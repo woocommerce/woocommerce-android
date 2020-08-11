@@ -193,7 +193,7 @@ Language: ko_KR
     <string name="product_add_image_content_description">이미지 추가</string>
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
-    <string name="product_variant_hidden">숨김</string>
+    <string name="product_variation_hidden">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
@@ -238,7 +238,7 @@ Language: ko_KR
     <string name="product_list_empty_search">일치하는 제품이 없음</string>
     <string name="product_list_empty">아직 제품이 없음</string>
     <string name="product_stock_count">%s 재고 있음</string>
-    <string name="product_stock_status_instock_with_variants">재고 있음 \u2022 %d 변형</string>
+    <string name="product_stock_status_instock_with_variations">재고 있음 \u2022 %d 변형</string>
     <string name="product_image_content_description">상품 이미지</string>
     <string name="review_list_item_title">%1$s 님이 %2$s에 대한 검토를 남김</string>
     <string name="wc_unapproved">받아들이지 않기</string>

@@ -15,8 +15,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IM
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.addNewItem
+import com.woocommerce.android.extensions.clearList
+import com.woocommerce.android.extensions.containsItem
+import com.woocommerce.android.extensions.getList
+import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
+import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -26,6 +32,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -149,6 +156,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _productTags = MutableLiveData<List<ProductTag>>()
     val productTags: LiveData<List<ProductTag>> = _productTags
+
+    private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
+    val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -725,8 +735,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val shouldFetch = remoteProductId != getRemoteProductId()
                 updateProductState(productInDb)
 
-                val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
-                if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
+                val cachedVariationCount = productRepository.getCachedVariationCount(remoteProductId)
+                if (shouldFetch || cachedVariationCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
                     fetchProductPassword(remoteProductId)
                 }
@@ -1186,16 +1196,75 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
-    fun onProductTagSelected(tag: ProductTag) {
-        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
-        selectedTags.add(tag)
-        updateProductDraft(tags = selectedTags)
+    fun onProductTagDoneMenuActionClicked() {
+        val tags = _addedProductTags.getList()
+        // check if there are tags entered that do not exist on the site. If so,
+        // call the API to add the tags to the site first
+        if (tags.isNotEmpty()) {
+            productTagsViewState = productTagsViewState.copy(isProgressDialogShown = true)
+            launch {
+                val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
+                // if there are some tags that could not be added, display an error message
+                if (addedTags.size < tags.size) {
+                    triggerEvent(ShowSnackbar(string.product_add_tag_error))
+                }
+
+                // add the newly added tags to the product
+                _addedProductTags.clearList()
+                updateProductDraft(tags = addedTags.addTags(viewState.productDraft))
+
+                // redirect to the product detail screen
+                productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
+                onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            }
+        } else {
+            // There are no newly added tags so redirect to the product detail screen
+            onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+        }
     }
 
+    /**
+     * Method called when a tag is entered
+     */
+    fun onProductTagAdded(tagName: String) {
+        // verify if the entered tagName exists for the site
+        // It so, the tag should be added to the product directly
+        productTagsRepository.getProductTagByName(tagName)?.let {
+            onProductTagSelected(it)
+        } ?: run {
+            // Since the tag does not exist for the site, add the tag to
+            // a list of newly added tags
+            _addedProductTags.addNewItem(ProductTag(name = tagName))
+            updateTagsMenuAction()
+        }
+    }
+
+    /**
+     * Method called when a tag is selected from the list of product tags
+     */
+    fun onProductTagSelected(tag: ProductTag) {
+        updateProductDraft(tags = tag.addTag(viewState.productDraft))
+        updateTagsMenuAction()
+    }
+
+    /**
+     * Method called when a tag is removed from the product
+     */
     fun onProductTagSelectionRemoved(tag: ProductTag) {
-        val selectedTags = viewState.productDraft?.tags?.toMutableList() ?: mutableListOf()
-        selectedTags.remove(tag)
-        updateProductDraft(tags = selectedTags)
+        // check if the tag is newly added. If so, remove it from the newly added tags
+        if (_addedProductTags.containsItem(tag)) {
+            _addedProductTags.removeItem(tag)
+        } else {
+            updateProductDraft(tags = tag.removeTag(viewState.productDraft))
+        }
+        updateTagsMenuAction()
+    }
+
+    private fun updateTagsMenuAction() {
+        productTagsViewState = productTagsViewState.copy(
+            shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
+                !_addedProductTags.isEmpty()
+        )
     }
 
     fun fetchProductTags() {
@@ -1400,7 +1469,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val shouldDisplayDoneMenuButton: Boolean? = null,
+        val isProgressDialogShown: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

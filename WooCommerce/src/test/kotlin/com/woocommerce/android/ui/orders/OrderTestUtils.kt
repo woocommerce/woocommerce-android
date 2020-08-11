@@ -176,6 +176,7 @@ object OrderTestUtils {
                 remoteShippingLabelId = i.toLong()
                 packageName = "Package$i"
                 serviceName = "Service$i"
+                dateCreated = Date().time.toString()
             }.toAppModel())
         }
         return result

@@ -262,6 +262,7 @@
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
+    <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
     <string name="orderdetail_shipping_label_item_shipto">Ship to</string>
     <string name="orderdetail_shipping_label_item_package_info">Package details</string>
@@ -274,6 +275,7 @@
     <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining items to ship</string>
     <string name="orderdetail_shipping_label_virtual_products_header">Remaining products</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
@@ -296,6 +298,16 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <!--
+        Refunds
+    -->
+    <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take a least 14 days to process.</string>
+    <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
+    <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
+    <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
+    <string name="shipping_label_refund_success">Refund was successfully submitted</string>
+    <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
+
     <!--
         Refunds
     -->
@@ -492,7 +504,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
-    <string name="product_stock_status_instock_with_variants">In stock \u2022 %d variants</string>
+    <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
     <string name="product_stock_count">%s in stock</string>
@@ -523,7 +535,6 @@
     <string name="product_wip_title">New editing options available</string>
     <string name="product_wip_message">We\'ve added more editing functionalities to products. You can now update images, edit product settings &amp; share products!</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
-    <string name="product_variant_hidden">Hidden</string>
     <string name="product_variant_list_empty">Add options like size and color from web. These will show up as options on the product page of your site</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
@@ -590,7 +601,8 @@
     <string name="product_tags">Tags</string>
     <string name="product_tag_list_empty_title">Add your first tag</string>
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
-
+    <string name="product_add_tag_dialog_title">Adding tag</string>
+    <string name="product_add_tag_error">Error occurred when adding tags</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -600,6 +612,11 @@
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
 
+    <!--
+        Variations
+    -->
+    <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
+    <string name="variation_detail_update_variation_error">Error updating variation</string>
     <!--
         Product images
     -->
@@ -884,6 +901,11 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+
+    <!-- In-App Feedback -->
+    <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
+    <string name="feedback_request_make_better">Could be better</string>
+    <string name="feedback_request_like_it">I like it</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

@@ -193,7 +193,7 @@ Language: de
     <string name="product_add_image_content_description">Bild hinzufügen</string>
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
-    <string name="product_variant_hidden">Versteckt</string>
+    <string name="product_variation_hidden">Versteckt</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
@@ -238,7 +238,7 @@ Language: de
     <string name="product_list_empty_search">Keine Produkte gefunden</string>
     <string name="product_list_empty">Noch keine Produkte</string>
     <string name="product_stock_count">%s auf Lager</string>
-    <string name="product_stock_status_instock_with_variants">Auf Lager \u2022 %d Varianten</string>
+    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s hat eine Bewertung für %2$s hinterlassen</string>
     <string name="wc_unapproved">Nicht genehmigt</string>

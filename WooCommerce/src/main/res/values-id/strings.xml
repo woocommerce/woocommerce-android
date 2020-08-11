@@ -193,7 +193,7 @@ Language: id
     <string name="product_add_image_content_description">Tambahkan gambar</string>
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
-    <string name="product_variant_hidden">Tersembunyi</string>
+    <string name="product_variation_hidden">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
@@ -238,7 +238,7 @@ Language: id
     <string name="product_list_empty_search">Tidak ada produk yang cocok</string>
     <string name="product_list_empty">Belum ada produk</string>
     <string name="product_stock_count">%s tersedia</string>
-    <string name="product_stock_status_instock_with_variants">Tersedia \u2022 %d varian</string>
+    <string name="product_stock_status_instock_with_variations">Tersedia \u2022 %d varian</string>
     <string name="product_image_content_description">Gambar produk</string>
     <string name="review_list_item_title">%1$s memberikan ulasan di %2$s</string>
     <string name="wc_unapproved">Tidak disetujui</string>

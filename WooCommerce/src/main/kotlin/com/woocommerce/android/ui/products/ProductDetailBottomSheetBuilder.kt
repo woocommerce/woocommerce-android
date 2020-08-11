@@ -54,7 +54,6 @@ class ProductDetailBottomSheetBuilder(
             }
             GROUPED -> {
                 listOfNotNull(
-                    product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription()

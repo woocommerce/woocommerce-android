@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:padding="@dimen/major_75">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelRefund_info"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/shipping_label_refund_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelRefund_purchaseDate_title"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_refund_purchase_date_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelRefund_info" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelRefund_purchaseDate"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelRefund_purchaseDate_title"
+        tools:text="December 19th 2019, 11:17pm" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelRefund_amount_title"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_refund_amount_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelRefund_purchaseDate" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelRefund_amount"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelRefund_amount_title"
+        tools:text="$7.50" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/shippingLabelRefund_btnRefund"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:text="@string/shipping_label_refund_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -221,7 +221,7 @@ class ProductDetailRepository @Inject constructor(
 
     fun geProductExistsBySku(sku: String) = productStore.geProductExistsBySku(selectedSite.get(), sku)
 
-    fun getCachedVariantCount(remoteProductId: Long) =
+    fun getCachedVariationCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =

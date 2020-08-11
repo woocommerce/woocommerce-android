@@ -45,6 +45,20 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
+            app:destination="@id/nav_graph_shipping_labels"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="orderId"
+                android:defaultValue="0L"
+                app:argType="long" />
+            <argument
+                android:name="shippingLabelId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
+        <action
             android:id="@+id/action_orderDetailFragment_to_issue_refund"
             app:destination="@id/nav_graph_refunds"
             app:enterAnim="@anim/activity_fade_in"
@@ -181,6 +195,7 @@
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out" />
     <include app:graph="@navigation/nav_graph_refunds" />
+    <include app:graph="@navigation/nav_graph_shipping_labels" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <fragment
