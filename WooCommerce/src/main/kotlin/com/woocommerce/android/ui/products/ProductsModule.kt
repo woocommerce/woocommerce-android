@@ -272,16 +272,16 @@ object ProductsModule {
     }
 
     @Module
-<<<<<<< HEAD
-    internal abstract class ProductAddTypeBottomSheetFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductAddTypeBottomSheetModule::class])
-        abstract fun productAddTypeFragment(): ProductAddTypeBottomSheetFragment
-=======
     internal abstract class ProductTypesBottomSheetFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductTypesBottomSheetModule::class])
-        abstract fun productTypesBottomSheetFragment(): ProductTypesBottomSheetFragment
->>>>>>> develop
+        @ContributesAndroidInjector(modules = [ProductDetailTypesBottomSheetModule::class])
+        abstract fun productTypesBottomSheetFragment(): ProductDetailTypesBottomSheetFragment
+    }
+
+    @Module
+    internal abstract class ProductAddTypeBottomSheetFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductAddTypesBottomSheetModule::class])
+        abstract fun productAddTypeFragment(): ProductAddTypesBottomSheetFragment
     }
 }

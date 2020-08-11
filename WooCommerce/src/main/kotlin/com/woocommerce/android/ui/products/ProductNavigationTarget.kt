@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility

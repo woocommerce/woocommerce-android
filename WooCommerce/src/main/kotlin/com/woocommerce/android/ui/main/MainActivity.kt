@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
@@ -772,7 +773,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductAddBottomSheet() {
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment()
+        val action = NavGraphMainDirections.actionGlobalProductAddTypeBottomSheetFragment()
         navController.navigateSafely(action)
     }
 

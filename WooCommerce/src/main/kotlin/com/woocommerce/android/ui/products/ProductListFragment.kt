@@ -369,7 +369,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         fun showButton() = run { addProductButton.visibility = View.VISIBLE }
         fun hideButton() = run { addProductButton.visibility = View.GONE }
         fun showProductAddTypes() {
-            (activity as? MainNavigationRouter)?.showProductAddBottomSheet(remoteProductId)
+            (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
         }
         when (show) {
             true -> {

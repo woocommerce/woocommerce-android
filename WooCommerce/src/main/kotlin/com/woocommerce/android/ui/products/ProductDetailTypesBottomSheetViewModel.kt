@@ -11,9 +11,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.products.ProductType.EXTERNAL
-import com.woocommerce.android.ui.products.ProductType.GROUPED
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -21,13 +19,21 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 
+interface ProductTypeBottomSheetBuilder {
+    fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem>
+}
+
 @OpenClassOnDebug
-class ProductTypesBottomSheetViewModel @AssistedInject constructor(
+class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
+
+    val productListBuilder: ProductTypeBottomSheetBuilder by lazy {
+        ProductDetailTypeBottomSheetBuilder()
+    }
 
     fun loadProductTypes() {
         _productTypesBottomSheetList.value = buildProductTypeList()
@@ -45,35 +51,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         ))
     }
 
-    private fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> {
-        return listOf(
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                titleResource = R.string.product_type_physical,
-                descResource = R.string.product_type_physical_desc,
-                iconResource = R.drawable.ic_gridicons_product
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                isVirtual = true,
-                titleResource = R.string.product_type_virtual,
-                descResource = R.string.product_type_virtual_desc,
-                iconResource = R.drawable.ic_gridicons_cloud_outline
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = GROUPED,
-                titleResource = R.string.product_type_grouped,
-                descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = EXTERNAL,
-                titleResource = R.string.product_type_external,
-                descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
-            )
-        )
-    }
+    fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> = productListBuilder.buildBottomSheetList()
 
     data class ExitWithResult(val productTypeUiItem: ProductTypesBottomSheetUiItem) : Event()
 
@@ -87,5 +65,5 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ProductTypesBottomSheetViewModel>
+    interface Factory : ViewModelAssistedFactory<ProductDetailTypesBottomSheetViewModel>
 }

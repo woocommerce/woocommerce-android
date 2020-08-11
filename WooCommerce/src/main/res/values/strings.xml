@@ -914,7 +914,7 @@
     <string name="product_type_confirm_button">Yes, change</string>
     
     <!-- Product add -->
-    <string name="product_add_type_list_header">Select a product type</string>
+    <string name="product_add_type_list_header">@string/product_type_list_header</string>
     <string name="product_add_type_simple">Simple product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
