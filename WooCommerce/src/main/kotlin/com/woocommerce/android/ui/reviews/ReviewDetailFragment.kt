@@ -72,7 +72,7 @@ class ReviewDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.image_minor_50)
+        val dimen = requireActivity().resources.getDimensionPixelSize(R.dimen.image_minor_50)
         productIconSize = DisplayUtils.dpToPx(activity, dimen)
     }
 
