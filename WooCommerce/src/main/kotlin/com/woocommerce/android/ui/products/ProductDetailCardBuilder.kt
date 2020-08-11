@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -477,7 +478,12 @@ class ProductDetailCardBuilder(
                 R.string.grouped_products,
                 resources.getString(R.string.grouped_products_count, groupedProductsSize),
                 R.drawable.ic_widgets
-            )
+            ) {
+                // TODO: add click event
+                viewModel.onEditProductCardClicked(
+                    ViewGroupedProducts(this.remoteId)
+                )
+            }
         } else {
             null
         }
