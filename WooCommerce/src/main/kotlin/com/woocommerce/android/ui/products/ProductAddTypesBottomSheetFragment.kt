@@ -73,6 +73,7 @@ class ProductAddTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndro
                 is ExitWithResult -> {
                     dismiss()
                 }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })

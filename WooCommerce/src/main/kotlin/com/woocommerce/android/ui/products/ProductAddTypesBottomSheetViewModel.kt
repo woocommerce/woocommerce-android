@@ -5,6 +5,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 
@@ -19,6 +20,7 @@ class ProductAddTypesBottomSheetViewModel @AssistedInject constructor(
 
     override fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         saveUserSelection(productTypeUiItem.type)
+        triggerEvent(ViewProductAdd)
         triggerEvent(ExitWithResult(productTypeUiItem = productTypeUiItem))
     }
 

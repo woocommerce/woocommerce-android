@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.products
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -203,6 +205,11 @@ class ProductNavigator @Inject constructor() {
             is ViewProductReviews -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductReviewsFragment(target.remoteId)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductAdd -> {
+                val action = NavGraphMainDirections.actionGlobalProductAddFragment()
                 fragment.findNavController().navigate(action)
             }
 

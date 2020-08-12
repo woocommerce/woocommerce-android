@@ -789,11 +789,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun showAddProduct() {
         showBottomNav()
-        NavGraphMainDirections.actionGlobalOrderDetailFragment()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = 0L,
-            isAddProduct = true
-        )
+        val action = NavGraphMainDirections.actionGlobalProductAddFragment()
         navController.navigateSafely(action)
     }
 
