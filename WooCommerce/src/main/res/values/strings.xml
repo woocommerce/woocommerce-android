@@ -429,6 +429,7 @@
         Product Reviews List
     -->
     <string name="review_list_item_title">%1$s left a review on %2$s</string>
+    <string name="product_review_list_item_title">%1$s left a review</string>
     <string name="review_moderation_undo">Review marked as %1$s</string>
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
@@ -493,6 +494,7 @@
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
     <string name="product_reviews">Reviews</string>
+    <string name="product_reviews_count">\u2022  %d reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
     <string name="product_download_limit">Limit</string>
