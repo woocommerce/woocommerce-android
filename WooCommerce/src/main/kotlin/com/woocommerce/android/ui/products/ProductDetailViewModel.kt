@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -180,12 +180,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        when(navArgs.isAddProduct) {
-            false -> loadProduct(navArgs.remoteProductId)
-            else -> {
-                val abc = ""
-            }
-        }
+        loadProduct(navArgs.remoteProductId)
     }
 
     fun getProduct() = viewState
@@ -198,13 +193,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun initialisePricing() {
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
+            ?: DEFAULT_DECIMAL_PRECISION
         productPricingViewState = productPricingViewState.copy(
-                currency = parameters.currencyCode,
-                decimals = decimals,
-                taxClassList = productRepository.getTaxClassesForSite(),
-                regularPrice = viewState.storedProduct?.regularPrice,
-                salePrice = viewState.storedProduct?.salePrice
+            currency = parameters.currencyCode,
+            decimals = decimals,
+            taxClassList = productRepository.getTaxClassesForSite(),
+            regularPrice = viewState.storedProduct?.regularPrice,
+            salePrice = viewState.storedProduct?.salePrice
         )
     }
 
@@ -452,7 +447,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
         } ?: false
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
@@ -464,33 +459,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges(event)
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    // discard changes made to the current screen
+                    discardEditChanges(event)
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else {
@@ -517,7 +512,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 // check if sku is available from local cache
                 if (productRepository.geProductExistsBySku(sku)) {
                     productInventoryViewState = productInventoryViewState.copy(
-                            skuErrorMessage = string.product_inventory_update_sku_error
+                        skuErrorMessage = string.product_inventory_update_sku_error
                     )
                 } else {
                     verifyProductExistsBySkuRemotely(sku)
@@ -540,7 +535,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             productInventoryViewState.copy(stockQuantityErrorMessage = 0)
         } else {
             productInventoryViewState.copy(
-                    stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
+                stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
             )
         }
     }
@@ -627,49 +622,49 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
-                    description = description ?: product.description,
-                    shortDescription = shortDescription ?: product.shortDescription,
-                    name = title ?: product.name,
-                    sku = sku ?: product.sku,
-                    slug = slug ?: product.slug,
-                    manageStock = manageStock ?: product.manageStock,
-                    stockStatus = stockStatus ?: product.stockStatus,
-                    soldIndividually = soldIndividually ?: product.soldIndividually,
-                    backorderStatus = backorderStatus ?: product.backorderStatus,
-                    stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = images ?: product.images,
-                    regularPrice = regularPrice ?: product.regularPrice,
-                    salePrice = salePrice ?: product.salePrice,
-                    isOnSale = isOnSale ?: product.isOnSale,
-                    isVirtual = isVirtual ?: product.isVirtual,
-                    taxStatus = taxStatus ?: product.taxStatus,
-                    taxClass = taxClass ?: product.taxClass,
-                    length = length ?: product.length,
-                    width = width ?: product.width,
-                    height = height ?: product.height,
-                    weight = weight ?: product.weight,
-                    shippingClass = shippingClass ?: product.shippingClass,
-                    shippingClassId = shippingClassId ?: product.shippingClassId,
-                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    status = productStatus ?: product.status,
-                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
-                    isFeatured = isFeatured ?: product.isFeatured,
-                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
-                    purchaseNote = purchaseNote ?: product.purchaseNote,
-                    externalUrl = externalUrl ?: product.externalUrl,
-                    buttonText = buttonText ?: product.buttonText,
-                    menuOrder = menuOrder ?: product.menuOrder,
-                    categories = categories ?: product.categories,
-                    tags = tags ?: product.tags,
-                    type = type ?: product.type,
-                    saleEndDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                    } else viewState.storedProduct?.saleEndDateGmt,
-                    saleStartDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                description = description ?: product.description,
+                shortDescription = shortDescription ?: product.shortDescription,
+                name = title ?: product.name,
+                sku = sku ?: product.sku,
+                slug = slug ?: product.slug,
+                manageStock = manageStock ?: product.manageStock,
+                stockStatus = stockStatus ?: product.stockStatus,
+                soldIndividually = soldIndividually ?: product.soldIndividually,
+                backorderStatus = backorderStatus ?: product.backorderStatus,
+                stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
+                images = images ?: product.images,
+                regularPrice = regularPrice ?: product.regularPrice,
+                salePrice = salePrice ?: product.salePrice,
+                isOnSale = isOnSale ?: product.isOnSale,
+                isVirtual = isVirtual ?: product.isVirtual,
+                taxStatus = taxStatus ?: product.taxStatus,
+                taxClass = taxClass ?: product.taxClass,
+                length = length ?: product.length,
+                width = width ?: product.width,
+                height = height ?: product.height,
+                weight = weight ?: product.weight,
+                shippingClass = shippingClass ?: product.shippingClass,
+                shippingClassId = shippingClassId ?: product.shippingClassId,
+                isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                status = productStatus ?: product.status,
+                catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                isFeatured = isFeatured ?: product.isFeatured,
+                reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                purchaseNote = purchaseNote ?: product.purchaseNote,
+                externalUrl = externalUrl ?: product.externalUrl,
+                buttonText = buttonText ?: product.buttonText,
+                menuOrder = menuOrder ?: product.menuOrder,
+                categories = categories ?: product.categories,
+                tags = tags ?: product.tags,
+                type = type ?: product.type,
+                saleEndDateGmt = if (isSaleScheduled == true ||
+                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
+                } else viewState.storedProduct?.saleEndDateGmt,
+                saleStartDateGmt = if (isSaleScheduled == true ||
+                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    saleStartDate ?: product.saleStartDateGmt
+                } else viewState.storedProduct?.saleStartDateGmt
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -805,12 +800,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = if (viewState.draftPassword == null) {
             viewState.copy(
-                    storedPassword = password,
-                    draftPassword = password
+                storedPassword = password,
+                draftPassword = password
             )
         } else {
             viewState.copy(
-                    storedPassword = password
+                storedPassword = password
             )
         }
     }
@@ -858,7 +853,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
@@ -937,8 +932,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-                    ?: viewState.productDraft?.shippingClass ?: ""
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
@@ -955,13 +950,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
 
         viewState = viewState.copy(
-                productDraft = updatedDraft,
-                storedProduct = productToUpdateFrom,
-                weightWithUnits = weightWithUnits,
-                sizeWithUnits = sizeWithUnits,
-                salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
-                gmtOffset = parameters.gmtOffset
+            productDraft = updatedDraft,
+            storedProduct = productToUpdateFrom,
+            weightWithUnits = weightWithUnits,
+            sizeWithUnits = sizeWithUnits,
+            salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
+            regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
+            gmtOffset = parameters.gmtOffset
         )
 
         if (viewState.productBeforeEnteringFragment == null) {
@@ -1158,7 +1153,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1353,7 +1349,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true)
+                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
