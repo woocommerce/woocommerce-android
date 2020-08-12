@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -212,7 +213,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
                 if (isActive)
                     notifsRefreshLayout.isRefreshing = it
             }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { notifsLoadMoreProgress.isVisible = it }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -259,10 +260,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         } else {
             newDataAvailable = true
         }
-    }
-
-    private fun showLoadMoreProgress(show: Boolean) {
-        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
