@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
@@ -86,12 +85,15 @@ class MainActivity : AppUpgradeActivity(),
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
+        private const val DIALOG_NAVIGATOR_NAME = "dialog"
+
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
         const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
         const val FIELD_NOTIFICATION_TYPE = "notification-type"
+
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -293,7 +295,13 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
      */
-    override fun isChildFragmentShowing() = !isAtNavigationRoot()
+    override fun isChildFragmentShowing(): Boolean {
+        return navController.currentDestination?.let {
+            !isAtRootNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
+        } ?: run {
+             !isAtNavigationRoot()
+        }
+    }
 
     /**
      * Navigates to the root fragment so only the top level fragment is showing
@@ -317,11 +325,18 @@ class MainActivity : AppUpgradeActivity(),
      */
     private fun getActiveChildFragment(): Fragment? {
         return if (isChildFragmentShowing()) {
-            val navHostFragment = supportFragmentManager.primaryNavigationFragment
-            navHostFragment?.childFragmentManager?.fragments?.get(0)
+            getHostChildFragment()
         } else {
             null
         }
+    }
+
+    /***
+     * Get the actual primary navigation Fragment from the support manager
+     */
+    private fun getHostChildFragment(): Fragment? {
+        val navHostFragment = supportFragmentManager.primaryNavigationFragment
+        return navHostFragment?.childFragmentManager?.fragments?.get(0)
     }
 
     /**
@@ -329,6 +344,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val isAtRoot = isAtNavigationRoot()
+        val isRootNavigation = isAtRootNavigation(isAtRoot = isAtRoot, destination = destination)
 
         // go no further if this is the initial navigation to the root fragment
         if (isAtRoot && previousDestinationId == null) {
@@ -336,8 +352,8 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        // show/hide the top level fragment container depending on whether we're at the root
-        if (isAtRoot) {
+        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
+        if (isRootNavigation){
             container.visibility = View.VISIBLE
         } else {
             container.visibility = View.INVISIBLE
@@ -345,11 +361,9 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val showBottomNav: Boolean
-        if (isAtRoot) {
+        if (isRootNavigation) {
             showUpIcon = false
             showCrossIcon = false
-            showBottomNav = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -391,15 +405,15 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        // only show bottom nav if we're at a root fragment
-        if (isAtRoot) {
+        //show bottom nav if this is a dialog destination from root or, just root itself
+        if (isRootNavigation){
             showBottomNav()
         } else {
             hideBottomNav()
         }
 
         getActiveTopLevelFragment()?.let {
-            if (isAtRoot) {
+            if (isRootNavigation) {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
             } else {
@@ -408,6 +422,23 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         previousDestinationId = destination.id
+    }
+
+    /**
+     * Returns a Boolean value in order to set the behaviour from a root navigation type in terms of:
+     * .container visibility
+     * .menu items visibility
+     * .top nav bar titles
+     *
+     * @param isAtRoot The value that tells if root fragment is in the current destination
+     * @param destination The object for the next navigation destination
+     */
+
+    private fun isAtRootNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean{
+        val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
+        val activeChild = getHostChildFragment()
+        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        return (isDialogDestination && activeChildIsRoot) || isAtRoot
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
