@@ -214,4 +214,76 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
     }
+
+    override fun trackSignupMagicLinkOpenEmailClientViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackLoginMagicLinkOpenEmailClientViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSocialButtonStart() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackFailure(message: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSendCodeWithTextClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSubmit2faCodeClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSubmitClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackRequestMagicLinkClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackLoginWithPasswordClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackShowHelpClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackDismissDialog() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSelectEmailField() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackPickEmailFromHint() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackShowEmailHints() {
+        TODO("Not yet implemented")
+    }
+
+    override fun emailFormScreenResumed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackEmailSignupConfirmationViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSocialSignupConfirmationViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackCreateAccountClick() {
+        TODO("Not yet implemented")
+    }
 }

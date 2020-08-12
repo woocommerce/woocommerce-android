@@ -539,4 +539,32 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
+
+    override fun gotUnregisteredEmail(email: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun gotUnregisteredSocialAccount(
+        email: String?,
+        displayName: String?,
+        idToken: String?,
+        photoUrl: String?,
+        service: String?
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun helpSignupConfirmationScreen(email: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showSignupSocial(
+        email: String?,
+        displayName: String?,
+        idToken: String?,
+        photoUrl: String?,
+        service: String?
+    ) {
+        TODO("Not yet implemented")
+    }
 }
