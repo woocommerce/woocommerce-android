@@ -429,6 +429,7 @@
         Product Reviews List
     -->
     <string name="review_list_item_title">%1$s left a review on %2$s</string>
+    <string name="product_review_list_item_title">%1$s left a review</string>
     <string name="review_moderation_undo">Review marked as %1$s</string>
     <string name="wc_mark_all_read">Mark all as read</string>
     <string name="wc_mark_all_read_success">All reviews marked as read</string>
@@ -493,6 +494,7 @@
     <string name="product_shipping_settings">Shipping settings</string>
     <string name="product_total_orders">Total orders</string>
     <string name="product_reviews">Reviews</string>
+    <string name="product_reviews_count">\u2022  %d reviews</string>
     <string name="product_downloads">Downloads</string>
     <string name="product_downloadable_files">Downloadable files</string>
     <string name="product_download_limit">Limit</string>
@@ -603,6 +605,7 @@
     <string name="product_tag_list_empty_message">Organise your products in tags</string>
     <string name="product_add_tag_dialog_title">Adding tag</string>
     <string name="product_add_tag_error">Error occurred when adding tags</string>
+    <string name="product_type_edit">Change product type</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -901,6 +904,16 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+
+    <!-- Product Add more details Bottom sheet -->
+    <string name="product_type_list_header">Select a product type</string>
+    <string name="product_type_physical_desc">An item you ship to the customer</string>
+    <string name="product_type_virtual_desc">A service or digital download</string>
+    <string name="product_type_grouped_desc">A collection of related products</string>
+    <string name="product_type_external_desc">Link a product to an external website</string>
+    <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
+    <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
+    <string name="product_type_confirm_button">Yes, change</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>

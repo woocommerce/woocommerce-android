@@ -40,7 +40,9 @@ sealed class ProductProperty(val type: Type) {
     data class RatingBar(
         @StringRes val title: Int,
         val value: String,
-        val rating: Float
+        val rating: Float,
+        @DrawableRes val icon: Int,
+        val onClick: (() -> Unit)? = null
     ) : ProductProperty(RATING_BAR) {
         override fun isNotEmpty(): Boolean {
             return this.value.isNotBlank()
