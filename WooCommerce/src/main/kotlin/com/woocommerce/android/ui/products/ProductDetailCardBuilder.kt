@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VI
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -269,7 +270,7 @@ class ProductDetailCardBuilder(
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         return if (hasPricingInfo) {
             // when there's a sale price show price & sales price as a group, otherwise show price separately
-            return if (this.isOnSale) {
+            return if (this.salePrice.isSet()) {
                 val group = mapOf(
                     resources.getString(R.string.product_regular_price)
                         to PriceUtils.formatCurrency(this.regularPrice, parameters.currencyCode, currencyFormatter),
@@ -400,7 +401,6 @@ class ProductDetailCardBuilder(
     private fun Product.price(): ProductProperty {
         // If we have pricing info, show price & sales price as a group,
         // otherwise provide option to add pricing info for the product
-        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
@@ -408,7 +408,6 @@ class ProductDetailCardBuilder(
             regularPrice,
             salePrice,
             isSaleScheduled,
-            isOnSale,
             saleStartDateGmt,
             saleEndDateGmt
         )
@@ -417,7 +416,7 @@ class ProductDetailCardBuilder(
             R.string.product_price,
             pricingGroup,
             R.drawable.ic_gridicons_money,
-            hasPricingInfo
+            showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
                 ViewProductPricing(PricingData(

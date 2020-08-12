@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -126,7 +127,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     }
 
     fun onScheduledSaleChanged(isSaleScheduled: Boolean) {
-        if (isSaleScheduled && pricingData.salePrice isEquivalentTo BigDecimal.ZERO) {
+        if (isSaleScheduled && pricingData.salePrice.isNotSet()) {
             viewState = viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
         } else if (viewState.salePriceErrorMessage == string.product_pricing_scheduled_sale_price_error) {
             viewState = viewState.copy(salePriceErrorMessage = 0)
@@ -140,7 +141,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         val regularPrice = pricingData.regularPrice ?: BigDecimal.ZERO
         viewState = if (inputValue > regularPrice) {
             viewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else if (pricingData.isSaleScheduled == true && inputValue isEquivalentTo BigDecimal.ZERO)
+        } else if (pricingData.isSaleScheduled == true && inputValue.isNotSet())
             viewState.copy(salePriceErrorMessage = string.product_pricing_scheduled_sale_price_error)
         else {
             viewState.copy(salePriceErrorMessage = 0)

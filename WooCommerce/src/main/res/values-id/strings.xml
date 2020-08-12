@@ -193,7 +193,7 @@ Language: id
     <string name="product_add_image_content_description">Tambahkan gambar</string>
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
-    <string name="product_variation_hidden">Tersembunyi</string>
+    <string name="product_variation_disabled">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>

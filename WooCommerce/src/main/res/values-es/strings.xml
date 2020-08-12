@@ -193,7 +193,7 @@ Language: es
     <string name="product_add_image_content_description">Añadir imagen</string>
     <string name="date_timeframe_future">Próximo</string>
     <string name="remove">Eliminar</string>
-    <string name="product_variation_hidden">Oculto</string>
+    <string name="product_variation_disabled">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>

@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
@@ -45,9 +46,6 @@ data class ProductVariation(
     override val height: Float,
     override val weight: Float
 ) : Parcelable, IProduct {
-    val isOnSale: Boolean
-        get() = !(this.salePrice isEquivalentTo BigDecimal.ZERO)
-
     override fun equals(other: Any?): Boolean {
         val variation = other as? ProductVariation
         return variation?.let {
@@ -56,7 +54,6 @@ data class ProductVariation(
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
-                isOnSale == variation.isOnSale &&
                 isSaleScheduled == variation.isSaleScheduled &&
                 saleEndDateGmt == variation.saleEndDateGmt &&
                 saleStartDateGmt == variation.saleStartDateGmt &&
@@ -98,8 +95,8 @@ data class ProductVariation(
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
             it.image = imageToJson()
-            it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
-            it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
+            it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
+            it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
             if (isSaleScheduled) {
                 saleStartDateGmt?.let { dateOnSaleFrom ->
                     it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
@@ -109,7 +106,6 @@ data class ProductVariation(
                 it.dateOnSaleFromGmt = ""
                 it.dateOnSaleToGmt = ""
             }
-            it.onSale = isOnSale
             it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
             it.stockQuantity = stockQuantity
             it.purchasable = isPurchasable

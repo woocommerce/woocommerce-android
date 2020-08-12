@@ -193,7 +193,7 @@ Language: ko_KR
     <string name="product_add_image_content_description">이미지 추가</string>
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
-    <string name="product_variation_hidden">숨김</string>
+    <string name="product_variation_disabled">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>

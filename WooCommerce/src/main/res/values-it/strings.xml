@@ -193,7 +193,7 @@ Language: it
     <string name="product_add_image_content_description">Aggiungi immagine</string>
     <string name="date_timeframe_future">In arrivo</string>
     <string name="remove">Rimuovi</string>
-    <string name="product_variation_hidden">Nascosto</string>
+    <string name="product_variation_disabled">Nascosto</string>
     <string name="login_discovery_error_generic">Non siamo stati in grado di accedere al tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_ssl">Non siamo stati in grado di accedere al tuo sito perché abbiamo riscontrato un problema con il &lt;b>certificato SSL&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_http_auth">Non siamo stati in grado di accedere al tuo sito perché viene richiesta l\'&lt;b>autenticazione HTTP&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>

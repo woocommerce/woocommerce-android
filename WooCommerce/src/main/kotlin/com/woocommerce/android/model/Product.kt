@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -80,9 +81,6 @@ data class Product(
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
     }
-
-    val isOnSale: Boolean
-        get() = !(this.salePrice isEquivalentTo BigDecimal.ZERO)
 
     @Parcelize
     data class Image(
@@ -178,7 +176,6 @@ data class Product(
                 salePrice.isNotEqualTo(it.salePrice) ||
                 saleStartDateGmt != it.saleStartDateGmt ||
                 saleEndDateGmt != it.saleEndDateGmt ||
-                isOnSale != it.isOnSale ||
                 taxClass != it.taxClass ||
                 taxStatus != it.taxStatus
         } ?: false
@@ -425,9 +422,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.stockQuantity = stockQuantity
         it.soldIndividually = soldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
-        it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
-        it.onSale = isOnSale
+        it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
+        it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()

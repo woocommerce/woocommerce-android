@@ -8,6 +8,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -15,6 +17,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.Switch
+import com.woocommerce.android.ui.products.models.ProductProperty.Warning
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -43,6 +46,7 @@ class VariationDetailCardBuilder(
             properties = listOf(
                 variation.description(),
                 variation.price(),
+                variation.warning(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -77,10 +81,10 @@ class VariationDetailCardBuilder(
         @StringRes val visibility: Int
         @DrawableRes val visibilityIcon: Int
         if (this.isVisible) {
-            visibility = string.product_variation_visible
+            visibility = string.product_variation_enabled
             visibilityIcon = drawable.ic_gridicons_visible
         } else {
-            visibility = string.product_variation_hidden
+            visibility = string.product_variation_disabled
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
@@ -89,10 +93,17 @@ class VariationDetailCardBuilder(
         }
     }
 
+    private fun ProductVariation.warning(): ProductProperty? {
+        return if (regularPrice.isNotSet() && this.isVisible) {
+            Warning(resources.getString(string.variation_detail_price_warning))
+        } else {
+            null
+        }
+    }
+
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
-        val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
@@ -100,16 +111,18 @@ class VariationDetailCardBuilder(
             regularPrice,
             salePrice,
             isSaleScheduled,
-            isOnSale,
             saleStartDateGmt,
             saleEndDateGmt
         )
 
+        val isWarningVisible = regularPrice.isNotSet() && this.isVisible
         return PropertyGroup(
             string.product_price,
             pricingGroup,
             drawable.ic_gridicons_money,
-            hasPricingInfo
+            showTitle = regularPrice.isSet(),
+            isHighlighted = isWarningVisible,
+            isDividerVisible = !isWarningVisible
         ) {
                 viewModel.onEditVariationCardClicked(
                     ViewPricing(PricingData(

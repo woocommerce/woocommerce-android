@@ -1,17 +1,22 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.content.Context
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
@@ -44,24 +49,24 @@ class VariationListAdapter(
     }
 
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
-        val productVariation = variationList[position]
+        val variation = variationList[position]
 
-        holder.txtVariationOptionName.text = productVariation.optionName
+        holder.txtVariationOptionName.text = variation.optionName
 
-        val variationPurchasable = if (!productVariation.isPurchasable) {
-            context.getString(R.string.product_variation_hidden)
+        if (variation.isVisible) {
+            if (variation.regularPrice.isSet()) {
+                holder.txtVariationOptionPriceAndStock.text = variation.priceWithCurrency
+            } else {
+                val highlightedText = highlightText(context.getString(R.string.product_variation_no_price_set))
+                holder.txtVariationOptionPriceAndStock.text = highlightedText
+            }
         } else {
-            null
+            holder.txtVariationOptionPriceAndStock.text = StringBuilder()
+                .append(context.getString(R.string.product_variation_disabled))
+                .appendWithIfNotEmpty(variation.priceWithCurrency, context.getString(R.string.product_bullet))
         }
-        holder.txtVariationOptionPriceAndStock.text = StringBuilder()
-                .appendWithIfNotEmpty(variationPurchasable)
-                .appendWithIfNotEmpty(productVariation.priceWithCurrency, context.getString(R.string.product_bullet))
 
-        holder.txtVariationOptionPriceAndStock.text = StringBuilder()
-                .appendWithIfNotEmpty(variationPurchasable)
-                .appendWithIfNotEmpty(productVariation.priceWithCurrency, context.getString(R.string.product_bullet))
-
-        productVariation.image?.let {
+        variation.image?.let {
             val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
             glideRequest.load(imageUrl)
                     .placeholder(R.drawable.ic_product)
@@ -75,6 +80,17 @@ class VariationListAdapter(
         holder.itemView.setOnClickListener {
             onItemClick(variationList[position])
         }
+    }
+
+    private fun highlightText(text: String): Spannable {
+        val spannable = SpannableString(text)
+        spannable.setSpan(
+            ForegroundColorSpan(ContextCompat.getColor(context, R.color.warning_foreground_color)),
+            0,
+            spannable.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        return spannable
     }
 
     private class VariationItemDiffUtil(

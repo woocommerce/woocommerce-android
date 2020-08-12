@@ -27,12 +27,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_200"
         android:layout_marginTop="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_00"
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintEnd_toStartOf="@+id/imgProperty"
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/textPropertyValue"
         app:layout_goneMarginStart="@dimen/major_100"
+        app:layout_goneMarginBottom="@dimen/major_100"
         tools:text="textPropertyName this is really long text that will wrap."
         tools:visibility="visible"/>
 
@@ -55,6 +58,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         app:layout_goneMarginStart="@dimen/major_100"
         app:layout_goneMarginTop="@dimen/major_100"
+        tools:visibility="visible"
         tools:text="textPropertyValue this is really long text that will wrap." />
 
     <RatingBar
@@ -74,14 +78,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textPropertyValue"
         app:layout_goneMarginStart="@dimen/major_100"
         tools:rating="3"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <ImageView
         android:id="@+id/imgProperty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_75"
-        android:background="@drawable/ic_arrow_right"
+        android:src="@drawable/ic_arrow_right"
         android:contentDescription="@string/product_property_edit"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/divider"
@@ -95,6 +99,7 @@
         android:layout_width="@dimen/minor_00"
         android:layout_marginStart="@dimen/major_200"
         android:layout_marginTop="@dimen/major_100"
+        tools:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgPropertyIcon"
