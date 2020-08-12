@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragme
 import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductMenuOrderFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductReviewsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingClassFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmentModule
@@ -35,6 +36,8 @@ import com.woocommerce.android.ui.products.categories.ParentCategoryListFragment
 import com.woocommerce.android.ui.products.categories.ParentCategoryListModule
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
+import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
+import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
@@ -86,6 +89,7 @@ import dagger.android.ContributesAndroidInjector
     ProductTagsFragmentModule::class,
     ProductDetailBottomSheetFragmentModule::class,
     ProductTypesBottomSheetFragmentModule::class,
+    ProductReviewsFragmentModule::class,
     ProductAddTypeBottomSheetFragmentModule::class
 ])
 object ProductsModule {
@@ -283,5 +287,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductAddTypesBottomSheetModule::class])
         abstract fun productAddTypeFragment(): ProductAddTypesBottomSheetFragment
+    }
+
+    @Module
+    internal abstract class ProductReviewsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductReviewsModule::class])
+        abstract fun productReviewsFragment(): ProductReviewsFragment
     }
 }

@@ -35,7 +35,7 @@ class ReviewListAdapter(
     private val removedRemoteIds = HashSet<Long>()
 
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview)
+        fun onReviewClick(review: ProductReview) { }
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -352,8 +352,14 @@ class ReviewListAdapter(
                 itemHolder.rating.visibility = View.GONE
             }
 
-            itemHolder.title.text = context.getString(
+            itemHolder.title.text = if (review.product == null) {
+                context.getString(
+                    R.string.product_review_list_item_title, review.reviewerName)
+            } else {
+                context.getString(
                     R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
+            }
+
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
             itemHolder.divider.visibility = if (position < getContentItemsTotal() - 1) View.VISIBLE else View.GONE
 
