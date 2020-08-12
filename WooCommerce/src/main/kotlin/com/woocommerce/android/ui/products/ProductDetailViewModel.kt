@@ -180,7 +180,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        loadProduct(navArgs.remoteProductId)
+        when(navArgs.isAddProduct) {
+            false -> loadProduct(navArgs.remoteProductId)
+            else -> {
+                val abc = ""
+            }
+        }
     }
 
     fun getProduct() = viewState
