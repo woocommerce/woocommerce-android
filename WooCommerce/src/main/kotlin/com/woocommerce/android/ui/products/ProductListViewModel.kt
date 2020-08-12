@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -288,6 +289,8 @@ class ProductListViewModel @AssistedInject constructor(
             TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
         }
     }
+
+    fun isShowProductTypeBottomSheet() = AppPrefs.getSelectedProductType().isEmpty()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
@@ -40,7 +41,8 @@ object AppPrefs {
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
-        SELECTED_APP_THEME
+        SELECTED_APP_THEME,
+        SELECTED_PRODUCT_TYPE
     }
 
     /**
@@ -227,6 +229,10 @@ object AppPrefs {
 
     fun getSelectedOrderListTabPosition() =
             getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
+
+    fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
+
+    fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,

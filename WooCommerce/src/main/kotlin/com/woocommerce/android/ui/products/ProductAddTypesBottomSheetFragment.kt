@@ -9,8 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -22,6 +24,7 @@ import kotlinx.android.synthetic.main.dialog_product_detail_bottom_sheet_list.*
 import javax.inject.Inject
 
 class ProductAddTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
+    @Inject internal lateinit var navigator: ProductNavigator
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -67,7 +70,9 @@ class ProductAddTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndro
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is Exit -> dismiss()
+                is ExitWithResult -> {
+                    dismiss()
+                }
                 else -> event.isHandled = false
             }
         })

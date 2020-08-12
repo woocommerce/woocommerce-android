@@ -42,6 +42,7 @@ import org.wordpress.android.util.ActivityUtils
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     companion object {
+        const val PRODUCT_TYPE = "product_type"
         private const val LIST_STATE_KEY = "list_state"
     }
 
