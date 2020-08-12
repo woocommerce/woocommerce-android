@@ -15,6 +15,7 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -50,6 +51,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
+
+    // TODO this is to help test the click!
+    var count = 0
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -371,6 +375,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
                     addProductButton.setOnClickListener {
+                        // TODO - this is a test!!!
+                        testingResetPrefs()
                         when (viewModel.isShowProductTypeBottomSheet()) {
                             true -> showProductTypesBottomSheet()
                             else -> showAddProduct()
@@ -381,6 +387,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 }
             }
             else -> hideButton()
+        }
+    }
+
+    // TODO - this is a test!!!
+    private fun testingResetPrefs() {
+        count++
+        if (count % 2 == 0){
+            AppPrefs.resetSelectedProductType()
         }
     }
 

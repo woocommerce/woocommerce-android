@@ -52,18 +52,25 @@ object AppPrefs {
     private enum class UndeletablePrefKey : PrefKey {
         // The last stored versionCode of the app
         LAST_APP_VERSION_CODE,
+
         // Whether or not automatic crash reporting is enabled
         ENABLE_CRASH_REPORTING,
+
         // Enable notifications for new orders
         NOTIFS_ORDERS_ENABLED,
+
         // Enable notifications for new reviews
         NOTIFS_REVIEWS_ENABLED,
+
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED,
+
         // Number of times the "mark all notifications read" icon was tapped
         NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
+
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
+
         // Application permissions
         ASKED_PERMISSION_CAMERA
     }
@@ -128,17 +135,17 @@ object AppPrefs {
     fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
 
     fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
-            setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
+        setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
 
     /**
      * Flag to check if the v4 stats API is no longer supported for a site AND if the user has already dismissed the
      * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
      */
     fun shouldDisplayV4StatsRevertedBanner() =
-            getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
+        getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
 
     fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
-            setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
+        setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
@@ -175,7 +182,7 @@ object AppPrefs {
     }
 
     fun getNumTimesMarkAllReadSnackShown(): Int =
-            getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
+        getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
 
     fun incNumTimesMarkAllReadSnackShown() {
         val numTimesShown = getNumTimesMarkAllReadSnackShown() + 1
@@ -183,14 +190,14 @@ object AppPrefs {
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
-            getString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
+        getString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
 
     fun setSelectedShipmentTrackingProviderName(providerName: String) {
         setString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME, providerName)
     }
 
     fun getIsSelectedShipmentTrackingProviderCustom(): Boolean =
-            getBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
+        getBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, false)
 
     fun setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider: Boolean) {
         setBoolean(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM, isCustomProvider)
@@ -211,7 +218,7 @@ object AppPrefs {
     }
 
     fun getLoginUserBypassedJetpackRequired() =
-            getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+        getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
 
     fun removeLoginUserBypassedJetpackRequired() {
         remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
@@ -228,11 +235,18 @@ object AppPrefs {
     }
 
     fun getSelectedOrderListTabPosition() =
-            getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
+        getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
 
     fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
+
+    // TODO - THIS IS A TEST!!!
+    fun resetSelectedProductType() {
+        val editor = getPreferences().edit()
+        editor.remove(DeletablePrefKey.SELECTED_PRODUCT_TYPE.name)
+        editor.apply()
+    }
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,
@@ -249,7 +263,7 @@ object AppPrefs {
     }
 
     fun getAppTheme(): ThemeOption =
-            ThemeOption.valueOf(getString(DeletablePrefKey.SELECTED_APP_THEME, DEFAULT.toString()))
+        ThemeOption.valueOf(getString(DeletablePrefKey.SELECTED_APP_THEME, DEFAULT.toString()))
 
     fun setAppTheme(theme: ThemeOption) {
         setString(DeletablePrefKey.SELECTED_APP_THEME, theme.toString())
@@ -266,10 +280,10 @@ object AppPrefs {
     }
 
     private fun getInt(key: PrefKey, default: Int = 0) =
-            PreferenceUtils.getInt(getPreferences(), key.toString(), default)
+        PreferenceUtils.getInt(getPreferences(), key.toString(), default)
 
     private fun setInt(key: PrefKey, value: Int) =
-            PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+        PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
         return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)?.let {
@@ -278,13 +292,13 @@ object AppPrefs {
     }
 
     private fun setString(key: PrefKey, value: String) =
-            PreferenceUtils.setString(getPreferences(), key.toString(), value)
+        PreferenceUtils.setString(getPreferences(), key.toString(), value)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
-            PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
+        PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
 
     fun setBoolean(key: PrefKey, value: Boolean = false) =
-            PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
+        PreferenceUtils.setBoolean(getPreferences(), key.toString(), value)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -301,15 +315,15 @@ object AppPrefs {
      * attributes as well.
      */
     private fun getDeletableInt(key: PrefKey, default: Int = 0) =
-            PreferenceUtils.getInt(getDeleteablePreferences(), key.toString(), default)
+        PreferenceUtils.getInt(getDeleteablePreferences(), key.toString(), default)
 
     private fun setDeletableInt(key: PrefKey, value: Int) =
-            PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
+        PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
 
     private fun getDeleteablePreferences(): SharedPreferences {
         return context.getSharedPreferences(
-                "${context.packageName}_deletable_preferences",
-                Context.MODE_PRIVATE
+            "${context.packageName}_deletable_preferences",
+            Context.MODE_PRIVATE
         )
     }
 
