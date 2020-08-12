@@ -433,7 +433,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.AddButton">
         <item name="android:src">@drawable/ic_add</item>
-        <item name="tint">@color/color_icon_menu</item>
+        <item name="tint">@color/woo_white</item>
+        <item name="backgroundTint">@color/woo_pink_50</item>
     </style>
 
 
