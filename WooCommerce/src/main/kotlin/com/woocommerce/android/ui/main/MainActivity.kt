@@ -72,12 +72,12 @@ import java.util.Locale
 import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
-        MainContract.View,
-        HasAndroidInjector,
-        MainNavigationRouter,
-        MainBottomNavigationView.MainNavigationListener,
-        NavController.OnDestinationChangedListener,
-        WCPromoDialog.PromoDialogListener {
+    MainContract.View,
+    HasAndroidInjector,
+    MainNavigationRouter,
+    MainBottomNavigationView.MainNavigationListener,
+    NavController.OnDestinationChangedListener,
+    WCPromoDialog.PromoDialogListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -93,7 +93,6 @@ class MainActivity : AppUpgradeActivity(),
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
         const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
         const val FIELD_NOTIFICATION_TYPE = "notification-type"
-
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -139,7 +138,8 @@ class MainActivity : AppUpgradeActivity(),
             if (!isMainThemeApplied) {
                 it.applyStyle(R.style.Theme_Woo_DayNight, true)
                 isMainThemeApplied = true
-            } }
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,7 +196,11 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun hideProgressDialog() {
-        progressDialog?.apply { if (isShowing) { cancel() } }
+        progressDialog?.apply {
+            if (isShowing) {
+                cancel()
+            }
+        }
     }
 
     override fun showProgressDialog(@StringRes stringId: Int) {
@@ -299,7 +303,7 @@ class MainActivity : AppUpgradeActivity(),
         return navController.currentDestination?.let {
             !isAtRootNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
         } ?: run {
-             !isAtNavigationRoot()
+            !isAtNavigationRoot()
         }
     }
 
@@ -353,7 +357,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
-        if (isRootNavigation){
+        if (isRootNavigation) {
             container.visibility = View.VISIBLE
         } else {
             container.visibility = View.INVISIBLE
@@ -406,7 +410,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
-        if (isRootNavigation){
+        if (isRootNavigation) {
             showBottomNav()
         } else {
             hideBottomNav()
@@ -434,7 +438,7 @@ class MainActivity : AppUpgradeActivity(),
      * @param destination The object for the next navigation destination
      */
 
-    private fun isAtRootNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean{
+    private fun isAtRootNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
         val activeChildIsRoot = activeChild != null && activeChild is RootFragment
@@ -541,9 +545,9 @@ class MainActivity : AppUpgradeActivity(),
     private fun restart() {
         val intent = intent
         intent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_NO_ANIMATION
         )
         finish()
         startActivity(intent)
@@ -771,7 +775,8 @@ class MainActivity : AppUpgradeActivity(),
                     }
                 }
                 PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
-                else -> { /* do nothing */ }
+                else -> { /* do nothing */
+                }
             }
         }
     }
@@ -790,15 +795,16 @@ class MainActivity : AppUpgradeActivity(),
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                remoteReviewId,
-                tempStatus,
-                launchedFromNotification)
+            remoteReviewId,
+            tempStatus,
+            launchedFromNotification
+        )
         navController.navigateSafely(action)
     }
 
     override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
         val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
-                stockStatus, productStatus, productType
+            stockStatus, productStatus, productType
         )
         navController.navigateSafely(action)
     }
@@ -861,7 +867,9 @@ class MainActivity : AppUpgradeActivity(),
             PromoButton.SITE_PICKER_TRY_IT -> {
                 WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
                 showSettingsScreen()
-            } else -> {}
+            }
+            else -> {
+            }
         }
     }
 
@@ -871,9 +879,10 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun showAppUpdateSuccessSnack(actionListener: View.OnClickListener) {
         uiMessageResolver.getRestartSnack(
-                stringResId = R.string.update_downloaded,
-                actionListener = actionListener)
-                .show()
+            stringResId = R.string.update_downloaded,
+            actionListener = actionListener
+        )
+            .show()
     }
 
     /**
@@ -881,8 +890,10 @@ class MainActivity : AppUpgradeActivity(),
      * Display a failure snack bar and ask users to retry
      */
     override fun showAppUpdateFailedSnack(actionListener: View.OnClickListener) {
-        uiMessageResolver.getRetrySnack(R.string.update_failed,
-                actionListener = actionListener)
-                .show()
+        uiMessageResolver.getRetrySnack(
+            R.string.update_failed,
+            actionListener = actionListener
+        )
+            .show()
     }
 }

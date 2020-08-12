@@ -175,7 +175,8 @@ class ProductNavigator @Inject constructor() {
             }
 
             is AddProductCategory -> {
-                val action = ProductCategoriesFragmentDirections.actionProductCategoriesFragmentToAddProductCategoryFragment()
+                val action = ProductCategoriesFragmentDirections
+                    .actionProductCategoriesFragmentToAddProductCategoryFragment()
                 fragment.findNavController().navigate(action)
             }
 
