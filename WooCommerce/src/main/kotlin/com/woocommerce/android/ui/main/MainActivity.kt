@@ -405,7 +405,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        //show bottom nav if this is a dialog destination from root or, just root itself
+        // show bottom nav if this is a dialog destination from root or, just root itself
         if (isRootNavigation){
             showBottomNav()
         } else {
