@@ -73,7 +73,7 @@ data class Product(
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
-    val groupedProductIds: List<Int>,
+    val groupedProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -538,7 +538,7 @@ fun WCProductModel.toAppModel(): Product {
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIds()
+        groupedProductIds = this.getGroupedProductIds().map { it.toLong() }
     )
 }
 

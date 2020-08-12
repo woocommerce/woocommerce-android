@@ -481,7 +481,7 @@ class ProductDetailCardBuilder(
             ) {
                 // TODO: add click event
                 viewModel.onEditProductCardClicked(
-                    ViewGroupedProducts(this.remoteId)
+                    ViewGroupedProducts(this.groupedProductIds.joinToString(","))
                 )
             }
         } else {

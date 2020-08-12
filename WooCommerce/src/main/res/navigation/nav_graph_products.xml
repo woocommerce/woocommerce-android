@@ -217,9 +217,9 @@
         android:name="com.woocommerce.android.ui.products.GroupedProductListFragment"
         tools:layout="@layout/fragment_product_list">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="groupedProductIds"
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
