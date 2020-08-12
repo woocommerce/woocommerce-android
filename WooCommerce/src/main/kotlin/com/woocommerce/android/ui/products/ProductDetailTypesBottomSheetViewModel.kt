@@ -27,7 +27,7 @@ open class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    val productListBuilder: ProductTypeBottomSheetBuilder by lazy {
+    open val productListBuilder: ProductTypeBottomSheetBuilder by lazy {
         ProductDetailTypeBottomSheetBuilder()
     }
 
@@ -35,7 +35,7 @@ open class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
         _productTypesBottomSheetList.value = buildProductTypeList()
     }
 
-    fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
+    open fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         triggerEvent(ShowDiscardDialog(
             titleId = R.string.product_type_confirm_dialog_title,
             messageId = R.string.product_type_confirm_dialog_message,
