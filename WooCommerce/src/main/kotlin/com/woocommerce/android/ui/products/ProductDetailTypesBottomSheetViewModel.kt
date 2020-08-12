@@ -20,7 +20,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 
 @OpenClassOnDebug
-class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
+open class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
