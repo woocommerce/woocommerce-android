@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,8 @@ import kotlinx.android.synthetic.main.fragment_licenses.*
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "feedback_survey"
+        private const val QUERY_PARAMETER_MESSAGE = "msg"
+        private const val SURVEY_DONE_QUERY_MESSAGE = "done"
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -61,10 +64,22 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         progressDialog = null
     }
 
+    private fun completeSurvey() {
+        // TODO: call Survey complete view instead of calling onBackPressed
+        activity?.onBackPressed()
+    }
+
     private inner class SurveyWebViewClient : WebViewClient() {
         override fun onPageFinished(view: WebView?, url: String?) {
             hideProgressDialog()
             super.onPageFinished(view, url)
+        }
+
+        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            request?.url?.getQueryParameter(QUERY_PARAMETER_MESSAGE)
+                ?.takeIf { it == SURVEY_DONE_QUERY_MESSAGE }
+                ?.let { completeSurvey() }
+            return super.shouldOverrideUrlLoading(view, request)
         }
     }
 }
