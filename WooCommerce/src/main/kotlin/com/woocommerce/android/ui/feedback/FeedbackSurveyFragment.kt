@@ -55,8 +55,8 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     private fun showProgressDialog() {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
-            "Loading",
-            "Please wait"
+            getString(R.string.web_view_loading_title),
+            getString(R.string.web_view_loading_message)
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }

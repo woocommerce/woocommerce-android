@@ -920,6 +920,8 @@
     <string name="feedback_request_make_better">Could be better</string>
     <string name="feedback_request_like_it">I like it</string>
     <string name="feedback_survey_request_title">How can we improve?</string>
+    <string name="web_view_loading_title">Loading</string>
+    <string name="web_view_loading_message">Please wait…</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
