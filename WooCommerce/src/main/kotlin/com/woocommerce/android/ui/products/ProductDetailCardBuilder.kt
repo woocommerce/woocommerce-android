@@ -204,7 +204,7 @@ class ProductDetailCardBuilder(
             ) else ""
 
             val downloadGroup = mapOf(
-                Pair(resources.getString(R.string.product_downloadable_files), this.fileCount.toString()),
+                Pair(resources.getString(R.string.product_downloadable_files), this.downloads.size.toString()),
                 Pair(resources.getString(R.string.product_download_limit), limit),
                 Pair(resources.getString(R.string.product_download_expiry), expiry)
             )

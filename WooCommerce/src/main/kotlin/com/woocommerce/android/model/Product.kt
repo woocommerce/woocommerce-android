@@ -57,7 +57,7 @@ data class Product(
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
-    val fileCount: Int,
+    val downloads: List<ProductFile>,
     val downloadLimit: Int,
     val downloadExpiry: Int,
     val purchaseNote: String,
@@ -495,7 +495,13 @@ fun WCProductModel.toAppModel(): Product {
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
         isDownloadable = this.downloadable,
-        fileCount = this.getDownloadableFiles().size,
+        downloads = this.getDownloadableFiles().map {
+            ProductFile(
+                id = it.id,
+                name = it.name,
+                url = it.url
+            )
+        },
         downloadLimit = this.downloadLimit,
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
