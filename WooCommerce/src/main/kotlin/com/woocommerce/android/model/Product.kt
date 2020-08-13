@@ -551,6 +551,20 @@ fun MediaModel.toAppModel(): Product.Image {
     )
 }
 
+fun List<Product>.isSameList(productList: List<Product>): Boolean {
+    if (this.size != productList.size) {
+        return false
+    }
+    for (index in this.indices) {
+        val oldItem = productList[index]
+        val newItem = this[index]
+        if (!oldItem.isSameProduct(newItem)) {
+            return false
+        }
+    }
+    return true
+}
+
 /**
  * Returns the product as a [ProductReviewProduct] for use with the product reviews feature.
  */
