@@ -37,4 +37,3 @@ class ProductDownloadsAdapter : RecyclerView.Adapter<ProductDownloadableFileView
         val fileUrl: TextView = view.url
     }
 }
-
