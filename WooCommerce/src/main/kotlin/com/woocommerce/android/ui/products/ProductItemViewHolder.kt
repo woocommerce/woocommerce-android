@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
@@ -67,6 +68,16 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         itemView.productImage.layoutParams.apply {
             height = size
             width = size
+        }
+    }
+
+    fun setOnDeleteClickListener(
+        product: Product,
+        onItemDeleted: (product: Product) -> Unit
+    ) {
+        with(itemView.product_btnDelete) {
+            isVisible = true
+            setOnClickListener { onItemDeleted(product) }
         }
     }
 
