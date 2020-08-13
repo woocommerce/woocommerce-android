@@ -104,7 +104,10 @@ class MyStoreFragment : TopLevelFragment(),
             if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
                 store_feedback_request_card.visibility = View.VISIBLE
                 val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
+                val negativeCallback = {
+                    mainNavigationRouter?.showFeedbackSurvey()
+                    removeTabLayoutFromAppBar(tabLayout)
+                }
                 store_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
