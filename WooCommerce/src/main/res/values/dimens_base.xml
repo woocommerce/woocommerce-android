@@ -93,6 +93,7 @@ so that's the baseline as defined in `major_100`.
 
     <!-- Corner Radius -->
     <dimen name="corner_radius_small">2dp</dimen>
+    <dimen name="corner_radius_medium">4dp</dimen>
     <dimen name="corner_radius_round_button">20dp</dimen>
 
     <!-- Chart dimens -->
