@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -365,8 +366,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showAddProductButton(show: Boolean) {
-        fun showButton() = run { addProductButton.visibility = View.VISIBLE }
-        fun hideButton() = run { addProductButton.visibility = View.GONE }
+        fun showButton() = run { addProductButton.isVisible = true }
+        fun hideButton() = run { addProductButton.isVisible = false }
         fun showProductAddTypes() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
         when (show) {
             true -> {

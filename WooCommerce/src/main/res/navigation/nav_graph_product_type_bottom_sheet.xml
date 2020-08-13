@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_product_type_bottom_sheet"
+    app:startDestination="@id/productTypesBottomSheetFragment">
+
+    <dialog
+        android:id="@+id/productTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetFragment"
+        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
+
+</navigation>

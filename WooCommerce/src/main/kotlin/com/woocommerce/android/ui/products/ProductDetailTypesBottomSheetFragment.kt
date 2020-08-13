@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
@@ -36,6 +37,8 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
 
     private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
 
+    private val navArgs: ProductDetailTypesBottomSheetFragmentArgs by navArgs()
+
     override fun androidInjector(): AndroidInjector<Any> {
         return childInjector
     }
@@ -52,11 +55,14 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-        viewModel.loadProductTypes()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        val builder = productTypeListBuilder()
+
+        viewModel.loadProductTypes(builder = builder)
 
         productDetailInfo_lblTitle.text = getString(R.string.product_type_list_header)
         productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
@@ -87,9 +93,7 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
                     event.positiveButtonId,
                     event.negativeButtonId
                 )
-                is ExitWithResult -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productTypeUiItem)
-                }
+                is ExitWithResult -> navigateWithSelectedResult(type = event.productTypeUiItem)
                 else -> event.isHandled = false
             }
         })
@@ -99,5 +103,19 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         productTypeOptions: List<ProductTypesBottomSheetUiItem>
     ) {
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
+    }
+
+    private fun productTypeListBuilder(): ProductTypeBottomSheetBuilder {
+        return when (navArgs.isAddProduct) {
+            true -> ProductAddTypeBottomSheetBuilder()
+            else -> ProductDetailTypeBottomSheetBuilder()
+        }
+    }
+
+    private fun navigateWithSelectedResult(type: ProductTypesBottomSheetUiItem) {
+        when (navArgs.isAddProduct) {
+            true -> dismiss()
+            else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, type)
+        }
     }
 }

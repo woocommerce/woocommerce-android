@@ -301,7 +301,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun isChildFragmentShowing(): Boolean {
         return navController.currentDestination?.let {
-            !isAtRootNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
+            !isAtTopLevelNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
         } ?: run {
             !isAtNavigationRoot()
         }
@@ -348,7 +348,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val isAtRoot = isAtNavigationRoot()
-        val isRootNavigation = isAtRootNavigation(isAtRoot = isAtRoot, destination = destination)
+        val isRootNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
 
         // go no further if this is the initial navigation to the root fragment
         if (isAtRoot && previousDestinationId == null) {
@@ -438,7 +438,7 @@ class MainActivity : AppUpgradeActivity(),
      * @param destination The object for the next navigation destination
      */
 
-    private fun isAtRootNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
+    private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
         val activeChildIsRoot = activeChild != null && activeChild is RootFragment
@@ -810,7 +810,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductAddBottomSheet() {
-        val action = NavGraphMainDirections.actionGlobalProductAddTypeBottomSheetFragment()
+        val action = NavGraphMainDirections.actionGlobalProductTypeBottomSheetFragment(isAddProduct = true)
         navController.navigateSafely(action)
     }
 

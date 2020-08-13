@@ -178,7 +178,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false
+                        displaySortAndFilterCard = false,
+                        isAddProductButtonVisible = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -205,7 +206,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = !showSkeleton
+                        displaySortAndFilterCard = !showSkeleton,
+                        isAddProductButtonVisible = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }

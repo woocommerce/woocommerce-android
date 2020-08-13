@@ -190,8 +190,6 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
                 fragment.findNavController().navigate(action)
-
-                ProductCategoriesFragmentDirections
             }
 
             is ViewProductTypes -> {
