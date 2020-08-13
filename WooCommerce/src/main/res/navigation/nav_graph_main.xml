@@ -211,21 +211,23 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
-    <dialog
-        android:id="@+id/productAddTypeBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductAddTypesBottomSheetFragment"
-        android:label="ProductAddTypeBottomSheetFragment"
-        tools:layout="@layout/dialog_product_detail_bottom_sheet_list" />
+
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
     <action
-        android:id="@+id/action_global_productAddTypeBottomSheetFragment"
-        app:destination="@id/productAddTypeBottomSheetFragment"
+        android:id="@+id/action_global_productTypeBottomSheetFragment"
+        app:destination="@id/nav_graph_product_type_bottom_sheet"
         app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </action>
     <fragment
         android:id="@+id/productAddFragment"
         android:name="com.woocommerce.android.ui.products.ProductAddFragment"
         android:label="ProductAddFragment"
         tools:layout="@layout/fragment_product_detail" />
     <action android:id="@+id/action_global_productAddFragment"
-        app:destination="@id/productAddFragment" />
+        app:destination="@id/productAddFragment" />s
 </navigation>

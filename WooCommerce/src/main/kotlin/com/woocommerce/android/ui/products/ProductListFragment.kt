@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -368,8 +369,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showAddProductButton(show: Boolean) {
-        fun showButton() = run { addProductButton.visibility = View.VISIBLE }
-        fun hideButton() = run { addProductButton.visibility = View.GONE }
+        fun showButton() = run { addProductButton.isVisible = true }
+        fun hideButton() = run { addProductButton.isVisible = false }
         when (show) {
             true -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
@@ -377,6 +378,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                     addProductButton.setOnClickListener {
                         // TODO - this is a test!!!
                         testingResetPrefs()
+                        // TODO END TEST
+
                         when (viewModel.isShowProductTypeBottomSheet()) {
                             true -> showProductTypesBottomSheet()
                             else -> showAddProduct()
@@ -397,6 +400,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             AppPrefs.resetSelectedProductType()
         }
     }
+    // TODO END TEST
 
     override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
 

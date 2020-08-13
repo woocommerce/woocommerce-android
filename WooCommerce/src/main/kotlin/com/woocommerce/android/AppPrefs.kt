@@ -247,6 +247,7 @@ object AppPrefs {
         editor.remove(DeletablePrefKey.SELECTED_PRODUCT_TYPE.name)
         editor.apply()
     }
+    // TODO END TEST
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,
