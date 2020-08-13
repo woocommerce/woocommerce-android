@@ -47,6 +47,11 @@
             app:destination="@id/productReviewsFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productDownloadsFragment"
+            app:destination="@id/productDownloadsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -134,6 +139,12 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/productDownloadsFragment"
+        android:name="com.woocommerce.android.ui.products.ProductDownloadsFragment"
+        tools:layout="@layout/fragment_product_downloads_list">
+    </fragment>
+
     <fragment
         android:id="@+id/productImageViewerFragment"
         android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"

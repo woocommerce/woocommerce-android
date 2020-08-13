@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -96,7 +97,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
-                product.downloadableFiles()
+                product.downloads()
             ).filterNotEmpty()
         )
     }
@@ -193,7 +194,7 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.downloadableFiles(): ProductProperty? {
+    private fun Product.downloads(): ProductProperty? {
         if (!this.isDownloadable || this.downloads.isEmpty()) return null
         return ComplexProperty(
             title = R.string.product_downloadable_files,
@@ -203,7 +204,12 @@ class ProductDetailCardBuilder(
                 default = R.string.product_downloadable_files_value_multiple,
                 one = R.string.product_downloadable_files_value_single
             ),
-            icon = R.drawable.ic_gridicons_cloud
+            icon = R.drawable.ic_gridicons_cloud,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDownloads
+                )
+            }
         )
     }
 
