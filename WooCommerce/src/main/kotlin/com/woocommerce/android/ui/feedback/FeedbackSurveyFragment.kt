@@ -9,9 +9,11 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_licenses.*
 
@@ -65,8 +67,9 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun completeSurvey() {
-        // TODO: call Survey complete view instead of calling onBackPressed
-        activity?.onBackPressed()
+        FeedbackSurveyFragmentDirections.actionFeedbackSurveyFragmentToFeedbackCompletedFragment().apply {
+            findNavController().navigateSafely(this)
+        }
     }
 
     private inner class SurveyWebViewClient : WebViewClient() {
