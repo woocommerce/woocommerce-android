@@ -348,7 +348,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val isAtRoot = isAtNavigationRoot()
-        val isRootNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
+        val isTopLevelNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
 
         // go no further if this is the initial navigation to the root fragment
         if (isAtRoot && previousDestinationId == null) {
@@ -357,7 +357,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
-        if (isRootNavigation) {
+        if (isTopLevelNavigation) {
             container.visibility = View.VISIBLE
         } else {
             container.visibility = View.INVISIBLE
@@ -365,7 +365,7 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        if (isRootNavigation) {
+        if (isTopLevelNavigation) {
             showUpIcon = false
             showCrossIcon = false
         } else {
@@ -410,14 +410,14 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // show bottom nav if this is a dialog destination from root or, just root itself
-        if (isRootNavigation) {
+        if (isTopLevelNavigation) {
             showBottomNav()
         } else {
             hideBottomNav()
         }
 
         getActiveTopLevelFragment()?.let {
-            if (isRootNavigation) {
+            if (isTopLevelNavigation) {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
             } else {
