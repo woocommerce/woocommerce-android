@@ -167,6 +167,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     product.shortDescription,
                     R.drawable.ic_gridicons_align_left,
                     true
+                ),
+                ComplexProperty(
+                    R.string.product_downloadable_files,
+                    resources.getString(R.string.product_downloadable_files_value_single),
+                    R.drawable.ic_gridicons_cloud
                 )
             )
         )
