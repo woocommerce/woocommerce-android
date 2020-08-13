@@ -56,7 +56,7 @@
         app:srcCompat="@drawable/img_bubbles"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_store_addr"
+        android:id="@+id/button_login"
         style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,12 +65,12 @@
         android:layout_marginBottom="@dimen/minor_100"
         android:text="@string/login_store_address"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/button_login"
+        app:layout_constraintBottom_toTopOf="@+id/button_login_wpcom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login"
+        android:id="@+id/button_login_wpcom"
         style="@style/Woo.Button.Colored.White"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

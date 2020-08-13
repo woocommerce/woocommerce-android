@@ -71,7 +71,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login_store_addr"
+            android:id="@+id/button_login"
             style="@style/Woo.Button.Colored"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -81,7 +81,7 @@
             android:textAllCaps="false"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login"
+            android:id="@+id/button_login_wpcom"
             style="@style/Woo.Button.Colored.White"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
