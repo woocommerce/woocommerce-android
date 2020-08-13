@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.feedback
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,10 +26,12 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         return inflater.inflate(R.layout.fragment_feedback_survey, container, false)
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
             showProgressDialog()
+            webView.settings.apply { javaScriptEnabled = true }
             webView.webViewClient = surveyWebViewClient
             webView.loadUrl(BuildConfig.CROWDSIGNAL_URL)
         }
