@@ -915,7 +915,7 @@
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
     
-    <!-- Product add -->
+    <!-- New Product bottom sheet -->
     <string name="product_add_type_list_header">@string/product_type_list_header</string>
     <string name="product_add_type_simple">Simple product</string>
     <string name="product_add_type_variable">Variable product</string>
@@ -925,6 +925,10 @@
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
     <string name="product_add_type_grouped_desc">@string/product_type_grouped_desc</string>
     <string name="product_add_type_external_desc">@string/product_type_external_desc</string>
+
+    <!-- New Product screen -->
+    <string name="product_add_tool_bar_title">New Product</string>
+    <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductAddFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailBottomSheetFragmentModule
@@ -88,7 +89,8 @@ import dagger.android.ContributesAndroidInjector
     ProductTagsFragmentModule::class,
     ProductDetailBottomSheetFragmentModule::class,
     ProductTypesBottomSheetFragmentModule::class,
-    ProductReviewsFragmentModule::class
+    ProductReviewsFragmentModule::class,
+    ProductAddFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -285,5 +287,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductReviewsModule::class])
         abstract fun productReviewsFragment(): ProductReviewsFragment
+    }
+
+    @Module
+    abstract class ProductAddFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductAddModule::class])
+        abstract fun productDetailFragment(): ProductAddFragment
     }
 }
