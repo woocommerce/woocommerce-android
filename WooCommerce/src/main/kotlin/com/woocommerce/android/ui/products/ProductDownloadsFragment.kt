@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
 class ProductDownloadsFragment : BaseProductFragment() {
@@ -35,11 +38,21 @@ class ProductDownloadsFragment : BaseProductFragment() {
         }
     }
 
+    override fun getFragmentTitle(): String = getString(R.string.product_downloadable_files)
+
     fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is ExitProductDownloads -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
+        })
+
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productDownloadsAdapter.filesList = product.downloads
     }
 
-    // TODO
-    override fun onRequestAllowBackPress(): Boolean = true
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onBackButtonClicked(ExitProductDownloads())
+    }
 }
