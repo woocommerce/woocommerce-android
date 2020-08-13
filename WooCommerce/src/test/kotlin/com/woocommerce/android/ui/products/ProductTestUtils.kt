@@ -29,7 +29,20 @@ object ProductTestUtils {
             height = "3"
             variations = "[]"
             attributes = "[]"
-            categories = ""
+            categories = """[
+                                {
+                                    "id": 1,
+                                    "name": "Category",
+                                    "slug": "category"
+                                }
+                            ]"""
+            tags = """[
+                        {
+                            "id": 1,
+                            "name": "Tag",
+                            "slug": "tag"
+                        }
+                    ]"""
             shortDescription = "short desc"
         }.toAppModel()
     }
