@@ -351,7 +351,8 @@ data class Product(
                 buttonText = updatedProduct.buttonText,
                 menuOrder = updatedProduct.menuOrder,
                 categories = updatedProduct.categories,
-                tags = updatedProduct.tags
+                tags = updatedProduct.tags,
+                type = updatedProduct.type
             )
         } ?: this.copy()
     }
@@ -449,6 +450,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.menuOrder = menuOrder
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
+        it.type = type.value
     }
 }
 

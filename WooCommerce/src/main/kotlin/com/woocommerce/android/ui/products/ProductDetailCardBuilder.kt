@@ -13,9 +13,11 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -26,6 +28,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICING
@@ -89,6 +92,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
+                product.productReviews(),
                 product.inventory(),
                 product.shipping(),
                 product.categories(),
@@ -103,6 +107,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
+                product.productReviews(),
                 product.inventory(),
                 product.categories(),
                 product.tags(),
@@ -117,6 +122,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 product.price(),
                 product.productType(),
+                product.productReviews(),
                 product.externalLink(),
                 product.inventory(),
                 product.categories(),
@@ -131,6 +137,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.productType(),
+                product.productReviews(),
                 product.variations(),
                 product.categories(),
                 product.tags(),
@@ -440,7 +447,31 @@ class ProductDetailCardBuilder(
                 R.string.product_type,
                 resources.getString(R.string.product_detail_product_type_hint, productType),
                 R.drawable.ic_gridicons_product
-            )
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductTypes(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
+                )
+            }
+        } else {
+            null
+        }
+    }
+
+    private fun Product.productReviews(): ProductProperty? {
+        return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && this.reviewsAllowed) {
+            val ratingCount = this.ratingCount
+            RatingBar(
+                R.string.product_reviews,
+                resources.getString(R.string.product_reviews_count, ratingCount),
+                ratingCount.toFloat(),
+                R.drawable.ic_reviews
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductReviews(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
+                )
+            }
         } else {
             null
         }

@@ -20,6 +20,7 @@ object CustomDiscardDialog {
         activity: Activity,
         posBtnAction: (OnClickListener)? = null,
         negBtnAction: (OnClickListener)? = null,
+        @StringRes titleId: Int? = null,
         @StringRes messageId: Int? = null,
         @StringRes positiveButtonId: Int? = null,
         @StringRes negativeButtonId: Int? = null
@@ -42,6 +43,8 @@ object CustomDiscardDialog {
                 .setPositiveButton(positiveButtonTextId, posBtnAction)
                 .setNegativeButton(negativeButtonTextId, negBtnAction)
                 .setOnDismissListener { onCleared() }
+
+        titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
 
         dialogRef = WeakReference(builder.show())
     }

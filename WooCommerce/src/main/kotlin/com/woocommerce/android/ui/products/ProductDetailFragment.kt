@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChr
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -96,6 +97,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
+        handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
+            viewModel.updateProductDraft(type = it.type, isVirtual = it.isVirtual)
+            changesMade()
+        }
         handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,
