@@ -794,6 +794,11 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
+    override fun showFeedbackSurvey() {
+        val action = NavGraphMainDirections.actionGlobalFeedbackSurveyFragment()
+        navController.navigateSafely(action)
+    }
+
     override fun updateOfflineStatusBar(isConnected: Boolean) {
         if (isConnected) offline_bar.hide() else offline_bar.show()
     }

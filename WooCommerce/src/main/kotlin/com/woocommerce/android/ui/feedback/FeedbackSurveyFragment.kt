@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import kotlinx.android.synthetic.main.fragment_licenses.*
@@ -21,7 +22,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
-            webView.loadData("https://wordpress.com", "text/html", "utf-8")
+            webView.loadUrl(BuildConfig.CROWDSIGNAL_URL)
         }
     }
 

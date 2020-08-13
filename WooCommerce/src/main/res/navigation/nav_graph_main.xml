@@ -211,4 +211,13 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/feedbackSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
+        android:label="FeedbackSurveyFragment"/>
+    <action
+        android:id="@+id/action_global_feedbackSurveyFragment"
+        app:destination="@id/feedbackSurveyFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
 </navigation>
