@@ -117,7 +117,8 @@
     <string name="at_username">\@%s</string>
     <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
-    <string name="login">Log in</string>
+    <string name="login_wpcom">Continue with WordPress.com</string>
+    <string name="login_store_address">Enter your store address</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
     <string name="login_pick_store">Pick store</string>

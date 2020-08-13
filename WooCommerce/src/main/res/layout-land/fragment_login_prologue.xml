@@ -58,23 +58,37 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/img_bubbles"/>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/color_primary"
+        android:background="@color/color_primary_variant"
         android:clipToPadding="false"
         android:padding="@dimen/major_175"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_login_store_addr"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/minor_100"
+            android:text="@string/login_store_address"
+            android:textAllCaps="false"/>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login"
             style="@style/Woo.Button.Colored.White"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/login"/>
-    </FrameLayout>
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/minor_100"
+            android:text="@string/login_wpcom"
+            android:textAllCaps="false"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
