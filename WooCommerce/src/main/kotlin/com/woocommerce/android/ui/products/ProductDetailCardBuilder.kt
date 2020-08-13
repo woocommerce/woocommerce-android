@@ -95,7 +95,8 @@ class ProductDetailCardBuilder(
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.downloadableFiles()
             ).filterNotEmpty()
         )
     }
@@ -174,7 +175,7 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                product.downloads(),
+                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) null else product.downloadsLegacy(),
                 product.purchaseNote()
             ).filterNotEmpty()
         )
@@ -192,7 +193,21 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.downloads(): ProductProperty? {
+    private fun Product.downloadableFiles(): ProductProperty? {
+        if (!this.isDownloadable || this.downloads.isEmpty()) return null
+        return ComplexProperty(
+            title = R.string.product_downloadable_files,
+            value = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = this.downloads.size,
+                default = R.string.product_downloadable_files_value_multiple,
+                one = R.string.product_downloadable_files_value_single
+            ),
+            icon = R.drawable.ic_gridicons_cloud
+        )
+    }
+
+    private fun Product.downloadsLegacy(): ProductProperty? {
         return if (this.isDownloadable) {
             val limit = if (this.downloadLimit > 0) String.format(
                 resources.getString(R.string.product_download_limit_count),
@@ -239,13 +254,16 @@ class ProductDetailCardBuilder(
         return when {
             this.manageStock -> {
                 val group = mapOf(
-                    Pair(resources.getString(R.string.product_stock_status),
+                    Pair(
+                        resources.getString(R.string.product_stock_status),
                         ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
                     ),
-                    Pair(resources.getString(R.string.product_backorders),
+                    Pair(
+                        resources.getString(R.string.product_backorders),
                         ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
                     ),
-                    Pair(resources.getString(R.string.product_stock_quantity),
+                    Pair(
+                        resources.getString(R.string.product_stock_quantity),
                         StringUtils.formatCount(this.stockQuantity)
                     ),
                     Pair(resources.getString(R.string.product_sku), this.sku)
@@ -323,16 +341,22 @@ class ProductDetailCardBuilder(
                     Pair(resources.getString(R.string.product_sku), this.sku)
                 )
             this.manageStock -> mapOf(
-                Pair(resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
-                Pair(resources.getString(R.string.product_stock_quantity),
-                    FormatUtils.formatInt(this.stockQuantity)),
+                Pair(
+                    resources.getString(R.string.product_backorders),
+                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
+                ),
+                Pair(
+                    resources.getString(R.string.product_stock_quantity),
+                    FormatUtils.formatInt(this.stockQuantity)
+                ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
             this.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), this.sku),
-                Pair(resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+                Pair(
+                    resources.getString(R.string.product_stock_status),
+                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
+                )
             )
             else -> mapOf(
                 Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))

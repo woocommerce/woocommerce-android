@@ -1238,4 +1238,6 @@
     <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
     <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
     <string name="sign_up">Sign Up for WordPress.com</string>
+    <string name="product_downloadable_files_value_multiple">%1$d files</string>
+    <string name="product_downloadable_files_value_single">1 file</string>
 </resources>
