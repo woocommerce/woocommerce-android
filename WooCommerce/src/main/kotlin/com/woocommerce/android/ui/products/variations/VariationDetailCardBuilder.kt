@@ -98,7 +98,7 @@ class VariationDetailCardBuilder(
 
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
-    private fun ProductVariation.price(): ProductProperty {
+    private fun ProductVariation.price(): ProductProperty? {
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
@@ -112,12 +112,16 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        return PropertyGroup(
-            string.product_price,
-            pricingGroup,
-            drawable.ic_gridicons_money,
-            hasPricingInfo
-        )
+        return if (hasPricingInfo) {
+            PropertyGroup(
+                string.product_price,
+                pricingGroup,
+                drawable.ic_gridicons_money,
+                hasPricingInfo
+            )
+        } else {
+            null
+        }
         // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
