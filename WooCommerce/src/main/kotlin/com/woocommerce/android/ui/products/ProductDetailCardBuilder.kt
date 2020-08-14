@@ -96,8 +96,8 @@ class ProductDetailCardBuilder(
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription(),
-                product.downloads()
+                product.downloads(),
+                product.shortDescription()
             ).filterNotEmpty()
         )
     }

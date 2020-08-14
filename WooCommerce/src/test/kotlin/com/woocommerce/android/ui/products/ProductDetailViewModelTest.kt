@@ -163,15 +163,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     maxLines = 5
                 ),
                 ComplexProperty(
+                        R.string.product_downloadable_files,
+                        resources.getString(R.string.product_downloadable_files_value_single),
+                        R.drawable.ic_gridicons_cloud
+                ),
+                ComplexProperty(
                     R.string.product_short_description,
                     product.shortDescription,
                     R.drawable.ic_gridicons_align_left,
                     true
-                ),
-                ComplexProperty(
-                    R.string.product_downloadable_files,
-                    resources.getString(R.string.product_downloadable_files_value_single),
-                    R.drawable.ic_gridicons_cloud
                 )
             )
         )
