@@ -78,6 +78,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         object Exit : Event()
+        data class ExitWithResult<T>(val item: T) : Event()
 
         data class ShowDiscardDialog(
             val positiveBtnAction: OnClickListener? = null,
