@@ -1,5 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal|top"
+    android:orientation="vertical">
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/completion_title"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="241dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
+        android:lineSpacingExtra="5sp"
+        android:text="@string/feedback_completed_title_message"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/success_image"
+        android:layout_width="280dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/img_success_tablet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/completion_title" />
+
+    <TextView
+        android:id="@+id/completion_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feedback_completed_description"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success_image" />
+
+    <Button
+        android:id="@+id/btn_back_to_store"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_75"
+        android:text="@string/feedback_completed_back_to_store_button_text"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/completion_description" />
+
+    <ImageView
+        android:id="@+id/crowdsignal_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_back_to_store" />
+
+    <TextView
+        android:id="@+id/crowdsignal_attribution"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/crowdsignal_attribution_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/crowdsignal_icon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

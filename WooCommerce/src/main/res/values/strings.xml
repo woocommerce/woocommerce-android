@@ -922,6 +922,11 @@
     <string name="feedback_survey_request_title">How can we improve?</string>
     <string name="web_view_loading_title">Loading</string>
     <string name="web_view_loading_message">Please wait…</string>
+    <string name="feedback_completed_title">Feedback sent</string>
+    <string name="feedback_completed_title_message">Thank you for sharing your thoughts with us</string>
+    <string name="feedback_completed_description">Keep in mind that this is not a support ticket and we won\'t be able to address individual feedback.</string>
+    <string name="feedback_completed_back_to_store_button_text">Back to store</string>
+    <string name="crowdsignal_attribution_text">Powered by Crowdsignal, an Automattic company</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
