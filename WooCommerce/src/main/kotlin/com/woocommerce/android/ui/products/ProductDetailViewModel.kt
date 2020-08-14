@@ -252,15 +252,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onProductDownloadClicked(file: ProductFile) {
-        triggerEvent(EditProductDownload(file))
+        triggerEvent(EditProductDownload(file, viewState.productDraft!!.downloadLimit, viewState.productDraft!!.downloadExpiry))
     }
 
-    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
+    fun updateDownloadableFileInDraft(
+        updatedFile: ProductFile,
+        downloadLimit: Int,
+        downloadExpiry: Int
+    ) {
         viewState.productDraft?.let {
             val updatedDownloads = it.downloads.map { file ->
                 if(file.id == updatedFile.id) updatedFile else file
             }
-            updateProductDraft(downloads = updatedDownloads)
+            updateProductDraft(downloads = updatedDownloads, downloadLimit = downloadLimit, downloadExpiry = downloadExpiry)
         }
     }
 
@@ -633,7 +637,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
         type: ProductType? = null,
-        downloads: List<ProductFile>? = null
+        downloads: List<ProductFile>? = null,
+        downloadLimit: Int? = null,
+        downloadExpiry: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -681,7 +687,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         saleStartDate ?: product.saleStartDateGmt
                     } else viewState.storedProduct?.saleStartDateGmt,
-                    downloads = downloads ?: product.downloads
+                    downloads = downloads ?: product.downloads,
+                    downloadLimit = downloadLimit ?: product.downloadLimit,
+                    downloadExpiry = downloadExpiry ?: product.downloadExpiry
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 

@@ -24,7 +24,12 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
 
     val productDownloadDetailsViewStateData = LiveDataDelegate(
         savedState,
-        ProductDownloadDetailsViewState(navArgs.productFile ?: ProductFile(null, "", ""), false)
+        ProductDownloadDetailsViewState(
+            fileDraft = navArgs.productFile ?: ProductFile(null, "", ""),
+            downloadLimit = navArgs.downloadLimit,
+            downloadExpiry = navArgs.downloadExpiry,
+            hasChanges = false
+        )
     )
     private var productDownloadDetailsViewState by productDownloadDetailsViewStateData
 
@@ -36,17 +41,31 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
 
     fun onFileUrlChanged(url: String) {
         val updatedDraft = productDownloadDetailsViewState.fileDraft.copy(url = url)
-        updateDraftFile(updatedDraft)
+        updateState(productDownloadDetailsViewState.copy(fileDraft = updatedDraft))
     }
 
     fun onFileNameChanged(name: String) {
         val updatedDraft = productDownloadDetailsViewState.fileDraft.copy(name = name)
-        updateDraftFile(updatedDraft)
+        updateState(productDownloadDetailsViewState.copy(fileDraft = updatedDraft))
+    }
+
+    fun onDownloadExpiryChanged(value: Int) {
+        updateState(productDownloadDetailsViewState.copy(downloadExpiry = value))
+    }
+
+    fun onDownloadLimitChanged(value: Int) {
+        updateState(productDownloadDetailsViewState.copy(downloadLimit = value))
     }
 
     fun onDoneOrUpdateClicked() {
         // TODO handle file creation by checking if the navArgs file is null
-        triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+        triggerEvent(
+            UpdateFileAndExitEvent(
+                productDownloadDetailsViewState.fileDraft,
+                productDownloadDetailsViewState.downloadLimit,
+                productDownloadDetailsViewState.downloadExpiry
+            )
+        )
     }
 
     fun onBackButtonClicked(): Boolean {
@@ -60,21 +79,26 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         } else true
     }
 
-    private fun updateDraftFile(updatedFile: ProductFile) {
-        productDownloadDetailsViewState = productDownloadDetailsViewState.copy(
-            fileDraft = updatedFile,
-            hasChanges = updatedFile != navArgs.productFile
-        )
+    private fun updateState(updatedState: ProductDownloadDetailsViewState) {
+        val hasChanges = updatedState.fileDraft != navArgs.productFile
+            || updatedState.downloadExpiry != navArgs.downloadExpiry
+            || updatedState.downloadLimit != navArgs.downloadLimit
+        productDownloadDetailsViewState = updatedState.copy(hasChanges = hasChanges)
     }
 
-    sealed class ProductDownloadDetailsEvent: Event()
-    {
-        data class UpdateFileAndExitEvent(val updatedFile: ProductFile) : ProductDownloadDetailsEvent()
+    sealed class ProductDownloadDetailsEvent : Event() {
+        data class UpdateFileAndExitEvent(
+            val updatedFile: ProductFile,
+            val downloadLimit: Int,
+            val downloadExpiry: Int
+        ) : ProductDownloadDetailsEvent()
     }
 
     @Parcelize
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
+        val downloadLimit: Int,
+        val downloadExpiry: Int,
         val hasChanges: Boolean
     ) : Parcelable
 

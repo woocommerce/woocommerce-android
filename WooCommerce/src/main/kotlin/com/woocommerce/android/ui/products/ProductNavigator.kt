@@ -213,7 +213,8 @@ class ProductNavigator @Inject constructor() {
             }
 
             is EditProductDownload -> {
-                val action = ProductDownloadsFragmentDirections.actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file)
+                val action = ProductDownloadsFragmentDirections
+                    .actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file, target.downloadLimit, target.downloadExpiry)
                 fragment.findNavController().navigate(action)
             }
 

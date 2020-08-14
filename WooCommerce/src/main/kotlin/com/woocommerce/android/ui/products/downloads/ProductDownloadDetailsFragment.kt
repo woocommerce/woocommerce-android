@@ -65,6 +65,8 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
+        fun Int.formatLimitAndExpiry(): String = if(this == -1) "" else this.toString()
+
         viewModel.productDownloadDetailsViewStateData.observe(owner = viewLifecycleOwner, observer = { old, new ->
             Log.d("debug", "new state: $new")
             new.fileDraft.url.takeIfNotEqualTo(product_download_url.getText()) {
@@ -72,6 +74,12 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             }
             new.fileDraft.name.takeIfNotEqualTo(product_download_name.getText()) {
                 product_download_name.setText(it)
+            }
+            new.downloadLimit.formatLimitAndExpiry().takeIfNotEqualTo(product_download_limit.getText()) {
+                product_download_limit.setText(it)
+            }
+            new.downloadExpiry.formatLimitAndExpiry().takeIfNotEqualTo(product_download_expiry.getText()) {
+                product_download_expiry.setText(it)
             }
 
             new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
@@ -93,7 +101,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     event.messageId
                 )
                 is UpdateFileAndExitEvent -> {
-                    parentViewModel.updateDownloadableFileInDraft(event.updatedFile)
+                    parentViewModel.updateDownloadableFileInDraft(event.updatedFile, event.downloadLimit, event.downloadExpiry)
                     findNavController().navigateUp()
                 }
             }
@@ -108,6 +116,14 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         }
         product_download_name.setOnTextChangedListener {
             viewModel.onFileNameChanged(it.toString())
+        }
+        product_download_expiry.setOnTextChangedListener {
+            val value = if(it.isNullOrEmpty()) -1 else it.toString().toInt()
+            viewModel.onDownloadExpiryChanged(value)
+        }
+        product_download_limit.setOnTextChangedListener {
+            val value = if(it.isNullOrEmpty()) -1 else it.toString().toInt()
+            viewModel.onDownloadLimitChanged(value)
         }
     }
 
