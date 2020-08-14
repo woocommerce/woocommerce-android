@@ -83,6 +83,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val positiveBtnAction: OnClickListener? = null,
             val negativeBtnAction: OnClickListener? = null,
             @StringRes val messageId: Int? = null,
+            @StringRes val titleId: Int? = null,
             @StringRes val positiveButtonId: Int? = null,
             @StringRes val negativeButtonId: Int? = null
         ) : Event() {
@@ -90,6 +91,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 if (this === other) return true
                 if (other !is ShowDiscardDialog) return false
 
+                if (titleId != other.titleId) return false
                 if (messageId != other.messageId) return false
                 if (positiveButtonId != other.positiveButtonId) return false
                 if (negativeButtonId != other.negativeButtonId) return false

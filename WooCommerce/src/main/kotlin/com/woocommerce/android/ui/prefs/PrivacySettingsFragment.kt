@@ -64,7 +64,7 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
             AnalyticsTracker.track(
                     PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchCrashReporting.isChecked)))
-            presenter.setCrashReportingEnabled(activity!!, isChecked)
+            presenter.setCrashReportingEnabled(requireActivity(), isChecked)
         }
     }
 

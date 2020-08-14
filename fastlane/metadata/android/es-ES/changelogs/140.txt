@@ -1,6 +1,0 @@
-4.6:
-Nuevo: hemos añadido un marcador de posición para los pedidos sin nombre de cliente.
-
-Corrección: las notificaciones de varios pedidos nuevos ahora son visibles.
-
-Ajustes: hemos cambiado el color de fondo de las vistas de inicio de sesión y hemos movido el aviso de privacidad para los usuarios de Californnia a "Sobre la aplicación".

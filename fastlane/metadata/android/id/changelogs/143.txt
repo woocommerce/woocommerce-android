@@ -1,0 +1,4 @@
+4.7:
+<b>Statistik:</b> Grafik statistik Anda sekarang akan cocok dengan yang Anda lihat di wp-admin. Anda perlu mengoperasikan WooCommerce 4.0 atau versi lebih baru, pastikan Anda melakukan pembaruan.
+
+<b>Perbaikan Crash:</b> Crash terjadi saat sedang mentransfer data dalam jumlah besar. Kami memperbaikinya pada perangkat yang menjalankan Android P dan versi lebih baru dengan kapasitas penyangga yang lebih besar.
