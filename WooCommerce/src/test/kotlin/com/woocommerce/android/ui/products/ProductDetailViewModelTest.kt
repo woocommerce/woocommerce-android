@@ -20,29 +20,30 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailV
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.Link
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.Link
-import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
-import com.woocommerce.android.ui.products.tags.ProductTagsRepository
-import com.woocommerce.android.util.CoroutineTestRule
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -61,6 +62,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productTagsRepository: ProductTagsRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
+        on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
     }
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -84,16 +86,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDetailViewModel
 
     private val productWithParameters = ProductDetailViewState(
-            productDraft = product,
-            storedProduct = product,
-            productBeforeEnteringFragment = product,
-            isSkeletonShown = false,
-            uploadingImageUris = null,
-            weightWithUnits = "10kg",
-            sizeWithUnits = "1 x 2 x 3 cm",
-            salePriceWithCurrency = "CZK10.00",
-            regularPriceWithCurrency = "CZK30.00",
-            showBottomSheetButton = false
+        productDraft = product,
+        storedProduct = product,
+        productBeforeEnteringFragment = product,
+        isSkeletonShown = false,
+        uploadingImageUris = null,
+        weightWithUnits = "10kg",
+        sizeWithUnits = "1 x 2 x 3 cm",
+        salePriceWithCurrency = "CZK10.00",
+        regularPriceWithCurrency = "CZK30.00",
+        showBottomSheetButton = false
     )
 
     private val expectedCards = listOf(
@@ -117,6 +119,25 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     ),
                     R.drawable.ic_gridicons_money
                 ),
+                ComplexProperty(
+                    R.string.product_type,
+                    resources.getString(R.string.product_detail_product_type_hint, ""),
+                    R.drawable.ic_gridicons_product
+                ),
+                RatingBar(
+                    R.string.product_reviews,
+                    resources.getString(R.string.product_reviews_count, 0),
+                    0f,
+                    R.drawable.ic_reviews
+                ),
+                PropertyGroup(
+                    R.string.product_inventory,
+                    mapOf(
+                        Pair("", resources.getString(R.string.product_stock_status_instock))
+                    ),
+                    R.drawable.ic_gridicons_list_checkmark,
+                    true
+                ),
                 PropertyGroup(
                     R.string.product_shipping,
                     mapOf(
@@ -127,33 +148,30 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_shipping,
                     true
                 ),
-                PropertyGroup(
-                    R.string.product_inventory,
-                    mapOf(
-                        Pair("", resources.getString(R.string.product_stock_status_instock))
-                    ),
-                    R.drawable.ic_gridicons_list_checkmark,
-                    true
+                ComplexProperty(
+                    R.string.product_categories,
+                    "Category",
+                    R.drawable.ic_gridicons_folder,
+                    showTitle = true,
+                    maxLines = 5
+                ),
+                ComplexProperty(
+                    R.string.product_tags,
+                    "Tag",
+                    R.drawable.ic_gridicons_tag,
+                    showTitle = true,
+                    maxLines = 5
+                ),
+                ComplexProperty(
+                        R.string.product_downloadable_files,
+                        resources.getString(R.string.product_downloadable_files_value_single),
+                        R.drawable.ic_gridicons_cloud
                 ),
                 ComplexProperty(
                     R.string.product_short_description,
                     product.shortDescription,
                     R.drawable.ic_gridicons_align_left,
                     true
-                ),
-                ComplexProperty(
-                    R.string.product_categories,
-                    resources.getString(R.string.product_category_empty),
-                    R.drawable.ic_gridicons_folder,
-                    showTitle = false,
-                    maxLines = 5
-                ),
-                ComplexProperty(
-                    R.string.product_tags,
-                    resources.getString(R.string.product_tag_empty),
-                    R.drawable.ic_gridicons_tag,
-                    showTitle = false,
-                    maxLines = 5
                 )
             )
         )
@@ -179,19 +197,21 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(prodSettings).whenever(wooCommerceStore).getProductSettings(any())
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
 
-        viewModel = spy(ProductDetailViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            selectedSite,
-            productRepository,
-            networkStatus,
-            currencyFormatter,
-            wooCommerceStore,
-            productImagesServiceWrapper,
-            resources,
-            productCategoriesRepository,
-            productTagsRepository
-        ))
+        viewModel = spy(
+            ProductDetailViewModel(
+                savedState,
+                coroutinesTestRule.testDispatchers,
+                selectedSite,
+                productRepository,
+                networkStatus,
+                currencyFormatter,
+                wooCommerceStore,
+                productImagesServiceWrapper,
+                resources,
+                productCategoriesRepository,
+                productTagsRepository
+            )
+        )
 
         clearInvocations(
             viewModel,
@@ -236,6 +256,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 is Editable -> p.copy(onTextChanged = null)
                 is PropertyGroup -> p.copy(onClick = null)
                 is Link -> p.copy(onClick = null)
+                is RatingBar -> p.copy(onClick = null)
                 else -> p
             }
         })
