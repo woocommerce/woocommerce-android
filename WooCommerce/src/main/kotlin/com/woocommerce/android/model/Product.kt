@@ -137,7 +137,8 @@ data class Product(
             menuOrder == product.menuOrder &&
             isSameImages(product.images) &&
             isSameCategories(product.categories) &&
-            isSameTags(product.tags)
+            isSameTags(product.tags) &&
+            groupedProductIds == product.groupedProductIds
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -355,7 +356,8 @@ data class Product(
                 menuOrder = updatedProduct.menuOrder,
                 categories = updatedProduct.categories,
                 tags = updatedProduct.tags,
-                type = updatedProduct.type
+                type = updatedProduct.type,
+                groupedProductIds = updatedProduct.groupedProductIds
             )
         } ?: this.copy()
     }
@@ -455,6 +457,11 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
         it.type = type.value
+        it.groupedProductIds = groupedProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
     }
 }
 
