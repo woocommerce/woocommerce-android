@@ -143,6 +143,11 @@
         android:id="@+id/productDownloadsFragment"
         android:name="com.woocommerce.android.ui.products.ProductDownloadsFragment"
         tools:layout="@layout/fragment_product_downloads_list">
+        <action
+            android:id="@+id/action_productDownloadsFragment_to_productDownloadDetailsFragment"
+            app:destination="@id/productDownloadDetailsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
 
     <fragment
@@ -284,5 +289,15 @@
         <argument
             android:name="variation"
             app:argType="com.woocommerce.android.model.ProductVariation" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDownloadDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
+        android:label="ProductDownloadDetailsFragment" >
+        <argument
+            android:name="productFile"
+            app:argType="com.woocommerce.android.model.ProductFile"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

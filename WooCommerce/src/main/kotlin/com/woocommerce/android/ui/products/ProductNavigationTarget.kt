@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -50,4 +51,5 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductTypes(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
     object ViewProductDownloads : ProductNavigationTarget()
+    data class EditProductDownload(val file: ProductFile) : ProductNavigationTarget()
 }

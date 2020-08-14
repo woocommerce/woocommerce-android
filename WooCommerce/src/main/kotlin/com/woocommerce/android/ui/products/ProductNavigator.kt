@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -208,6 +209,11 @@ class ProductNavigator @Inject constructor() {
             is ViewProductDownloads -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDownloadsFragment()
+                fragment.findNavController().navigate(action)
+            }
+
+            is EditProductDownload -> {
+                val action = ProductDownloadsFragmentDirections.actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file)
                 fragment.findNavController().navigate(action)
             }
 

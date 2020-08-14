@@ -10,7 +10,7 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductDownloadsAdapter.ProductDownloadableFileViewHolder
 import kotlinx.android.synthetic.main.product_downloads_list_item.view.*
 
-class ProductDownloadsAdapter : RecyclerView.Adapter<ProductDownloadableFileViewHolder>() {
+class ProductDownloadsAdapter(private val clickListener: (ProductFile) -> Unit) : RecyclerView.Adapter<ProductDownloadableFileViewHolder>() {
     var filesList: List<ProductFile> = ArrayList()
         set(value) {
             if (value != field) {
@@ -30,6 +30,7 @@ class ProductDownloadsAdapter : RecyclerView.Adapter<ProductDownloadableFileView
     override fun onBindViewHolder(holder: ProductDownloadableFileViewHolder, position: Int) {
         holder.fileName.text = filesList[position].name
         holder.fileUrl.text = filesList[position].url
+        holder.itemView.setOnClickListener { clickListener.invoke(filesList[position]) }
     }
 
     class ProductDownloadableFileViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -30,6 +30,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.addTags
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -247,6 +249,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onRemoveEndDateClicked() {
         productPricingViewState = productPricingViewState.copy(saleEndDate = null)
         updateProductDraft(saleEndDate = Optional(null))
+    }
+
+    fun onProductDownloadClicked(file: ProductFile) {
+        triggerEvent(EditProductDownload(file))
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
