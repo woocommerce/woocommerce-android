@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
@@ -86,8 +87,12 @@ class VariationDetailCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVisibilityChanged(it)
+        return if (PRODUCT_RELEASE_M3.isEnabled()) {
+            Switch(visibility, isVisible, visibilityIcon) {
+                viewModel.onVisibilityChanged(it)
+            }
+        } else {
+            Switch(visibility, isVisible, visibilityIcon)
         }
     }
 
