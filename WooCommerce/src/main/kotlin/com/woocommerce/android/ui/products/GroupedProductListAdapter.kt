@@ -7,8 +7,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.isSameList
 
 class GroupedProductListAdapter(
-    private val onItemDeleted: (product: Product) -> Unit,
-    private val loadMoreListener: OnLoadMoreListener
+    private val onItemDeleted: (product: Product) -> Unit
 ) : RecyclerView.Adapter<ProductItemViewHolder>() {
     private val productList = ArrayList<Product>()
 
@@ -27,10 +26,6 @@ class GroupedProductListAdapter(
 
         holder.bind(product)
         holder.setOnDeleteClickListener(product, onItemDeleted)
-
-        if (position == itemCount - 1) {
-            loadMoreListener.onRequestLoadMore()
-        }
     }
 
     fun setProductList(products: List<Product>) {

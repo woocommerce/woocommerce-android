@@ -77,7 +77,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     ) {
         with(itemView.product_btnDelete) {
             isVisible = true
-            setOnClickListener { onItemDeleted(product) }
+            setOnClickListener { onItemDeleted.invoke(product) }
         }
     }
 
