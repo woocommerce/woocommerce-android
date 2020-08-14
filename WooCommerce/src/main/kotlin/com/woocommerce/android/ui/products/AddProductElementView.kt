@@ -18,7 +18,9 @@ class AddProductElementView @JvmOverloads constructor(
         attrs.let {
             context.obtainStyledAttributes(it, R.styleable.AddProductElementView, 0, 0).use { typedArray ->
                 val buttonText = typedArray.getString(R.styleable.AddProductElementView_buttonText)
-                if(buttonText.isNullOrEmpty()) throw IllegalArgumentException("AddProductElementView must have a text for its button (buttonText)")
+                if (buttonText.isNullOrEmpty()) {
+                    throw IllegalArgumentException("AddProductElementView must have a text for its button (buttonText)")
+                }
                 addElementButton.text = buttonText
             }
         }
