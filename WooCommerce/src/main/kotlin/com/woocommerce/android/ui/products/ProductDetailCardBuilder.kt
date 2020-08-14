@@ -474,9 +474,11 @@ class ProductDetailCardBuilder(
     private fun Product.groupedProducts(): ProductProperty? {
         val groupedProductsSize = this.groupedProductIds.size
         return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && groupedProductsSize > 0) {
+            val groupedProductResourceId = if (groupedProductsSize == 1) R.string.grouped_products_single
+            else R.string.grouped_products_count
             ComplexProperty(
                 R.string.grouped_products,
-                resources.getString(R.string.grouped_products_count, groupedProductsSize),
+                resources.getString(groupedProductResourceId, groupedProductsSize),
                 R.drawable.ic_widgets
             ) {
                 // TODO: add click event
