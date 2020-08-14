@@ -545,7 +545,7 @@ fun WCProductModel.toAppModel(): Product {
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIds().map { it.toLong() }
+        groupedProductIds = this.getGroupedProductIds()
     )
 }
 
