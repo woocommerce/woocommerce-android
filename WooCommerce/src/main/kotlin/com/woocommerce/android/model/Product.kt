@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -411,6 +412,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         return jsonArray.toString()
     }
 
+    fun downloadsToJson(): String {
+        val jsonArray = JsonArray()
+        downloads.map { WCProductFileModel(it.id, it.name, it.url) }
+            .forEach { jsonArray.add(it.toJson()) }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -455,6 +463,9 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
         it.type = type.value
+        it.downloads = downloadsToJson()
+        it.downloadLimit = downloadLimit
+        it.downloadExpiry = downloadExpiry
     }
 }
 
