@@ -6,8 +6,10 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -42,6 +44,11 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         updateDraftFile(updatedDraft)
     }
 
+    fun onDoneOrUpdateClicked() {
+        // TODO handle file creation by checking if the navArgs file is null
+        triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+    }
+
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges) {
             triggerEvent(ShowDiscardDialog(
@@ -53,11 +60,16 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         } else true
     }
 
-    private fun updateDraftFile(updatedFile: ProductFile){
+    private fun updateDraftFile(updatedFile: ProductFile) {
         productDownloadDetailsViewState = productDownloadDetailsViewState.copy(
             fileDraft = updatedFile,
             hasChanges = updatedFile != navArgs.productFile
         )
+    }
+
+    sealed class ProductDownloadDetailsEvent: Event()
+    {
+        data class UpdateFileAndExitEvent(val updatedFile: ProductFile) : ProductDownloadDetailsEvent()
     }
 
     @Parcelize

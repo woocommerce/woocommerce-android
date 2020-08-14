@@ -255,6 +255,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(EditProductDownload(file))
     }
 
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads.map { file ->
+                if(file.id == updatedFile.id) updatedFile else file
+            }
+            updateProductDraft(downloads = updatedDownloads)
+        }
+    }
+
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
 
     fun hasPricingChanges() = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
@@ -623,7 +632,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null
+        type: ProductType? = null,
+        downloads: List<ProductFile>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -670,7 +680,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     saleStartDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt,
+                    downloads = downloads ?: product.downloads
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 

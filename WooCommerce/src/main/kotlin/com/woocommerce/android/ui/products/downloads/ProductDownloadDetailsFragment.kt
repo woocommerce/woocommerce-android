@@ -11,12 +11,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -30,7 +33,8 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel: ProductDownloadDetailsViewModel by viewModels { viewModelFactory }
-    private lateinit var doneMenuItem: MenuItem
+    private val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
+    private lateinit var doneOrUpdateMenuItem: MenuItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -39,10 +43,20 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
+        inflater.inflate(R.menu.menu_product_download_details, menu)
 
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.hasChanges
+        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+        doneOrUpdateMenuItem.isVisible = viewModel.hasChanges
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.onDoneOrUpdateClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +92,10 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     event.negativeBtnAction,
                     event.messageId
                 )
+                is UpdateFileAndExitEvent -> {
+                    parentViewModel.updateDownloadableFileInDraft(event.updatedFile)
+                    findNavController().navigateUp()
+                }
             }
         })
 
@@ -94,8 +112,8 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun showDoneMenuItem(show: Boolean) {
-        if (::doneMenuItem.isInitialized) {
-            doneMenuItem.isVisible = show
+        if (::doneOrUpdateMenuItem.isInitialized) {
+            doneOrUpdateMenuItem.isVisible = show
         }
     }
 

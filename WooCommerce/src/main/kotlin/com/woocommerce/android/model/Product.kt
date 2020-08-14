@@ -136,7 +136,8 @@ data class Product(
             menuOrder == product.menuOrder &&
             isSameImages(product.images) &&
             isSameCategories(product.categories) &&
-            isSameTags(product.tags)
+            isSameTags(product.tags) &&
+            downloads == product.downloads
     }
 
     val hasCategories get() = categories.isNotEmpty()

@@ -21,8 +21,6 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        AndroidSupportInjection.inject(this)
-
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
             activity?.title = it.getString(KEY_TITLE)

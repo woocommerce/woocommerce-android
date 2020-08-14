@@ -1249,4 +1249,5 @@
     <string name="product_downloadable_files_expiry_info">Enter the number of days before a download limk expires, or leave blank if never it expires</string>
     <string name="product_downloadable_files_limit">Download limit</string>
     <string name="product_downloadable_files_expiry">Download expiration</string>
+    <string name="delete">Delete</string>
 </resources>

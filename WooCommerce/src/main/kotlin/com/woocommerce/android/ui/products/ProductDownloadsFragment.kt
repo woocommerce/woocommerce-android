@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.observe
@@ -38,6 +41,22 @@ class ProductDownloadsFragment : BaseProductFragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun getFragmentTitle(): String = getString(R.string.product_downloadable_files)
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -50,6 +69,10 @@ class ProductDownloadsFragment : BaseProductFragment() {
 
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productDownloadsAdapter.filesList = product.downloads
+    }
+
+    override fun hasChanges(): Boolean {
+        return viewModel.hasChanges()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
