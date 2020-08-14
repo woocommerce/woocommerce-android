@@ -67,7 +67,10 @@ class MagicLinkInterceptFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
+
+        // TODO AMANDA - login magic link view deleted in login library. Find replacement?
+//        return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
+        return null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

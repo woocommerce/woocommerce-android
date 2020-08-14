@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginAnalyticsListener
+import org.wordpress.android.login.LoginAnalyticsListener.CreatedAccountSource
 import java.util.HashMap
 import javax.inject.Singleton
 
@@ -19,7 +20,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
         }
     }
 
-    override fun trackCreatedAccount(username: String?, email: String?) {
+    override fun trackCreatedAccount(username: String?, email: String?, source: CreatedAccountSource) {
         // TODO: Account creation
     }
 
@@ -43,7 +44,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_AUTOFILL_CREDENTIALS_UPDATED)
     }
 
-    override fun trackLoginFailed(errorContext: String, errorType: String, errorDescription: String?) {
+    override fun trackLoginFailed(errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FAILED, errorContext, errorType, errorDescription)
     }
 
@@ -77,10 +78,6 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
 
     override fun trackMagicLinkFailed(properties: Map<String, *>) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FAILED, properties)
-    }
-
-    override fun trackMagicLinkOpenEmailClientViewed() {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED)
     }
 
     override fun trackMagicLinkRequested() {
@@ -171,7 +168,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_ERROR_UNKNOWN_USER)
     }
 
-    override fun trackSocialFailure(errorContext: String, errorType: String, errorDescription: String?) {
+    override fun trackSocialFailure(errorContext: String?, errorType: String?, errorDescription: String?) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_FAILURE, errorContext, errorType, errorDescription)
     }
 
@@ -216,5 +213,77 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
 
     override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
+    }
+
+    override fun trackSignupMagicLinkOpenEmailClientViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackLoginMagicLinkOpenEmailClientViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSocialButtonStart() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackFailure(message: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSendCodeWithTextClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSubmit2faCodeClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSubmitClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackRequestMagicLinkClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackLoginWithPasswordClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackShowHelpClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackDismissDialog() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSelectEmailField() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackPickEmailFromHint() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackShowEmailHints() {
+        TODO("Not yet implemented")
+    }
+
+    override fun emailFormScreenResumed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackEmailSignupConfirmationViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackSocialSignupConfirmationViewed() {
+        TODO("Not yet implemented")
+    }
+
+    override fun trackCreateAccountClick() {
+        TODO("Not yet implemented")
     }
 }
