@@ -5,35 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/addFileCard"
-        android:layout_width="0dp"
+    <com.woocommerce.android.ui.products.AddProductElementView
+        android:id="@+id/addProductDownloadsView"
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorSurface"
-            android:paddingTop="@dimen/major_75"
-            android:paddingBottom="@dimen/major_75">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/addFileButton"
-                style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_125"
-                android:layout_marginEnd="@dimen/major_125"
-                android:text="@string/product_downloadable_files_add"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:buttonText="@string/product_downloadable_files_add" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productDownloadsRecycler"
@@ -43,7 +23,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addFileCard"
+        app:layout_constraintTop_toBottomOf="@+id/addProductDownloadsView"
         tools:itemCount="25"
         tools:listitem="@layout/product_downloads_list_item"
         tools:visibility="visible" />
