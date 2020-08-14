@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -18,6 +19,11 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
 
     companion object {
         private const val KEY_TITLE = "title"
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

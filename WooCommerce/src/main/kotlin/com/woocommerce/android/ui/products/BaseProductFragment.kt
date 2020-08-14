@@ -32,16 +32,19 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers(viewModel)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
         // as it exists now so we can easily discard changes are determine if any changes were made inside
         // this fragment
         if (savedInstanceState == null) {
             viewModel.updateProductBeforeEnteringFragment()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers(viewModel)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
