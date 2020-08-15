@@ -123,7 +123,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
-
+            
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductSettingsFragment()
@@ -207,7 +207,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductAdd -> {
-                val action = NavGraphMainDirections.actionGlobalProductAddFragment()
+                val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
                 fragment.findNavController().navigate(action)
             }
 

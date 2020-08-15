@@ -180,7 +180,16 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        loadProduct(navArgs.remoteProductId)
+        when (navArgs.isAddProduct) {
+            true -> startAddNewProduct()
+            else -> loadProduct(navArgs.remoteProductId)
+        }
+    }
+
+    private fun startAddNewProduct() {
+        viewState = viewState.copy(
+            isAddNewProduct = true
+        )
     }
 
     fun getProduct() = viewState
@@ -227,8 +236,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId))
+        when (navArgs.isAddProduct) {
+            true -> triggerEvent(ViewProductImageChooser(0L))
+            else -> {
+                viewState.productDraft?.let {
+                    triggerEvent(ViewProductImageChooser(it.remoteId))
+                }
+            }
         }
     }
 
@@ -1421,7 +1435,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null
+        val showBottomSheetButton: Boolean? = null,
+        val isAddNewProduct: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword

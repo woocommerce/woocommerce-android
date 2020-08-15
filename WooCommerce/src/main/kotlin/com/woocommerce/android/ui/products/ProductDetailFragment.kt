@@ -8,7 +8,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -16,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
@@ -44,6 +48,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
+
+    private val navArgs: ProductDetailFragmentArgs by navArgs()
 
     private var productName = ""
         set(value) {
@@ -115,6 +121,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
                 productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
             }
+            new.isAddNewProduct?.takeIfNotEqualTo(old?.isAddNewProduct) {
+                showDefaultAddProductDetails()
+            }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
@@ -136,11 +145,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
-            addImageContainer.visibility = View.VISIBLE
-            addImageContainer.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                viewModel.onAddImageClicked()
-            }
+            startAddImageContainer()
         } else {
             addImageContainer.visibility = View.GONE
             imageGallery.visibility = View.VISIBLE
@@ -167,6 +172,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
+    private fun startAddImageContainer() {
+        addImageContainer.visibility = View.VISIBLE
+        addImageContainer.setOnClickListener {
+            AnalyticsTracker.track(PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            viewModel.onAddImageClicked()
+        }
+    }
+
+    private fun showDefaultAddProductDetails() {
+        imageGallery.isVisible = false
+        startAddImageContainer()
+        productDetail_addMoreContainer.isVisible = true
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
@@ -174,7 +193,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
         menu.findItem(R.id.menu_product_settings).isVisible = true
 
+        when (navArgs.isAddProduct) {
+            true -> setupProductAddOptionsMenu(menu)
+            else -> Unit
+        }
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setupProductAddOptionsMenu(menu: Menu) {
+        // todo - not showing yet
+        menu.findItem(R.id.menu_done).apply {
+            title = getString(R.string.product_add_tool_bar_menu_button_done)
+            isVisible = true
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -186,9 +217,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             R.id.menu_done -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked()
+                startMenuDoneAction()
                 true
             }
 
@@ -205,6 +234,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun startMenuDoneAction() {
+        when (navArgs.isAddProduct) {
+            true -> {
+                Toast.makeText(this@ProductDetailFragment.context, "Publish clicked!", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked()
+            }
         }
     }
 
@@ -291,7 +333,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.onAddImageClicked()
     }
 
-    override fun getFragmentTitle() = productName
+    override fun getFragmentTitle(): String {
+        return when (navArgs.isAddProduct) {
+            true -> getString(R.string.product_add_tool_bar_title)
+            else -> productName
+        }
+    }
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been

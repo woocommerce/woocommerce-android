@@ -148,6 +148,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
     <action
         android:id="@+id/action_global_productFilterListFragment"
@@ -223,11 +227,4 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </action>
-    <fragment
-        android:id="@+id/productAddFragment"
-        android:name="com.woocommerce.android.ui.products.ProductAddFragment"
-        android:label="ProductAddFragment"
-        tools:layout="@layout/fragment_product_detail" />
-    <action android:id="@+id/action_global_productAddFragment"
-        app:destination="@id/productAddFragment" />s
 </navigation>
