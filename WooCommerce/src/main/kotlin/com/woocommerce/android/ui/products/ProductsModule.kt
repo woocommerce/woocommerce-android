@@ -276,8 +276,8 @@ object ProductsModule {
     @Module
     internal abstract class ProductTypesBottomSheetFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ProductDetailTypesBottomSheetModule::class])
-        abstract fun productTypesBottomSheetFragment(): ProductDetailTypesBottomSheetFragment
+        @ContributesAndroidInjector(modules = [ProductTypesBottomSheetModule::class])
+        abstract fun productTypesBottomSheetFragment(): ProductTypesBottomSheetFragment
     }
 
     @Module

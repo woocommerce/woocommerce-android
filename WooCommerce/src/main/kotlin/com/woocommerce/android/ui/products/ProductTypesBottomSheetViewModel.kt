@@ -20,14 +20,14 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 
 @OpenClassOnDebug
-class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
+class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    private val arguments: ProductDetailTypesBottomSheetFragmentArgs by savedState.navArgs()
+    private val arguments: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
     fun loadProductTypes(builder: ProductTypeBottomSheetBuilder) {
         _productTypesBottomSheetList.value = builder.buildBottomSheetList()
@@ -66,5 +66,5 @@ class ProductDetailTypesBottomSheetViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ProductDetailTypesBottomSheetViewModel>
+    interface Factory : ViewModelAssistedFactory<ProductTypesBottomSheetViewModel>
 }

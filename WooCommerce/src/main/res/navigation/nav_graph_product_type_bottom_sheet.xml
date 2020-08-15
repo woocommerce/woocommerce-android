@@ -7,7 +7,7 @@
 
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"

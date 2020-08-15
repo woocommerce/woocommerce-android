@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetAdapter.ProductTypesBottomSheetViewHolder
-import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import kotlinx.android.synthetic.main.product_detail_bottom_sheet_list_item.view.*
 
 class ProductTypesBottomSheetAdapter(
