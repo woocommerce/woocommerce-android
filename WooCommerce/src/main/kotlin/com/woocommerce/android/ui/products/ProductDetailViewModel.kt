@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -252,19 +252,25 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onProductDownloadClicked(file: ProductFile) {
-        triggerEvent(EditProductDownload(file, viewState.productDraft!!.downloadLimit, viewState.productDraft!!.downloadExpiry))
+        triggerEvent(
+            EditProductDownload(
+                file,
+                viewState.productDraft!!.downloadLimit,
+                viewState.productDraft!!.downloadExpiry
+            )
+        )
     }
 
-    fun updateDownloadableFileInDraft(
-        updatedFile: ProductFile,
-        downloadLimit: Int,
-        downloadExpiry: Int
-    ) {
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile, downloadLimit: Int, downloadExpiry: Int) {
         viewState.productDraft?.let {
             val updatedDownloads = it.downloads.map { file ->
-                if(file.id == updatedFile.id) updatedFile else file
+                if (file.id == updatedFile.id) updatedFile else file
             }
-            updateProductDraft(downloads = updatedDownloads, downloadLimit = downloadLimit, downloadExpiry = downloadExpiry)
+            updateProductDraft(
+                downloads = updatedDownloads,
+                downloadLimit = downloadLimit,
+                downloadExpiry = downloadExpiry
+            )
         }
     }
 

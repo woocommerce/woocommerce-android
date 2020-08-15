@@ -65,7 +65,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
-        fun Int.formatLimitAndExpiry(): String = if(this == -1) "" else this.toString()
+        fun Int.formatLimitAndExpiry(): String = if (this == -1) "" else this.toString()
 
         viewModel.productDownloadDetailsViewStateData.observe(owner = viewLifecycleOwner, observer = { old, new ->
             Log.d("debug", "new state: $new")
@@ -101,7 +101,9 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     event.messageId
                 )
                 is UpdateFileAndExitEvent -> {
-                    parentViewModel.updateDownloadableFileInDraft(event.updatedFile, event.downloadLimit, event.downloadExpiry)
+                    parentViewModel.updateDownloadableFileInDraft(
+                        event.updatedFile, event.downloadLimit, event.downloadExpiry
+                    )
                     findNavController().navigateUp()
                 }
             }
@@ -118,11 +120,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             viewModel.onFileNameChanged(it.toString())
         }
         product_download_expiry.setOnTextChangedListener {
-            val value = if(it.isNullOrEmpty()) -1 else it.toString().toInt()
+            val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadExpiryChanged(value)
         }
         product_download_limit.setOnTextChangedListener {
-            val value = if(it.isNullOrEmpty()) -1 else it.toString().toInt()
+            val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadLimitChanged(value)
         }
     }

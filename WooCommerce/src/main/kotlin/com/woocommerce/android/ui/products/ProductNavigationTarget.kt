@@ -51,5 +51,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductTypes(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
     object ViewProductDownloads : ProductNavigationTarget()
-    data class EditProductDownload(val file: ProductFile, val downloadLimit: Int, val downloadExpiry: Int) : ProductNavigationTarget()
+    data class EditProductDownload(val file: ProductFile, val downloadLimit: Int, val downloadExpiry: Int) :
+        ProductNavigationTarget()
 }

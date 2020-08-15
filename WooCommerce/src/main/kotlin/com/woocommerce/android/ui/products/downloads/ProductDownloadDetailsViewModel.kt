@@ -80,9 +80,9 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {
-        val hasChanges = updatedState.fileDraft != navArgs.productFile
-            || updatedState.downloadExpiry != navArgs.downloadExpiry
-            || updatedState.downloadLimit != navArgs.downloadLimit
+        val hasChanges = updatedState.fileDraft != navArgs.productFile ||
+            updatedState.downloadExpiry != navArgs.downloadExpiry ||
+            updatedState.downloadLimit != navArgs.downloadLimit
         productDownloadDetailsViewState = updatedState.copy(hasChanges = hasChanges)
     }
 

@@ -10,7 +10,8 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductDownloadsAdapter.ProductDownloadableFileViewHolder
 import kotlinx.android.synthetic.main.product_downloads_list_item.view.*
 
-class ProductDownloadsAdapter(private val clickListener: (ProductFile) -> Unit) : RecyclerView.Adapter<ProductDownloadableFileViewHolder>() {
+class ProductDownloadsAdapter(private val clickListener: (ProductFile) -> Unit) :
+    RecyclerView.Adapter<ProductDownloadableFileViewHolder>() {
     var filesList: List<ProductFile> = ArrayList()
         set(value) {
             if (value != field) {

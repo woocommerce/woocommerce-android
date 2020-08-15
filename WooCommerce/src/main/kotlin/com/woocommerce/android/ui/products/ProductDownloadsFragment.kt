@@ -16,7 +16,9 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
 class ProductDownloadsFragment : BaseProductFragment() {
-    private val productDownloadsAdapter: ProductDownloadsAdapter by lazy { ProductDownloadsAdapter(viewModel::onProductDownloadClicked) }
+    private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {
+        ProductDownloadsAdapter(viewModel::onProductDownloadClicked)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
