@@ -89,6 +89,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Collections
 import java.util.Date
 
 @OpenClassOnDebug
@@ -271,6 +272,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                 downloadLimit = downloadLimit,
                 downloadExpiry = downloadExpiry
             )
+        }
+    }
+
+    fun swapDownloadableFiles(from: Int, to: Int) {
+        viewState.productDraft?.let {
+            val mutableDownloadsList = it.downloads.toMutableList()
+            Collections.swap(mutableDownloadsList, from, to)
+            updateProductDraft(downloads = mutableDownloadsList)
         }
     }
 
