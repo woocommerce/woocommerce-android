@@ -260,6 +260,12 @@ data class Product(
         } ?: false
     }
 
+    fun hasDownloadChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            downloads != it.downloads
+        } ?: false
+    }
+
     /**
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order

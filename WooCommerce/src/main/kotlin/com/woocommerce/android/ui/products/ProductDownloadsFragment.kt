@@ -72,7 +72,7 @@ class ProductDownloadsFragment : BaseProductFragment() {
     }
 
     override fun hasChanges(): Boolean {
-        return viewModel.hasChanges()
+        return viewModel.hasDownloadsChanges()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
