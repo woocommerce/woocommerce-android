@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 
 class ProductDetailTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
     override fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {

@@ -13,8 +13,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ExitWithResult
-import com.woocommerce.android.ui.products.ProductDetailTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ExitWithResult
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -25,7 +25,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_product_detail_bottom_sheet_list.*
 import javax.inject.Inject
 
-class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
+class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     companion object {
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
@@ -33,12 +33,11 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     @Inject internal lateinit var navigator: ProductNavigator
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var viewModelFactory: ViewModelFactory
-
-    val viewModel: ProductDetailTypesBottomSheetViewModel by viewModels { viewModelFactory }
+    val viewModel: ProductTypesBottomSheetViewModel by viewModels { viewModelFactory }
 
     private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
 
-    private val navArgs: ProductDetailTypesBottomSheetFragmentArgs by navArgs()
+    private val navArgs: ProductTypesBottomSheetFragmentArgs by navArgs()
 
     override fun androidInjector(): AndroidInjector<Any> {
         return childInjector
@@ -61,7 +60,7 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val builder = productTypeListBuilder()
+        val builder = getProductTypeListBuilder()
 
         viewModel.loadProductTypes(builder = builder)
 
@@ -107,7 +106,7 @@ class ProductDetailTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
     }
 
-    private fun productTypeListBuilder(): ProductTypeBottomSheetBuilder {
+    private fun getProductTypeListBuilder(): ProductTypeBottomSheetBuilder {
         return when (navArgs.isAddProduct) {
             true -> ProductAddTypeBottomSheetBuilder()
             else -> ProductDetailTypeBottomSheetBuilder()
