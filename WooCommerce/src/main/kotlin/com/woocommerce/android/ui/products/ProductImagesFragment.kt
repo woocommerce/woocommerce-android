@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -35,6 +36,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
+
+    private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
@@ -123,7 +126,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onGalleryImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
-                image.id
+            image.id
         )
         findNavController().navigateSafely(action)
     }
@@ -131,33 +134,33 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showImageSourceDialog() {
         val inflater = requireActivity().layoutInflater
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
-                .also {
-                    it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                        )
-                        chooseProductImage()
-                    }
-                    it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                        )
-                        captureProductImage()
-                    }
-                    it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
-                        )
-                        showWPMediaPicker()
-                    }
+            .also {
+                it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                    )
+                    chooseProductImage()
                 }
+                it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                    )
+                    captureProductImage()
+                }
+                it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                    AnalyticsTracker.track(
+                        Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+                    )
+                    showWPMediaPicker()
+                }
+            }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
-                .setView(contentView)
-                .show()
+            .setView(contentView)
+            .show()
     }
 
     private fun showWPMediaPicker() {
@@ -211,23 +214,33 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         return
                     }
                     AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_ADDED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+                    updateProductImage(uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_ADDED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+                    updateProductImage(uriList)
                 }
             }
         }
 
         changesMade()
+    }
+
+    private fun updateProductImage(uriList: ArrayList<Uri>) {
+        when (navArgs.isAddProduct) {
+            false -> viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+            else -> {
+                viewModel.triggerProductAddImagesSelected(uriList)
+                //TODO - force list reload
+            }
+        }
     }
 
     /**
@@ -253,7 +266,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
+            requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
         if (allGranted) {
