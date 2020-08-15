@@ -25,7 +25,16 @@
             android:id="@+id/action_productDetailFragment_to_productImagesFragment"
             app:destination="@id/productImagesFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="remoteProductId"
+                android:defaultValue="0L"
+                app:argType="long" />
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
@@ -71,6 +80,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
