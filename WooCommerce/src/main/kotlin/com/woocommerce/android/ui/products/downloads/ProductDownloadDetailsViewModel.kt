@@ -6,6 +6,8 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.ShowDeleteFileConfirmationEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -52,6 +54,10 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
     }
 
+    fun onDeleteButtonClicked() {
+        triggerEvent(ShowDeleteFileConfirmationEvent)
+    }
+
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges) {
             triggerEvent(ShowDiscardDialog(
@@ -68,10 +74,22 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         productDownloadDetailsViewState = updatedState.copy(hasChanges = hasChanges)
     }
 
+    fun triggerFileDeletion() {
+        triggerEvent(
+            DeleteFileEvent(
+                navArgs.productFile
+                    ?: throw IllegalStateException("The delete action can't be invoked if the file to edit is null")
+            )
+        )
+    }
+
     sealed class ProductDownloadDetailsEvent : Event() {
         data class UpdateFileAndExitEvent(
             val updatedFile: ProductFile
         ) : ProductDownloadDetailsEvent()
+
+        object ShowDeleteFileConfirmationEvent : ProductDownloadDetailsEvent()
+        class DeleteFileEvent(val file: ProductFile) : ProductDownloadDetailsEvent()
     }
 
     @Parcelize

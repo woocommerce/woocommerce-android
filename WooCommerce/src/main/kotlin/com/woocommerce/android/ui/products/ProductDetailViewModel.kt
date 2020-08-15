@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
@@ -281,6 +282,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             val mutableDownloadsList = it.downloads.toMutableList()
             Collections.swap(mutableDownloadsList, from, to)
             updateProductDraft(downloads = mutableDownloadsList)
+        }
+    }
+
+    fun deleteDownloadableFile(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads - file
+            updateProductDraft(downloads = updatedDownloads)
+            // If the downloads list is empty now, go directly to the product details screen
+            if(updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
         }
     }
 
