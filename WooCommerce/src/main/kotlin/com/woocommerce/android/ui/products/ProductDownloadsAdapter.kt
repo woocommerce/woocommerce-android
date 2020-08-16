@@ -37,9 +37,10 @@ class ProductDownloadsAdapter(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ProductDownloadableFileViewHolder, position: Int) {
-        holder.fileName.text = filesList[position].name
-        holder.fileUrl.text = filesList[position].url
-        holder.itemView.setOnClickListener { clickListener.invoke(filesList[position]) }
+        val file = filesList[position]
+        holder.fileName.text = file.name
+        holder.fileUrl.text = file.url
+        holder.itemView.setOnClickListener { clickListener.invoke(file) }
         holder.dragHandle.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 dragHelper.startDrag(holder)
