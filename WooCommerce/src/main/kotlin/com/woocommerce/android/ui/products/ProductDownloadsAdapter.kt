@@ -49,7 +49,7 @@ class ProductDownloadsAdapter(
     }
 
     class ProductDownloadableFileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val dragHandle: ImageView = view.product_download_item_icon
+        val dragHandle: ImageView = view.product_download_item_drag_handle
         val fileName: TextView = view.product_download_item_name
         val fileUrl: TextView = view.product_download_item_url
     }
