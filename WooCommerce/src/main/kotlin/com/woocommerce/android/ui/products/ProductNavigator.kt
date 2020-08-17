@@ -215,7 +215,10 @@ class ProductNavigator @Inject constructor() {
 
     private fun viewProductImageChooser(fragment: Fragment, remoteId: Long, isAddProduct: Boolean) {
         val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(remoteProductId = remoteId, isAddProduct = isAddProduct)
+                .actionProductDetailFragmentToProductImagesFragment(
+                    remoteProductId = remoteId,
+                    isAddProduct = isAddProduct
+                )
         fragment.findNavController().navigateSafely(action)
     }
 

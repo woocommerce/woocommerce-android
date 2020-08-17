@@ -31,8 +31,6 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
-import java.util.Date
-import kotlin.random.Random
 
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     companion object {
