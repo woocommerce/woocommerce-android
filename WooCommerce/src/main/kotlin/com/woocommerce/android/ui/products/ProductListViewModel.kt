@@ -178,7 +178,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false
+                        displaySortAndFilterCard = false,
+                        isAddProductButtonVisible = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -205,7 +206,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = !showSkeleton
+                        displaySortAndFilterCard = !showSkeleton,
+                        isAddProductButtonVisible = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }
@@ -271,7 +273,8 @@ class ProductListViewModel @AssistedInject constructor(
                 isSkeletonShown = false,
                 isLoading = false,
                 isLoadingMore = false,
-                isRefreshing = false
+                isRefreshing = false,
+                isAddProductButtonVisible = true
         )
 
         if (scrollToTop) {
@@ -315,7 +318,8 @@ class ProductListViewModel @AssistedInject constructor(
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
-        val displaySortAndFilterCard: Boolean? = null
+        val displaySortAndFilterCard: Boolean? = null,
+        val isAddProductButtonVisible: Boolean? = null
     ) : Parcelable
 
     sealed class ProductListEvent : Event() {

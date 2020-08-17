@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -284,6 +286,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
                 products_sort_filter_card.setSortingTitle(getString(it))
             }
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
+                showAddProductButton(show = isVisible)
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner, Observer {
@@ -357,6 +362,23 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun updateFilterSelection(filterCount: Int) {
         products_sort_filter_card.updateFilterSelection(filterCount)
+    }
+
+    private fun showAddProductButton(show: Boolean) {
+        fun showButton() = run { addProductButton.isVisible = true }
+        fun hideButton() = run { addProductButton.isVisible = false }
+        fun showProductAddTypes() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
+        when (show) {
+            true -> {
+                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
+                    showButton()
+                    addProductButton.setOnClickListener { showProductAddTypes() }
+                } else {
+                    hideButton()
+                }
+            }
+            else -> hideButton()
+        }
     }
 
     override fun onProductClick(remoteProductId: Long) {

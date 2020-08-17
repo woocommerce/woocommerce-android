@@ -8,4 +8,5 @@ interface MainNavigationRouter {
     fun showProductDetail(remoteProductId: Long)
     fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String? = null)
     fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)
+    fun showProductAddBottomSheet()
 }
