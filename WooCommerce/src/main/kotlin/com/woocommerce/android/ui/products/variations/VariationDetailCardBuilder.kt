@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
@@ -88,8 +89,12 @@ class VariationDetailCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVariationChanged(isVisible = it)
+        return if (PRODUCT_RELEASE_M3.isEnabled()) {
+            Switch(visibility, isVisible, visibilityIcon) {
+                viewModel.onVariationChanged(isVisible = it)
+            }
+        } else {
+            Switch(visibility, isVisible, visibilityIcon)
         }
     }
 
@@ -103,7 +108,7 @@ class VariationDetailCardBuilder(
 
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
-    private fun ProductVariation.price(): ProductProperty {
+    private fun ProductVariation.price(): ProductProperty? {
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
@@ -115,26 +120,32 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        val isWarningVisible = regularPrice.isNotSet() && this.isVisible
-        return PropertyGroup(
-            string.product_price,
-            pricingGroup,
-            drawable.ic_gridicons_money,
-            showTitle = regularPrice.isSet(),
-            isHighlighted = isWarningVisible,
-            isDividerVisible = !isWarningVisible
-        ) {
+        return if (regularPrice.isSet()) {
+            val isWarningVisible = regularPrice.isNotSet() && this.isVisible
+            PropertyGroup(
+                string.product_price,
+                pricingGroup,
+                drawable.ic_gridicons_money,
+                showTitle = regularPrice.isSet(),
+                isHighlighted = isWarningVisible,
+                isDividerVisible = !isWarningVisible
+            ) {
                 viewModel.onEditVariationCardClicked(
-                    ViewPricing(PricingData(
-                        isSaleScheduled = isSaleScheduled,
-                        saleStartDate = saleStartDateGmt,
-                        saleEndDate = saleEndDateGmt,
-                        regularPrice = regularPrice,
-                        salePrice = salePrice
-                    )),
+                    ViewPricing(
+                        PricingData(
+                            isSaleScheduled = isSaleScheduled,
+                            saleStartDate = saleStartDateGmt,
+                            saleEndDate = saleEndDateGmt,
+                            regularPrice = regularPrice,
+                            salePrice = salePrice
+                        )
+                    ),
                     PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
                 )
             }
+        } else {
+            null
+        }
     }
 
     private fun ProductVariation.shipping(): ProductProperty? {
@@ -153,7 +164,11 @@ class VariationDetailCardBuilder(
                         viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                     )
                 )
-            } else mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            } else {
+                return null
+                // TODO: M3 feature
+//                mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            }
 
             PropertyGroup(
                 string.product_shipping,
