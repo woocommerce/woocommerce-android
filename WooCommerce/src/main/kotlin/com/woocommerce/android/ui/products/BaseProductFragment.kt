@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
