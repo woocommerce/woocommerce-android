@@ -304,11 +304,6 @@
             app:argType="com.woocommerce.android.model.ProductFile"
             app:nullable="true"
             android:defaultValue="@null" />
-        <argument
-            android:name="downloadLimit"
-            app:argType="integer" />
-        <argument android:name="downloadExpiry"
-            app:argType="integer"/>
     </fragment>
     <fragment
         android:id="@+id/productDownloadsSettingsFragment"

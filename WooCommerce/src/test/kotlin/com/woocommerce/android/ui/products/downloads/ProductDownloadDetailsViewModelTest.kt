@@ -17,10 +17,10 @@ import org.junit.Test
 class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductDownloadDetailsViewModel
     private val file = ProductFile(id = "id", name = "file", url = "url")
-    val savedStateForEditing = SavedStateWithArgs(
+    private val savedStateForEditing = SavedStateWithArgs(
         SavedStateHandle(),
         null,
-        ProductDownloadDetailsFragmentArgs(file, 1, 2)
+        ProductDownloadDetailsFragmentArgs(file)
     )
 
     @get:Rule
@@ -37,8 +37,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft).isEqualTo(file)
-        assertThat(state!!.downloadLimit).isEqualTo(1)
-        assertThat(state!!.downloadExpiry).isEqualTo(2)
         assertThat(state!!.hasChanges).isEqualTo(false)
     }
 
@@ -89,8 +87,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         val newLimit = 5
         viewModel.onFileNameChanged(newName)
         viewModel.onFileUrlChanged(newUrl)
-        viewModel.onDownloadExpiryChanged(newExpiry)
-        viewModel.onDownloadLimitChanged(newLimit)
 
         var event: Event? = null
         viewModel.event.observeForever { new -> event = new }
@@ -99,7 +95,5 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         assertThat(event).isInstanceOf(UpdateFileAndExitEvent::class.java)
         assertThat((event as UpdateFileAndExitEvent).updatedFile.name == newName).isTrue()
         assertThat((event as UpdateFileAndExitEvent).updatedFile.url == newUrl).isTrue()
-        assertThat((event as UpdateFileAndExitEvent).downloadLimit == newLimit).isTrue()
-        assertThat((event as UpdateFileAndExitEvent).downloadExpiry == newExpiry).isTrue()
     }
 }

@@ -26,8 +26,6 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         savedState,
         ProductDownloadDetailsViewState(
             fileDraft = navArgs.productFile ?: ProductFile(null, "", ""),
-            downloadLimit = navArgs.downloadLimit,
-            downloadExpiry = navArgs.downloadExpiry,
             hasChanges = false
         )
     )
@@ -49,23 +47,9 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         updateState(productDownloadDetailsViewState.copy(fileDraft = updatedDraft))
     }
 
-    fun onDownloadExpiryChanged(value: Int) {
-        updateState(productDownloadDetailsViewState.copy(downloadExpiry = value))
-    }
-
-    fun onDownloadLimitChanged(value: Int) {
-        updateState(productDownloadDetailsViewState.copy(downloadLimit = value))
-    }
-
     fun onDoneOrUpdateClicked() {
         // TODO handle file creation by checking if the navArgs file is null
-        triggerEvent(
-            UpdateFileAndExitEvent(
-                productDownloadDetailsViewState.fileDraft,
-                productDownloadDetailsViewState.downloadLimit,
-                productDownloadDetailsViewState.downloadExpiry
-            )
-        )
+        triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
     }
 
     fun onBackButtonClicked(): Boolean {
@@ -80,25 +64,19 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {
-        val hasChanges = updatedState.fileDraft != navArgs.productFile ||
-            updatedState.downloadExpiry != navArgs.downloadExpiry ||
-            updatedState.downloadLimit != navArgs.downloadLimit
+        val hasChanges = updatedState.fileDraft != navArgs.productFile
         productDownloadDetailsViewState = updatedState.copy(hasChanges = hasChanges)
     }
 
     sealed class ProductDownloadDetailsEvent : Event() {
         data class UpdateFileAndExitEvent(
-            val updatedFile: ProductFile,
-            val downloadLimit: Int,
-            val downloadExpiry: Int
+            val updatedFile: ProductFile
         ) : ProductDownloadDetailsEvent()
     }
 
     @Parcelize
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
-        val downloadLimit: Int,
-        val downloadExpiry: Int,
         val hasChanges: Boolean
     ) : Parcelable
 
