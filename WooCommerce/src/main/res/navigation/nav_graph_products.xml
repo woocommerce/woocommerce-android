@@ -148,6 +148,11 @@
             app:destination="@id/productDownloadDetailsFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_productDownloadsFragment_to_productDownloadsSettingsFragment"
+            app:destination="@id/productDownloadsSettingsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@anim/activity_fade_out" />
     </fragment>
 
     <fragment
@@ -305,4 +310,8 @@
         <argument android:name="downloadExpiry"
             app:argType="integer"/>
     </fragment>
+    <fragment
+        android:id="@+id/productDownloadsSettingsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment"
+        android:label="ProductDownloadsSettingsFragment" />
 </navigation>

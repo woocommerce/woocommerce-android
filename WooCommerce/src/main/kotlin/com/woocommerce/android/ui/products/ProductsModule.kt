@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductDetailBottomShe
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadDetailsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadsSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterOptionListFragmentModule
@@ -39,6 +40,8 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsModule
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
@@ -94,7 +97,8 @@ import dagger.android.ContributesAndroidInjector
     ProductTypesBottomSheetFragmentModule::class,
     ProductReviewsFragmentModule::class,
     ProductDownloadsFragmentModule::class,
-    ProductDownloadDetailsFragmentModule::class
+    ProductDownloadDetailsFragmentModule::class,
+    ProductDownloadsSettingsFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -305,5 +309,12 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductDownloadDetailsModule::class])
         abstract fun productDownloadDetailsFragment(): ProductDownloadDetailsFragment
+    }
+
+    @Module
+    internal abstract class ProductDownloadsSettingsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductDownloadsSettingsModule::class])
+        abstract fun productDownloadsSettingsFragment(): ProductDownloadsSettingsFragment
     }
 }

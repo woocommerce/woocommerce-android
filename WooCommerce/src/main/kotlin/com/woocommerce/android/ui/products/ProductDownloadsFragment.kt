@@ -65,7 +65,7 @@ class ProductDownloadsFragment : BaseProductFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
+        inflater.inflate(R.menu.menu_product_downloads_list, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -73,6 +73,10 @@ class ProductDownloadsFragment : BaseProductFragment() {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
+                true
+            }
+            R.id.menu_product_downloads_settings -> {
+                viewModel.onDownloadsSettingsClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)

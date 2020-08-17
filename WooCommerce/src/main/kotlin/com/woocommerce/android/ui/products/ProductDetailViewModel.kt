@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDo
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
@@ -262,15 +263,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
-    fun updateDownloadableFileInDraft(updatedFile: ProductFile, downloadLimit: Int, downloadExpiry: Int) {
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
         viewState.productDraft?.let {
             val updatedDownloads = it.downloads.map { file ->
                 if (file.id == updatedFile.id) updatedFile else file
             }
             updateProductDraft(
-                downloads = updatedDownloads,
-                downloadLimit = downloadLimit,
-                downloadExpiry = downloadExpiry
+                downloads = updatedDownloads
             )
         }
     }
@@ -281,6 +280,26 @@ class ProductDetailViewModel @AssistedInject constructor(
             Collections.swap(mutableDownloadsList, from, to)
             updateProductDraft(downloads = mutableDownloadsList)
         }
+    }
+
+    fun onDownloadExpiryChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadExpiry = value
+            )
+        }
+    }
+
+    fun onDownloadLimitChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadLimit = value
+            )
+        }
+    }
+
+    fun onDownloadsSettingsClicked() {
+        triggerEvent(ViewProductDownloadsSettings)
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
@@ -314,8 +333,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun hasDownloadsChanges(): Boolean {
         return viewState.storedProduct?.let {
             it.hasDownloadChanges(viewState.productDraft) ||
-                it.downloadLimit != viewState.productDraft?.downloadLimit ||
-                it.downloadExpiry != viewState.productDraft?.downloadExpiry
+                hasDownloadsSettingsChanges()
+        } ?: false
+    }
+
+    fun hasDownloadsSettingsChanges(): Boolean {
+        return viewState.storedProduct?.let {
+            it.downloadLimit != viewState.productDraft?.downloadLimit ||
+                it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
+                it.isDownloadable != viewState.productDraft?.isDownloadable
         } ?: false
     }
 
@@ -1427,6 +1453,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()

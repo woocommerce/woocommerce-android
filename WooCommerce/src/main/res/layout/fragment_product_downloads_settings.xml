@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                    android:id="@+id/product_download_limit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:hint="@string/product_downloadable_files_limit"
+                    android:inputType="number"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/product_download_limit_info"
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_150"
+                    android:layout_marginEnd="@dimen/major_150"
+                    android:text="@string/product_downloadable_files_limit_info"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_download_limit" />
+
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                    android:id="@+id/product_download_expiry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_150"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:hint="@string/product_downloadable_files_expiry"
+                    android:inputType="number"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_download_limit_info" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/product_download_expiry_info"
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_150"
+                    android:layout_marginEnd="@dimen/major_150"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:text="@string/product_downloadable_files_expiry_info"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_download_expiry" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_125"
+            app:contentPadding="@dimen/major_100">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/product_is_downloadable_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_is_downloadable" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
