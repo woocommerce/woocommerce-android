@@ -24,7 +24,6 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
@@ -193,13 +192,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
-    class OnAddProductImagesSelectedCompletedEvent(
-        val images: List<Uri> = listOf()
-    )
-
-    fun triggerProductAddImagesSelected(images: List<Uri>) =
-        EventBus.getDefault().post(OnAddProductImagesSelectedCompletedEvent(images))
-
     fun getProduct() = viewState
 
     fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
@@ -234,13 +226,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        when (navArgs.isAddProduct) {
-            true -> triggerEvent(ViewProductImages(0L, image, false))
-            else -> {
-                viewState.productDraft?.let {
-                    triggerEvent(ViewProductImages(it.remoteId, image, false))
-                }
-            }
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductImages(it, image))
         }
     }
 
@@ -249,13 +236,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        when (navArgs.isAddProduct) {
-            true -> triggerEvent(ViewProductImageChooser(0L, isAddProduct = true))
-            else -> {
-                viewState.productDraft?.let {
-                    triggerEvent(ViewProductImageChooser(it.remoteId, isAddProduct = false))
-                }
-            }
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductImageChooser(it.remoteId))
         }
     }
 
@@ -1054,18 +1036,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
         checkImageUploads(getRemoteProductId())
-    }
-
-    /**
-     * Finished selecting images for add new product flow
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEvenMainThread(event: OnAddProductImagesSelectedCompletedEvent) {
-        val originalList = viewState.uploadingImageUris?.toMutableList() ?: mutableListOf()
-        originalList.addAll(event.images)
-        viewState = viewState.copy(uploadingImageUris = originalList)
-        productImagesViewState = productImagesViewState.copy(isUploadingImages = false)
     }
 
     /**

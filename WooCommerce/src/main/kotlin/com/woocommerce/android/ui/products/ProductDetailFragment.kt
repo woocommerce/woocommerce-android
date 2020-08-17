@@ -201,7 +201,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun setupProductAddOptionsMenu(menu: Menu) {
-        // todo - not showing yet
         menu.findItem(R.id.menu_done).apply {
             title = getString(R.string.product_add_tool_bar_menu_button_done)
             isVisible = true
@@ -239,9 +238,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun startMenuDoneAction() {
         when (navArgs.isAddProduct) {
-            true -> {
-                Toast.makeText(this@ProductDetailFragment.context, "Publish clicked!", Toast.LENGTH_SHORT).show()
-            }
+            true -> Unit
             else -> {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)

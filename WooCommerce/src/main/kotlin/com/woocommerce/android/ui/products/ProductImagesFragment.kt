@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -36,8 +35,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
-
-    private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
@@ -217,7 +214,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         Stat.PRODUCT_IMAGE_ADDED,
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    updateProductImage(uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -225,22 +222,12 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    updateProductImage(uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
             }
         }
 
         changesMade()
-    }
-
-    private fun updateProductImage(uriList: ArrayList<Uri>) {
-        when (navArgs.isAddProduct) {
-            false -> viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
-            else -> {
-                viewModel.triggerProductAddImagesSelected(uriList)
-                //TODO - force list reload
-            }
-        }
     }
 
     /**
