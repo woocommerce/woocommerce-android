@@ -118,10 +118,10 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
 
-            new.localAddProductImages.takeIfNotEqualTo(old?.localAddProductImages) {
-                val productAddImage = getDefaultAddProductImages(new.localAddProductImages)
+            new.localSelectedUriImages.takeIfNotEqualTo(old?.localSelectedUriImages) {
+                val productAddImage = transformToProductImages(new.localSelectedUriImages)
                 reloadImageGalleryForAddProduct(images = productAddImage)
-                imageGallery.setPlaceholderImageUris(new.localAddProductImages)
+                imageGallery.setPlaceholderImageUris(new.localSelectedUriImages)
             }
         }
     }
@@ -135,7 +135,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun reloadImageGalleryForAddProduct(images: List<Product.Image>) =
         imageGallery.showProductImages(images, this)
 
-    private fun getDefaultAddProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
+    private fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
         return uploadingImageUris?.let { list ->
             list.map { uri ->
                 val tempId =

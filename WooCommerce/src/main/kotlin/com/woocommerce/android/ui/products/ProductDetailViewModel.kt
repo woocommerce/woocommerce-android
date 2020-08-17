@@ -1059,12 +1059,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvenMainThread(event: OnAddProductImagesSelectedCompletedEvent) {
-        val originalList = viewState.uploadingImageUris?.toMutableList() ?: mutableListOf()
+        val originalList = productImagesViewState.localSelectedUriImages?.toMutableList() ?: mutableListOf()
         originalList.addAll(event.images)
         viewState = viewState.copy(uploadingImageUris = originalList)
         productImagesViewState = productImagesViewState.copy(
-            isUploadingImages = false,
-            localAddProductImages = originalList
+            localSelectedUriImages = originalList
         )
     }
 
@@ -1492,7 +1491,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductImagesViewState(
         val isUploadingImages: Boolean = false,
-        val localAddProductImages: List<Uri> = listOf()
+        val localSelectedUriImages: List<Uri>? = null
     ) : Parcelable
 
     @Parcelize
