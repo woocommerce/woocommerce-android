@@ -166,22 +166,6 @@ data class Product(
     }
 
     /**
-     * Verifies if there are any changes made to the pricing fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasPricingChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            regularPrice.isNotEqualTo(it.regularPrice) ||
-                salePrice.isNotEqualTo(it.salePrice) ||
-                saleStartDateGmt != it.saleStartDateGmt ||
-                saleEndDateGmt != it.saleEndDateGmt ||
-                taxClass != it.taxClass ||
-                taxStatus != it.taxStatus
-        } ?: false
-    }
-
-    /**
      * Verifies if there are any changes made to the shipping fields
      * by comparing the updated product model ([updatedProduct]) with the product model stored
      * in the local db and returns a [Boolean] flag

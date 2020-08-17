@@ -13,7 +13,7 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.ProductPricingViewState
+import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -65,7 +65,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         TaxClass("standard"),
         TaxClass("weird")
     )
-    private val viewState = ProductPricingViewState(
+    private val viewState = ViewState(
         "$",
         2,
         taxClasses,
@@ -104,7 +104,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the initial price information correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         assertThat(state).isEqualTo(viewState)
@@ -112,7 +112,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays and hides the done button after data change`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         val newPrice = BigDecimal(4)
@@ -142,7 +142,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Disables the done button if there is validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         val newPrice = BigDecimal(14)
@@ -178,7 +178,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             selectedSite
         ))
 
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         val expectedState = viewState.copy(
@@ -191,7 +191,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Makes sale end date equal to start date if earlier`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         val calendar = Calendar.getInstance()
@@ -219,7 +219,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Nulls the sale schedule dates if switch off`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        var state: ProductPricingViewState? = null
+        var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
         var firedEvent: Event? = null

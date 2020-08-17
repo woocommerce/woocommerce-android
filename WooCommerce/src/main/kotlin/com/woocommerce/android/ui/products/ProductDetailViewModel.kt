@@ -226,8 +226,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
 
-    fun hasPricingChanges() = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
-
     fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
 
     fun hasImageChanges(): Boolean {

@@ -41,7 +41,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     private var originalPricing: PricingData
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     val parameters: SiteParameters by lazy {
@@ -192,7 +192,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     }
 
     @Parcelize
-    data class ProductPricingViewState(
+    data class ViewState(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
