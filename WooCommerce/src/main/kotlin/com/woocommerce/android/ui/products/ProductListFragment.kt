@@ -16,7 +16,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -376,10 +375,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
                     addProductButton.setOnClickListener {
-                        // TODO - this is a test!!!
-                        testingResetPrefs()
-                        // TODO END TEST
-
                         when (viewModel.isShowProductTypeBottomSheet()) {
                             true -> showProductTypesBottomSheet()
                             else -> showAddProduct()
@@ -392,15 +387,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             else -> hideButton()
         }
     }
-
-    // TODO - this is a test!!!
-    private fun testingResetPrefs() {
-        count++
-        if (count % 2 == 0){
-            AppPrefs.resetSelectedProductType()
-        }
-    }
-    // TODO END TEST
 
     override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
 

@@ -241,14 +241,6 @@ object AppPrefs {
 
     fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
 
-    // TODO - THIS IS A TEST!!!
-    fun resetSelectedProductType() {
-        val editor = getPreferences().edit()
-        editor.remove(DeletablePrefKey.SELECTED_PRODUCT_TYPE.name)
-        editor.apply()
-    }
-    // TODO END TEST
-
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,
      * then the value will be the default of -1.
