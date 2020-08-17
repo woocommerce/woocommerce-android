@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 
@@ -86,14 +87,18 @@ class VariationDetailCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return Switch(visibility, this.isVisible, visibilityIcon) {
-            viewModel.onVisibilityChanged(it)
+        return if (PRODUCT_RELEASE_M3.isEnabled()) {
+            Switch(visibility, isVisible, visibilityIcon) {
+                viewModel.onVisibilityChanged(it)
+            }
+        } else {
+            Switch(visibility, isVisible, visibilityIcon)
         }
     }
 
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
-    private fun ProductVariation.price(): ProductProperty {
+    private fun ProductVariation.price(): ProductProperty? {
         val hasPricingInfo = this.regularPrice != null || this.salePrice != null
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
@@ -107,12 +112,16 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        return PropertyGroup(
-            string.product_price,
-            pricingGroup,
-            drawable.ic_gridicons_money,
-            hasPricingInfo
-        )
+        return if (hasPricingInfo) {
+            PropertyGroup(
+                string.product_price,
+                pricingGroup,
+                drawable.ic_gridicons_money,
+                hasPricingInfo
+            )
+        } else {
+            null
+        }
         // TODO: This will be used once the variants are editable
 //            {
 //                viewModel.onEditVariationCardClicked(
@@ -138,7 +147,11 @@ class VariationDetailCardBuilder(
                         viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                     )
                 )
-            } else mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            } else {
+                return null
+                // TODO: M3 feature
+//                mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            }
 
             PropertyGroup(
                 string.product_shipping,
