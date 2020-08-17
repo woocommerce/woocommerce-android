@@ -101,6 +101,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     event.messageId
                 )
                 is UpdateFileAndExitEvent -> {
+                    ActivityUtils.hideKeyboard(requireActivity())
                     parentViewModel.updateDownloadableFileInDraft(
                         event.updatedFile, event.downloadLimit, event.downloadExpiry
                     )
