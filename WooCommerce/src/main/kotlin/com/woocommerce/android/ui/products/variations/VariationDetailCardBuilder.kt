@@ -147,7 +147,11 @@ class VariationDetailCardBuilder(
                         viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                     )
                 )
-            } else mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            } else {
+                return null
+                // TODO: M3 feature
+//                mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            }
 
             PropertyGroup(
                 string.product_shipping,
