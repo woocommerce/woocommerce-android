@@ -124,6 +124,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.isAddNewProduct?.takeIfNotEqualTo(old?.isAddNewProduct) {
                 showDefaultAddProductDetails()
             }
+            new.addProductLocalUris?.takeIfNotEqualTo(old?.addProductLocalUris) {
+                showAddProductSelectedImages()
+            }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
@@ -181,9 +184,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showDefaultAddProductDetails() {
+        addImageContainer.isVisible = true
         imageGallery.isVisible = false
         startAddImageContainer()
         productDetail_addMoreContainer.isVisible = true
+    }
+
+    private fun showAddProductSelectedImages() {
+        addImageContainer.isVisible = false
+        imageGallery.isVisible = true
+        imageGallery.showProductImages(viewModel.productAddImages, this@ProductDetailFragment)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

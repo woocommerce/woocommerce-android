@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductImagesFragment.Companion
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -89,6 +90,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
+import kotlin.random.Random
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -109,6 +111,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         private const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE: Long = 100L
+        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE: Long = 1000L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -122,6 +126,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         savedState[KEY_PRODUCT_PARAMETERS] = params
         params
     }
+
+    /**
+     * Holds the latest list of product images for the product add flow.
+     *
+     * Is updated from the ProductImagesFragment
+     * */
+    var productAddImages: List<Product.Image> = mutableListOf()
 
     private var skuVerificationJob: Job? = null
 
@@ -1061,12 +1072,32 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEvenMainThread(event: OnAddProductImagesSelectedCompletedEvent) {
         val originalList = productImagesViewState.localSelectedUriImages?.toMutableList() ?: mutableListOf()
         originalList.addAll(event.images)
-        viewState = viewState.copy(uploadingImageUris = originalList)
+        viewState = viewState.copy(addProductLocalUris = originalList)
         productImagesViewState = productImagesViewState.copy(
             localSelectedUriImages = originalList
         )
     }
 
+    fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
+        productAddImages = uploadingImageUris?.let { list ->
+            list.map { uri ->
+                val tempId =
+                    Random.nextLong(
+                        DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE,
+                        DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE
+                    )
+                return@map Product.Image(
+                    id = tempId,
+                    name = ProductImagesFragment.DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
+                    source = uri.toString(),
+                    dateCreated = Date()
+                )
+            }
+        } ?: run {
+            listOf<Product.Image>()
+        }
+        return productAddImages
+    }
 
     /**
      * Adds a single image to the list of product draft's images
@@ -1461,7 +1492,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val storedPassword: String? = null,
         val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
-        val isAddNewProduct: Boolean? = null
+        val isAddNewProduct: Boolean? = null,
+        val addProductLocalUris: List<Uri>? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword

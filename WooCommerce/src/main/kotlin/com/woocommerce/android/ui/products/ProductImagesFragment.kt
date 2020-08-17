@@ -37,9 +37,7 @@ import kotlin.random.Random
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
-        private const val DEFAULT_TEMP_ADD_PRODUCT_IMAGE = "temp-add-product-image"
-        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE: Long = 100L
-        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE: Long = 1000L
+        const val DEFAULT_TEMP_ADD_PRODUCT_IMAGE = "temp-add-product-image"
     }
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
@@ -119,9 +117,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             new.localSelectedUriImages.takeIfNotEqualTo(old?.localSelectedUriImages) {
-                val productAddImage = transformToProductImages(new.localSelectedUriImages)
+                val productAddImage = viewModel.transformToProductImages(new.localSelectedUriImages)
                 reloadImageGalleryForAddProduct(images = productAddImage)
-                imageGallery.setPlaceholderImageUris(new.localSelectedUriImages)
             }
         }
     }
@@ -134,23 +131,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun reloadImageGalleryForAddProduct(images: List<Product.Image>) =
         imageGallery.showProductImages(images, this)
-
-    private fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
-        return uploadingImageUris?.let { list ->
-            list.map { uri ->
-                val tempId =
-                    Random.nextLong(DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE, DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE)
-                return@map Product.Image(
-                    id = tempId,
-                    name = DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
-                    source = uri.toString(),
-                    dateCreated = Date()
-                )
-            }
-        } ?: run {
-            listOf<Product.Image>()
-        }
-    }
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 

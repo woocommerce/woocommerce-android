@@ -20,6 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductImagesFragment.Companion.DEFAULT_TEMP_ADD_PRODUCT_IMAGE
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -37,6 +38,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private const val VIEW_TYPE_IMAGE = 0
         private const val VIEW_TYPE_PLACEHOLDER = 1
         private const val VIEW_TYPE_ADD_IMAGE = 2
+        private const val VIEW_TYPE_ADD_PRODUCT_IMAGE = 3
         private const val NUM_COLUMNS = 2
         private const val ADD_IMAGE_ITEM_ID = Long.MAX_VALUE
     }
@@ -217,6 +219,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return true
         }
 
+        /**
+         * Returns true if the current item position name is of same type of the product add image
+         */
+        private fun isAddProductTypeImage(position: Int): Boolean =
+            imageList[position].name.contains(DEFAULT_TEMP_ADD_PRODUCT_IMAGE)
+
         fun setPlaceholderImages(placeholders: List<Product.Image>) {
             // remove existing placeholders
             var didChange = clearPlaceholders()
@@ -256,6 +264,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return when {
                 showAddImageIcon && imageList[position].id == ADD_IMAGE_ITEM_ID -> VIEW_TYPE_ADD_IMAGE
                 isPlaceholder(position) -> VIEW_TYPE_PLACEHOLDER
+                isAddProductTypeImage(position) -> VIEW_TYPE_ADD_PRODUCT_IMAGE
                 else -> VIEW_TYPE_IMAGE
             }
         }
@@ -291,7 +300,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             val src = getImage(position).source
             val viewType = getItemViewType(position)
-            if (viewType == VIEW_TYPE_PLACEHOLDER) {
+            if (viewType == VIEW_TYPE_PLACEHOLDER || viewType == VIEW_TYPE_ADD_PRODUCT_IMAGE) {
                 glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
