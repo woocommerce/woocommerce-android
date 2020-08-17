@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.OnAddProductImagesSelectedCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
@@ -105,6 +106,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
+        private const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
@@ -212,6 +214,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
+    fun triggerProductAddImagesSelected(images: List<Uri>) =
+        EventBus.getDefault().post(OnAddProductImagesSelectedCompletedEvent(images))
+
     /**
      * Called when the Share menu button is clicked in Product detail screen
      */
@@ -226,8 +231,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image))
+        when (navArgs.isAddProduct) {
+            true -> triggerEvent(ViewProductImages(DEFAULT_ADD_NEW_PRODUCT_ID, image, true))
+            else -> {
+                viewState.productDraft?.let {
+                    triggerEvent(ViewProductImages(it.remoteId, image))
+                }
+            }
         }
     }
 
@@ -235,9 +245,14 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageClicked() {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId))
+        when (navArgs.isAddProduct) {
+            true -> triggerEvent(ViewProductImageChooser(DEFAULT_ADD_NEW_PRODUCT_ID, isAddProduct = true))
+            else -> {
+                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+                viewState.productDraft?.let {
+                    triggerEvent(ViewProductImageChooser(it.remoteId))
+                }
+            }
         }
     }
 
@@ -1039,6 +1054,22 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Finished selecting images for add product flow
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEvenMainThread(event: OnAddProductImagesSelectedCompletedEvent) {
+        val originalList = viewState.uploadingImageUris?.toMutableList() ?: mutableListOf()
+        originalList.addAll(event.images)
+        viewState = viewState.copy(uploadingImageUris = originalList)
+        productImagesViewState = productImagesViewState.copy(
+            isUploadingImages = false,
+            localAddProductImages = originalList
+        )
+    }
+
+
+    /**
      * Adds a single image to the list of product draft's images
      */
     fun addProductImageToDraft(image: Product.Image) {
@@ -1460,7 +1491,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false
+        val isUploadingImages: Boolean = false,
+        val localAddProductImages: List<Uri> = listOf()
     ) : Parcelable
 
     @Parcelize

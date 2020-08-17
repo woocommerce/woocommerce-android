@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -30,11 +31,18 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
+import java.util.Date
+import kotlin.random.Random
 
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
+        private const val DEFAULT_TEMP_ADD_PRODUCT_IMAGE = "temp-add-product-image"
+        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE: Long = 100L
+        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE: Long = 1000L
     }
+
+    private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
@@ -106,15 +114,41 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         viewModel.productImagesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isUploadingImages.takeIfNotEqualTo(old?.isUploadingImages) {
-                reloadImageGallery()
+                reloadImageGalleryForEditProduct()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
+            }
+
+            new.localAddProductImages.takeIfNotEqualTo(old?.localAddProductImages) {
+                val productAddImage = getDefaultAddProductImages(new.localAddProductImages)
+                reloadImageGalleryForAddProduct(images = productAddImage)
+                imageGallery.setPlaceholderImageUris(new.localAddProductImages)
             }
         }
     }
 
-    private fun reloadImageGallery() {
+    private fun reloadImageGalleryForEditProduct() {
         viewModel.getProduct().productDraft?.let {
             imageGallery.showProductImages(it.images, this)
+        }
+    }
+
+    private fun reloadImageGalleryForAddProduct(images: List<Product.Image>) =
+        imageGallery.showProductImages(images, this)
+
+    private fun getDefaultAddProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
+        return uploadingImageUris?.let { list ->
+            list.map { uri ->
+                val tempId =
+                    Random.nextLong(DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE, DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE)
+                return@map Product.Image(
+                    id = tempId,
+                    name = DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
+                    source = uri.toString(),
+                    dateCreated = Date()
+                )
+            }
+        } ?: run {
+            listOf<Product.Image>()
         }
     }
 
@@ -214,7 +248,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         Stat.PRODUCT_IMAGE_ADDED,
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+                    updateWithImage(uriList = uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -222,12 +256,19 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+                    updateWithImage(uriList = uriList)
                 }
             }
         }
 
         changesMade()
+    }
+
+    private fun updateWithImage(uriList: ArrayList<Uri>) {
+        when (navArgs.isAddProduct) {
+            true -> viewModel.triggerProductAddImagesSelected(uriList)
+            else -> viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
+        }
     }
 
     /**
