@@ -91,7 +91,7 @@ class VariationDetailCardBuilder(
 
         return if (PRODUCT_RELEASE_M3.isEnabled()) {
             Switch(visibility, isVisible, visibilityIcon) {
-                viewModel.onVariationChanged(isVisible = it)
+                viewModel.onVariationVisibilitySwitchChanged(it)
             }
         } else {
             Switch(visibility, isVisible, visibilityIcon)

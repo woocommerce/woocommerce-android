@@ -10,6 +10,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
@@ -124,6 +125,11 @@ class VariationDetailViewModel @AssistedInject constructor(
             AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
             triggerEvent(ShowImage(it))
         }
+    }
+
+    fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
+        AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED)
+        onVariationChanged(isVisible = isVisible)
     }
 
     fun onVariationChanged(
