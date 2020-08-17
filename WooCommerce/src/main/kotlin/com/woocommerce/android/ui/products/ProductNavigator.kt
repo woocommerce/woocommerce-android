@@ -122,7 +122,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
+            is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId, target.isAddProduct)
 
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
@@ -160,7 +160,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductImages -> viewProductImageChooser(fragment, target.product.remoteId)
+            is ViewProductImages -> viewProductImageChooser(fragment, target.remoteId, target.isAddProduct)
 
             is ViewProductMenuOrder -> {
                 val action = ProductSettingsFragmentDirections
@@ -213,9 +213,9 @@ class ProductNavigator @Inject constructor() {
         }
     }
 
-    private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
+    private fun viewProductImageChooser(fragment: Fragment, remoteId: Long, isAddProduct: Boolean) {
         val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(remoteProductId = remoteId)
+                .actionProductDetailFragmentToProductImagesFragment(remoteProductId = remoteId, isAddProduct = isAddProduct)
         fragment.findNavController().navigateSafely(action)
     }
 
