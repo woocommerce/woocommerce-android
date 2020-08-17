@@ -15,15 +15,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
-import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
+import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 import org.wordpress.android.util.ActivityUtils
 
-class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener {
-    private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
-    private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
+class ProductInventoryFragment : BaseFragment(), ProductItemSelectorDialogListener {
+    private var productBackOrderSelectorDialog: ProductItemSelectorDialog? = null
+    private var productStockStatusSelectorDialog: ProductItemSelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -134,22 +135,22 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         with(edit_product_backorders) {
             setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), product.backorderStatus))
             setClickListener {
-                productBackOrderSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                productBackOrderSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
                         getString(R.string.product_backorders), ProductBackorderStatus.toMap(requireContext()),
                         edit_product_backorders.getText()
-                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+                ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
         }
 
         with(edit_product_stock_status) {
             setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), product.stockStatus))
             setClickListener {
-                productStockStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                productStockStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
                         getString(R.string.product_stock_status), ProductStockStatus.toMap(requireContext()),
                         edit_product_stock_status.getText()
-                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+                ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
         }
 
@@ -192,7 +193,7 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         }
     }
 
-    override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
+    override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
         when (resultCode) {
             RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
                 selectedItem?.let {
