@@ -59,17 +59,9 @@
         android:id="@+id/crowdsignal_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/img_crowdsignal_attribution"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_back_to_store" />
-
-    <TextView
-        android:id="@+id/crowdsignal_attribution"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/crowdsignal_attribution_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/crowdsignal_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
