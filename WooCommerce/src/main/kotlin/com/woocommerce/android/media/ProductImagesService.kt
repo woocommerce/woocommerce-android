@@ -62,6 +62,9 @@ class ProductImagesService : JobIntentService() {
         // posted when the upload is cancelled
         class OnUploadCancelled
 
+        // posted when the image selection for product add is done
+        class OnAddProductImagesSelectedCompletedEvent(val images: List<Uri> = listOf())
+
         fun isUploadingForProduct(remoteProductId: Long): Boolean {
             return if (isCancelled) {
                 false
