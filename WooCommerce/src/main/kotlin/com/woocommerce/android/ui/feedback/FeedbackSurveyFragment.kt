@@ -47,9 +47,15 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.let {
+            it.invalidateOptionsMenu()
             it.title = getString(R.string.feedback_survey_request_title)
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.invalidateOptionsMenu()
     }
 
     private fun showProgressDialog() {
