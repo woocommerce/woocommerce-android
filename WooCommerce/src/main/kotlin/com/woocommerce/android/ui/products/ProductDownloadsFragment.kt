@@ -107,6 +107,6 @@ class ProductDownloadsFragment : BaseProductFragment() {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloads())
+        return viewModel.onBackButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = hasChanges()))
     }
 }

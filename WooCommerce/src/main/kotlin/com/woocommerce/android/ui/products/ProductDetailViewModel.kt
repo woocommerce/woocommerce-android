@@ -331,10 +331,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
     fun hasDownloadsChanges(): Boolean {
-        return viewState.storedProduct?.let {
-            it.hasDownloadChanges(viewState.productDraft) ||
-                hasDownloadsSettingsChanges()
-        } ?: false
+        return viewState.storedProduct?.hasDownloadChanges(viewState.productDraft) ?: false
     }
 
     fun hasDownloadsSettingsChanges(): Boolean {
