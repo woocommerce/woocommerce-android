@@ -31,7 +31,7 @@
         app:layout_constraintTop_toBottomOf="@+id/completion_title" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/completion_description"
+        android:id="@+id/completion_help_guide"
         style="@style/Woo.TextView.Body2"
         android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
@@ -50,21 +50,21 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_250"
+        android:layout_marginStart="@dimen/major_300"
         android:layout_marginTop="@dimen/major_200"
-        android:layout_marginEnd="@dimen/major_250"
+        android:layout_marginEnd="@dimen/major_300"
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/feedback_completed_back_to_store_button_text"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/completion_description" />
+        app:layout_constraintTop_toBottomOf="@+id/completion_help_guide" />
 
     <ImageView
         android:id="@+id/crowdsignal_icon"
         android:layout_width="@dimen/image_major_150"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_250"
+        android:layout_marginTop="@dimen/major_150"
         android:src="@drawable/img_crowdsignal_attribution"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
