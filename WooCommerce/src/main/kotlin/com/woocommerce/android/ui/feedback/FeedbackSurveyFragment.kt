@@ -10,7 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.AppUrls.CROWDSIGNAL_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
@@ -38,7 +38,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
             showProgressDialog()
             webView.settings.apply { javaScriptEnabled = true }
             webView.webViewClient = surveyWebViewClient
-            webView.loadUrl(BuildConfig.CROWDSIGNAL_URL)
+            webView.loadUrl(CROWDSIGNAL_SURVEY)
         }
     }
 

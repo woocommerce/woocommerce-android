@@ -21,4 +21,6 @@ object AppUrls {
             "https://docs.woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app/"
     const val JETPACK_TROUBLESHOOTING =
             "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
+
+    const val CROWDSIGNAL_SURVEY = "https://wasseryi.survey.fm/woo-mobile-app-test-survey"
 }
