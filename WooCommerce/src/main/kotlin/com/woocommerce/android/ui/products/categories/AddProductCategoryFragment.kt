@@ -17,12 +17,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.AddProductCategoryEvent.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -133,9 +134,9 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
                     event.negativeBtnAction,
                     event.messageId
                 )
-                is ExitWithResult -> {
+                is ExitWithResult<*> -> {
                     val bundle = Bundle()
-                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.addedCategory)
+                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.item as? ProductCategory)
                     requireActivity().navigateBackWithResult(
                         RequestCodes.PRODUCT_ADD_CATEGORY,
                         bundle,
