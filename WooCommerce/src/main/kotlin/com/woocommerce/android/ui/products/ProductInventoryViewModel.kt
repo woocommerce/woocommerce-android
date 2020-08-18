@@ -42,6 +42,10 @@ class ProductInventoryViewModel @AssistedInject constructor(
     val inventoryData
         get() = viewState.inventoryData
 
+    private val hasChanges: Boolean
+        get() = inventoryData != originalInventory
+
+
     init {
         viewState = viewState.copy(
             inventoryData = navArgs.inventoryData,
@@ -52,30 +56,24 @@ class ProductInventoryViewModel @AssistedInject constructor(
         originalInventory = navArgs.inventoryData.copy()
     }
 
-    private val hasChanges: Boolean
-        get() = viewState.inventoryData != originalInventory
-
     /**
      * Called when user modifies the SKU field. Currently checks if the entered sku is available
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2 && sku != viewState.inventoryData.sku) {
-            // cancel any existing verification search, then start a new one after a brief delay
-            // so we don't actually perform the fetch until the user stops typing
-            skuVerificationJob?.cancel()
-            skuVerificationJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
-
-                val isSkuAvailable = productRepository.isProductSkuAvailableLocally(sku) &&
-                    productRepository.isSkuAvailableRemotely(sku) ?: false
-
-                if (isSkuAvailable) {
-                    val skuErrorMessage = if (isSkuAvailable) string.product_inventory_update_sku_error else 0
-                    viewState = viewState.copy(skuErrorMessage = skuErrorMessage)
+        if (sku.length > 2) {
+            if (sku == originalInventory.sku) {
+                onDataChanged(sku = sku)
+                resetError()
+            } else {
+                // cancel any existing verification search, then start a new one after a brief delay
+                // so we don't actually perform the fetch until the user stops typing
+                onDataChanged(sku = sku)
+                if (productRepository.isProductSkuAvailableLocally(sku)) {
+                    resetError()
                 } else {
-                    onDataChanged(sku = sku)
+                    viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
                 }
             }
         }
@@ -108,9 +106,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
         )
 
-        val resultInventory = inventoryData.copy(
-        )
-        triggerEvent(ExitWithResult(resultInventory))
+        triggerEvent(ExitWithResult(inventoryData))
     }
 
 
@@ -126,6 +122,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
         }
     }
 
+    private fun resetError() {
+        if (viewState.skuErrorMessage != 0) {
+            viewState = viewState.copy(skuErrorMessage = 0)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val inventoryData: InventoryData = InventoryData(),
@@ -135,7 +137,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isIndividualSaleSwitchVisible: Boolean? = null
     ) : Parcelable {
         val isDoneButtonEnabled: Boolean
-            get() = skuErrorMessage == 0
+            get() = skuErrorMessage == 0 || skuErrorMessage == null
     }
 
     @Parcelize
