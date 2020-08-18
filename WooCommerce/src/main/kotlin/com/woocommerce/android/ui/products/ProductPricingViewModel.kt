@@ -55,6 +55,9 @@ class ProductPricingViewModel @AssistedInject constructor(
     val pricingData
         get() = viewState.pricingData
 
+    private val hasChanges: Boolean
+        get() = pricingData != originalPricing
+
     init {
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
             ?: DEFAULT_DECIMAL_PRECISION
@@ -69,9 +72,6 @@ class ProductPricingViewModel @AssistedInject constructor(
 
         originalPricing = navArgs.pricingData.copy()
     }
-
-    private val hasChanges: Boolean
-        get() = viewState.pricingData != originalPricing
 
     private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -204,7 +204,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
         val isDoneButtonEnabled: Boolean
-            get() = salePriceErrorMessage == 0
+            get() = salePriceErrorMessage == 0 || salePriceErrorMessage == null
     }
 
     @Parcelize
