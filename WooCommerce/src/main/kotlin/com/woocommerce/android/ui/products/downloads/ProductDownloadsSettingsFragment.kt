@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
 import kotlinx.android.synthetic.main.fragment_product_downloads_settings.*
 
 class ProductDownloadsSettingsFragment : BaseProductFragment() {
@@ -85,6 +86,6 @@ class ProductDownloadsSettingsFragment : BaseProductFragment() {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloads())
+        return viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
     }
 }
