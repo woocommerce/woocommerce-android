@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
@@ -83,8 +84,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
 
         val newUrl = "new url"
         val newName = "new name"
-        val newExpiry = 10
-        val newLimit = 5
         viewModel.onFileNameChanged(newName)
         viewModel.onFileUrlChanged(newUrl)
 
@@ -93,7 +92,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.onDoneOrUpdateClicked()
 
         assertThat(event).isInstanceOf(UpdateFileAndExitEvent::class.java)
-        assertThat((event as UpdateFileAndExitEvent).updatedFile.name == newName).isTrue()
-        assertThat((event as UpdateFileAndExitEvent).updatedFile.url == newUrl).isTrue()
+        assertEquals(newName, (event as UpdateFileAndExitEvent).updatedFile.name)
+        assertEquals(newUrl, (event as UpdateFileAndExitEvent).updatedFile.url)
     }
 }
