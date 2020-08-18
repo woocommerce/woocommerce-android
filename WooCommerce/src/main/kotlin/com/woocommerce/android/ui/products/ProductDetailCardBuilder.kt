@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -239,7 +241,7 @@ class ProductDetailCardBuilder(
     // show stock properties as a group if stock management is enabled, otherwise show sku separately
     private fun Product.readOnlyInventory(): ProductProperty {
         return when {
-            this.manageStock -> {
+            this.isStockManaged -> {
                 val group = mapOf(
                     Pair(resources.getString(R.string.product_stock_status),
                         ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
@@ -324,7 +326,7 @@ class ProductDetailCardBuilder(
                 mapOf(
                     Pair(resources.getString(R.string.product_sku), this.sku)
                 )
-            this.manageStock -> mapOf(
+            this.isStockManaged -> mapOf(
                 Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
                 Pair(resources.getString(R.string.product_stock_quantity),
@@ -347,9 +349,19 @@ class ProductDetailCardBuilder(
             R.drawable.ic_gridicons_list_checkmark,
             true
         ) {
+            PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             viewModel.onEditProductCardClicked(
-                ViewProductInventory(this.remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+                ViewProductInventory(
+                    InventoryData(
+                        sku = this.sku,
+                        isStockManaged = this.isStockManaged,
+                        stockStatus = this.stockStatus,
+                        stockQuantity = this.stockQuantity,
+                        backorderStatus = this.backorderStatus,
+                        isSoldIndividually = this.isSoldIndividually
+                    )
+                ),
+                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             )
         }
     }

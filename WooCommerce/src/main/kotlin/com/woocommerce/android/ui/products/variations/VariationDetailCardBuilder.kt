@@ -4,13 +4,17 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.RequestCodes.VARIATION_DETAIL_INVENTORY
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -22,6 +26,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
@@ -120,7 +125,7 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        return if (regularPrice.isSet()) {
+        return if (regularPrice.isSet() || PRODUCT_RELEASE_M3.isEnabled()) {
             val isWarningVisible = regularPrice.isNotSet() && this.isVisible
             PropertyGroup(
                 string.product_price,
@@ -197,13 +202,19 @@ class VariationDetailCardBuilder(
             ),
             drawable.ic_gridicons_list_checkmark,
             true
-        )
-        // TODO: This will be used once the variants are editable
-//        {
-//            viewModel.onEditProductCardClicked(
-//                ViewProductInventory(this.remoteId),
-//                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
-//            )
-//        }
+        ) {
+            viewModel.onEditVariationCardClicked(
+                ViewInventory(
+                    InventoryData(
+                        sku = this.sku,
+                        isStockManaged = this.isStockManaged,
+                        stockStatus = this.stockStatus,
+                        stockQuantity = this.stockQuantity,
+                        backorderStatus = this.backorderStatus
+                    )
+                ),
+                PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
+            )
+        }
     }
 }
