@@ -22,7 +22,6 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
-import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
@@ -40,7 +39,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
@@ -79,8 +77,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
@@ -105,7 +101,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productTagsRepository: ProductTagsRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
@@ -121,8 +116,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         params
     }
 
-    private var skuVerificationJob: Job? = null
-
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
@@ -132,10 +125,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
     private var viewState by productDetailViewStateData
-
-    // view state for the product inventory screen
-    val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
-    private var productInventoryViewState by productInventoryViewStateData
 
     // view state for the product images screen
     val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
@@ -224,8 +213,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(target)
     }
 
-    fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
-
     fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
 
     fun hasImageChanges(): Boolean {
@@ -263,10 +250,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
-            is ExitInventory -> {
-                eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasInventoryChanges()
-            }
             is ExitShipping -> {
                 eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasShippingChanges()
@@ -435,53 +418,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Called when user modifies the SKU field. Currently checks if the entered sku is available
-     * in the local db. Only if it is not available, the API verification call is initiated.
-     */
-    fun onSkuChanged(sku: String) {
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
-            // reset the error message when the user starts typing again
-            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
-
-            // cancel any existing verification search, then start a new one after a brief delay
-            // so we don't actually perform the fetch until the user stops typing
-            skuVerificationJob?.cancel()
-            skuVerificationJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
-
-                // check if sku is available from local cache
-                if (productRepository.geProductExistsBySku(sku)) {
-                    productInventoryViewState = productInventoryViewState.copy(
-                            skuErrorMessage = string.product_inventory_update_sku_error
-                    )
-                } else {
-                    verifyProductExistsBySkuRemotely(sku)
-                }
-            }
-        }
-    }
-
-    /**
-     * Called when user modifies the Stock quantity field in the inventory screen.
-     *
-     * Currently checks if the entered stock quantity [text] is empty or contains '-' symbol.
-     * Symbols are not supported when updating the stock quantity and displays an error
-     * message to the UI if there are any unsupported symbols found in the [text]
-     */
-    fun onStockQuantityChanged(text: String) {
-        val inputText = if (text.isEmpty()) "0" else text
-        productInventoryViewState = if (inputText.isNumeric()) {
-            updateProductDraft(stockQuantity = inputText)
-            productInventoryViewState.copy(stockQuantityErrorMessage = 0)
-        } else {
-            productInventoryViewState.copy(
-                    stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
-            )
-        }
-    }
-
     fun onProductTitleChanged(title: String) {
         updateProductDraft(title = title)
     }
@@ -544,9 +480,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
                     slug = slug ?: product.slug,
-                    manageStock = manageStock ?: product.manageStock,
+                    isStockManaged = manageStock ?: product.isStockManaged,
                     stockStatus = stockStatus ?: product.stockStatus,
-                    soldIndividually = soldIndividually ?: product.soldIndividually,
+                    isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
                     stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
                     images = images ?: product.images,
@@ -827,15 +763,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
-    }
-
-    private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
-        // if the sku is not available display error
-        val isSkuAvailable = productRepository.verifySkuAvailability(sku)
-        val skuErrorMessage = if (isSkuAvailable == false) {
-            string.product_inventory_update_sku_error
-        } else 0
-        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
     }
 
     /**
@@ -1280,7 +1207,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1333,12 +1259,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
-
-    @Parcelize
-    data class ProductInventoryViewState(
-        val skuErrorMessage: Int? = null,
-        val stockQuantityErrorMessage: Int? = null
-    ) : Parcelable
 
     @Parcelize
     data class ProductImagesViewState(
