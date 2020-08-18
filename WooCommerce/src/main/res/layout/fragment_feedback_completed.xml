@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="32dp"
     android:gravity="center_horizontal|top"
     android:orientation="vertical">
 
@@ -11,7 +12,6 @@
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="241dp"
         android:layout_height="48dp"
-        android:layout_marginTop="32dp"
         android:lineSpacingExtra="5sp"
         android:text="@string/feedback_completed_title_message"
         android:textAlignment="center"
@@ -22,32 +22,37 @@
 
     <ImageView
         android:id="@+id/success_image"
-        android:layout_width="280dp"
-        android:layout_height="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/image_major_150"
         android:layout_marginTop="40dp"
         android:src="@drawable/img_success_tablet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/completion_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/completion_description"
-        android:layout_width="wrap_content"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_175"
+        android:layout_marginTop="@dimen/major_250"
+        android:layout_marginEnd="@dimen/major_175"
+        android:lineSpacingExtra="@dimen/minor_50"
         android:text="@string/feedback_completed_description"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/success_image" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_back_to_store"
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/minor_100"
-        android:layout_marginTop="@dimen/major_75"
-        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_250"
+        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginEnd="@dimen/major_250"
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/feedback_completed_back_to_store_button_text"
         android:textAllCaps="false"
@@ -57,8 +62,9 @@
 
     <ImageView
         android:id="@+id/crowdsignal_icon"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/image_major_150"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_250"
         android:src="@drawable/img_crowdsignal_attribution"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
