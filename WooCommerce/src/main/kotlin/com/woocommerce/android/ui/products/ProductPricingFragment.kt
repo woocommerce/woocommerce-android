@@ -130,7 +130,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSel
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                updateViews(new.currency, new.decimals, viewModel.pricingData)
+                setupViews(new.currency, new.decimals, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -179,7 +179,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSel
         })
     }
 
-    private fun updateViews(currency: String, decimals: Int, pricingData: PricingData) {
+    private fun setupViews(currency: String, decimals: Int, pricingData: PricingData) {
         if (!isAdded) return
 
         with(product_regular_price) {
