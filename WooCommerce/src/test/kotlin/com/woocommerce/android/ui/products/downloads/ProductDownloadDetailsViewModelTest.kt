@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.downloads
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.ShowDeleteFileConfirmationEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
 import com.woocommerce.android.util.CoroutineTestRule
@@ -94,5 +96,22 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         assertThat(event).isInstanceOf(UpdateFileAndExitEvent::class.java)
         assertEquals(newName, (event as UpdateFileAndExitEvent).updatedFile.name)
         assertEquals(newUrl, (event as UpdateFileAndExitEvent).updatedFile.url)
+    }
+
+    @Test
+    fun `test delete file`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForEditing,
+            coroutinesTestRule.testDispatchers
+        )
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever { new -> events.add(new) }
+        viewModel.onDeleteButtonClicked()
+        viewModel.triggerFileDeletion()
+
+        assertThat(events[0]).isInstanceOf(ShowDeleteFileConfirmationEvent::class.java)
+        assertThat(events[1]).isInstanceOf(DeleteFileEvent::class.java)
+        assertThat((events[1] as DeleteFileEvent).file).isEqualTo(file)
     }
 }
