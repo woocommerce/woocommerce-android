@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.downloads
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.model.ProductFile
-import com.woocommerce.android.ui.products.ProductDownloadsAdapter.ProductDownloadableFileViewHolder
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsAdapter.ProductDownloadableFileViewHolder
 import kotlinx.android.synthetic.main.product_downloads_list_item.view.*
 
 class ProductDownloadsAdapter(
@@ -21,7 +21,11 @@ class ProductDownloadsAdapter(
 ) : RecyclerView.Adapter<ProductDownloadableFileViewHolder>() {
     var filesList: List<ProductFile> = ArrayList()
         set(value) {
-            val diffResult = DiffUtil.calculateDiff(ProductFileDiffUtil(field, value), true)
+            val diffResult = DiffUtil.calculateDiff(
+                ProductFileDiffUtil(
+                    field,
+                    value
+                ), true)
             field = value
 
             diffResult.dispatchUpdatesTo(this)

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTy
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,64 +63,64 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToVariationListFragment(target.remoteId)
+                    .actionProductDetailFragmentToVariationListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalAztecEditorFragment(
-                                target.description,
-                                target.title,
-                                null,
-                                RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
-                        )
+                    .actionGlobalAztecEditorFragment(
+                        target.description,
+                        target.title,
+                        null,
+                        RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductShortDescriptionEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalAztecEditorFragment(
-                                target.shortDescription,
-                                target.title,
-                                null,
-                                RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION
-                        )
+                    .actionGlobalAztecEditorFragment(
+                        target.shortDescription,
+                        target.title,
+                        null,
+                        RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductPurchaseNoteEditor -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalAztecEditorFragment(
-                                target.purchaseNote,
-                                target.title,
-                                target.caption,
-                                RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
-                        )
+                    .actionGlobalAztecEditorFragment(
+                        target.purchaseNote,
+                        target.title,
+                        target.caption,
+                        RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductInventory -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(target.remoteId)
+                    .actionProductDetailFragmentToProductInventoryFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
+                    .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductExternalLink -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductExternalLinkFragment(target.remoteId)
+                    .actionProductDetailFragmentToProductExternalLinkFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalProductShippingFragment(target.remoteId)
+                    .actionGlobalProductShippingFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -127,37 +128,37 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductSettingsFragment()
+                    .actionProductDetailFragmentToProductSettingsFragment()
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductStatus -> {
                 val status = target.status?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductStatusFragment(status)
+                    .actionProductSettingsFragmentToProductStatusFragment(status)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductCatalogVisibility -> {
                 val catalogVisibility = target.catalogVisibility?.toString() ?: ""
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductCatalogVisibilityFragment(
-                                catalogVisibility,
-                                target.isFeatured
-                        )
+                    .actionProductSettingsFragmentToProductCatalogVisibilityFragment(
+                        catalogVisibility,
+                        target.isFeatured
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductVisibility -> {
                 val visibility = target.visibility.toString()
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductVisibilityFragment(visibility, target.password)
+                    .actionProductSettingsFragmentToProductVisibilityFragment(visibility, target.password)
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductSlug -> {
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductSlugFragment(target.slug)
+                    .actionProductSettingsFragmentToProductSlugFragment(target.slug)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -167,7 +168,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductMenuOrder -> {
                 val action = ProductSettingsFragmentDirections
-                        .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
+                    .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -232,13 +233,13 @@ class ProductNavigator @Inject constructor() {
 
     private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
         val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(remoteId)
+            .actionProductDetailFragmentToProductImagesFragment(remoteId)
         fragment.findNavController().navigateSafely(action)
     }
 
     private fun viewProductImageViewer(fragment: Fragment, remoteId: Long) {
         val action = ProductImageViewerFragmentDirections
-                .actionGlobalProductImageViewerFragment(remoteId)
+            .actionGlobalProductImageViewerFragment(remoteId)
         fragment.findNavController().navigateSafely(action)
     }
 }

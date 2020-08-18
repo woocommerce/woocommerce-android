@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
@@ -40,7 +42,10 @@ class ProductDownloadsFragment : BaseProductFragment() {
     }
 
     private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {
-        ProductDownloadsAdapter(viewModel::onProductDownloadClicked, itemTouchHelper)
+        ProductDownloadsAdapter(
+            viewModel::onProductDownloadClicked,
+            itemTouchHelper
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

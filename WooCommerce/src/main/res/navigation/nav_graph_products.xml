@@ -141,7 +141,7 @@
     </fragment>
     <fragment
         android:id="@+id/productDownloadsFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDownloadsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsFragment"
         tools:layout="@layout/fragment_product_downloads_list">
         <action
             android:id="@+id/action_productDownloadsFragment_to_productDownloadDetailsFragment"

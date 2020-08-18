@@ -40,6 +40,8 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragment
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsModule
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsModule
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
