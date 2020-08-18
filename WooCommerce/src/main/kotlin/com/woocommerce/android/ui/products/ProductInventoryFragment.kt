@@ -129,13 +129,18 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
                 edit_product_backorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
             }
             new.inventoryData.stockStatus?.takeIfNotEqualTo(old?.inventoryData?.stockStatus) {
-                edit_product_backorders.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
+                edit_product_stock_status.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
-                product_sku.setText(it)
+                if (product_sku.getText() != it) {
+                    product_sku.setText(it)
+                }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
-                product_stock_quantity.setText(it.toString())
+                val quantity = it.toString()
+                if (product_stock_quantity.getText() != quantity) {
+                    product_stock_quantity.setText(quantity)
+                }
             }
             new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
                 soldIndividually_switch.isChecked = it
@@ -162,7 +167,7 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
         if (messageId != 0) {
             product_sku.error = getString(messageId)
         } else {
-            product_sku.error = null
+            product_sku.helperText = getString(R.string.product_sku_summary)
         }
     }
 
@@ -222,6 +227,7 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
     }
 
     private fun enableManageStockStatus(manageStock: Boolean) {
+        manageStock_switch.isChecked = manageStock
         if (manageStock) {
             edit_product_stock_status.visibility = View.GONE
             manageStock_morePanel.expand()
