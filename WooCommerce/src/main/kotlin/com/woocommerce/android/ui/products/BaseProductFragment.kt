@@ -29,7 +29,9 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
-    protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory.get() }
+    protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
+        viewModelFactory.get()
+    }
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
@@ -54,10 +56,10 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction,
-                        event.messageId
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.messageId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
