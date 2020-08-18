@@ -31,6 +31,6 @@ abstract class ProductInventoryModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProductDetailViewModel::class)
-    abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(ProductInventoryViewModel::class)
+    abstract fun bindFactory(factory: ProductInventoryViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 }
