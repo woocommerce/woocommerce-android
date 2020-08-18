@@ -6,6 +6,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,9 +40,16 @@ class VariationNavigator @Inject constructor() {
             }
             is ViewPricing -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductPricingFragment(
-                        RequestCodes.VARIATION_DETAIL_PRICING,
-                        target.pricingData
-                    )
+                    RequestCodes.VARIATION_DETAIL_PRICING,
+                    target.pricingData
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewInventory -> {
+                val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductInventoryFragment(
+                    RequestCodes.VARIATION_DETAIL_PRICING,
+                    target.inventoryData
+                )
                 fragment.findNavController().navigateSafely(action)
             }
         }

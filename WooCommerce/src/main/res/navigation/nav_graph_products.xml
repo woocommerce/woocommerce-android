@@ -100,9 +100,11 @@
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
         tools:layout="@layout/fragment_product_inventory">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="inventoryData"
+            app:argType="com.woocommerce.android.ui.products.ProductInventoryViewModel$InventoryData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -278,5 +280,8 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
+            app:destination="@id/productInventoryFragment" />
     </fragment>
 </navigation>
