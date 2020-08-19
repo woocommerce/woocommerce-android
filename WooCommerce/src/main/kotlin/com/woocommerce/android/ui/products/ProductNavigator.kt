@@ -100,7 +100,8 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductDetailFragmentDirections
                         .actionProductDetailFragmentToProductInventoryFragment(
                             RequestCodes.PRODUCT_DETAIL_INVENTORY,
-                            target.inventoryData
+                            target.inventoryData,
+                            target.sku
                         )
                 fragment.findNavController().navigateSafely(action)
             }

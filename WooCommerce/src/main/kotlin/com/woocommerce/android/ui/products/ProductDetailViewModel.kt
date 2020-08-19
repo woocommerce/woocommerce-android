@@ -533,7 +533,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun updateCards(product: Product) {
-        _productDetailCards.value = cardBuilder.buildPropertyCards(product)
+        _productDetailCards.value = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
         fetchBottomSheetList()
     }
 

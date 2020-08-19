@@ -12,7 +12,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
  * Mostly used by [VariationDetailFragment] for handling navigation in the Products detail/product sub detail screen
  */
 sealed class VariationNavigationTarget : Event() {
-    data class ViewInventory(val inventoryData: InventoryData) : VariationNavigationTarget()
+    data class ViewInventory(val inventoryData: InventoryData, val sku: String) : VariationNavigationTarget()
     data class ViewPricing(val pricingData: PricingData) : VariationNavigationTarget()
     data class ViewShipping(val remoteId: Long) : VariationNavigationTarget()
     data class ViewDescriptionEditor(val description: String, val title: String) : VariationNavigationTarget()

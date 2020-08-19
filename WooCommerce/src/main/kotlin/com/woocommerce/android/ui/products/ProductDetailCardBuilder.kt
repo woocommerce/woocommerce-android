@@ -53,9 +53,12 @@ class ProductDetailCardBuilder(
 ) {
     private fun isSimple(product: Product) = product.type == SIMPLE
 
-    fun buildPropertyCards(product: Product): List<ProductPropertyCard> {
-        val cards = mutableListOf<ProductPropertyCard>()
+    private lateinit var originalSku: String
 
+    fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+        this.originalSku = originalSku
+
+        val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
@@ -359,7 +362,8 @@ class ProductDetailCardBuilder(
                         stockQuantity = this.stockQuantity,
                         backorderStatus = this.backorderStatus,
                         isSoldIndividually = this.isSoldIndividually
-                    )
+                    ),
+                    originalSku
                 ),
                 PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             )

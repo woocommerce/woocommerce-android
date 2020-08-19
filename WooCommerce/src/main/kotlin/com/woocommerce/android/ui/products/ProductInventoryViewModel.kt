@@ -36,6 +36,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
     private var skuVerificationJob: Job? = null
 
     private val isProductInventory by lazy { navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY }
+    private val originalSku by lazy { navArgs.sku }
 
     val inventoryData
         get() = viewState.inventoryData
@@ -61,13 +62,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
     fun onSkuChanged(sku: String) {
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2) {
-            if (sku == originalInventory.sku) {
-                onDataChanged(sku = sku)
+            onDataChanged(sku = sku)
+            if (sku == originalSku) {
                 resetError()
             } else {
                 // cancel any existing verification search, then start a new one after a brief delay
                 // so we don't actually perform the fetch until the user stops typing
-                onDataChanged(sku = sku)
                 if (productRepository.isProductSkuAvailableLocally(sku)) {
                     resetError()
                 } else {

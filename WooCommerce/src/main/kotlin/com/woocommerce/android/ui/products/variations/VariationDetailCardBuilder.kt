@@ -4,9 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.RequestCodes.VARIATION_DETAIL_INVENTORY
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
@@ -39,7 +37,11 @@ class VariationDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    fun buildPropertyCards(variation: ProductVariation): List<ProductPropertyCard> {
+    private lateinit var originalSku: String
+
+    fun buildPropertyCards(variation: ProductVariation, originalSku: String): List<ProductPropertyCard> {
+        this.originalSku = originalSku
+
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(variation))
 
@@ -211,7 +213,8 @@ class VariationDetailCardBuilder(
                         stockStatus = this.stockStatus,
                         stockQuantity = this.stockQuantity,
                         backorderStatus = this.backorderStatus
-                    )
+                    ),
+                    originalSku
                 ),
                 PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
             )
