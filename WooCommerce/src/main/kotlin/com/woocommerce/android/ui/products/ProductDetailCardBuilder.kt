@@ -458,7 +458,7 @@ class ProductDetailCardBuilder(
             RatingBar(
                 R.string.product_reviews,
                 resources.getString(R.string.product_reviews_count, ratingCount),
-                ratingCount.toFloat(),
+                this.averageRating,
                 R.drawable.ic_reviews
             ) {
                 viewModel.onEditProductCardClicked(
