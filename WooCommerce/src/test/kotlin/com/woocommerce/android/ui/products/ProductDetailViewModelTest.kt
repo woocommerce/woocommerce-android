@@ -221,23 +221,19 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product detail properties correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        // This is still a feature flagged functionality => it'll fail on CircleCI
-        // TODO: Remove the check once it's available
-        if (BuildConfig.DEBUG) {
-            doReturn(true).whenever(networkStatus).isConnected()
-            doReturn(productWithTagsAndCategories).whenever(productRepository).getProduct(any())
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(productWithTagsAndCategories).whenever(productRepository).getProduct(any())
 
-            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            var cards: List<ProductPropertyCard>? = null
-            viewModel.productDetailCards.observeForever {
-                cards = it.map { card -> stripCallbacks(card) }
-            }
-
-            viewModel.start()
-
-            assertThat(cards).isEqualTo(expectedCards)
+        var cards: List<ProductPropertyCard>? = null
+        viewModel.productDetailCards.observeForever {
+            cards = it.map { card -> stripCallbacks(card) }
         }
+
+        viewModel.start()
+
+        assertThat(cards).isEqualTo(expectedCards)
     }
 
     private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {
