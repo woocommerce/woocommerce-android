@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -125,6 +126,9 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
             new.isStockSectionVisible?.takeIfNotEqualTo(old?.isStockSectionVisible) { isVisible ->
                 enableManageStockStatus(isVisible)
             }
+            new.isIndividualSaleSwitchVisible?.takeIfNotEqualTo(old?.isIndividualSaleSwitchVisible) { isVisible ->
+                soldIndividually_switch.isVisible = isVisible
+            }
             new.inventoryData.backorderStatus?.takeIfNotEqualTo(old?.inventoryData?.backorderStatus) {
                 edit_product_backorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
             }
@@ -228,11 +232,10 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
 
     private fun enableManageStockStatus(manageStock: Boolean) {
         manageStock_switch.isChecked = manageStock
+        edit_product_stock_status.isVisible = !manageStock
         if (manageStock) {
-            edit_product_stock_status.visibility = View.GONE
             manageStock_morePanel.expand()
         } else {
-            edit_product_stock_status.visibility = View.VISIBLE
             manageStock_morePanel.collapse()
         }
     }
