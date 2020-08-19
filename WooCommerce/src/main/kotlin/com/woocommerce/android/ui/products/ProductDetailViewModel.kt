@@ -24,7 +24,6 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.ProductImagesService
-import com.woocommerce.android.media.ProductImagesService.Companion.OnAddProductImagesSelectedCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
@@ -135,6 +134,12 @@ class ProductDetailViewModel @AssistedInject constructor(
      * */
     var productAddImages: List<Product.Image> = mutableListOf()
 
+    /**
+     * Holds the latest uploaded images remote url for publish
+     *
+     * */
+    var productImagesRemoteUrl: ArrayList<String> = arrayListOf()
+
     private var skuVerificationJob: Job? = null
 
     // view state for the product detail screen
@@ -196,7 +201,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().register(this)
         when (navArgs.isAddProduct) {
             true -> startAddNewProduct()
-            else -> loadProduct(navArgs.remoteProductId)
+            else -> loadRemoteProduct(navArgs.remoteProductId)
         }
     }
 
@@ -225,9 +230,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             salePrice = viewState.storedProduct?.salePrice
         )
     }
-
-    fun triggerProductAddImagesSelected(images: List<Uri>) =
-        EventBus.getDefault().post(OnAddProductImagesSelectedCompletedEvent(images))
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -763,7 +765,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductEditAction()
     }
 
-    private fun loadProduct(remoteProductId: Long) {
+    private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -787,6 +789,16 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             viewState = viewState.copy(isSkeletonShown = false)
         }
+    }
+
+    private fun loadLocalProduct(localUriList: List<Uri>) {
+        val originalList = productImagesViewState.localSelectedUriImages?.toMutableList() ?: mutableListOf()
+        originalList.apply {
+            addAll(localUriList)
+            viewState = viewState.copy(addProductLocalUris = this)
+            productImagesViewState = productImagesViewState.copy(localSelectedUriImages = this)
+        }
+        checkImageUploads(0L)
     }
 
     /**
@@ -947,7 +959,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadProduct(product.remoteId)
+                loadRemoteProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -1046,9 +1058,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.remoteProductId)
+            when (navArgs.isAddProduct) {
+                true -> loadLocalProduct(event.localUriList)
+                else -> loadRemoteProduct(event.remoteProductId)
+            }
         }
-
         checkImageUploads(event.remoteProductId)
     }
 
@@ -1062,24 +1076,13 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                addProductImageToDraft(media.toAppModel())
+                when (navArgs.isAddProduct) {
+                    true -> saveLocalProductUploadedUrl(url = media.guid)
+                    else -> addProductImageToDraft(media.toAppModel())
+                }
             }
         }
         checkImageUploads(getRemoteProductId())
-    }
-
-    /**
-     * Finished selecting images for add product flow
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEvenMainThread(event: OnAddProductImagesSelectedCompletedEvent) {
-        val originalList = productImagesViewState.localSelectedUriImages?.toMutableList() ?: mutableListOf()
-        originalList.addAll(event.images)
-        viewState = viewState.copy(addProductLocalUris = originalList)
-        productImagesViewState = productImagesViewState.copy(
-            localSelectedUriImages = originalList
-        )
     }
 
     fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
@@ -1136,6 +1139,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(images = imageList)
         }
     }
+
+    /**
+     * Adds the latest uploaded image URL into a local list for the publish step
+     */
+    private fun saveLocalProductUploadedUrl(url: String) = productImagesRemoteUrl.add(url)
 
     fun fetchProductCategories() {
         if (_productCategories.value == null) {

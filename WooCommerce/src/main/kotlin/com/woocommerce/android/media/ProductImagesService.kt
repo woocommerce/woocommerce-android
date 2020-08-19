@@ -50,7 +50,8 @@ class ProductImagesService : JobIntentService() {
         // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
             val remoteProductId: Long,
-            val isCancelled: Boolean
+            val isCancelled: Boolean,
+            val localUriList: List<Uri>
         )
 
         // posted when a single image has been uploaded
@@ -61,9 +62,6 @@ class ProductImagesService : JobIntentService() {
 
         // posted when the upload is cancelled
         class OnUploadCancelled
-
-        // posted when the image selection for product add is done
-        class OnAddProductImagesSelectedCompletedEvent(val images: List<Uri> = listOf())
 
         fun isUploadingForProduct(remoteProductId: Long): Boolean {
             return if (isCancelled) {
@@ -199,7 +197,7 @@ class ProductImagesService : JobIntentService() {
         }
 
         currentMediaUpload = null
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled, localUriList))
     }
 
     override fun onStopCurrentWork(): Boolean {

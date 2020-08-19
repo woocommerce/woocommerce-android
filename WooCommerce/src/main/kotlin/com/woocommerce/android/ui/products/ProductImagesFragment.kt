@@ -113,9 +113,9 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 reloadImageGalleryForEditProduct()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
-
             new.localSelectedUriImages.takeIfNotEqualTo(old?.localSelectedUriImages) {
-                val productAddImage = viewModel.transformToProductImages(new.localSelectedUriImages)
+                val productAddImage =
+                    viewModel.transformToProductImages(new.localSelectedUriImages)
                 reloadImageGalleryForAddProduct(images = productAddImage)
             }
         }
@@ -226,7 +226,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         Stat.PRODUCT_IMAGE_ADDED,
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
-                    updateWithImage(uriList = uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
@@ -234,19 +234,12 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                         mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
-                    updateWithImage(uriList = uriList)
+                    viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
                 }
             }
         }
 
         changesMade()
-    }
-
-    private fun updateWithImage(uriList: ArrayList<Uri>) {
-        when (navArgs.isAddProduct) {
-            true -> viewModel.triggerProductAddImagesSelected(uriList)
-            else -> viewModel.uploadProductImages(viewModel.getRemoteProductId(), uriList)
-        }
     }
 
     /**
