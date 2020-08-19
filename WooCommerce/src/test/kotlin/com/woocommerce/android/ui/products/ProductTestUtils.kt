@@ -32,6 +32,7 @@ object ProductTestUtils {
             attributes = "[]"
             categories = ""
             ratingCount = 4
+            groupedProductIds = "[10,11]"
             shortDescription = "short desc"
         }.toAppModel()
     }

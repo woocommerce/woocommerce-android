@@ -148,7 +148,7 @@ class ProductListRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_PRODUCTS) {
+        if (event.causeOfChange == FETCH_PRODUCTS && loadContinuation != null) {
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
