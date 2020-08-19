@@ -1256,4 +1256,5 @@
     <string name="delete">Delete</string>
     <string name="product_is_downloadable">Downloadable product</string>
     <string name="product_downloadable_files_delete_confirmation">Are you sure you want to remove this file?</string>
+    <string name="product_downloadable_files_edit_title">File</string>
 </resources>
