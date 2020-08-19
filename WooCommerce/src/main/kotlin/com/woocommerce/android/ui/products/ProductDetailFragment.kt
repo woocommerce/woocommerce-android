@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
@@ -110,6 +111,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 isSaleScheduled = it.isSaleScheduled,
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
+            )
+            changesMade()
+        }
+        handleResult<InventoryData>(ProductInventoryFragment.KEY_INVENTORY_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                sku = it.sku,
+                soldIndividually = it.isSoldIndividually,
+                stockStatus = it.stockStatus,
+                stockQuantity = it.stockQuantity,
+                backorderStatus = it.backorderStatus,
+                manageStock = it.isStockManaged
             )
             changesMade()
         }
