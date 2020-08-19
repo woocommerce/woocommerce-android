@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Allow clear text for localhost, for testing with a mock server -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
     <debug-overrides>
         <trust-anchors>
             <!-- Trust user added certificate authorities while debuggable only -->

@@ -1,6 +1,5 @@
 package com.woocommerce.android.helpers
 
-import android.app.Instrumentation
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.junit.WireMockRule
@@ -15,6 +14,10 @@ open class TestBase {
     protected lateinit var appContext: WooCommerce
     protected lateinit var mockedAppComponent: AppComponentTest
 
+    companion object {
+        val wireMockPort = 8080
+    }
+
     @Before
     open fun setup() {
         appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as WooCommerce
@@ -25,7 +28,7 @@ open class TestBase {
     }
 
     @get:Rule
-    var wireMockRule: WireMockRule = WireMockRule(options().port(8080)
-        .usingFilesUnderDirectory("/src/androidTest/kotlin/com/woocommerce/android/mocks/mappings")
+    var wireMockRule: WireMockRule = WireMockRule(options().port(wireMockPort)
+        .usingFilesUnderDirectory("/WooCommerce/src/androidTest/kotlin/com/woocommerce/android/mocks")
         .notifier(AndroidNotifier()))
 }

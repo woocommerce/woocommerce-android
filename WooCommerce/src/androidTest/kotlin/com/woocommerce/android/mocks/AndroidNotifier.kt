@@ -17,6 +17,6 @@ class AndroidNotifier : Notifier {
     }
 
     companion object {
-        private const val TAG = "WordPressMocks"
+        private const val TAG = "WooCommerceMocks"
     }
 }
