@@ -27,17 +27,20 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
+import dagger.Lazy
 import kotlinx.android.synthetic.main.fragment_refund_by_items.*
 import kotlinx.android.synthetic.main.refund_by_items_products.*
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
+        viewModelFactory.get()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)

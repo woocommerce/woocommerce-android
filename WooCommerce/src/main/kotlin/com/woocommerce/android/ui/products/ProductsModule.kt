@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
@@ -98,6 +99,7 @@ import dagger.android.ContributesAndroidInjector
     ProductDetailBottomSheetFragmentModule::class,
     ProductTypesBottomSheetFragmentModule::class,
     ProductReviewsFragmentModule::class,
+    GroupedProductListFragmentModule::class,
     ProductDownloadsFragmentModule::class,
     ProductDownloadDetailsFragmentModule::class,
     ProductDownloadsSettingsFragmentModule::class
@@ -297,6 +299,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductReviewsModule::class])
         abstract fun productReviewsFragment(): ProductReviewsFragment
+    }
+
+    @Module
+    internal abstract class GroupedProductListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [GroupedProductListModule::class])
+        abstract fun groupedProductListFragment(): GroupedProductListFragment
     }
 
     @Module
