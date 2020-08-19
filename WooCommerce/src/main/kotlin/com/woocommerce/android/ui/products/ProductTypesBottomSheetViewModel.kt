@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -53,8 +54,6 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             }
         }
     }
-
-    data class ExitWithResult(val productTypeUiItem: ProductTypesBottomSheetUiItem) : Event()
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(

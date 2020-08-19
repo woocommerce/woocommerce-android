@@ -44,7 +44,7 @@
         android:orientation="vertical"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/divider"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/product_btnDelete"
         app:layout_constraintStart_toEndOf="@+id/productImageFrame"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.50">
@@ -69,6 +69,18 @@
             tools:text="Out of stock this is a really long version to see what happens when we move o"
             tools:visibility="visible" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/product_btnDelete"
+        style="@style/Woo.ImageButton.Close"
+        android:contentDescription="@string/grouped_product_btn_delete"
+        android:scaleType="centerInside"
+        android:layout_margin="@dimen/minor_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <View
         android:id="@+id/divider"
