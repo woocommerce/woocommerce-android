@@ -111,8 +111,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         private const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE: Long = 100L
-        private const val DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE: Long = 1000L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -798,7 +796,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(addProductLocalUris = this)
             productImagesViewState = productImagesViewState.copy(localSelectedUriImages = this)
         }
-        checkImageUploads(0L)
+        checkImageUploads(DEFAULT_ADD_NEW_PRODUCT_ID)
     }
 
     /**
@@ -1088,13 +1086,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
         productAddImages = uploadingImageUris?.let { list ->
             list.map { uri ->
-                val tempId =
-                    Random.nextLong(
-                        DEFAULT_TEMP_ADD_PRODUCT_ID_MIN_RANGE,
-                        DEFAULT_TEMP_ADD_PRODUCT_ID_MAX_RANGE
-                    )
                 return@map Product.Image(
-                    id = tempId,
+                    id = DEFAULT_ADD_NEW_PRODUCT_ID,
                     name = ProductImagesFragment.DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
                     source = uri.toString(),
                     dateCreated = Date()
