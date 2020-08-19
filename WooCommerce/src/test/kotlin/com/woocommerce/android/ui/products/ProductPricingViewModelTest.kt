@@ -11,13 +11,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -269,6 +269,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             saleEndDate = null
         )
 
-        assertThat((firedEvent as? ExitWithResult)?.data).isEqualTo(expectedResultData)
+        assertThat((firedEvent as? ExitWithResult<*>)?.data).isEqualTo(expectedResultData)
     }
 }

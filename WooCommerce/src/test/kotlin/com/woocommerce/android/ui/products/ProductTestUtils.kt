@@ -31,6 +31,7 @@ object ProductTestUtils {
             variations = "[]"
             attributes = "[]"
             categories = ""
+            ratingCount = 4
             shortDescription = "short desc"
         }.toAppModel()
     }
