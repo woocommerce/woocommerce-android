@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.Lazy
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -26,22 +27,27 @@ import javax.inject.Inject
 abstract class BaseProductFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
-    protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) { viewModelFactory }
+    protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
+        viewModelFactory.get()
+    }
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers(viewModel)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
         // as it exists now so we can easily discard changes are determine if any changes were made inside
         // this fragment
         if (savedInstanceState == null) {
             viewModel.updateProductBeforeEnteringFragment()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers(viewModel)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

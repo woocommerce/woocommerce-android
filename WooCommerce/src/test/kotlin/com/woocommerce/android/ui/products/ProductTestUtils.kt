@@ -50,6 +50,7 @@ object ProductTestUtils {
                             "slug": "tag"
                         }
                     ]"""
+            groupedProductIds = "[10,11]"
             shortDescription = "short desc"
         }.toAppModel()
     }

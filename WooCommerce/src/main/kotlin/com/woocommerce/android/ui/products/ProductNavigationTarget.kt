@@ -50,6 +50,7 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductDetailBottomSheet(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductTypes(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewGroupedProducts(val groupedProductIds: String) : ProductNavigationTarget()
     object ViewProductDownloads : ProductNavigationTarget()
     object ViewProductDownloadsSettings : ProductNavigationTarget()
     data class EditProductDownload(val file: ProductFile, val downloadLimit: Int, val downloadExpiry: Int) :
