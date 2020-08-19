@@ -12,9 +12,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
@@ -87,8 +87,8 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     event.positiveButtonId,
                     event.negativeButtonId
                 )
-                is ExitWithResult -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productTypeUiItem)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.data)
                 }
                 else -> event.isHandled = false
             }

@@ -11,15 +11,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ProductInventoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -149,8 +147,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val stockQuantity: Int? = null,
         val backorderStatus: ProductBackorderStatus? = null
     ) : Parcelable
-
-    data class ExitWithResult(val data: InventoryData) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductInventoryViewModel>

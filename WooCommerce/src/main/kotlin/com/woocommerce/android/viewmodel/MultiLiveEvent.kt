@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -78,6 +79,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         object Exit : Event()
+
+        data class ExitWithResult<out T>(val data: T) : Event()
 
         data class ShowDiscardDialog(
             val positiveBtnAction: OnClickListener? = null,

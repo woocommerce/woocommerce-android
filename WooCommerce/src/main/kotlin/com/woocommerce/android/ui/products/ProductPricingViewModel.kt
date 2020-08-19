@@ -16,8 +16,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -234,8 +234,6 @@ class ProductPricingViewModel @AssistedInject constructor(
             return super.hashCode()
         }
     }
-
-    data class ExitWithResult(val data: PricingData) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductPricingViewModel>
