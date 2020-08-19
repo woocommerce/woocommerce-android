@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -135,6 +136,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onVariationChanged(
         remoteProductId: Long? = null,
         remoteVariationId: Long? = null,
+        sku: String? = null,
         image: Product.Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
@@ -142,6 +144,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         saleStartDate: Optional<Date>? = null,
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
+        backorderStatus: ProductBackorderStatus? = null,
         stockQuantity: Int? = null,
         optionName: String? = null,
         isPurchasable: Boolean? = null,
@@ -149,6 +152,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         isDownloadable: Boolean? = null,
         description: String? = null,
         isVisible: Boolean? = null,
+        isStockManaged: Boolean? = null,
         shippingClass: String? = null,
         shippingClassId: Long? = null,
         length: Float? = null,
@@ -159,6 +163,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         showVariation(viewState.variation.copy(
             remoteProductId = remoteProductId ?: viewState.variation.remoteProductId,
             remoteVariationId = remoteVariationId ?: viewState.variation.remoteVariationId,
+            sku = sku ?: viewState.variation.sku,
             image = image ?: viewState.variation.image,
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
@@ -166,6 +171,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             saleStartDateGmt = if (saleStartDate != null) saleStartDate.value else viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
+            backorderStatus = backorderStatus ?: viewState.variation.backorderStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
             optionName = optionName ?: viewState.variation.optionName,
             isPurchasable = isPurchasable ?: viewState.variation.isPurchasable,
@@ -173,6 +179,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             isDownloadable = isDownloadable ?: viewState.variation.isDownloadable,
             description = description ?: viewState.variation.description,
             isVisible = isVisible ?: viewState.variation.isVisible,
+            isStockManaged = isStockManaged ?: viewState.variation.isStockManaged,
             shippingClass = shippingClass ?: viewState.variation.shippingClass,
             shippingClassId = shippingClassId ?: viewState.variation.shippingClassId,
             length = length ?: viewState.variation.length,
@@ -246,7 +253,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation)
+            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation, originalVariation.sku)
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
