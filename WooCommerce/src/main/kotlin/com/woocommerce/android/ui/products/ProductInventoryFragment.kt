@@ -85,7 +85,6 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 

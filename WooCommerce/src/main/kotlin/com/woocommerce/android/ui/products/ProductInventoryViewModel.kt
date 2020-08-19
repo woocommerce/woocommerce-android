@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
 import android.os.Parcelable
-import android.util.Log
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -128,7 +127,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
 
         triggerEvent(ExitWithResult(inventoryData))
     }
-
 
     fun onExit() {
         if (hasChanges) {
