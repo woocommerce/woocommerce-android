@@ -101,6 +101,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(type = it.type, isVirtual = it.isVirtual)
             changesMade()
         }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(groupedProductIds = it)
+            changesMade()
+        }
         handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,

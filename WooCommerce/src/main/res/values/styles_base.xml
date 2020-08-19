@@ -428,6 +428,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:src">@drawable/ic_menu_more_vert_compat</item>
     </style>
 
+    <style name="Woo.ImageButton.Close">
+        <item name="android:src">@drawable/ic_gridicons_cross_grey_24dp</item>
+        <item name="android:padding">@dimen/major_85</item>
+    </style>
+
     <!-- Set at the theme level so no need to set directly on the component -->
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:paddingStart">@dimen/major_100</item>
