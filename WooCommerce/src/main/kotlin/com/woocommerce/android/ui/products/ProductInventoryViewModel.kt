@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
 import android.os.Parcelable
+import android.util.Log
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -18,6 +19,8 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ProductInventoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -44,7 +47,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
     private val hasChanges: Boolean
         get() = inventoryData != originalInventory
 
-
     init {
         viewState = viewState.copy(
             inventoryData = navArgs.inventoryData,
@@ -63,15 +65,35 @@ class ProductInventoryViewModel @AssistedInject constructor(
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2) {
             onDataChanged(sku = sku)
+
             if (sku == originalSku) {
-                resetError()
+                clearSkuError()
             } else {
+                viewState = viewState.copy(explicitlyHideDoneButton = true)
+
+                if (!productRepository.isProductSkuAvailableLocally(sku)) {
+                    showSkuError()
+                } else {
+                    clearSkuError()
+                }
+
                 // cancel any existing verification search, then start a new one after a brief delay
                 // so we don't actually perform the fetch until the user stops typing
-                if (productRepository.isProductSkuAvailableLocally(sku)) {
-                    resetError()
-                } else {
-                    viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
+                skuVerificationJob?.cancel()
+                skuVerificationJob = launch {
+                    delay(SEARCH_TYPING_DELAY_MS)
+
+                    // only after the SKU is available remotely, reset the error if it's available locally, as well
+                    // to avoid showing/hiding error message
+                    productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->
+                        if (isRemotelyAvailable) {
+                            clearSkuError()
+                        } else {
+                            showSkuError()
+                        }
+
+                        viewState = viewState.copy(explicitlyHideDoneButton = false)
+                    }
                 }
             }
         }
@@ -120,10 +142,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
         }
     }
 
-    private fun resetError() {
-        if (viewState.skuErrorMessage != 0) {
-            viewState = viewState.copy(skuErrorMessage = 0)
-        }
+    private fun clearSkuError() {
+        viewState = viewState.copy(skuErrorMessage = 0)
+    }
+
+    private fun showSkuError() {
+        viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
     }
 
     @Parcelize
@@ -132,10 +156,11 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
         val isStockSectionVisible: Boolean? = null,
-        val isIndividualSaleSwitchVisible: Boolean? = null
+        val isIndividualSaleSwitchVisible: Boolean? = null,
+        val explicitlyHideDoneButton: Boolean = false
     ) : Parcelable {
         val isDoneButtonEnabled: Boolean
-            get() = skuErrorMessage == 0 || skuErrorMessage == null
+            get() = !explicitlyHideDoneButton && (skuErrorMessage == 0 || skuErrorMessage == null)
     }
 
     @Parcelize
