@@ -90,7 +90,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.random.Random
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -136,7 +135,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Holds the latest uploaded images remote url for publish
      *
      * */
-    var productImagesRemoteUrl: ArrayList<String> = arrayListOf()
+    var productAddImagesRemoteUrl: ArrayList<String> = arrayListOf()
 
     private var skuVerificationJob: Job? = null
 
@@ -1136,7 +1135,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Adds the latest uploaded image URL into a local list for the publish step
      */
-    private fun saveLocalProductUploadedUrl(url: String) = productImagesRemoteUrl.add(url)
+    private fun saveLocalProductUploadedUrl(url: String) = productAddImagesRemoteUrl.add(url)
 
     fun fetchProductCategories() {
         if (_productCategories.value == null) {
