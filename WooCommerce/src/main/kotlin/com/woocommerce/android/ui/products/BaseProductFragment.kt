@@ -50,10 +50,10 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction,
-                        event.messageId
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.messageId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false

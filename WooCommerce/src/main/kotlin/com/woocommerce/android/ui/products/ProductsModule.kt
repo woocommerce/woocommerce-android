@@ -7,7 +7,9 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibili
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDetailFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadDetailsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductDownloadsSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductExternalLinkFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductFilterOptionListFragmentModule
@@ -36,6 +38,12 @@ import com.woocommerce.android.ui.products.categories.ParentCategoryListFragment
 import com.woocommerce.android.ui.products.categories.ParentCategoryListModule
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsModule
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragment
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsModule
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsModule
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
@@ -90,7 +98,9 @@ import dagger.android.ContributesAndroidInjector
     ProductDetailBottomSheetFragmentModule::class,
     ProductTypesBottomSheetFragmentModule::class,
     ProductReviewsFragmentModule::class,
-    ProductDownloadsFragmentModule::class
+    ProductDownloadsFragmentModule::class,
+    ProductDownloadDetailsFragmentModule::class,
+    ProductDownloadsSettingsFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -294,5 +304,19 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductDownloadsModule::class])
         abstract fun productDownloadsFragment(): ProductDownloadsFragment
+    }
+
+    @Module
+    internal abstract class ProductDownloadDetailsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductDownloadDetailsModule::class])
+        abstract fun productDownloadDetailsFragment(): ProductDownloadDetailsFragment
+    }
+
+    @Module
+    internal abstract class ProductDownloadsSettingsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductDownloadsSettingsModule::class])
+        abstract fun productDownloadsSettingsFragment(): ProductDownloadsSettingsFragment
     }
 }

@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -32,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTy
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
+import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -208,6 +211,19 @@ class ProductNavigator @Inject constructor() {
             is ViewProductDownloads -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDownloadsFragment()
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewProductDownloadsSettings -> {
+                val action = ProductDownloadsFragmentDirections
+                    .actionProductDownloadsFragmentToProductDownloadsSettingsFragment()
+
+                fragment.findNavController().navigate(action)
+            }
+
+            is EditProductDownload -> {
+                val action = ProductDownloadsFragmentDirections
+                    .actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file)
                 fragment.findNavController().navigate(action)
             }
 

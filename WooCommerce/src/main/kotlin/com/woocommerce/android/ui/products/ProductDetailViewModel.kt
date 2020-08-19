@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -30,6 +30,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.addTags
@@ -48,9 +49,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
@@ -87,6 +90,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Collections
 import java.util.Date
 
 @OpenClassOnDebug
@@ -249,6 +253,55 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(saleEndDate = Optional(null))
     }
 
+    fun onProductDownloadClicked(file: ProductFile) {
+        triggerEvent(
+            EditProductDownload(
+                file,
+                viewState.productDraft!!.downloadLimit,
+                viewState.productDraft!!.downloadExpiry
+            )
+        )
+    }
+
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads.map { file ->
+                if (file.id == updatedFile.id) updatedFile else file
+            }
+            updateProductDraft(
+                downloads = updatedDownloads
+            )
+        }
+    }
+
+    fun swapDownloadableFiles(from: Int, to: Int) {
+        viewState.productDraft?.let {
+            val mutableDownloadsList = it.downloads.toMutableList()
+            Collections.swap(mutableDownloadsList, from, to)
+            updateProductDraft(downloads = mutableDownloadsList)
+        }
+    }
+
+    fun onDownloadExpiryChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadExpiry = value
+            )
+        }
+    }
+
+    fun onDownloadLimitChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadLimit = value
+            )
+        }
+    }
+
+    fun onDownloadsSettingsClicked() {
+        triggerEvent(ViewProductDownloadsSettings)
+    }
+
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
 
     fun hasPricingChanges() = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
@@ -276,6 +329,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
+
+    fun hasDownloadsChanges(): Boolean {
+        return viewState.storedProduct?.hasDownloadChanges(viewState.productDraft) ?: false
+    }
+
+    fun hasDownloadsSettingsChanges(): Boolean {
+        return viewState.storedProduct?.let {
+            it.downloadLimit != viewState.productDraft?.downloadLimit ||
+                it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
+                it.isDownloadable != viewState.productDraft?.isDownloadable
+        } ?: false
+    }
 
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
@@ -617,7 +682,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null
+        type: ProductType? = null,
+        downloads: List<ProductFile>? = null,
+        downloadLimit: Int? = null,
+        downloadExpiry: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -664,7 +732,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                     saleStartDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt,
+                    downloads = downloads ?: product.downloads,
+                    downloadLimit = downloadLimit ?: product.downloadLimit,
+                    downloadExpiry = downloadExpiry ?: product.downloadExpiry
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -1379,6 +1450,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
+            ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
