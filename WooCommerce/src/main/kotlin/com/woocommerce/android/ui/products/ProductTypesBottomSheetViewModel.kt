@@ -14,6 +14,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -52,7 +53,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                     positiveButtonId = R.string.product_type_confirm_button,
                     negativeButtonId = R.string.cancel,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(ExitWithResult(productTypeUiItem))
+                        triggerEvent(ExitWithResult<ProductTypesBottomSheetUiItem>(productTypeUiItem))
                     }
                 ))
             }

@@ -13,9 +13,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ExitWithResult
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
@@ -93,7 +93,13 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     event.positiveButtonId,
                     event.negativeButtonId
                 )
-                is ExitWithResult -> navigateWithSelectedResult(type = event.productTypeUiItem)
+
+                is ExitWithResult<*> -> {
+                    (event.item as? ProductTypesBottomSheetUiItem)?.let {
+                        navigateWithSelectedResult(type = it)
+                    }
+                }
+
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
