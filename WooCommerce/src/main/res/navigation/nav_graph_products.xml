@@ -105,6 +105,9 @@
         <argument
             android:name="inventoryData"
             app:argType="com.woocommerce.android.ui.products.ProductInventoryViewModel$InventoryData" />
+        <argument
+            android:name="sku"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
