@@ -24,14 +24,17 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.Lazy
 import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
 class RefundSummaryFragment : BaseFragment(), BackPressListener {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) { viewModelFactory }
+    private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
+        viewModelFactory.get()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)

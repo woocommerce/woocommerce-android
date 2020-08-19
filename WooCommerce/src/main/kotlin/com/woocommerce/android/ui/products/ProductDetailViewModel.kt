@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -67,6 +68,7 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -626,54 +628,56 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null
+        type: ProductType? = null,
+        groupedProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
-                description = description ?: product.description,
-                shortDescription = shortDescription ?: product.shortDescription,
-                name = title ?: product.name,
-                sku = sku ?: product.sku,
-                slug = slug ?: product.slug,
-                manageStock = manageStock ?: product.manageStock,
-                stockStatus = stockStatus ?: product.stockStatus,
-                soldIndividually = soldIndividually ?: product.soldIndividually,
-                backorderStatus = backorderStatus ?: product.backorderStatus,
-                stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                images = images ?: product.images,
-                regularPrice = regularPrice ?: product.regularPrice,
-                salePrice = salePrice ?: product.salePrice,
-                isOnSale = isOnSale ?: product.isOnSale,
-                isVirtual = isVirtual ?: product.isVirtual,
-                taxStatus = taxStatus ?: product.taxStatus,
-                taxClass = taxClass ?: product.taxClass,
-                length = length ?: product.length,
-                width = width ?: product.width,
-                height = height ?: product.height,
-                weight = weight ?: product.weight,
-                shippingClass = shippingClass ?: product.shippingClass,
-                shippingClassId = shippingClassId ?: product.shippingClassId,
-                isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                status = productStatus ?: product.status,
-                catalogVisibility = catalogVisibility ?: product.catalogVisibility,
-                isFeatured = isFeatured ?: product.isFeatured,
-                reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
-                purchaseNote = purchaseNote ?: product.purchaseNote,
-                externalUrl = externalUrl ?: product.externalUrl,
-                buttonText = buttonText ?: product.buttonText,
-                menuOrder = menuOrder ?: product.menuOrder,
-                categories = categories ?: product.categories,
-                tags = tags ?: product.tags,
-                type = type ?: product.type,
-                saleEndDateGmt = if (isSaleScheduled == true ||
-                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                    if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                } else viewState.storedProduct?.saleEndDateGmt,
-                saleStartDateGmt = if (isSaleScheduled == true ||
-                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                    saleStartDate ?: product.saleStartDateGmt
-                } else viewState.storedProduct?.saleStartDateGmt
+                    description = description ?: product.description,
+                    shortDescription = shortDescription ?: product.shortDescription,
+                    name = title ?: product.name,
+                    sku = sku ?: product.sku,
+                    slug = slug ?: product.slug,
+                    manageStock = manageStock ?: product.manageStock,
+                    stockStatus = stockStatus ?: product.stockStatus,
+                    soldIndividually = soldIndividually ?: product.soldIndividually,
+                    backorderStatus = backorderStatus ?: product.backorderStatus,
+                    stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
+                    images = images ?: product.images,
+                    regularPrice = regularPrice ?: product.regularPrice,
+                    salePrice = salePrice ?: product.salePrice,
+                    isOnSale = isOnSale ?: product.isOnSale,
+                    isVirtual = isVirtual ?: product.isVirtual,
+                    taxStatus = taxStatus ?: product.taxStatus,
+                    taxClass = taxClass ?: product.taxClass,
+                    length = length ?: product.length,
+                    width = width ?: product.width,
+                    height = height ?: product.height,
+                    weight = weight ?: product.weight,
+                    shippingClass = shippingClass ?: product.shippingClass,
+                    shippingClassId = shippingClassId ?: product.shippingClassId,
+                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                    status = productStatus ?: product.status,
+                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                    isFeatured = isFeatured ?: product.isFeatured,
+                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                    purchaseNote = purchaseNote ?: product.purchaseNote,
+                    externalUrl = externalUrl ?: product.externalUrl,
+                    buttonText = buttonText ?: product.buttonText,
+                    menuOrder = menuOrder ?: product.menuOrder,
+                    categories = categories ?: product.categories,
+                    tags = tags ?: product.tags,
+                    type = type ?: product.type,
+                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                    saleEndDateGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
+                    } else viewState.storedProduct?.saleEndDateGmt,
+                    saleStartDateGmt = if (isSaleScheduled == true ||
+                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                        saleStartDate ?: product.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -702,12 +706,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun fetchBottomSheetList() {
+        val featureFlagCondition = FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() || viewState.productDraft?.type == SIMPLE
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
-                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty() && featureFlagCondition)
                 }
             }
         }
