@@ -40,7 +40,8 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         get() = productDownloadDetailsViewState.hasChanges
 
     val screenTitle
-        get() = navArgs.productFile?.name?.ifEmpty { resourceProvider.getString(R.string.product_downloadable_files_edit_title) }
+        get() = navArgs.productFile?.name
+            ?.ifEmpty { resourceProvider.getString(R.string.product_downloadable_files_edit_title) }
             ?: TODO("Should be implemented for files creation")
 
     fun onFileUrlChanged(url: String) {

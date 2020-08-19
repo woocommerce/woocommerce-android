@@ -290,7 +290,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             val updatedDownloads = it.downloads - file
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
-            if(updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
+            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
         }
     }
 
