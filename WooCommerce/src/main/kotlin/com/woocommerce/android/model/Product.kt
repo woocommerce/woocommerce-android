@@ -140,7 +140,8 @@ data class Product(
             isSameTags(product.tags) &&
             downloads == product.downloads &&
             downloadLimit == product.downloadLimit &&
-            downloadExpiry == product.downloadExpiry
+            downloadExpiry == product.downloadExpiry &&
+            isDownloadable == product.isDownloadable
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -234,7 +235,8 @@ data class Product(
                 reviewsAllowed != it.reviewsAllowed ||
                 purchaseNote != it.purchaseNote ||
                 menuOrder != it.menuOrder ||
-                isVirtual != it.isVirtual
+                isVirtual != it.isVirtual ||
+                isDownloadable != it.isDownloadable
         } ?: false
     }
 
@@ -474,6 +476,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.downloads = downloadsToJson()
         it.downloadLimit = downloadLimit
         it.downloadExpiry = downloadExpiry
+        it.downloadable = isDownloadable
     }
 }
 

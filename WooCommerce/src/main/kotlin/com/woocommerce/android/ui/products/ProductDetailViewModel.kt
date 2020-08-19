@@ -685,7 +685,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         type: ProductType? = null,
         downloads: List<ProductFile>? = null,
         downloadLimit: Int? = null,
-        downloadExpiry: Int? = null
+        downloadExpiry: Int? = null,
+        isDownloadable: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -735,7 +736,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     } else viewState.storedProduct?.saleStartDateGmt,
                     downloads = downloads ?: product.downloads,
                     downloadLimit = downloadLimit ?: product.downloadLimit,
-                    downloadExpiry = downloadExpiry ?: product.downloadExpiry
+                    downloadExpiry = downloadExpiry ?: product.downloadExpiry,
+                    isDownloadable = isDownloadable ?: product.isDownloadable
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
