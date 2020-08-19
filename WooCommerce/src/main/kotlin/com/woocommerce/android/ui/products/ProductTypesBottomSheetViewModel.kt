@@ -53,7 +53,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                     positiveButtonId = R.string.product_type_confirm_button,
                     negativeButtonId = R.string.cancel,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(ExitWithResult(productTypeUiItem))
+                        triggerEvent(ExitWithResult<ProductTypesBottomSheetUiItem>(productTypeUiItem))
                     }
                 ))
             }

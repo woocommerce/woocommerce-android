@@ -95,10 +95,11 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.item as? ProductTypesBottomSheetUiItem)
+                    (event.item as? ProductTypesBottomSheetUiItem)?.let {
+                        navigateWithSelectedResult(type = it)
+                    }
                 }
 
-                //is ExitWithResult -> navigateWithSelectedResult(type = event.productTypeUiItem)
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
