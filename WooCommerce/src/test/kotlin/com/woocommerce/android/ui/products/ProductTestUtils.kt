@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -34,6 +35,10 @@ object ProductTestUtils {
             ratingCount = 4
             shortDescription = "short desc"
         }.toAppModel()
+    }
+
+    fun generateProductWithTagsAndCategories(productId: Long = 1L): Product {
+        return generateProduct(productId).copy(categories = generateProductCategories(), tags = generateTags())
     }
 
     fun generateProductList(): List<Product> {
@@ -71,6 +76,10 @@ object ProductTestUtils {
             add(generateProductVariation(productId, 5))
             return this
         }
+    }
+
+    fun generateTags(): List<ProductTag> {
+        return listOf(ProductTag(1, "Tag", "Slug", "Desc"))
     }
 
     fun generateProductCategories(): List<ProductCategory> {
