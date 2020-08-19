@@ -94,7 +94,6 @@ Language: ru
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
     <string name="my_store_stats_availability_message">Мы улучшили статистику для магазинов с WooCommerce 4.0 или расширением WooCommerce Admin</string>
-    <string name="my_store_stats_reverted_message">Мы представили улучшения нашим аналитикам. Для просмотра статистики с 1 июля 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
     <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
@@ -266,7 +265,6 @@ Language: ru
     <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
     <string name="orderdetail_issue_refund_button">Оформить возврат</string>
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
-    <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
     <string name="order_begin_fulfillment">Начать выполнение</string>

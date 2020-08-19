@@ -31,6 +31,7 @@ repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
+    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 androidExtensions {
@@ -47,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.7-rc-1"
+            versionName "4.8-rc-2"
         }
-        versionCode 141
+        versionCode 145
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -145,7 +146,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:52d3e23406'
+    implementation 'com.automattic:tracks:1.2.1'
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"

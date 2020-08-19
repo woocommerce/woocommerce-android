@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCatalogVisibilityFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductCategoriesFragmentModule
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductInventoryFragme
 import com.woocommerce.android.ui.products.ProductsModule.ProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductMenuOrderFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductPricingFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductReviewsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductSettingsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingClassFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductShippingFragmentModule
@@ -23,6 +25,7 @@ import com.woocommerce.android.ui.products.ProductsModule.ProductSlugFragmentMod
 import com.woocommerce.android.ui.products.ProductsModule.ProductSortingFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductStatusFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductTagsFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.ProductTypesBottomSheetFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.VariationDetailFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.VariationListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ProductVisibilityFragmentModule
@@ -33,6 +36,8 @@ import com.woocommerce.android.ui.products.categories.ParentCategoryListFragment
 import com.woocommerce.android.ui.products.categories.ParentCategoryListModule
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragment
 import com.woocommerce.android.ui.products.categories.ProductCategoriesModule
+import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
+import com.woocommerce.android.ui.products.reviews.ProductReviewsModule
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityModule
 import com.woocommerce.android.ui.products.settings.ProductMenuOrderFragment
@@ -82,7 +87,10 @@ import dagger.android.ContributesAndroidInjector
     AddProductCategoryFragmentModule::class,
     ParentCategoryListFragmentModule::class,
     ProductTagsFragmentModule::class,
-    ProductDetailBottomSheetFragmentModule::class
+    ProductDetailBottomSheetFragmentModule::class,
+    ProductTypesBottomSheetFragmentModule::class,
+    ProductReviewsFragmentModule::class,
+    GroupedProductListFragmentModule::class
 ])
 object ProductsModule {
     @Module
@@ -265,5 +273,26 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ProductDetailBottomSheetModule::class])
         abstract fun productDetailBottomSheetFragment(): ProductDetailBottomSheetFragment
+    }
+
+    @Module
+    internal abstract class ProductTypesBottomSheetFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductTypesBottomSheetModule::class])
+        abstract fun productTypesBottomSheetFragment(): ProductTypesBottomSheetFragment
+    }
+
+    @Module
+    internal abstract class ProductReviewsFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ProductReviewsModule::class])
+        abstract fun productReviewsFragment(): ProductReviewsFragment
+    }
+
+    @Module
+    internal abstract class GroupedProductListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [GroupedProductListModule::class])
+        abstract fun groupedProductListFragment(): GroupedProductListFragment
     }
 }

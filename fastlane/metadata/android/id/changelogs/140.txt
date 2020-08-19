@@ -1,6 +1,0 @@
-4.6:
-Baru: Placeholder tambahan untuk pesanan yang tidak memiliki nama pelanggan.
-
-Perbaikan: Beberapa pemberitahuan pesanan baru sekarang dapat dilihat.
-
-Penyesuaian: Warna latar belakang tampilan login yang diperbarui dan pemberitahuan privasi untuk pengguna CA yang dipindahkan ke layar "Tentang Aplikasi".

@@ -1,0 +1,4 @@
+4,7 :
+<b>Stats :</b> votre graphique des statistiques correspondra désormais à ce que vous voyez dans wp-admin. Étant donné que vous devez exécuter WooCommerce 4.0, veillez à effectuer la mise à jour.
+
+<b>Correction d’incidents :</b> des incidents se produisaient lors du transfert de gros volumes de données. Ce problème a été résolu sur les appareils exécutant Android P ou version ultérieure grâce à un tampon plus important.

@@ -94,7 +94,6 @@ Language: he_IL
     <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
     <string name="product_short_description">תיאור קצר</string>
     <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות עם WooCommerce 4.0 או בחנויות שבהן הותקן התוסף WooCommerce Admin</string>
-    <string name="my_store_stats_reverted_message">אנחנו מפרסמים שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 ביולי 2020.</string>
     <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
     <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
@@ -266,7 +265,6 @@ Language: he_IL
     <string name="order_refunds_available_for_refund">סכום של %s זמין להחזר כספי</string>
     <string name="orderdetail_issue_refund_button">נמצאה בעיה</string>
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
-    <string name="settings_enable_v4_stats_message">נסה את הנתונים הסטטיסטיים שזמינים\nבתוסף הניהול החדש של WooCommerce</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
     <string name="order_begin_fulfillment">להתחיל את ההשלמה</string>

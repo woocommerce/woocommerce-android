@@ -73,6 +73,7 @@ data class Product(
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
+    val groupedProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -136,7 +137,8 @@ data class Product(
             menuOrder == product.menuOrder &&
             isSameImages(product.images) &&
             isSameCategories(product.categories) &&
-            isSameTags(product.tags)
+            isSameTags(product.tags) &&
+            groupedProductIds == product.groupedProductIds
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -353,7 +355,9 @@ data class Product(
                 buttonText = updatedProduct.buttonText,
                 menuOrder = updatedProduct.menuOrder,
                 categories = updatedProduct.categories,
-                tags = updatedProduct.tags
+                tags = updatedProduct.tags,
+                type = updatedProduct.type,
+                groupedProductIds = updatedProduct.groupedProductIds
             )
         } ?: this.copy()
     }
@@ -452,6 +456,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.menuOrder = menuOrder
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
+        it.type = type.value
+        it.groupedProductIds = groupedProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
     }
 }
 
@@ -534,7 +544,8 @@ fun WCProductModel.toAppModel(): Product {
                 it.name,
                 it.slug
             )
-        }
+        },
+        groupedProductIds = this.getGroupedProductIds()
     )
 }
 
@@ -545,6 +556,20 @@ fun MediaModel.toAppModel(): Product.Image {
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
+}
+
+fun List<Product>.isSameList(productList: List<Product>): Boolean {
+    if (this.size != productList.size) {
+        return false
+    }
+    for (index in this.indices) {
+        val oldItem = productList[index]
+        val newItem = this[index]
+        if (!oldItem.isSameProduct(newItem)) {
+            return false
+        }
+    }
+    return true
 }
 
 /**

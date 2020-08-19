@@ -82,7 +82,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
                         mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked)))
 
                 val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
-                addNote_icon.setImageDrawable(ContextCompat.getDrawable(activity!!, drawableId))
+                addNote_icon.setImageDrawable(ContextCompat.getDrawable(requireActivity(), drawableId))
             }
         } else {
             addNote_switch.visibility = View.GONE
