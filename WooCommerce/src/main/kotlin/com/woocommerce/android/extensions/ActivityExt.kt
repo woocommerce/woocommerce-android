@@ -2,11 +2,14 @@ package com.woocommerce.android.extensions
 
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.properties.Delegates
 
 /**
@@ -40,4 +43,15 @@ fun MainActivity.navigateBackWithResult(requestCode: Int, result: Bundle, @IdRes
     }
     childFragmentManager?.addOnBackStackChangedListener(backStackListener)
     findNavController(navHostId).popBackStack(dest, false)
+}
+
+/**
+ * Used to configure and intercept the close button from any fragment
+ * called through the MainActivity
+ */
+fun MainActivity.configureToolbarWithCloseButton() {
+    (toolbar as? Toolbar)?.let {
+        it.setNavigationOnClickListener { onBackPressed() }
+    }
+    supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
 }

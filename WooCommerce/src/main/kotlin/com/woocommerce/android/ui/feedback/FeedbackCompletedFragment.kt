@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.configureToolbarWithCloseButton
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_feedback_completed.*
@@ -19,6 +20,9 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "survey_completed"
     }
+
+    private val mainActivity
+        get() = activity as? MainActivity
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_feedback_completed, container, false)
@@ -31,7 +35,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         activity?.let {
             it.invalidateOptionsMenu()
             it.title = getString(R.string.feedback_completed_title)
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+            mainActivity?.configureToolbarWithCloseButton()
         }
 
         val contactUsText = getString(R.string.feedback_completed_contact_us)
@@ -39,7 +43,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
             .configureStringClick(
                 clickableContent = contactUsText,
                 clickAction = WooClickableSpan {
-                    context?.let { (activity as? MainActivity)?.showHelpAndSupport() }
+                    context?.let { mainActivity?.showHelpAndSupport() }
                 })
 
         btn_back_to_store.setOnClickListener { activity?.onBackPressed() }

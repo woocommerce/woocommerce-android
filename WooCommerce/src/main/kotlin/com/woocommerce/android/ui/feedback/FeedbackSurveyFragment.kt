@@ -9,12 +9,13 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls.CROWDSIGNAL_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.configureToolbarWithCloseButton
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_licenses.*
 
@@ -47,7 +48,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         activity?.let {
             it.invalidateOptionsMenu()
             it.title = getString(R.string.feedback_survey_request_title)
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+            (it as? MainActivity)?.configureToolbarWithCloseButton()
         }
     }
 
