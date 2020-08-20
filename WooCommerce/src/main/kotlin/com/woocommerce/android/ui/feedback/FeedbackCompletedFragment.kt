@@ -42,10 +42,8 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         getString(R.string.feedback_completed_description, contactUsText)
             .configureStringClick(
                 clickableContent = contactUsText,
-                clickAction = WooClickableSpan {
-                    context?.let { mainActivity?.showHelpAndSupport() }
-                })
-
+                clickAction = WooClickableSpan { mainActivity?.showHelpAndSupport() }
+            )
         btn_back_to_store.setOnClickListener { activity?.onBackPressed() }
     }
 
