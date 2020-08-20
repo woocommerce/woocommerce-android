@@ -68,7 +68,7 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.description(): ProductProperty {
         val variationDescription = this.description
         val description = if (variationDescription.isEmpty()) {
-            resources.getString(string.product_description)
+            resources.getString(string.product_description_empty)
         } else {
             variationDescription
         }
