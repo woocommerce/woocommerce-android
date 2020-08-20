@@ -41,7 +41,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     private var originalPricing: PricingData
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState(pricingData = navArgs.pricingData))
     private var viewState by viewStateData
 
     val parameters: SiteParameters by lazy {
@@ -50,7 +50,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         params
     }
 
-    private val isProductPricing by lazy { navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING }
+    private val isProductPricing = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING
 
     val pricingData
         get() = viewState.pricingData
@@ -66,11 +66,10 @@ class ProductPricingViewModel @AssistedInject constructor(
             currency = parameters.currencyCode,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
-            pricingData = navArgs.pricingData,
             isTaxSectionVisible = isProductPricing
         )
 
-        originalPricing = navArgs.pricingData.copy()
+        originalPricing = navArgs.pricingData
     }
 
     private fun loadParameters(): SiteParameters {
