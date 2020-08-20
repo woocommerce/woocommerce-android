@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
@@ -31,15 +32,12 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         return inflater.inflate(R.layout.fragment_feedback_survey, container, false)
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        context?.let {
-            showProgressDialog()
-            webView.settings.apply { javaScriptEnabled = true }
-            webView.webViewClient = surveyWebViewClient
-            webView.loadUrl(CROWDSIGNAL_SURVEY)
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        configureWebView()
+        savedInstanceState?.let {
+            webView.restoreState(it)
+        } ?: webView.loadUrl(CROWDSIGNAL_SURVEY)
     }
 
     override fun onResume() {
@@ -58,6 +56,16 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         activity?.invalidateOptionsMenu()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        webView.restoreState(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        webView.saveState(outState)
+    }
+
     private fun showProgressDialog() {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
@@ -65,6 +73,16 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
             getString(R.string.web_view_loading_message)
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun configureWebView() = webView.apply {
+        showProgressDialog()
+        settings.apply {
+            javaScriptEnabled = true
+            cacheMode = WebSettings.LOAD_DEFAULT
+        }
+        webViewClient = surveyWebViewClient
     }
 
     private fun hideProgressDialog() {
