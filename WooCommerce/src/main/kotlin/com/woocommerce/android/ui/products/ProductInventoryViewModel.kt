@@ -49,7 +49,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
     init {
         viewState = viewState.copy(
             inventoryData = navArgs.inventoryData,
-            isStockSectionVisible = navArgs.inventoryData.isStockManaged,
             isIndividualSaleSwitchVisible = isProductInventory
         )
 
@@ -153,7 +152,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val inventoryData: InventoryData = InventoryData(),
         val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
-        val isStockSectionVisible: Boolean? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val explicitlyHideDoneButton: Boolean = false
     ) : Parcelable {

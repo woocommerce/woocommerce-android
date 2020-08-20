@@ -122,9 +122,6 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 doneButton?.isEnabled = isEnabled
             }
-            new.isStockSectionVisible?.takeIfNotEqualTo(old?.isStockSectionVisible) { isVisible ->
-                enableManageStockStatus(isVisible)
-            }
             new.isIndividualSaleSwitchVisible?.takeIfNotEqualTo(old?.isIndividualSaleSwitchVisible) { isVisible ->
                 soldIndividually_switch.isVisible = isVisible
             }
@@ -133,6 +130,9 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
             }
             new.inventoryData.stockStatus?.takeIfNotEqualTo(old?.inventoryData?.stockStatus) {
                 edit_product_stock_status.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
+            }
+            new.inventoryData.isStockManaged?.takeIfNotEqualTo(old?.inventoryData?.isStockManaged) { isStockManaged ->
+                enableManageStockStatus(isStockManaged)
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
                 if (product_sku.getText() != it) {
@@ -229,10 +229,10 @@ class ProductInventoryFragment : BaseFragment(), BackPressListener, ProductItemS
         }
     }
 
-    private fun enableManageStockStatus(manageStock: Boolean) {
-        manageStock_switch.isChecked = manageStock
-        edit_product_stock_status.isVisible = !manageStock
-        if (manageStock) {
+    private fun enableManageStockStatus(isStockManaged: Boolean) {
+        manageStock_switch.isChecked = isStockManaged
+        edit_product_stock_status.isVisible = !isStockManaged
+        if (isStockManaged) {
             manageStock_morePanel.expand()
         } else {
             manageStock_morePanel.collapse()
