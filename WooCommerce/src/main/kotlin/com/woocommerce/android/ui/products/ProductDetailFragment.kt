@@ -272,12 +272,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     changesMade()
                 }
             }
-            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
+            RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
                         ?.let {
                             viewModel.addProductImageListToDraft(it)
                             changesMade()
                         }
+            }
+            RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE -> {
+                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                    ?.let {
+                        viewModel.showAddProductDownload(it.first().source)
+                        changesMade()
+                    }
             }
         }
     }

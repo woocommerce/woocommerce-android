@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -17,6 +18,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -33,6 +35,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
 
     private val viewModel: ProductDownloadDetailsViewModel by viewModels { viewModelFactory }
     private val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products)
+    private val navArgs by navArgs<ProductDownloadDetailsFragmentArgs>()
     private lateinit var doneOrUpdateMenuItem: MenuItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,10 +45,14 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.menu_product_download_details, menu)
+        if (navArgs.isEditing) {
+            inflater.inflate(R.menu.menu_product_download_details, menu)
+        } else {
+            inflater.inflate(R.menu.menu_done, menu)
+        }
 
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
-        doneOrUpdateMenuItem.isVisible = viewModel.hasChanges
+        doneOrUpdateMenuItem.isVisible = viewModel.showDoneButton
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -75,7 +82,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             new.fileDraft.name.takeIfNotEqualTo(product_download_name.getText()) {
                 product_download_name.setText(it)
             }
-            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
+            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
                 showDoneMenuItem(it)
             }
         })
@@ -91,6 +98,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 is UpdateFileAndExitEvent -> {
                     ActivityUtils.hideKeyboard(requireActivity())
                     parentViewModel.updateDownloadableFileInDraft(event.updatedFile)
+                    findNavController().navigateUp()
+                }
+                is AddFileAndExitEvent -> {
+                    ActivityUtils.hideKeyboard(requireActivity())
+                    parentViewModel.addDownloadableFileToDraft(event.file)
                     findNavController().navigateUp()
                 }
                 is DeleteFileEvent -> {

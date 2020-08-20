@@ -1263,4 +1263,5 @@
     <string name="product_uncheck_is_downloadable_warning_no_button">No</string>
     <string name="bottom_sheet_downloadable_files_desc">Include downloadable files with purchases</string>
     <string name="product_downloadable_add_bottomsheet_header">Add downloadable file</string>
+    <string name="product_downloadable_files_add_title">Add downloadable file</string>
 </resources>

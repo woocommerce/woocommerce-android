@@ -161,7 +161,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showWPMediaPicker() {
-        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
+        val action = ProductDetailFragmentDirections
+            .actionGlobalWpMediaFragment(RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS, multiSelect = true)
         findNavController().navigateSafely(action)
     }
 

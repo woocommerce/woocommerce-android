@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -29,19 +30,22 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     val productDownloadDetailsViewStateData = LiveDataDelegate(
         savedState,
         ProductDownloadDetailsViewState(
-            fileDraft = navArgs.productFile ?: ProductFile(null, "", ""),
-            hasChanges = false
+            fileDraft = navArgs.productFile,
+            showDoneButton = !navArgs.isEditing
         )
     )
     private var productDownloadDetailsViewState by productDownloadDetailsViewStateData
 
-    val hasChanges
-        get() = productDownloadDetailsViewState.hasChanges
+    val showDoneButton
+        get() = productDownloadDetailsViewState.showDoneButton
 
     val screenTitle
-        get() = navArgs.productFile?.name
-            ?.ifEmpty { resourceProvider.getString(R.string.product_downloadable_files_edit_title) }
-            ?: TODO("Should be implemented for files creation")
+        get() = if (navArgs.isEditing) {
+            navArgs.productFile.name
+                .ifEmpty { resourceProvider.getString(R.string.product_downloadable_files_edit_title) }
+        } else {
+            resourceProvider.getString(R.string.product_downloadable_files_add_title)
+        }
 
     fun onFileUrlChanged(url: String) {
         val updatedDraft = productDownloadDetailsViewState.fileDraft.copy(url = url)
@@ -54,8 +58,11 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     fun onDoneOrUpdateClicked() {
-        // TODO handle file creation by checking if the navArgs file is null
-        triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+        if (navArgs.isEditing) {
+            triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+        } else {
+            triggerEvent(AddFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+        }
     }
 
     fun onDeleteButtonClicked() {
@@ -70,7 +77,7 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     fun onBackButtonClicked(): Boolean {
-        return if (hasChanges) {
+        return if (showDoneButton) {
             triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
@@ -81,22 +88,22 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {
-        val hasChanges = updatedState.fileDraft != navArgs.productFile
-        productDownloadDetailsViewState = updatedState.copy(hasChanges = hasChanges)
+        val hasChanges = !navArgs.isEditing || updatedState.fileDraft != navArgs.productFile
+        val canSave = updatedState.fileDraft.url.isNotBlank()
+        productDownloadDetailsViewState = updatedState.copy(showDoneButton = hasChanges && canSave)
     }
 
     fun triggerFileDeletion() {
-        triggerEvent(
-            DeleteFileEvent(
-                navArgs.productFile
-                    ?: throw IllegalStateException("The delete action can't be invoked if the file to edit is null")
-            )
-        )
+        triggerEvent(DeleteFileEvent(navArgs.productFile))
     }
 
     sealed class ProductDownloadDetailsEvent : Event() {
         data class UpdateFileAndExitEvent(
             val updatedFile: ProductFile
+        ) : ProductDownloadDetailsEvent()
+
+        data class AddFileAndExitEvent(
+            val file: ProductFile
         ) : ProductDownloadDetailsEvent()
 
         class DeleteFileEvent(val file: ProductFile) : ProductDownloadDetailsEvent()
@@ -105,7 +112,7 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
-        val hasChanges: Boolean
+        val showDoneButton: Boolean
     ) : Parcelable
 
     @AssistedInject.Factory

@@ -50,10 +50,10 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -258,10 +258,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onProductDownloadClicked(file: ProductFile) {
         triggerEvent(
-            EditProductDownload(
-                file,
-                viewState.productDraft!!.downloadLimit,
-                viewState.productDraft!!.downloadExpiry
+            ViewProductDownloadDetails(
+                true,
+                file
             )
         )
     }
@@ -273,6 +272,17 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             updateProductDraft(
                 downloads = updatedDownloads
+            )
+        }
+    }
+
+    fun addDownloadableFileToDraft(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads + file
+            updateProductDraft(
+                downloads = updatedDownloads,
+                // Make sure to mark the file as downloadable
+                isDownloadable = true
             )
         }
     }
@@ -312,6 +322,15 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onDownloadsSettingsClicked() {
         triggerEvent(ViewProductDownloadsSettings)
+    }
+
+    fun showAddProductDownload(url: String) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                isEditing = false,
+                file = ProductFile(id = null, url = url, name = "")
+            )
+        )
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
