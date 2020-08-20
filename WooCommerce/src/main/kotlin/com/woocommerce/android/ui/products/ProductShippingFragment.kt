@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_ID
 import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_SLUG
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -40,71 +41,23 @@ import javax.inject.Inject
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseFragment(), BackPressListener, NavigationResult {
-    companion object {
-        const val KEY_SHIPPING_DIALOG_RESULT = "key_shipping_dialog_result"
-    }
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
+class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping), NavigationResult {
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
 
-    private var doneButton: MenuItem? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_shipping, container, false)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        activity?.let {
-            ActivityUtils.hideKeyboard(it)
-        }
-    }
+    override val isDoneButtonVisible: Boolean
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
+    override val isDoneButtonEnabled: Boolean = true
+    override val lastEvent: Event?
+        get() = viewModel.event.value
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupObservers(viewModel)
         setupViews()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        inflater.inflate(R.menu.menu_done, menu)
-        doneButton = menu.findItem(R.id.menu_done)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        val viewState = viewModel.viewStateData.liveData.value
-        doneButton?.isVisible = viewState?.isDoneButtonVisible ?: false
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -133,7 +86,7 @@ class ProductShippingFragment : BaseFragment(), BackPressListener, NavigationRes
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(ProductShippingFragment.KEY_SHIPPING_DIALOG_RESULT, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
@@ -208,7 +161,11 @@ class ProductShippingFragment : BaseFragment(), BackPressListener, NavigationRes
         }
     }
 
-    override fun onRequestAllowBackPress(): Boolean {
-        return (viewModel.event.value == Exit).also { if (it.not()) viewModel.onExit() }
+    override fun onDoneButtonClicked() {
+        viewModel.onDoneButtonClicked()
+    }
+
+    override fun onExit() {
+        viewModel.onExit()
     }
 }

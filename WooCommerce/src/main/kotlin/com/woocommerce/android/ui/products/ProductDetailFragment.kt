@@ -107,7 +107,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }
-        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,
@@ -119,7 +119,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
-        handleResult<InventoryData>(ProductInventoryFragment.KEY_INVENTORY_DIALOG_RESULT) {
+        handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 sku = it.sku,
                 soldIndividually = it.isSoldIndividually,
@@ -130,7 +130,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
-        handleResult<ShippingData>(ProductShippingFragment.KEY_SHIPPING_DIALOG_RESULT) {
+        handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 weight = it.weight,
                 length = it.length,
