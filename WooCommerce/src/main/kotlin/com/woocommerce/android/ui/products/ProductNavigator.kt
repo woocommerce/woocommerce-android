@@ -124,7 +124,10 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(
+                            RequestCodes.PRODUCT_DETAIL_SHIPPING,
+                            target.shippingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 

@@ -32,6 +32,8 @@ import com.woocommerce.android.ui.products.ProductInventoryFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingFragment
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingFragment
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.Optional
@@ -149,6 +151,16 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
                 isStockManaged = it.isStockManaged
+            )
+        }
+        handleResult<ShippingData>(ProductShippingFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
             )
         }
     }

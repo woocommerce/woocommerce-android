@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -126,6 +127,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
                 manageStock = it.isStockManaged
+            )
+            changesMade()
+        }
+        handleResult<ShippingData>(ProductShippingFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
             )
             changesMade()
         }

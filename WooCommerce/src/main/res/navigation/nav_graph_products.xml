@@ -113,13 +113,15 @@
         android:id="@+id/productShippingFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
             app:destination="@id/productShippingClassFragment" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="shippingData"
+            app:argType="com.woocommerce.android.ui.products.ProductShippingViewModel$ShippingData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingClassFragment"
@@ -300,5 +302,8 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productShippingFragment"
+            app:destination="@id/productShippingFragment" />
     </fragment>
 </navigation>

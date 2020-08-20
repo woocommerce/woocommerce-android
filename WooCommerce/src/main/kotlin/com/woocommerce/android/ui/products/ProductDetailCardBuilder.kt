@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -390,7 +391,16 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_shipping
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductShipping(this.remoteId),
+                    ViewProductShipping(
+                        ShippingData(
+                            weight,
+                            length,
+                            width,
+                            height,
+                            shippingClass,
+                            shippingClassId
+                        )
+                    ),
                     Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
                 )
             }
