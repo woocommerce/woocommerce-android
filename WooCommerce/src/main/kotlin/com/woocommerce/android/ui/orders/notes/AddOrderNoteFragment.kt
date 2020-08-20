@@ -16,7 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
@@ -105,7 +105,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -163,12 +163,15 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     shouldShowDiscardDialog = false
                     activity?.onBackPressed()
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })

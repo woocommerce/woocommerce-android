@@ -6,12 +6,12 @@ import com.nhaarman.mockitokotlin2.mock
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.ShowDeleteFileConfirmationEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -142,7 +142,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.onDeleteButtonClicked()
         viewModel.triggerFileDeletion()
 
-        assertThat(events[0]).isInstanceOf(ShowDeleteFileConfirmationEvent::class.java)
+        assertThat(events[0]).isInstanceOf(ShowDialog::class.java)
         assertThat(events[1]).isInstanceOf(DeleteFileEvent::class.java)
         assertThat((events[1] as DeleteFileEvent).file).isEqualTo(file)
     }

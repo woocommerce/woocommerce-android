@@ -7,25 +7,20 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.ShowDeleteFileConfirmationEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_download_details.*
@@ -92,19 +87,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     ActivityUtils.hideKeyboard(requireActivity())
                     findNavController().navigateUp()
                 }
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    event.messageId
-                )
+                is ShowDialog -> event.showDialog()
                 is UpdateFileAndExitEvent -> {
                     ActivityUtils.hideKeyboard(requireActivity())
                     parentViewModel.updateDownloadableFileInDraft(event.updatedFile)
                     findNavController().navigateUp()
-                }
-                is ShowDeleteFileConfirmationEvent -> {
-                    showDeleteConfirmationDialog()
                 }
                 is DeleteFileEvent -> {
                     parentViewModel.deleteDownloadableFile(event.file)
@@ -114,17 +101,6 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         })
 
         initListeners()
-    }
-
-    private fun showDeleteConfirmationDialog() {
-        MaterialAlertDialogBuilder(ContextThemeWrapper(requireActivity(), style.Theme_Woo_Dialog))
-            .setMessage(R.string.product_downloadable_files_delete_confirmation)
-            .setCancelable(true)
-            .setPositiveButton(R.string.delete) { _, _ ->
-                viewModel.triggerFileDeletion()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     private fun initListeners() {

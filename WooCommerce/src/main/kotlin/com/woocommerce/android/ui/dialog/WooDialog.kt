@@ -12,18 +12,18 @@ import java.lang.ref.WeakReference
  * Used to display discard dialog across the app.
  * Currently used in Products and Orders
  */
-object CustomDiscardDialog {
+object WooDialog {
     // Weak ref to avoid leaking the context
     private var dialogRef: WeakReference<AlertDialog>? = null
 
-    fun showDiscardDialog(
+    fun showDialog(
         activity: Activity,
-        posBtnAction: (OnClickListener)? = null,
-        negBtnAction: (OnClickListener)? = null,
         @StringRes titleId: Int? = null,
-        @StringRes messageId: Int? = null,
-        @StringRes positiveButtonId: Int? = null,
-        @StringRes negativeButtonId: Int? = null
+        @StringRes messageId: Int,
+        @StringRes positiveButtonId: Int,
+        posBtnAction: OnClickListener,
+        @StringRes negativeButtonId: Int? = null,
+        negBtnAction: OnClickListener? = null
     ) {
         dialogRef?.get()?.let {
             // Dialog is already present
@@ -41,8 +41,9 @@ object CustomDiscardDialog {
                 .setMessage(message)
                 .setCancelable(true)
                 .setPositiveButton(positiveButtonTextId, posBtnAction)
-                .setNegativeButton(negativeButtonTextId, negBtnAction)
                 .setOnDismissListener { onCleared() }
+
+        negativeButtonId?.let { builder.setNegativeButton(it, negBtnAction) }
 
         titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
 

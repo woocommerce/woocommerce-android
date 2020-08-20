@@ -17,7 +17,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -67,11 +67,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onBackButtonClicked(): Boolean {
         return if (productListViewState.hasChanges == true) {
-            triggerEvent(ShowDiscardDialog(
-                negativeButtonId = string.keep_changes,
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
-                }
+                },
+                negativeButtonId = string.keep_changes
             ))
             false
         } else {

@@ -78,7 +78,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -535,34 +535,34 @@ class ProductDetailViewModel @AssistedInject constructor(
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges(event)
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    // discard changes made to the current screen
+                    discardEditChanges(event)
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDiscardDialog(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else {

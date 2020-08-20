@@ -8,13 +8,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
-import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.ShowDeleteFileConfirmationEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -60,12 +59,19 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     fun onDeleteButtonClicked() {
-        triggerEvent(ShowDeleteFileConfirmationEvent)
+        triggerEvent(
+            ShowDialog(
+                messageId = R.string.product_downloadable_files_delete_confirmation,
+                positiveButtonId = R.string.delete,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ -> triggerFileDeletion() },
+                negativeButtonId = R.string.cancel
+            )
+        )
     }
 
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges) {
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
                 }
@@ -93,7 +99,6 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
             val updatedFile: ProductFile
         ) : ProductDownloadDetailsEvent()
 
-        object ShowDeleteFileConfirmationEvent : ProductDownloadDetailsEvent()
         class DeleteFileEvent(val file: ProductFile) : ProductDownloadDetailsEvent()
     }
 

@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.woocommerce.android.R.string
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -80,32 +81,28 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         object Exit : Event()
         data class ExitWithResult<T>(val item: T) : Event()
 
-        data class ShowDiscardDialog(
-            val positiveBtnAction: OnClickListener? = null,
-            val negativeBtnAction: OnClickListener? = null,
-            @StringRes val messageId: Int? = null,
+        data class ShowDialog(
             @StringRes val titleId: Int? = null,
-            @StringRes val positiveButtonId: Int? = null,
-            @StringRes val negativeButtonId: Int? = null
+            @StringRes val messageId: Int,
+            @StringRes val positiveButtonId: Int,
+            val positiveBtnAction: OnClickListener,
+            @StringRes val negativeButtonId: Int? = null,
+            val negativeBtnAction: OnClickListener? = null
         ) : Event() {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (other !is ShowDiscardDialog) return false
-
-                if (titleId != other.titleId) return false
-                if (messageId != other.messageId) return false
-                if (positiveButtonId != other.positiveButtonId) return false
-                if (negativeButtonId != other.negativeButtonId) return false
-                if (positiveBtnAction != other.positiveBtnAction) return false
-                if (negativeBtnAction != other.negativeBtnAction) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = positiveBtnAction?.hashCode() ?: 0
-                result = 31 * result + (negativeBtnAction?.hashCode() ?: 0)
-                return result
+            companion object {
+                fun buildDiscardDialogEvent(
+                    messageId: Int = string.discard_message,
+                    positiveButtonId: Int = string.discard,
+                    negativeButtonId: Int = string.keep_editing,
+                    positiveBtnAction: OnClickListener,
+                    negativeBtnAction: OnClickListener? = null
+                ) = ShowDialog(
+                    messageId = messageId,
+                    positiveButtonId = positiveButtonId,
+                    positiveBtnAction = positiveBtnAction,
+                    negativeButtonId = negativeButtonId,
+                    negativeBtnAction = negativeBtnAction
+                )
             }
         }
     }

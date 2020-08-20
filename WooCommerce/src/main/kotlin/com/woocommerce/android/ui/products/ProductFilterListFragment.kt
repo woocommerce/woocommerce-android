@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_list.*
@@ -126,13 +126,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener, 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    event.messageId,
-                    negativeButtonId = event.negativeButtonId
-                )
+                is ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         })
