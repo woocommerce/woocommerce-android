@@ -27,7 +27,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     private val savedStateForEditing = SavedStateWithArgs(
         SavedStateHandle(),
         null,
-        ProductDownloadDetailsFragmentArgs(file)
+        ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
     )
 
     @get:Rule
@@ -58,7 +58,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         val savedStateWithArgs = SavedStateWithArgs(
             SavedStateHandle(),
             null,
-            ProductDownloadDetailsFragmentArgs(file)
+            ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
         )
         viewModel = ProductDownloadDetailsViewModel(
             savedStateWithArgs,
