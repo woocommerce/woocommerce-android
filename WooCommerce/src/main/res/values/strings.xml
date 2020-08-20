@@ -1261,4 +1261,6 @@
     <string name="product_uncheck_is_downloadable_warning_message">All files currently attached to this product will be deleted.</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">No</string>
+    <string name="bottom_sheet_downloadable_files_desc">Include downloadable files with purchases</string>
+    <string name="product_downloadable_add_bottomsheet_header">Add downloadable file</string>
 </resources>

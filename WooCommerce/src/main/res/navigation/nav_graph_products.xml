@@ -301,6 +301,11 @@
         app:destination="@id/groupedProductListFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_addProductDownloadBottomSheetFragment"
+        app:destination="@id/addProductDownloadBottomSheetFragment"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:popExitAnim="@anim/fragment_fade_exit" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
@@ -323,4 +328,9 @@
         android:id="@+id/productDownloadsSettingsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment"
         android:label="ProductDownloadsSettingsFragment" />
+    <dialog
+        android:id="@+id/addProductDownloadBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment"
+        android:label="AddProductDownloadBottomSheetFragment"
+        tools:layout="@layout/dialog_product_add_downloadable_file"/>
 </navigation>

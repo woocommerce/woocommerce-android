@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTy
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import javax.inject.Inject
@@ -231,6 +233,11 @@ class ProductNavigator @Inject constructor() {
             is EditProductDownload -> {
                 val action = ProductDownloadsFragmentDirections
                     .actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file)
+                fragment.findNavController().navigate(action)
+            }
+
+            is AddProductDownloadableFile -> {
+                val action = ProductDownloadsFragmentDirections.actionGlobalAddProductDownloadBottomSheetFragment()
                 fragment.findNavController().navigate(action)
             }
 

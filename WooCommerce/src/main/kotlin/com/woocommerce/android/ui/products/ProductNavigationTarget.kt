@@ -55,4 +55,5 @@ sealed class ProductNavigationTarget : Event() {
     object ViewProductDownloadsSettings : ProductNavigationTarget()
     data class EditProductDownload(val file: ProductFile, val downloadLimit: Int, val downloadExpiry: Int) :
         ProductNavigationTarget()
+    object AddProductDownloadableFile : ProductNavigationTarget()
 }
