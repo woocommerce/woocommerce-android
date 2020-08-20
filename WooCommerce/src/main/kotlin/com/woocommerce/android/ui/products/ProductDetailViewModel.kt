@@ -35,7 +35,6 @@ import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
@@ -82,7 +81,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -90,11 +88,10 @@ import java.util.Date
 class ProductDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
+    parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
@@ -110,10 +107,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    val parameters: SiteParameters by lazy {
-        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
-        savedState[KEY_PRODUCT_PARAMETERS] = params
-        params
+    private val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
     // view state for the product detail screen
@@ -658,24 +653,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Loads the product dependencies for a site such as dimensions, currency or timezone
-     */
-    private fun loadParameters(): SiteParameters {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            return@let Pair(settings.weightUnit, settings.dimensionUnit)
-        } ?: Pair(null, null)
-
-        return SiteParameters(
-            currencyCode,
-            weightUnit,
-            dimensionUnit,
-            gmtOffset
-        )
-    }
-
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
@@ -820,12 +797,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             // Pre-load current site's tax class list for use in the product pricing screen
             productRepository.loadTaxClassesForSite()
         }
-    }
-
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
     }
 
     /**

@@ -56,6 +56,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock()
+    private val parameterRepository: ParameterRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
     private val resources: ResourceProvider = mock {
@@ -196,11 +197,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel = spy(ProductDetailViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
-            selectedSite,
+            parameterRepository,
             productRepository,
             networkStatus,
             currencyFormatter,
-            wooCommerceStore,
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,

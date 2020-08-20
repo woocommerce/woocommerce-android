@@ -8,6 +8,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -20,8 +21,12 @@ import kotlinx.android.parcel.Parcelize
 class ProductShippingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+    }
     private val navArgs: ProductShippingFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(
@@ -32,6 +37,10 @@ class ProductShippingViewModel @AssistedInject constructor(
         )
     )
     private var viewState by viewStateData
+
+    val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+    }
 
     private val originalShippingData = navArgs.shippingData
 
@@ -47,7 +56,7 @@ class ProductShippingViewModel @AssistedInject constructor(
         width: Float? = shippingData.width,
         height: Float? = shippingData.height,
         shippingClassSlug: String? = shippingData.shippingClassSlug,
-        shippingClassId: String? = shippingData.shippingClassId
+        shippingClassId: Long? = shippingData.shippingClassId
     ) {
         viewState = viewState.copy(
             shippingData = ShippingData(
@@ -64,7 +73,7 @@ class ProductShippingViewModel @AssistedInject constructor(
 
     fun onDoneButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
+            Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
         )
 
@@ -83,6 +92,10 @@ class ProductShippingViewModel @AssistedInject constructor(
         }
     }
 
+    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: shippingData.shippingClassSlug ?: ""
+
     @Parcelize
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),
@@ -97,7 +110,7 @@ class ProductShippingViewModel @AssistedInject constructor(
         val width: Float? = null,
         val height: Float? = null,
         val shippingClassSlug: String? = null,
-        val shippingClassId: String? = null
+        val shippingClassId: Long? = null
     ) : Parcelable
 
     @AssistedInject.Factory

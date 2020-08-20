@@ -16,7 +16,7 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -36,19 +36,17 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
 class VariationDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
     private val variationRepository: VariationDetailRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore,
+    private val parameterRepository: ParameterRepository,
     private val resources: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -66,9 +64,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
 
     private val parameters: SiteParameters by lazy {
-        val params = savedState.get<SiteParameters>(KEY_VARIATION_PARAMETERS) ?: loadParameters()
-        savedState[KEY_VARIATION_PARAMETERS] = params
-        params
+        parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState)
     }
 
     // view state for the variation detail screen
@@ -278,24 +274,6 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation.shippingClass ?: ""
-
-    /**
-     * Loads the product dependencies for a site such as dimensions, currency or timezone
-     */
-    private fun loadParameters(): SiteParameters {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            return@let Pair(settings.weightUnit, settings.dimensionUnit)
-        } ?: Pair(null, null)
-
-        return SiteParameters(
-            currencyCode,
-            weightUnit,
-            dimensionUnit,
-            gmtOffset
-        )
-    }
 
     @Parcelize
     data class VariationViewState(
