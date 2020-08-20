@@ -145,7 +145,8 @@ class MyStoreFragment : TopLevelFragment(),
         my_store_top_earners.initView(
             listener = this,
             selectedSite = selectedSite,
-            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+            statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
         )
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

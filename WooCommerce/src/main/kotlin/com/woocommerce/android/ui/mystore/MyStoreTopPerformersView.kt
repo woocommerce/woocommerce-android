@@ -37,6 +37,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
+    private lateinit var statsCurrencyCode: String
 
     private var listener: MyStoreStatsListener? = null
     private var skeletonView = SkeletonView()
@@ -44,14 +45,21 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     fun initView(
         listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
-        formatCurrencyForDisplay: FormatCurrencyRounded
+        formatCurrencyForDisplay: FormatCurrencyRounded,
+        statsCurrencyCode: String
     ) {
         this.listener = listener
         this.selectedSite = selectedSite
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
+        this.statsCurrencyCode = statsCurrencyCode
 
         topEarners_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
+        topEarners_recycler.adapter = TopEarnersAdapter(
+            context,
+            formatCurrencyForDisplay,
+            statsCurrencyCode,
+            listener
+        )
         topEarners_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
@@ -74,7 +82,12 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
         )
 
-        topEarners_recycler.adapter = TopEarnersAdapter(context, formatCurrencyForDisplay, listener)
+        topEarners_recycler.adapter = TopEarnersAdapter(
+            context,
+            formatCurrencyForDisplay,
+            statsCurrencyCode,
+            listener
+        )
         showEmptyView(false)
         showErrorView(false)
         listener?.onRequestLoadTopEarnerStats(granularity)
@@ -114,6 +127,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     class TopEarnersAdapter(
         context: Context,
         val formatCurrencyForDisplay: FormatCurrencyRounded,
+        val statsCurrencyCode: String,
         val listener: MyStoreStatsListener?
     ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
         private val orderString: String
@@ -147,7 +161,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
             val topPerformer = topEarnerList[position]
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topPerformer.quantity))
-            val total = formatCurrencyForDisplay(topPerformer.total, topPerformer.currency)
+            val total = formatCurrencyForDisplay(topPerformer.total, statsCurrencyCode)
 
             holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topPerformer.product.name)
             holder.productOrdersText.text = numOrders
