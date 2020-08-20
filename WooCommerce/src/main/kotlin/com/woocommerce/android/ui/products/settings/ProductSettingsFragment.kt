@@ -7,8 +7,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
@@ -83,6 +85,13 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         } else {
             productReviewsAllowed.visibility = View.GONE
             productReviewsAllowedDivider.visibility = View.GONE
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
+            productIsDownloadable.visibility = View.VISIBLE
+            productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
+                updateIsDownloadableFlag(checkbox, isChecked)
+            }
         }
 
         productPurchaseNote.setOnClickListener {
@@ -191,6 +200,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
+        productIsDownloadable.isChecked = product.isDownloadable
     }
 
     private fun setupObservers() {
@@ -202,5 +212,27 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         })
 
         updateProductView()
+    }
+
+    private fun updateIsDownloadableFlag(checkBox: CompoundButton, isChecked: Boolean) {
+        fun updateProductDraft(value: Boolean) {
+            viewModel.updateProductDraft(isDownloadable = value)
+            activity?.invalidateOptionsMenu()
+        }
+
+        if (!isChecked) {
+            MaterialAlertDialogBuilder(requireActivity())
+                .setView(R.layout.dialog_uncheck_is_downloadable_warning)
+                .setPositiveButton(R.string.product_uncheck_is_downloadable_warning_yes_button) { _, _ ->
+                    updateProductDraft(false)
+                }
+                .setNegativeButton(R.string.product_uncheck_is_downloadable_warning_no_button) { _, _ ->
+                    checkBox.isChecked = true
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            updateProductDraft(true)
+        }
     }
 }

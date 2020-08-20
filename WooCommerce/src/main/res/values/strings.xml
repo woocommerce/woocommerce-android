@@ -1257,4 +1257,8 @@
     <string name="product_is_downloadable">Downloadable product</string>
     <string name="product_downloadable_files_delete_confirmation">Are you sure you want to remove this file?</string>
     <string name="product_downloadable_files_edit_title">File</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Are you sure you want to remove the ability to download files when product is purchased?</string>
+    <string name="product_uncheck_is_downloadable_warning_message">All files currently attached to this product will be deleted.</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">No</string>
 </resources>
