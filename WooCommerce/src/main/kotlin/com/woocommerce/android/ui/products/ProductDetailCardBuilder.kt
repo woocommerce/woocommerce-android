@@ -354,7 +354,6 @@ class ProductDetailCardBuilder(
             R.drawable.ic_gridicons_list_checkmark,
             true
         ) {
-            PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             viewModel.onEditProductCardClicked(
                 ViewProductInventory(
                     InventoryData(
