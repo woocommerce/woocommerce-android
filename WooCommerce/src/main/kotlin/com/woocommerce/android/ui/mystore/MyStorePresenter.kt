@@ -242,14 +242,17 @@ class MyStorePresenter @Inject constructor(
         granularity: StatsGranularity
     ) {
         topPerformers
-            ?.let {
-            // Track fresh data loaded
-            AnalyticsTracker.track(
-                Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
-            )
-            dashboardView?.showTopPerformers(topPerformers, granularity)
-        } ?: dashboardView?.showTopPerformersError(granularity)
+            ?.sortedWith(
+                compareByDescending(WCTopPerformerProductModel::quantity)
+                    .thenByDescending(WCTopPerformerProductModel::total)
+            )?.let {
+                // Track fresh data loaded
+                AnalyticsTracker.track(
+                    Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
+                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
+                )
+                dashboardView?.showTopPerformers(it, granularity)
+            } ?: dashboardView?.showTopPerformersError(granularity)
     }
 
     @Suppress("unused")
