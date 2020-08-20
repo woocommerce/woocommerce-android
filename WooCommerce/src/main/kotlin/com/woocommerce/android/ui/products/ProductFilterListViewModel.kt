@@ -16,7 +16,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
@@ -98,11 +98,11 @@ class ProductFilterListViewModel @AssistedInject constructor(
 
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges()) {
-            triggerEvent(ShowDiscardDialog(
-                negativeButtonId = string.keep_changes,
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
-                }
+                },
+                negativeButtonId = string.keep_changes
             ))
             false
         } else {

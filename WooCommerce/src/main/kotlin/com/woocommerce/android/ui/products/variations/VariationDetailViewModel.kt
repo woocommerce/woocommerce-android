@@ -25,7 +25,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -102,7 +102,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         when {
             ProductImagesService.isUploadingForProduct(viewState.variation.remoteVariationId) -> {
                 // images can't be assigned to the product until they finish uploading so ask whether to discard images.
-                triggerEvent(ShowDiscardDialog(
+                triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(Exit)
@@ -110,7 +110,7 @@ class VariationDetailViewModel @AssistedInject constructor(
                 ))
             }
             viewState.variation != originalVariation -> {
-                triggerEvent(ShowDiscardDialog(
+                triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(Exit)
                     }

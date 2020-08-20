@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -34,14 +34,14 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
-        triggerEvent(ShowDiscardDialog(
+        triggerEvent(ShowDialog(
             titleId = R.string.product_type_confirm_dialog_title,
             messageId = R.string.product_type_confirm_dialog_message,
             positiveButtonId = R.string.product_type_confirm_button,
-            negativeButtonId = R.string.cancel,
             positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                 triggerEvent(ExitWithResult(productTypeUiItem))
-            }
+            },
+            negativeButtonId = R.string.cancel
         ))
     }
 

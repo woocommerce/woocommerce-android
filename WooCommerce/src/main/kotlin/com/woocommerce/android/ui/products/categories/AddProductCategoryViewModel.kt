@@ -16,7 +16,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -50,7 +50,7 @@ class AddProductCategoryViewModel @AssistedInject constructor(
     fun onBackButtonClicked(categoryName: String, parentId: String): Boolean {
         val hasChanges = categoryName.isNotEmpty() || parentId.isNotEmpty()
         return if (hasChanges && addProductCategoryViewState.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = false)
                     triggerEvent(Exit)
