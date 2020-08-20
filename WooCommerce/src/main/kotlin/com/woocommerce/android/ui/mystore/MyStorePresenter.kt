@@ -63,10 +63,10 @@ class MyStorePresenter @Inject constructor(
          * used after a swipe-to-refresh on the dashboard to ensure we don't get cached data
          */
         fun resetForceRefresh() {
-            for (i in 0 until statsForceRefresh.size) {
+            for (i in statsForceRefresh.indices) {
                 statsForceRefresh[i] = true
             }
-            for (i in 0 until topPerformersForceRefresh.size) {
+            for (i in topPerformersForceRefresh.indices) {
                 topPerformersForceRefresh[i] = true
             }
         }
