@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.downloads
 
+import android.net.Uri
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -44,6 +45,10 @@ class AddProductDownloadViewModel @AssistedInject constructor(
         )
     }
 
+    fun launchFileUpload(uri: Uri) {
+        triggerEvent(UploadFile(uri))
+    }
+
     @Parcelize
     data class AddProductDownloadViewState(
         val isUploading: Boolean
@@ -52,6 +57,7 @@ class AddProductDownloadViewModel @AssistedInject constructor(
     object PickFileFromMedialLibrary : Event()
     object PickFileFromDevice : Event()
     object PickFileFromCamera : Event()
+    data class UploadFile(val uri: Uri): Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddProductDownloadViewModel>

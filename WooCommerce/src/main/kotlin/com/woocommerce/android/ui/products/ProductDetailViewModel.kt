@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -108,7 +109,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val mediaFilesRepository: MediaFilesRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -322,6 +324,20 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onDownloadsSettingsClicked() {
         triggerEvent(ViewProductDownloadsSettings)
+    }
+
+    fun triggerDownloadableFileUpload(uri: Uri) {
+        launch {
+            viewState = viewState.copy(isUploadingDownloadableFile = true)
+            try {
+                val url = mediaFilesRepository.uploadFile(uri)
+                showAddProductDownload(url)
+            } catch (e: Exception) {
+                triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
+            } finally {
+                viewState = viewState.copy(isUploadingDownloadableFile = false)
+            }
+        }
     }
 
     fun showAddProductDownload(url: String) {
@@ -783,6 +799,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
+        mediaFilesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -1529,7 +1546,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null
+        val showBottomSheetButton: Boolean? = null,
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword

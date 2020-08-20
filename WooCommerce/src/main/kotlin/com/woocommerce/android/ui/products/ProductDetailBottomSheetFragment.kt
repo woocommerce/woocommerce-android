@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -46,9 +47,12 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter(
-            viewModel::onProductDetailBottomSheetItemSelected
-        )
+        productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter{
+            // Navigate up before navigating to the next destination, this is useful if the next destination
+            // is a dialog too
+            findNavController().navigateUp()
+            viewModel.onProductDetailBottomSheetItemSelected(it)
+        }
         with(productDetailInfo_optionsList) {
             adapter = productDetailBottomSheetAdapter
             layoutManager = LinearLayoutManager(activity)

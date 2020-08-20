@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.products.downloads
 
+import android.Manifest.permission
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +18,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.media.ProductImagesUtils
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromCamera
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -28,16 +39,19 @@ import kotlinx.android.synthetic.main.layout_file_picker_sources.*
 import javax.inject.Inject
 
 private const val CHOOSE_FILE_REQUEST_CODE = 1
+private const val CAPTURE_PHOTO_REQUEST_CODE = 2
+private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
 
 class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
-
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
-    val viewModel: AddProductDownloadViewModel by viewModels { viewModelFactory.get() }
-    val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
+    private val viewModel: AddProductDownloadViewModel by viewModels { viewModelFactory.get() }
+    private val parentViewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
         viewModelFactory.get()
     }
+    private var capturedPhotoUri: Uri? = null
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -45,6 +59,9 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        savedInstanceState?.let { bundle ->
+            capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
+        }
         return inflater.inflate(R.layout.dialog_product_add_downloadable_file, container, false)
     }
 
@@ -52,11 +69,31 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         textWPMediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
-        textChooser.setOnClickListener { chooseFile() }
+        textChooser.setOnClickListener { viewModel.onDeviceClicked() }
+        textCamera.setOnClickListener { viewModel.onCameraClicked() }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                CHOOSE_FILE_REQUEST_CODE -> {
+                    if (intent?.data == null) {
+                        WooLog.w(T.MEDIA, "File picker return an null data")
+                        return
+                    }
+                    viewModel.launchFileUpload(intent.data!!)
+                }
+                CAPTURE_PHOTO_REQUEST_CODE -> capturedPhotoUri?.let { imageUri ->
+                    viewModel.launchFileUpload(imageUri)
+                }
+            }
+        }
     }
 
     private fun setupObservers(viewModel: AddProductDownloadViewModel) {
@@ -67,6 +104,12 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is PickFileFromMedialLibrary -> showWPMediaPicker()
+                is PickFileFromDevice -> chooseFile()
+                is PickFileFromCamera -> captureProductImage()
+                is UploadFile -> {
+                    parentViewModel.triggerDownloadableFileUpload(event.uri)
+                    findNavController().navigateUp()
+                }
             }
         })
     }
@@ -83,7 +126,53 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
             it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         val chooser = Intent.createChooser(intent, null)
-        activity?.startActivityFromFragment(this, chooser, CHOOSE_FILE_REQUEST_CODE)
+        startActivityForResult(chooser, CHOOSE_FILE_REQUEST_CODE)
+    }
+
+    private fun captureProductImage() {
+        if (requestCameraPermission()) {
+            val intent = ProductImagesUtils.createCaptureImageIntent(requireActivity())
+            if (intent == null) {
+                uiMessageResolver.showSnack(R.string.product_images_camera_error)
+                // dismiss the dialog to allow the snackbar to be shown
+                findNavController().navigateUp()
+                return
+            }
+            capturedPhotoUri = intent.getParcelableExtra(android.provider.MediaStore.EXTRA_OUTPUT)
+            startActivityForResult(intent, CAPTURE_PHOTO_REQUEST_CODE)
+        }
+    }
+
+    private fun requestCameraPermission(): Boolean {
+        if (isAdded) {
+            if (WooPermissionUtils.hasCameraPermission(requireActivity())) {
+                return true
+            }
+            requestPermissions(arrayOf(permission.CAMERA), RequestCodes.CAMERA_PERMISSION)
+        }
+        return false
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (!isAdded) {
+            return
+        }
+
+        val allGranted = WooPermissionUtils.setPermissionListAsked(
+            requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
+        )
+
+        if (allGranted) {
+            when (requestCode) {
+                RequestCodes.CAMERA_PERMISSION -> {
+                    captureProductImage()
+                }
+            }
+        }
     }
 
     override fun androidInjector(): AndroidInjector<Any> = childInjector

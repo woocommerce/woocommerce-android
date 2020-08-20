@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -112,12 +113,25 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                if (it) {
+                    showProgressDialog(R.string.product_update_dialog_title, R.string.product_update_dialog_message)
+                } else {
+                    hideProgressDialog()
+                }
+            }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
                 productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
+            }
+            new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
+                if (it) {
+                    showProgressDialog(R.string.product_downloadable_files_upload_dialog_title, R.string.product_downloadable_files_upload_dialog_message)
+                } else {
+                    hideProgressDialog()
+                }
             }
         }
 
@@ -220,17 +234,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                    getString(R.string.product_update_dialog_title),
-                    getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
+    private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
     }
 
     private fun hideProgressDialog() {
@@ -274,10 +284,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                        ?.let {
-                            viewModel.addProductImageListToDraft(it)
-                            changesMade()
-                        }
+                    ?.let {
+                        viewModel.addProductImageListToDraft(it)
+                        changesMade()
+                    }
             }
             RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
