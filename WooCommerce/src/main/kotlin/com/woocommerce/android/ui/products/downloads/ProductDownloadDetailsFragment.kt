@@ -15,12 +15,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_download_details.*
@@ -54,6 +54,10 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 viewModel.onDoneOrUpdateClicked()
                 true
             }
+            R.id.menu_delete -> {
+                viewModel.onDeleteButtonClicked()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -83,15 +87,14 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     ActivityUtils.hideKeyboard(requireActivity())
                     findNavController().navigateUp()
                 }
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    event.messageId
-                )
+                is ShowDialog -> event.showDialog()
                 is UpdateFileAndExitEvent -> {
                     ActivityUtils.hideKeyboard(requireActivity())
                     parentViewModel.updateDownloadableFileInDraft(event.updatedFile)
+                    findNavController().navigateUp()
+                }
+                is DeleteFileEvent -> {
+                    parentViewModel.deleteDownloadableFile(event.file)
                     findNavController().navigateUp()
                 }
             }

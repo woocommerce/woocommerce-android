@@ -606,6 +606,10 @@
     <string name="product_add_tag_dialog_title">Adding tag</string>
     <string name="product_add_tag_error">Error occurred when adding tags</string>
     <string name="product_type_edit">Change product type</string>
+    <string name="grouped_products">Grouped products</string>
+    <string name="grouped_products_count">%d products</string>
+    <string name="grouped_products_single">%d product</string>
+    <string name="grouped_product_btn_delete">Delete the grouped product</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1251,6 +1255,8 @@
     <string name="product_downloadable_files_expiry">Download expiration</string>
     <string name="delete">Delete</string>
     <string name="product_is_downloadable">Downloadable product</string>
+    <string name="product_downloadable_files_delete_confirmation">Are you sure you want to remove this file?</string>
+    <string name="product_downloadable_files_edit_title">File</string>
     <string name="product_uncheck_is_downloadable_warning_title">Are you sure you want to remove the ability to download files when product is purchased?</string>
     <string name="product_uncheck_is_downloadable_warning_message">All files currently attached to this product will be deleted.</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>

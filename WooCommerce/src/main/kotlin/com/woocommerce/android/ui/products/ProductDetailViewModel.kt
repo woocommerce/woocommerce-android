@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
@@ -61,6 +62,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -70,12 +72,13 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -279,6 +282,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             val mutableDownloadsList = it.downloads.toMutableList()
             Collections.swap(mutableDownloadsList, from, to)
             updateProductDraft(downloads = mutableDownloadsList)
+        }
+    }
+
+    fun deleteDownloadableFile(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads - file
+            updateProductDraft(downloads = updatedDownloads)
+            // If the downloads list is empty now, go directly to the product details screen
+            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
         }
     }
 
@@ -523,34 +535,34 @@ class ProductDetailViewModel @AssistedInject constructor(
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges(event)
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    // discard changes made to the current screen
+                    discardEditChanges(event)
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDiscardDialog(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else {
@@ -683,6 +695,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
         type: ProductType? = null,
+        groupedProductIds: List<Long>? = null,
         downloads: List<ProductFile>? = null,
         downloadLimit: Int? = null,
         downloadExpiry: Int? = null,
@@ -726,6 +739,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     categories = categories ?: product.categories,
                     tags = tags ?: product.tags,
                     type = type ?: product.type,
+                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -766,12 +780,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun fetchBottomSheetList() {
+        val featureFlagCondition = FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() || viewState.productDraft?.type == SIMPLE
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
-                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty() && featureFlagCondition)
                 }
             }
         }

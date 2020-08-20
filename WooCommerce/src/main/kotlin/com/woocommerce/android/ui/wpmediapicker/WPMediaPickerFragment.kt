@@ -22,7 +22,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView.WPMediaGalleryListener
@@ -73,7 +73,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -180,12 +180,15 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                     findNavController().navigateUp()
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })

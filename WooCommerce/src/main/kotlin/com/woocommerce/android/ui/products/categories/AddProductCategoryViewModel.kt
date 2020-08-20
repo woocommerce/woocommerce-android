@@ -8,17 +8,15 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.AddProductCategoryEvent.ExitWithResult
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -52,7 +50,7 @@ class AddProductCategoryViewModel @AssistedInject constructor(
     fun onBackButtonClicked(categoryName: String, parentId: String): Boolean {
         val hasChanges = categoryName.isNotEmpty() || parentId.isNotEmpty()
         return if (hasChanges && addProductCategoryViewState.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = false)
                     triggerEvent(Exit)
@@ -216,10 +214,6 @@ class AddProductCategoryViewModel @AssistedInject constructor(
             isLoadingMore = false,
             isRefreshing = false
         )
-    }
-
-    sealed class AddProductCategoryEvent(val addedCategory: ProductCategory?) : Event() {
-        class ExitWithResult(addedCategory: ProductCategory?) : AddProductCategoryEvent(addedCategory)
     }
 
     @Parcelize

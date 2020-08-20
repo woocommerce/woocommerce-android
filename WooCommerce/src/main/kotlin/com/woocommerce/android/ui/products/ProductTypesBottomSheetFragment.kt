@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ExitWithResult
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -78,17 +78,17 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 is Exit -> {
                     dismiss()
                 }
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    event.titleId,
-                    event.messageId,
-                    event.positiveButtonId,
-                    event.negativeButtonId
+                is ShowDialog -> WooDialog.showDialog(
+                    activity = requireActivity(),
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    posBtnAction = event.positiveBtnAction,
+                    negativeButtonId = event.negativeButtonId,
+                    negBtnAction = event.negativeBtnAction
                 )
-                is ExitWithResult -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.productTypeUiItem)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.item as? ProductTypesBottomSheetUiItem)
                 }
                 else -> event.isHandled = false
             }
