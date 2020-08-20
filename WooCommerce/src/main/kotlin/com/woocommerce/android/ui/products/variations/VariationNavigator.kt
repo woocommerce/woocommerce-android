@@ -47,7 +47,7 @@ class VariationNavigator @Inject constructor() {
             }
             is ViewInventory -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductInventoryFragment(
-                    RequestCodes.VARIATION_DETAIL_PRICING,
+                    RequestCodes.VARIATION_DETAIL_INVENTORY,
                     target.inventoryData,
                     target.sku
                 )
