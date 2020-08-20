@@ -29,31 +29,26 @@ class ProductInventoryViewModel @AssistedInject constructor(
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
-    private var originalInventory: InventoryData
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(
+        savedState,
+        ViewState(
+            inventoryData = navArgs.inventoryData,
+            isIndividualSaleSwitchVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
+        )
+    )
     private var viewState by viewStateData
 
     private var skuVerificationJob: Job? = null
-
-    private val isProductInventory by lazy { navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY }
-    private val originalSku by lazy { navArgs.sku }
+    private val originalSku = navArgs.sku
+    private val originalInventoryData = navArgs.inventoryData
 
     val inventoryData
         get() = viewState.inventoryData
 
     private val hasChanges: Boolean
-        get() = inventoryData != originalInventory
-
-    init {
-        viewState = viewState.copy(
-            inventoryData = navArgs.inventoryData,
-            isIndividualSaleSwitchVisible = isProductInventory
-        )
-
-        originalInventory = navArgs.inventoryData.copy()
-    }
+        get() = inventoryData != originalInventoryData
 
     /**
      * Called when user modifies the SKU field. Currently checks if the entered sku is available
