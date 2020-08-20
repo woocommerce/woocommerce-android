@@ -57,6 +57,13 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
     private var originalVariation: ProductVariation = navArgs.variation
+        set(value) {
+            // Update the cards (and the original SKU, so that that the "SKU error taken" is not shown unnecessarily
+            if (field != value) {
+                field = value
+                updateCards(viewState.variation)
+            }
+        }
 
     private val parameters: SiteParameters by lazy {
         val params = savedState.get<SiteParameters>(KEY_VARIATION_PARAMETERS) ?: loadParameters()
