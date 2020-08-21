@@ -10,9 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -21,17 +23,20 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.Switch
 import com.woocommerce.android.ui.products.models.ProductProperty.Warning
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
+import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -50,15 +55,15 @@ class VariationDetailCardBuilder(
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(variation))
+        cards.addIfNotEmpty(getSecondaryCard(variation))
 
         return cards
     }
 
-    private fun getPrimaryCard(variation: ProductVariation): ProductPropertyCard {
+    private fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
         return ProductPropertyCard(
-            type = PRIMARY,
+            type = SECONDARY,
             properties = listOf(
-                variation.description(),
                 variation.price(),
                 variation.warning(),
                 variation.visibility(),
@@ -66,6 +71,20 @@ class VariationDetailCardBuilder(
                 variation.shipping()
             ).filterNotEmpty()
         )
+    }
+
+    private fun getPrimaryCard(variation: ProductVariation): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = PRIMARY,
+            properties = listOf(
+                variation.title(),
+                variation.description()
+            ).filterNotEmpty()
+        )
+    }
+
+    private fun ProductVariation.title(): ProductProperty {
+        return ComplexProperty(string.product_name, this.optionName)
     }
 
     private fun ProductVariation.description(): ProductProperty {
@@ -88,8 +107,7 @@ class VariationDetailCardBuilder(
         return ComplexProperty(
             string.product_description,
             description,
-            drawable.ic_gridicons_align_left,
-            variationDescription.isNotEmpty(),
+            showTitle = variationDescription.isNotEmpty(),
             onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
         )
     }
