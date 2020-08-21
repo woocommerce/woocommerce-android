@@ -18,7 +18,7 @@ enum class FeatureFlag {
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
             // Also, turn on the feature during testing
             APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
-            PRODUCT_RELEASE_M3 -> AppPrefs.isProductsFeatureEnabled()
+            PRODUCT_RELEASE_M3 -> isTesting() || AppPrefs.isProductsFeatureEnabled()
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
