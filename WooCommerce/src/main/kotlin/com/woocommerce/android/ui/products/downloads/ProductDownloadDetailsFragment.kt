@@ -85,7 +85,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
                 showDoneMenuItem(it)
             }
-            new.urlErrorMessage.takeIfNotEqualTo(old?.urlErrorMessage) {errorRes ->
+            new.urlErrorMessage.takeIfNotEqualTo(old?.urlErrorMessage) { errorRes ->
                 updateUrlErrorMessage(errorRes)
             }
         })
@@ -128,7 +128,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     }
 
     private fun updateUrlErrorMessage(errorRes: Int?) {
-        if(errorRes != null) {
+        if (errorRes != null) {
             product_download_url.error = getString(errorRes)
             enableDoneButton(false)
         } else {

@@ -335,7 +335,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductDownloadableFile)
     }
 
-    fun triggerDownloadableFileUpload(uri: Uri) {
+    fun uploadDownloadableFile(uri: Uri) {
         launch {
             viewState = viewState.copy(isUploadingDownloadableFile = true)
             productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)

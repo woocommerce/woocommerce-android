@@ -107,7 +107,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
                 is PickFileFromDevice -> chooseFile()
                 is PickFileFromCamera -> captureProductImage()
                 is UploadFile -> {
-                    parentViewModel.triggerDownloadableFileUpload(event.uri)
+                    parentViewModel.uploadDownloadableFile(event.uri)
                     findNavController().navigateUp()
                 }
             }
