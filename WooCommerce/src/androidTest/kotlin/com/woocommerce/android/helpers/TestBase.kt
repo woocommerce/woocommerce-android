@@ -1,12 +1,13 @@
 package com.woocommerce.android.helpers
 
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.woocommerce.android.WooCommerce
+import com.woocommerce.android.di.AndroidNotifier
 import com.woocommerce.android.di.AppComponentTest
+import com.woocommerce.android.di.AssetFileSource
 import com.woocommerce.android.di.DaggerAppComponentTest
-import com.woocommerce.android.mocks.AndroidNotifier
 import org.junit.Before
 import org.junit.Rule
 
@@ -20,15 +21,16 @@ open class TestBase {
 
     @Before
     open fun setup() {
-        appContext = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as WooCommerce
+        appContext = getInstrumentation().targetContext.applicationContext as WooCommerce
 
         mockedAppComponent = DaggerAppComponentTest.builder()
                 .application(appContext)
                 .build()
     }
 
-    @get:Rule
-    var wireMockRule: WireMockRule = WireMockRule(options().port(wireMockPort)
-        .usingFilesUnderDirectory("/WooCommerce/src/androidTest/kotlin/com/woocommerce/android/mocks")
-        .notifier(AndroidNotifier()))
+    @Rule @JvmField
+    val wireMockRule = WireMockRule(options().port(wireMockPort)
+        .fileSource(AssetFileSource(getInstrumentation().context.assets))
+        .notifier(AndroidNotifier())
+    )
 }

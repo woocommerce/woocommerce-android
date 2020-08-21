@@ -2,11 +2,10 @@ package com.woocommerce.android.screenshots
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
-import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.ui.main.MainActivity
 import org.junit.Rule
 import org.junit.Test

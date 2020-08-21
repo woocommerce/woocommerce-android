@@ -1,4 +1,4 @@
-package com.woocommerce.android.mocks
+package com.woocommerce.android.di
 
 import android.util.Log
 import com.github.tomakehurst.wiremock.common.Notifier
