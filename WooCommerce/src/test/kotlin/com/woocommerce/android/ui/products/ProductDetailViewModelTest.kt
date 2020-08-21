@@ -13,6 +13,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -59,6 +60,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
+    private val mediaFilesRepository: MediaFilesRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -208,7 +210,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 productImagesServiceWrapper,
                 resources,
                 productCategoriesRepository,
-                productTagsRepository
+                productTagsRepository,
+                mediaFilesRepository
             )
         )
 

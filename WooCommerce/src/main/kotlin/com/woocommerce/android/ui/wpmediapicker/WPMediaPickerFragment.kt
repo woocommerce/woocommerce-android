@@ -184,17 +184,17 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     private fun confirmDiscard() {
         isConfirmingDiscard = true
         WooDialog.showDialog(
-            requireActivity(),
-            messageId = R.string.discard_message,
-            positiveButtonId = R.string.discard,
-            posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                isConfirmingDiscard = false
-                findNavController().navigateUp()
-            },
-            negativeButtonId = R.string.keep_editing,
-            negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                isConfirmingDiscard = false
-            })
+                requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
+                posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    isConfirmingDiscard = false
+                    findNavController().navigateUp()
+                },
+                negativeButtonId = R.string.keep_editing,
+                negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    isConfirmingDiscard = false
+                })
     }
 
     private fun showLoadingProgress(show: Boolean) {

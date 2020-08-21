@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsViewState
@@ -29,6 +30,11 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         null,
         ProductDownloadDetailsFragmentArgs(isEditing = true, productFile = file)
     )
+    private val savedStateForAdding = SavedStateWithArgs(
+        SavedStateHandle(),
+        null,
+        ProductDownloadDetailsFragmentArgs(isEditing = false, productFile = file.copy(id = null))
+    )
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -49,7 +55,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft).isEqualTo(file)
-        assertThat(state!!.showDoneButton).isEqualTo(false)
+        assertThat(state!!.hasChanges).isEqualTo(false)
     }
 
     @Test
@@ -86,7 +92,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.name).isEqualTo(newName)
-        assertThat(state!!.showDoneButton).isEqualTo(true)
+        assertThat(state!!.hasChanges).isEqualTo(true)
     }
 
     @Test
@@ -104,11 +110,11 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.url).isEqualTo(newUrl)
-        assertThat(state!!.showDoneButton).isEqualTo(true)
+        assertThat(state!!.hasChanges).isEqualTo(true)
     }
 
     @Test
-    fun `test dispatch update event`() {
+    fun `test dispatch update event when editing`() {
         viewModel = ProductDownloadDetailsViewModel(
             savedStateForEditing,
             coroutinesTestRule.testDispatchers,
@@ -130,6 +136,28 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `test dispatch add event when adding file`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForAdding,
+            coroutinesTestRule.testDispatchers,
+            resourceProvider
+        )
+
+        val newUrl = "new url"
+        val newName = "new name"
+        viewModel.onFileNameChanged(newName)
+        viewModel.onFileUrlChanged(newUrl)
+
+        var event: Event? = null
+        viewModel.event.observeForever { new -> event = new }
+        viewModel.onDoneOrUpdateClicked()
+
+        assertThat(event).isInstanceOf(AddFileAndExitEvent::class.java)
+        assertEquals(newName, (event as AddFileAndExitEvent).file.name)
+        assertEquals(newUrl, (event as AddFileAndExitEvent).file.url)
+    }
+
+    @Test
     fun `test delete file`() {
         viewModel = ProductDownloadDetailsViewModel(
             savedStateForEditing,
@@ -145,5 +173,71 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         assertThat(events[0]).isInstanceOf(ShowDialog::class.java)
         assertThat(events[1]).isInstanceOf(DeleteFileEvent::class.java)
         assertThat((events[1] as DeleteFileEvent).file).isEqualTo(file)
+    }
+
+    @Test
+    fun `test field validation when url empty`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForEditing,
+            coroutinesTestRule.testDispatchers,
+            resourceProvider
+        )
+
+        viewModel.onFileUrlChanged("")
+
+        var state: ProductDownloadDetailsViewState? = null
+        viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
+
+        assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+    }
+
+    @Test
+    fun `test field validation when url invalid`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForEditing,
+            coroutinesTestRule.testDispatchers,
+            resourceProvider
+        )
+
+        viewModel.onFileUrlChanged("invalid_url")
+
+        var state: ProductDownloadDetailsViewState? = null
+        viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
+
+        assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+    }
+
+    @Test
+    fun `test field validation when url without path and name empty`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForEditing,
+            coroutinesTestRule.testDispatchers,
+            resourceProvider
+        )
+
+        viewModel.onFileUrlChanged("http://testurl.com/")
+        viewModel.onFileNameChanged("")
+
+        var state: ProductDownloadDetailsViewState? = null
+        viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
+
+        assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+    }
+
+    @Test
+    fun `test field validation when url with path and name empty`() {
+        viewModel = ProductDownloadDetailsViewModel(
+            savedStateForEditing,
+            coroutinesTestRule.testDispatchers,
+            resourceProvider
+        )
+
+        viewModel.onFileUrlChanged("http://testurl.com/path/file.jpg")
+        viewModel.onFileNameChanged("")
+
+        var state: ProductDownloadDetailsViewState? = null
+        viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
+
+        assertThat(state!!.urlErrorMessage).isNull()
     }
 }

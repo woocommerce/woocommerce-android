@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.downloads
 
 import android.content.DialogInterface
 import android.os.Parcelable
+import androidx.core.util.PatternsCompat
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -19,6 +20,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import java.net.URI
+import java.net.URISyntaxException
 
 class ProductDownloadDetailsViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -31,13 +34,13 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         savedState,
         ProductDownloadDetailsViewState(
             fileDraft = navArgs.productFile,
-            showDoneButton = !navArgs.isEditing
+            hasChanges = !navArgs.isEditing
         )
     )
     private var productDownloadDetailsViewState by productDownloadDetailsViewStateData
 
     val showDoneButton
-        get() = productDownloadDetailsViewState.showDoneButton
+        get() = productDownloadDetailsViewState.hasChanges
 
     val screenTitle
         get() = if (navArgs.isEditing) {
@@ -89,8 +92,24 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {
         val hasChanges = !navArgs.isEditing || updatedState.fileDraft != navArgs.productFile
-        val canSave = updatedState.fileDraft.url.isNotBlank()
-        productDownloadDetailsViewState = updatedState.copy(showDoneButton = hasChanges && canSave)
+        val isInputValid = validateInput(updatedState)
+        productDownloadDetailsViewState = updatedState.copy(
+            hasChanges = hasChanges,
+            urlErrorMessage = if (isInputValid) null else R.string.product_downloadable_files_url_invalid
+        )
+    }
+
+    private fun validateInput(updatedState: ProductDownloadDetailsViewState): Boolean {
+        val url = updatedState.fileDraft.url
+        val name = updatedState.fileDraft.name
+        if (url.isEmpty() || !PatternsCompat.WEB_URL.matcher(url).matches()) return false
+        try {
+            val uri = URI(url)
+            if (uri.path?.length ?: 0 > 1) return true
+            return name.isNotBlank()
+        } catch (e: URISyntaxException) {
+            return false
+        }
     }
 
     fun triggerFileDeletion() {
@@ -112,7 +131,8 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
-        val showDoneButton: Boolean
+        val hasChanges: Boolean,
+        val urlErrorMessage: Int? = null
     ) : Parcelable
 
     @AssistedInject.Factory

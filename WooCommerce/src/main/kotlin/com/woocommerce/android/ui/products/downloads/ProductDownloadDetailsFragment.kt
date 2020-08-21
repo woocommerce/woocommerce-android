@@ -82,8 +82,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             new.fileDraft.name.takeIfNotEqualTo(product_download_name.getText()) {
                 product_download_name.setText(it)
             }
-            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
+            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
                 showDoneMenuItem(it)
+            }
+            new.urlErrorMessage.takeIfNotEqualTo(old?.urlErrorMessage) {errorRes ->
+                updateUrlErrorMessage(errorRes)
             }
         })
 
@@ -121,6 +124,22 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         }
         product_download_name.setOnTextChangedListener {
             viewModel.onFileNameChanged(it.toString())
+        }
+    }
+
+    private fun updateUrlErrorMessage(errorRes: Int?) {
+        if(errorRes != null) {
+            product_download_url.error = getString(errorRes)
+            enableDoneButton(false)
+        } else {
+            product_download_url.error = null
+            enableDoneButton(true)
+        }
+    }
+
+    private fun enableDoneButton(enable: Boolean) {
+        if (::doneOrUpdateMenuItem.isInitialized) {
+            doneOrUpdateMenuItem.isEnabled = enable
         }
     }
 
