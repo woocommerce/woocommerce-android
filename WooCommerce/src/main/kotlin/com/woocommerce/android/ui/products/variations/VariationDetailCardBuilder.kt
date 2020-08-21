@@ -2,15 +2,19 @@ package com.woocommerce.android.ui.products.variations
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.ProductBackorderStatus
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -22,11 +26,13 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.util.FormatUtils
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -34,7 +40,11 @@ class VariationDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    fun buildPropertyCards(variation: ProductVariation): List<ProductPropertyCard> {
+    private lateinit var originalSku: String
+
+    fun buildPropertyCards(variation: ProductVariation, originalSku: String): List<ProductPropertyCard> {
+        this.originalSku = originalSku
+
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(variation))
 
@@ -58,7 +68,7 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.description(): ProductProperty {
         val variationDescription = this.description
         val description = if (variationDescription.isEmpty()) {
-            resources.getString(string.product_description)
+            resources.getString(string.product_description_empty)
         } else {
             variationDescription
         }
@@ -91,7 +101,7 @@ class VariationDetailCardBuilder(
 
         return if (PRODUCT_RELEASE_M3.isEnabled()) {
             Switch(visibility, isVisible, visibilityIcon) {
-                viewModel.onVariationChanged(isVisible = it)
+                viewModel.onVariationVisibilitySwitchChanged(it)
             }
         } else {
             Switch(visibility, isVisible, visibilityIcon)
@@ -120,7 +130,7 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        return if (regularPrice.isSet()) {
+        return if (regularPrice.isSet() || PRODUCT_RELEASE_M3.isEnabled()) {
             val isWarningVisible = regularPrice.isNotSet() && this.isVisible
             PropertyGroup(
                 string.product_price,
@@ -189,21 +199,43 @@ class VariationDetailCardBuilder(
     }
 
     private fun ProductVariation.inventory(): ProductProperty {
-        return ComplexProperty(
-            string.product_inventory,
-            ProductStockStatus.stockStatusToDisplayString(
-                resources,
-                this.stockStatus
-            ),
-            drawable.ic_gridicons_list_checkmark,
+        val inventoryGroup = when {
+            this.isStockManaged -> mapOf(
+                Pair(resources.getString(R.string.product_backorders),
+                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
+                Pair(resources.getString(R.string.product_stock_quantity),
+                    FormatUtils.formatInt(this.stockQuantity)),
+                Pair(resources.getString(R.string.product_sku), this.sku)
+            )
+            this.sku.isNotEmpty() -> mapOf(
+                Pair(resources.getString(R.string.product_sku), this.sku),
+                Pair(resources.getString(R.string.product_stock_status),
+                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+            )
+            else -> mapOf(
+                Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+            )
+        }
+
+        return PropertyGroup(
+            R.string.product_inventory,
+            inventoryGroup,
+            R.drawable.ic_gridicons_list_checkmark,
             true
-        )
-        // TODO: This will be used once the variants are editable
-//        {
-//            viewModel.onEditProductCardClicked(
-//                ViewProductInventory(this.remoteId),
-//                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
-//            )
-//        }
+        ) {
+            viewModel.onEditVariationCardClicked(
+                ViewInventory(
+                    InventoryData(
+                        sku = this.sku,
+                        isStockManaged = this.isStockManaged,
+                        stockStatus = this.stockStatus,
+                        stockQuantity = this.stockQuantity,
+                        backorderStatus = this.backorderStatus
+                    ),
+                    originalSku
+                ),
+                PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
+            )
+        }
     }
 }

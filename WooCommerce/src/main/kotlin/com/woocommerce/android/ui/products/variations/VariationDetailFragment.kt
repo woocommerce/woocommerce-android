@@ -28,6 +28,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.ProductInventoryFragment
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingFragment
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
@@ -138,6 +140,15 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 isSaleScheduled = it.isSaleScheduled,
                 saleStartDate = Optional(it.saleStartDate),
                 saleEndDate = Optional(it.saleEndDate)
+            )
+        }
+        handleResult<InventoryData>(ProductInventoryFragment.KEY_INVENTORY_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                sku = it.sku,
+                stockStatus = it.stockStatus,
+                stockQuantity = it.stockQuantity,
+                backorderStatus = it.backorderStatus,
+                isStockManaged = it.isStockManaged
             )
         }
     }

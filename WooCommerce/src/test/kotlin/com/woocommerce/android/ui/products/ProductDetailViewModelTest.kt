@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -126,6 +127,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
                     true
+                ),
+                RatingBar(
+                    R.string.product_reviews,
+                    resources.getString(R.string.product_reviews_count, product.ratingCount),
+                    product.averageRating,
+                    R.drawable.ic_reviews
                 ),
                 PropertyGroup(
                     R.string.product_inventory,
@@ -239,6 +246,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 is Editable -> p.copy(onTextChanged = null)
                 is PropertyGroup -> p.copy(onClick = null)
                 is Link -> p.copy(onClick = null)
+                is RatingBar -> p.copy(onClick = null)
                 else -> p
             }
         })

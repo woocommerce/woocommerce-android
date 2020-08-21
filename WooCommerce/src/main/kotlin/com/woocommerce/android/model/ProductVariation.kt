@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
@@ -24,6 +25,7 @@ import java.util.Date
 data class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
+    val sku: String,
     val image: Product.Image?,
     val regularPrice: BigDecimal?,
     val salePrice: BigDecimal?,
@@ -31,12 +33,14 @@ data class ProductVariation(
     val saleStartDateGmt: Date?,
     val isSaleScheduled: Boolean,
     val stockStatus: ProductStockStatus,
+    val backorderStatus: ProductBackorderStatus,
     val stockQuantity: Int,
     val optionName: String,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,
     val isVirtual: Boolean,
     val isDownloadable: Boolean,
+    val isStockManaged: Boolean,
     val description: String,
     val isVisible: Boolean,
     val shippingClass: String,
@@ -51,6 +55,7 @@ data class ProductVariation(
         return variation?.let {
             remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
+                sku == variation.sku &&
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
@@ -59,11 +64,13 @@ data class ProductVariation(
                 saleStartDateGmt == variation.saleStartDateGmt &&
                 stockQuantity == variation.stockQuantity &&
                 stockStatus == variation.stockStatus &&
+                backorderStatus == variation.backorderStatus &&
                 optionName.fastStripHtml() == variation.optionName.fastStripHtml() &&
                 priceWithCurrency == variation.priceWithCurrency &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&
+                isStockManaged == variation.isStockManaged &&
                 description.fastStripHtml() == variation.description.fastStripHtml() &&
                 isVisible == variation.isVisible &&
                 shippingClass == variation.shippingClass &&
@@ -94,6 +101,7 @@ data class ProductVariation(
         return (cachedVariation ?: WCProductVariationModel()).also {
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
+            it.sku = sku
             it.image = imageToJson()
             it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
             it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
@@ -107,10 +115,12 @@ data class ProductVariation(
                 it.dateOnSaleToGmt = ""
             }
             it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
+            it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
             it.stockQuantity = stockQuantity
             it.purchasable = isPurchasable
             it.virtual = isVirtual
             it.downloadable = isDownloadable
+            it.manageStock = isStockManaged
             it.description = description
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
@@ -127,6 +137,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
         this.remoteProductId,
         this.remoteVariationId,
+        this.sku,
         this.getImage()?.let {
             Product.Image(
                 it.id,
@@ -141,11 +152,13 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         this.dateOnSaleFromGmt.formatDateToISO8601Format(),
         this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         ProductStockStatus.fromString(this.stockStatus),
+        ProductBackorderStatus.fromString(this.backorders),
         this.stockQuantity,
         getAttributeOptionName(this.getProductVariantOptions()),
         isPurchasable = this.purchasable,
         isDownloadable = this.downloadable,
         isVirtual = this.virtual,
+        isStockManaged = this.manageStock,
         description = this.description.fastStripHtml(),
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,

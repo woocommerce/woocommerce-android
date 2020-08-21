@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
@@ -9,6 +10,7 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -52,9 +54,12 @@ class ProductDetailCardBuilder(
 ) {
     private fun isSimple(product: Product) = product.type == SIMPLE
 
-    fun buildPropertyCards(product: Product): List<ProductPropertyCard> {
-        val cards = mutableListOf<ProductPropertyCard>()
+    private lateinit var originalSku: String
 
+    fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+        this.originalSku = originalSku
+
+        val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
@@ -241,7 +246,7 @@ class ProductDetailCardBuilder(
     // show stock properties as a group if stock management is enabled, otherwise show sku separately
     private fun Product.readOnlyInventory(): ProductProperty {
         return when {
-            this.manageStock -> {
+            this.isStockManaged -> {
                 val group = mapOf(
                     Pair(resources.getString(R.string.product_stock_status),
                         ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
@@ -326,7 +331,7 @@ class ProductDetailCardBuilder(
                 mapOf(
                     Pair(resources.getString(R.string.product_sku), this.sku)
                 )
-            this.manageStock -> mapOf(
+            this.isStockManaged -> mapOf(
                 Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
                 Pair(resources.getString(R.string.product_stock_quantity),
@@ -350,8 +355,18 @@ class ProductDetailCardBuilder(
             true
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductInventory(this.remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+                ViewProductInventory(
+                    InventoryData(
+                        sku = this.sku,
+                        isStockManaged = this.isStockManaged,
+                        stockStatus = this.stockStatus,
+                        stockQuantity = this.stockQuantity,
+                        backorderStatus = this.backorderStatus,
+                        isSoldIndividually = this.isSoldIndividually
+                    ),
+                    originalSku
+                ),
+                PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             )
         }
     }
@@ -466,7 +481,7 @@ class ProductDetailCardBuilder(
             RatingBar(
                 R.string.product_reviews,
                 resources.getString(R.string.product_reviews_count, ratingCount),
-                ratingCount.toFloat(),
+                this.averageRating,
                 R.drawable.ic_reviews
             ) {
                 viewModel.onEditProductCardClicked(

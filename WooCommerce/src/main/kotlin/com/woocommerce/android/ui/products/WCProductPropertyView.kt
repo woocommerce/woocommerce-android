@@ -33,29 +33,31 @@ class WCProductPropertyView @JvmOverloads constructor(
         orientation: Int,
         caption: String,
         detail: CharSequence?,
-        @DrawableRes propertyIcon: Int? = null
+        showTitle: Boolean,
+        @DrawableRes propertyIcon: Int? = null,
+        isRating: Boolean = false
     ) {
-        ensureViewCreated(orientation)
+        ensureViewCreated(orientation, isRating)
 
         propertyNameText?.text = caption
 
         if (propertyIcon != null) {
-            propertyGroupIcon?.visibility = View.VISIBLE
+            propertyGroupIcon?.isVisible = true
             propertyGroupIcon?.setImageDrawable(context.getDrawable(propertyIcon))
         } else {
-            propertyGroupIcon?.visibility = View.GONE
+            propertyGroupIcon?.isVisible = false
         }
 
         if (detail.isNullOrEmpty()) {
-            propertyValueText?.visibility = View.GONE
+            propertyValueText?.isVisible = false
+        } else if (!showTitle) {
+            propertyValueText?.isVisible = false
+            propertyNameText?.isVisible = true
+            propertyNameText?.text = detail
         } else {
-            propertyValueText?.visibility = View.VISIBLE
+            propertyValueText?.isVisible = true
             propertyValueText?.text = detail
         }
-    }
-
-    fun showPropertyName(show: Boolean) {
-        propertyNameText?.isVisible = show
     }
 
     /**
@@ -83,7 +85,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     }
 
     fun setRating(rating: Float) {
-        ensureViewCreated()
+        ensureViewCreated(isRating = true)
 
         try {
             ratingBar?.rating = rating
@@ -111,12 +113,16 @@ class WCProductPropertyView @JvmOverloads constructor(
         propertyGroupImg?.clearColorFilter()
     }
 
-    private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {
+    private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL, isRating: Boolean) {
         if (view == null) {
-            view = if (orientation == LinearLayout.VERTICAL) {
-                View.inflate(context, R.layout.product_property_view_vert_layout, this)
+            view = if (isRating) {
+                View.inflate(context, R.layout.rating_property_view_layout, this)
             } else {
-                View.inflate(context, R.layout.product_property_view_horz_layout, this)
+                if (orientation == LinearLayout.VERTICAL) {
+                    View.inflate(context, R.layout.product_property_view_vert_layout, this)
+                } else {
+                    View.inflate(context, R.layout.product_property_view_horz_layout, this)
+                }
             }
             propertyGroupImg = view?.findViewById(R.id.imgProperty)
             propertyGroupIcon = view?.findViewById(R.id.imgPropertyIcon)

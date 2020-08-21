@@ -11,7 +11,6 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -52,7 +51,7 @@ data class Product(
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
-    val manageStock: Boolean,
+    val isStockManaged: Boolean,
     val stockQuantity: Int,
     val sku: String,
     val shippingClass: String,
@@ -67,7 +66,7 @@ data class Product(
     val attributes: List<Attribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
-    val soldIndividually: Boolean,
+    val isSoldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
@@ -104,9 +103,9 @@ data class Product(
             stockQuantity == product.stockQuantity &&
             stockStatus == product.stockStatus &&
             status == product.status &&
-            manageStock == product.manageStock &&
+            isStockManaged == product.isStockManaged &&
             backorderStatus == product.backorderStatus &&
-            soldIndividually == product.soldIndividually &&
+            isSoldIndividually == product.isSoldIndividually &&
             reviewsAllowed == product.reviewsAllowed &&
             sku == product.sku &&
             slug == product.slug &&
@@ -159,27 +158,11 @@ data class Product(
     fun hasInventoryChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             sku != it.sku ||
-                manageStock != it.manageStock ||
+                isStockManaged != it.isStockManaged ||
                 stockStatus != it.stockStatus ||
                 stockQuantity != it.stockQuantity ||
                 backorderStatus != it.backorderStatus ||
-                soldIndividually != it.soldIndividually
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the pricing fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasPricingChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            regularPrice.isNotEqualTo(it.regularPrice) ||
-                salePrice.isNotEqualTo(it.salePrice) ||
-                saleStartDateGmt != it.saleStartDateGmt ||
-                saleEndDateGmt != it.saleEndDateGmt ||
-                taxClass != it.taxClass ||
-                taxStatus != it.taxStatus
+                isSoldIndividually != it.isSoldIndividually
         } ?: false
     }
 
@@ -327,11 +310,11 @@ data class Product(
                 status = updatedProduct.status,
                 catalogVisibility = updatedProduct.catalogVisibility,
                 isFeatured = updatedProduct.isFeatured,
-                manageStock = updatedProduct.manageStock,
+                isStockManaged = updatedProduct.isStockManaged,
                 stockStatus = updatedProduct.stockStatus,
                 stockQuantity = updatedProduct.stockQuantity,
                 backorderStatus = updatedProduct.backorderStatus,
-                soldIndividually = updatedProduct.soldIndividually,
+                isSoldIndividually = updatedProduct.isSoldIndividually,
                 regularPrice = updatedProduct.regularPrice,
                 salePrice = updatedProduct.salePrice,
                 isVirtual = updatedProduct.isVirtual,
@@ -421,10 +404,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.status = status.toString()
         it.catalogVisibility = catalogVisibility.toString()
         it.featured = isFeatured
-        it.manageStock = manageStock
+        it.manageStock = isStockManaged
         it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
         it.stockQuantity = stockQuantity
-        it.soldIndividually = soldIndividually
+        it.soldIndividually = isSoldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
         it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
         it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
@@ -489,7 +472,7 @@ fun WCProductModel.toAppModel(): Product {
         // In Core, if a tax class is empty it is considered as standard and we are following the same
         // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
-        manageStock = this.manageStock,
+        isStockManaged = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
         slug = this.slug,
@@ -523,7 +506,7 @@ fun WCProductModel.toAppModel(): Product {
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        soldIndividually = this.soldIndividually,
+        isSoldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder,

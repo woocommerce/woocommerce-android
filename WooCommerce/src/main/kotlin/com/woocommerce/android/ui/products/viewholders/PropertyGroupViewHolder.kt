@@ -20,18 +20,18 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
                 LinearLayout.VERTICAL,
                 getPropertyValue(item.properties, item.propertyFormat),
                 null,
+                true,
                 item.icon
             )
-            propertyView.showPropertyName(true)
         } else {
             propertyView.show(
                 LinearLayout.VERTICAL,
                 context.getString(item.title),
                 getPropertyValue(item.properties, item.propertyFormat),
+                item.showTitle,
                 item.icon
             )
             propertyView.setMaxLines(Integer.MAX_VALUE)
-            propertyView.showPropertyName(item.showTitle)
         }
 
         if (item.onClick != null) {

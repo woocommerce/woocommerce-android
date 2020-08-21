@@ -24,8 +24,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
-import com.woocommerce.android.ui.products.ProductPricingViewModel.ExitWithResult
+import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -35,6 +34,7 @@ import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -44,7 +44,7 @@ import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInventorySelectorDialogListener {
+class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSelectorDialogListener {
     companion object {
         const val KEY_PRICING_DIALOG_RESULT = "key_pricing_dialog_result"
     }
@@ -55,8 +55,8 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
 
     private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory }
 
-    private var productTaxStatusSelectorDialog: ProductInventorySelectorDialog? = null
-    private var productTaxClassSelectorDialog: ProductInventorySelectorDialog? = null
+    private var productTaxStatusSelectorDialog: ProductItemSelectorDialog? = null
+    private var productTaxClassSelectorDialog: ProductItemSelectorDialog? = null
 
     private var startDatePickerDialog: DatePickerDialog? = null
     private var endDatePickerDialog: DatePickerDialog? = null
@@ -130,7 +130,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                updateViews(new.currency, new.decimals, viewModel.pricingData)
+                setupViews(new.currency, new.decimals, viewModel.pricingData)
             }
             new.taxClassList?.takeIfNotEqualTo(old?.taxClassList) {
                 updateProductTaxClassList(it, viewModel.pricingData)
@@ -166,7 +166,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
@@ -179,7 +179,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         })
     }
 
-    private fun updateViews(currency: String, decimals: Int, pricingData: PricingData) {
+    private fun setupViews(currency: String, decimals: Int, pricingData: PricingData) {
         if (!isAdded) return
 
         with(product_regular_price) {
@@ -248,11 +248,11 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
             with(product_tax_status) {
                 setText(ProductTaxStatus.taxStatusToDisplayString(requireContext(), status))
                 setClickListener {
-                    productTaxStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
+                    productTaxStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_STATUS,
                         getString(R.string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
                         getText()
-                    ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+                    ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
                 }
             }
         }
@@ -297,11 +297,13 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         product_tax_class.setText(name)
         taxClassList?.let { taxClasses ->
             product_tax_class.setClickListener {
-                productTaxClassSelectorDialog = ProductInventorySelectorDialog.newInstance(
-                        this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_CLASS,
-                        getString(R.string.product_tax_class), taxClasses.map { it.slug to it.name }.toMap(),
-                        product_tax_class.getText()
-                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+                productTaxClassSelectorDialog = ProductItemSelectorDialog.newInstance(
+                    this@ProductPricingFragment,
+                    RequestCodes.PRODUCT_TAX_CLASS,
+                    getString(R.string.product_tax_class),
+                    taxClasses.map { it.slug to it.name }.toMap(),
+                    product_tax_class.getText()
+                ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
         }
     }
@@ -351,7 +353,7 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductInvento
         return dateOnSaleFrom.formatToMMMddYYYY()
     }
 
-    override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
+    override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
         when (resultCode) {
             RequestCodes.PRODUCT_TAX_STATUS -> {
                 selectedItem?.let {

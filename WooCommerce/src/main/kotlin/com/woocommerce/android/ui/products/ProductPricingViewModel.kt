@@ -16,8 +16,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -41,7 +41,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     private var originalPricing: PricingData
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState(pricingData = navArgs.pricingData))
     private var viewState by viewStateData
 
     val parameters: SiteParameters by lazy {
@@ -50,10 +50,13 @@ class ProductPricingViewModel @AssistedInject constructor(
         params
     }
 
-    private val isProductPricing by lazy { navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING }
+    private val isProductPricing = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING
 
     val pricingData
         get() = viewState.pricingData
+
+    private val hasChanges: Boolean
+        get() = pricingData != originalPricing
 
     init {
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
@@ -63,15 +66,11 @@ class ProductPricingViewModel @AssistedInject constructor(
             currency = parameters.currencyCode,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
-            pricingData = navArgs.pricingData,
             isTaxSectionVisible = isProductPricing
         )
 
-        originalPricing = navArgs.pricingData.copy()
+        originalPricing = navArgs.pricingData
     }
-
-    private val hasChanges: Boolean
-        get() = viewState.pricingData != originalPricing
 
     private fun loadParameters(): SiteParameters {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
@@ -192,7 +191,7 @@ class ProductPricingViewModel @AssistedInject constructor(
     }
 
     @Parcelize
-    data class ProductPricingViewState(
+    data class ViewState(
         val currency: String? = null,
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
@@ -204,7 +203,7 @@ class ProductPricingViewModel @AssistedInject constructor(
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
         val isDoneButtonEnabled: Boolean
-            get() = salePriceErrorMessage == 0
+            get() = salePriceErrorMessage == 0 || salePriceErrorMessage == null
     }
 
     @Parcelize
@@ -234,8 +233,6 @@ class ProductPricingViewModel @AssistedInject constructor(
             return super.hashCode()
         }
     }
-
-    data class ExitWithResult(val data: PricingData) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductPricingViewModel>
