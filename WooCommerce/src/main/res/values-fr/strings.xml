@@ -296,7 +296,6 @@ Language: fr
     <string name="install">Installer</string>
     <string name="error_disabled_apis">Impossible d’extraire les réglages : certaines API sont indisponibles pour cette combinaison d’ID d’application OAuth + compte.</string>
     <string name="settings_hiring">Nous recrutons !</string>
-    <string name="feature_requests">Demande de fonctionnalité</string>
     <string name="orderdetail_copy_tracking_number">Copier le numéro de suivi</string>
     <string name="login_refresh_app_progress">Vérification de WooCommerce…</string>
     <string name="login_refresh_app">actualiser l’application</string>

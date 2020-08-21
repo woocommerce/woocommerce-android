@@ -296,7 +296,6 @@ Language: zh_TW
     <string name="install">安裝</string>
     <string name="error_disabled_apis">無法擷取設定：部分 API 並不適用此 OAuth 應用程式 ID 與帳號的組合。</string>
     <string name="settings_hiring">人才招募中！</string>
-    <string name="feature_requests">功能要求</string>
     <string name="orderdetail_copy_tracking_number">複製追蹤號碼</string>
     <string name="login_refresh_app_progress">正在檢查 WooCommerce…</string>
     <string name="login_refresh_app">重新整理應用程式</string>

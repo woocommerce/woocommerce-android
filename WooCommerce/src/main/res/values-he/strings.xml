@@ -296,7 +296,6 @@ Language: he_IL
     <string name="install">להתקין</string>
     <string name="error_disabled_apis">לא ניתן היה להביא את ההגדרות: חלק ממשקי ה-API לא זמינים בשילוב הנוכחי של מזהה אפליקציית OAuth ושל החשבון.</string>
     <string name="settings_hiring">אנחנו מחפשים עובדים!</string>
-    <string name="feature_requests">בקשת תכונה</string>
     <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>

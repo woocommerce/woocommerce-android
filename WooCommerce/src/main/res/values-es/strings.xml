@@ -296,7 +296,6 @@ Language: es
     <string name="install">Instalar</string>
     <string name="error_disabled_apis">No se ha podido recuperar la configuración: Algunas APIs no están disponibles para la cuenta e ID de esta aplicación OAuth.</string>
     <string name="settings_hiring">¡Buscamos personal!</string>
-    <string name="feature_requests">Solicitud de función</string>
     <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
     <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>

@@ -296,7 +296,6 @@ Language: id
     <string name="install">Instal</string>
     <string name="error_disabled_apis">Tidak dapat memuat pengaturan: Beberapa API tidak tersedia untuk kombinasi ID aplikasi OAuth + akun ini.</string>
     <string name="settings_hiring">Kami membuka lowongan!</string>
-    <string name="feature_requests">Permintaan fitur</string>
     <string name="orderdetail_copy_tracking_number">Salin nomor pelacakan</string>
     <string name="login_refresh_app_progress">Memeriksa WooCommerce…</string>
     <string name="login_refresh_app">segarkan aplikasi</string>

@@ -296,7 +296,6 @@ Language: zh_CN
     <string name="install">安装</string>
     <string name="error_disabled_apis">无法获取设置：一些 API 不适用于此 OAuth 应用程序 ID + 帐户组合。</string>
     <string name="settings_hiring">我们正在招贤纳士！</string>
-    <string name="feature_requests">功能请求</string>
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>

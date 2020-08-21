@@ -315,7 +315,6 @@ Language: sv_SE
     <string name="install">Installera</string>
     <string name="error_disabled_apis">Det gick inte att hämta inställningarna: En del API:er är inte tillgängliga för den här OAuth app-ID + konto-kombinationen.</string>
     <string name="settings_hiring">Vi letar efter medarbetare!</string>
-    <string name="feature_requests">Funktionsbegäran</string>
     <string name="orderdetail_copy_tracking_number">Kopiera spårningsnummer</string>
     <string name="login_refresh_app_progress">Kollar efter WooCommerce …</string>
     <string name="login_refresh_app">uppdatera appen</string>

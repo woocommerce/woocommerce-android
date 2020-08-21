@@ -296,7 +296,6 @@ Language: ko_KR
     <string name="install">설치</string>
     <string name="error_disabled_apis">설정을 가져올 수 없음: 이 OAuth 앱 ID + 계정 조합에 일부 API를 사용할 수 없습니다.</string>
     <string name="settings_hiring">우리와 함께해요!</string>
-    <string name="feature_requests">기능 요청</string>
     <string name="orderdetail_copy_tracking_number">추적 번호 복사</string>
     <string name="login_refresh_app_progress">WooCommerce 확인 중…</string>
     <string name="login_refresh_app">앱 새로 고침</string>

@@ -294,7 +294,6 @@ Language: tr
     <string name="install">Yükle</string>
     <string name="error_disabled_apis">Ayarlar getirilemedi: Bu OAuth uygulama kimliği ve hesap birleşimi için bazı API\'ler kullanılamıyor.</string>
     <string name="settings_hiring">Yeni çalışma arkadaşları arıyoruz!</string>
-    <string name="feature_requests">Özellik isteği</string>
     <string name="orderdetail_copy_tracking_number">Takip numarasını kopyala</string>
     <string name="login_refresh_app_progress">WooCommerce kontrol ediliyor…</string>
     <string name="login_refresh_app">uygulamayı yenile</string>
