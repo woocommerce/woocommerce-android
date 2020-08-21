@@ -162,9 +162,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        option_feature_request.setOnClickListener {
+        option_send_feedback.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
-            context?.let { ChromeCustomTabUtils.launchUrl(it, AppUrls.APP_FEATURE_REQUEST) }
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_feedbackSurveyFragment)
         }
 
         option_about.setOnClickListener {
