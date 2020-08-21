@@ -9,13 +9,13 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal|top"
         android:orientation="vertical"
-        android:padding="32dp">
+        android:padding="@dimen/major_200">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/completion_title"
             style="@style/Woo.TextView.Subtitle1"
-            android:layout_width="241dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/feedback_completed_title_width"
+            android:layout_height="@dimen/major_300"
             android:lineSpacingExtra="5sp"
             android:text="@string/feedback_completed_title_message"
             android:textAlignment="center"
@@ -28,7 +28,7 @@
             android:id="@+id/success_image"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/image_major_150"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="@dimen/major_250"
             android:src="@drawable/img_success_tablet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_back_to_store"
             style="@style/Woo.Button.Colored"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_300"
             android:layout_marginTop="@dimen/major_200"
