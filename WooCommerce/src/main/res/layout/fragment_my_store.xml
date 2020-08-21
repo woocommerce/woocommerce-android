@@ -59,7 +59,7 @@
                     android:visibility="gone"/>
 
                 <!-- Top earner stats -->
-                <com.woocommerce.android.ui.mystore.MyStoreTopEarnersView
+                <com.woocommerce.android.ui.mystore.MyStoreTopPerformersView
                     android:id="@+id/my_store_top_earners"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"

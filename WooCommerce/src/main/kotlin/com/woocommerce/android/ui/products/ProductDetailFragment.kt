@@ -101,6 +101,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(type = it.type, isVirtual = it.isVirtual)
             changesMade()
         }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(groupedProductIds = it)
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
