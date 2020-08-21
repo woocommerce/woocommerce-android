@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -305,8 +306,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         isRequestingStats = false
-        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
-        chart.visibility = if (show) View.GONE else View.VISIBLE
+        dashboard_stats_error.isVisible = show
+        chart.isVisible = !show
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {

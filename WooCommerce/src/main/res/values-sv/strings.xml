@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-30 09:59:37+0000
+Translation-Revision-Date: 2020-08-19 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="feedback_request_like_it">Jag gillar den</string>
+    <string name="feedback_request_make_better">Kunde vara bättre</string>
+    <string name="feedback_request_title">Tycker du om WooCommerce-appen?</string>
+    <string name="variation_detail_update_variation_error">Fel vid uppdatering av variation</string>
+    <string name="variation_detail_fetch_variation_error">Fel vid hämtning av variation</string>
+    <string name="product_add_tag_error">Fel uppstod när etiketter lades till</string>
+    <string name="product_add_tag_dialog_title">Lägger till etiketter</string>
+    <string name="shipping_label_refund_progress_message">Din återbetalning bearbetas. Vänta …</string>
+    <string name="shipping_label_refund_success">Återbetalningen har skickats utan problem</string>
+    <string name="shipping_label_refund_button">Återbetalningsetikett (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Belopp berättigat för återbetalning</string>
+    <string name="shipping_label_refund_purchase_date_title">Inköpsdatum</string>
+    <string name="shipping_label_refund_message">Du kan begära en återbetalning för en leveransetikett som inte har använts för att skicka ett paket. Det tar minst 14 dagar att bearbeta.</string>
+    <string name="orderdetail_shipping_label_request_refund">Begär en återbetalning</string>
+    <string name="orderdetail_shipping_label_item_menu">Fraktetikett för återbetalning</string>
+    <string name="product_type_physical">Fysisk</string>
     <string name="bottom_sheet_short_description_desc">Ett kort utdrag om din produkt</string>
     <string name="bottom_sheet_tags_desc">Gör dina produkter lättare att hitta med etiketter</string>
     <string name="bottom_sheet_categories_desc">Organisera dina produkter i relaterade grupper</string>
@@ -23,9 +39,23 @@ Language: sv_SE
     <string name="product_type_downloadable">nedladdningsbar</string>
     <string name="product_type_description">%s produkt</string>
     <string name="orderdetail_shipping_label_virtual_products_header">Återstående produkter</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Resterande artiklar som ska skickas</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s returetikett</string>
+    <string name="orderdetail_shipping_label_tracking_info">Spåra försändelse</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Dölj information om försändelse</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Visa försändelseinformation</string>
     <string name="orderdetail_shipping_label_item_payment_type">Kreditkort</string>
     <string name="orderdetail_shipping_label_item_payment">Betalningsmetod</string>
+    <string name="orderdetail_shipping_label_item_carrier">Transportföretag och avgifter</string>
+    <string name="orderdetail_shipping_label_item_package_info">Information om förpackning</string>
+    <string name="orderdetail_shipping_label_item_shipto">Leverans</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Avsändare</string>
+    <string name="orderdetail_shipping_label_item_header">Förpackning %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s alternativ)</string>
+    <string name="shipping_labels">Fraktetiketter</string>
     <string name="product_add_category_dialog_message">Vänta…</string>
     <string name="product_add_category_dialog_title">Lägger till kategori</string>
     <string name="product_category_parent">Överordnad kategori</string>
@@ -114,6 +144,7 @@ Language: sv_SE
     <string name="product_short_description_empty">Kort sammanfattning om produkten</string>
     <string name="product_short_description">Kort beskrivning</string>
     <string name="my_store_stats_availability_message">Vi lanserar förbättringar av statistiken för butiker med WooCommerce 4.0 eller butiker som har WooCommerce Admin-tillägget installerat</string>
+    <string name="my_store_stats_reverted_message">Vi har lanserat förbättringar av våra analyser. Uppgradera till WooCommerce 4.0 eller senare eller installera WooCommerce Admin-tillägget för att fortsätta att se din statistik efter den 1 september 2020</string>
     <string name="my_store_stats_reverted_title">Uppgradera för att fortsätta se din statistik</string>
     <string name="product_pricing_update_sale_price_error">Reapriset måste vara lägre än det ordinarie priset</string>
     <string name="product_schedule_remove_end_date_link_label">Ta bort slutdatum</string>
@@ -213,6 +244,7 @@ Language: sv_SE
     <string name="product_add_image_content_description">Lägg till bild</string>
     <string name="date_timeframe_future">Kommande</string>
     <string name="remove">Ta bort</string>
+    <string name="product_variation_disabled">Dold</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
@@ -257,7 +289,7 @@ Language: sv_SE
     <string name="product_list_empty_search">Inga matchande produkter</string>
     <string name="product_list_empty">Inga produkter ännu</string>
     <string name="product_stock_count">%s i lager</string>
-    <string name="product_stock_status_instock_with_variations">I lager \u2022 %d varianter</string>
+    <string name="product_stock_status_instock_with_variations">I lager \u2022 %d variationer</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s lämnade en recension om %2$s</string>
     <string name="wc_unapproved">Förkastad</string>

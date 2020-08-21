@@ -28,9 +28,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
@@ -38,6 +35,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,9 +73,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         )
     )
 
+    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val parameterRepository: ParameterRepository = mock {
+        on(it.getParameters(any(), any())).thenReturn(siteParams)
+    }
+
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
-
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
@@ -90,10 +92,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             productBeforeEnteringFragment = product,
             isSkeletonShown = false,
             uploadingImageUris = null,
-            weightWithUnits = "10kg",
-            sizeWithUnits = "1 x 2 x 3 cm",
-            salePriceWithCurrency = "CZK10.00",
-            regularPriceWithCurrency = "CZK30.00",
             showBottomSheetButton = true
     )
 
@@ -113,7 +111,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     mapOf(
                         Pair(
                             resources.getString(R.string.product_regular_price),
-                            productWithParameters.regularPriceWithCurrency!!
+                            currencyFormatter.formatCurrency(
+                                productWithParameters.productDraft?.regularPrice ?: BigDecimal.ZERO,
+                                siteParams.currencyCode ?: ""
+                            )
+                        ),
+                        Pair(
+                            resources.getString(R.string.product_sale_price),
+                            currencyFormatter.formatCurrency(
+                                productWithParameters.productDraft?.salePrice ?: BigDecimal.ZERO,
+                                siteParams.currencyCode ?: ""
+                            )
                         )
                     ),
                     R.drawable.ic_gridicons_money
@@ -141,8 +149,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_shipping,
                     mapOf(
-                        Pair(resources.getString(R.string.product_weight), productWithParameters.weightWithUnits!!),
-                        Pair(resources.getString(R.string.product_dimensions), productWithParameters.sizeWithUnits!!),
+                        Pair(resources.getString(R.string.product_weight),
+                            productWithParameters.productDraft?.getWeightWithUnits(siteParams.weightUnit) ?: ""),
+                        Pair(resources.getString(R.string.product_dimensions),
+                            productWithParameters.productDraft?.getSizeWithUnits(siteParams.dimensionUnit) ?: ""),
                         Pair(resources.getString(R.string.product_shipping_class), "")
                     ),
                     R.drawable.ic_gridicons_shipping,
@@ -176,27 +186,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(ProductImagesViewState()))
             .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
 
-        val prodSettings = WCProductSettingsModel(0).apply {
-            dimensionUnit = "cm"
-            weightUnit = "kg"
-        }
-        val siteSettings = mock<WCSettingsModel> {
-            on(it.currencyCode).thenReturn("CZK")
-        }
-
-        doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(prodSettings).whenever(wooCommerceStore).getProductSettings(any())
-        doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
 
         viewModel = spy(ProductDetailViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
-            selectedSite,
+            parameterRepository,
             productRepository,
             networkStatus,
             currencyFormatter,
-            wooCommerceStore,
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,

@@ -17,11 +17,11 @@ class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(p
             LinearLayout.VERTICAL,
             context.getString(item.title ?: R.string.product_name),
             SpannableString(HtmlUtils.fromHtml(item.value)),
+            item.title != null && item.showTitle,
             item.icon
         )
 
         propertyView.setMaxLines(item.maxLines)
-        propertyView.showPropertyName(item.title != null && item.showTitle)
 
         if (item.onClick != null) {
             item.onClick.let { onClick ->
