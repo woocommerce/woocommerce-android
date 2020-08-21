@@ -1,4 +1,0 @@
-4.7:
-<b>Statistieken:</b> Je grafiek met statistieken komt nu overeen met wat je ziet in wp-admin. Zorg dat je de update uitvoert, want je hebt WooCommerce 4.0 of hoger nodig.
-
-<b>Crash-fix:</b> Wanneer grote hoeveelheden gegevens werden overgedragen, vonden er crashes plaats. We hebben dit opgelost op toestellen met Android P en hoger dankzij een grotere buffer.

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-09 14:54:03+0000
+Translation-Revision-Date: 2020-08-19 08:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="feedback_request_like_it">يعجبني</string>
+    <string name="feedback_request_make_better">يمكن أن يكون أفضل</string>
+    <string name="feedback_request_title">هل تستمتع بتطبيق WooCommerce؟</string>
+    <string name="variation_detail_update_variation_error">حدث خطأ في أثناء تحديث التباين</string>
+    <string name="variation_detail_fetch_variation_error">حدث خطأ في أثناء إحضار التباين</string>
+    <string name="product_add_tag_error">حدث خطأ عند إضافة وسوم</string>
+    <string name="product_add_tag_dialog_title">إضافة وسم</string>
+    <string name="shipping_label_refund_progress_message">تتم معالجة عملية استرداد أموالك. يُرجى الانتظار…</string>
+    <string name="shipping_label_refund_success">تم إرسال عملية استرداد الأموال بنجاح</string>
+    <string name="shipping_label_refund_button">بطاقة عملية استرداد الأموال (-⁦%1$s⁩)</string>
+    <string name="shipping_label_refund_amount_title">المبلغ الذي يستحق الاسترداد</string>
+    <string name="shipping_label_refund_purchase_date_title">تاريخ الشراء</string>
+    <string name="shipping_label_refund_message">يمكنك طلب استرداد أموال بطاقة الشحن التي لم يتم استخدامها لشحن طرد. سيستغرق الأمر 14 يومًا على الأقل للمعالجة.</string>
+    <string name="orderdetail_shipping_label_request_refund">طلب استرداد الأموال</string>
+    <string name="orderdetail_shipping_label_item_menu">استرداد أموال بطاقة الشحن</string>
     <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
     <string name="product_add_category_dialog_title">إضافة تصنيف</string>
     <string name="product_category_parent">التصنيف الأب</string>
@@ -193,7 +208,6 @@ Language: ar
     <string name="product_add_image_content_description">إضافة صورة</string>
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
-    <string name="product_variation_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -238,7 +252,7 @@ Language: ar
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
     <string name="product_stock_count">%s متوافرة</string>
-    <string name="product_stock_status_instock_with_variations">\u2022 %dمن التباينات متوافرة</string>
+    <string name="product_stock_status_instock_with_variations">في المخزون \u2022، ثمَّة %d من التباينات</string>
     <string name="product_image_content_description">صورة المنتج</string>
     <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
     <string name="wc_unapproved">غير موافق عليه</string>
