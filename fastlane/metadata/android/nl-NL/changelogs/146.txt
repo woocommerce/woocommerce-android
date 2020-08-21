@@ -1,0 +1,4 @@
+4.8:
+* Het gedeelte 'Verzending bijhouden toevoegen' is bijgewerkt om alleen de Shipment Tracking-plugin te laten zien als deze beschikbaar is.
+* Een crash na het dubbeltikken op een navigatie-element en nog een (zeldzame) crash veroorzaakt door het proberen verbergen van een non-actief overzicht zijn opgelost.
+

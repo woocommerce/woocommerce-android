@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-04 15:17:09+0000
+Translation-Revision-Date: 2020-08-19 08:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="feedback_request_like_it">Eu gosto dele</string>
+    <string name="feedback_request_make_better">Poderia ser melhor</string>
+    <string name="feedback_request_title">O que você acha do aplicativo WooCommerce?</string>
+    <string name="variation_detail_update_variation_error">Erro ao atualizar variação</string>
+    <string name="variation_detail_fetch_variation_error">Erro ao buscar variação</string>
+    <string name="product_add_tag_error">Ocorreu um erro ao adicionar tags</string>
+    <string name="product_add_tag_dialog_title">Adicionando tag</string>
+    <string name="shipping_label_refund_progress_message">O reembolso está sendo processado. Aguarde…</string>
+    <string name="shipping_label_refund_success">O reembolso foi enviado com sucesso</string>
+    <string name="shipping_label_refund_button">Reembolsar etiqueta (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Valor elegível para reembolso</string>
+    <string name="shipping_label_refund_purchase_date_title">Data da compra</string>
+    <string name="shipping_label_refund_message">Você pode solicitar o reembolso de uma etiqueta de envio que não tenha sido usada para enviar um pacote. O processamento levará pelo menos 14 dias.</string>
+    <string name="orderdetail_shipping_label_request_refund">Solicitar um reembolso</string>
+    <string name="orderdetail_shipping_label_item_menu">Etiqueta de envio do reembolso</string>
     <string name="product_add_category_dialog_message">Aguarde…</string>
     <string name="product_add_category_dialog_title">Adicionando categoria</string>
     <string name="product_category_parent">Categoria ascendente</string>
@@ -193,7 +208,6 @@ Language: pt_BR
     <string name="product_add_image_content_description">Adicionar imagem</string>
     <string name="date_timeframe_future">Próximos</string>
     <string name="remove">Remover</string>
-    <string name="product_variation_hidden">Oculta</string>
     <string name="login_discovery_error_generic">Não foi possível acessar seu site. Entre em contato com seu host para resolver isso.</string>
     <string name="login_discovery_error_ssl">Não foi possível acessar seu site devido a um problema com o &lt;b>Certificado SSL&lt;/b>. Entre em contato com seu host para resolver isso.</string>
     <string name="login_discovery_error_http_auth">Não foi possível acessar seu site porque ele requer a &lt;b>Autenticação HTTP&lt;/b>. Entre em contato com seu host para resolver isso.</string>
@@ -238,7 +252,7 @@ Language: pt_BR
     <string name="product_list_empty_search">Nenhum produto corresponde à pesquisa</string>
     <string name="product_list_empty">Nenhum produto ainda</string>
     <string name="product_stock_count">%s em estoque</string>
-    <string name="product_stock_status_instock_with_variations">Em estoque \u2022 %d variantes</string>
+    <string name="product_stock_status_instock_with_variations">Em estoque \u2022 %d variações</string>
     <string name="product_image_content_description">Imagem do produto</string>
     <string name="review_list_item_title">%1$s deixou uma avaliação em %2$s</string>
     <string name="wc_unapproved">Rejeitado</string>
