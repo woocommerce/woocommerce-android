@@ -47,9 +47,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.8-rc-2"
+            versionName "4.8"
         }
-        versionCode 145
+        versionCode 146
 
         minSdkVersion 21
         targetSdkVersion 29
