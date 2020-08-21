@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
@@ -230,13 +231,13 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductDownloadDetails -> {
-                val action = ProductDownloadsFragmentDirections
+                val action = NavGraphProductsDirections
                     .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
                 fragment.findNavController().navigate(action)
             }
 
             is AddProductDownloadableFile -> {
-                val action = ProductDownloadsFragmentDirections.actionGlobalAddProductDownloadBottomSheetFragment()
+                val action = NavGraphProductsDirections.actionGlobalAddProductDownloadBottomSheetFragment()
                 fragment.findNavController().navigate(action)
             }
 

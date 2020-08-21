@@ -143,7 +143,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
                 navArgs.requestCode,
                 bundle,
                 R.id.nav_host_fragment_main,
-                R.id.productDetailFragment
+                findNavController().previousBackStackEntry?.destination?.id ?: R.id.productDetailFragment
             )
         } else {
             findNavController().navigateUp()

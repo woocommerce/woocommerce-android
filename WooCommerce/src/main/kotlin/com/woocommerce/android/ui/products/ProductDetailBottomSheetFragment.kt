@@ -47,7 +47,7 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter{
+        productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter {
             // Navigate up before navigating to the next destination, this is useful if the next destination
             // is a dialog too
             findNavController().navigateUp()

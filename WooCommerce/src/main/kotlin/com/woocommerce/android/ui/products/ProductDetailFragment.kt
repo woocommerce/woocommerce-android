@@ -128,7 +128,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
             new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
                 if (it) {
-                    showProgressDialog(R.string.product_downloadable_files_upload_dialog_title, R.string.product_downloadable_files_upload_dialog_message)
+                    showProgressDialog(
+                        title = R.string.product_downloadable_files_upload_dialog_title,
+                        message = R.string.product_downloadable_files_upload_dialog_message)
                 } else {
                     hideProgressDialog()
                 }
@@ -281,13 +283,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                     changesMade()
                 }
-            }
-            RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS -> {
-                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                    ?.let {
-                        viewModel.addProductImageListToDraft(it)
-                        changesMade()
-                    }
             }
             RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE -> {
                 result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)

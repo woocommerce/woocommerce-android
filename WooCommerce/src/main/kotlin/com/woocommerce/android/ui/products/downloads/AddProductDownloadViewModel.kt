@@ -57,7 +57,7 @@ class AddProductDownloadViewModel @AssistedInject constructor(
     object PickFileFromMedialLibrary : Event()
     object PickFileFromDevice : Event()
     object PickFileFromCamera : Event()
-    data class UploadFile(val uri: Uri): Event()
+    data class UploadFile(val uri: Uri) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddProductDownloadViewModel>

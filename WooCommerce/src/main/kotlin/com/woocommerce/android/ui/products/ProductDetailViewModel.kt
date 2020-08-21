@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
@@ -159,6 +160,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product tags screen
     final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
+
+    // view state for the product downloads screen
+    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
     val productCategories: LiveData<List<ProductCategory>> = _productCategories
@@ -326,9 +331,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(ViewProductDownloadsSettings)
     }
 
+    fun onAddDownloadableFileClicked() {
+        triggerEvent(AddProductDownloadableFile)
+    }
+
     fun triggerDownloadableFileUpload(uri: Uri) {
         launch {
             viewState = viewState.copy(isUploadingDownloadableFile = true)
+            productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
             try {
                 val url = mediaFilesRepository.uploadFile(uri)
                 showAddProductDownload(url)
@@ -336,6 +346,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
             } finally {
                 viewState = viewState.copy(isUploadingDownloadableFile = false)
+                productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
             }
         }
     }
@@ -1602,6 +1613,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
         val isProgressDialogShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductDownloadsViewState(
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory
