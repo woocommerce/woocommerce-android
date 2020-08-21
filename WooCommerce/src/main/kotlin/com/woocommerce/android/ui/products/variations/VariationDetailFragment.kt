@@ -166,6 +166,14 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
+            new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
+                if (variationName.isEmpty()) {
+                    variationName = product?.attributes?.joinToString(
+                        separator = " - ",
+                        transform = { "Any ${it.name}" }
+                    ) ?: ""
+                }
+            }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
@@ -194,7 +202,10 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        variationName = variation.optionName.fastStripHtml()
+        val optionName = variation.optionName.fastStripHtml()
+        if (optionName.isNotBlank()) {
+            variationName = variation.optionName.fastStripHtml()
+        }
 
         if (variation.image == null) {
             variationImage.visibility = View.GONE

@@ -67,10 +67,6 @@ class VariationDetailViewModel @AssistedInject constructor(
         parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState)
     }
 
-    private val parentProduct: Product? by lazy {
-        productRepository.getProduct(viewState.variation.remoteProductId)
-    }
-
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
@@ -92,6 +88,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     init {
+        viewState = viewState.copy(parentProduct = productRepository.getProduct(viewState.variation.remoteProductId))
         showVariation(originalVariation.copy())
     }
 
@@ -263,7 +260,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             _variationDetailCards.value = cardBuilder.buildPropertyCards(
                 variation,
                 originalVariation.sku,
-                parentProduct
+                viewState.parentProduct
             )
             viewState = viewState.copy(isSkeletonShown = false)
         }
@@ -292,7 +289,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val gmtOffset: Float = 0f,
-        val shippingClass: String? = null
+        val shippingClass: String? = null,
+        val parentProduct: Product? = null
     ) : Parcelable
 
     @AssistedInject.Factory
