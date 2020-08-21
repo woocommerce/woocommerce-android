@@ -67,6 +67,10 @@ class VariationDetailViewModel @AssistedInject constructor(
         parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState)
     }
 
+    private val parentProduct: Product? by lazy {
+        productRepository.getProduct(viewState.variation.remoteProductId)
+    }
+
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState(originalVariation)) { old, new ->
         if (old?.variation != new.variation) {
@@ -256,7 +260,11 @@ class VariationDetailViewModel @AssistedInject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation, originalVariation.sku)
+            _variationDetailCards.value = cardBuilder.buildPropertyCards(
+                variation,
+                originalVariation.sku,
+                parentProduct
+            )
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -268,9 +276,6 @@ class VariationDetailViewModel @AssistedInject constructor(
         )
     }
 
-    /**
-     * Fetch the shipping class name of a product based on the remote shipping class id
-     */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation.shippingClass ?: ""

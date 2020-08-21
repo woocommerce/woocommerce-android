@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
-import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
@@ -36,7 +35,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -49,9 +47,15 @@ class VariationDetailCardBuilder(
     private val parameters: SiteParameters
 ) {
     private lateinit var originalSku: String
+    private var parentProduct: Product? = null
 
-    fun buildPropertyCards(variation: ProductVariation, originalSku: String): List<ProductPropertyCard> {
+    fun buildPropertyCards(
+        variation: ProductVariation,
+        originalSku: String,
+        parentProduct: Product?
+    ): List<ProductPropertyCard> {
         this.originalSku = originalSku
+        this.parentProduct = parentProduct
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(variation))
@@ -84,7 +88,11 @@ class VariationDetailCardBuilder(
     }
 
     private fun ProductVariation.title(): ProductProperty {
-        return ComplexProperty(string.product_name, this.optionName)
+        return Editable(
+            string.product_detail_title_hint,
+            parentProduct?.name ?: optionName,
+            isReadOnly = true
+        )
     }
 
     private fun ProductVariation.description(): ProductProperty {

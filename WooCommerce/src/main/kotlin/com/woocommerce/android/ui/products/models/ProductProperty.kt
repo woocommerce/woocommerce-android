@@ -74,6 +74,7 @@ sealed class ProductProperty(val type: Type) {
         @StringRes val hint: Int,
         val text: String = "",
         var shouldFocus: Boolean = false,
+        var isReadOnly: Boolean = false,
         val onTextChanged: ((String) -> Unit)? = null
     ) : ProductProperty(EDITABLE)
 
