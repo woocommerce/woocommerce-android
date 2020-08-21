@@ -50,7 +50,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
-        private const val TEST_STRING = "test"
     }
 
     private val wooCommerceStore: WooCommerceStore = mock()

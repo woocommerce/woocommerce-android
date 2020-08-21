@@ -81,7 +81,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
+        productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
