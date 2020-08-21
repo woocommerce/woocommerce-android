@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -37,6 +38,11 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val productRepository: ProductDetailRepository = mock()
+
+    private val siteParams = SiteParameters("$", "kg", "cm", 0f)
+    private val parameterRepository: ParameterRepository = mock {
+        on(it.getParameters(any(), any())).thenReturn(siteParams)
+    }
 
     private val pricingData = PricingData(
         taxClass = "standard",
@@ -78,7 +84,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         val siteSettings = mock<WCSettingsModel> {
-            on(it.currencyCode).thenReturn(viewState.currency)
             on(it.currencyDecimalNumber).thenReturn(viewState.decimals)
         }
 
@@ -91,7 +96,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             productRepository,
             wooCommerceStore,
-            selectedSite
+            selectedSite,
+            parameterRepository
         ))
 
         clearInvocations(
@@ -175,7 +181,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             productRepository,
             wooCommerceStore,
-            selectedSite
+            selectedSite,
+            parameterRepository
         ))
 
         var state: ViewState? = null
