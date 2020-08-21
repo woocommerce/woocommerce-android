@@ -20,7 +20,10 @@ object CustomDiscardDialog {
         activity: Activity,
         posBtnAction: (OnClickListener)? = null,
         negBtnAction: (OnClickListener)? = null,
-        @StringRes messageId: Int? = null
+        @StringRes titleId: Int? = null,
+        @StringRes messageId: Int? = null,
+        @StringRes positiveButtonId: Int? = null,
+        @StringRes negativeButtonId: Int? = null
     ) {
         dialogRef?.get()?.let {
             // Dialog is already present
@@ -28,15 +31,20 @@ object CustomDiscardDialog {
         }
 
         val message = messageId?.let {
-            activity.applicationContext.getString(messageId)
+            activity.applicationContext.getString(it)
         } ?: activity.applicationContext.getString(string.discard_message)
+
+        val positiveButtonTextId = positiveButtonId ?: string.discard
+        val negativeButtonTextId = negativeButtonId ?: string.keep_editing
 
         val builder = MaterialAlertDialogBuilder(activity)
                 .setMessage(message)
                 .setCancelable(true)
-                .setPositiveButton(string.discard, posBtnAction)
-                .setNegativeButton(string.keep_editing, negBtnAction)
+                .setPositiveButton(positiveButtonTextId, posBtnAction)
+                .setNegativeButton(negativeButtonTextId, negBtnAction)
                 .setOnDismissListener { onCleared() }
+
+        titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
 
         dialogRef = WeakReference(builder.show())
     }

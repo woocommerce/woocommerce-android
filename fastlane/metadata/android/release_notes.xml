@@ -1,136 +1,96 @@
 <ar>
-4.1:
-* أضفنا لمسة جديدة من الألوان على التطبيق — استمتع بالألوان الجديدة!
-* يتوافر الآن الوضع الداكن لأي شخص يُفضِّل استخدام الشاشات ذات درجات السطوع الأقل.
-* أزلنا قسم الشحن من عرض تفاصيل المنتجات الافتراضية (لأنَّك لا تشحنها).
-* إذا كانت لديك قائمة منتجات أصغر، فإن العناصر ستختفي منها أحيانًا، ولكن ليس بعد الآن لأنَّنا أصلحنا ذلك الخطأ.
-* ستؤدي محاولة عرض تفاصيل أحد المنتجات إلى تعطُّل التطبيق، وذلك في حالات نادرة جدًا. أصلحنا ذلك الخطأ كذلك.
+4.7:
+<b>الإحصاءات:</b> سيطابق الرسم البياني لإحصاءاتك الآن ما تراه في wp-admin. نظرًا إلى أنَّك تحتاج إلى تشغيل الإصدار 4.0 من WooCommerce أو إصدار أحدث منه، فتأكَّد من أنَّك قمت بالتحديث.
+
+<b>إصلاح العطل:</b> كانت تحدث الأعطال عند نقل كميات كبيرة من البيانات. تم إصلاح هذا على الأجهزة التي تعمل بنظام التشغيل Android P والإصدارات الأحدث مع وجود مخزن مؤقت أكبر.
 </ar>
 <de-DE>
-4.1:
-* Unsere App hat einen neuen Look bekommen – wir hoffen, dir gefallen die Farben!
-* Der dunkle Modus ist jetzt für alle verfügbar, die einen dunkleren Bildschirm bevorzugen.
-* Wir haben bei der Detailansicht deiner virtuellen Produkte den Abschnitt zum Versand entfernt, da du diese ja nicht per Post verschickst.
-* Auf kleineren Produktlisten sind manchmal Artikel verschwunden – diesen Fehler haben wir behoben.
-* Manchmal ist beim Anklicken der Detailansicht die App abgestürzt – auch diesen Fehler haben wir behoben.
+4.7:
+<b>Statistiken:</b> Dein Statistikdiagramm stimmt jetzt mit deiner Ansicht in wp-admin überein. Bitte führe ein Update durch, da du WooCommerce 4.0 oder höher ausführen musst.
+
+<b>Abstürze behoben:</b> Bei der Übertragung großer Datenmengen kam es zu Abstürzen. Wir haben das auf Geräten, auf denen Android P und höher ausgeführt wird, mit einem größeren Puffer behoben.
 </de-DE>
 <es-ES>
-4.1:
-* Le hemos dado una mano de pintura a la app. ¡Disfrútalo!
-* El modo Oscuro ya está aquí para los que prefieren pantallas menos brillantes.
-* Hemos eliminado la sección Envío de la vista de detalles de los productos virtuales (básicamente, porque no se envían)
-* Si tenías una lista de productos pequeña, a veces los artículos desaparecían. Ya no, lo hemos solucionado.
-* En muy raras ocasiones, al intentar ver los detalles de un producto la aplicación se bloqueaba. También lo hemos solucionado.
+4.7:
+<b>Estadísticas:</b> tus estadísticas coincidirán con lo que ves en wp-admin. Como tienes que ejecutar WooCommerce 4,0 o una versión posterior, asegúrate de actualizar la versión.
+
+<b>Resolución de errores:</b> Cuando se transferían grandes cantidades de datos, ocurrían errores. Lo hemos corregido en dispositivos Android P y posteriores con un mayor almacenamiento.
 </es-ES>
 <fr-FR>
-4.1 :
-* De nouvelles couleurs apportent du peps à l'application !
-* Tous les utilisateurs préférant un écran moins lumineux peuvent désormais utiliser le mode sombre.
-* Nous avons supprimé la section Expédition de la vue détaillée des produits virtuels (étant donné que vous n'en expédiez pas).
-* Dans les listes de produits plus petites, certains articles disparaissaient parfois. Cela n'arrivera plus, ce bug ayant été résolu.
-* La tentative d'affichage des détails d'un produit entraînait l'arrêt de l'application en de très rares occasions. Nous avons également résolu ce bug.
+4,7 :
+<b>Stats :</b> votre graphique des statistiques correspondra désormais à ce que vous voyez dans wp-admin. Étant donné que vous devez exécuter WooCommerce 4.0, veillez à effectuer la mise à jour.
+
+<b>Correction d’incidents :</b> des incidents se produisaient lors du transfert de gros volumes de données. Ce problème a été résolu sur les appareils exécutant Android P ou version ultérieure grâce à un tampon plus important.
 </fr-FR>
 <iw-IL>
-4.1:
-* צבענו מחדש את האפליקציה – מקווים שהצבעים החדשים ימצאו חן בעיניך!
-* המצב הכהה כעת זמין לכל המשתמשים שמעדיפים מסכים בהירים פחות.
-* הסרנו את המקטע 'משלוח' מתצוגת הפרטים במוצרים וירטואלים (כי לא באמת שולחים אותם).
-* אם רשימת המוצרים שלך קצרה יחסית, לפעמים נעלמו ממנה פריטים אבל אל חשש – תיקנו את הבאג.
-* במקרים נדירים מאוד, האפליקציה הייתה קורסת כאשר ניסו להציג את הפריטים של המוצר. תיקנו גם את הבאג הזה.
+4.7:
+<b>Stats:</b>  הגרף של הנתונים הסטטיסטיים מתאים כעת לנתונים שמוצגים ב-wp-admin. מאחר שעליך להפעיל את WooCommerce 4.0 או גרסאות מתקדמות יותר, עליך לעדכן את הגרסה.
+
+<b>Crash Fix:</b> קריסות התרחשו במהלך העברה של נתונים בכמויות גדולות. תיקנו את הבעיה הזאת במכשירים שמופעלים עם Android P או גרסאות מתקדמות יותר והרחבנו את הטווח.
 </iw-IL>
 <id>
-4.1:
-* Kami baru saja memberikan lapisan cat yang baru untuk aplikasi — nikmati warna barunya!
-* Mode gelap kini tersedia bagi yang lebih menyukai layar redup.
-* Kami menghilangkan bagian Pengiriman dari tampilan detail produk virtual (karena, ya, memang Anda tidak mengirimnya).
-* Jika Anda memiliki daftar produk yang lebih kecil, terkadang item menghilang dari daftar, tetapi sekarang tidak akan lagi — kami telah memperbaiki bug tersebut.
-* Di saat-saat tertentu, mencoba menampilkan detail produk dapat menyebabkan crash pada aplikasi. Kami juga telah memperbaiki bug tersebut.
+4.7:
+<b>Statistik:</b> Grafik statistik Anda sekarang akan cocok dengan yang Anda lihat di wp-admin. Anda perlu mengoperasikan WooCommerce 4.0 atau versi lebih baru, pastikan Anda melakukan pembaruan.
+
+<b>Perbaikan Crash:</b> Crash terjadi saat sedang mentransfer data dalam jumlah besar. Kami memperbaikinya pada perangkat yang menjalankan Android P dan versi lebih baru dengan kapasitas penyangga yang lebih besar.
 </id>
 <it-IT>
-4.1:
-*Abbiamo appena rinfrescato all'app. Goditi i nuovi colori!
-*Dark mode è ora disponibile per chi preferisce schermi meno luminosi.
-*Rimossa la sezione Spedizione dalla visualizzazione dei dettagli dei prodotti virtuali (perché, beh, non li spedisci).
-*In un elenco di prodotti ridotto, gli articoli a volte scomparivano da esso, ora non più: bug risolto.
-*In rare occasioni, il tentativo di visualizzare i dettagli di un prodotto provocava l'arresto anomalo dell'app. Abbiamo risolto anche quel bug.
+4.7:
+<b>Statistiche:</b> il grafico delle tue statistiche ora corrisponde a ciò che visualizzi in wp-admin. Assicurati di effettuare l'aggiornamento perché dovrai utilizzare WooCommerce 4.0 o versioni superiori.
+
+<b>Correzione di un arresto anomalo:</b> quando veniva trasferita una grande quantità di dati avvenivano arresti anomali. Abbiamo corretto questo problema sui dispositivi su cui è in esecuzione Android P e versioni successive con un buffer maggiore.
 </it-IT>
 <ja-JP>
-4.1:
-* アプリの外観が新しくなりました — 新しい色をお楽しみください !
-* 明るくない画面を好む人はダークモードを利用できるようになりました。
-* バーチャル商品の詳細ビューから「配送」セクションを削除しました (配送の必要がないため)。
-* 商品リストが小さい場合、項目がリストに表示されないことがありましたが、表示されるようになりました。このバグを修正しました。
-* ごくまれに、商品の詳細を表示しようとすると、アプリがクラッシュすることがありました。このバグも修正しました。
+4.7:
+<b>統計 :</b> 統計グラフが、wp-admin に表示される内容と一致するようになりました。 WooCommerce 4.0 以上を実行する必要があるため、必ずアップデートするようにしてください。
+
+<b>クラッシュの修正 :</b> 大量のデータを転送する際にクラッシュが起こっていました。 Android P を実行するデバイスと、バッファーが大きいデバイスでこの問題を修正しました。
 </ja-JP>
 <ko-KR>
-4.1:
-* 새로운 색상으로 앱 분위기를 바꾸었습니다. 지금 확인해 보세요!
-* 이제 많이 밝지 않은 화면을 선호하는 사람 누구나 어둡게 모드를 이용할 수 있습니다.
-* 해당 제품을 배송하지 않기 때문에 가상 제품의 세부정보 보기에서 배송 섹션을 제거했습니다.
-* 제품 목록이 상대적으로 작은 경우 경우에 따라 아이템이 사라지는 경우가 있었으나 버그를 수정하여 더 이상 해당 문제가 발생하지 않습니다.
-* 매우 드물지만 제품의 세부정보를 보려고 하면 앱이 중단되는 현상이 발생했습니다. 이 버그도 수정했습니다.
+4.7:
+<b>통계:</b> 이제 통계 그래프에 wp-admin과 일치하는 콘텐츠가 표시됩니다. WooCommerce 4.0 이상을 실행해야 하므로 업데이트했는지 확인하세요.
+
+<b>충동 해결:</b> 대용량 데이터를 전송할 때 충돌 문제가 발생했었습니다. 버퍼 크기를 늘려 Android P 이상을 실행하는 기기에서 이 문제를 해결했습니다.
 </ko-KR>
 <nl-NL>
-4.1:
-* We hebben de kleuren van de app vernieuwd: geniet ervan!
-* De nachtmodus is nu beschikbaar voor iedereen die behoefte heeft aan een minder fel scherm.
-* We hebben het gedeelte Verzending verwijderd uit het detail-overzicht van virtuele producten (omdat je ze natuurlijk niet verzendt).
-* Als je een kleinere productlijst hebt, werden sommige artikelen er soms uit verwijderd, maar nu niet meer, want die bug is opgelost.
-* Heel af en toe vond er een crash van de app plaats wanneer de details van een product werden bekeken. Die bug hebben we ook opgelost.
+4.7:
+<b>Statistieken:</b> Je grafiek met statistieken komt nu overeen met wat je ziet in wp-admin. Zorg dat je de update uitvoert, want je hebt WooCommerce 4.0 of hoger nodig.
+
+<b>Crash-fix:</b> Wanneer grote hoeveelheden gegevens werden overgedragen, vonden er crashes plaats. We hebben dit opgelost op toestellen met Android P en hoger dankzij een grotere buffer.
 </nl-NL>
 <pt-BR>
-4.1:
-* Acabamos de dar uma nova cara ao app. Aproveite as novas cores!
-* Para quem prefere telas mais escuras, disponibilizamos o modo noturno.
-* Removemos a seção Envio da visualização de detalhes dos produtos virtuais (porque não precisam ser enviados, né).
-* Os produtos às vezes desapareciam das listas menores, mas agora já resolvemos esse problema.
-* Em algumas ocasiões, tentar ver os detalhes de um produto travava o aplicativo. Consertamos esse problema também.
+4.7:
+<b>Estatísticas:</b> agora seu gráfico de estatísticas corresponde ao que é exibido no Painel WP Admin. É necessário atualizar o WooCommerce para a versão 4.0 ou superior.
+
+<b>Correção de falhas:</b> estavam ocorrendo falhas na transferência de um número grande de dados. Isso já foi corrigido para dispositivos com o Android P e superior com um buffer maior.
 </pt-BR>
 <ru-RU>
-4.1:
-* Мы освежили цветовую гамму — оцените новые цвета!
-* Темная тема оформления теперь доступна для тех, кто предпочитает умеренную яркость.
-* Мы убрали раздел «Отгрузки» для виртуальных продуктов (потому что они не «отгружаются»).
-* В небольших списках продукты могли иногда пропадать, но больше этого происходить не будет — ошибка исправлена.
-* В очень редких случаях просмотр деталей товара приводил к сбою приложения. Эта ошибка тоже исправлена.
+4.7:
+<b>Статистика:</b> График статистики теперь совпадает с тем, что используется в wp-admin. Для этого требуется WooCommerce 4.0 или более поздней версии. Не забудьте обновить приложение.
+
+<b>Исправление ошибок:</b> При переносе больших объемов данных происходили ошибки. Мы исправили эти ошибки на устройствах Android P и более поздних версий, увеличив буфер.
 </ru-RU>
-<sv-SE>
-4.1:
-* Vi har just gett appen ett nytt lager färg — njut av de nya färgerna!
-* Mörkt läge är nu tillgängligt för alla som föredrar mindre ljusa skärmar.
-* Vi har tagit bort avsnittet Frakt från detaljvyn för virtuella produkter (eftersom de inte skickas).
-* Om du hade en mindre produktlista kunde det ibland försvinna objekt från den, men så är inte längre fallet — vi har åtgärdat det felet.
-* I mycket sällsynta fall kraschade appen om man försökte visa den detaljerade informationen för en produkt. Vi har åtgärdat det felet också.
-</sv-SE>
 <tr-TR>
-4.1:
-* Uygulamaya yepyeni renkler kazandırdık - yeni renklerin keyfini çıkarın.
-* Artık daha az parlak ekranları tercih eden herkes Karanlık modu kullanılabilir.
-* Sanal ürünlerin ayrıntı görünümünden Gönderim bölümünü kaldırdık (çünkü onlar gönderilmez).
-* Daha küçük bir ürün listeniz olduğunda öğeler bazen listeden kaybolurdu, ancak artık değil. Bu hata düzeltildi.
-* Çok nadir durumlarda, bir ürünün ayrıntılarını görüntülemeye çalışmak uygulamanın çökmesine neden olurdu. Bu hata da düzeltildi.
+4.7:
+<b>İstatistikler:</b> İstatistik grafiğiniz artık wp-admin'de gördüklerinizle aynı olacak. WooCommerce 4.0 veya üstünü çalıştırmanız gerektiğinden güncelleme yaptığınızdan emin olun.
+
+<b>Kilitlenmeyle İlgili Düzeltme:</b> Büyük miktarda veri aktarılırken kilitlenmeler yaşanıyordu. Daha büyük bir arabellekle, Android P ve daha yeni sürümleri çalıştıran cihazlarda bu sorun düzeltildi.
 </tr-TR>
 <zh-CN>
-4.1：
-* 我们刚刚为应用程序添加了新颜色，快来体验新颜色！
-* 现已面向偏爱弱光屏幕的用户推出夜间模式。
-* 我们已从虚拟产品的详细信息视图中删除了“配送”部分（因为虚拟产品无需配送）。
-* 如果您的产品列表较小，某些商品有时会从列表中消失，那么现在不会了，我们修复了该错误。
-* 在极少数情况下，尝试查看产品详细信息会导致应用程序崩溃，我们也修复了该错误。
+4.7：
+<b>统计数据：</b>现在，您的统计数据图将与您在 wp-admin 中看到的信息相符。 当您需要运行 WooCommerce 4.0 或更高版本时，请务必进行更新。
+
+<b>崩溃问题修复：</b>之前，在传输大量数据时，系统会崩溃。 我们在运行具有较大缓冲区的 Android P 及更高版本操作系统的设备上修复了此类问题。
 </zh-CN>
 <zh-TW>
-4.1：
-* 我們為應用程式加入全新配色，盡情享受全新色彩設計！
-* 深色模式現已推出，適合偏好將螢幕調暗的使用者選用。
-* 我們從虛擬產品的詳細資訊檢視畫面中移除了「送貨」區段 (因為虛擬產品不需要送貨選項)。
-* 產品清單較小時，有時某些項目會消失不見；我們現已修復此錯誤，不會再有這個問題了。
-* 在極少數情況下，嘗試查看產品的詳細資訊會導致應用程式當機。這個錯誤也已修正。
+4.7：
+<b>統計資料：</b>現在你的統計資料圖表資訊會與 wp-admin 中顯示資訊相符。 當你需要執行 WooCommerce 4.0 以上版本時，請務必更新。
+
+<b>當機修正：</b>過去轉移大量資料時會發生當機問題。 我們已改用更大的緩衝區，執行 Android P 以上版本的裝置已不會再出現此問題。
 </zh-TW>
 <en-US>
-4.1:
-* We just gave the app a fresh coat of paint — enjoy the new colors!
-* Dark mode is now available for anyone who prefers less-bright screens.
-* We removed the Shipping section from virtual products’ detail view (because, well, you don’t ship them).
-* If you have a smaller product list, items would sometimes disappear from it, but not anymore — we fixed that bug.
-* On very rare occasions, attempting to view the details of a product would crash the app. We fixed that bug, too.
+4.7:
+<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
+
+<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
 </en-US>

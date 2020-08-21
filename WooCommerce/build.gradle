@@ -31,6 +31,7 @@ repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
+    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 androidExtensions {
@@ -47,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.2-rc-1"
+            versionName "4.8-rc-2"
         }
-        versionCode 126
+        versionCode 145
 
         minSdkVersion 21
         targetSdkVersion 29
@@ -145,12 +146,12 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.22') {
+    implementation('org.wordpress:utils:1.24') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:52d3e23406'
+    implementation 'com.automattic:tracks:1.2.1'
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -213,6 +214,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
@@ -317,6 +319,12 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     ]
 }
 
+task printVersionName {
+    doLast {
+        println android.defaultConfig.versionName
+    }
+}
+
 def checkGradlePropertiesFile() {
     def inputFile = file("${rootDir}/gradle.properties")
     if (!inputFile.exists()) {
@@ -334,14 +342,14 @@ static def loadPropertiesFromFile(inputFile) {
 }
 
 // For app signing
-if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.hasProperty(it) } == 0) {
+if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !project.hasProperty(it) } == 0) {
     android {
         signingConfigs {
             release {
-                storeFile = rootProject.file(project.storeFile)
-                storePassword = project.storePassword
-                keyAlias = project.keyAlias
-                keyPassword = project.keyPassword
+                storeFile = rootProject.file(project.uploadStoreFile)
+                storePassword = project.uploadStorePassword
+                keyAlias = project.uploadKeyAlias
+                keyPassword = project.uploadKeyPassword
             }
         }
     }

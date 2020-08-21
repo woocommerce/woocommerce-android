@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -80,7 +79,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
+        productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
@@ -331,30 +330,24 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             productsRecycler.layoutManager?.onRestoreInstanceState(it)
             listState = null
         }
+
         showProductWIPNoticeCard(true)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show) {
             products_wip_card.visibility = View.VISIBLE
-            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-                products_wip_card.initView(
-                    getString(R.string.product_wip_title),
-                    getString(R.string.product_wip_message)
-                )
-            } else {
-                products_wip_card.initView(
-                    getString(R.string.product_limited_editing_title),
-                    getString(R.string.product_limited_editing_message)
-                )
-            }
+            products_wip_card.initView(
+                getString(R.string.product_wip_title),
+                getString(R.string.product_wip_message)
+            )
         } else {
             products_wip_card.visibility = View.GONE
         }
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
-        if (show && FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
+        if (show) {
             products_sort_filter_card.visibility = View.VISIBLE
             products_sort_filter_card.initView(this)
         } else {

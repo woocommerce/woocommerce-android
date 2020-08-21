@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-30 09:54:04+0000
+Translation-Revision-Date: 2020-07-09 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_add_category_dialog_message">נא להמתין…</string>
+    <string name="product_add_category_dialog_title">מוסיף קטגוריות</string>
+    <string name="product_category_parent">קטגוריית אב</string>
+    <string name="product_category_name">שם קטגוריה</string>
+    <string name="add_product_category_empty">יש להזין את שם הקטגוריה</string>
+    <string name="add_product_category_failed">שגיאה ביצירת הקטגוריה</string>
+    <string name="add_product_category_duplicate">שגיאה ביצירת הקטגוריה – השם כבר קיים באתר שלך.</string>
+    <string name="add_product_category_success">קטגוריית המוצר נוספה</string>
+    <string name="product_add_category">להוסיף קטגוריה</string>
+    <string name="product_category_list_empty_message">לארגן את המוצרים שלך בקטגוריות</string>
+    <string name="product_category_list_empty_title">להוסיף את הקטגוריה הראשונה שלך</string>
+    <string name="product_category_empty">להוסיף קטגוריה</string>
+    <string name="product_categories">קטגוריות</string>
+    <string name="orderdetail_customer_name_default">אורח</string>
+    <string name="settings_privacy_policy_ca">הצהרת פרטיות למשתמשים מקליפורניה</string>
+    <string name="keep_changes">לשמור את השינויים</string>
+    <string name="product_sale_date_to">עד %1$s</string>
+    <string name="product_wip_message">הוספנו עוד אפשרויות לעריכה במוצרים. כעת אפשר לעדכן תמונות, לערוך את הגדרות המוצרים ולשתף מוצרים!</string>
+    <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
+    <string name="product_limited_editing_title">עריכה מוגבלת זמינה</string>
+    <string name="orderdetail_product_multiple">מוצרים</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">חיצוני</string>
+    <string name="product_type_simple">פשוט</string>
+    <string name="product_status_privately_published">פורסם כפרטי</string>
+    <string name="empty_wpmedia_list_message">עדיין אין תמונות</string>
+    <string name="wpmedia_picker_title">ספריית המדיה של WordPress</string>
+    <string name="image_source_wp_media_library">ספריית המדיה של WordPress</string>
+    <string name="product_menu_order_caption">ההגדרה קובעת את המיקום של המוצר בקטלוג. ככל שהערך המספרי נמוך יותר, הפריט יופיע במקום גבוה יותר ברשימת המוצרים. ניתן להשתמש גם במספרים שליליים.</string>
+    <string name="product_menu_order">הסדר בתפריט</string>
+    <string name="product_purchase_note_caption">הערה אופציונלית לשלוח ללקוחות לאחר הרכישה</string>
+    <string name="product_external_link_button_text_label">הטקסט יוצג על הכפתור שמקשר למוצר החיצוני</string>
+    <string name="product_external_link_button_text">טקסט של כפתור</string>
+    <string name="product_external_link_label">להזין את כתובת ה-URL החיצונית במוצר</string>
+    <string name="product_external_link">קישור למוצר</string>
+    <string name="product_external_empty_link">להוסיף קישור למוצר</string>
+    <string name="product_enable_reviews">להפעיל ביקורות</string>
+    <string name="product_slug_label">זאת גרסה ידידותית לכתובות URL בכותרת המוצר</string>
+    <string name="product_slug">מזהה לכתובת</string>
+    <string name="product_visibility_headline">הגדרה זו קובעת על אילו מעמודי החנות תופיע רשימת מוצרים</string>
+    <string name="product_featured">המוצר המוצע</string>
+    <string name="product_catalog_visibility_hidden">מוסתר</string>
+    <string name="product_catalog_visibility_search">תוצאות חיפוש בלבד</string>
+    <string name="product_catalog_visibility_catalog">חנות בלבד</string>
+    <string name="product_catalog_visibility_visible">חנות ותוצאות חיפוש</string>
+    <string name="product_catalog_visibility">נראות הקטלוג</string>
+    <string name="product_visibility_password_required">נדרשת סיסמה</string>
+    <string name="product_visibility_password_protected">מוגן בסיסמה</string>
+    <string name="product_visibility_private">פרטי</string>
+    <string name="product_visibility_public">ציבורי</string>
+    <string name="product_visibility">נראות</string>
+    <string name="product_status">מצב</string>
+    <string name="product_settings">הגדרות מוצר</string>
+    <string name="product_detail_update_product_password_error">שגיאה בעדכון הסיסמה</string>
+    <string name="product_list_sorting_list_item">אפשרות המיון שנבחרה</string>
+    <string name="product_list_filters_list_item">אפשרות הסינון שנבחרה</string>
+    <string name="product_list_filters_show_products">להציג את המוצרים</string>
+    <string name="product_list_filters_selected">מסננים \u2022 %d</string>
+    <string name="product_list_filters_count">מסננים (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">מ-Z ל-A</string>
+    <string name="product_list_sorting_z_to_a">כותרת: מ-Z ל-A</string>
+    <string name="product_list_sorting_a_to_z_short">מ-A ל-Z</string>
+    <string name="product_list_sorting_a_to_z">כותרת: מ-A ל-Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">הישן ביותר</string>
+    <string name="product_list_sorting_oldest_to_newest">תאריך: מהישן לחדש</string>
+    <string name="product_list_sorting_newest_to_oldest_short">החדש ביותר</string>
+    <string name="product_list_sorting_newest_to_oldest">תאריך: מהחדש לישן</string>
+    <string name="product_list_sorting_header">מיון לפי</string>
+    <string name="product_list_filters">מסננים</string>
+    <string name="product_list_empty_filters">לא נמצאו מוצרים</string>
+    <string name="product_filter_default">כל אפשרות</string>
+    <string name="product_type">סוג מוצר</string>
+    <string name="selection_count">נבחרו %d</string>
+    <string name="value_not_set">לא הוגדר</string>
+    <string name="more_options">עוד אפשרויות</string>
+    <string name="clear">לנקות</string>
     <string name="product_status_pending">ביקורת ממתינה לאישור</string>
     <string name="settings_about_title">אודות WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">לקבוע לפי חיסכון בצריכת הסוללה</string>
@@ -16,15 +94,13 @@ Language: he_IL
     <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
     <string name="product_short_description">תיאור קצר</string>
     <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות עם WooCommerce 4.0 או בחנויות שבהן הותקן התוסף WooCommerce Admin</string>
-    <string name="my_store_stats_reverted_message">אנחנו מפרסמים שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 ביולי 2020.</string>
     <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
     <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
     <string name="product_shipping_empty">להוסיף משלוח</string>
     <string name="discard_images_message">תמונות המוצר עוד מועלות. האם למחוק את השינויים שביצעת?</string>
     <string name="product_inventory_update_stock_quantity_error">יש להזין מספר</string>
-    <string name="product_wip_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
-    <string name="product_wip_title">עריכה מוגבלת זמינה</string>
+    <string name="product_limited_editing_message">הוספנו אפשרות עריכה למוצרים פשוטים. כדאי לשים לב לאפשרויות נוספות שיופיעו בקרוב!</string>
     <string name="product_tax_status_shipping">משלוח</string>
     <string name="product_tax_status_taxable">חייב במיסים</string>
     <string name="product_tax_status_none">ללא</string>
@@ -117,7 +193,7 @@ Language: he_IL
     <string name="product_add_image_content_description">להוסיף תמונה</string>
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
-    <string name="product_variant_hidden">מוסתר</string>
+    <string name="product_variation_hidden">מוסתר</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
@@ -162,7 +238,7 @@ Language: he_IL
     <string name="product_list_empty_search">אין מוצרים תואמים</string>
     <string name="product_list_empty">עדיין אין מוצרים</string>
     <string name="product_stock_count">%s במלאי</string>
-    <string name="product_stock_status_instock_with_variants">משתנים של \u2022 %d מלאי</string>
+    <string name="product_stock_status_instock_with_variations">משתנים של \u2022 %d מלאי</string>
     <string name="product_image_content_description">תמונת מוצר</string>
     <string name="review_list_item_title">המשתמש %1$s כתב ביקורת על %2$s</string>
     <string name="wc_unapproved">לא מאושר</string>
@@ -189,7 +265,6 @@ Language: he_IL
     <string name="order_refunds_available_for_refund">סכום של %s זמין להחזר כספי</string>
     <string name="orderdetail_issue_refund_button">נמצאה בעיה</string>
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
-    <string name="settings_enable_v4_stats_message">נסה את הנתונים הסטטיסטיים שזמינים\nבתוסף הניהול החדש של WooCommerce</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
     <string name="order_begin_fulfillment">להתחיל את ההשלמה</string>
@@ -517,6 +592,8 @@ Language: he_IL
     <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
     <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
     <string name="support_help_center">מרכז העזרה</string>
+    <string name="product_type_grouped">בקבוצה</string>
+    <string name="product_type_variable">משתנה</string>
     <string name="product_backorders_notify">להרשות אך להודיע ללקוח</string>
     <string name="product_backorders_yes">להרשות</string>
     <string name="product_backorders_no">לא להרשות</string>
@@ -617,7 +694,6 @@ Language: he_IL
     <string name="review_moderation_undo">הביקורת סומנה בתור \"%1$s\"</string>
     <string name="add_order_note_sublabel">אם האפשרות מושבתת, הפתק יהיה פרטי</string>
     <string name="order_error_fetch_generic">שגיאה בהבאת ההזמנה</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">בדיקה, הכנה ומשלוח של ההזמנות שבהמתנה</string>
     <string name="back">חזרה</string>
     <string name="notification_channel_review_title">התראות לגבי ביקורות על המוצר</string>
@@ -816,12 +892,9 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>
-    <string name="orderdetail_orderstatus_created">נוצר ב-%1$s</string>
-    <string name="orderdetail_orderstatus_heading">מספר %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">הזמנה מספר %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">פרטי לקוח</string>

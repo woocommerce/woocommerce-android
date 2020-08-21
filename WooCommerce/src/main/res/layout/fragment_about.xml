@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/color_surface">
 
     <ImageView
         android:id="@+id/about_image"
@@ -26,6 +27,18 @@
         android:background="?attr/colorSurface">
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_tos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/about_tos"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
             android:id="@+id/about_privacy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,16 +51,16 @@
             android:layout_marginStart="@dimen/major_100"/>
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/about_tos"
+            android:id="@+id/about_privacy_ca"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/major_100"
             android:paddingEnd="@dimen/minor_00"
-            app:optionTitle="@string/about_tos"/>
+            app:optionTitle="@string/settings_privacy_policy_ca"/>
 
         <View
             style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100" />
+            android:layout_marginStart="@dimen/major_100"/>
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView

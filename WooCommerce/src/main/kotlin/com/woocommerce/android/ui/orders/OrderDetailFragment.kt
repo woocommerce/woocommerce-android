@@ -22,7 +22,10 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.fetchTrackingLinks
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -32,6 +35,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderDetailNoteListener
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelActionListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -44,7 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
-        OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult {
+        OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult, ShippingLabelActionListener {
     companion object {
         const val ARG_DID_MARK_COMPLETE = "did_mark_complete"
         const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
@@ -191,25 +195,10 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         super.onDestroyView()
     }
 
-    override fun getFragmentTitle() = getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number)
+    override fun getFragmentTitle() =
+        getString(R.string.orderdetail_orderstatus_ordernum, presenter.orderModel?.number.orEmpty())
 
     override fun showRefunds(order: WCOrderModel, refunds: List<Refund>) {
-        // populate the Order Product List Card if not all have been refunded
-        if (order.toAppModel().hasNonRefundedItems(refunds)) {
-            orderDetail_productList.initView(
-                    orderModel = order,
-                    productImageMap = productImageMap,
-                    expanded = false,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                    orderListener = this,
-                    productListener = this,
-                    refunds = refunds
-            )
-            orderDetail_productList.show()
-        } else {
-            orderDetail_productList.hide()
-        }
-
         // show the refund products count if at least one refunded
         if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
             orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
@@ -222,6 +211,54 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })
         } else {
             orderDetail_paymentInfo.showRefundTotal()
+        }
+    }
+
+    override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
+        // Shipment tracking links are not available by default from the shipping label API
+        // Until this is available on the API side, we need to fetch the tracking link from the
+        // shipment tracking API (if available) and link the tracking link to the corresponding
+        // tracking number of a shipping label
+        val shipmentTrackingList = presenter.getOrderShipmentTrackingsFromDb(order)
+        shippingLabels.map { it.fetchTrackingLinks(shipmentTrackingList) }
+
+        orderDetail_shippingLabelList.initView(
+            order.toAppModel(),
+            shippingLabels,
+            productImageMap,
+            currencyFormatter.buildBigDecimalFormatter(order.currency),
+            this
+        )
+    }
+
+    override fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>) {
+        // populate the Order Product List Card if not all products are associated with any of the shipping labels
+        // available or if there is at least 1 product that is not refunded
+        val orderModel = order.toAppModel()
+        val hasUnpackagedProducts = orderModel.hasUnpackagedProducts(shippingLabels)
+        if (hasUnpackagedProducts && orderModel.hasNonRefundedItems(refunds)) {
+            val unpackagedAndNonRefundedProducts =
+                orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels)
+
+            val listTitle = if (hasVirtualProductsOnly(unpackagedAndNonRefundedProducts)) {
+                getString(R.string.orderdetail_shipping_label_virtual_products_header)
+            } else if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
+                getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+            } else null
+
+            orderDetail_productList.initView(
+                orderModel = order,
+                orderItems = unpackagedAndNonRefundedProducts,
+                productImageMap = productImageMap,
+                expanded = false,
+                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                orderListener = this,
+                productListener = this,
+                listTitle = listTitle
+            )
+            orderDetail_productList.show()
+        } else {
+            orderDetail_productList.hide()
         }
     }
 
@@ -653,6 +690,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
     }
 
+    override fun openShippingLabelRefund(orderId: Long, shippingLabelId: Long) {
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
+            orderId, shippingLabelId
+        )
+        findNavController().navigateSafely(action)
+    }
+
     private fun showOrderStatusSelector() {
         // If the device is offline, alert the user with a snack and exit (do not show order status selector).
         if (!networkStatus.isConnected()) {
@@ -680,5 +724,23 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     private fun showOrderShippingNotice(isVirtualProduct: Boolean, order: WCOrderModel) {
         val hideShippingMethodNotice = isVirtualProduct || !order.isMultiShippingLinesAvailable()
         orderDetail_shippingMethodNotice.visibility = if (hideShippingMethodNotice) View.GONE else View.VISIBLE
+    }
+
+    private fun hasVirtualProductsOnly(
+        orderItems: List<Item>
+    ): Boolean {
+        val remoteProductIds: List<Long> = orderItems.map { it.productId }
+        if (remoteProductIds.isNullOrEmpty()) {
+            return false
+        }
+
+        // verify that the LineItem product is in the local cache and
+        // that the product count in the local cache matches the lineItem count.
+        val productModels = presenter.getProductsByIds(remoteProductIds)
+        if (productModels.isNullOrEmpty() || productModels.count() != remoteProductIds.count()) {
+            return false
+        }
+
+        return productModels.none { !it.virtual }
     }
 }

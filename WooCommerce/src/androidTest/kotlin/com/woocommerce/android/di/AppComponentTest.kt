@@ -3,7 +3,6 @@ package com.woocommerce.android.di
 import android.app.Application
 import com.woocommerce.android.push.FCMServiceModule
 import com.woocommerce.android.ui.login.LoginAnalyticsModule
-import com.woocommerce.android.ui.products.MockedWooStoreModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -18,29 +17,27 @@ import javax.inject.Singleton
 @Component(modules = [
         AndroidInjectionModule::class,
         ThreadModule::class,
-        MockedViewModelAssistedFactoriesModule::class,
+        ViewModelAssistedFactoriesModule::class,
         ApplicationModule::class,
         AppConfigModule::class,
         ReleaseBaseModule::class,
         ReleaseNetworkModule::class,
         ReleaseWCNetworkModule::class,
         ReleaseOkHttpClientModule::class,
-        MockedActivityBindingModule::class,
-        MockedWooStoreModule::class,
-        MockedProductDetailRepositoryModule::class,
-        MockedSelectedSiteModule::class,
+        ActivityBindingModule::class,
+        SelectedSiteModule::class,
         FCMServiceModule::class,
         LoginAnalyticsModule::class,
         LoginServiceModule::class,
-        MockedNetworkStatusModule::class,
-        MockedCurrencyModule::class,
+        NetworkStatusModule::class,
+        CurrencyModule::class,
         SupportModule::class,
         OrderFetcherModule::class])
 interface AppComponentTest : AppComponent {
     @Component.Builder
     interface Builder : AppComponent.Builder {
         @BindsInstance
-        override fun application(application: Application): AppComponentTest.Builder
+        override fun application(application: Application): Builder
 
         override fun build(): AppComponentTest
     }

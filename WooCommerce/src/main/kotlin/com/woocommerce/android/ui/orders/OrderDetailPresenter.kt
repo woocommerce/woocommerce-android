@@ -10,26 +10,21 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.OrderDetailRepository.OrderDetailUiItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.MARK_NOTIFICATIONS_READ
@@ -48,8 +43,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
@@ -64,20 +57,18 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderDetailPresenter @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
-    private val refundStore: WCRefundStore,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus,
-    private val notificationStore: NotificationStore
+    private val notificationStore: NotificationStore,
+    private val orderDetailRepository: OrderDetailRepository
 ) : OrderDetailContract.Presenter {
     companion object {
         private val TAG: String = OrderDetailPresenter::class.java.simpleName
@@ -102,7 +93,7 @@ class OrderDetailPresenter @Inject constructor(
     private var isNotesInit = false
     private var isRefreshingOrderStatusOptions = false
 
-    private var deferredRefunds: Deferred<WooResult<List<WCRefundModel>>>? = null
+    override val coroutineScope = CoroutineScope(dispatchers.main)
 
     override fun takeView(view: OrderDetailContract.View) {
         orderView = view
@@ -111,10 +102,12 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
+        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
+        orderDetailRepository.onCleanup()
     }
 
     /**
@@ -133,30 +126,49 @@ class OrderDetailPresenter @Inject constructor(
             orderModel?.let { order ->
                 orderView?.showOrderDetail(order, isFreshData = false)
                 if (markComplete) orderView?.showChangeOrderStatusSnackbar(CoreOrderStatus.COMPLETED.value)
-                loadRefunds()
+                loadOrderDetailInfo(order)
                 loadOrderNotes()
-                loadOrderShipmentTrackings()
             } ?: fetchOrder(orderIdentifier.toIdSet().remoteOrderId, true)
         }
     }
 
-    private fun loadRefunds() {
+    override fun loadOrderDetailInfo(order: WCOrderModel) {
         orderModel?.let {
-            val refunds = loadRefundsFromDb(it)
-            orderView?.showRefunds(it, refunds)
+            val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
 
-            GlobalScope.launch(dispatchers.main) {
-                fetchRefunds(it.remoteOrderId)
-                val freshRefunds = awaitRefunds()
-                orderView?.showRefunds(it, freshRefunds)
-            }
+            // if there are no shipping labels cached in the db, we prefer not to show the product list
+            // till it can be fetched from the API
+            displayOrderDetailInfo(order, cachedOrderDetailUiItem, cachedOrderDetailUiItem.shippingLabels.isNotEmpty())
+
+            fetchOrderDetailInfo(it)
         }
     }
 
-    private fun loadRefundsFromDb(order: WCOrderModel): List<Refund> {
-        return refundStore.getAllRefunds(selectedSite.get(), order.remoteOrderId)
-                .map { it.toAppModel() }
-                .reversed()
+    override fun fetchOrderDetailInfo(order: WCOrderModel) {
+        coroutineScope.launch {
+            val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
+            displayOrderDetailInfo(order, freshOrderDetailUiItem, true)
+        }
+    }
+
+    private fun displayOrderDetailInfo(
+        order: WCOrderModel,
+        orderDetailUiItem: OrderDetailUiItem,
+        displayProductList: Boolean
+    ) {
+        orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
+        orderView?.showShippingLabels(orderDetailUiItem.orderModel, orderDetailUiItem.shippingLabels)
+
+        // display the product list only if we know for sure,
+        // that there are no shipping labels available for the order
+        if (displayProductList) {
+            orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
+        }
+
+        // Display the shipment tracking list only if it's available and if there are no shipping labels available
+        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.shipmentTrackingList.isNotEmpty()) {
+            orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
+        }
     }
 
     override fun refreshOrderAfterDelay(refreshDelay: Long) {
@@ -206,18 +218,6 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    override fun loadOrderShipmentTrackings() {
-        orderModel?.let { order ->
-            // Preload trackings from the db if we've already fetched it
-            if (isShipmentTrackingsFetched) {
-                loadShipmentTrackingsFromDb()
-            } else if (networkStatus.isConnected() && !isShipmentTrackingsFailed) {
-                // Attempt to refresh trackings from api in the background
-                requestShipmentTrackingsFromApi(order)
-            }
-        }
-    }
-
     /**
      * Fetch the order shipment trackings from the device database
      * Segregating the fetching from db and displaying to UI into two separate methods
@@ -244,17 +244,9 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun fetchOrder(remoteOrderId: Long, displaySkeleton: Boolean) {
-        fetchRefunds(remoteOrderId)
-
         orderView?.showSkeleton(displaySkeleton)
         val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
-    }
-
-    private fun fetchRefunds(remoteOrderId: Long) {
-        deferredRefunds = GlobalScope.async {
-            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
-        }
     }
 
     /**
@@ -264,6 +256,9 @@ class OrderDetailPresenter @Inject constructor(
     override fun isVirtualProduct(order: WCOrderModel) = isVirtualProduct(
             selectedSite.get(), order.getLineItemList(), productStore
     )
+
+    override fun getProductsByIds(remoteProductIds: List<Long>) =
+        productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
 
     override fun doChangeOrderStatus(newStatus: String) {
         if (!networkStatus.isConnected()) {
@@ -283,9 +278,9 @@ class OrderDetailPresenter @Inject constructor(
      * Removes the notification from the system bar if present, fetch the new order notification from the database,
      * and fire the event to mark it as read.
      */
-    override fun markOrderNotificationRead(context: Context, remoteNotificationId: Long) {
-        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNotificationId.toString())
-        notificationStore.getNotificationByRemoteId(remoteNotificationId)?.let {
+    override fun markOrderNotificationRead(context: Context, remoteNoteId: Long) {
+        NotificationHandler.removeNotificationWithNoteIdFromSystemBar(context, remoteNoteId.toString())
+        notificationStore.getNotificationByRemoteId(remoteNoteId)?.let {
             // Send event that an order with a matching notification was opened
             AnalyticsTracker.track(Stat.NOTIFICATION_OPEN, mapOf(
                     AnalyticsTracker.KEY_TYPE to AnalyticsTracker.VALUE_ORDER,
@@ -349,16 +344,6 @@ class OrderDetailPresenter @Inject constructor(
         }
     }
 
-    private suspend fun awaitRefunds(): List<Refund> {
-        return deferredRefunds?.await()?.let { requestResult ->
-            if (!requestResult.isError) {
-                requestResult.model?.map { it.toAppModel() } ?: emptyList()
-            } else {
-                emptyList()
-            }
-        } ?: emptyList()
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -369,15 +354,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                GlobalScope.launch(dispatchers.main) {
+                coroutineScope.launch {
                     orderModel?.let { order ->
-                        fetchRefunds(order.remoteOrderId)
-                        val refunds = awaitRefunds()
                         orderView?.showOrderDetail(order, isFreshData = true)
-                        orderView?.showRefunds(order, refunds)
                         orderView?.showSkeleton(false)
                         loadOrderNotes()
-                        loadOrderShipmentTrackings()
+                        fetchOrderDetailInfo(order)
                     } ?: orderView?.showLoadOrderError()
                 }
             }
@@ -395,20 +377,6 @@ class OrderDetailPresenter @Inject constructor(
                     isUsingCachedNotes = false
                     val notes = orderStore.getOrderNotesForOrder(order)
                     orderView?.updateOrderNotes(notes)
-                }
-            }
-        } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS) {
-            if (event.isError) {
-                WooLog.e(T.ORDERS, "$TAG - Error fetching order shipment tracking info: ${event.error.message}")
-                isShipmentTrackingsFailed = true
-            } else {
-                orderModel?.let { order ->
-                    AnalyticsTracker.track(
-                            Stat.ORDER_TRACKING_LOADED,
-                            mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
-
-                    isShipmentTrackingsFetched = true
-                    loadShipmentTrackingsFromDb()
                 }
             }
         } else if (event.causeOfChange == UPDATE_ORDER_STATUS) {
@@ -505,7 +473,7 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh order notes now that a connection is active is needed
@@ -524,18 +492,18 @@ class OrderDetailPresenter @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onNotificationChanged(event: OnNotificationChanged) {
-        when (event.causeOfChange) {
-            MARK_NOTIFICATIONS_READ -> onNotificationMarkedRead(event)
+        if (event.causeOfChange == MARK_NOTIFICATIONS_READ) {
+            onNotificationMarkedRead(event)
         }
     }
 
     @Suppress
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onOrderStatusOptionsChanged(event: OnOrderStatusOptionsChanged) {
         isRefreshingOrderStatusOptions = false
 
         if (event.isError) {
-            WooLog.e(T.ORDERS, "${OrderDetailPresenter.TAG} " +
+            WooLog.e(T.ORDERS, "$TAG " +
                     "- Error fetching order status options from the api : ${event.error.message}")
             return
         }

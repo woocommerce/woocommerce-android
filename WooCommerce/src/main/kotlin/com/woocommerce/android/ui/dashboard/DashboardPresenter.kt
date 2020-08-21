@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.dashboard
 
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -32,7 +31,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @ActivityScope
 class DashboardPresenter @Inject constructor(
     private val dispatcher: Dispatcher,

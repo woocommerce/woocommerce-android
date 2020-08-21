@@ -1,3 +1,40 @@
+4.9
+-----
+* Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
+ 
+4.8
+-----
+* Added a fix to display the Add shipment tracking section only if the Shipment Tracking plugin is available
+* Fixed a rare crash caused by attempting to hide a non-active view
+ 
+4.7
+-----
+* Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
+* Fixed cursor window size-related crashes for device running Android P and above
+ 
+4.6
+-----
+* Added a fix to support multiple new order notifications for a store.
+* Updated the background color of the login views.
+* Moved privacy notice for CA users to the About App screen.
+* Added a placeholder for orders without a customer name.
+ 
+4.5
+-----
+* Added a link to the new privacy notice for california users
+* Products: now you can update product images, product settings, viewing and sharing a product
+ 
+4.4
+-----
+* Minor style tweaks to login screens
+* Fixes text color on support ticket views for dark mode
+* Adds a fix to retain the cursor position when updating product title
+* Fixed a potential memory leak while switching between stores
+* Reverted the notification icon back to the W for better visibility
+* Adds a fix to display the exact stock status for a product in Product detail
+
 4.3
 -----
 * Added shipment tracking to the order detail screen
@@ -7,6 +44,12 @@
 * Fixed a crash when rapidly double clicking to navigate to another screen
 * All orders tab now displays future-dated orders
 * Fixed crash in order detail after returning from the refund screen
+* You can now filter and sort Products by clicking on the Products tab!
+* Fixes text color on support ticket views for dark mode
+
+4.2.1
+-----
+* Fixed crash happening on Android 5.1 while applying dynamic themes
  
 4.2
 -----

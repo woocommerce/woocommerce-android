@@ -32,6 +32,7 @@ import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.push.NotificationHandler
+import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -67,6 +68,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.Locale
 import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
@@ -88,6 +90,7 @@ class MainActivity : AppUpgradeActivity(),
         const val FIELD_REMOTE_NOTE_ID = "remote-note-id"
         const val FIELD_OPENED_FROM_PUSH_GROUP = "opened-from-push-group"
         const val FIELD_OPENED_FROM_ZENDESK = "opened-from-zendesk"
+        const val FIELD_NOTIFICATION_TYPE = "notification-type"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -112,6 +115,7 @@ class MainActivity : AppUpgradeActivity(),
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
+    private var isMainThemeApplied = false
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -125,7 +129,14 @@ class MainActivity : AppUpgradeActivity(),
      * use this theme at runtime (in the case of switching the theme at runtime).
      */
     override fun getTheme(): Theme {
-        return super.getTheme().also { it.applyStyle(R.style.Theme_Woo_DayNight, true) }
+        return super.getTheme().also {
+            // Since applying the theme overwrites all theme properties and then applies,
+            // we only want to do this once per session to avoid unnecessary GC as well as
+            // OOM crashes in older versions of Android.
+            if (!isMainThemeApplied) {
+                it.applyStyle(R.style.Theme_Woo_DayNight, true)
+                isMainThemeApplied = true
+            } }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -346,7 +357,9 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
-                R.id.productSettingsFragment -> {
+                R.id.productSettingsFragment,
+                R.id.addProductCategoryFragment,
+                R.id.parentCategoryListFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -567,24 +580,17 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun updateStatsView(isAvailable: Boolean) {
         val fragment = bottomNavView.getFragment(DASHBOARD)
-        val isEnabled = isAvailable && AppPrefs.isV4StatsUISupported()
         when (fragment.tag) {
             DashboardFragment.TAG -> {
-                if (isEnabled) {
+                if (isAvailable) {
                     // display the new stats UI only if user has opted in
                     replaceStatsFragment()
-                } else if (isAvailable) {
-                    // if the new stats UI is not enabled but the user has not opted out of it,
-                    // display the new stats availability banner
-                    (fragment as? DashboardFragment)?.showV4StatsAvailabilityBanner(
-                            AppPrefs.shouldDisplayV4StatsAvailabilityBanner()
-                    )
                 }
             }
             MyStoreFragment.TAG -> {
                 // if new stats UI was enabled but is no longer enabled, display revert banner
                 // and replace the new stats UI with the old UI
-                if (!isEnabled) {
+                if (!isAvailable) {
                     AppPrefs.setShouldDisplayV4StatsRevertedBanner(true)
                     replaceStatsFragment()
                 }
@@ -657,8 +663,16 @@ class MainActivity : AppUpgradeActivity(),
                 // Clear unread messages from the system bar
                 NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
-                // User clicked on a group of notifications. Just show the notifications tab.
-                bottomNavView.currentPosition = REVIEWS
+                // User clicked on a group of notifications. Redirect to the order list screen if
+                // the last notification received is a new order. Otherwise, redirect to the reviews screen
+                val notificationChannelType = intent.getStringExtra(FIELD_NOTIFICATION_TYPE)?.let {
+                    NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
+                } ?: NotificationChannelType.REVIEW
+
+                bottomNavView.currentPosition = when (notificationChannelType) {
+                    NotificationChannelType.NEW_ORDER -> ORDERS
+                    else -> REVIEWS
+                }
             } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
                 // Reset this flag now that it's being processed
                 intent.removeExtra(FIELD_OPENED_FROM_ZENDESK)

@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 12:54:04+0000
+Translation-Revision-Date: 2020-08-04 15:17:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Bitte warten …</string>
+    <string name="product_add_category_dialog_title">Kategorie wird hinzugefügt</string>
+    <string name="product_category_parent">Übergeordnete Kategorie</string>
+    <string name="product_category_name">Kategoriename</string>
+    <string name="add_product_category_empty">Kategorienamen eingeben</string>
+    <string name="add_product_category_failed">Fehler beim Erstellen der Kategorie</string>
+    <string name="add_product_category_duplicate">Fehler beim Erstellen der Kategorie – Der Name ist bereits auf deiner Website vorhanden.</string>
+    <string name="add_product_category_success">Produktkategorie hinzugefügt</string>
+    <string name="product_add_category">Kategorie hinzufügen</string>
+    <string name="product_category_list_empty_message">Deine Produkte in Kategorien organisieren</string>
+    <string name="product_category_list_empty_title">Deine erste Kategorie hinzufügen</string>
+    <string name="product_category_empty">Kategorie hinzufügen</string>
+    <string name="product_categories">Kategorien</string>
+    <string name="orderdetail_customer_name_default">Gast</string>
+    <string name="settings_privacy_policy_ca">Datenschutzhinweis für Benutzer in Kalifornien</string>
+    <string name="keep_changes">Änderungen beibehalten</string>
+    <string name="product_sale_date_to">Bis %1$s</string>
+    <string name="product_wip_message">Wir haben den Produkten weitere Bearbeitungsfunktionen hinzugefügt. Ab sofort kannst du Bilder aktualisieren, Produkteinstellungen bearbeiten und Produkte teilen!</string>
+    <string name="product_wip_title">Neue Bearbeitungsfunktionen verfügbar</string>
+    <string name="product_limited_editing_title">Begrenzte Bearbeitungsfunktionen verfügbar</string>
+    <string name="orderdetail_product_multiple">Produkte</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">Extern</string>
+    <string name="product_type_simple">Einfach</string>
+    <string name="product_status_privately_published">Privat veröffentlicht</string>
+    <string name="empty_wpmedia_list_message">Noch keine Bilder</string>
+    <string name="wpmedia_picker_title">WordPress-Mediathek</string>
+    <string name="image_source_wp_media_library">WordPress-Mediathek</string>
+    <string name="product_menu_order_caption">Legt die Positionierung des Produktes im Katalog fest. Je niedriger der Wert der Zahl, desto höher wird der Artikel in der Produktliste angezeigt. Du kannst auch negative Zahlen verwenden.</string>
+    <string name="product_menu_order">Menüreihenfolge</string>
+    <string name="product_purchase_note_caption">Optionale Bestätigung, die dem Kunden nach dem Kauf gesendet wird</string>
+    <string name="product_external_link_button_text_label">Dieser Text wird auf dem Button angezeigt, der auf das externe Produkt verlinkt</string>
+    <string name="product_external_link_button_text">Button-Text</string>
+    <string name="product_external_link_label">Bitte gib die externe URL zum Produkt ein.</string>
+    <string name="product_external_link">Produkt-Link</string>
+    <string name="product_external_empty_link">Produkt-Link hinzufügen</string>
+    <string name="product_enable_reviews">Bewertungen aktivieren</string>
+    <string name="product_slug_label">Dies ist die URL-freundliche Version des Produkttitels.</string>
+    <string name="product_slug">Titelform</string>
+    <string name="product_visibility_headline">Diese Einstellung legt fest, auf welchen Seiten des Shops Produkte gelistet werden.</string>
+    <string name="product_featured">Hervorgehobenes Produkt</string>
+    <string name="product_catalog_visibility_hidden">Versteckt</string>
+    <string name="product_catalog_visibility_search">Nur Suchergebnisse</string>
+    <string name="product_catalog_visibility_catalog">Nur Shop</string>
+    <string name="product_catalog_visibility_visible">Shop und Suchergebnisse</string>
+    <string name="product_catalog_visibility">Katalogsichtbarkeit</string>
+    <string name="product_visibility_password_required">Passwort ist erforderlich</string>
+    <string name="product_visibility_password_protected">Passwortgeschützt</string>
+    <string name="product_visibility_private">Privat</string>
+    <string name="product_visibility_public">Öffentlich</string>
+    <string name="product_visibility">Sichtbarkeit</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Produkteinstellungen</string>
+    <string name="product_detail_update_product_password_error">Fehler beim Aktualisieren des Passwortes</string>
+    <string name="product_list_sorting_list_item">Ausgewählte Reihenfolge</string>
+    <string name="product_list_filters_list_item">Ausgewählte Filteroption</string>
+    <string name="product_list_filters_show_products">Produkte anzeigen</string>
+    <string name="product_list_filters_selected">Filter \u2022 %d</string>
+    <string name="product_list_filters_count">Filter (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z bis A</string>
+    <string name="product_list_sorting_z_to_a">Titel: Z bis A</string>
+    <string name="product_list_sorting_a_to_z_short">A bis Z</string>
+    <string name="product_list_sorting_a_to_z">Titel: A bis Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Älteste</string>
+    <string name="product_list_sorting_oldest_to_newest">Datum: Älteste bis neueste</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Neueste</string>
+    <string name="product_list_sorting_newest_to_oldest">Datum: Neueste bis älteste</string>
+    <string name="product_list_sorting_header">Sortieren nach</string>
+    <string name="product_list_filters">Filter</string>
+    <string name="product_list_empty_filters">Keine Produkte gefunden</string>
+    <string name="product_filter_default">Beliebig</string>
+    <string name="product_type">Produkttyp</string>
+    <string name="selection_count">%d ausgewählt</string>
+    <string name="value_not_set">Nicht festgelegt</string>
+    <string name="more_options">Weitere Optionen</string>
+    <string name="clear">Löschen</string>
     <string name="product_status_pending">Ausstehende Bewertung</string>
     <string name="settings_about_title">Über WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Von Battery Saver festgesetzt</string>
@@ -16,15 +94,13 @@ Language: de
     <string name="product_short_description_empty">Kurze Produktübersicht</string>
     <string name="product_short_description">Kurzbeschreibung</string>
     <string name="my_store_stats_availability_message">Wir werden Verbesserungen an den Statistiken für Shops mit WooCommerce 4.0 oder Shops mit dem WooCommerce Admin-Plugin einführen.</string>
-    <string name="my_store_stats_reverted_message">Wir haben unsere Analysen verbessert. Führe ein Upgrade auf WooCommerce 4.0 oder höher durch, oder installiere das WooCommerce Admin-Plugin, um auch nach dem 1. Juli 2020 deine Statistiken sehen zu können.</string>
     <string name="my_store_stats_reverted_title">Führe ein Upgrade durch, um weiterhin deine Statistiken sehen zu können</string>
     <string name="product_pricing_update_sale_price_error">Der Verkaufspreis muss niedriger als der reguläre Preis sein</string>
     <string name="product_schedule_remove_end_date_link_label">Enddatum entfernen</string>
     <string name="product_shipping_empty">Versand hinzufügen</string>
     <string name="discard_images_message">Die Produktbilder werden noch hochgeladen. Möchtest du deine Änderungen verwerfen?</string>
     <string name="product_inventory_update_stock_quantity_error">Gib bitte eine Zahl ein</string>
-    <string name="product_wip_message">Wir haben zu einfachen Produkten Bearbeitungsfunktionen hinzugefügt. In Kürze werden noch weitere Optionen verfügbar sein. Halte deine Augen offen!</string>
-    <string name="product_wip_title">Begrenzte Bearbeitungsfunktionen verfügbar</string>
+    <string name="product_limited_editing_message">Wir haben zu einfachen Produkten Bearbeitungsfunktionen hinzugefügt. In Kürze werden noch weitere Optionen verfügbar sein. Halte deine Augen offen!</string>
     <string name="product_tax_status_shipping">Versand</string>
     <string name="product_tax_status_taxable">Zu versteuern</string>
     <string name="product_tax_status_none">Keines</string>
@@ -117,7 +193,7 @@ Language: de
     <string name="product_add_image_content_description">Bild hinzufügen</string>
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
-    <string name="product_variant_hidden">Versteckt</string>
+    <string name="product_variation_hidden">Versteckt</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
@@ -162,7 +238,7 @@ Language: de
     <string name="product_list_empty_search">Keine Produkte gefunden</string>
     <string name="product_list_empty">Noch keine Produkte</string>
     <string name="product_stock_count">%s auf Lager</string>
-    <string name="product_stock_status_instock_with_variants">Auf Lager \u2022 %d Varianten</string>
+    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s hat eine Bewertung für %2$s hinterlassen</string>
     <string name="wc_unapproved">Nicht genehmigt</string>
@@ -189,7 +265,6 @@ Language: de
     <string name="order_refunds_available_for_refund">%s zur Rückerstattung verfügbar</string>
     <string name="orderdetail_issue_refund_button">Rückerstattung ausstellen</string>
     <string name="orderdetail_refund_detail">%1$s per %2$s</string>
-    <string name="settings_enable_v4_stats_message">Teste die neuen Statistiken, die im\nWooCommerce Admin-Plugin verfügbar ist</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
     <string name="order_begin_fulfillment">Auftragsabwicklung starten</string>
@@ -517,6 +592,8 @@ Language: de
     <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>
     <string name="no_site_error">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss die Website WordPress verwenden.</string>
     <string name="support_help_center">Hilfe-Center</string>
+    <string name="product_type_grouped">Gruppiert</string>
+    <string name="product_type_variable">Variable</string>
     <string name="product_backorders_notify">Zulassen, aber Kunden benachrichtigen</string>
     <string name="product_backorders_yes">Zulassen</string>
     <string name="product_backorders_no">Nicht zulassen</string>
@@ -617,7 +694,6 @@ Language: de
     <string name="review_moderation_undo">Bewertung als %1$s markiert</string>
     <string name="add_order_note_sublabel">Bei Deaktivierung wird der Hinweis privat</string>
     <string name="order_error_fetch_generic">Fehler beim Abrufen der Bestellung</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Diese ausstehenden Bestellungen prüfen, vorbereiten und versenden</string>
     <string name="back">Zurück</string>
     <string name="notification_channel_review_title">Benachrichtigungen zu Produktbewertungen</string>
@@ -816,12 +892,9 @@ Language: de
     <string name="orderdetail_product_image_contentdesc">Produktabbildung</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Steuern:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">E-Mail an Kunden senden</string>
     <string name="orderdetail_billing_details">Abrechnungsdetails</string>
     <string name="orderdetail_shipping_details">Versanddetails</string>
-    <string name="orderdetail_orderstatus_created">%1$s erstellt</string>
-    <string name="orderdetail_orderstatus_heading">Nr. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Bestellung Nr. %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Kundeninformationen</string>

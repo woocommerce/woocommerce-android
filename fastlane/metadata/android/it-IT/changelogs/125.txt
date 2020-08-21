@@ -1,6 +1,0 @@
-4.1:
-*Abbiamo appena rinfrescato all'app. Goditi i nuovi colori!
-*Dark mode è ora disponibile per chi preferisce schermi meno luminosi.
-*Rimossa la sezione Spedizione dalla visualizzazione dei dettagli dei prodotti virtuali (perché, beh, non li spedisci).
-*In un elenco di prodotti ridotto, gli articoli a volte scomparivano da esso, ora non più: bug risolto.
-*In rare occasioni, il tentativo di visualizzare i dettagli di un prodotto provocava l'arresto anomalo dell'app. Abbiamo risolto anche quel bug.

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.MenuItem
@@ -52,7 +53,32 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         navAdapter = NavAdapter()
         addTopDivider()
+        createBadges()
 
+        assignNavigationListeners(true)
+
+        // Default to the dashboard position
+        active(DASHBOARD.position)
+    }
+
+    /**
+     * HACK alert! The bottom nav's presenter stores the badges in its saved state and recreates them
+     * in onRestoreInstanceState, which should be fine but instead it ends up creating duplicates
+     * of our badges. To work around this we remove the badges before state is saved and recreate
+     * them ourselves when state is restored.
+     */
+    override fun onSaveInstanceState(): Parcelable? {
+        removeBadge(R.id.orders)
+        removeBadge(R.id.reviews)
+        return super.onSaveInstanceState()
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
+        createBadges()
+    }
+
+    private fun createBadges() {
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
@@ -61,11 +87,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         reviewsBadge = getOrCreateBadge(R.id.reviews)
         reviewsBadge.isVisible = false
         reviewsBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-
-        assignNavigationListeners(true)
-
-        // Default to the dashboard position
-        active(DASHBOARD.position)
     }
 
     /**

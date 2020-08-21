@@ -13,27 +13,30 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import kotlinx.android.synthetic.main.my_store_stats.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.WCTopEarnerModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class MyStoreFragment : TopLevelFragment(),
-        MyStoreContract.View,
-        DashboardStatsListener {
+    MyStoreContract.View,
+    MyStoreStatsListener {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
@@ -69,6 +72,9 @@ class MyStoreFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
     }
 
+    private val appBarLayout
+        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -90,6 +96,13 @@ class MyStoreFragment : TopLevelFragment(),
                     dashboard_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
                 }
+            }
+
+            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
+                store_feedback_request_card.visibility = View.VISIBLE
+                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
+                val negativeCallback = { /* TODO */ }
+                store_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
         return view
@@ -124,21 +137,24 @@ class MyStoreFragment : TopLevelFragment(),
 
         my_store_date_bar.initView()
         my_store_stats.initView(
-                activeGranularity,
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            activeGranularity,
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+        )
         my_store_top_earners.initView(
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+            statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
+        )
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
-                my_store_date_bar.clearDateRangeValues()
-                my_store_stats.loadDashboardStats(activeGranularity)
-                my_store_top_earners.loadTopEarnerStats(activeGranularity)
+                my_store_date_bar?.clearDateRangeValues()
+                my_store_stats?.loadDashboardStats(activeGranularity)
+                my_store_top_earners?.loadTopEarnerStats(activeGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -184,6 +200,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onStop() {
         errorSnackbar?.dismiss()
+        removeTabLayoutFromAppBar(tabLayout)
         super.onStop()
     }
 
@@ -221,14 +238,14 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
+    override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
-            my_store_top_earners.updateView(topEarnerList)
+            my_store_top_earners.updateView(topPerformers)
         }
     }
 
-    override fun showTopEarnersError(granularity: StatsGranularity) {
+    override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.updateView(emptyList())
             my_store_top_earners.showErrorView(true)
@@ -294,9 +311,11 @@ class MyStoreFragment : TopLevelFragment(),
                     my_store_stats.clearChartData()
                     my_store_date_bar.clearDateRangeValues()
                 }
-                presenter.loadStats(activeGranularity, forced)
-                presenter.loadTopEarnerStats(activeGranularity, forced)
-                presenter.fetchHasOrders()
+                presenter.run {
+                    loadStats(activeGranularity, forced)
+                    coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
+                    fetchHasOrders()
+                }
             }
             else -> isRefreshPending = true
         }
@@ -317,12 +336,14 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
         my_store_top_earners.showErrorView(false)
-        presenter.loadTopEarnerStats(period)
+        presenter.coroutineScope.launch {
+            presenter.loadTopPerformersStats(period)
+        }
     }
 
-    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+    override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
         removeTabLayoutFromAppBar(tabLayout)
-        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+        (activity as? MainNavigationRouter)?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
@@ -355,18 +376,16 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (isActive && !appBar.children.contains(tabLayout)) {
-                appBar.addView(
-                        tabLayout,
-                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                )
-            }
-        }
+        appBarLayout
+            ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.addView(
+                tabLayout,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            )
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        appBarLayout?.removeView(tabLayout)
     }
 
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE

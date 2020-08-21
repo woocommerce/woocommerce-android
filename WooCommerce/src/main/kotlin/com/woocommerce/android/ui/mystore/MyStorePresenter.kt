@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.mystore
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -13,6 +12,8 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -21,26 +22,27 @@ import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchTopEarnersStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
-import org.wordpress.android.fluxc.store.WCStatsStore.OnWCTopEarnersChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @ActivityScope
 class MyStorePresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooCommerceStore: WooCommerceStore, // Required to ensure the WooCommerceStore is initialized!
+    private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wcStatsStore: WCStatsStore,
     private val wcOrderStore: WCOrderStore, // Required to ensure the WCOrderStore is initialized!
     private val selectedSite: SelectedSite,
@@ -50,7 +52,7 @@ class MyStorePresenter @Inject constructor(
         private val TAG = MyStorePresenter::class.java
         private const val NUM_TOP_EARNERS = 3
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
-        private val topEarnersForceRefresh = BooleanArray(StatsGranularity.values().size)
+        private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
         init {
             resetForceRefresh()
@@ -61,11 +63,11 @@ class MyStorePresenter @Inject constructor(
          * used after a swipe-to-refresh on the dashboard to ensure we don't get cached data
          */
         fun resetForceRefresh() {
-            for (i in 0 until statsForceRefresh.size) {
+            for (i in statsForceRefresh.indices) {
                 statsForceRefresh[i] = true
             }
-            for (i in 0 until topEarnersForceRefresh.size) {
-                topEarnersForceRefresh[i] = true
+            for (i in topPerformersForceRefresh.indices) {
+                topPerformersForceRefresh[i] = true
             }
         }
     }
@@ -103,19 +105,23 @@ class MyStorePresenter @Inject constructor(
         fetchVisitorStats(granularity, forceRefresh)
     }
 
-    override fun loadTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
+    override suspend fun loadTopPerformersStats(
+        granularity: StatsGranularity,
+        forced: Boolean
+    ) {
         if (!networkStatus.isConnected()) {
             dashboardView?.isRefreshPending = true
-            return
         }
 
-        val forceRefresh = forced || topEarnersForceRefresh[granularity.ordinal]
+        val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
         if (forceRefresh) {
-            topEarnersForceRefresh[granularity.ordinal] = false
-            dashboardView?.showTopEarnersSkeleton(true)
+            topPerformersForceRefresh[granularity.ordinal] = false
+            withContext(Dispatchers.Main) {
+                dashboardView?.showTopEarnersSkeleton(true)
+            }
         }
 
-        fetchTopEarnerStats(granularity, forceRefresh)
+        fetchTopPerformersStats(granularity, forceRefresh)
     }
 
     override fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean) {
@@ -128,12 +134,46 @@ class MyStorePresenter @Inject constructor(
         dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
     }
 
-    override fun fetchTopEarnerStats(granularity: StatsGranularity, forced: Boolean) {
-        val payload = FetchTopEarnersStatsPayload(
-                selectedSite.get(), granularity, NUM_TOP_EARNERS, forced = forced
-        )
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchTopEarnersStatsAction(payload))
+    override suspend fun fetchTopPerformersStats(
+        granularity: StatsGranularity,
+        forced: Boolean
+    ) {
+        withContext(Dispatchers.Default) {
+            requestProductLeaderboards(granularity, forced)
+                .also { handleTopPerformersResult(it, granularity) }
+        }
     }
+
+    private suspend fun handleTopPerformersResult(
+        result: WooResult<List<WCTopPerformerProductModel>>,
+        granularity: StatsGranularity
+    ) {
+        withContext(Dispatchers.Main) {
+            dashboardView?.showTopEarnersSkeleton(false)
+            result.model?.let {
+                onWCTopPerformersChanged(it, granularity)
+            } ?: dashboardView?.showTopPerformersError(granularity)
+        }
+    }
+
+    private suspend fun requestProductLeaderboards(granularity: StatsGranularity, forced: Boolean) =
+        when (forced) {
+            true -> requestUpdatedProductLeaderboards(granularity)
+            false -> requestStoredProductLeaderboards(granularity)
+        }
+
+    private suspend fun requestUpdatedProductLeaderboards(granularity: StatsGranularity) =
+        wcLeaderboardsStore.fetchProductLeaderboards(
+            site = selectedSite.get(),
+            unit = granularity,
+            quantity = NUM_TOP_EARNERS
+        )
+
+    private fun requestStoredProductLeaderboards(granularity: StatsGranularity) =
+        wcLeaderboardsStore.fetchCachedProductLeaderboards(
+            site = selectedSite.get(),
+            unit = granularity
+        )
 
     override fun getStatsCurrency() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
@@ -156,7 +196,7 @@ class MyStorePresenter @Inject constructor(
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                        AppPrefs.setIsUsingV4Api(false)
+                        AppPrefs.setV4StatsSupported(false)
                         dashboardView?.updateStatsAvailabilityError()
                     } else {
                         dashboardView?.showStatsError(event.granularity)
@@ -165,11 +205,13 @@ class MyStorePresenter @Inject constructor(
                 }
 
                 // Track fresh data load
-                AnalyticsTracker.track(Stat.DASHBOARD_MAIN_STATS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
+                AnalyticsTracker.track(
+                    Stat.DASHBOARD_MAIN_STATS_LOADED,
+                    mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase())
+                )
 
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                        selectedSite.get(), event.granularity, event.startDate!!, event.endDate!!
+                    selectedSite.get(), event.granularity, event.startDate!!, event.endDate!!
                 )
                 dashboardView?.showStats(revenueStatsModel, event.granularity)
             }
@@ -188,27 +230,29 @@ class MyStorePresenter @Inject constructor(
                 }
 
                 val visitorStats = wcStatsStore.getNewVisitorStats(
-                        selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
+                    selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
                 )
                 dashboardView?.showVisitorStats(visitorStats, event.granularity)
             }
         }
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onWCTopEarnersChanged(event: OnWCTopEarnersChanged) {
-        dashboardView?.showTopEarnersSkeleton(false)
-        if (event.isError) {
-            dashboardView?.showTopEarnersError(event.granularity)
-        } else {
-            // Track fresh data loaded
-            AnalyticsTracker.track(
+    fun onWCTopPerformersChanged(
+        topPerformers: List<WCTopPerformerProductModel>?,
+        granularity: StatsGranularity
+    ) {
+        topPerformers
+            ?.sortedWith(
+                compareByDescending(WCTopPerformerProductModel::quantity)
+                    .thenByDescending(WCTopPerformerProductModel::total)
+            )?.let {
+                // Track fresh data loaded
+                AnalyticsTracker.track(
                     Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase()))
-
-            dashboardView?.showTopEarners(event.topEarners, event.granularity)
-        }
+                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
+                )
+                dashboardView?.showTopPerformers(it, granularity)
+            } ?: dashboardView?.showTopPerformersError(granularity)
     }
 
     @Suppress("unused")
@@ -217,8 +261,10 @@ class MyStorePresenter @Inject constructor(
         when (event.causeOfChange) {
             FETCH_HAS_ORDERS -> {
                 if (event.isError) {
-                    WooLog.e(T.DASHBOARD,
-                            "$TAG - Error fetching whether orders exist: ${event.error.message}")
+                    WooLog.e(
+                        T.DASHBOARD,
+                        "$TAG - Error fetching whether orders exist: ${event.error.message}"
+                    )
                 } else {
                     val hasNoOrders = event.rowsAffected == 0
                     dashboardView?.showEmptyView(hasNoOrders)

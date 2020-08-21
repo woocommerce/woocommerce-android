@@ -83,6 +83,11 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
                 confirmDiscard()
             }
         }
+
+        aztec.visualEditor.post {
+            aztec.visualEditor.requestFocus()
+            ActivityUtils.showKeyboard(aztec.visualEditor)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

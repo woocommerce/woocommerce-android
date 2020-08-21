@@ -1,10 +1,15 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.ui.orders.OrderDetailRepository.OrderDetailUiItem
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -161,4 +166,43 @@ object OrderTestUtils {
 
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
             generateOrderStatusOptions().map { it.statusKey to it }.toMap()
+
+    private fun generateShippingLabels(totalCount: Int = 5, lOrderId: Long): List<ShippingLabel> {
+        val result = ArrayList<ShippingLabel>()
+        for (i in totalCount downTo 1) {
+            result.add(WCShippingLabelModel().apply {
+                localSiteId = TEST_LOCAL_SITE_ID
+                localOrderId = lOrderId
+                remoteShippingLabelId = i.toLong()
+                packageName = "Package$i"
+                serviceName = "Service$i"
+                dateCreated = Date().time.toString()
+            }.toAppModel())
+        }
+        return result
+    }
+
+    private fun generateRefunds(totalCount: Int = 5): List<Refund> {
+        val result = ArrayList<Refund>()
+        for (i in totalCount downTo 1) {
+            result.add(Refund(
+                id = i.toLong(),
+                amount = i.toBigDecimal(),
+                dateCreated = Date(),
+                reason = "Test",
+                automaticGatewayRefund = true,
+                items = emptyList()
+            ))
+        }
+        return result
+    }
+
+    fun generateOrderDetailUiItem(order: WCOrderModel): OrderDetailUiItem {
+        return OrderDetailUiItem(
+            orderModel = order,
+            refunds = generateRefunds(),
+            shippingLabels = generateShippingLabels(lOrderId = order.remoteOrderId),
+            shipmentTrackingList = generateOrderShipmentTrackings(5, order.remoteOrderId.toInt())
+        )
+    }
 }

@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 08:54:03+0000
+Translation-Revision-Date: 2020-07-08 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_add_category_dialog_message">기다려주세요…</string>
+    <string name="product_add_category_dialog_title">카테고리 추가 중</string>
+    <string name="product_category_parent">상위 카테고리</string>
+    <string name="product_category_name">카테고리 이름</string>
+    <string name="add_product_category_empty">카테고리 이름 입력</string>
+    <string name="add_product_category_failed">카테고리 만들기 오류</string>
+    <string name="add_product_category_duplicate">카테고리 만들기 오류 - 이미 사이트에 존재하는 이름입니다.</string>
+    <string name="add_product_category_success">제품 카테고리 추가됨</string>
+    <string name="product_add_category">카테고리 추가</string>
+    <string name="product_category_list_empty_message">카테고리로 제품 정리</string>
+    <string name="product_category_list_empty_title">첫 번째 카테고리 추가</string>
+    <string name="product_category_empty">카테고리 추가</string>
+    <string name="product_categories">카테고리</string>
+    <string name="orderdetail_customer_name_default">비회원</string>
+    <string name="settings_privacy_policy_ca">캘리포니아 사용자를 위한 개인정보 공지</string>
+    <string name="keep_changes">변경 사항 유지</string>
+    <string name="product_sale_date_to">%1$s까지</string>
+    <string name="product_wip_message">제품에 더 많은 편집 기능을 추가했습니다. 이제 이미지를 업데이트하고 제품 설정을 편집하고 제품을 공유할 수 있습니다!</string>
+    <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
+    <string name="product_limited_editing_title">제한적인 편집 가능</string>
+    <string name="orderdetail_product_multiple">제품</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">외부</string>
+    <string name="product_type_simple">심플</string>
+    <string name="product_status_privately_published">비공개로 게시됨</string>
+    <string name="empty_wpmedia_list_message">아직 이미지 없음</string>
+    <string name="wpmedia_picker_title">워드프레스 미디어 라이브러리</string>
+    <string name="image_source_wp_media_library">워드프레스 미디어 라이브러리</string>
+    <string name="product_menu_order_caption">카탈로그에서 제품의 위치를 결정합니다. 숫자 값이 낮을수록 아이템이 제품 목록에서 더 위에 옵니다. 음수도 사용할 수 있습니다.</string>
+    <string name="product_menu_order">메뉴 순서</string>
+    <string name="product_purchase_note_caption">구매 후 고객에 보낼 메모(선택 사항)</string>
+    <string name="product_external_link_button_text_label">외부 제품을 링크하는 버튼에 표시될 텍스트</string>
+    <string name="product_external_link_button_text">버튼 텍스트</string>
+    <string name="product_external_link_label">제품의 외부 URL 입력</string>
+    <string name="product_external_link">제품 링크</string>
+    <string name="product_external_empty_link">제품 링크 추가</string>
+    <string name="product_enable_reviews">제품평 활성화</string>
+    <string name="product_slug_label">제품 제목의 URL 친화적인 버전</string>
+    <string name="product_slug">슬러그</string>
+    <string name="product_visibility_headline">이 설정은 제품이 어떤 상점 페이지에 등록될지 결정합니다.</string>
+    <string name="product_featured">추천 제품</string>
+    <string name="product_catalog_visibility_hidden">숨김</string>
+    <string name="product_catalog_visibility_search">검색 결과만</string>
+    <string name="product_catalog_visibility_catalog">상점만</string>
+    <string name="product_catalog_visibility_visible">상점 및 검색 결과</string>
+    <string name="product_catalog_visibility">카탈로그 표시 여부</string>
+    <string name="product_visibility_password_required">비밀번호는 필수입니다.</string>
+    <string name="product_visibility_password_protected">비밀번호로 보호</string>
+    <string name="product_visibility_private">비공개</string>
+    <string name="product_visibility_public">공개</string>
+    <string name="product_visibility">공개 설정</string>
+    <string name="product_status">상태</string>
+    <string name="product_settings">제품 설정</string>
+    <string name="product_detail_update_product_password_error">비밀번호를 업데이트하는 중에 오류가 발생했습니다.</string>
+    <string name="product_list_sorting_list_item">선택한 정렬 옵션</string>
+    <string name="product_list_filters_list_item">선택한 필터 옵션</string>
+    <string name="product_list_filters_show_products">제품 표시</string>
+    <string name="product_list_filters_selected">필터 \u2022 %d</string>
+    <string name="product_list_filters_count">필터(%d개)</string>
+    <string name="product_list_sorting_z_to_a_short">내림차순</string>
+    <string name="product_list_sorting_z_to_a">제목: 내림차순</string>
+    <string name="product_list_sorting_a_to_z_short">오름차순</string>
+    <string name="product_list_sorting_a_to_z">제목: 오름차순</string>
+    <string name="product_list_sorting_oldest_to_newest_short">오래된 항목</string>
+    <string name="product_list_sorting_oldest_to_newest">날짜: 오래된 순</string>
+    <string name="product_list_sorting_newest_to_oldest_short">최신순</string>
+    <string name="product_list_sorting_newest_to_oldest">날짜: 최신순</string>
+    <string name="product_list_sorting_header">정렬 기준</string>
+    <string name="product_list_filters">필터</string>
+    <string name="product_list_empty_filters">제품을 찾을 수 없음</string>
+    <string name="product_filter_default">모두</string>
+    <string name="product_type">제품 유형</string>
+    <string name="selection_count">%d개 선택됨</string>
+    <string name="value_not_set">설정되지 않음</string>
+    <string name="more_options">추가 옵션</string>
+    <string name="clear">지우기</string>
     <string name="product_status_pending">검토중</string>
     <string name="settings_about_title">WooCommerce 정보</string>
     <string name="settings_app_theme_option_battery_saver">배터리 세이버로 설정</string>
@@ -16,15 +94,13 @@ Language: ko_KR
     <string name="product_short_description_empty">간단한 제품 요약</string>
     <string name="product_short_description">간단한 설명</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0을 통한 스토어 또는 WooCommerce 관리자 플러그인이 설치된 스토어의 통계 개선 사항을 공개하고 있습니다.</string>
-    <string name="my_store_stats_reverted_message">분석 개선 사항을 공개했습니다. 2020년 7월 1일 이후 계속해서 통계를 확인하려면 WooCommerce 4.0 이상으로 업그레이드하거나 WooCommerce 관리자 플러그인을 설치하세요.</string>
     <string name="my_store_stats_reverted_title">업그레이드하여 계속 통계 확인</string>
     <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
     <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
     <string name="product_shipping_empty">배송 추가</string>
     <string name="discard_images_message">제품 이미지를 아직 업로드 중입니다. 변경 사항을 삭제하시겠습니까?</string>
     <string name="product_inventory_update_stock_quantity_error">번호를 입력해 주세요.</string>
-    <string name="product_wip_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
-    <string name="product_wip_title">제한적인 편집 가능</string>
+    <string name="product_limited_editing_message">간단한 제품에 편집 기능을 추가했습니다. 더 많은 옵션이 곧 제공됩니다!</string>
     <string name="product_tax_status_shipping">배송</string>
     <string name="product_tax_status_taxable">과세 가능</string>
     <string name="product_tax_status_none">없음</string>
@@ -117,7 +193,7 @@ Language: ko_KR
     <string name="product_add_image_content_description">이미지 추가</string>
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
-    <string name="product_variant_hidden">숨김</string>
+    <string name="product_variation_hidden">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
@@ -162,7 +238,7 @@ Language: ko_KR
     <string name="product_list_empty_search">일치하는 제품이 없음</string>
     <string name="product_list_empty">아직 제품이 없음</string>
     <string name="product_stock_count">%s 재고 있음</string>
-    <string name="product_stock_status_instock_with_variants">재고 있음 \u2022 %d 변형</string>
+    <string name="product_stock_status_instock_with_variations">재고 있음 \u2022 %d 변형</string>
     <string name="product_image_content_description">상품 이미지</string>
     <string name="review_list_item_title">%1$s 님이 %2$s에 대한 검토를 남김</string>
     <string name="wc_unapproved">받아들이지 않기</string>
@@ -189,7 +265,6 @@ Language: ko_KR
     <string name="order_refunds_available_for_refund">%s 환불 가능</string>
     <string name="orderdetail_issue_refund_button">환불 발행</string>
     <string name="orderdetail_refund_detail">%2$s을(를) 통한 %1$s</string>
-    <string name="settings_enable_v4_stats_message">WooCommerce 관리자 플러그인으로\n사용할 수 있는 새 통계를 확인해 보세요.</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
     <string name="order_begin_fulfillment">처리 시작</string>
@@ -517,6 +592,8 @@ Language: ko_KR
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>
     <string name="no_site_error">이 주소의 사이트는 워드프레스 사이트가 아닙니다. 연결하려면 사이트에서 워드프레스를 사용해야 합니다.</string>
     <string name="support_help_center">도움말 센터</string>
+    <string name="product_type_grouped">그룹</string>
+    <string name="product_type_variable">옵션</string>
     <string name="product_backorders_notify">허용하지만 고객에게 알림</string>
     <string name="product_backorders_yes">허용</string>
     <string name="product_backorders_no">허용하지 않음</string>
@@ -617,7 +694,6 @@ Language: ko_KR
     <string name="review_moderation_undo">%1$s(으)로 표시된 리뷰</string>
     <string name="add_order_note_sublabel">해제된 경우 메모는 비공개가 됩니다.</string>
     <string name="order_error_fetch_generic">주문을 가져오는 동안 오류가 발생했습니다</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">대기 중인 주문 검토, 준비 및 배송</string>
     <string name="back">뒤로</string>
     <string name="notification_channel_review_title">제품 리뷰 알림</string>
@@ -816,12 +892,9 @@ Language: ko_KR
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">세금:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s(%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">고객에게 이메일 보내기</string>
     <string name="orderdetail_billing_details">청구 상세 내역</string>
     <string name="orderdetail_shipping_details">배송 상세 내역</string>
-    <string name="orderdetail_orderstatus_created">%1$s 작성</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">주문 #%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">고객 정보</string>

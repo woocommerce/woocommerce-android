@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-28 10:54:03+0000
+Translation-Revision-Date: 2020-07-09 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_add_category_dialog_message">請稍候…</string>
+    <string name="product_add_category_dialog_title">新增類別中</string>
+    <string name="product_category_parent">上層類別</string>
+    <string name="product_category_name">類別名稱</string>
+    <string name="add_product_category_empty">輸入類別名稱</string>
+    <string name="add_product_category_failed">建立類別時發生錯誤</string>
+    <string name="add_product_category_duplicate">建立類別時發生錯誤 - 你的網站上已存在相同名稱。</string>
+    <string name="add_product_category_success">已新增產品類別</string>
+    <string name="product_add_category">新增類別</string>
+    <string name="product_category_list_empty_message">依類別整理你的產品</string>
+    <string name="product_category_list_empty_title">新增你的第一個類別</string>
+    <string name="product_category_empty">新增類別</string>
+    <string name="product_categories">類別</string>
+    <string name="orderdetail_customer_name_default">訪客</string>
+    <string name="settings_privacy_policy_ca">加州使用者的隱私權聲明</string>
+    <string name="keep_changes">保留變更</string>
+    <string name="product_sale_date_to">%1$s截止</string>
+    <string name="product_wip_message">我們已為產品新增更多編輯功能。你現在可以更新圖片、編輯產品設定並分享產品！</string>
+    <string name="product_wip_title">有可用的新編輯選項</string>
+    <string name="product_limited_editing_title">僅可進行有限編輯</string>
+    <string name="orderdetail_product_multiple">產品</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">外部</string>
+    <string name="product_type_simple">簡單</string>
+    <string name="product_status_privately_published">已私密發表</string>
+    <string name="empty_wpmedia_list_message">尚未有圖片</string>
+    <string name="wpmedia_picker_title">WordPress 媒體庫</string>
+    <string name="image_source_wp_media_library">WordPress 媒體庫</string>
+    <string name="product_menu_order_caption">決定產品在目錄中的位置。數值越低，品項在產品清單中的位置越前面。您也可以輸入負數值。</string>
+    <string name="product_menu_order">選單順序</string>
+    <string name="product_purchase_note_caption">可選擇在購買之後傳送備註給客戶</string>
+    <string name="product_external_link_button_text_label">這些文字會顯示在連至外部商品的按鈕上</string>
+    <string name="product_external_link_button_text">按鈕文字</string>
+    <string name="product_external_link_label">輸入此產品的外部網址</string>
+    <string name="product_external_link">產品連結</string>
+    <string name="product_external_empty_link">新增產品連結</string>
+    <string name="product_enable_reviews">啟用評論</string>
+    <string name="product_slug_label">這是用在網址列上的產品標題</string>
+    <string name="product_slug">代稱</string>
+    <string name="product_visibility_headline">此設定可決定要在哪個商店頁面顯示產品</string>
+    <string name="product_featured">特色商品</string>
+    <string name="product_catalog_visibility_hidden">已隱藏</string>
+    <string name="product_catalog_visibility_search">僅限搜尋結果</string>
+    <string name="product_catalog_visibility_catalog">僅限商店</string>
+    <string name="product_catalog_visibility_visible">商店和搜尋結果</string>
+    <string name="product_catalog_visibility">目錄可見度</string>
+    <string name="product_visibility_password_required">必須輸入密碼</string>
+    <string name="product_visibility_password_protected">受密碼保護</string>
+    <string name="product_visibility_private">私人</string>
+    <string name="product_visibility_public">公開</string>
+    <string name="product_visibility">可見度</string>
+    <string name="product_status">狀態</string>
+    <string name="product_settings">產品設定</string>
+    <string name="product_detail_update_product_password_error">更新密碼時發生錯誤</string>
+    <string name="product_list_sorting_list_item">所選排序選項</string>
+    <string name="product_list_filters_list_item">所選篩選選項</string>
+    <string name="product_list_filters_show_products">顯示產品</string>
+    <string name="product_list_filters_selected">篩選條件 \u2022 %d</string>
+    <string name="product_list_filters_count">篩選條件 (%d 個)</string>
+    <string name="product_list_sorting_z_to_a_short">Z 到 A</string>
+    <string name="product_list_sorting_z_to_a">標題：Z 到 A</string>
+    <string name="product_list_sorting_a_to_z_short">A 到 Z</string>
+    <string name="product_list_sorting_a_to_z">標題：A 到 Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">最舊</string>
+    <string name="product_list_sorting_oldest_to_newest">日期：最舊到最新</string>
+    <string name="product_list_sorting_newest_to_oldest_short">最新</string>
+    <string name="product_list_sorting_newest_to_oldest">日期：最新到最舊</string>
+    <string name="product_list_sorting_header">排序依據</string>
+    <string name="product_list_filters">篩選條件</string>
+    <string name="product_list_empty_filters">找不到產品</string>
+    <string name="product_filter_default">任何</string>
+    <string name="product_type">產品類型</string>
+    <string name="selection_count">已選取：%d</string>
+    <string name="value_not_set">未設定</string>
+    <string name="more_options">更多選項</string>
+    <string name="clear">清除</string>
     <string name="product_status_pending">待審中</string>
     <string name="settings_about_title">關於 WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">由省電模式設定</string>
@@ -16,15 +94,13 @@ Language: zh_TW
     <string name="product_short_description_empty">關於產品的簡短摘要</string>
     <string name="product_short_description">簡短說明</string>
     <string name="my_store_stats_availability_message">我們正在推出統計資料改善功能，適用於使用 WooCommerce 4.0 或安裝 WooCommerce Admin 外掛程式的商店</string>
-    <string name="my_store_stats_reverted_message">我們已推出分析功能的改善項目。請升級至 WooCommerce 4.0 以上版本或安裝 WooCommerce Admin 外掛程式，確保你可於 2020 年 7 月 1 日後繼續查看統計資料。</string>
     <string name="my_store_stats_reverted_title">升級以繼續查看統計資料</string>
     <string name="product_pricing_update_sale_price_error">優惠價格必須低於一般價格</string>
     <string name="product_schedule_remove_end_date_link_label">移除結束日期</string>
     <string name="product_shipping_empty">新增運費</string>
     <string name="discard_images_message">產品圖片仍在上傳中。是否要捨棄所做的變更？</string>
     <string name="product_inventory_update_stock_quantity_error">請輸入一個數字</string>
-    <string name="product_wip_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
-    <string name="product_wip_title">僅可進行有限編輯</string>
+    <string name="product_limited_editing_message">我們已在簡單產品中新增了編輯功能。有更多選項即將登場，敬請密切注意！</string>
     <string name="product_tax_status_shipping">運送方式</string>
     <string name="product_tax_status_taxable">應課稅</string>
     <string name="product_tax_status_none">無</string>
@@ -117,7 +193,7 @@ Language: zh_TW
     <string name="product_add_image_content_description">新增圖片</string>
     <string name="date_timeframe_future">即將到來</string>
     <string name="remove">移除</string>
-    <string name="product_variant_hidden">隱藏</string>
+    <string name="product_variation_hidden">隱藏</string>
     <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
@@ -162,7 +238,7 @@ Language: zh_TW
     <string name="product_list_empty_search">沒有相符的產品</string>
     <string name="product_list_empty">尚未有任何產品</string>
     <string name="product_stock_count">尚有 %s 件庫存</string>
-    <string name="product_stock_status_instock_with_variants">有庫存\u2022 %d 種子類選項</string>
+    <string name="product_stock_status_instock_with_variations">有庫存\u2022 %d 種子類選項</string>
     <string name="product_image_content_description">商品圖片</string>
     <string name="review_list_item_title">%1$s 在%2$s 上留下了評論</string>
     <string name="wc_unapproved">未核准</string>
@@ -189,7 +265,6 @@ Language: zh_TW
     <string name="order_refunds_available_for_refund">%s 可退款</string>
     <string name="orderdetail_issue_refund_button">核發退款</string>
     <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
-    <string name="settings_enable_v4_stats_message">體驗下列外掛程式提供的全新統計資料：\nWooCommerce 管理員外掛程式</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>
     <string name="order_begin_fulfillment">開始履行</string>
@@ -517,6 +592,8 @@ Language: zh_TW
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
     <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
     <string name="support_help_center">說明中心</string>
+    <string name="product_type_grouped">組合</string>
+    <string name="product_type_variable">款式</string>
     <string name="product_backorders_notify">允許，但通知顧客</string>
     <string name="product_backorders_yes">允許</string>
     <string name="product_backorders_no">不允許</string>
@@ -617,7 +694,6 @@ Language: zh_TW
     <string name="review_moderation_undo">已將評論標記為 %1$s</string>
     <string name="add_order_note_sublabel">若停用，此備註將變成私人狀態</string>
     <string name="order_error_fetch_generic">擷取訂單時發生錯誤</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">審查、準備和運送這些待處理訂單</string>
     <string name="back">上一步</string>
     <string name="notification_channel_review_title">產品評論提醒</string>
@@ -816,12 +892,9 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>
-    <string name="orderdetail_orderstatus_created">已建立 %1$s</string>
-    <string name="orderdetail_orderstatus_heading">編號%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">訂單編號%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客資料</string>

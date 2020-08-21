@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
+import org.wordpress.android.fluxc.store.MediaStore.CancelMediaPayload
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.fluxc.store.MediaStore.UploadMediaPayload
 import org.wordpress.android.fluxc.store.SiteStore
@@ -36,6 +37,8 @@ class ProductImagesService : JobIntentService() {
         private const val STRIP_LOCATION = true
         private const val TIMEOUT_PER_UPLOAD = 120L
 
+        private var isCancelled: Boolean = false
+
         // array of remoteProductId / uploading image uris for that product
         private val currentUploads = LongSparseArray<ArrayList<Uri>>()
 
@@ -46,7 +49,8 @@ class ProductImagesService : JobIntentService() {
 
         // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            val remoteProductId: Long
+            val remoteProductId: Long,
+            val isCancelled: Boolean
         )
 
         // posted when a single image has been uploaded
@@ -55,12 +59,31 @@ class ProductImagesService : JobIntentService() {
             val isError: Boolean = false
         )
 
-        fun isUploadingForProduct(remoteProductId: Long) = currentUploads.containsKey(remoteProductId)
+        // posted when the upload is cancelled
+        class OnUploadCancelled
+
+        fun isUploadingForProduct(remoteProductId: Long): Boolean {
+            return if (isCancelled) {
+                false
+            } else {
+                currentUploads.containsKey(remoteProductId)
+            }
+        }
 
         fun isBusy() = !currentUploads.isEmpty
 
         fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri>? {
             return currentUploads.get(remoteProductId)
+        }
+
+        /**
+         * A JobIntentService can't truly be cancelled, but we can at least set a flag that tells it
+         * to stop continuing its work when the current task is done, and post an event the service
+         * can use to cancel the upload
+         */
+        fun cancel() {
+            isCancelled = true
+            EventBus.getDefault().post(OnUploadCancelled())
         }
     }
 
@@ -73,19 +96,21 @@ class ProductImagesService : JobIntentService() {
     @Inject lateinit var networkStatus: NetworkStatus
 
     private var doneSignal: CountDownLatch? = null
-
+    private var currentMediaUpload: MediaModel? = null
     private lateinit var notifHandler: ProductImagesNotificationHandler
 
     override fun onCreate() {
         WooLog.i(T.MEDIA, "productImagesService > created")
         AndroidInjection.inject(this)
         dispatcher.register(this)
+        EventBus.getDefault().register(this)
         super.onCreate()
     }
 
     override fun onDestroy() {
         WooLog.i(T.MEDIA, "productImagesService > destroyed")
         dispatcher.unregister(this)
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -113,27 +138,30 @@ class ProductImagesService : JobIntentService() {
         val totalUploads = localUriList.size
         notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
 
+        isCancelled = false
+
         for (index in 0 until totalUploads) {
             notifHandler.update(index + 1, totalUploads)
             val localUri = localUriList[index]
 
             // create a media model from this local image uri
-            val media = ProductImagesUtils.mediaModelFromLocalUri(
+            currentMediaUpload = ProductImagesUtils.mediaModelFromLocalUri(
                     this,
                     selectedSite.get().id,
                     localUri,
                     mediaStore
             )
-            if (media == null) {
+
+            if (currentMediaUpload == null) {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
             } else {
-                media.postId = remoteProductId
-                media.setUploadState(MediaModel.MediaUploadState.UPLOADING)
+                currentMediaUpload!!.postId = remoteProductId
+                currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
                 // dispatch the upload request
                 WooLog.d(T.MEDIA, "productImagesService > Dispatching request to upload $localUri")
-                val payload = UploadMediaPayload(selectedSite.get(), media, STRIP_LOCATION)
+                val payload = UploadMediaPayload(selectedSite.get(), currentMediaUpload!!, STRIP_LOCATION)
                 dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(payload))
 
                 // wait for the upload to complete
@@ -143,6 +171,10 @@ class ProductImagesService : JobIntentService() {
                 } catch (e: InterruptedException) {
                     WooLog.e(T.MEDIA, "productImagesService > interrupted", e)
                 }
+            }
+
+            if (isCancelled) {
+                break
             }
 
             // remove this uri from the list of uploads for this product
@@ -155,12 +187,16 @@ class ProductImagesService : JobIntentService() {
             }
         }
 
-        currentUploads.remove(remoteProductId)
-        productImageMap.remove(remoteProductId)
+        if (isCancelled) {
+            currentUploads.clear()
+        } else {
+            notifHandler.remove()
+            currentUploads.remove(remoteProductId)
+            productImageMap.remove(remoteProductId)
+        }
 
-        // remove the notification and alert that all uploads have completed
-        notifHandler.remove()
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId))
+        currentMediaUpload = null
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
     }
 
     override fun onStopCurrentWork(): Boolean {
@@ -181,16 +217,17 @@ class ProductImagesService : JobIntentService() {
                 handleFailure()
             }
             event.canceled -> {
-                WooLog.w(T.MEDIA, "productImagesService > upload media cancelled")
-                handleFailure()
+                WooLog.d(T.MEDIA, "productImagesService > upload media cancelled")
             }
             event.completed -> {
                 WooLog.i(T.MEDIA, "productImagesService > uploaded media ${event.media?.id}")
                 handleSuccess(event.media)
             } else -> {
-                // otherwise this is an upload progress event, so update the notification progress
-                val progress = (event.progress * 100).toInt()
-                notifHandler.setProgress(progress)
+                // otherwise this is an upload progress event
+                if (!isCancelled) {
+                    val progress = (event.progress * 100).toInt()
+                    notifHandler.setProgress(progress)
+                }
             }
         }
     }
@@ -210,6 +247,26 @@ class ProductImagesService : JobIntentService() {
             if (it.count > 0) {
                 it.countDown()
             }
+        }
+    }
+
+    /**
+     * Posted above when we want the upload cancelled - removes the upload notification and
+     * dispatches a request to cancel the upload
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnUploadCancelled) {
+        notifHandler.remove()
+        doneSignal?.let {
+            while (it.count > 0) {
+                it.countDown()
+            }
+        }
+
+        currentMediaUpload?.let {
+            val payload = CancelMediaPayload(selectedSite.get(), it, true)
+            dispatcher.dispatch(MediaActionBuilder.newCancelMediaUploadAction(payload))
         }
     }
 }

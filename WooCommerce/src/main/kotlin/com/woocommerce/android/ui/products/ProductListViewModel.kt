@@ -8,7 +8,6 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
@@ -36,7 +35,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
-@OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
@@ -106,13 +104,17 @@ class ProductListViewModel @AssistedInject constructor(
         productStatus: String?,
         productType: String?
     ) {
-        productFilterOptions.clear()
-        stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
-        productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
-        productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
+        if (stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[ProductFilterOption.TYPE]) {
+            productFilterOptions.clear()
+            stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
+            productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
+            productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
 
-        viewState = viewState.copy(filterCount = productFilterOptions.size)
-        refreshProducts()
+            viewState = viewState.copy(filterCount = productFilterOptions.size)
+            refreshProducts()
+        }
     }
 
     fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]

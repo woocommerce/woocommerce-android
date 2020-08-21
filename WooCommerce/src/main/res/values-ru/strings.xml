@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-28 12:54:06+0000
+Translation-Revision-Date: 2020-07-10 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
+    <string name="product_add_category_dialog_title">Добавление категории</string>
+    <string name="product_category_parent">Родительская рубрика</string>
+    <string name="product_category_name">Имя категории</string>
+    <string name="add_product_category_empty">Введите имя категории</string>
+    <string name="add_product_category_failed">Ошибка создания категории</string>
+    <string name="add_product_category_duplicate">Ошибка создания категории — это имя уже существует на вашем сайте.</string>
+    <string name="add_product_category_success">Категория товара добавлена</string>
+    <string name="product_add_category">Добавить рубрику</string>
+    <string name="product_category_list_empty_message">Распределите свои товары по категориям</string>
+    <string name="product_category_list_empty_title">Добавьте первую категорию</string>
+    <string name="product_category_empty">Добавить рубрику</string>
+    <string name="product_categories">Категории</string>
+    <string name="orderdetail_customer_name_default">Гость</string>
+    <string name="settings_privacy_policy_ca">Заявление о защите конфиденциальности для пользователей из Калифорнии</string>
+    <string name="keep_changes">Сохранить изменения</string>
+    <string name="product_sale_date_to">До %1$s</string>
+    <string name="product_wip_message">Мы добавили дополнительные функции редактирования. Теперь вы можете загружать изображения, изменять настройки товаров и делиться ими!</string>
+    <string name="product_wip_title">Доступны новые опции редактирования</string>
+    <string name="product_limited_editing_title">Доступны ограниченные возможности редактирования</string>
+    <string name="orderdetail_product_multiple">Товары</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">Сторонний</string>
+    <string name="product_type_simple">Обычный</string>
+    <string name="product_status_privately_published">Опубликован как скрытый</string>
+    <string name="empty_wpmedia_list_message">Нет изображений</string>
+    <string name="wpmedia_picker_title">Библиотека медиафайлов WordPress</string>
+    <string name="image_source_wp_media_library">Библиотека медиафайлов WordPress</string>
+    <string name="product_menu_order_caption">Определяет положение товара в каталоге. Чем меньше число, тем выше товар в списке. Можно также использовать отрицательные числа.</string>
+    <string name="product_menu_order">Порядок меню</string>
+    <string name="product_purchase_note_caption">Сообщение, отправляемое клиентку после покупки</string>
+    <string name="product_external_link_button_text_label">Этот текст будет отображаться на кнопке для перехода к стороннему продукту</string>
+    <string name="product_external_link_button_text">Текст кнопки</string>
+    <string name="product_external_link_label">Введите внешний URL-адрес продукта</string>
+    <string name="product_external_link">Ссылка на продукт</string>
+    <string name="product_external_empty_link">Добавить ссылку на продукт</string>
+    <string name="product_enable_reviews">Включить отзывы</string>
+    <string name="product_slug_label">Это сокращенная версия названия продукта для включения в URL-адрес</string>
+    <string name="product_slug">Слаг</string>
+    <string name="product_visibility_headline">Этот параметр определяет, на каких страницах магазина будет отображаться продукт</string>
+    <string name="product_featured">Рекомендуемый продукт</string>
+    <string name="product_catalog_visibility_hidden">Скрыто</string>
+    <string name="product_catalog_visibility_search">Только результаты поиска</string>
+    <string name="product_catalog_visibility_catalog">Только товары</string>
+    <string name="product_catalog_visibility_visible">Товары и результаты поиска</string>
+    <string name="product_catalog_visibility">Видимость в каталоге</string>
+    <string name="product_visibility_password_required">Требуется пароль</string>
+    <string name="product_visibility_password_protected">Защищено паролем</string>
+    <string name="product_visibility_private">Скрытый</string>
+    <string name="product_visibility_public">Общедоступный</string>
+    <string name="product_visibility">Настройки видимости</string>
+    <string name="product_status">Статус</string>
+    <string name="product_settings">Параметры продукта</string>
+    <string name="product_detail_update_product_password_error">Во время обновления пароля произошла ошибка</string>
+    <string name="product_list_sorting_list_item">Выбранный вариант сортировки</string>
+    <string name="product_list_filters_list_item">Выбранный вариант фильтрации</string>
+    <string name="product_list_filters_show_products">Показать продукты</string>
+    <string name="product_list_filters_selected">Фильтры \u2022 %d</string>
+    <string name="product_list_filters_count">Фильтры (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">От Z до A (от Я до А)</string>
+    <string name="product_list_sorting_z_to_a">Заголовок: От Z до A (от Я до А)</string>
+    <string name="product_list_sorting_a_to_z_short">От A до Z (от А до Я)</string>
+    <string name="product_list_sorting_a_to_z">Заголовок: От A до Z (от А до Я)</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Сначала старые</string>
+    <string name="product_list_sorting_oldest_to_newest">Дата: От старых к новым</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Сначала новые</string>
+    <string name="product_list_sorting_newest_to_oldest">Дата: От новых к старым</string>
+    <string name="product_list_sorting_header">Приоритет сортировки</string>
+    <string name="product_list_filters">Фильтры</string>
+    <string name="product_list_empty_filters">Товары не обнаружены</string>
+    <string name="product_filter_default">Любой</string>
+    <string name="product_type">Тип товара</string>
+    <string name="selection_count">Выбрано: %d</string>
+    <string name="value_not_set">Не указано</string>
+    <string name="more_options">Дополнительные параметры</string>
+    <string name="clear">Очистить</string>
     <string name="product_status_pending">На утверждении</string>
     <string name="settings_about_title">О WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Режим экономии энергии</string>
@@ -16,15 +94,13 @@ Language: ru
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
     <string name="my_store_stats_availability_message">Мы улучшили статистику для магазинов с WooCommerce 4.0 или расширением WooCommerce Admin</string>
-    <string name="my_store_stats_reverted_message">Мы представили улучшения нашим аналитикам. Для просмотра статистики с 1 июля 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
     <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
     <string name="product_shipping_empty">Добавить доставку</string>
     <string name="discard_images_message">Выполняется загрузка изображений продуктов. Отменить изменения?</string>
     <string name="product_inventory_update_stock_quantity_error">Введите номер</string>
-    <string name="product_wip_message">Мы добавили функцию редактирования простых продуктов. Следите за новостями, планируется дополнительное расширение возможностей!</string>
-    <string name="product_wip_title">Доступны ограниченные возможности редактирования</string>
+    <string name="product_limited_editing_message">Мы добавили функцию редактирования обычных товаров. Следите за новостями: планируется дополнительное расширение возможностей.</string>
     <string name="product_tax_status_shipping">Доставка</string>
     <string name="product_tax_status_taxable">Налогооблагаемый</string>
     <string name="product_tax_status_none">Нет</string>
@@ -117,7 +193,7 @@ Language: ru
     <string name="product_add_image_content_description">Добавить изображение</string>
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
-    <string name="product_variant_hidden">Скрыто</string>
+    <string name="product_variation_hidden">Скрыто</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
@@ -162,7 +238,7 @@ Language: ru
     <string name="product_list_empty_search">Нет соответствующих товаров</string>
     <string name="product_list_empty">В этом списке пока нет товаров</string>
     <string name="product_stock_count">%s в наличии</string>
-    <string name="product_stock_status_instock_with_variants">Количество вариантов в наличии: \u2022 %d</string>
+    <string name="product_stock_status_instock_with_variations">Количество вариантов в наличии: \u2022 %d</string>
     <string name="product_image_content_description">Изображение продукта</string>
     <string name="review_list_item_title">Пользователь %1$s оставил отзыв на %2$s</string>
     <string name="wc_unapproved">Не одобрен</string>
@@ -189,7 +265,6 @@ Language: ru
     <string name="order_refunds_available_for_refund">%s доступно для возврата</string>
     <string name="orderdetail_issue_refund_button">Оформить возврат</string>
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
-    <string name="settings_enable_v4_stats_message">Оцените новую страницу статистики в\nплагине администратора WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
     <string name="order_begin_fulfillment">Начать выполнение</string>
@@ -517,6 +592,8 @@ Language: ru
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
+    <string name="product_type_grouped">Сборный</string>
+    <string name="product_type_variable">С вариантами</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
     <string name="product_backorders_yes">Разрешить</string>
     <string name="product_backorders_no">Do not allow</string>
@@ -617,7 +694,6 @@ Language: ru
     <string name="review_moderation_undo">Обзор помечен как %1$s</string>
     <string name="add_order_note_sublabel">При отключении примечание будет закрытым</string>
     <string name="order_error_fetch_generic">Ошибка при загрузке заказа</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Просмотреть, подготовить и отправить эти ожидающие заказы</string>
     <string name="back">Назад</string>
     <string name="notification_channel_review_title">Оповещения об обзоре товаров</string>
@@ -816,12 +892,9 @@ Language: ru
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
     <string name="orderdetail_product_lineitem_sku">АРТИКУЛ:</string>
     <string name="orderdetail_product_lineitem_tax">Налог:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">отправить клиенту эл. письмо</string>
     <string name="orderdetail_billing_details">Платёжные сведения</string>
     <string name="orderdetail_shipping_details">Сведения о доставке</string>
-    <string name="orderdetail_orderstatus_created">Создано %1$s</string>
-    <string name="orderdetail_orderstatus_heading">№%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Заказ №%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Информация о клиенте</string>

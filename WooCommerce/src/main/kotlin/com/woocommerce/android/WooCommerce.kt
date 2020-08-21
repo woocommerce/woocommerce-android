@@ -3,6 +3,9 @@ package com.woocommerce.android
 import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.os.StrictMode.VmPolicy
 import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.google.android.gms.common.ConnectionResult
@@ -99,6 +102,11 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     override fun onCreate() {
         super.onCreate()
 
+        // enable strict mode in debug builds
+        if (BuildConfig.DEBUG) {
+            enableStrictMode()
+        }
+
         // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
         // https://github.com/woocommerce/woocommerce-android/issues/817
         if (!BuildConfig.DEBUG) {
@@ -146,6 +154,37 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
                 this, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
                 BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
+    }
+
+    /**
+     * enables "strict mode" for testing - should NEVER be used in release builds
+     */
+    private fun enableStrictMode() {
+        // return if the build is not a debug build
+        if (!BuildConfig.DEBUG) {
+            WooLog.e(T.UTILS, "You should not call enableStrictMode() on a non debug build")
+            return
+        }
+
+        StrictMode.setThreadPolicy(
+            ThreadPolicy.Builder()
+                .detectDiskWrites()
+                .detectNetwork()
+                .penaltyLog()
+                .penaltyFlashScreen()
+                .build()
+        )
+
+        StrictMode.setVmPolicy(
+            VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .penaltyLog()
+                .build()
+        )
+        WooLog.w(T.UTILS, "Strict mode enabled")
     }
 
     override fun onAppComesFromBackground() {

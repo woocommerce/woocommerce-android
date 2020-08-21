@@ -8,18 +8,29 @@ import com.woocommerce.android.BuildConfig
  * "Feature flags" are used to hide in-progress features from release versions
  */
 enum class FeatureFlag {
-    PRODUCT_RELEASE_M2,
     PRODUCT_RELEASE_M3,
+    SHIPPING_LABELS_M1,
+    APP_FEEDBACK,
     DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
-            // currently only enabled for debug users but once live, this feature will live switched on from the
+            // This feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
-            PRODUCT_RELEASE_M2 -> BuildConfig.DEBUG || AppPrefs.isProductsFeatureEnabled()
-            PRODUCT_RELEASE_M3 -> BuildConfig.DEBUG
+            // Also, turn on the feature during testing
+            APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
+            PRODUCT_RELEASE_M3 -> isTesting() || AppPrefs.isProductsFeatureEnabled()
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }
+        }
+    }
+
+    private fun isTesting(): Boolean {
+        return try {
+            Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
         }
     }
 }

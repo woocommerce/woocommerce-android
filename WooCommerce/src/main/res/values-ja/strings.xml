@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-30 08:54:04+0000
+Translation-Revision-Date: 2020-07-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_add_category_dialog_message">しばらくお待ちください…</string>
+    <string name="product_add_category_dialog_title">カテゴリーを追加しています</string>
+    <string name="product_category_parent">親カテゴリー</string>
+    <string name="product_category_name">カテゴリー名</string>
+    <string name="add_product_category_empty">カテゴリー名を入力してください</string>
+    <string name="add_product_category_failed">カテゴリーの作成中にエラーが発生しました</string>
+    <string name="add_product_category_duplicate">カテゴリーの作成中にエラーが発生しました - 同じ名前がサイトにすでに存在しています。</string>
+    <string name="add_product_category_success">商品カテゴリーが追加されました</string>
+    <string name="product_add_category">カテゴリーを追加</string>
+    <string name="product_category_list_empty_message">商品をカテゴリーごとに整理</string>
+    <string name="product_category_list_empty_title">最初のカテゴリーを追加</string>
+    <string name="product_category_empty">カテゴリーを追加</string>
+    <string name="product_categories">カテゴリー</string>
+    <string name="orderdetail_customer_name_default">ゲスト</string>
+    <string name="settings_privacy_policy_ca">カリフォルニア州のユーザーへのプライバシー通知</string>
+    <string name="keep_changes">変更を保存</string>
+    <string name="product_sale_date_to">%1$sまで</string>
+    <string name="product_wip_message">商品にその他の編集機能が加わりました。画像の更新、商品設定の編集、商品の共有を行えるようになりました。</string>
+    <string name="product_wip_title">新しい編集オプションが利用可能</string>
+    <string name="product_limited_editing_title">一部の編集機能が利用可能</string>
+    <string name="orderdetail_product_multiple">商品</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">外部</string>
+    <string name="product_type_simple">シンプル</string>
+    <string name="product_status_privately_published">非公開</string>
+    <string name="empty_wpmedia_list_message">画像がありません</string>
+    <string name="wpmedia_picker_title">WordPress メディアライブラリ</string>
+    <string name="image_source_wp_media_library">WordPress メディアライブラリ</string>
+    <string name="product_menu_order_caption">カタログ内の商品の位置を決定します。数字の値が小さいほど、アイテムは商品リストの上の方に表示されます。マイナスの数字も利用できます。</string>
+    <string name="product_menu_order">メニューの表示順</string>
+    <string name="product_purchase_note_caption">購入後、お客様に送るオプション備考</string>
+    <string name="product_external_link_button_text_label">このテキストは外部商品のリンクボタンに表示されます</string>
+    <string name="product_external_link_button_text">ボタンのテキスト</string>
+    <string name="product_external_link_label">商品の外部 URL を入力</string>
+    <string name="product_external_link">商品へのリンク</string>
+    <string name="product_external_empty_link">商品へのリンクを追加</string>
+    <string name="product_enable_reviews">レビューを有効化</string>
+    <string name="product_slug_label">これは商品タイトルの URL フレンドリーなバージョンです。</string>
+    <string name="product_slug">スラッグ</string>
+    <string name="product_visibility_headline">この設定は、商品が掲載されるショップページを決定します</string>
+    <string name="product_featured">おすすめ商品</string>
+    <string name="product_catalog_visibility_hidden">非表示</string>
+    <string name="product_catalog_visibility_search">検索結果のみ</string>
+    <string name="product_catalog_visibility_catalog">ショップのみ</string>
+    <string name="product_catalog_visibility_visible">ショップおよび検索結果</string>
+    <string name="product_catalog_visibility">カタログ表示</string>
+    <string name="product_visibility_password_required">パスワードは必須です</string>
+    <string name="product_visibility_password_protected">パスワード保護中</string>
+    <string name="product_visibility_private">非公開</string>
+    <string name="product_visibility_public">公開</string>
+    <string name="product_visibility">公開状態</string>
+    <string name="product_status">ステータス</string>
+    <string name="product_settings">商品設定</string>
+    <string name="product_detail_update_product_password_error">パスワードの更新中にエラーが発生しました</string>
+    <string name="product_list_sorting_list_item">選択済みの並べ替えオプション</string>
+    <string name="product_list_filters_list_item">選択済みのフィルターオプション</string>
+    <string name="product_list_filters_show_products">商品を表示する</string>
+    <string name="product_list_filters_selected">フィルター \u2022 %d</string>
+    <string name="product_list_filters_count">フィルター (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z から A</string>
+    <string name="product_list_sorting_z_to_a">タイトル :Z から A</string>
+    <string name="product_list_sorting_a_to_z_short">A から Z</string>
+    <string name="product_list_sorting_a_to_z">タイトル :A から Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">最も古い</string>
+    <string name="product_list_sorting_oldest_to_newest">日付 :古いものから表示</string>
+    <string name="product_list_sorting_newest_to_oldest_short">最新</string>
+    <string name="product_list_sorting_newest_to_oldest">日付 :新しいものから表示</string>
+    <string name="product_list_sorting_header">並び順</string>
+    <string name="product_list_filters">フィルター</string>
+    <string name="product_list_empty_filters">商品が見つかりません</string>
+    <string name="product_filter_default">任意</string>
+    <string name="product_type">商品タイプ</string>
+    <string name="selection_count">%d件を選択済み</string>
+    <string name="value_not_set">未設定</string>
+    <string name="more_options">追加オプション</string>
+    <string name="clear">クリア</string>
     <string name="product_status_pending">レビュー待ち</string>
     <string name="settings_about_title">WooCommerce について</string>
     <string name="settings_app_theme_option_battery_saver">バッテリーセーバーで設定</string>
@@ -16,15 +94,13 @@ Language: ja_JP
     <string name="product_short_description_empty">商品についての簡単な概要</string>
     <string name="product_short_description">簡単な説明</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0 のストアまたは WooCommerce Admin プラグインがインストールされているストアに、強化された統計機能を提供開始します</string>
-    <string name="my_store_stats_reverted_message">アナリティクスの改善を提供開始しました。2020年7月1日以降も統計情報を引き続き表示するには、WooCommerce 4.0以降にアップグレードするか、WooCommerce Admin プラグインをインストールしてください。</string>
     <string name="my_store_stats_reverted_title">統計情報を引き続き表示するにはアップグレードしてください</string>
     <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
     <string name="product_schedule_remove_end_date_link_label">終了日を削除</string>
     <string name="product_shipping_empty">配送を追加</string>
     <string name="discard_images_message">商品画像をアップロードしています。変更を破棄しますか ?</string>
     <string name="product_inventory_update_stock_quantity_error">数字を入力してください</string>
-    <string name="product_wip_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
-    <string name="product_wip_title">一部の編集機能が利用可能</string>
+    <string name="product_limited_editing_message">シンプルな商品に編集機能が加わりました。その他のオプションもまもなく加わる予定です。</string>
     <string name="product_tax_status_shipping">配送</string>
     <string name="product_tax_status_taxable">課税</string>
     <string name="product_tax_status_none">なし</string>
@@ -117,7 +193,7 @@ Language: ja_JP
     <string name="product_add_image_content_description">画像を追加</string>
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
-    <string name="product_variant_hidden">非表示</string>
+    <string name="product_variation_hidden">非表示</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
@@ -162,7 +238,7 @@ Language: ja_JP
     <string name="product_list_empty_search">一致する商品はありません</string>
     <string name="product_list_empty">まだ商品がありません</string>
     <string name="product_stock_count">在庫%s個</string>
-    <string name="product_stock_status_instock_with_variants">在庫 \u2022 %d個のバリエーション</string>
+    <string name="product_stock_status_instock_with_variations">在庫 \u2022 %d個のバリエーション</string>
     <string name="product_image_content_description">商品画像</string>
     <string name="review_list_item_title">%1$sさんが%2$sに関するレビューを書きました</string>
     <string name="wc_unapproved">非承認</string>
@@ -189,7 +265,6 @@ Language: ja_JP
     <string name="order_refunds_available_for_refund">%sが返金可能</string>
     <string name="orderdetail_issue_refund_button">返金を実行</string>
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
-    <string name="settings_enable_v4_stats_message">WooCommerce Admin プラグインで利用可能な\n新しい統計機能をお試しください</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
     <string name="order_begin_fulfillment">フルフィルメントを開始</string>
@@ -517,6 +592,8 @@ Language: ja_JP
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>
     <string name="no_site_error">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトが WordPress を使用している必要があります。</string>
     <string name="support_help_center">ヘルプセンター</string>
+    <string name="product_type_grouped">グループ化</string>
+    <string name="product_type_variable">変数</string>
     <string name="product_backorders_notify">許可し、顧客に通知する</string>
     <string name="product_backorders_yes">許可する</string>
     <string name="product_backorders_no">許可しない</string>
@@ -617,7 +694,6 @@ Language: ja_JP
     <string name="review_moderation_undo">レビューを%1$sとしてマークする</string>
     <string name="add_order_note_sublabel">無効にするとメモは公開されません</string>
     <string name="order_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">これらの保留中の注文を確認して準備し、配送してください</string>
     <string name="back">戻る</string>
     <string name="notification_channel_review_title">製品レビューアラート</string>
@@ -816,12 +892,9 @@ Language: ja_JP
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
     <string name="orderdetail_product_lineitem_sku">商品コード:</string>
     <string name="orderdetail_product_lineitem_tax">税:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">顧客にメールを送信</string>
     <string name="orderdetail_billing_details">請求詳細</string>
     <string name="orderdetail_shipping_details">配送詳細</string>
-    <string name="orderdetail_orderstatus_created">%1$s が作成されました</string>
-    <string name="orderdetail_orderstatus_heading">番号%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">注文番号%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">顧客情報</string>

@@ -1,6 +1,0 @@
-4.1:
-* Le hemos dado una mano de pintura a la app. ¡Disfrútalo!
-* El modo Oscuro ya está aquí para los que prefieren pantallas menos brillantes.
-* Hemos eliminado la sección Envío de la vista de detalles de los productos virtuales (básicamente, porque no se envían)
-* Si tenías una lista de productos pequeña, a veces los artículos desaparecían. Ya no, lo hemos solucionado.
-* En muy raras ocasiones, al intentar ver los detalles de un producto la aplicación se bloqueaba. También lo hemos solucionado.

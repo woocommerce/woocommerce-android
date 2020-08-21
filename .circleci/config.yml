@@ -6,14 +6,15 @@ copy_gradle_properties: &copy_gradle_properties
 orbs:
   # Using 1.0 of our Orbs means it will use the latest 1.0.x version from https://github.com/wordpress-mobile/circleci-orbs
   android: wordpress-mobile/android@1.0
+  git: wordpress-mobile/git@1.0
   bundle-install: toshimaru/bundle-install@0.1.1
+  slack: circleci/slack@3.4.2
 
 version: 2.1
 jobs:
   Lint:
-    executor: 
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - android/restore-gradle-cache:
@@ -33,16 +34,15 @@ jobs:
               ./gradlew violationCommentsToGitHub -DGITHUB_PULLREQUESTID=${CIRCLE_PULL_REQUEST##*/} -DGITHUB_OAUTH2TOKEN=$GITHUB_API_TOKEN
             else
               echo "Not posting lint errors to Github because \$GITHUB_API_TOKEN is not found"
-            fi 
+            fi
       - android/save-gradle-cache:
           cache-prefix: lint-cache-v1
       - store_artifacts:
           path: WooCommerce/build/reports
           destination: reports
   Test:
-    executor: 
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - android/restore-gradle-cache:
@@ -54,10 +54,30 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
+  Ensure Screenshots Tests Build:
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - <<: *copy_gradle_properties
+      - run:
+          # The instrumentation tests are not currently used and do tend to get
+          # out of date when the UI changes, failing to build.
+          #
+          # This is a problem for the screenshots automation, which depends on
+          # those tests.
+          #
+          # This check lets developers know when they accidentally broke the
+          # instrumentation tests build, giving them a chance to either fix the
+          # build or remove the broken tests if they are now obsolete.
+          name: Check instrumentation tests build
+          command: ./gradlew assembleVanillaDebugAndroidTest
+
   Installable Build:
-    executor: 
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - bundle-install/bundle-install
@@ -76,16 +96,54 @@ jobs:
             fi
             VERSION_NAME="${PREFIX}-build-${CIRCLE_BUILD_NUM}"
             echo "export VERSION_NAME=$VERSION_NAME" >> $BASH_ENV
-            ./gradlew --stacktrace assembleVanillaRelease -PversionName="$VERSION_NAME"
+            ./gradlew --stacktrace assembleWasabiDebug -PversionName="$VERSION_NAME"
       - android/save-gradle-cache
       - run:
           name: Prepare APK
           command: |
             mkdir -p Artifacts
-            mv WooCommerce/build/outputs/apk/vanilla/release/WooCommerce-vanilla-release.apk "Artifacts/WooCommerce-${VERSION_NAME}.apk"
+            mv WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk "Artifacts/WooCommerce-${VERSION_NAME}.apk"
       - store_artifacts:
           path: Artifacts
           destination: Artifacts
+  Release Build:
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
+    steps:
+      - git/shallow-checkout
+      - bundle-install/bundle-install
+      - run:
+          name: Copy Secrets
+          command: bundle exec fastlane run configure_apply
+      - run:
+          name: Install other tools
+          command: |
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+            eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+            echo "export PATH='/home/linuxbrew/.linuxbrew/Cellar/bundletool/1.0.0/bin:$PATH'" >> $BASH_ENV
+            brew install bundletool
+      - android/restore-gradle-cache
+      - run:
+          name: Build APK
+          command: |
+            APP_VERSION=$(./gradlew -q printVersionName | tail -1)
+            echo "export SLACK_FAILURE_MESSAGE=':red_circle: Build for WooCommerce Android $APP_VERSION failed!'" >> $BASH_ENV
+            echo "export SLACK_SUCCESS_MESSAGE=':tada: WooCommerce Android $APP_VERSION has been deployed!'" >> $BASH_ENV
+            mv ~/.android/debug_a8c.keystore ~/.android/debug.keystore
+            if [[ $APP_VERSION == *"-rc-"* ]]; then
+              bundle exec fastlane build_and_upload_beta skip_confirm:true create_release:true
+            else
+              bundle exec fastlane build_and_upload_release skip_confirm:true create_release:true
+            fi
+      - android/save-gradle-cache
+      - slack/status:
+          include_job_number_field: false
+          include_project_field: false
+          include_visit_job_action: false
+          webhook: '${SLACK_BUILD_WEBHOOK}'
+          failure_message: '${SLACK_FAILURE_MESSAGE}'
+          success_message: '${SLACK_SUCCESS_MESSAGE}'
+
 
 workflows:
   "WooCommerce Android":
@@ -93,3 +151,12 @@ workflows:
       - Lint
       - Test
       - Installable Build
+      - Ensure Screenshots Tests Build
+  Release Build:
+    jobs:
+      - Release Build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+(\.\d+)*(-rc-\d)?$/

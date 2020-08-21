@@ -1,6 +1,0 @@
-4.1:
-* We hebben de kleuren van de app vernieuwd: geniet ervan!
-* De nachtmodus is nu beschikbaar voor iedereen die behoefte heeft aan een minder fel scherm.
-* We hebben het gedeelte Verzending verwijderd uit het detail-overzicht van virtuele producten (omdat je ze natuurlijk niet verzendt).
-* Als je een kleinere productlijst hebt, werden sommige artikelen er soms uit verwijderd, maar nu niet meer, want die bug is opgelost.
-* Heel af en toe vond er een crash van de app plaats wanneer de details van een product werden bekeken. Die bug hebben we ook opgelost.

@@ -1,6 +1,0 @@
-4.1:
-* Unsere App hat einen neuen Look bekommen – wir hoffen, dir gefallen die Farben!
-* Der dunkle Modus ist jetzt für alle verfügbar, die einen dunkleren Bildschirm bevorzugen.
-* Wir haben bei der Detailansicht deiner virtuellen Produkte den Abschnitt zum Versand entfernt, da du diese ja nicht per Post verschickst.
-* Auf kleineren Produktlisten sind manchmal Artikel verschwunden – diesen Fehler haben wir behoben.
-* Manchmal ist beim Anklicken der Detailansicht die App abgestürzt – auch diesen Fehler haben wir behoben.

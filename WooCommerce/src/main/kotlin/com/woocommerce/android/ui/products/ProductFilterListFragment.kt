@@ -20,18 +20,22 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_list.*
 import javax.inject.Inject
 
-class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
+class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener, BackPressListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
@@ -119,6 +123,20 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
         viewModel.filterListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
         })
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is Exit -> findNavController().navigateUp()
+                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.messageId,
+                    negativeButtonId = event.negativeButtonId
+                )
+                else -> event.isHandled = false
+            }
+        })
+
         viewModel.loadFilters()
     }
 
@@ -135,6 +153,8 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener {
                 .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
         findNavController().navigateSafely(action)
     }
+
+    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked()
 
     override fun onResume() {
         super.onResume()

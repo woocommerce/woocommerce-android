@@ -31,23 +31,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toTopOf="@+id/dashboard_stats_availability_card"
+                    app:layout_constraintBottom_toTopOf="@+id/dashboard_stats"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="visible" />
-
-                <!-- My Store stats availability notice card -->
-                <com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityCard
-                    android:id="@+id/dashboard_stats_availability_card"
-                    style="@style/Woo.Card.Expandable"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dashboard_stats_reverted_card"
-                    app:layout_constraintBottom_toTopOf="@+id/dashboard_stats"
                     tools:visibility="visible" />
 
                 <!-- Order stats -->
@@ -58,8 +45,20 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dashboard_stats_availability_card"
-                    app:layout_constraintBottom_toTopOf="@+id/dashboard_top_earners"/>
+                    app:layout_constraintTop_toBottomOf="@+id/dashboard_stats_reverted_card"
+                    app:layout_constraintBottom_toTopOf="@+id/dashboard_feedback_request_card"/>
+
+                <!-- Feedback Request Card -->
+                <com.woocommerce.android.ui.feedback.FeedbackRequestCard
+                    android:id="@+id/dashboard_feedback_request_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/minor_100"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dashboard_stats"
+                    app:layout_constraintBottom_toTopOf="@+id/dashboard_top_earners"
+                    android:visibility="gone"/>
 
                 <!-- Top earner stats -->
                 <com.woocommerce.android.ui.dashboard.DashboardTopEarnersView
@@ -69,7 +68,7 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dashboard_stats"
+                    app:layout_constraintTop_toBottomOf="@+id/dashboard_feedback_request_card"
                     app:layout_constraintBottom_toBottomOf="parent"
                     tools:visibility="visible"/>
 

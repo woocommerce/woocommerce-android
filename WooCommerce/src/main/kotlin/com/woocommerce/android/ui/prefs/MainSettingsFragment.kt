@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
@@ -57,7 +56,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
-        fun onV4StatsOptionChanged(enabled: Boolean)
         fun onProductsFeatureOptionChanged(enabled: Boolean)
     }
 
@@ -109,18 +107,14 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-            option_image_optimization.visibility = View.VISIBLE
-            option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
-            option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(
-                        SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
-                        mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
-                )
-                AppPrefs.setImageOptimizationEnabled(isChecked)
-            }
-        } else {
-            option_image_optimization.visibility = View.GONE
+        option_image_optimization.visibility = View.VISIBLE
+        option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
+        option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(
+                    SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+                    mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
+            )
+            AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
@@ -161,9 +155,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        val productsTeaser = getString(R.string.settings_enable_product_teaser_title)
-        val statsTeaser = getString(R.string.settings_enable_v4_stats_title)
-        option_beta_features.optionValue = "$productsTeaser, $statsTeaser"
+        option_beta_features.optionValue = getString(R.string.settings_enable_product_teaser_title)
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)

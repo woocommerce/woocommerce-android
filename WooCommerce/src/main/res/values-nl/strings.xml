@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 13:54:04+0000
+Translation-Revision-Date: 2020-08-04 15:17:00+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Een moment geduld…</string>
+    <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
+    <string name="product_category_parent">Hoofdcategorie</string>
+    <string name="product_category_name">Naam categorie</string>
+    <string name="add_product_category_empty">Voer een categorienaam in</string>
+    <string name="add_product_category_failed">Fout bij maken van categorie</string>
+    <string name="add_product_category_duplicate">Fout bij maken van categorie - Naam bestaat al op je site.</string>
+    <string name="add_product_category_success">Productcategorie toegevoegd</string>
+    <string name="product_add_category">Categorie toevoegen</string>
+    <string name="product_category_list_empty_message">Deel je producten onder in categorieën</string>
+    <string name="product_category_list_empty_title">Voeg je eerste categorie toe</string>
+    <string name="product_category_empty">Categorie toevoegen</string>
+    <string name="product_categories">Categorieën</string>
+    <string name="orderdetail_customer_name_default">Gast</string>
+    <string name="settings_privacy_policy_ca">Privacyverklaring voor gebruikers in Californië</string>
+    <string name="keep_changes">Wijzigingen bewaren</string>
+    <string name="product_sale_date_to">Tot %1$s</string>
+    <string name="product_wip_message">We hebben meer bewerkingsfuncties aan producten toegevoegd. Je kunt nu afbeeldingen bijwerken, productinstellingen bewerken en producten delen!</string>
+    <string name="product_wip_title">Nieuwe bewerkingsopties beschikbaar</string>
+    <string name="product_limited_editing_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
+    <string name="orderdetail_product_multiple">Producten</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">Extern</string>
+    <string name="product_type_simple">Simpel</string>
+    <string name="product_status_privately_published">Gepubliceerd als privé</string>
+    <string name="empty_wpmedia_list_message">Nog geen afbeeldingen</string>
+    <string name="wpmedia_picker_title">WordPress-mediabibliotheek</string>
+    <string name="image_source_wp_media_library">WordPress-mediabibliotheek</string>
+    <string name="product_menu_order_caption">Bepaalt de positie van het product in de catalogus. Hoe lager de waarde van het cijfer, hoe hoger het artikel in de productlijst wordt weergegeven. Je kunt ook negatieve getallen gebruiken.</string>
+    <string name="product_menu_order">Menuvolgorde</string>
+    <string name="product_purchase_note_caption">Een optionele opmerking om naar de klant te sturen na aankoop</string>
+    <string name="product_external_link_button_text_label">Deze tekst wordt weergegeven op de knop die naar het externe product doorverwijst</string>
+    <string name="product_external_link_button_text">Knoptekst</string>
+    <string name="product_external_link_label">Voer de externe URL naar het product in</string>
+    <string name="product_external_link">Productlink</string>
+    <string name="product_external_empty_link">Productlink toevoegen</string>
+    <string name="product_enable_reviews">Beoordelingen inschakelen</string>
+    <string name="product_slug_label">Dit is de URL-vriendelijke versie van de producttitel</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Deze instelling bepaalt op welke winkelpagina\'s producten worden vermeld</string>
+    <string name="product_featured">Uitgelicht product</string>
+    <string name="product_catalog_visibility_hidden">Verborgen</string>
+    <string name="product_catalog_visibility_search">Alleen zoekresultaten</string>
+    <string name="product_catalog_visibility_catalog">Alleen winkel</string>
+    <string name="product_catalog_visibility_visible">Winkel en zoekresultaten</string>
+    <string name="product_catalog_visibility">Zichtbaarheid van de catalogus</string>
+    <string name="product_visibility_password_required">Wachtwoord is vereist</string>
+    <string name="product_visibility_password_protected">Wachtwoord beveiligd</string>
+    <string name="product_visibility_private">Privé</string>
+    <string name="product_visibility_public">Openbaar</string>
+    <string name="product_visibility">Zichtbaarheid</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Productinstellingen</string>
+    <string name="product_detail_update_product_password_error">Bijwerken wachtwoord mislukt</string>
+    <string name="product_list_sorting_list_item">Geselecteerde sorteeroptie</string>
+    <string name="product_list_filters_list_item">Geselecteerde filteroptie</string>
+    <string name="product_list_filters_show_products">Producten tonen</string>
+    <string name="product_list_filters_selected">Filters \u2022 %d</string>
+    <string name="product_list_filters_count">Filters (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Van Z naar A</string>
+    <string name="product_list_sorting_z_to_a">Titel: Van Z naar A</string>
+    <string name="product_list_sorting_a_to_z_short">Van A naar Z</string>
+    <string name="product_list_sorting_a_to_z">Titel: Van A naar Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Oudste</string>
+    <string name="product_list_sorting_oldest_to_newest">Datum: Oudste naar nieuwste</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Nieuwste</string>
+    <string name="product_list_sorting_newest_to_oldest">Datum: Nieuwste naar oudste</string>
+    <string name="product_list_sorting_header">Sorteren op</string>
+    <string name="product_list_filters">Filters</string>
+    <string name="product_list_empty_filters">Geen producten gevonden</string>
+    <string name="product_filter_default">Alle</string>
+    <string name="product_type">Producttype</string>
+    <string name="selection_count">%d geselecteerd</string>
+    <string name="value_not_set">Niet ingesteld</string>
+    <string name="more_options">Meer opties</string>
+    <string name="clear">Wissen</string>
     <string name="product_status_pending">Controle in behandeling</string>
     <string name="settings_about_title">Over WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Ingesteld door energiebesparing</string>
@@ -16,15 +94,13 @@ Language: nl
     <string name="product_short_description_empty">Korte samenvatting van het product</string>
     <string name="product_short_description">Korte beschrijving</string>
     <string name="my_store_stats_availability_message">We voeren verbeteringen door aan statistieken voor winkels met WooCommerce 4.0 of winkels waarvoor de WooCommerce Admin-plugin is geïnstalleerd</string>
-    <string name="my_store_stats_reverted_message">We hebben verbeteringen doorgevoerd voor analyses. Upgrade naar WooCommerce 4.0 of hoger of installeer de WooCommerce Admin-plugin om je statistieken te kunnen blijven bekijken na 1 juli 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade om je statistieken te kunnen blijven bekijken</string>
     <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
     <string name="product_schedule_remove_end_date_link_label">Verwijder einddatum</string>
     <string name="product_shipping_empty">Voeg verzendkosten toe</string>
     <string name="discard_images_message">Productafbeeldingen worden nog geüpload. Wil je de wijzigingen ongedaan maken?</string>
     <string name="product_inventory_update_stock_quantity_error">Voer een nummer in</string>
-    <string name="product_wip_message">We hebben bewerkingsfuncties toegevoegd aan simpele producten. Houd de nieuwe functies in de gaten!</string>
-    <string name="product_wip_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
+    <string name="product_limited_editing_message">We hebben bewerkingsfuncties toegevoegd aan simpele producten. Houd de nieuwe functies in de gaten!</string>
     <string name="product_tax_status_shipping">Verzending</string>
     <string name="product_tax_status_taxable">Belastbaar</string>
     <string name="product_tax_status_none">Geen</string>
@@ -117,7 +193,7 @@ Language: nl
     <string name="product_add_image_content_description">Afbeelding toevoegen</string>
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
-    <string name="product_variant_hidden">Verborgen</string>
+    <string name="product_variation_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
@@ -162,7 +238,7 @@ Language: nl
     <string name="product_list_empty_search">Geen overeenkomende producten</string>
     <string name="product_list_empty">Nog geen producten</string>
     <string name="product_stock_count">%s op voorraad</string>
-    <string name="product_stock_status_instock_with_variants">Op voorraad \u2022 %d varianten</string>
+    <string name="product_stock_status_instock_with_variations">Op voorraad \u2022 %d varianten</string>
     <string name="product_image_content_description">Productafbeelding</string>
     <string name="review_list_item_title">%1$s heeft een beoordeling geplaatst voor %2$s</string>
     <string name="wc_unapproved">Afgekeurd</string>
@@ -189,7 +265,6 @@ Language: nl
     <string name="order_refunds_available_for_refund">%s restitueerbaar</string>
     <string name="orderdetail_issue_refund_button">Restitueren</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
-    <string name="settings_enable_v4_stats_message">Probeer de nieuwe statistieken die beschikbaar zijn met de\nWooCommerce Admin-plugin</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
     <string name="order_begin_fulfillment">Begin met leveren</string>
@@ -517,6 +592,8 @@ Language: nl
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
     <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
     <string name="support_help_center">Help Center</string>
+    <string name="product_type_grouped">Gegroepeerd</string>
+    <string name="product_type_variable">Variabele</string>
     <string name="product_backorders_notify">Toestaan, maar melden bij klant</string>
     <string name="product_backorders_yes">Toestaan</string>
     <string name="product_backorders_no">Niet toestaan</string>
@@ -617,7 +694,6 @@ Language: nl
     <string name="review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
     <string name="add_order_note_sublabel">Als deze functie is uitgeschakeld, is de opmerking privé</string>
     <string name="order_error_fetch_generic">Fout bij ophalen bestelling</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Controleer deze bestellingen in behandeling, bereid ze voor en verzend ze</string>
     <string name="back">Terug</string>
     <string name="notification_channel_review_title">Meldingen productbeoordeling</string>
@@ -816,12 +892,9 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>
-    <string name="orderdetail_orderstatus_created">%1$s aangemaakt</string>
-    <string name="orderdetail_orderstatus_heading">Nr. %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Bestelnr. %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Klantgegevens</string>

@@ -436,7 +436,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun hideEmptyView() {
-        empty_view.hide()
+        empty_view?.hide()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
@@ -458,7 +458,14 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun openOrderDetail(remoteOrderId: Long) {
+    override fun openOrderDetail(remoteOrderId: Long, orderStatus: String) {
+        // Track user clicked to open an order and the status of that order
+        AnalyticsTracker.track(
+            Stat.ORDER_OPEN, mapOf(
+            AnalyticsTracker.KEY_ID to remoteOrderId,
+            AnalyticsTracker.KEY_STATUS to orderStatus)
+        )
+
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
     }

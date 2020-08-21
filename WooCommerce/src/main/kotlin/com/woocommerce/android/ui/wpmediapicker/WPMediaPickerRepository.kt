@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched
+import org.wordpress.android.fluxc.utils.MimeType
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -54,7 +55,7 @@ class WPMediaPickerRepository @Inject constructor(
                         selectedSite.get(),
                         MEDIA_PAGE_SIZE,
                         loadMore,
-                        MEDIA_MIME_TYPE
+                        MimeType.Type.IMAGE
                 )
                 dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
             }
@@ -69,7 +70,21 @@ class WPMediaPickerRepository @Inject constructor(
     /**
      * Returns all media for the current site that are in the database
      */
-    fun getSiteMediaList(): List<Product.Image> = mediaStore.getSiteImages(selectedSite.get()).map { it.toAppModel() }
+    fun getSiteMediaList(): List<Product.Image> {
+        val mediaList = mediaStore.getSiteImages(selectedSite.get())
+        val imageList = ArrayList<Product.Image>()
+
+        for (media in mediaList) {
+            // skip media with empty URLs - these are media that are still being uploaded
+            if (media.url.isNullOrEmpty()) {
+                WooLog.w(WooLog.T.MEDIA, "Empty media url")
+            } else {
+                imageList.add(media.toAppModel())
+            }
+        }
+
+        return imageList
+    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

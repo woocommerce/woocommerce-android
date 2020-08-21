@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 12:54:04+0000
+Translation-Revision-Date: 2020-08-04 15:17:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_add_category_dialog_message">Harap tunggu…</string>
+    <string name="product_add_category_dialog_title">Menambahkan kategori</string>
+    <string name="product_category_parent">Kategori induk</string>
+    <string name="product_category_name">Nama kategori</string>
+    <string name="add_product_category_empty">Masukkan nama kategori</string>
+    <string name="add_product_category_failed">Error dalam membuat kategori</string>
+    <string name="add_product_category_duplicate">Error dalam membuat kategori - Nama sudah terdaftar di situs Anda.</string>
+    <string name="add_product_category_success">Kategori produk ditambahkan</string>
+    <string name="product_add_category">Tambahkan kategori</string>
+    <string name="product_category_list_empty_message">Atur produk Anda di kategori</string>
+    <string name="product_category_list_empty_title">Tambahkan kategori pertama Anda</string>
+    <string name="product_category_empty">Tambahkan kategori</string>
+    <string name="product_categories">Kategori</string>
+    <string name="orderdetail_customer_name_default">Tamu</string>
+    <string name="settings_privacy_policy_ca">Pemberitahuan privasi untuk pengguna di California</string>
+    <string name="keep_changes">Simpan perubahan</string>
+    <string name="product_sale_date_to">Sampai %1$s</string>
+    <string name="product_wip_message">Kami menambahkan fungsionalitas penyuntingan lebih banyak pada produk. Anda kini dapat memperbarui gambar, menyunting pengaturan produk &amp; membagikan produk!</string>
+    <string name="product_wip_title">Tersedia pilihan penyuntingan baru</string>
+    <string name="product_limited_editing_title">Penyuntingan terbatas tersedia</string>
+    <string name="orderdetail_product_multiple">Produk</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">Eksternal</string>
+    <string name="product_type_simple">Sederhana</string>
+    <string name="product_status_privately_published">Diterbitkan secara privat</string>
+    <string name="empty_wpmedia_list_message">Belum ada gambar</string>
+    <string name="wpmedia_picker_title">Pusaka media WordPress</string>
+    <string name="image_source_wp_media_library">Pusaka media WordPress</string>
+    <string name="product_menu_order_caption">Menentukan posisi produk di katalog. Semakin rendah nilai angka, semakin posisi tinggi item di daftar produk. Anda juga dapat menggunakan angka negatif.</string>
+    <string name="product_menu_order">Urutan menu</string>
+    <string name="product_purchase_note_caption">Catatan opsional untuk dikirim kepada pelanggan setelah pembelian</string>
+    <string name="product_external_link_button_text_label">Teks ini akan ditampilkan di tombol yang ditautkan ke produk eksternalt</string>
+    <string name="product_external_link_button_text">Teks tombol</string>
+    <string name="product_external_link_label">Masukkan URL eksternal ke produk</string>
+    <string name="product_external_link">Tautan produk</string>
+    <string name="product_external_empty_link">Tambahkan tautan produk</string>
+    <string name="product_enable_reviews">Aktifkan ulasan</string>
+    <string name="product_slug_label">Ini versi judul produk yang ramah URL</string>
+    <string name="product_slug">Slug</string>
+    <string name="product_visibility_headline">Pengaturan ini menentukan di halaman toko mana produk akan dicantumkan</string>
+    <string name="product_featured">Produk yang ditampilkan</string>
+    <string name="product_catalog_visibility_hidden">Tersembunyi</string>
+    <string name="product_catalog_visibility_search">Hanya hasil penelusuran</string>
+    <string name="product_catalog_visibility_catalog">Hanya Toko</string>
+    <string name="product_catalog_visibility_visible">Hasil penelusuran dan toko</string>
+    <string name="product_catalog_visibility">Visibilitas katalog</string>
+    <string name="product_visibility_password_required">Kata sandi diperlukan</string>
+    <string name="product_visibility_password_protected">Dilindungi kata sandi</string>
+    <string name="product_visibility_private">Pribadi</string>
+    <string name="product_visibility_public">Publik</string>
+    <string name="product_visibility">Visibilitas</string>
+    <string name="product_status">Status</string>
+    <string name="product_settings">Pengaturan produk</string>
+    <string name="product_detail_update_product_password_error">Terjadi error saat memperbarui kata sandi</string>
+    <string name="product_list_sorting_list_item">Pilihan pengurutan yang dipilih</string>
+    <string name="product_list_filters_list_item">Pilihan penyaring yang dipilih</string>
+    <string name="product_list_filters_show_products">Tampilkan produk</string>
+    <string name="product_list_filters_selected">Penyaring \u2022 %d</string>
+    <string name="product_list_filters_count">Penyaring (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z ke A</string>
+    <string name="product_list_sorting_z_to_a">Judul: Z ke A</string>
+    <string name="product_list_sorting_a_to_z_short">A ke Z</string>
+    <string name="product_list_sorting_a_to_z">Judul: A ke Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">Paling lama</string>
+    <string name="product_list_sorting_oldest_to_newest">Tanggal: Terlama hingga terbaru</string>
+    <string name="product_list_sorting_newest_to_oldest_short">Paling baru</string>
+    <string name="product_list_sorting_newest_to_oldest">Tanggal: Terbaru hingga terlama</string>
+    <string name="product_list_sorting_header">Urutkan berdasarkan</string>
+    <string name="product_list_filters">Penyaring</string>
+    <string name="product_list_empty_filters">Produk tidak ditemukan</string>
+    <string name="product_filter_default">Sembarang</string>
+    <string name="product_type">Tipe produk</string>
+    <string name="selection_count">%d dipilih</string>
+    <string name="value_not_set">Tidak ditentukan</string>
+    <string name="more_options">Pilihan lainnya</string>
+    <string name="clear">Hapus</string>
     <string name="product_status_pending">Menunggu Peninjauan</string>
     <string name="settings_about_title">Tentang WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">Diatur oleh Penghemat Baterai</string>
@@ -16,15 +94,13 @@ Language: id
     <string name="product_short_description_empty">Rangkuman ringkas tentang produk</string>
     <string name="product_short_description">Deskripsi singkat</string>
     <string name="my_store_stats_availability_message">Kami meluncurkan peningkatan pada statistik untuk toko dengan WooCommerce 4.0 atau toko yang menginstal plugin WooCommerce Admin</string>
-    <string name="my_store_stats_reverted_message">Kami telah meluncurkan peningkatan pada analitik kami. Upgrade ke WooCommerce 4.0 atau di atasnya atau instal plugin WooCommerce Admin untuk tetap bisa melihat statistik Anda setelah tanggal 1 Juli 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade untuk bisa tetap melihat statistik Anda</string>
     <string name="product_pricing_update_sale_price_error">Harga penjualan harus kurang dari harga biasa</string>
     <string name="product_schedule_remove_end_date_link_label">Hapus tanggal akhir</string>
     <string name="product_shipping_empty">Tambahkan pengiriman</string>
     <string name="discard_images_message">Gambar produk sedang diunggah. Ingin membuang perubahan?</string>
     <string name="product_inventory_update_stock_quantity_error">Masukkan nomor</string>
-    <string name="product_wip_message">Kami telah menambahkan fungsionalitas penyuntingan ke produk sederhana. Nantikan lebih banyak opsi lainnya segera!</string>
-    <string name="product_wip_title">Penyuntingan terbatas tersedia</string>
+    <string name="product_limited_editing_message">Kami telah menambahkan fungsionalitas penyuntingan ke produk sederhana. Nantikan lebih banyak opsi lainnya segera!</string>
     <string name="product_tax_status_shipping">Pengiriman</string>
     <string name="product_tax_status_taxable">Kena Pajak</string>
     <string name="product_tax_status_none">Tidak Ada</string>
@@ -117,7 +193,7 @@ Language: id
     <string name="product_add_image_content_description">Tambahkan gambar</string>
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
-    <string name="product_variant_hidden">Tersembunyi</string>
+    <string name="product_variation_hidden">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
@@ -162,7 +238,7 @@ Language: id
     <string name="product_list_empty_search">Tidak ada produk yang cocok</string>
     <string name="product_list_empty">Belum ada produk</string>
     <string name="product_stock_count">%s tersedia</string>
-    <string name="product_stock_status_instock_with_variants">Tersedia \u2022 %d varian</string>
+    <string name="product_stock_status_instock_with_variations">Tersedia \u2022 %d varian</string>
     <string name="product_image_content_description">Gambar produk</string>
     <string name="review_list_item_title">%1$s memberikan ulasan di %2$s</string>
     <string name="wc_unapproved">Tidak disetujui</string>
@@ -189,7 +265,6 @@ Language: id
     <string name="order_refunds_available_for_refund">%s tersedia untuk pengembalian dana</string>
     <string name="orderdetail_issue_refund_button">Keluarkan pengembalian dana</string>
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
-    <string name="settings_enable_v4_stats_message">Cobalah statistik baru yang tersedia bersama\nPlugin admin WooCommerce</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
     <string name="order_begin_fulfillment">Mulai pemenuhan</string>
@@ -517,6 +592,8 @@ Language: id
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
     <string name="no_site_error">Situs di alamat ini bukan situs WordPress. Agar kami dapat menghubungkannya, situs harus menggunakan WordPress.</string>
     <string name="support_help_center">Pusat Bantuan</string>
+    <string name="product_type_grouped">Dikelompokkan</string>
+    <string name="product_type_variable">Variabel</string>
     <string name="product_backorders_notify">Izinkan, tetapi beri tahu pelanggan</string>
     <string name="product_backorders_yes">Izinkan</string>
     <string name="product_backorders_no">Jangan izinkan</string>
@@ -617,7 +694,6 @@ Language: id
     <string name="review_moderation_undo">Ulasan ditandai %1$s</string>
     <string name="add_order_note_sublabel">Jika dinonaktifkan, catatan akan diatur sebagai pribadi</string>
     <string name="order_error_fetch_generic">Terjadi error saat mengambil pesanan</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">Tinjau, siapkan, dan kirimkan pesanan yang tertunda ini</string>
     <string name="back">Kembali</string>
     <string name="notification_channel_review_title">Pemberitahuan ulasan produk</string>
@@ -816,12 +892,9 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
-    <string name="orderdetail_orderstatus_created">Dibuat %1$s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">Pesanan #%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">Informasi Pelanggan</string>

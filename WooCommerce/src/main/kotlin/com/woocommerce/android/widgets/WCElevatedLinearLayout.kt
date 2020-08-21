@@ -20,14 +20,15 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         attrs?.let {
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCElevatedLinearLayout)
             try {
-                shapeElevation = attrArray.getDimension(R.styleable.WCElevatedLinearLayout_wcElevation, shapeElevation)
+                shapeElevation = attrArray.getDimension(
+                    R.styleable.WCElevatedLinearLayout_android_elevation, shapeElevation)
             } finally {
                 attrArray.recycle()
             }
         }
 
         elevatedBackground = MaterialShapeDrawable.createWithElevationOverlay(context, shapeElevation)
-        elevatedBackground.setShadowCompatibilityMode(MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS)
+        elevatedBackground.shadowCompatibilityMode = MaterialShapeDrawable.SHADOW_COMPAT_MODE_ALWAYS
     }
 
     override fun onFinishInflate() {
@@ -44,9 +45,5 @@ open class WCElevatedLinearLayout @JvmOverloads constructor(
         if (parent is ViewGroup) {
             (parent as ViewGroup).clipChildren = false
         }
-    }
-
-    override fun setElevation(elevation: Float) {
-        elevatedBackground.elevation = elevation
     }
 }

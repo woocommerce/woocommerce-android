@@ -9,9 +9,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SH
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -27,11 +28,12 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -39,13 +41,22 @@ import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
+    companion object {
+        private const val LIST_STATE_KEY = "list_state"
+    }
+
     private var productName = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
+
     private val skeletonView = SkeletonView()
-    private val LIST_STATE_KEY = "list_state"
 
     private var progressDialog: CustomProgressDialog? = null
+    private var layoutManager: LayoutManager? = null
 
-    private val navArgs: ProductDetailFragmentArgs by navArgs()
+    private var viewProductOnStoreMenuItem: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -71,6 +82,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        this.layoutManager = layoutManager
+
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
@@ -80,7 +93,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
+        handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
+            viewModel.updateProductDraft(type = it.type, isVirtual = it.isVirtual)
+            changesMade()
+        }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(groupedProductIds = it)
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -91,6 +115,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
+            }
+            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
+                productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
             }
         }
 
@@ -110,21 +137,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showProductDetails(product: Product) {
         productName = product.name.fastStripHtml()
-        updateActivityTitle()
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
-            if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(requireActivity())) {
-                addImageContainer.visibility = View.VISIBLE
-                addImageContainer.setOnClickListener {
-                    AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                    viewModel.onAddImageClicked()
-                }
+            addImageContainer.visibility = View.VISIBLE
+            addImageContainer.setOnClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+                viewModel.onAddImageClicked()
             }
         } else {
             addImageContainer.visibility = View.GONE
             imageGallery.visibility = View.VISIBLE
-            imageGallery.showProductImages(product, this)
+            imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
@@ -133,6 +157,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 frameStatusBadge.visibility = View.VISIBLE
                 textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
+
+            // display View Product on Store menu button only if the Product status is published,
+            // otherwise the page is redirected to a 404
+            viewProductOnStoreMenuItem?.isVisible = status == ProductStatus.PUBLISH
+        }
+
+        productDetail_addMoreContainer.setOnClickListener {
+            // TODO: add tracking events here
+            viewModel.onEditProductCardClicked(
+                ViewProductDetailBottomSheet(product.remoteId)
+            )
         }
     }
 
@@ -140,8 +175,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
-        menu.findItem(R.id.menu_view_product).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
-        menu.findItem(R.id.menu_product_settings).isVisible = FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()
+        viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
+        menu.findItem(R.id.menu_product_settings).isVisible = true
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -203,8 +238,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         progressDialog = null
     }
 
-    override fun getFragmentTitle() = productName
-
     private fun showProductCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
         if (cardsRecyclerView.adapter == null) {
@@ -220,7 +253,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        cardsRecyclerView.layoutManager?.let {
+        layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
     }
@@ -261,6 +294,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageClicked()
     }
+
+    override fun getFragmentTitle() = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been

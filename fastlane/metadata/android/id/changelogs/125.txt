@@ -1,6 +1,0 @@
-4.1:
-* Kami baru saja memberikan lapisan cat yang baru untuk aplikasi — nikmati warna barunya!
-* Mode gelap kini tersedia bagi yang lebih menyukai layar redup.
-* Kami menghilangkan bagian Pengiriman dari tampilan detail produk virtual (karena, ya, memang Anda tidak mengirimnya).
-* Jika Anda memiliki daftar produk yang lebih kecil, terkadang item menghilang dari daftar, tetapi sekarang tidak akan lagi — kami telah memperbaiki bug tersebut.
-* Di saat-saat tertentu, mencoba menampilkan detail produk dapat menyebabkan crash pada aplikasi. Kami juga telah memperbaiki bug tersebut.

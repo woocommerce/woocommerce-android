@@ -6,10 +6,14 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -17,15 +21,18 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,7 +60,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductVariantsFragment(target.remoteId)
+                        .actionProductDetailFragmentToVariationListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -110,7 +117,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -153,16 +160,54 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImages -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled()) {
-                    viewProductImageChooser(fragment, target.product.remoteId)
-                } else if (target.imageModel != null) {
-                    viewProductImageViewer(fragment, target.product.remoteId)
-                }
+                viewProductImageChooser(fragment, target.product.remoteId)
             }
 
             is ViewProductMenuOrder -> {
                 val action = ProductSettingsFragmentDirections
                         .actionProductSettingsFragmentToProductMenuOrderFragment(target.menuOrder)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductCategories -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductCategoriesFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is AddProductCategory -> {
+                val action = ProductCategoriesFragmentDirections
+                    .actionProductCategoriesFragmentToAddProductCategoryFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductTags -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductTagsFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductDetailBottomSheet -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductTypes -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductReviews -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductReviewsFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewGroupedProducts -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalGroupedProductListFragment(target.groupedProductIds)
                 fragment.findNavController().navigateSafely(action)
             }
 

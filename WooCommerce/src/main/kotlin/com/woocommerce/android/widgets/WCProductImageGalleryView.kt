@@ -20,7 +20,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -64,12 +63,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             val attrArray = context.obtainStyledAttributes(it, R.styleable.WCProductImageGalleryView)
             try {
                 isGridView = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isGridView, false)
-                if (FeatureFlag.PRODUCT_RELEASE_M2.isEnabled(context)) {
-                    showAddImageIcon = attrArray.getBoolean(
-                            R.styleable.WCProductImageGalleryView_showAddImageIcon,
-                            false
-                    )
-                }
+                showAddImageIcon = attrArray.getBoolean(
+                        R.styleable.WCProductImageGalleryView_showAddImageIcon,
+                        false
+                )
             } finally {
                 attrArray.recycle()
             }
@@ -118,27 +115,36 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
+    fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
         this.listener = listener
-        adapter.showImages(product.images)
+        adapter.showImages(images)
+    }
+
+    fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
+        this.listener = listener
+        adapter.showImages(listOf(images))
     }
 
     /**
      * Show upload placeholders for the passed local image Uris
      */
     fun setPlaceholderImageUris(imageUriList: List<Uri>?) {
-        val placeholders = ArrayList<Product.Image>()
+        if (imageUriList.isNullOrEmpty()) {
+            if (adapter.clearPlaceholders()) {
+                adapter.notifyDataSetChanged()
+            }
+        } else {
+            val placeholders = ArrayList<Product.Image>()
 
-        imageUriList?.let { images ->
-            for (index in images.indices) {
+            for (index in imageUriList.indices) {
                 // use a negative id so we can check it in isPlaceholder() below
                 val id = (-index - 1).toLong()
                 // set the image src to this uri so we can preview it while uploading
-                placeholders.add(0, Product.Image(id, "", images[index].toString(), Date()))
+                placeholders.add(0, Product.Image(id, "", imageUriList[index].toString(), Date()))
             }
-        }
 
-        adapter.setPlaceholderImages(placeholders)
+            adapter.setPlaceholderImages(placeholders)
+        }
     }
 
     private fun onImageClicked(position: Int) {
@@ -229,7 +235,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         /**
          * Removes all placeholders, returns true only if any were removed
          */
-        private fun clearPlaceholders(): Boolean {
+        fun clearPlaceholders(): Boolean {
             var result = false
             while (itemCount > 0 && isPlaceholder(0)) {
                 imageList.removeAt(0)

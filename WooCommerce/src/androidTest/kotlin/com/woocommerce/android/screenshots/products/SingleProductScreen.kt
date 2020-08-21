@@ -5,7 +5,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class SingleProductScreen : Screen {
     companion object {
-        const val PRODUCT_DETAIL_CONTAINER = R.id.productDetail_container
+        const val PRODUCT_DETAIL_CONTAINER = R.id.productDetail_root
     }
 
     constructor(): super(PRODUCT_DETAIL_CONTAINER)

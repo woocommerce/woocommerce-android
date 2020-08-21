@@ -13,8 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -27,6 +27,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -52,8 +53,8 @@ import java.util.Locale
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@Suppress("LeakingThis")
 @OpenClassOnDebug
+@Suppress("LeakingThis")
 class OrderListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     coroutineDispatchers: CoroutineDispatchers,
@@ -63,7 +64,8 @@ class OrderListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: OrderFetcher
+    private val fetcher: OrderFetcher,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -75,7 +77,7 @@ class OrderListViewModel @AssistedInject constructor(
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher)
+        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
     final val viewStateLiveData = LiveDataDelegate(savedState, ViewState())

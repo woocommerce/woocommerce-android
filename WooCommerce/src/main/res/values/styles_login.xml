@@ -5,6 +5,7 @@
      -->
     <style name="LoginTheme" parent="Theme.Woo.DayNight">
         <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:colorBackground">@color/color_surface</item>
     </style>
 
     <style name="LoginTheme.Toolbar">
@@ -33,6 +34,10 @@
     <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
 
     <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
+
+    <style name="LoginTheme.Button.LoginOption" parent="TextAppearance.Woo.Body1">
+        <item name="android:textColor">@color/color_secondary</item>
+    </style>
 
     <style name="LoginTheme.TextLabel.Icon">
         <item name="drawableTint">@color/color_on_surface_medium</item>

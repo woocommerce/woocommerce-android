@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 15:54:04+0000
+Translation-Revision-Date: 2020-07-09 14:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
+    <string name="product_add_category_dialog_title">إضافة تصنيف</string>
+    <string name="product_category_parent">التصنيف الأب</string>
+    <string name="product_category_name">اسم التصنيف</string>
+    <string name="add_product_category_empty">إدخال اسم التصنيف</string>
+    <string name="add_product_category_failed">خطأ في أثناء إنشاء التصنيف</string>
+    <string name="add_product_category_duplicate">خطأ في أثناء إنشاء التصنيف - الاسم موجود بالفعل على موقعك.</string>
+    <string name="add_product_category_success">تمت إضافة تصنيف المنتج</string>
+    <string name="product_add_category">إضافة فئة</string>
+    <string name="product_category_list_empty_message">تنظيم منتجاتك في تصنيفات</string>
+    <string name="product_category_list_empty_title">إضافة تصنيفك الأول</string>
+    <string name="product_category_empty">إضافة فئة</string>
+    <string name="product_categories">تصنيفات</string>
+    <string name="orderdetail_customer_name_default">زائر</string>
+    <string name="settings_privacy_policy_ca">إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا</string>
+    <string name="keep_changes">الاحتفاظ بالتغييرات</string>
+    <string name="product_sale_date_to">حتى %1$s</string>
+    <string name="product_wip_message">أضفنا وظائف تحرير إضافية إلى المنتجات. يمكنك الآن تحديث الصور، وتحرير المنتجات والإعدادات، ومشاركة المنتجات!</string>
+    <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
+    <string name="product_limited_editing_title">تتوافر وظائف تحرير محدودة</string>
+    <string name="orderdetail_product_multiple">المنتجات</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
+    <string name="product_type_external">خارجي</string>
+    <string name="product_type_simple">بسيط</string>
+    <string name="product_status_privately_published">تم النشر سرًا</string>
+    <string name="empty_wpmedia_list_message">لا توجد صور حتى الآن</string>
+    <string name="wpmedia_picker_title">مكتبة وسائط ووردبريس</string>
+    <string name="image_source_wp_media_library">مكتبة وسائط ووردبريس</string>
+    <string name="product_menu_order_caption">تحدِّد وضع المنتج في الكتالوج. كلما انخفضت قيمة العدد، سيكون العنصر الموجود في قائمة المنتجات أعلى. يمكنك أيضًا استخدام أعداد سالبة.</string>
+    <string name="product_menu_order">ترتيب القائمة</string>
+    <string name="product_purchase_note_caption">ملحوظة اختيارية يتم إرسالها إلى العميل بعد الشراء</string>
+    <string name="product_external_link_button_text_label">سيظهر هذا النص على الزر المرتبط بالمنتج الخارجي</string>
+    <string name="product_external_link_button_text">نص الزر</string>
+    <string name="product_external_link_label">إدخال عنوان URL الخارجي إلى المنتج</string>
+    <string name="product_external_link">رابط المنتج</string>
+    <string name="product_external_empty_link">إضافة رابط المنتج</string>
+    <string name="product_enable_reviews">تمكين المراجعات</string>
+    <string name="product_slug_label">هذا هو إصدار عنوان المنتج المألوف لعنوان URL</string>
+    <string name="product_slug">الاسم اللطيف</string>
+    <string name="product_visibility_headline">يحدِّد هذا الإعداد صفحات المتجر التي ستُعرض المنتجات عليها</string>
+    <string name="product_featured">المنتج المميز</string>
+    <string name="product_catalog_visibility_hidden">مخفي</string>
+    <string name="product_catalog_visibility_search">نتائج البحث فقط</string>
+    <string name="product_catalog_visibility_catalog">المحال فقط</string>
+    <string name="product_catalog_visibility_visible">المحال ونتائج البحث</string>
+    <string name="product_catalog_visibility">رؤية الكتالوج</string>
+    <string name="product_visibility_password_required">كلمة المرور مطلوبة</string>
+    <string name="product_visibility_password_protected">محمي بكلمة مرور</string>
+    <string name="product_visibility_private">خاص</string>
+    <string name="product_visibility_public">عام</string>
+    <string name="product_visibility">الرؤية</string>
+    <string name="product_status">الحالة</string>
+    <string name="product_settings">إعدادات المنتج</string>
+    <string name="product_detail_update_product_password_error">حدث خطأ في أثناء تحديث كلمة المرور</string>
+    <string name="product_list_sorting_list_item">خيار الفرز المُحدَّد</string>
+    <string name="product_list_filters_list_item">خيار التصفية المُحدَّد</string>
+    <string name="product_list_filters_show_products">عرض المنتجات</string>
+    <string name="product_list_filters_selected">عوامل التصفية ‎\u2022‏ %d</string>
+    <string name="product_list_filters_count">عوامل التصفية (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z إلى A</string>
+    <string name="product_list_sorting_z_to_a">العنوان: Z إلى A</string>
+    <string name="product_list_sorting_a_to_z_short">A إلى Z</string>
+    <string name="product_list_sorting_a_to_z">العنوان: A إلى Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">الأقدم</string>
+    <string name="product_list_sorting_oldest_to_newest">التاريخ: من الأقدم إلى الأحدث</string>
+    <string name="product_list_sorting_newest_to_oldest_short">الأحدث</string>
+    <string name="product_list_sorting_newest_to_oldest">التاريخ: من الأحدث الى الأقدم</string>
+    <string name="product_list_sorting_header">فرز حسب</string>
+    <string name="product_list_filters">عوامل التصفية</string>
+    <string name="product_list_empty_filters">لم يتم العثور على أي منتجات</string>
+    <string name="product_filter_default">أي</string>
+    <string name="product_type">نوع المنتج</string>
+    <string name="selection_count">%dمُحدَّد</string>
+    <string name="value_not_set">لم يتم التعيين</string>
+    <string name="more_options">مزيد من الخيارات</string>
+    <string name="clear">مسح</string>
     <string name="product_status_pending">في انتظار المراجعة</string>
     <string name="settings_about_title">حول WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">محدَّد بواسطة موفِّر البطارية</string>
@@ -16,15 +94,13 @@ Language: ar
     <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
     <string name="product_short_description">وصف قصير</string>
     <string name="my_store_stats_availability_message">نطرح تحسينات على إحصاءات المتاجر باستخدام الإصدار 4.0 من WooCommerce أو المتاجر التي يتم تثبيت إضافة مسؤول WooCommerce بها</string>
-    <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى الإصدار 4.0 من WooCommerce أو إصدار أعلى، أو يمكنك تثبيت إضافة مسؤول WooCommerce لمواصلة الاطِّلاع على إحصاءاتك بعد 1 يوليو 2020.</string>
     <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
     <string name="product_schedule_remove_end_date_link_label">إزالة تاريخ الانتهاء</string>
     <string name="product_shipping_empty">إضافة الشحن</string>
     <string name="discard_images_message">ما تزال صور المنتج قيد التحميل. هل ترغب في تجاهل تغييراتك؟</string>
     <string name="product_inventory_update_stock_quantity_error">يرجى إدخال رقم</string>
-    <string name="product_wip_message">أضفنا وظائف التحرير إلى المنتجات البسيطة. ترقَّب المزيد من الخيارات قريبًا!</string>
-    <string name="product_wip_title">تتوافر وظائف تحرير محدودة</string>
+    <string name="product_limited_editing_message">أضفنا وظائف التحرير إلى المنتجات البسيطة. ترقَّب المزيد من الخيارات قريبًا!</string>
     <string name="product_tax_status_shipping">الشحن</string>
     <string name="product_tax_status_taxable">خاضع للضريبة</string>
     <string name="product_tax_status_none">لا شيء</string>
@@ -117,7 +193,7 @@ Language: ar
     <string name="product_add_image_content_description">إضافة صورة</string>
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
-    <string name="product_variant_hidden">مخفي</string>
+    <string name="product_variation_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -162,7 +238,7 @@ Language: ar
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
     <string name="product_stock_count">%s متوافرة</string>
-    <string name="product_stock_status_instock_with_variants">\u2022 %dمن التباينات متوافرة</string>
+    <string name="product_stock_status_instock_with_variations">\u2022 %dمن التباينات متوافرة</string>
     <string name="product_image_content_description">صورة المنتج</string>
     <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
     <string name="wc_unapproved">غير موافق عليه</string>
@@ -189,7 +265,6 @@ Language: ar
     <string name="order_refunds_available_for_refund">%s متوافر للاسترداد</string>
     <string name="orderdetail_issue_refund_button">نشر مبلغ الاسترداد</string>
     <string name="orderdetail_refund_detail">%1$s عبر %2$s</string>
-    <string name="settings_enable_v4_stats_message">تجربة الإحصاءات الجديدة المتاحة مع\nإضافة مسؤول WooCommerce</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
     <string name="order_begin_fulfillment">بدء التنفيذ</string>
@@ -517,6 +592,8 @@ Language: ar
     <string name="error_user_username_instead_of_email">يُرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك على وردبرس.كوم بدلاً من عنوان البريد الإلكتروني.</string>
     <string name="no_site_error">الموقع الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب أن يستخدم وردبرس.</string>
     <string name="support_help_center">مركز المساعدة</string>
+    <string name="product_type_grouped">مجمَّع</string>
+    <string name="product_type_variable">متغيِّر</string>
     <string name="product_backorders_notify">اسمح بذلك، ولكن مع تنبيه العميل</string>
     <string name="product_backorders_yes">سماح</string>
     <string name="product_backorders_no">لا تسمح بذلك</string>
@@ -617,7 +694,6 @@ Language: ar
     <string name="review_moderation_undo">تم وسم المراجعة كـ %1$s</string>
     <string name="add_order_note_sublabel">في حالة تعطيلها، فستكون الملاحظة خاصة</string>
     <string name="order_error_fetch_generic">حدث خطأ أثناء إحضار الطلب</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">مراجعة هذه الطلبات المُعلّقة وإعدادها وشحنها</string>
     <string name="back">رجوع</string>
     <string name="notification_channel_review_title">تنبيهات مراجعة المنتجات</string>
@@ -816,12 +892,9 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>
-    <string name="orderdetail_orderstatus_created">تم إنشاء %1$s</string>
-    <string name="orderdetail_orderstatus_heading">#%1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">طلب رقم #%s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">معلومات العميل</string>

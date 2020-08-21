@@ -64,9 +64,21 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+            productIsVirtual.visibility = View.VISIBLE
+            productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
+                viewModel.updateProductDraft(isVirtual = isChecked)
+                activity?.invalidateOptionsMenu()
+            }
+        } else {
+            productIsVirtual.visibility = View.GONE
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             productReviewsAllowed.visibility = View.VISIBLE
             productReviewsAllowedDivider.visibility = View.VISIBLE
             productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
                 viewModel.updateProductDraft(reviewsAllowed = isChecked)
                 activity?.invalidateOptionsMenu()
             }
@@ -177,6 +189,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
+        productIsVirtual.isChecked = product.isVirtual
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)

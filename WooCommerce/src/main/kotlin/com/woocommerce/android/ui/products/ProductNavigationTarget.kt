@@ -43,4 +43,11 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductSlug(val slug: String) : ProductNavigationTarget()
     data class ViewProductMenuOrder(val menuOrder: Int) : ProductNavigationTarget()
     object ExitProduct : ProductNavigationTarget()
+    data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
+    object AddProductCategory : ProductNavigationTarget()
+    data class ViewProductTags(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductDetailBottomSheet(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductTypes(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewGroupedProducts(val groupedProductIds: String) : ProductNavigationTarget()
 }

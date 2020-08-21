@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-04-29 10:54:04+0000
+Translation-Revision-Date: 2020-07-09 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_add_category_dialog_message">请稍候…</string>
+    <string name="product_add_category_dialog_title">添加类别</string>
+    <string name="product_category_parent">父级类别</string>
+    <string name="product_category_name">类别名称</string>
+    <string name="add_product_category_empty">输入类别名称</string>
+    <string name="add_product_category_failed">创建类别时出错</string>
+    <string name="add_product_category_duplicate">创建类别时出错 - 您的站点上已存在此名称。</string>
+    <string name="add_product_category_success">已添加产品类别</string>
+    <string name="product_add_category">添加类别</string>
+    <string name="product_category_list_empty_message">将您的产品分类</string>
+    <string name="product_category_list_empty_title">添加您的第一个类别</string>
+    <string name="product_category_empty">添加类别</string>
+    <string name="product_categories">类别</string>
+    <string name="orderdetail_customer_name_default">访客</string>
+    <string name="settings_privacy_policy_ca">面向加州用户的隐私声明</string>
+    <string name="keep_changes">保存更改</string>
+    <string name="product_sale_date_to">直至 %1$s</string>
+    <string name="product_wip_message">我们为产品添加了更多的编辑功能。您现在可以更新图像、编辑产品设置和共享产品！</string>
+    <string name="product_wip_title">提供新的编辑选项</string>
+    <string name="product_limited_editing_title">提供有限编辑功能</string>
+    <string name="orderdetail_product_multiple">产品</string>
+    <string name="orderdetail_product_lineitem_qty_and_price">%1$sx %2$s</string>
+    <string name="orderdetail_orderstatus_name">%1$s%2$s</string>
+    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s\u2022 #%2$s</string>
+    <string name="product_type_external">外部</string>
+    <string name="product_type_simple">简单</string>
+    <string name="product_status_privately_published">已私密发布</string>
+    <string name="empty_wpmedia_list_message">尚无图片</string>
+    <string name="wpmedia_picker_title">WordPress 媒体库</string>
+    <string name="image_source_wp_media_library">WordPress 媒体库</string>
+    <string name="product_menu_order_caption">确定产品在目录中的位置。数值越低，相关产品在产品列表中的位置越靠前。您还可以使用负数。</string>
+    <string name="product_menu_order">菜单顺序</string>
+    <string name="product_purchase_note_caption">在顾客购买后发给他们的可选备注</string>
+    <string name="product_external_link_button_text_label">此文本将显示在链接到外部产品的按钮上</string>
+    <string name="product_external_link_button_text">按钮文本</string>
+    <string name="product_external_link_label">输入指向产品的外部 URL</string>
+    <string name="product_external_link">产品链接</string>
+    <string name="product_external_empty_link">添加产品链接</string>
+    <string name="product_enable_reviews">启用评论</string>
+    <string name="product_slug_label">这是适合 URL 的产品名称版本</string>
+    <string name="product_slug">数据域</string>
+    <string name="product_visibility_headline">此设置决定产品将在哪个商店页面上列出</string>
+    <string name="product_featured">推荐产品</string>
+    <string name="product_catalog_visibility_hidden">已隐藏</string>
+    <string name="product_catalog_visibility_search">仅在搜索结果中显示</string>
+    <string name="product_catalog_visibility_catalog">仅在店铺中显示</string>
+    <string name="product_catalog_visibility_visible">在店铺和搜索结果中显示</string>
+    <string name="product_catalog_visibility">目录公开程度</string>
+    <string name="product_visibility_password_required">必须提供密码</string>
+    <string name="product_visibility_password_protected">受密码保护</string>
+    <string name="product_visibility_private">非公开</string>
+    <string name="product_visibility_public">公开</string>
+    <string name="product_visibility">公开程度</string>
+    <string name="product_status">状态</string>
+    <string name="product_settings">产品设置</string>
+    <string name="product_detail_update_product_password_error">更新密码时出错</string>
+    <string name="product_list_sorting_list_item">已选排序选项</string>
+    <string name="product_list_filters_list_item">已选筛选选项</string>
+    <string name="product_list_filters_show_products">显示产品</string>
+    <string name="product_list_filters_selected">筛选条件 \u2022 %d</string>
+    <string name="product_list_filters_count">筛选条件 (%d)</string>
+    <string name="product_list_sorting_z_to_a_short">Z 到 A</string>
+    <string name="product_list_sorting_z_to_a">标题：Z 到 A</string>
+    <string name="product_list_sorting_a_to_z_short">A 到 Z</string>
+    <string name="product_list_sorting_a_to_z">标题：A 到 Z</string>
+    <string name="product_list_sorting_oldest_to_newest_short">最旧</string>
+    <string name="product_list_sorting_oldest_to_newest">日期：最旧到最新</string>
+    <string name="product_list_sorting_newest_to_oldest_short">最新</string>
+    <string name="product_list_sorting_newest_to_oldest">日期：最新到最旧</string>
+    <string name="product_list_sorting_header">排序方式</string>
+    <string name="product_list_filters">筛选条件</string>
+    <string name="product_list_empty_filters">没找到产品</string>
+    <string name="product_filter_default">任何</string>
+    <string name="product_type">产品类型</string>
+    <string name="selection_count">已选择 %d 个</string>
+    <string name="value_not_set">未设置</string>
+    <string name="more_options">更多选项</string>
+    <string name="clear">清除</string>
     <string name="product_status_pending">待审核</string>
     <string name="settings_about_title">关于 WooCommerce</string>
     <string name="settings_app_theme_option_battery_saver">设置为省电模式</string>
@@ -16,15 +94,13 @@ Language: zh_CN
     <string name="product_short_description_empty">产品摘要</string>
     <string name="product_short_description">简短说明</string>
     <string name="my_store_stats_availability_message">我们即将面向采用 WooCommerce 4.0 或安装了 WooCommerce Admin 插件的商店推出改进的统计功能</string>
-    <string name="my_store_stats_reverted_message">我们已经对我们的分析功能进行了改进。升级至 WooCommerce 4.0 或更高版本，或者安装 WooCommerce Admin 插件，以便能在 2020 年 7 月 1 日后继续查看统计信息。</string>
     <string name="my_store_stats_reverted_title">升级以继续查看统计信息</string>
     <string name="product_pricing_update_sale_price_error">售价必须低于正常价格</string>
     <string name="product_schedule_remove_end_date_link_label">移除结束日期</string>
     <string name="product_shipping_empty">添加运费</string>
     <string name="discard_images_message">产品图片仍在上传中。要放弃您所做的更改吗？</string>
     <string name="product_inventory_update_stock_quantity_error">请输入一个数字</string>
-    <string name="product_wip_message">我们已经为几款简单的产品添加了编辑功能。请关注即将推出的更多选项！</string>
-    <string name="product_wip_title">提供有限编辑功能</string>
+    <string name="product_limited_editing_message">我们已经为几款简单的产品添加了编辑功能。更多选项即将推出，敬请关注！</string>
     <string name="product_tax_status_shipping">配送</string>
     <string name="product_tax_status_taxable">应纳税</string>
     <string name="product_tax_status_none">无</string>
@@ -117,7 +193,7 @@ Language: zh_CN
     <string name="product_add_image_content_description">添加图片</string>
     <string name="date_timeframe_future">即将到来</string>
     <string name="remove">删除</string>
-    <string name="product_variant_hidden">已隐藏</string>
+    <string name="product_variation_hidden">已隐藏</string>
     <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_ssl">由于 &lt;b>SSL 证书&lt;/b>的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
     <string name="login_discovery_error_http_auth">由于需要 &lt;b>HTTP 验证&lt;/b>，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
@@ -162,7 +238,7 @@ Language: zh_CN
     <string name="product_list_empty_search">没有匹配的产品</string>
     <string name="product_list_empty">尚无产品</string>
     <string name="product_stock_count">%s有货</string>
-    <string name="product_stock_status_instock_with_variants">有货 \u2022 %d 个变体</string>
+    <string name="product_stock_status_instock_with_variations">有货 \u2022 %d 个变体</string>
     <string name="product_image_content_description">产品图片</string>
     <string name="review_list_item_title">%1$s评论了“%2$s”</string>
     <string name="wc_unapproved">未批准</string>
@@ -189,7 +265,6 @@ Language: zh_CN
     <string name="order_refunds_available_for_refund">%s 可用于退款</string>
     <string name="orderdetail_issue_refund_button">发放退款</string>
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
-    <string name="settings_enable_v4_stats_message">试用新的统计页面（适用于\nWooCommerce Admin 插件）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
     <string name="order_begin_fulfillment">开始履行</string>
@@ -517,6 +592,8 @@ Language: zh_CN
     <string name="error_user_username_instead_of_email">请使用您的 WordPress.com 用户名（而不是电子邮件地址）登录。</string>
     <string name="no_site_error">此地址下的站点不是 WordPress 站点。要让我们进行连接，此站点必须使用 WordPress。</string>
     <string name="support_help_center">帮助中心</string>
+    <string name="product_type_grouped">已分组</string>
+    <string name="product_type_variable">变量</string>
     <string name="product_backorders_notify">允许，但通知客户</string>
     <string name="product_backorders_yes">允许</string>
     <string name="product_backorders_no">不允许</string>
@@ -617,7 +694,6 @@ Language: zh_CN
     <string name="review_moderation_undo">评论已标记为 %1$s</string>
     <string name="add_order_note_sublabel">如果禁用，备注将不会公开</string>
     <string name="order_error_fetch_generic">抓取订单时出错</string>
-    <string name="orderdetail_product_lineitem_total_single">%1$s</string>
     <string name="dashboard_fulfill_orders_msg">审核、准备和配送这些待处理订单</string>
     <string name="back">返回</string>
     <string name="notification_channel_review_title">产品评论提醒</string>
@@ -816,12 +892,9 @@ Language: zh_CN
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
     <string name="orderdetail_product_lineitem_sku">SKU：</string>
     <string name="orderdetail_product_lineitem_tax">税费：</string>
-    <string name="orderdetail_product_lineitem_total_multiple">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">向客户发送电子邮件</string>
     <string name="orderdetail_billing_details">账单详情</string>
     <string name="orderdetail_shipping_details">配送详情</string>
-    <string name="orderdetail_orderstatus_created">已创建 %1$s</string>
-    <string name="orderdetail_orderstatus_heading">订单号 %1$s %2$s %3$s</string>
     <string name="orderdetail_orderstatus_ordernum">订单号 %s</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="customer_information">客户信息</string>
