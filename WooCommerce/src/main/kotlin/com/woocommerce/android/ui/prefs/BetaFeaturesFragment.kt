@@ -9,7 +9,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import kotlinx.android.synthetic.main.fragment_settings_beta.*
@@ -40,9 +39,6 @@ class BetaFeaturesFragment : Fragment() {
                     AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchProductsUI.isChecked)))
             settingsListener.onProductsFeatureOptionChanged(isChecked)
         }
-
-        // hidden until we need it again for M3
-        switchProductsUI.hide()
     }
 
     override fun onResume() {
