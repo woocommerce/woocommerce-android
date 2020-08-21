@@ -928,6 +928,14 @@
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
     <string name="feedback_request_make_better">Could be better</string>
     <string name="feedback_request_like_it">I like it</string>
+    <string name="feedback_survey_request_title">How can we improve?</string>
+    <string name="web_view_loading_title">Loading</string>
+    <string name="web_view_loading_message">Please wait…</string>
+    <string name="feedback_completed_title">Feedback sent</string>
+    <string name="feedback_completed_title_message">Thank you for sharing your\n thoughts with us</string>
+    <string name="feedback_completed_description">Keep in mind that this is not a support ticket and we won\'t be able to address individual feedback.\n\nNeed some help? %1$s</string>
+    <string name="feedback_completed_contact_us">Contact us here</string>
+    <string name="feedback_completed_back_to_store_button_text">Back to store</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
