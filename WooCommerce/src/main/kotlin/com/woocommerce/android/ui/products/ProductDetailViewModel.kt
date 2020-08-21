@@ -1075,6 +1075,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onAddCategoryButtonClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductCategory)
     }
 
