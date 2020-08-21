@@ -1,5 +1,6 @@
 4.9
 -----
+* You can now edit variations (price, description, inventory, visibility and shipping)
  
 4.8
 -----
