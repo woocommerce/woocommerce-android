@@ -28,9 +28,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
@@ -81,10 +78,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
 
-
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
-
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
