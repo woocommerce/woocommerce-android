@@ -73,12 +73,7 @@ class VariationDetailCardBuilder(
             variationDescription
         }
 
-        return ComplexProperty(
-            string.product_description,
-            description,
-            drawable.ic_gridicons_align_left,
-            variationDescription.isNotEmpty()
-        ) {
+        val onClick = {
             viewModel.onEditVariationCardClicked(
                 ViewDescriptionEditor(
                     variationDescription, resources.getString(string.product_description)
@@ -86,6 +81,14 @@ class VariationDetailCardBuilder(
                 Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
             )
         }
+
+        return ComplexProperty(
+            string.product_description,
+            description,
+            drawable.ic_gridicons_align_left,
+            variationDescription.isNotEmpty(),
+            onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
+        )
     }
 
     private fun ProductVariation.visibility(): ProductProperty {
@@ -131,15 +134,7 @@ class VariationDetailCardBuilder(
         )
 
         return if (regularPrice.isSet() || PRODUCT_RELEASE_M3.isEnabled()) {
-            val isWarningVisible = regularPrice.isNotSet() && this.isVisible
-            PropertyGroup(
-                string.product_price,
-                pricingGroup,
-                drawable.ic_gridicons_money,
-                showTitle = regularPrice.isSet(),
-                isHighlighted = isWarningVisible,
-                isDividerVisible = !isWarningVisible
-            ) {
+            val onClick = {
                 viewModel.onEditVariationCardClicked(
                     ViewPricing(
                         PricingData(
@@ -153,6 +148,17 @@ class VariationDetailCardBuilder(
                     PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
                 )
             }
+
+            val isWarningVisible = regularPrice.isNotSet() && this.isVisible
+            PropertyGroup(
+                string.product_price,
+                pricingGroup,
+                drawable.ic_gridicons_money,
+                showTitle = regularPrice.isSet(),
+                isHighlighted = isWarningVisible,
+                isDividerVisible = !isWarningVisible,
+                onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
+            )
         } else {
             null
         }
@@ -201,28 +207,29 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.inventory(): ProductProperty {
         val inventoryGroup = when {
             this.isStockManaged -> mapOf(
-                Pair(resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
-                Pair(resources.getString(R.string.product_stock_quantity),
-                    FormatUtils.formatInt(this.stockQuantity)),
+                Pair(
+                    resources.getString(R.string.product_backorders),
+                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
+                ),
+                Pair(
+                    resources.getString(R.string.product_stock_quantity),
+                    FormatUtils.formatInt(this.stockQuantity)
+                ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
             this.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), this.sku),
-                Pair(resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+                Pair(
+                    resources.getString(R.string.product_stock_status),
+                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
+                )
             )
             else -> mapOf(
                 Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
             )
         }
 
-        return PropertyGroup(
-            R.string.product_inventory,
-            inventoryGroup,
-            R.drawable.ic_gridicons_list_checkmark,
-            true
-        ) {
+        val onClick = {
             viewModel.onEditVariationCardClicked(
                 ViewInventory(
                     InventoryData(
@@ -237,5 +244,13 @@ class VariationDetailCardBuilder(
                 PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
             )
         }
+
+        return PropertyGroup(
+            R.string.product_inventory,
+            inventoryGroup,
+            R.drawable.ic_gridicons_list_checkmark,
+            true,
+            onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
+        )
     }
 }
