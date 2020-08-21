@@ -14,8 +14,8 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/completion_title"
             style="@style/Woo.TextView.Subtitle1"
-            android:layout_width="@dimen/feedback_completed_title_width"
-            android:layout_height="@dimen/major_300"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:lineSpacingExtra="5sp"
             android:text="@string/feedback_completed_title_message"
             android:textAlignment="center"
