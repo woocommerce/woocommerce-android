@@ -118,6 +118,7 @@ dependencies {
 
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
+        exclude group: "com.google.guava", module: "guava"
     }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
@@ -235,6 +236,9 @@ dependencies {
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
     androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+        exclude group: 'asm', module: 'asm'
+        exclude group: 'org.json', module: 'json'
     }
     androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
 
