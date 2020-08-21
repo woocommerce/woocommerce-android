@@ -7,13 +7,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -58,6 +56,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -67,6 +66,7 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -310,6 +310,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = hasSettingsChanges()
             }
             is ExitExternalLink -> {
+                eventName = Stat.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
             is ExitProductCategories -> {
@@ -388,16 +389,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let {
             triggerEvent(ViewProductMenuOrder(it.menuOrder))
         }
-    }
-
-    fun onViewProductOnStoreLinkClicked(url: String) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
-    }
-
-    fun onAffiliateLinkClicked(url: String) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
     }
 
     /**
@@ -617,7 +608,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null
+        type: ProductType? = null,
+        groupedProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -657,6 +649,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     categories = categories ?: product.categories,
                     tags = tags ?: product.tags,
                     type = type ?: product.type,
+                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -693,12 +686,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun fetchBottomSheetList() {
+        val featureFlagCondition = FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() || viewState.productDraft?.type == SIMPLE
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
-                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty() && featureFlagCondition)
                 }
             }
         }
@@ -1070,6 +1064,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onAddCategoryButtonClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(AddProductCategory)
     }
 

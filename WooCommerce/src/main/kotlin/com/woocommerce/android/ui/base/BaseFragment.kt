@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -20,9 +21,12 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
         private const val KEY_TITLE = "title"
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.let {
             activity?.title = it.getString(KEY_TITLE)
