@@ -30,33 +30,31 @@ class ProductPricingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     productRepository: ProductDetailRepository,
-    private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    wooCommerceStore: WooCommerceStore,
+    selectedSite: SelectedSite,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
-    private var originalPricing: PricingData
+    private var originalPricingData: PricingData
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
+    private val isProductPricing = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING
+
+    val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+    }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState(pricingData = navArgs.pricingData))
     private var viewState by viewStateData
-
-    val parameters: SiteParameters by lazy {
-        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
-        savedState[KEY_PRODUCT_PARAMETERS] = params
-        params
-    }
-
-    private val isProductPricing = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING
 
     val pricingData
         get() = viewState.pricingData
 
     private val hasChanges: Boolean
-        get() = pricingData != originalPricing
+        get() = pricingData != originalPricingData
 
     init {
         val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
@@ -69,22 +67,7 @@ class ProductPricingViewModel @AssistedInject constructor(
             isTaxSectionVisible = isProductPricing
         )
 
-        originalPricing = navArgs.pricingData
-    }
-
-    private fun loadParameters(): SiteParameters {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            return@let Pair(settings.weightUnit, settings.dimensionUnit)
-        } ?: Pair(null, null)
-
-        return SiteParameters(
-            currencyCode,
-            weightUnit,
-            dimensionUnit,
-            gmtOffset
-        )
+        originalPricingData = navArgs.pricingData
     }
 
     fun getTaxClassBySlug(slug: String): TaxClass? {

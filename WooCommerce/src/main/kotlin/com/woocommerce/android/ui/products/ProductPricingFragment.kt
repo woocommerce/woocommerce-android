@@ -3,18 +3,12 @@ package com.woocommerce.android.ui.products
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
@@ -22,50 +16,38 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.offsetGmtDate
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.TaxClass
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
-import org.wordpress.android.util.ActivityUtils
 import java.util.Date
-import javax.inject.Inject
 
-class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSelectorDialogListener {
-    companion object {
-        const val KEY_PRICING_DIALOG_RESULT = "key_pricing_dialog_result"
-    }
-
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
+class ProductPricingFragment
+    : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
     private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory }
+
+    override val isDoneButtonVisible: Boolean
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
+    override val isDoneButtonEnabled: Boolean
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
+    override val lastEvent: Event?
+        get() = viewModel.event.value
 
     private var productTaxStatusSelectorDialog: ProductItemSelectorDialog? = null
     private var productTaxClassSelectorDialog: ProductItemSelectorDialog? = null
 
     private var startDatePickerDialog: DatePickerDialog? = null
     private var endDatePickerDialog: DatePickerDialog? = null
-    private var doneButton: MenuItem? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_pricing, container, false)
-    }
 
     override fun onPause() {
         super.onPause()
@@ -82,50 +64,12 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSel
         endDatePickerDialog = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        activity?.let {
-            ActivityUtils.hideKeyboard(it)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_price)
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        inflater.inflate(R.menu.menu_done, menu)
-        doneButton = menu.findItem(R.id.menu_done)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        val viewState = viewModel.viewStateData.liveData.value
-        doneButton?.isVisible = viewState?.isDoneButtonVisible ?: false
-        doneButton?.isEnabled = viewState?.isDoneButtonEnabled ?: false
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -258,6 +202,14 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSel
         }
     }
 
+    override fun onDoneButtonClicked() {
+        viewModel.onDoneButtonClicked()
+    }
+
+    override fun onExit() {
+        viewModel.onExit()
+    }
+
     /**
      * Method to update the start date of a sale using the [offset]
      *
@@ -372,9 +324,5 @@ class ProductPricingFragment : BaseFragment(), BackPressListener, ProductItemSel
                 }
             }
         }
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        return (viewModel.event.value == Exit).also { if (it.not()) viewModel.onExit() }
     }
 }

@@ -8,6 +8,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
@@ -16,6 +17,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -28,6 +30,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
@@ -181,24 +184,32 @@ class VariationDetailCardBuilder(
                     )
                 )
             } else {
-                return null
-                // TODO: M3 feature
-//                mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+                mapOf(Pair("", resources.getString(string.product_shipping_empty)))
+            }
+
+            val onClick = {
+                viewModel.onEditVariationCardClicked(
+                    ViewShipping(
+                        ShippingData(
+                            weight,
+                            length,
+                            width,
+                            height,
+                            shippingClass,
+                            shippingClassId
+                        )
+                    ),
+                    PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
+                )
             }
 
             PropertyGroup(
                 string.product_shipping,
                 shippingGroup,
                 drawable.ic_gridicons_shipping,
-                hasShippingInfo
+                hasShippingInfo,
+                onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
             )
-            // TODO: This will be used once the variants are editable
-//            {
-//                viewModel.onEditProductCardClicked(
-//                    ViewProductShipping(this.remoteId),
-//                    PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
-//                )
-//            }
         } else {
             null
         }

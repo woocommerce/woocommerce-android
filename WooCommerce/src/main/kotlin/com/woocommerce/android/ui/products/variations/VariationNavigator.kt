@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,6 +51,13 @@ class VariationNavigator @Inject constructor() {
                     RequestCodes.VARIATION_DETAIL_INVENTORY,
                     target.inventoryData,
                     target.sku
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewShipping -> {
+                val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductShippingFragment(
+                    RequestCodes.VARIATION_DETAIL_SHIPPING,
+                    target.shippingData
                 )
                 fragment.findNavController().navigateSafely(action)
             }

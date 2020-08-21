@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -106,7 +107,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }
-        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,
@@ -118,7 +119,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
-        handleResult<InventoryData>(ProductInventoryFragment.KEY_INVENTORY_DIALOG_RESULT) {
+        handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 sku = it.sku,
                 soldIndividually = it.isSoldIndividually,
@@ -126,6 +127,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
                 manageStock = it.isStockManaged
+            )
+            changesMade()
+        }
+        handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
             )
             changesMade()
         }

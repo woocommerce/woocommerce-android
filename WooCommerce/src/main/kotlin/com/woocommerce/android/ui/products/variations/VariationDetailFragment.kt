@@ -28,10 +28,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
-import com.woocommerce.android.ui.products.ProductInventoryFragment
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingFragment
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.Optional
@@ -133,7 +133,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
     }
 
     private fun setupResultHandlers(viewModel: VariationDetailViewModel) {
-        handleResult<PricingData>(ProductPricingFragment.KEY_PRICING_DIALOG_RESULT) {
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,
@@ -142,13 +142,23 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 saleEndDate = Optional(it.saleEndDate)
             )
         }
-        handleResult<InventoryData>(ProductInventoryFragment.KEY_INVENTORY_DIALOG_RESULT) {
+        handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 sku = it.sku,
                 stockStatus = it.stockStatus,
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
                 isStockManaged = it.isStockManaged
+            )
+        }
+        handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
             )
         }
     }

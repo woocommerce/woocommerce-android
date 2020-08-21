@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -74,7 +75,16 @@ class ProductDetailBottomSheetBuilder(
         return if (!isVirtual && !hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
-                ViewProductShipping(remoteId),
+                ViewProductShipping(
+                    ShippingData(
+                        weight,
+                        length,
+                        width,
+                        height,
+                        shippingClass,
+                        shippingClassId
+                    )
+                ),
                 Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
             )
         } else {

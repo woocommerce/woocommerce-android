@@ -34,7 +34,6 @@ import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
@@ -42,7 +41,6 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -81,7 +79,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -89,11 +86,10 @@ import java.util.Date
 class ProductDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
+    parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore,
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
@@ -109,10 +105,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    val parameters: SiteParameters by lazy {
-        val params = savedState.get<SiteParameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
-        savedState[KEY_PRODUCT_PARAMETERS] = params
-        params
+    private val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
     // view state for the product detail screen
@@ -249,10 +243,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
-            is ExitShipping -> {
-                eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasShippingChanges()
-            }
             is ExitImages -> {
                 eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasImageChanges()
@@ -653,24 +643,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Loads the product dependencies for a site such as dimensions, currency or timezone
-     */
-    private fun loadParameters(): SiteParameters {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            return@let Pair(settings.weightUnit, settings.dimensionUnit)
-        } ?: Pair(null, null)
-
-        return SiteParameters(
-            currencyCode,
-            weightUnit,
-            dimensionUnit,
-            gmtOffset
-        )
-    }
-
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
@@ -780,17 +752,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
-        val weightWithUnits = updatedDraft.getWeightWithUnits(parameters.weightUnit)
-        val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
-
         viewState = viewState.copy(
                 productDraft = updatedDraft,
-                storedProduct = productToUpdateFrom,
-                weightWithUnits = weightWithUnits,
-                sizeWithUnits = sizeWithUnits,
-                salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
-                gmtOffset = parameters.gmtOffset
+                storedProduct = productToUpdateFrom
         )
 
         if (viewState.productBeforeEnteringFragment == null) {
@@ -815,12 +779,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             // Pre-load current site's tax class list for use in the product pricing screen
             productRepository.loadTaxClassesForSite()
         }
-    }
-
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
     }
 
     /**
@@ -1205,7 +1163,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1243,13 +1200,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
-        val weightWithUnits: String? = null,
-        val sizeWithUnits: String? = null,
-        val priceWithCurrency: String? = null,
-        val salePriceWithCurrency: String? = null,
-        val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null
