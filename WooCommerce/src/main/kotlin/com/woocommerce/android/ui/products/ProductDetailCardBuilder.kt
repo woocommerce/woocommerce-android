@@ -481,9 +481,9 @@ class ProductDetailCardBuilder(
                 resources.getString(groupedProductResourceId, groupedProductsSize),
                 R.drawable.ic_widgets
             ) {
-                // TODO: add click event
                 viewModel.onEditProductCardClicked(
-                    ViewGroupedProducts(this.groupedProductIds.joinToString(","))
+                    ViewGroupedProducts(this.groupedProductIds.joinToString(",")),
+                    Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
                 )
             }
         } else {
