@@ -1,96 +1,102 @@
 <ar>
-4.7:
-<b>الإحصاءات:</b> سيطابق الرسم البياني لإحصاءاتك الآن ما تراه في wp-admin. نظرًا إلى أنَّك تحتاج إلى تشغيل الإصدار 4.0 من WooCommerce أو إصدار أحدث منه، فتأكَّد من أنَّك قمت بالتحديث.
+4.8:
+* تم تحديث قسم "إضافة تعقُّب الشحنة" لعرضه فقط في حالة توافر إضافة تعقُّب الشحنة
+* تم إصلاح عطل كان يحدث عند النقر المزدوج على عنصر التنقل، وعطل آخر (نادر) ناتج عن محاولة إخفاء العرض غير النشط.
 
-<b>إصلاح العطل:</b> كانت تحدث الأعطال عند نقل كميات كبيرة من البيانات. تم إصلاح هذا على الأجهزة التي تعمل بنظام التشغيل Android P والإصدارات الأحدث مع وجود مخزن مؤقت أكبر.
 </ar>
 <de-DE>
-4.7:
-<b>Statistiken:</b> Dein Statistikdiagramm stimmt jetzt mit deiner Ansicht in wp-admin überein. Bitte führe ein Update durch, da du WooCommerce 4.0 oder höher ausführen musst.
+4.8:
+* Bereich „Sendungsverfolgung hinzufügen“ aktualisiert, sodass er nur noch angezeigt wird, wenn das Sendungsverfolgungs-Plugin vorhanden ist.
+* Absturz beim Doppeltippen auf ein Navigationselement und ein weiterer (seltener) Absturz beim Verbergen einer nicht aktiven Anzeige behoben.
 
-<b>Abstürze behoben:</b> Bei der Übertragung großer Datenmengen kam es zu Abstürzen. Wir haben das auf Geräten, auf denen Android P und höher ausgeführt wird, mit einem größeren Puffer behoben.
 </de-DE>
 <es-ES>
-4.7:
-<b>Estadísticas:</b> tus estadísticas coincidirán con lo que ves en wp-admin. Como tienes que ejecutar WooCommerce 4,0 o una versión posterior, asegúrate de actualizar la versión.
+4.8:
+* Se ha actualizado la sección "Add shipment tracking" (Añadir seguimiento de envío) a la sección para que se muestre únicamente si está disponible el plugin Shipment Tracking (Seguimiento de envío).
+* Se ha solucionado un fallo que se producía al tocar dos veces un elemento de navegación y otro (en raras ocasiones) que se producía al intentar ocultar una vista no activa.
 
-<b>Resolución de errores:</b> Cuando se transferían grandes cantidades de datos, ocurrían errores. Lo hemos corregido en dispositivos Android P y posteriores con un mayor almacenamiento.
 </es-ES>
 <fr-FR>
-4,7 :
-<b>Stats :</b> votre graphique des statistiques correspondra désormais à ce que vous voyez dans wp-admin. Étant donné que vous devez exécuter WooCommerce 4.0, veillez à effectuer la mise à jour.
+4.8 :
+* Mise à jour de la section « Ajouter le suivi de l’expédition » pour qu’elle ne s’affiche que si l’extension Suivi de l’expédition est disponible.
+* Résolution d’un problème en effectuant un double-clic sur un élément de navigation et d’un autre (rare) problème causé par la tentative de masquer une vue non active.
 
-<b>Correction d’incidents :</b> des incidents se produisaient lors du transfert de gros volumes de données. Ce problème a été résolu sur les appareils exécutant Android P ou version ultérieure grâce à un tampon plus important.
 </fr-FR>
 <iw-IL>
-4.7:
-<b>Stats:</b>  הגרף של הנתונים הסטטיסטיים מתאים כעת לנתונים שמוצגים ב-wp-admin. מאחר שעליך להפעיל את WooCommerce 4.0 או גרסאות מתקדמות יותר, עליך לעדכן את הגרסה.
+4.8:
+* עדכנו את המקטע 'להוסיף מעקב אחר משלוח' כדי שיוצג רק כאשר התוסף של מעקב המשלוח זמין.
+* תיקנו קריסה שהתרחשה בהקשה כפולה על אלמנט ניווט ועוד קריסה (נדירה) שנגרמה בניסיון להסתיר תצוגה לא פעילה.
 
-<b>Crash Fix:</b> קריסות התרחשו במהלך העברה של נתונים בכמויות גדולות. תיקנו את הבעיה הזאת במכשירים שמופעלים עם Android P או גרסאות מתקדמות יותר והרחבנו את הטווח.
 </iw-IL>
 <id>
-4.7:
-<b>Statistik:</b> Grafik statistik Anda sekarang akan cocok dengan yang Anda lihat di wp-admin. Anda perlu mengoperasikan WooCommerce 4.0 atau versi lebih baru, pastikan Anda melakukan pembaruan.
+4.8:
+* Bagian “Tambah pelacakan pengiriman” diperbarui sehingga hanya tampil jika plugin Pelacakan Pengiriman tersedia.
+* Crash saat mengetuk dua kali elemen navigasi dan crash lainnya akibat menyembunyikan tampilan non-aktif (jarang terjadi) diperbaiki.
 
-<b>Perbaikan Crash:</b> Crash terjadi saat sedang mentransfer data dalam jumlah besar. Kami memperbaikinya pada perangkat yang menjalankan Android P dan versi lebih baru dengan kapasitas penyangga yang lebih besar.
 </id>
 <it-IT>
-4.7:
-<b>Statistiche:</b> il grafico delle tue statistiche ora corrisponde a ciò che visualizzi in wp-admin. Assicurati di effettuare l'aggiornamento perché dovrai utilizzare WooCommerce 4.0 o versioni superiori.
+4.8:
+* Sezione per aggiungere la tracciabilità della spedizione aggiornata per essere mostrata solo se il plugin Tracciabilità della spedizione è disponibile.
+* Risolto un arresto anomalo che si verificava toccando due volte un elemento di navigazione e un altro (raro) arresto anomalo causato dal tentativo di nascondere una vista non attiva.
 
-<b>Correzione di un arresto anomalo:</b> quando veniva trasferita una grande quantità di dati avvenivano arresti anomali. Abbiamo corretto questo problema sui dispositivi su cui è in esecuzione Android P e versioni successive con un buffer maggiore.
 </it-IT>
 <ja-JP>
-4.7:
-<b>統計 :</b> 統計グラフが、wp-admin に表示される内容と一致するようになりました。 WooCommerce 4.0 以上を実行する必要があるため、必ずアップデートするようにしてください。
+4.8:
+* 配送追跡プラグインが利用できる場合のみ「配送追跡を追加」セクションが表示されるように変更。
+* ナビゲーション要素をダブルタップした際に発生するクラッシュ、およびアクティブになっていないビューを非表示にしようとすると (稀に) 発生するクラッシュを修正。
 
-<b>クラッシュの修正 :</b> 大量のデータを転送する際にクラッシュが起こっていました。 Android P を実行するデバイスと、バッファーが大きいデバイスでこの問題を修正しました。
 </ja-JP>
 <ko-KR>
-4.7:
-<b>통계:</b> 이제 통계 그래프에 wp-admin과 일치하는 콘텐츠가 표시됩니다. WooCommerce 4.0 이상을 실행해야 하므로 업데이트했는지 확인하세요.
+4.8:
+"배송 추적 추가" 섹션이 배송 추적 플러그인을 사용하는 경우에만 표시되도록 업데이트했습니다.
+* 탐색 요소를 두 번 누를 때 발생하는 충돌과 활성화되지 않은 화면을 숨기려고 할 때 발생하는 (드문) 충돌을 해결했습니다.
 
-<b>충동 해결:</b> 대용량 데이터를 전송할 때 충돌 문제가 발생했었습니다. 버퍼 크기를 늘려 Android P 이상을 실행하는 기기에서 이 문제를 해결했습니다.
 </ko-KR>
 <nl-NL>
-4.7:
-<b>Statistieken:</b> Je grafiek met statistieken komt nu overeen met wat je ziet in wp-admin. Zorg dat je de update uitvoert, want je hebt WooCommerce 4.0 of hoger nodig.
+4.8:
+* Het gedeelte 'Verzending bijhouden toevoegen' is bijgewerkt om alleen de Shipment Tracking-plugin te laten zien als deze beschikbaar is.
+* Een crash na het dubbeltikken op een navigatie-element en nog een (zeldzame) crash veroorzaakt door het proberen verbergen van een non-actief overzicht zijn opgelost.
 
-<b>Crash-fix:</b> Wanneer grote hoeveelheden gegevens werden overgedragen, vonden er crashes plaats. We hebben dit opgelost op toestellen met Android P en hoger dankzij een grotere buffer.
 </nl-NL>
 <pt-BR>
-4.7:
-<b>Estatísticas:</b> agora seu gráfico de estatísticas corresponde ao que é exibido no Painel WP Admin. É necessário atualizar o WooCommerce para a versão 4.0 ou superior.
+4.8:
+* Seção "Adicionar rastreamento de envio" atualizada para ser exibida somente se o plugin Shipment Tracking estiver disponível.
+* Correção de falha causada ao dar dois cliques em um elemento de navegação, e de uma falha (rara) causada ao tentar ocultar uma visualização não ativa.
 
-<b>Correção de falhas:</b> estavam ocorrendo falhas na transferência de um número grande de dados. Isso já foi corrigido para dispositivos com o Android P e superior com um buffer maior.
 </pt-BR>
 <ru-RU>
-4.7:
-<b>Статистика:</b> График статистики теперь совпадает с тем, что используется в wp-admin. Для этого требуется WooCommerce 4.0 или более поздней версии. Не забудьте обновить приложение.
+4.8:
+* Обновлен раздел «Добавить отслеживание заказов», который теперь отображается, только если доступен плагин отслеживания.
+* Исправлена ошибка, из-за которой возникал сбой при двойном нажатии на элементы навигации, а также еще одна (редкая) ошибка, происходившая при попытке скрыть неактивные представления.
 
-<b>Исправление ошибок:</b> При переносе больших объемов данных происходили ошибки. Мы исправили эти ошибки на устройствах Android P и более поздних версий, увеличив буфер.
 </ru-RU>
-<tr-TR>
-4.7:
-<b>İstatistikler:</b> İstatistik grafiğiniz artık wp-admin'de gördüklerinizle aynı olacak. WooCommerce 4.0 veya üstünü çalıştırmanız gerektiğinden güncelleme yaptığınızdan emin olun.
+<sv-SE>
+4.8:
+* Avsnittet "Lägg till leveransspårning" uppdaterades så att det endast visas om tillägget Leveransspårning är tillgängligt.
+* En krasch som uppstod vid dubbeltryck på ett navigationselement och en annan (sällsynt) krasch som uppstod vid försök att dölja en icke-aktiv vy åtgärdades.
 
-<b>Kilitlenmeyle İlgili Düzeltme:</b> Büyük miktarda veri aktarılırken kilitlenmeler yaşanıyordu. Daha büyük bir arabellekle, Android P ve daha yeni sürümleri çalıştıran cihazlarda bu sorun düzeltildi.
+</sv-SE>
+<tr-TR>
+4,8:
+* "Gönderi takibi ekle" bölümü yalnızca Gönderi Takibi eklentisi mevcutsa görüntülenecek şekilde güncellendi.
+* Bir gezinme öğesine çift dokunulduğunda yaşanan kilitlenme ile, etkin olmayan bir görünümü gizlemeye çalışırken oluşan başka bir (nadir) kilitlenme sorunu düzeltildi.
+
 </tr-TR>
 <zh-CN>
-4.7：
-<b>统计数据：</b>现在，您的统计数据图将与您在 wp-admin 中看到的信息相符。 当您需要运行 WooCommerce 4.0 或更高版本时，请务必进行更新。
+4.8:
+* 更新了“添加配送跟踪”部分，以仅在 Shipment Tracking 插件可用时显示。
+* 修复了双击导航元素时出现的崩溃问题，以及因尝试隐藏非活动视图导致的另一个（极少出现）崩溃问题。
 
-<b>崩溃问题修复：</b>之前，在传输大量数据时，系统会崩溃。 我们在运行具有较大缓冲区的 Android P 及更高版本操作系统的设备上修复了此类问题。
 </zh-CN>
 <zh-TW>
-4.7：
-<b>統計資料：</b>現在你的統計資料圖表資訊會與 wp-admin 中顯示資訊相符。 當你需要執行 WooCommerce 4.0 以上版本時，請務必更新。
+4.8：
+* 更新「新增貨件追蹤」區段，只有安裝「貨件追蹤」外掛程式時才會顯示此區段。
+* 修復按兩下導覽元素時發生的當機問題，以及嘗試隱藏非使用中檢視畫面而導致的其他 (少見) 當機情況 。
 
-<b>當機修正：</b>過去轉移大量資料時會發生當機問題。 我們已改用更大的緩衝區，執行 Android P 以上版本的裝置已不會再出現此問題。
 </zh-TW>
 <en-US>
-4.7:
-<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
-
-<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
+4.8:
+* Updated the “Add shipment tracking” section to display only if the Shipment Tracking plugin is available.
+* Fixed a crash when double-tapping a navigation element, and another (rare) crash caused by trying to hide a non-active view.
+ 
 </en-US>

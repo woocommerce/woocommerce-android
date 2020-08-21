@@ -1,4 +1,0 @@
-4.7:
-<b>Statistiken:</b> Dein Statistikdiagramm stimmt jetzt mit deiner Ansicht in wp-admin überein. Bitte führe ein Update durch, da du WooCommerce 4.0 oder höher ausführen musst.
-
-<b>Abstürze behoben:</b> Bei der Übertragung großer Datenmengen kam es zu Abstürzen. Wir haben das auf Geräten, auf denen Android P und höher ausgeführt wird, mit einem größeren Puffer behoben.

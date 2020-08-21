@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-09 08:54:03+0000
+Translation-Revision-Date: 2020-08-18 12:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="feedback_request_like_it">喜歡</string>
+    <string name="feedback_request_make_better">還有改善空間</string>
+    <string name="feedback_request_title">喜歡 WooCommerce 應用程式嗎？</string>
+    <string name="variation_detail_update_variation_error">更新變化版本時發生錯誤</string>
+    <string name="variation_detail_fetch_variation_error">擷取變化版本時發生錯誤</string>
+    <string name="product_add_tag_error">新增標籤時發生錯誤</string>
+    <string name="product_add_tag_dialog_title">新增標籤中</string>
+    <string name="shipping_label_refund_progress_message">正在處理你的退款。 請稍候…</string>
+    <string name="shipping_label_refund_success">退款已成功轉出</string>
+    <string name="shipping_label_refund_button">退款標籤 (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">符合退款資格的金額</string>
+    <string name="shipping_label_refund_purchase_date_title">購買日期</string>
+    <string name="shipping_label_refund_message">你可以針對尚未用於運送包裹的郵寄標籤要求退款。 退款需至少 14 天處理時間。</string>
+    <string name="orderdetail_shipping_label_request_refund">要求退款</string>
+    <string name="orderdetail_shipping_label_item_menu">退還郵寄標籤的款項</string>
     <string name="product_add_category_dialog_message">請稍候…</string>
     <string name="product_add_category_dialog_title">新增類別中</string>
     <string name="product_category_parent">上層類別</string>
@@ -193,7 +208,6 @@ Language: zh_TW
     <string name="product_add_image_content_description">新增圖片</string>
     <string name="date_timeframe_future">即將到來</string>
     <string name="remove">移除</string>
-    <string name="product_variation_hidden">隱藏</string>
     <string name="login_discovery_error_generic">無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_ssl">由於 &lt;b>SSL 憑證&lt;/b>發生問題，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
     <string name="login_discovery_error_http_auth">由於你的網站須進行 &lt;b>HTTP 驗證&lt;/b>，我們無法存取你的網站。你必須聯絡主機商以解決此問題。</string>
@@ -238,7 +252,7 @@ Language: zh_TW
     <string name="product_list_empty_search">沒有相符的產品</string>
     <string name="product_list_empty">尚未有任何產品</string>
     <string name="product_stock_count">尚有 %s 件庫存</string>
-    <string name="product_stock_status_instock_with_variations">有庫存\u2022 %d 種子類選項</string>
+    <string name="product_stock_status_instock_with_variations">尚有庫存\u2022 %d 個變化版本</string>
     <string name="product_image_content_description">商品圖片</string>
     <string name="review_list_item_title">%1$s 在%2$s 上留下了評論</string>
     <string name="wc_unapproved">未核准</string>

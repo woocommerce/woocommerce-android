@@ -14,3 +14,7 @@ infix fun BigDecimal?.isEquivalentTo(that: BigDecimal?): Boolean {
     val val2 = that ?: BigDecimal.ZERO
     return val1.isEqualTo(val2)
 }
+
+fun BigDecimal?.isNotSet(): Boolean = this.isEquivalentTo(BigDecimal.ZERO)
+
+fun BigDecimal?.isSet(): Boolean = !this.isNotSet()

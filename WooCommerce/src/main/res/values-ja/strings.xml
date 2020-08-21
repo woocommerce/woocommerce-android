@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-10 09:54:03+0000
+Translation-Revision-Date: 2020-08-19 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="feedback_request_like_it">気に入りました</string>
+    <string name="feedback_request_make_better">改善が必要</string>
+    <string name="feedback_request_title">WooCommerce アプリの感想をお聞かせください</string>
+    <string name="variation_detail_update_variation_error">バリエーションを更新する際にエラーが発生しました</string>
+    <string name="variation_detail_fetch_variation_error">バリエーションを取得する際にエラーが発生しました</string>
+    <string name="product_add_tag_error">タグを追加する際にエラーが発生しました</string>
+    <string name="product_add_tag_dialog_title">タグを追加しています</string>
+    <string name="shipping_label_refund_progress_message">返金処理を実行中です。 しばらくお待ちください…</string>
+    <string name="shipping_label_refund_success">返金処理を正常に送信しました。</string>
+    <string name="shipping_label_refund_button">返金ラベル (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">返金対象額</string>
+    <string name="shipping_label_refund_purchase_date_title">購入日</string>
+    <string name="shipping_label_refund_message">荷物の配送に使用されていない配送ラベルの返金をリクエストできます。 処理には少なくとも14日かかります。</string>
+    <string name="orderdetail_shipping_label_request_refund">返金をリクエスト</string>
+    <string name="orderdetail_shipping_label_item_menu">配送ラベルを返金</string>
     <string name="product_add_category_dialog_message">しばらくお待ちください…</string>
     <string name="product_add_category_dialog_title">カテゴリーを追加しています</string>
     <string name="product_category_parent">親カテゴリー</string>
@@ -193,7 +208,6 @@ Language: ja_JP
     <string name="product_add_image_content_description">画像を追加</string>
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
-    <string name="product_variation_hidden">非表示</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>

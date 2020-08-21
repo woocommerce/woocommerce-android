@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-04 15:17:00+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="feedback_request_like_it">Ik vind het leuk</string>
+    <string name="feedback_request_make_better">Kan beter</string>
+    <string name="feedback_request_title">Vind je de WooCommerce-app leuk?</string>
+    <string name="variation_detail_update_variation_error">Bijwerken variatie mislukt</string>
+    <string name="variation_detail_fetch_variation_error">Fout bij ophalen van variatie</string>
+    <string name="product_add_tag_error">Toevoegen tags mislukt</string>
+    <string name="product_add_tag_dialog_title">Tag wordt toegevoegd</string>
+    <string name="shipping_label_refund_progress_message">Je restitutie wordt verwerkt. Een moment geduld …</string>
+    <string name="shipping_label_refund_success">De restitutie is ingediend</string>
+    <string name="shipping_label_refund_button">Restitutielabel (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Bedrag dat wordt terugbetaald</string>
+    <string name="shipping_label_refund_purchase_date_title">Datum van aanschaf</string>
+    <string name="shipping_label_refund_message">Je kan een terugbetaling aanvragen voor een verzendlabel dat niet is gebruikt om een pakket te verzenden. Het duurt minimaal 14 dagen voordat dit is verwerkt.</string>
+    <string name="orderdetail_shipping_label_request_refund">Een terugbetaling aanvragen</string>
+    <string name="orderdetail_shipping_label_item_menu">Label verzendrestitutie</string>
     <string name="product_add_category_dialog_message">Een moment geduld…</string>
     <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
     <string name="product_category_parent">Hoofdcategorie</string>
@@ -193,7 +208,6 @@ Language: nl
     <string name="product_add_image_content_description">Afbeelding toevoegen</string>
     <string name="date_timeframe_future">Komende</string>
     <string name="remove">Verwijderen</string>
-    <string name="product_variation_hidden">Verborgen</string>
     <string name="login_discovery_error_generic">We konden geen toegang krijgen tot je site. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_ssl">We konden geen toegang krijgen tot je site vanwege een probleem met het &lt;b>SSL-certificaat&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
     <string name="login_discovery_error_http_auth">We konden geen toegang krijgen tot je site omdat hiervoor &lt;b>HTTP-authenticatie is vereist&lt;/b>. Neem contact op met je host om dit probleem te verhelpen.</string>
@@ -238,7 +252,7 @@ Language: nl
     <string name="product_list_empty_search">Geen overeenkomende producten</string>
     <string name="product_list_empty">Nog geen producten</string>
     <string name="product_stock_count">%s op voorraad</string>
-    <string name="product_stock_status_instock_with_variations">Op voorraad \u2022 %d varianten</string>
+    <string name="product_stock_status_instock_with_variations">Op voorraad \u2022 %d variaties</string>
     <string name="product_image_content_description">Productafbeelding</string>
     <string name="review_list_item_title">%1$s heeft een beoordeling geplaatst voor %2$s</string>
     <string name="wc_unapproved">Afgekeurd</string>

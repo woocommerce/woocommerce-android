@@ -3,14 +3,18 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -20,27 +24,33 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 
 class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val variationListRepository: VariationListRepository,
+    private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
-    val variationList: LiveData<List<ProductVariation>> = _variationList
+    val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
+        val anyWithoutPrice = variations.any { it.isVisible && it.regularPrice.isNotSet() && it.salePrice.isNotSet() }
+        viewState = viewState.copy(isWarningVisible = anyWithoutPrice)
+        variations
+    }
 
-    val viewStateLiveData = LiveDataDelegate(savedState,
-        ViewState()
-    )
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
+    private var loadingJob: Job? = null
+
     fun start(remoteProductId: Long) {
+        viewState = viewState.copy(parentProduct = productRepository.getProduct(remoteProductId))
         loadVariations(remoteProductId)
     }
 
@@ -60,39 +70,23 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onItemClick(variation: ProductVariation) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
-        triggerEvent(
-            ShowVariationDetail(
-                variation
-            )
-        )
+        triggerEvent(ShowVariationDetail(variation))
     }
 
-    private fun isLoadingMore() = viewState.isLoadingMore == true
-
-    private fun isRefreshing() = viewState.isRefreshing == true
-
-    private fun loadVariations(
-        remoteProductId: Long,
-        loadMore: Boolean = false
-    ) {
+    private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (loadMore && !variationListRepository.canLoadMoreProductVariations) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
             return
         }
 
-        if (loadMore && isLoadingMore()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already loading more product variations")
-            return
-        }
-
-        if (loadMore && isRefreshing()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already refreshing product variations")
+        if (loadingJob?.isActive == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product variations")
             return
         }
 
         this.remoteProductId = remoteProductId
 
-        launch {
+        loadingJob = launch {
             viewState = viewState.copy(isLoadingMore = loadMore)
             if (!loadMore) {
                 // if this is the initial load, first get the product variations from the db and if there are any show
@@ -109,10 +103,7 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun fetchVariations(
-        remoteProductId: Long,
-        loadMore: Boolean = false
-    ) {
+    private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
@@ -135,9 +126,11 @@ class VariationListViewModel @AssistedInject constructor(
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationListRepository.getCurrencyCode()
         variations.map { variation ->
-            variation.priceWithCurrency = currencyCode?.let {
-                currencyFormatter.formatCurrency(variation.regularPrice ?: BigDecimal.ZERO, it)
-            } ?: variation.regularPrice.toString()
+            variation.regularPrice?.let { price ->
+                variation.priceWithCurrency = currencyCode?.let {
+                    currencyFormatter.formatCurrency(price, it)
+                } ?: price.toString()
+            }
         }
         return variations
     }
@@ -148,7 +141,9 @@ class VariationListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isWarningVisible: Boolean? = null,
+        val parentProduct: Product? = null
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
