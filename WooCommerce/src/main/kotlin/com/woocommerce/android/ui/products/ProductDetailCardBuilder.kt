@@ -398,7 +398,10 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_link,
                 hasExternalLink
             ) {
-                viewModel.onEditProductCardClicked(ViewProductExternalLink(this.remoteId))
+                viewModel.onEditProductCardClicked(
+                    ViewProductExternalLink(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED
+                )
             }
         } else {
             null
@@ -481,9 +484,9 @@ class ProductDetailCardBuilder(
                 resources.getString(groupedProductResourceId, groupedProductsSize),
                 R.drawable.ic_widgets
             ) {
-                // TODO: add click event
                 viewModel.onEditProductCardClicked(
-                    ViewGroupedProducts(this.groupedProductIds.joinToString(","))
+                    ViewGroupedProducts(this.groupedProductIds.joinToString(",")),
+                    Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
                 )
             }
         } else {
