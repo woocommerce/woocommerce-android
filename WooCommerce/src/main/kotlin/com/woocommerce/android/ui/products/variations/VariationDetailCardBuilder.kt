@@ -187,12 +187,7 @@ class VariationDetailCardBuilder(
                 mapOf(Pair("", resources.getString(string.product_shipping_empty)))
             }
 
-            PropertyGroup(
-                string.product_shipping,
-                shippingGroup,
-                drawable.ic_gridicons_shipping,
-                hasShippingInfo
-            ) {
+            val onClick = {
                 viewModel.onEditVariationCardClicked(
                     ViewShipping(
                         ShippingData(
@@ -207,6 +202,14 @@ class VariationDetailCardBuilder(
                     PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
                 )
             }
+
+            PropertyGroup(
+                string.product_shipping,
+                shippingGroup,
+                drawable.ic_gridicons_shipping,
+                hasShippingInfo,
+                onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
+            )
         } else {
             null
         }
