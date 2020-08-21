@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-04 15:17:07+0000
+Translation-Revision-Date: 2020-08-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="feedback_request_like_it">Mi piace</string>
+    <string name="feedback_request_make_better">Potrebbe essere migliore</string>
+    <string name="feedback_request_title">Ti piace l\'app WooCommerce?</string>
+    <string name="variation_detail_update_variation_error">Errore durante l\'aggiornamento della variazione</string>
+    <string name="variation_detail_fetch_variation_error">Errore durante il recupero della variazione</string>
+    <string name="product_add_tag_error">Si è verificato un errore durante l\'aggiunta di tag</string>
+    <string name="product_add_tag_dialog_title">Aggiunta di tag</string>
+    <string name="shipping_label_refund_progress_message">Il rimborso è in fase di elaborazione. Attendi…</string>
+    <string name="shipping_label_refund_success">Rimborso inviato correttamente</string>
+    <string name="shipping_label_refund_button">Rimborsa etichetta (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Importo idoneo al rimborso</string>
+    <string name="shipping_label_refund_purchase_date_title">Data di acquisto</string>
+    <string name="shipping_label_refund_message">Puoi richiedere un rimborso per un\'etichetta di spedizione non utilizzata per spedire un pacchetto. L\'elaborazione richiederà almeno 14 giorni.</string>
+    <string name="orderdetail_shipping_label_request_refund">Richiedi un rimborso</string>
+    <string name="orderdetail_shipping_label_item_menu">Rimborsa etichetta di spedizione</string>
     <string name="product_add_category_dialog_message">Attendi…</string>
     <string name="product_add_category_dialog_title">Aggiunta della categoria</string>
     <string name="product_category_parent">Categoria madre</string>
@@ -193,7 +208,6 @@ Language: it
     <string name="product_add_image_content_description">Aggiungi immagine</string>
     <string name="date_timeframe_future">In arrivo</string>
     <string name="remove">Rimuovi</string>
-    <string name="product_variation_disabled">Nascosto</string>
     <string name="login_discovery_error_generic">Non siamo stati in grado di accedere al tuo sito. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_ssl">Non siamo stati in grado di accedere al tuo sito perché abbiamo riscontrato un problema con il &lt;b>certificato SSL&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
     <string name="login_discovery_error_http_auth">Non siamo stati in grado di accedere al tuo sito perché viene richiesta l\'&lt;b>autenticazione HTTP&lt;/b>. Dovrai contattare il tuo fornitore di hosting per risolvere questo problema.</string>
@@ -238,7 +252,7 @@ Language: it
     <string name="product_list_empty_search">Nessun prodotto corrispondente</string>
     <string name="product_list_empty">Ancora nessun prodotto</string>
     <string name="product_stock_count">%s in magazzino</string>
-    <string name="product_stock_status_instock_with_variations">%d varianti \u2022 in magazzino</string>
+    <string name="product_stock_status_instock_with_variations">\u2022 %d varianti in magazzino</string>
     <string name="product_image_content_description">Immagine prodotto</string>
     <string name="review_list_item_title">%1$s ha lasciato una recensione per %2$s</string>
     <string name="wc_unapproved">Non approvato</string>

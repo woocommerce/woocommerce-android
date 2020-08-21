@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-03 22:24:14+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="feedback_request_like_it">Me gusta</string>
+    <string name="feedback_request_make_better">Podría ser mejor</string>
+    <string name="feedback_request_title">¿Te gusta la aplicación de WooCommerce?</string>
+    <string name="variation_detail_update_variation_error">Error al actualizar la variación</string>
+    <string name="variation_detail_fetch_variation_error">Error al obtener la variación</string>
+    <string name="product_add_tag_error">Se ha producido un error al añadir etiquetas</string>
+    <string name="product_add_tag_dialog_title">Añadiendo etiqueta</string>
+    <string name="shipping_label_refund_progress_message">Tu reembolso se está procesando Por favor, espera…</string>
+    <string name="shipping_label_refund_success">El reembolso se ha enviado correctamente</string>
+    <string name="shipping_label_refund_button">Etiqueta de reembolso (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Cantidad elegible para el reembolso</string>
+    <string name="shipping_label_refund_purchase_date_title">Fecha de compra</string>
+    <string name="shipping_label_refund_message">Puedes solicitar un reembolso para una etiqueta de envío que no se haya utilizado para enviar un paquete.  Tardará al menos 14 días en procesarse.</string>
+    <string name="orderdetail_shipping_label_request_refund">Solicitar un reembolso</string>
+    <string name="orderdetail_shipping_label_item_menu">Etiqueta de envío de reembolso</string>
     <string name="product_add_category_dialog_message">Por favor, espera…</string>
     <string name="product_add_category_dialog_title">Añadir categoría</string>
     <string name="product_category_parent">Categoría padre</string>
@@ -193,7 +208,6 @@ Language: es
     <string name="product_add_image_content_description">Añadir imagen</string>
     <string name="date_timeframe_future">Próximo</string>
     <string name="remove">Eliminar</string>
-    <string name="product_variation_disabled">Oculto</string>
     <string name="login_discovery_error_generic">No hemos podido acceder a tu sitio. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_ssl">No hemos podido acceder a tu sitio debido a un problema con el &lt;b>Certificado SSL&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
     <string name="login_discovery_error_http_auth">No hemos podido acceder a tu sitio porque requiere &lt;b>Autentificación con HTTP&lt;/b>. Tendrás que contactar con tu proveedor de alojamiento para solucionarlo.</string>
@@ -238,7 +252,7 @@ Language: es
     <string name="product_list_empty_search">Ningún producto coincide con tu búsqueda.</string>
     <string name="product_list_empty">Aún no hay ningún producto</string>
     <string name="product_stock_count">Existencias: %s</string>
-    <string name="product_stock_status_instock_with_variations">Existencias \u2022 %d variantes</string>
+    <string name="product_stock_status_instock_with_variations">Existencias \u2022 %d variaciones</string>
     <string name="product_image_content_description">Imagen del producto</string>
     <string name="review_list_item_title">%1$s ha dejado una reseña sobre %2$s</string>
     <string name="wc_unapproved">Rechazada</string>

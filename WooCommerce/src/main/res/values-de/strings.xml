@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-04 15:17:03+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="feedback_request_like_it">Ich mag sie</string>
+    <string name="feedback_request_make_better">Könnte besser sein</string>
+    <string name="feedback_request_title">Gefällt dir die WooCommerce-App?</string>
+    <string name="variation_detail_update_variation_error">Fehler beim Aktualisieren der Variante</string>
+    <string name="variation_detail_fetch_variation_error">Fehler beim Abrufen der Variante</string>
+    <string name="product_add_tag_error">Beim Hinzufügen von Schlagwörtern ist ein Fehler aufgetreten</string>
+    <string name="product_add_tag_dialog_title">Schlagwort wird hinzugefügt</string>
+    <string name="shipping_label_refund_progress_message">Deine Rückerstattung wird berarbeitet. Bitte warten …</string>
+    <string name="shipping_label_refund_success">Rückerstattung wurde erfolgreich übermittelt</string>
+    <string name="shipping_label_refund_button">Etikett erstatten (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Rückerstattbarer Betrag</string>
+    <string name="shipping_label_refund_purchase_date_title">Kaufdatum</string>
+    <string name="shipping_label_refund_message">Du kannst für ein Versandetikett, das noch nicht zum Versenden eines Pakets verwendet wurde, eine Rückerstattung anfordern. Die Bearbeitung dauert mindestens 14 Tage.</string>
+    <string name="orderdetail_shipping_label_request_refund">Rückerstattung anfordern</string>
+    <string name="orderdetail_shipping_label_item_menu">Rückerstattungsetikett für Versand</string>
     <string name="product_add_category_dialog_message">Bitte warten …</string>
     <string name="product_add_category_dialog_title">Kategorie wird hinzugefügt</string>
     <string name="product_category_parent">Übergeordnete Kategorie</string>
@@ -193,7 +208,6 @@ Language: de
     <string name="product_add_image_content_description">Bild hinzufügen</string>
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
-    <string name="product_variation_disabled">Versteckt</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
     <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
@@ -238,7 +252,7 @@ Language: de
     <string name="product_list_empty_search">Keine Produkte gefunden</string>
     <string name="product_list_empty">Noch keine Produkte</string>
     <string name="product_stock_count">%s auf Lager</string>
-    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
+    <string name="product_stock_status_instock_with_variations">Auf Lager \u2022 %d Varianten</string>
     <string name="product_image_content_description">Produktbild</string>
     <string name="review_list_item_title">%1$s hat eine Bewertung für %2$s hinterlassen</string>
     <string name="wc_unapproved">Nicht genehmigt</string>
