@@ -88,6 +88,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     init {
+        viewState = viewState.copy(parentProduct = productRepository.getProduct(viewState.variation.remoteProductId))
         showVariation(originalVariation.copy())
     }
 
@@ -256,7 +257,11 @@ class VariationDetailViewModel @AssistedInject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            _variationDetailCards.value = cardBuilder.buildPropertyCards(variation, originalVariation.sku)
+            _variationDetailCards.value = cardBuilder.buildPropertyCards(
+                variation,
+                originalVariation.sku,
+                viewState.parentProduct
+            )
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -268,9 +273,6 @@ class VariationDetailViewModel @AssistedInject constructor(
         )
     }
 
-    /**
-     * Fetch the shipping class name of a product based on the remote shipping class id
-     */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation.shippingClass ?: ""
@@ -287,7 +289,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         val salePriceWithCurrency: String? = null,
         val regularPriceWithCurrency: String? = null,
         val gmtOffset: Float = 0f,
-        val shippingClass: String? = null
+        val shippingClass: String? = null,
+        val parentProduct: Product? = null
     ) : Parcelable
 
     @AssistedInject.Factory

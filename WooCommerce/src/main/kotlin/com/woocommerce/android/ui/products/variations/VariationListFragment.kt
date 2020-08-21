@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -129,7 +130,7 @@ class VariationListFragment : BaseFragment(),
         }
 
         viewModel.variationList.observe(viewLifecycleOwner, Observer {
-            showVariations(it)
+            showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -168,11 +169,12 @@ class VariationListFragment : BaseFragment(),
         }
     }
 
-    private fun showVariations(variations: List<ProductVariation>) {
+    private fun showVariations(variations: List<ProductVariation>, parentProduct: Product?) {
         val adapter = (variationList.adapter ?: VariationListAdapter(
             requireContext(),
             GlideApp.with(this),
             this,
+            parentProduct,
             viewModel::onItemClick
         )) as VariationListAdapter
 

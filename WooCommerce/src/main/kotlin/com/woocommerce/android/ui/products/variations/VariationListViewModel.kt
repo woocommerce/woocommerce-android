@@ -11,8 +11,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -29,6 +31,7 @@ class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val variationListRepository: VariationListRepository,
+    private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
@@ -41,14 +44,13 @@ class VariationListViewModel @AssistedInject constructor(
         variations
     }
 
-    val viewStateLiveData = LiveDataDelegate(savedState,
-        ViewState()
-    )
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
     private var loadingJob: Job? = null
 
     fun start(remoteProductId: Long) {
+        viewState = viewState.copy(parentProduct = productRepository.getProduct(remoteProductId))
         loadVariations(remoteProductId)
     }
 
@@ -140,7 +142,8 @@ class VariationListViewModel @AssistedInject constructor(
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val isWarningVisible: Boolean? = null
+        val isWarningVisible: Boolean? = null,
+        val parentProduct: Product? = null
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()

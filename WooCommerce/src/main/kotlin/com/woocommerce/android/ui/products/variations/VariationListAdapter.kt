@@ -17,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
@@ -27,6 +28,7 @@ class VariationListAdapter(
     private val context: Context,
     private val glideRequest: GlideRequests,
     private val loadMoreListener: OnLoadMoreListener,
+    private val parentProduct: Product?,
     private val onItemClick: (variation: ProductVariation) -> Unit
 ) : RecyclerView.Adapter<VariationViewHolder>() {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
@@ -51,7 +53,11 @@ class VariationListAdapter(
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
         val variation = variationList[position]
 
-        holder.txtVariationOptionName.text = variation.optionName
+        holder.txtVariationOptionName.text = if (variation.optionName.isBlank()) {
+            parentProduct?.attributes?.joinToString(separator = " - ", transform = { "Any ${it.name}" }) ?: ""
+        } else {
+            variation.optionName
+        }
 
         if (variation.isVisible) {
             if (variation.regularPrice.isSet()) {
