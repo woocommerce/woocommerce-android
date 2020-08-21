@@ -1,0 +1,4 @@
+4.8:
+* Sezione per aggiungere la tracciabilità della spedizione aggiornata per essere mostrata solo se il plugin Tracciabilità della spedizione è disponibile.
+* Risolto un arresto anomalo che si verificava toccando due volte un elemento di navigazione e un altro (raro) arresto anomalo causato dal tentativo di nascondere una vista non attiva.
+
