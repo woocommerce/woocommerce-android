@@ -311,7 +311,6 @@ Language: ru
     <string name="install">Установить</string>
     <string name="error_disabled_apis">Не удалось получить параметры: некоторые API недоступны для этой пары идентификатора приложения OAuth и учетной записи.</string>
     <string name="settings_hiring">Есть вакансии!</string>
-    <string name="feature_requests">Запрос на добавление функции</string>
     <string name="orderdetail_copy_tracking_number">Копировать номер отслеживания</string>
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>

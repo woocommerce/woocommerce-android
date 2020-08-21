@@ -9,9 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_feedback_completed.*
 
@@ -19,9 +21,6 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "survey_completed"
     }
-
-    private val mainActivity
-        get() = activity as? MainActivity
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -44,7 +43,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         getString(R.string.feedback_completed_description, contactUsText)
             .configureStringClick(
                 clickableContent = contactUsText,
-                clickAction = WooClickableSpan { mainActivity?.showHelpAndSupport() }
+                clickAction = WooClickableSpan { activity?.startHelpActivity() }
             )
         btn_back_to_store.setOnClickListener { activity?.onBackPressed() }
     }
@@ -77,4 +76,13 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
     }
+
+    private fun FragmentActivity.startHelpActivity() =
+        startActivity(
+            HelpActivity.createIntent(
+                this,
+                Origin.FEEDBACK_SURVEY,
+                null
+            )
+        )
 }
