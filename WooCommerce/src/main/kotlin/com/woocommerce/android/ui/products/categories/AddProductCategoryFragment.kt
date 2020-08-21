@@ -78,7 +78,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_DONE_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }
