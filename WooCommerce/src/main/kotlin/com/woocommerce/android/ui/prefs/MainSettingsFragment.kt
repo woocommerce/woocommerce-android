@@ -155,7 +155,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
+        option_beta_features.optionValue = getString(R.string.settings_enable_product_teaser_title)
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
