@@ -75,6 +75,9 @@ class MyStoreFragment : TopLevelFragment(),
     private val appBarLayout
         get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
 
+    private val mainNavigationRouter
+        get() = activity as? MainNavigationRouter
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -101,7 +104,10 @@ class MyStoreFragment : TopLevelFragment(),
             if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
                 store_feedback_request_card.visibility = View.VISIBLE
                 val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { /* TODO */ }
+                val negativeCallback = {
+                    mainNavigationRouter?.showFeedbackSurvey()
+                    removeTabLayoutFromAppBar(tabLayout)
+                }
                 store_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
@@ -343,7 +349,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
         removeTabLayoutFromAppBar(tabLayout)
-        (activity as? MainNavigationRouter)?.showProductDetail(topPerformer.product.remoteProductId)
+        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {

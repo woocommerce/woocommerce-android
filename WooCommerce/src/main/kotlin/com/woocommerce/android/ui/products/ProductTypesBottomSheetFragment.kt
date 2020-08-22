@@ -95,7 +95,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.item as? ProductTypesBottomSheetUiItem)
+                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.data)
                 }
 
                 else -> event.isHandled = false

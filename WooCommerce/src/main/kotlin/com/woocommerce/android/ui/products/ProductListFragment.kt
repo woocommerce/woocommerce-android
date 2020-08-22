@@ -326,7 +326,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreProgress.isVisible = show
     }
 
     private fun showProductList(products: List<Product>) {

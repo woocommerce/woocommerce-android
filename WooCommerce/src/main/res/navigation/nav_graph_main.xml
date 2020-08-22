@@ -8,6 +8,29 @@
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
         tools:layout="@layout/fragment_root" />
+
+    <fragment
+        android:id="@+id/feedbackSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
+        android:label="FeedbackSurveyFragment">
+        <action
+            android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
+            app:destination="@id/feedbackCompletedFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"
+            app:popUpTo="@id/rootFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <action
+        android:id="@+id/action_global_feedbackSurveyFragment"
+        app:destination="@id/feedbackSurveyFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
+    <fragment
+        android:id="@+id/feedbackCompletedFragment"
+        android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
+        android:label="FeedbackCompletedFragment"/>
+
     <fragment
         android:id="@+id/orderDetailFragment"
         android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
