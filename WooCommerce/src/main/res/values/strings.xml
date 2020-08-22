@@ -558,6 +558,7 @@
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
     <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
+    <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
@@ -584,8 +585,9 @@
     <string name="product_purchase_note_caption">An optional note to send the customer after purchase</string>
     <string name="product_menu_order">Menu order</string>
     <string name="product_menu_order_caption">Determines the product\'s positioning in the catalog. The lower the value of the number, the higher the item will be on the product list. You can also use negative numbers.</string>
-    <string name="product_variation_visible">Visible</string>
-    <string name="product_variation_hidden">Hidden</string>
+    <string name="product_variation_enabled">Enabled</string>
+    <string name="product_variation_disabled">Disabled</string>
+    <string name="product_variation_no_price_set">No price set</string>
     <string name="product_categories">Categories</string>
     <string name="product_category_empty">Add category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
@@ -624,6 +626,9 @@
     -->
     <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
     <string name="variation_detail_update_variation_error">Error updating variation</string>
+    <string name="variation_detail_update_product_success">Variation updated</string>
+    <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
+    <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <!--
         Product images
     -->
@@ -669,7 +674,7 @@
     -->
     <string name="settings">Settings</string>
     <string name="privacy_settings">Privacy settings</string>
-    <string name="feature_requests">Feature request</string>
+    <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
@@ -938,6 +943,14 @@
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
     <string name="feedback_request_make_better">Could be better</string>
     <string name="feedback_request_like_it">I like it</string>
+    <string name="feedback_survey_request_title">How can we improve?</string>
+    <string name="web_view_loading_title">Loading</string>
+    <string name="web_view_loading_message">Please wait…</string>
+    <string name="feedback_completed_title">Feedback sent</string>
+    <string name="feedback_completed_title_message">Thank you for sharing your\n thoughts with us</string>
+    <string name="feedback_completed_description">Keep in mind that this is not a support ticket and we won\'t be able to address individual feedback.\n\nNeed some help? %1$s</string>
+    <string name="feedback_completed_contact_us">Contact us here</string>
+    <string name="feedback_completed_back_to_store_button_text">Back to store</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

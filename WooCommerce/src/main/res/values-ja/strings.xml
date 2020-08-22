@@ -310,7 +310,6 @@ Language: ja_JP
     <string name="install">インストール</string>
     <string name="error_disabled_apis">設定を取得できませんでした。一部の API ではこの OAuth のアプリ ID とアカウントの組み合わせを使用できません。</string>
     <string name="settings_hiring">人材募集中です。</string>
-    <string name="feature_requests">機能のリクエスト</string>
     <string name="orderdetail_copy_tracking_number">追跡番号をコピー</string>
     <string name="login_refresh_app_progress">WooCommerce をチェックしています…</string>
     <string name="login_refresh_app">アプリを再読み込み</string>

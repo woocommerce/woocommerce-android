@@ -310,7 +310,6 @@ Language: nl
     <string name="install">Installeren</string>
     <string name="error_disabled_apis">Instellingen ophalen mislukt: Sommige API\'s zijn niet beschikbaar voor deze combinatie van een OAuth app-ID en account.</string>
     <string name="settings_hiring">Wij zijn op zoek naar nieuwe collega\'s!</string>
-    <string name="feature_requests">Functie-aanvraag</string>
     <string name="orderdetail_copy_tracking_number">Volgnummer kopiëren</string>
     <string name="login_refresh_app_progress">Controleert op WooCommerce…</string>
     <string name="login_refresh_app">de app vernieuwen</string>

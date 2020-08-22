@@ -119,21 +119,28 @@
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
         tools:layout="@layout/fragment_product_inventory">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="inventoryData"
+            app:argType="com.woocommerce.android.ui.products.ProductInventoryViewModel$InventoryData" />
+        <argument
+            android:name="sku"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
             app:destination="@id/productShippingClassFragment" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="shippingData"
+            app:argType="com.woocommerce.android.ui.products.ProductShippingViewModel$ShippingData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingClassFragment"
@@ -149,9 +156,11 @@
         android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
         tools:layout="@layout/fragment_product_pricing">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="pricingData"
+            app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
     </fragment>
     <fragment
         android:id="@+id/productImageViewerFragment"
@@ -296,6 +305,15 @@
         <argument
             android:name="variation"
             app:argType="com.woocommerce.android.model.ProductVariation" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
+            app:destination="@id/productPricingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
+            app:destination="@id/productInventoryFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productShippingFragment"
+            app:destination="@id/productShippingFragment" />
     </fragment>
     <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
 </navigation>
