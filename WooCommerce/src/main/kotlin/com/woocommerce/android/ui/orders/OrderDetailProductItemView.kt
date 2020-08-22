@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Order
@@ -35,9 +36,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         productInfo_quantity.text = numberFormatter.format(item.quantity)
 
         // Modify views for expanded or collapsed mode
-        val viewMode = if (expanded) View.VISIBLE else View.GONE
-        productInfo_totalTax.visibility = viewMode
-        productInfo_lblTax.visibility = viewMode
+        productInfo_totalTax.isVisible = expanded
+        productInfo_lblTax.isVisible = expanded
 
         val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
         productInfo_name.maxLines = maxLinesInName

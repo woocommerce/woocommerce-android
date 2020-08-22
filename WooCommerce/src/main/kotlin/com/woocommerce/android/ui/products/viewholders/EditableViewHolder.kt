@@ -18,6 +18,6 @@ class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
             editableView.setOnTextChangedListener { text -> onTextChanged(text.toString()) }
         }
 
-        editableView.show(hint, item.text, item.shouldFocus)
+        editableView.show(hint, item.text, item.shouldFocus, item.isReadOnly)
     }
 }

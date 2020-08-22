@@ -95,7 +95,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    (event.item as? ProductTypesBottomSheetUiItem)?.let {
+                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
                         navigateWithSelectedResult(type = it)
                     }
                 }

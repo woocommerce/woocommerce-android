@@ -5,39 +5,38 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductBackOrders
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductTaxStatus
 
 /**
- * Dialog displays a list of product inventory items such as
+ * Dialog displays a list of product items such as
  * [CoreProductBackOrders], [CoreProductStockStatus], [CoreProductTaxStatus] and
- * allows for selecting a single product inventory item
+ * allows for selecting a single product item
  *
- * This fragment should be instantiated using the [ProductInventorySelectorDialog.newInstance] method.
+ * This fragment should be instantiated using the [ProductItemSelectorDialog.newInstance] method.
  * Calling classes can obtain the results of selection through the [onActivityResult]
- * via [ProductInventorySelectorDialog.getTargetFragment].
+ * via [ProductItemSelectorDialog.getTargetFragment].
  *
- * The [resultCode] passed to this fragment is used to classify the product inventory item i.e.
+ * The [resultCode] passed to this fragment is used to classify the product item i.e.
  * [CoreProductBackOrders], [CoreProductStockStatus] or [CoreProductTaxStatus]
  */
-class ProductInventorySelectorDialog : DialogFragment() {
+class ProductItemSelectorDialog : DialogFragment() {
     companion object {
-        const val TAG: String = "ProductInventorySelectorDialog"
+        const val TAG: String = "ProductItemSelectorDialog"
 
         fun newInstance(
             listener: Fragment,
-            resultCode: Int,
+            requestCode: Int,
             dialogTitle: String,
             listItemMap: Map<String, String>,
             selectedListItem: String?
-        ): ProductInventorySelectorDialog {
-            val fragment = ProductInventorySelectorDialog()
-            fragment.setTargetFragment(listener, RequestCodes.PRODUCT_INVENTORY)
+        ): ProductItemSelectorDialog {
+            val fragment = ProductItemSelectorDialog()
+            fragment.setTargetFragment(listener, requestCode)
             fragment.retainInstance = true
-            fragment.resultCode = resultCode
+            fragment.resultCode = requestCode
             fragment.dialogTitle = dialogTitle
             fragment.listItemMap = listItemMap
             fragment.selectedListItem = selectedListItem
@@ -45,8 +44,8 @@ class ProductInventorySelectorDialog : DialogFragment() {
         }
     }
 
-    interface ProductInventorySelectorDialogListener {
-        fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?)
+    interface ProductItemSelectorDialogListener {
+        fun onProductItemSelected(resultCode: Int, selectedItem: String?)
     }
 
     private var resultCode: Int = -1
@@ -55,26 +54,26 @@ class ProductInventorySelectorDialog : DialogFragment() {
     private var dialogTitle: String? = null
     private var listItemMap: Map<String, String>? = null
 
-    private var listener: ProductInventorySelectorDialogListener? = null
+    private var listener: ProductItemSelectorDialogListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        listener = targetFragment as ProductInventorySelectorDialogListener
+        listener = targetFragment as ProductItemSelectorDialogListener
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val selectedIndex = getCurrentProductInventoryListIndex()
+        val selectedIndex = getCurrentProductItemListIndex()
 
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(dialogTitle)
                 .setSingleChoiceItems(listItemMap?.values?.toTypedArray(), selectedIndex) { dialog, which ->
-                    listener?.onProductInventoryItemSelected(resultCode, listItemMap?.keys?.toTypedArray()?.get(which))
+                    listener?.onProductItemSelected(resultCode, listItemMap?.keys?.toTypedArray()?.get(which))
                     dialog.dismiss()
                 }
         return builder.create()
     }
 
-    private fun getCurrentProductInventoryListIndex(): Int {
+    private fun getCurrentProductItemListIndex(): Int {
         return listItemMap?.values?.indexOfFirst { it == selectedListItem } ?: 0
     }
 

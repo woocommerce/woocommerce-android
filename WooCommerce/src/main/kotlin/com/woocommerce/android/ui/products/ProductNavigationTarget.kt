@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -14,9 +17,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
     data class ViewProductVariations(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductInventory(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductPricing(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductShipping(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductInventory(val inventoryData: InventoryData, val sku: String) : ProductNavigationTarget()
+    data class ViewProductPricing(val pricingData: PricingData) : ProductNavigationTarget()
+    data class ViewProductShipping(val shippingData: ShippingData) : ProductNavigationTarget()
     data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductDescriptionEditor(val description: String, val title: String) : ProductNavigationTarget()
     data class ViewProductPurchaseNoteEditor(

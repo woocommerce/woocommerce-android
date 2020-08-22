@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
@@ -39,15 +40,11 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
     }
 
     private fun loadImage() {
-        showProgress(true)
+        progressBar.isVisible = true
         GlideApp.with(this)
                 .load(navArgs.imageUrl)
                 .listener(this)
                 .into(photoView)
-    }
-
-    private fun showProgress(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     /**
@@ -59,7 +56,7 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
         target: com.bumptech.glide.request.target.Target<Drawable>?,
         isFirstResource: Boolean
     ): Boolean {
-        showProgress(false)
+        progressBar.isVisible = false
         return false
     }
 
@@ -73,7 +70,7 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
         dataSource: DataSource?,
         isFirstResource: Boolean
     ): Boolean {
-        showProgress(false)
+        progressBar.isVisible = false
         return false
     }
 }
