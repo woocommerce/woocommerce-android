@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-04 15:17:05+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="feedback_request_like_it">Saya suka</string>
+    <string name="feedback_request_make_better">Perlu ditingkatkan</string>
+    <string name="feedback_request_title">Suka dengan aplikasi WooCommerce?</string>
+    <string name="variation_detail_update_variation_error">Error saat memperbarui variasi</string>
+    <string name="variation_detail_fetch_variation_error">Error saat mengambil variasi</string>
+    <string name="product_add_tag_error">Terjadi error saat menambahkan tag</string>
+    <string name="product_add_tag_dialog_title">Menambahkan tag</string>
+    <string name="shipping_label_refund_progress_message">Pengembalian dana Anda sedang diproses. Harap tunggu…</string>
+    <string name="shipping_label_refund_success">Pengembalian dana berhasil dikirim.</string>
+    <string name="shipping_label_refund_button">Kembalikan dana label (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Jumlah yang memenuhi syarat pengembalian dana</string>
+    <string name="shipping_label_refund_purchase_date_title">Tanggal pembelian</string>
+    <string name="shipping_label_refund_message">Anda dapat meminta pengembalian dana untuk label pengiriman yang belum digunakan untuk mengirim paket. Pengembalian dana akan diproses paling cepat dalam 14 hari.</string>
+    <string name="orderdetail_shipping_label_request_refund">Minta pengembalian dana</string>
+    <string name="orderdetail_shipping_label_item_menu">Kembalikan dana label pengiriman</string>
     <string name="product_add_category_dialog_message">Harap tunggu…</string>
     <string name="product_add_category_dialog_title">Menambahkan kategori</string>
     <string name="product_category_parent">Kategori induk</string>
@@ -193,7 +208,6 @@ Language: id
     <string name="product_add_image_content_description">Tambahkan gambar</string>
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
-    <string name="product_variation_hidden">Tersembunyi</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
     <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
@@ -238,7 +252,7 @@ Language: id
     <string name="product_list_empty_search">Tidak ada produk yang cocok</string>
     <string name="product_list_empty">Belum ada produk</string>
     <string name="product_stock_count">%s tersedia</string>
-    <string name="product_stock_status_instock_with_variations">Tersedia \u2022 %d varian</string>
+    <string name="product_stock_status_instock_with_variations">Tersedia \u2022 %d variasi</string>
     <string name="product_image_content_description">Gambar produk</string>
     <string name="review_list_item_title">%1$s memberikan ulasan di %2$s</string>
     <string name="wc_unapproved">Tidak disetujui</string>

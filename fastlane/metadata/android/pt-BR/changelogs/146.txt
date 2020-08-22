@@ -1,0 +1,4 @@
+4.8:
+* Seção "Adicionar rastreamento de envio" atualizada para ser exibida somente se o plugin Shipment Tracking estiver disponível.
+* Correção de falha causada ao dar dois cliques em um elemento de navegação, e de uma falha (rara) causada ao tentar ocultar uma visualização não ativa.
+
