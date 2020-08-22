@@ -238,11 +238,7 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-<<<<<<< HEAD
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
-=======
-    override fun showTopEarners(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
->>>>>>> base-feature-branch
         if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
             my_store_top_earners.updateView(topPerformers)

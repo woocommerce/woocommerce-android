@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -30,7 +31,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
-import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
