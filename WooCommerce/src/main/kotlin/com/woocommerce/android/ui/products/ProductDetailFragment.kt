@@ -277,7 +277,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         when (navArgs.isAddProduct) {
             true -> Unit
             else -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
             }
