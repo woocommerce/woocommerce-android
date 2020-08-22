@@ -6,6 +6,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
@@ -173,7 +174,7 @@ class AddOrderTrackingProviderListAdapter(
             itemHolder.rootView.tag = provider
 
             val isChecked = provider.carrierName == selectedCarrierName
-            itemHolder.selectedProviderRadioButton.visibility = if (isChecked) View.VISIBLE else View.GONE
+            itemHolder.selectedProviderRadioButton.isVisible = isChecked
             itemHolder.selectedProviderRadioButton.isChecked = isChecked
 
             itemHolder.rootView.setOnClickListener {

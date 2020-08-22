@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
@@ -48,7 +49,7 @@ class ProductSortingListAdapter(
             selectedOption: ProductSorting
         ) {
             txtSortingName.text = view.context.getString(item.stringResource)
-            txtSortingSelection.visibility = if (item.value == selectedOption) View.VISIBLE else View.GONE
+            txtSortingSelection.isVisible = item.value == selectedOption
             view.setOnClickListener {
                 onItemClicked(item.value)
             }

@@ -70,6 +70,12 @@
     <color name="tagView_text">@color/color_on_primary_high</color>
 
     <!--
+        Warning colors
+    -->
+    <color name="warning_foreground_color">@color/woo_orange_30</color>
+    <color name="warning_background_color">@color/woo_orange_70</color>
+
+    <!--
         Products List
     -->
     <color name="product_stock_fg">@color/color_on_surface_medium</color>
