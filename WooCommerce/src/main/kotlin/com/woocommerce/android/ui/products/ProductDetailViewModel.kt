@@ -11,8 +11,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
@@ -625,50 +623,50 @@ class ProductDetailViewModel @AssistedInject constructor(
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
             val updatedProduct = product.copy(
-                    description = description ?: product.description,
-                    shortDescription = shortDescription ?: product.shortDescription,
-                    name = title ?: product.name,
-                    sku = sku ?: product.sku,
-                    slug = slug ?: product.slug,
-                    manageStock = manageStock ?: product.manageStock,
-                    stockStatus = stockStatus ?: product.stockStatus,
-                    soldIndividually = soldIndividually ?: product.soldIndividually,
-                    backorderStatus = backorderStatus ?: product.backorderStatus,
-                    stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
-                    images = images ?: product.images,
-                    regularPrice = regularPrice ?: product.regularPrice,
-                    salePrice = salePrice ?: product.salePrice,
-                    isOnSale = isOnSale ?: product.isOnSale,
-                    isVirtual = isVirtual ?: product.isVirtual,
-                    taxStatus = taxStatus ?: product.taxStatus,
-                    taxClass = taxClass ?: product.taxClass,
-                    length = length ?: product.length,
-                    width = width ?: product.width,
-                    height = height ?: product.height,
-                    weight = weight ?: product.weight,
-                    shippingClass = shippingClass ?: product.shippingClass,
-                    shippingClassId = shippingClassId ?: product.shippingClassId,
-                    isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
-                    status = productStatus ?: product.status,
-                    catalogVisibility = catalogVisibility ?: product.catalogVisibility,
-                    isFeatured = isFeatured ?: product.isFeatured,
-                    reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
-                    purchaseNote = purchaseNote ?: product.purchaseNote,
-                    externalUrl = externalUrl ?: product.externalUrl,
-                    buttonText = buttonText ?: product.buttonText,
-                    menuOrder = menuOrder ?: product.menuOrder,
-                    categories = categories ?: product.categories,
-                    tags = tags ?: product.tags,
-                    type = type ?: product.type,
-                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
-                    saleEndDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                    } else viewState.storedProduct?.saleEndDateGmt,
-                    saleStartDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                description = description ?: product.description,
+                shortDescription = shortDescription ?: product.shortDescription,
+                name = title ?: product.name,
+                sku = sku ?: product.sku,
+                slug = slug ?: product.slug,
+                manageStock = manageStock ?: product.manageStock,
+                stockStatus = stockStatus ?: product.stockStatus,
+                soldIndividually = soldIndividually ?: product.soldIndividually,
+                backorderStatus = backorderStatus ?: product.backorderStatus,
+                stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
+                images = images ?: product.images,
+                regularPrice = regularPrice ?: product.regularPrice,
+                salePrice = salePrice ?: product.salePrice,
+                isOnSale = isOnSale ?: product.isOnSale,
+                isVirtual = isVirtual ?: product.isVirtual,
+                taxStatus = taxStatus ?: product.taxStatus,
+                taxClass = taxClass ?: product.taxClass,
+                length = length ?: product.length,
+                width = width ?: product.width,
+                height = height ?: product.height,
+                weight = weight ?: product.weight,
+                shippingClass = shippingClass ?: product.shippingClass,
+                shippingClassId = shippingClassId ?: product.shippingClassId,
+                isSaleScheduled = isSaleScheduled ?: product.isSaleScheduled,
+                status = productStatus ?: product.status,
+                catalogVisibility = catalogVisibility ?: product.catalogVisibility,
+                isFeatured = isFeatured ?: product.isFeatured,
+                reviewsAllowed = reviewsAllowed ?: product.reviewsAllowed,
+                purchaseNote = purchaseNote ?: product.purchaseNote,
+                externalUrl = externalUrl ?: product.externalUrl,
+                buttonText = buttonText ?: product.buttonText,
+                menuOrder = menuOrder ?: product.menuOrder,
+                categories = categories ?: product.categories,
+                tags = tags ?: product.tags,
+                type = type ?: product.type,
+                groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                saleEndDateGmt = if (isSaleScheduled == true ||
+                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
+                } else viewState.storedProduct?.saleEndDateGmt,
+                saleStartDateGmt = if (isSaleScheduled == true ||
+                    (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    saleStartDate ?: product.saleStartDateGmt
+                } else viewState.storedProduct?.saleStartDateGmt
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
