@@ -125,8 +125,13 @@ class MyStorePresenter @Inject constructor(
     }
 
     override fun fetchRevenueStats(granularity: StatsGranularity, forced: Boolean) {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
-        dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsAction(statsPayload))
+        coroutineScope.launch {
+            withContext(Dispatchers.Default) {
+                wcLeaderboardsStore.fetchProductLeaderboards(selectedSite.get(), granularity)
+                    .model
+                    ?.let { onWCTopPerformersChanged(it, granularity) }
+            }
+        }
     }
 
     override fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean) {
