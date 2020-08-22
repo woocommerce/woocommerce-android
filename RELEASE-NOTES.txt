@@ -1,5 +1,6 @@
 4.9
 -----
+* Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
  
 4.8
 -----
