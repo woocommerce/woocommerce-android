@@ -310,7 +310,6 @@ Language: de
     <string name="install">Installieren</string>
     <string name="error_disabled_apis">Einstellungen konnten nicht abgerufen werden: Einige APIs sind für diese Kombination aus OAuth-App-ID und Konto nicht verfügbar.</string>
     <string name="settings_hiring">Wir stellen weitere Mitarbeiter ein!</string>
-    <string name="feature_requests">Feature-Request</string>
     <string name="orderdetail_copy_tracking_number">Sendungsverfolgungsnummer kopieren</string>
     <string name="login_refresh_app_progress">WooCommerce wird gesucht …</string>
     <string name="login_refresh_app">App aktualisieren</string>

@@ -310,7 +310,6 @@ Language: it
     <string name="install">Installa</string>
     <string name="error_disabled_apis">Impossibile recuperare le impostazioni: alcune API non sono disponibili per questa combinazione di ID app OAuth + account.</string>
     <string name="settings_hiring">Stiamo assumendo.</string>
-    <string name="feature_requests">Richiesta di funzionalità</string>
     <string name="orderdetail_copy_tracking_number">Copia numero di tracciabilità</string>
     <string name="login_refresh_app_progress">Verifica per WooCommerce…</string>
     <string name="login_refresh_app">aggiorna l\'app</string>

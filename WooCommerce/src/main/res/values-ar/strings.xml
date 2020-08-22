@@ -310,7 +310,6 @@ Language: ar
     <string name="install">تثبيت</string>
     <string name="error_disabled_apis">تعذَّر الوصول إلى الإعدادات: بعض واجهات برمجة التطبيقات غير متاحة لمجموعة الحسابات عند إضافة المعرِّفات على تطبيق OAuth.</string>
     <string name="settings_hiring">إنَّنا نوظِّف!</string>
-    <string name="feature_requests">تمييز الطلب</string>
     <string name="orderdetail_copy_tracking_number">نسخ رقم التعقُّب</string>
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>

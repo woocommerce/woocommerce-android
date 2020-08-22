@@ -310,7 +310,6 @@ Language: pt_BR
     <string name="install">Instalar</string>
     <string name="error_disabled_apis">Não foi possível coletar configurações: algumas APIs estão indisponíveis para essa combinação de conta e ID do OAuth.</string>
     <string name="settings_hiring">Estamos contratando!</string>
-    <string name="feature_requests">Solicitação de funcionalidade</string>
     <string name="orderdetail_copy_tracking_number">Copie o número de rastreamento</string>
     <string name="login_refresh_app_progress">Verificando o WooCommerce…</string>
     <string name="login_refresh_app">atualize o aplicativo</string>

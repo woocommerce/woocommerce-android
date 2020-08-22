@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
 
 sealed class ProductProperty(val type: Type) {
     enum class Type {
@@ -23,14 +24,16 @@ sealed class ProductProperty(val type: Type) {
         PROPERTY_GROUP,
         LINK,
         READ_MORE,
-        SWITCH
+        SWITCH,
+        WARNING
     }
 
     object Divider : ProductProperty(DIVIDER)
 
     data class Property(
         @StringRes val title: Int,
-        val value: String
+        val value: String,
+        val isDividerVisible: Boolean = true
     ) : ProductProperty(PROPERTY) {
         override fun isNotEmpty(): Boolean {
             return this.value.isNotBlank()
@@ -71,6 +74,7 @@ sealed class ProductProperty(val type: Type) {
         @StringRes val hint: Int,
         val text: String = "",
         var shouldFocus: Boolean = false,
+        var isReadOnly: Boolean = false,
         val onTextChanged: ((String) -> Unit)? = null
     ) : ProductProperty(EDITABLE)
 
@@ -85,6 +89,8 @@ sealed class ProductProperty(val type: Type) {
         val properties: Map<String, String>,
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
+        val isDividerVisible: Boolean = true,
+        val isHighlighted: Boolean = false,
         @StringRes val propertyFormat: Int = R.string.product_property_default_formatter,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(PROPERTY_GROUP) {
@@ -99,6 +105,10 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val onStateChanged: ((Boolean) -> Unit)? = null
     ) : ProductProperty(SWITCH)
+
+    data class Warning(
+        val content: String = ""
+    ) : ProductProperty(WARNING)
 
     open fun isNotEmpty(): Boolean {
         return true
