@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
@@ -30,13 +29,13 @@ import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import kotlinx.android.synthetic.main.my_store_stats.*
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.WCTopEarnerModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class MyStoreFragment : TopLevelFragment(),
-        MyStoreContract.View,
-        DashboardStatsListener {
+    MyStoreContract.View,
+    MyStoreStatsListener {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
@@ -137,14 +136,16 @@ class MyStoreFragment : TopLevelFragment(),
 
         my_store_date_bar.initView()
         my_store_stats.initView(
-                activeGranularity,
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            activeGranularity,
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+        )
         my_store_top_earners.initView(
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+        )
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -235,10 +236,10 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
+    override fun showTopEarners(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
-            my_store_top_earners.updateView(topEarnerList)
+            my_store_top_earners.updateView(topPerformers)
         }
     }
 
@@ -334,9 +335,9 @@ class MyStoreFragment : TopLevelFragment(),
         presenter.loadTopEarnerStats(period)
     }
 
-    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+    override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
         removeTabLayoutFromAppBar(tabLayout)
-        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+        (activity as? MainNavigationRouter)?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
