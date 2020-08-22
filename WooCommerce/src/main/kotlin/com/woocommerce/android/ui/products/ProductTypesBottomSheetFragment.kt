@@ -30,8 +30,8 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
 
+    @Inject internal lateinit var navigator: ProductNavigator
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
-
     @Inject lateinit var viewModelFactory: ViewModelFactory
     val viewModel: ProductTypesBottomSheetViewModel by viewModels { viewModelFactory }
 
@@ -95,9 +95,12 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, event.data)
+                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                        navigateWithSelectedResult(type = it)
+                    }
                 }
 
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })

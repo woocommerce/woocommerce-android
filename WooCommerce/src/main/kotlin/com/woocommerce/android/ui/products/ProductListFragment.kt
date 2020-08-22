@@ -42,15 +42,18 @@ import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
-        OnLoadMoreListener,
-        OnQueryTextListener,
-        OnActionExpandListener,
-        NavigationResult {
+    OnLoadMoreListener,
+    OnQueryTextListener,
+    OnActionExpandListener,
+    NavigationResult {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
+
+    // TODO this is to help test the click!
+    var count = 0
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -148,9 +151,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         when (requestCode) {
             RequestCodes.PRODUCT_LIST_FILTERS -> {
                 viewModel.onFiltersChanged(
-                        stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
-                        productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
-                        productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
+                    stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
+                    productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
+                    productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
                 )
             }
         }
@@ -267,8 +270,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                     when {
                         new.isSearchActive == true -> {
                             empty_view.show(
-                                    EmptyViewType.SEARCH_RESULTS,
-                                    searchQueryOrFilter = viewModel.getSearchQuery()
+                                EmptyViewType.SEARCH_RESULTS,
+                                searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
                         new.filterCount?.compareTo(0) == 1 -> empty_view.show(EmptyViewType.FILTER_RESULTS)
@@ -367,12 +370,16 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showAddProductButton(show: Boolean) {
         fun showButton() = run { addProductButton.isVisible = true }
         fun hideButton() = run { addProductButton.isVisible = false }
-        fun showProductAddTypes() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
         when (show) {
             true -> {
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
-                    addProductButton.setOnClickListener { showProductAddTypes() }
+                    addProductButton.setOnClickListener {
+                        when (viewModel.isShowProductTypeBottomSheet()) {
+                            true -> showProductTypesBottomSheet()
+                            else -> showAddProduct()
+                        }
+                    }
                 } else {
                     hideButton()
                 }
@@ -381,10 +388,20 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         }
     }
 
-    override fun onProductClick(remoteProductId: Long) {
+    override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
+
+    private fun showProductDetails(remoteProductId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+    }
+
+    private fun showProductTypesBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
+
+    private fun showAddProduct() {
+        disableSearchListeners()
+        showOptionsMenu(false)
+        (activity as? MainNavigationRouter)?.showAddProduct()
     }
 
     override fun onRequestLoadMore() {
@@ -396,9 +413,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductFilters(
-                viewModel.getFilterByStockStatus(),
-                viewModel.getFilterByProductType(),
-                viewModel.getFilterByProductStatus()
+            viewModel.getFilterByStockStatus(),
+            viewModel.getFilterByProductType(),
+            viewModel.getFilterByProductStatus()
         )
     }
 

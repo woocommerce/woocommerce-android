@@ -787,6 +787,12 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
+    override fun showAddProduct() {
+        showBottomNav()
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS

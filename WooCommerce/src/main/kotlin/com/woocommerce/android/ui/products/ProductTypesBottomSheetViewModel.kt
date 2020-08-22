@@ -8,12 +8,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -39,7 +41,11 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
 
     private fun triggerSelectionHandler(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         when (arguments.isAddProduct) {
-            true -> triggerEvent(Exit)
+            true -> {
+                saveUserSelection(productTypeUiItem.type)
+                triggerEvent(ViewProductAdd)
+                triggerEvent(ExitWithResult(productTypeUiItem = productTypeUiItem))
+            }
             else -> {
                 triggerEvent(ShowDiscardDialog(
                     titleId = R.string.product_type_confirm_dialog_title,
@@ -47,12 +53,16 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                     positiveButtonId = R.string.product_type_confirm_button,
                     negativeButtonId = R.string.cancel,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(ExitWithResult(productTypeUiItem))
+                        triggerEvent(ExitWithResult<ProductTypesBottomSheetUiItem>(productTypeUiItem))
                     }
                 ))
             }
         }
     }
+
+    private fun saveUserSelection(type: ProductType) = AppPrefs.setSelectedProductType(type)
+
+    data class ExitWithResult(val productTypeUiItem: ProductTypesBottomSheetUiItem) : Event()
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(

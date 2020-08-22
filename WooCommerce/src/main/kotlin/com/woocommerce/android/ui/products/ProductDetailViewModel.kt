@@ -160,7 +160,16 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        loadProduct(navArgs.remoteProductId)
+        when (navArgs.isAddProduct) {
+            true -> startAddNewProduct()
+            else -> loadProduct(navArgs.remoteProductId)
+        }
+    }
+
+    private fun startAddNewProduct() {
+        viewState = viewState.copy(
+            isAddNewProduct = true
+        )
     }
 
     fun getProduct() = viewState
@@ -357,7 +366,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
         } ?: false
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
@@ -369,33 +378,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges(event)
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    // discard changes made to the current screen
+                    discardEditChanges(event)
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else {
@@ -633,12 +642,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = if (viewState.draftPassword == null) {
             viewState.copy(
-                    storedPassword = password,
-                    draftPassword = password
+                storedPassword = password,
+                draftPassword = password
             )
         } else {
             viewState.copy(
-                    storedPassword = password
+                storedPassword = password
             )
         }
     }
@@ -668,7 +677,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
@@ -738,8 +747,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-                    ?: viewState.productDraft?.shippingClass ?: ""
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
@@ -946,7 +955,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1141,7 +1151,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true)
+                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1203,7 +1214,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null
+        val showBottomSheetButton: Boolean? = null,
+        val isAddNewProduct: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
