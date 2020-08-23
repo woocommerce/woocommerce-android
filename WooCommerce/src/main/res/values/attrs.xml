@@ -157,4 +157,8 @@
     <declare-styleable name="AddProductElementView">
         <attr name="buttonText" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="FilePickerChooserView">
+        <attr name="title" format="string" />
+    </declare-styleable>
 </resources>

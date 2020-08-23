@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.widgets.FilePickerChooserView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
@@ -131,34 +132,35 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showImageSourceDialog() {
-        val inflater = requireActivity().layoutInflater
-        val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
-                .also {
-                    it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                        )
-                        chooseProductImage()
-                    }
-                    it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                        )
-                        captureProductImage()
-                    }
-                    it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
-                        )
-                        showWPMediaPicker()
-                    }
-                }
+        val view = FilePickerChooserView(requireContext()).apply {
+            title = getString(R.string.image_source_title)
+            setOnDeviceClickListener {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                )
+                chooseProductImage()
+            }
+
+            setOnCameraClickListener {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                )
+                captureProductImage()
+            }
+
+            setOnWPMediaLibraryClickListener {
+                AnalyticsTracker.track(
+                    Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+                )
+                showWPMediaPicker()
+            }
+        }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
-                .setView(contentView)
+                .setView(view)
                 .show()
     }
 
