@@ -125,7 +125,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getDownloadableFiles(): ProductDetailBottomSheetUiItem? {
-        if (isDownloadable && downloads.isNotEmpty()) return null
+        if (!FeatureFlag.PRODUCT_RELEASE_M4.isEnabled() || (isDownloadable && downloads.isNotEmpty())) return null
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_DOWNLOADS,
             AddProductDownloadableFile
