@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
@@ -78,7 +78,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_DONE_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }
@@ -136,7 +136,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
                 )
                 is ExitWithResult<*> -> {
                     val bundle = Bundle()
-                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.item as? ProductCategory)
+                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.data as Parcelable)
                     requireActivity().navigateBackWithResult(
                         RequestCodes.PRODUCT_ADD_CATEGORY,
                         bundle,

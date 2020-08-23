@@ -113,17 +113,16 @@
         android:id="@+id/option_beta_features"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:optionTitle="@string/beta_features"/>
 
     <!--
-        Feature Requests
+        Send Feedback
     -->
     <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_feature_request"
+        android:id="@+id/option_send_feedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:optionTitle="@string/feature_requests"/>
+        app:optionTitle="@string/send_feedback"/>
 
     <View style="@style/Woo.Divider"/>
 

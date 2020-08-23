@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-10 09:54:04+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="feedback_request_like_it">Мне нравится</string>
+    <string name="feedback_request_make_better">Есть над чем работать</string>
+    <string name="feedback_request_title">Нравится приложение WooCommerce?</string>
+    <string name="variation_detail_update_variation_error">Ошибка при обновлении варианта</string>
+    <string name="variation_detail_fetch_variation_error">Ошибка при получении варианта</string>
+    <string name="product_add_tag_error">При добавлении метки произошла ошибка</string>
+    <string name="product_add_tag_dialog_title">Добавление метки</string>
+    <string name="shipping_label_refund_progress_message">Запрос на возврат средств обрабатывается. Пожалуйста, подождите…</string>
+    <string name="shipping_label_refund_success">Средства возвращены заказчику</string>
+    <string name="shipping_label_refund_button">Вернуть оплату почтового бланка (-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">Сумма, доступная для возврата</string>
+    <string name="shipping_label_refund_purchase_date_title">Дата покупки</string>
+    <string name="shipping_label_refund_message">Вы можете запросить возврат средств за неиспользованный почтовый бланк Обработка займет не менее 14 дней.</string>
+    <string name="orderdetail_shipping_label_request_refund">Запросить возврат средств</string>
+    <string name="orderdetail_shipping_label_item_menu">Вернуть средства за почтовый бланк</string>
     <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_add_category_dialog_title">Добавление категории</string>
     <string name="product_category_parent">Родительская рубрика</string>
@@ -94,6 +109,7 @@ Language: ru
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
     <string name="my_store_stats_availability_message">Мы улучшили статистику для магазинов с WooCommerce 4.0 или расширением WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">Мы подготовили обновление для нашей системы аналитики. Для просмотра статистики с 1 сентября 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
     <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
@@ -193,7 +209,6 @@ Language: ru
     <string name="product_add_image_content_description">Добавить изображение</string>
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
-    <string name="product_variation_hidden">Скрыто</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
     <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
@@ -238,7 +253,7 @@ Language: ru
     <string name="product_list_empty_search">Нет соответствующих товаров</string>
     <string name="product_list_empty">В этом списке пока нет товаров</string>
     <string name="product_stock_count">%s в наличии</string>
-    <string name="product_stock_status_instock_with_variations">Количество вариантов в наличии: \u2022 %d</string>
+    <string name="product_stock_status_instock_with_variations">В наличии \u2022 %d вар.</string>
     <string name="product_image_content_description">Изображение продукта</string>
     <string name="review_list_item_title">Пользователь %1$s оставил отзыв на %2$s</string>
     <string name="wc_unapproved">Не одобрен</string>
@@ -296,7 +311,6 @@ Language: ru
     <string name="install">Установить</string>
     <string name="error_disabled_apis">Не удалось получить параметры: некоторые API недоступны для этой пары идентификатора приложения OAuth и учетной записи.</string>
     <string name="settings_hiring">Есть вакансии!</string>
-    <string name="feature_requests">Запрос на добавление функции</string>
     <string name="orderdetail_copy_tracking_number">Копировать номер отслеживания</string>
     <string name="login_refresh_app_progress">Поиск WooCommerce…</string>
     <string name="login_refresh_app">обновите приложение</string>
@@ -892,6 +906,7 @@ Language: ru
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
     <string name="orderdetail_product_lineitem_sku">АРТИКУЛ:</string>
     <string name="orderdetail_product_lineitem_tax">Налог:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">отправить клиенту эл. письмо</string>
     <string name="orderdetail_billing_details">Платёжные сведения</string>
     <string name="orderdetail_shipping_details">Сведения о доставке</string>

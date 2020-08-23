@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
+import com.woocommerce.android.ui.products.models.ProductProperty.Warning
 import com.woocommerce.android.ui.products.viewholders.ComplexPropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.DividerViewHolder
 import com.woocommerce.android.ui.products.viewholders.EditableViewHolder
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.products.viewholders.PropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.RatingBarViewHolder
 import com.woocommerce.android.ui.products.viewholders.ReadMoreViewHolder
 import com.woocommerce.android.ui.products.viewholders.SwitchViewHolder
+import com.woocommerce.android.ui.products.viewholders.WarningViewHolder
 
 class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
     private var items = listOf<ProductProperty>()
@@ -57,6 +60,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             LINK -> LinkViewHolder(parent)
             READ_MORE -> ReadMoreViewHolder(parent)
             SWITCH -> SwitchViewHolder(parent)
+            WARNING -> WarningViewHolder(parent)
         }
     }
 
@@ -77,6 +81,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             is LinkViewHolder -> holder.bind(item as Link)
             is ReadMoreViewHolder -> holder.bind(item as ReadMore)
             is SwitchViewHolder -> holder.bind(item as Switch)
+            is WarningViewHolder -> holder.bind(item as Warning)
         }
     }
 }
