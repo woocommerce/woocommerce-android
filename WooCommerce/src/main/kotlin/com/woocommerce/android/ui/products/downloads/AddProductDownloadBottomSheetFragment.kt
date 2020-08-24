@@ -117,7 +117,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     private fun chooseFile() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).also {
             it.type = "image/*"
-            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
         }
         val chooser = Intent.createChooser(intent, null)
         startActivityForResult(chooser, CHOOSE_FILE_REQUEST_CODE)
