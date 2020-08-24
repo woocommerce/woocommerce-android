@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:parentTag="LinearLayout">
+    android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/chooser_title"
-        style="@style/Woo.Card.Header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/color_on_surface_medium"
-        tools:text="Pick file" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/chooser_device"
+        android:id="@+id/textChooser"
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
@@ -29,7 +19,7 @@
         android:text="@string/image_source_device_chooser" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/chooser_camera"
+        android:id="@+id/textCamera"
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
@@ -42,7 +32,7 @@
         android:text="@string/image_source_device_camera" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/chooser_media_library"
+        android:id="@+id/textWPMediaLibrary"
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
@@ -54,4 +44,4 @@
         android:paddingStart="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
         android:text="@string/image_source_wp_media_library" />
-</merge>
+</LinearLayout>

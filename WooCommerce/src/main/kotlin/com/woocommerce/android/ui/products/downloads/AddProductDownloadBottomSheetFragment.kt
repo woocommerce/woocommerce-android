@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -34,6 +35,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_product_add_downloadable_file.*
+import kotlinx.android.synthetic.main.layout_file_picker_sources.*
 import javax.inject.Inject
 
 private const val CHOOSE_FILE_REQUEST_CODE = 1
@@ -66,9 +68,9 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        product_downloadable_files_chooser.setOnWPMediaLibraryClickListener { viewModel.onMediaGalleryClicked() }
-        product_downloadable_files_chooser.setOnDeviceClickListener { viewModel.onDeviceClicked() }
-        product_downloadable_files_chooser.setOnCameraClickListener { viewModel.onCameraClicked() }
+        textWPMediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
+        textChooser.setOnClickListener { viewModel.onDeviceClicked() }
+        textCamera.setOnClickListener { viewModel.onCameraClicked() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -95,6 +97,10 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
 
     private fun setupObservers(viewModel: AddProductDownloadViewModel) {
+        viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
+            product_add_downloadable_sources.isVisible = !new.isUploading
+        })
+
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is PickFileFromMedialLibrary -> showWPMediaPicker()
