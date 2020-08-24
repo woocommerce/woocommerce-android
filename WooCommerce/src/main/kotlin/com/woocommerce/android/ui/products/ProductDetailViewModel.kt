@@ -807,15 +807,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        var productId = event.remoteProductId
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
             when (navArgs.isAddProduct) {
-                true -> checkImageUploads(DEFAULT_ADD_NEW_MEDIA_ID)
+                true -> productId = DEFAULT_ADD_NEW_MEDIA_ID
                 else -> loadRemoteProduct(event.remoteProductId)
             }
         }
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(productId)
     }
 
     /**
