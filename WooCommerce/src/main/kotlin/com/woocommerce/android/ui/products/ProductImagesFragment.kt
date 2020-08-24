@@ -34,7 +34,6 @@ import kotlinx.android.synthetic.main.fragment_product_images.*
 class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
-        const val DEFAULT_TEMP_ADD_PRODUCT_IMAGE = "temp-add-product-image"
     }
 
     private var imageSourceDialog: AlertDialog? = null
@@ -107,13 +106,13 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         viewModel.productImagesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isUploadingImages.takeIfNotEqualTo(old?.isUploadingImages) {
-                reloadImageGalleryForEditProduct()
+                reloadImageGallery()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
         }
     }
 
-    private fun reloadImageGalleryForEditProduct() {
+    private fun reloadImageGallery() {
         viewModel.getProduct().productDraft?.let {
             imageGallery.showProductImages(it.images, this)
         }
