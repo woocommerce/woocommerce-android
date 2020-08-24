@@ -55,6 +55,15 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         loadProducts(loadMore = true)
     }
 
+    fun onRefreshRequested() {
+        productSelectionListViewState = productSelectionListViewState.copy(isRefreshing = true)
+        loadProducts()
+    }
+
+    fun onDoneButtonClicked(selectedProductIds: List<Long>? = emptyList()) {
+        // TODO:
+    }
+
     private final fun loadProducts(loadMore: Boolean = false) {
         if (isLoading) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")

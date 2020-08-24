@@ -2,7 +2,11 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ActionMode
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -18,6 +22,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -26,7 +31,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
-class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener {
+class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActionModeEventListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -38,6 +43,11 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener {
     }
 
     private val skeletonView = SkeletonView()
+
+    private var actionMode: ActionMode? = null
+    private val actionModeCallback: ProductSelectionActionModeCallback by lazy {
+        ProductSelectionActionModeCallback(this)
+    }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -95,6 +105,54 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener {
         }
 
         productSelectionListAdapter.tracker = tracker
+
+        productsRefreshLayout?.apply {
+            scrollUpChild = productsRecycler
+            setOnRefreshListener {
+                viewModel.onRefreshRequested()
+            }
+        }
+
+        tracker?.addObserver(
+            object : SelectionTracker.SelectionObserver<Long>() {
+                override fun onSelectionChanged() {
+                    super.onSelectionChanged()
+                    val selectionCount = tracker?.selection?.size() ?: 0
+                    if (selectionCount > 0 && actionMode == null) {
+                        actionMode = requireActivity().startActionMode(actionModeCallback)
+                    }
+
+                    when (selectionCount) {
+                        0 -> {
+                            actionMode?.finish()
+                            activity.title = getString(R.string.grouped_product_add)
+                        }
+                        else -> {
+                            actionMode?.title = StringUtils.getQuantityString(
+                                context = requireContext(),
+                                quantity = selectionCount,
+                                default = R.string.product_selection_count,
+                                one = R.string.product_selection_count_single
+                            )
+                        }
+                    }
+                }
+            })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_product_list_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_search -> {
+                // TODO: enable search
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -140,7 +198,55 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener {
         productSelectionListAdapter.setProductList(productSelectionList)
     }
 
+    private fun enableProductsRefresh(enable: Boolean) {
+        productsRefreshLayout?.isEnabled = enable
+    }
+
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
+    }
+
+    override fun onActionModeCreated() {
+        enableProductsRefresh(false)
+    }
+
+    override fun onActionModeClicked() {
+        viewModel.onDoneButtonClicked(tracker?.selection?.toList())
+        actionMode?.finish()
+    }
+
+    override fun onActionModeDestroyed() {
+        enableProductsRefresh(true)
+        tracker?.clearSelection()
+        actionMode = null
+    }
+
+    class ProductSelectionActionModeCallback(
+        private val onActionModeEventListener: OnActionModeEventListener
+    ) : ActionMode.Callback {
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.menu_done -> {
+                    onActionModeEventListener.onActionModeClicked()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            // display done menu button & disable PTR action
+            mode.menuInflater.inflate(R.menu.menu_done, menu)
+            onActionModeEventListener.onActionModeCreated()
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            // The long press selection is cancelled
+            // clear selection & enable PTR action again
+            onActionModeEventListener.onActionModeDestroyed()
+        }
     }
 }
