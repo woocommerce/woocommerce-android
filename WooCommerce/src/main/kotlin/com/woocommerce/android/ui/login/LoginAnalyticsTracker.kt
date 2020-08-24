@@ -220,7 +220,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackLoginMagicLinkOpenEmailClientViewed() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSocialButtonStart() {
@@ -244,11 +244,11 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackRequestMagicLinkClick() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackLoginWithPasswordClick() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackShowHelpClick() {
