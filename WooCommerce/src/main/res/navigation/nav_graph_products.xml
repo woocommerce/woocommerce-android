@@ -30,10 +30,6 @@
                 android:name="remoteProductId"
                 android:defaultValue="0L"
                 app:argType="long" />
-            <argument
-                android:name="isAddProduct"
-                android:defaultValue="false"
-                app:argType="boolean" />
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"

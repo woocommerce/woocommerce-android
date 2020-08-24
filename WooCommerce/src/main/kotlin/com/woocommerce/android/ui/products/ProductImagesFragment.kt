@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -37,8 +36,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
         const val DEFAULT_TEMP_ADD_PRODUCT_IMAGE = "temp-add-product-image"
     }
-
-    private val navArgs: ProductImagesFragmentArgs by navArgs()
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
@@ -113,11 +110,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
                 reloadImageGalleryForEditProduct()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
             }
-            new.localSelectedUriImages.takeIfNotEqualTo(old?.localSelectedUriImages) {
-                val productAddImage =
-                    viewModel.transformToProductImages(new.localSelectedUriImages)
-                reloadImageGalleryForAddProduct(images = productAddImage)
-            }
         }
     }
 
@@ -126,9 +118,6 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             imageGallery.showProductImages(it.images, this)
         }
     }
-
-    private fun reloadImageGalleryForAddProduct(images: List<Product.Image>) =
-        imageGallery.showProductImages(images, this)
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -97,7 +98,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
+        private const val DEFAULT_ADD_NEW_MEDIA_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -109,19 +110,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val parameters: SiteParameters by lazy {
         parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
-
-    /**
-     * Holds the latest list of product images for the product add flow.
-     *
-     * Is updated from the ProductImagesFragment
-     * */
-    var productAddImages: List<Product.Image> = mutableListOf()
-
-    /**
-     * Holds the latest uploaded images remote url for publish
-     *
-     * */
-    var productAddImagesRemoteUrl: ArrayList<String> = arrayListOf()
 
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
@@ -181,9 +169,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun startAddNewProduct() {
-        viewState = viewState.copy(
-            isAddNewProduct = true
-        )
+        val preferredSavedType = AppPrefs.getSelectedProductType()
+        val defaultProductType = ProductType.fromString(preferredSavedType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
     }
 
     fun getProduct() = viewState
@@ -205,13 +193,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-        when (navArgs.isAddProduct) {
-            true -> triggerEvent(ViewProductImages(DEFAULT_ADD_NEW_PRODUCT_ID, image, true))
-            else -> {
-                viewState.productDraft?.let {
-                    triggerEvent(ViewProductImages(it.remoteId, image))
-                }
-            }
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductImages(it.remoteId, image))
         }
     }
 
@@ -219,14 +202,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageClicked() {
-        when (navArgs.isAddProduct) {
-            true -> triggerEvent(ViewProductImageChooser(DEFAULT_ADD_NEW_PRODUCT_ID, isAddProduct = true))
-            else -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
-                viewState.productDraft?.let {
-                    triggerEvent(ViewProductImageChooser(it.remoteId))
-                }
-            }
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        viewState.productDraft?.let {
+            triggerEvent(ViewProductImageChooser(it.remoteId))
         }
     }
 
@@ -616,16 +594,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadLocalProduct(localUriList: List<Uri>) {
-        val originalList = productImagesViewState.localSelectedUriImages?.toMutableList() ?: mutableListOf()
-        originalList.apply {
-            addAll(localUriList)
-            viewState = viewState.copy(addProductLocalUris = this)
-            productImagesViewState = productImagesViewState.copy(localSelectedUriImages = this)
-        }
-        checkImageUploads(DEFAULT_ADD_NEW_PRODUCT_ID)
-    }
-
     /**
      * Called from the product visibility settings fragment when the user updates
      * the product's visibility and/or password
@@ -843,7 +811,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
             when (navArgs.isAddProduct) {
-                true -> loadLocalProduct(event.localUriList)
+                true -> checkImageUploads(DEFAULT_ADD_NEW_MEDIA_ID)
                 else -> loadRemoteProduct(event.remoteProductId)
             }
         }
@@ -860,20 +828,17 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                when (navArgs.isAddProduct) {
-                    true -> saveLocalProductUploadedUrl(url = media.guid)
-                    else -> addProductImageToDraft(media.toAppModel())
-                }
+                addProductImageToDraft(media.toAppModel())
             }
         }
         checkImageUploads(getRemoteProductId())
     }
 
     fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
-        productAddImages = uploadingImageUris?.let { list ->
+        val productAddImages = uploadingImageUris?.let { list ->
             list.map { uri ->
                 return@map Product.Image(
-                    id = DEFAULT_ADD_NEW_PRODUCT_ID,
+                    id = DEFAULT_ADD_NEW_MEDIA_ID,
                     name = ProductImagesFragment.DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
                     source = uri.toString(),
                     dateCreated = Date()
@@ -882,6 +847,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } ?: run {
             listOf<Product.Image>()
         }
+        updateProductDraft(images = productAddImages)
         return productAddImages
     }
 
@@ -918,11 +884,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(images = imageList)
         }
     }
-
-    /**
-     * Adds the latest uploaded image URL into a local list for the publish step
-     */
-    private fun saveLocalProductUploadedUrl(url: String) = productAddImagesRemoteUrl.add(url)
 
     fun fetchProductCategories() {
         if (_productCategories.value == null) {
@@ -1274,9 +1235,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null,
-        val isAddNewProduct: Boolean? = null,
-        val addProductLocalUris: List<Uri>? = null
+        val showBottomSheetButton: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
@@ -1284,8 +1243,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false,
-        val localSelectedUriImages: List<Uri>? = null
+        val isUploadingImages: Boolean = false
     ) : Parcelable
 
     @Parcelize
