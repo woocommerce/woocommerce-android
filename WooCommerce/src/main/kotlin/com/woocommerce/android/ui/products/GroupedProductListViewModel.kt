@@ -59,8 +59,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onGroupedProductsAdded(selectedProductIds: List<Long>) {
+        // ignore already added products
+        val uniqueSelectedProductIds = selectedProductIds.minus(selectedGroupedProductIds)
         productListViewState = productListViewState.copy(
-            selectedGroupedProductIds = selectedGroupedProductIds + selectedProductIds
+            selectedGroupedProductIds = selectedGroupedProductIds + uniqueSelectedProductIds
         )
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED)
         updateGroupedProductList()
