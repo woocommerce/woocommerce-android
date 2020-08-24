@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_PRODUCT_TAPPED
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.isSameList
 
 class ProductListAdapter(
     private val clickListener: OnProductClickListener? = null,
