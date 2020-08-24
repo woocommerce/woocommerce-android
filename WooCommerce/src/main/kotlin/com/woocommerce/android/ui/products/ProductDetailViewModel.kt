@@ -621,11 +621,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
+        // reset the error message when the user starts typing again
+        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
+
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
-            // reset the error message when the user starts typing again
-            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
-
             // cancel any existing verification search, then start a new one after a brief delay
             // so we don't actually perform the fetch until the user stops typing
             skuVerificationJob?.cancel()
