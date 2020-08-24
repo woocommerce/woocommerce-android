@@ -524,7 +524,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(siteAddress)
+        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(siteAddress, true)
         slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
     }
 
