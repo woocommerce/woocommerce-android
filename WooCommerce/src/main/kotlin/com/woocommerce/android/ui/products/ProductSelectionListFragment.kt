@@ -18,11 +18,13 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -32,6 +34,10 @@ import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
 class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActionModeEventListener {
+    companion object {
+        const val KEY_SELECTED_PRODUCT_IDS_RESULT = "key_selected_product_ids_result"
+    }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -181,6 +187,9 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_SELECTED_PRODUCT_IDS_RESULT, event.data as? List<*>)
+                }
                 else -> event.isHandled = false
             }
         })

@@ -19,6 +19,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import com.woocommerce.android.R.string
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.launch
 
 @OpenClassOnDebug
@@ -61,7 +62,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked(selectedProductIds: List<Long>? = emptyList()) {
-        // TODO:
+        triggerEvent(ExitWithResult(selectedProductIds))
     }
 
     private final fun loadProducts(loadMore: Boolean = false) {
