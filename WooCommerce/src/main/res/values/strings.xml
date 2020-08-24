@@ -1268,4 +1268,7 @@
     <string name="product_downloadable_files_upload_dialog_title">Loading</string>
     <string name="product_downloadable_files_upload_dialog_message">Please wait...</string>
     <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
+    <string name="product_downloadable_files_add_from_device">From device</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">From WordPress Media Library</string>
+    <string name="product_downloadable_files_add_manually">Enter file URL</string>
 </resources>

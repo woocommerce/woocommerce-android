@@ -13,5 +13,44 @@
         android:layout_marginEnd="@dimen/major_150"
         android:text="@string/image_source_title" />
 
-    <include layout="@layout/layout_file_picker_sources" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textChooser"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginTop="@dimen/major_75"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_image"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/image_source_device_chooser" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textCamera"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_camera"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/image_source_device_camera" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textWPMediaLibrary"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginBottom="@dimen/major_75"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_wordpress"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/image_source_wp_media_library" />
 </LinearLayout>

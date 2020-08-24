@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -21,7 +20,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromCamera
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
+import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
@@ -35,7 +35,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_product_add_downloadable_file.*
-import kotlinx.android.synthetic.main.layout_file_picker_sources.*
 import javax.inject.Inject
 
 private const val CHOOSE_FILE_REQUEST_CODE = 1
@@ -44,6 +43,7 @@ private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
 
 class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     @Inject internal lateinit var childInjector: DispatchingAndroidInjector<Any>
+    @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
@@ -68,9 +68,9 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        textWPMediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
-        textChooser.setOnClickListener { viewModel.onDeviceClicked() }
-        textCamera.setOnClickListener { viewModel.onCameraClicked() }
+        add_downloadable_from_wpmedia_library.setOnClickListener { viewModel.onMediaGalleryClicked() }
+        add_downloadable_from_device.setOnClickListener { viewModel.onDeviceClicked() }
+        add_downloadable_manually.setOnClickListener { viewModel.onEnterURLClicked() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -97,19 +97,16 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
 
     private fun setupObservers(viewModel: AddProductDownloadViewModel) {
-        viewModel.viewStateData.observe(viewLifecycleOwner, { old, new ->
-            product_add_downloadable_sources.isVisible = !new.isUploading
-        })
-
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is PickFileFromMedialLibrary -> showWPMediaPicker()
                 is PickFileFromDevice -> chooseFile()
-                is PickFileFromCamera -> captureProductImage()
                 is UploadFile -> {
                     parentViewModel.uploadDownloadableFile(event.uri)
                     findNavController().navigateUp()
                 }
+                is ViewProductDownloadDetails -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
         })
     }
