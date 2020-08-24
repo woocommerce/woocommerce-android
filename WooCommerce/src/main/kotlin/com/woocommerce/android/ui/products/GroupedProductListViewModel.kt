@@ -85,7 +85,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED, mapOf(
             AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges
         ))
-        triggerEvent(ExitWithResult(_productList.value?.map { it.remoteId }))
+        triggerEvent(ExitWithResult(selectedGroupedProductIds))
     }
 
     fun onBackButtonClicked(): Boolean {
