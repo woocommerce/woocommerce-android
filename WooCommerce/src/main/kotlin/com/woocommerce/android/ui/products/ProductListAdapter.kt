@@ -48,7 +48,10 @@ class ProductListAdapter(
     }
 
     fun setProductList(products: List<Product>) {
-        if (!productList.isSameList(products)) {
+        if (productList.isEmpty()) {
+            productList.addAll(products)
+            notifyDataSetChanged()
+        } else {
             val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
             productList.clear()
             productList.addAll(products)
