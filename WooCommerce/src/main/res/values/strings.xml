@@ -613,6 +613,7 @@
     <string name="grouped_products_single">%d product</string>
     <string name="grouped_product_btn_delete">Delete the grouped product</string>
     <string name="grouped_product_add">Add product</string>
+    <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
     <!--
