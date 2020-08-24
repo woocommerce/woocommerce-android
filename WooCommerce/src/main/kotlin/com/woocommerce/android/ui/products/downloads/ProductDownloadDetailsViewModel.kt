@@ -105,8 +105,8 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         if (url.isEmpty() || !PatternsCompat.WEB_URL.matcher(url).matches()) return false
         try {
             val uri = URI(url)
-            if (uri.path?.length ?: 0 > 1) return true
-            return name.isNotBlank()
+            if (uri.scheme == null) return false
+            return uri.path?.length ?: 0 > 1 || name.isNotBlank()
         } catch (e: URISyntaxException) {
             return false
         }
