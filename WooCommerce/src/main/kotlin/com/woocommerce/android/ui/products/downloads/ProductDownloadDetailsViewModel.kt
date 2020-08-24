@@ -34,13 +34,13 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         savedState,
         ProductDownloadDetailsViewState(
             fileDraft = navArgs.productFile,
-            hasChanges = !navArgs.isEditing
+            showDoneButton = (!navArgs.isEditing && navArgs.productFile.url.isNotEmpty())
         )
     )
     private var productDownloadDetailsViewState by productDownloadDetailsViewStateData
 
     val showDoneButton
-        get() = productDownloadDetailsViewState.hasChanges
+        get() = productDownloadDetailsViewState.showDoneButton
 
     val screenTitle
         get() = if (navArgs.isEditing) {
@@ -94,7 +94,7 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         val hasChanges = !navArgs.isEditing || updatedState.fileDraft != navArgs.productFile
         val isInputValid = validateInput(updatedState)
         productDownloadDetailsViewState = updatedState.copy(
-            hasChanges = hasChanges,
+            showDoneButton = hasChanges,
             urlErrorMessage = if (isInputValid) null else R.string.product_downloadable_files_url_invalid
         )
     }
@@ -131,7 +131,7 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
-        val hasChanges: Boolean,
+        val showDoneButton: Boolean,
         val urlErrorMessage: Int? = null
     ) : Parcelable
 

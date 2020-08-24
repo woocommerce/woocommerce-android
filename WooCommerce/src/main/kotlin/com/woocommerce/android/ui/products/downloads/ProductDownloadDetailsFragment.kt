@@ -82,7 +82,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             new.fileDraft.name.takeIfNotEqualTo(product_download_name.getText()) {
                 product_download_name.setText(it)
             }
-            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
+            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
                 showDoneMenuItem(it)
             }
             new.urlErrorMessage.takeIfNotEqualTo(old?.urlErrorMessage) { errorRes ->

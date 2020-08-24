@@ -55,7 +55,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft).isEqualTo(file)
-        assertThat(state!!.hasChanges).isEqualTo(false)
+        assertThat(state!!.showDoneButton).isEqualTo(false)
     }
 
     @Test
@@ -92,7 +92,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.name).isEqualTo(newName)
-        assertThat(state!!.hasChanges).isEqualTo(true)
+        assertThat(state!!.showDoneButton).isEqualTo(true)
     }
 
     @Test
@@ -110,7 +110,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.url).isEqualTo(newUrl)
-        assertThat(state!!.hasChanges).isEqualTo(true)
+        assertThat(state!!.showDoneButton).isEqualTo(true)
     }
 
     @Test
