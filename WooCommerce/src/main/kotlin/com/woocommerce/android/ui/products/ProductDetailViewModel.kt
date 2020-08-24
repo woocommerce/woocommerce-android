@@ -834,23 +834,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         checkImageUploads(getRemoteProductId())
     }
 
-    fun transformToProductImages(uploadingImageUris: List<Uri>?): List<Product.Image> {
-        val productAddImages = uploadingImageUris?.let { list ->
-            list.map { uri ->
-                return@map Product.Image(
-                    id = DEFAULT_ADD_NEW_MEDIA_ID,
-                    name = ProductImagesFragment.DEFAULT_TEMP_ADD_PRODUCT_IMAGE,
-                    source = uri.toString(),
-                    dateCreated = Date()
-                )
-            }
-        } ?: run {
-            listOf<Product.Image>()
-        }
-        updateProductDraft(images = productAddImages)
-        return productAddImages
-    }
-
     /**
      * Adds a single image to the list of product draft's images
      */
