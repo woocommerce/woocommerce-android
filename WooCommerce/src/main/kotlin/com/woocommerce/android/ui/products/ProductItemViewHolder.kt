@@ -61,7 +61,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         val size: Int
         when {
             itemView.isActivated -> {
-                size = imageSize
+                size = imageSize / 2
                 itemView.productImage.setImageResource(R.drawable.ic_menu_check)
                 itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
             }
