@@ -51,6 +51,10 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         }
     }
 
+    fun onLoadMoreRequested() {
+        loadProducts(loadMore = true)
+    }
+
     private final fun loadProducts(loadMore: Boolean = false) {
         if (isLoading) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")

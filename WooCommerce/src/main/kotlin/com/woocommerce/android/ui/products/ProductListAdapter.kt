@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.view.ViewGroup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -9,10 +10,13 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.isSameList
 
 class ProductListAdapter(
-    private val clickListener: OnProductClickListener,
+    private val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener
 ) : RecyclerView.Adapter<ProductItemViewHolder>() {
     private val productList = ArrayList<Product>()
+
+    // allow the selection library to track the selections of the user
+    var tracker: SelectionTracker<Long>? = null
 
     interface OnProductClickListener {
         fun onProductClick(remoteProductId: Long)
@@ -31,11 +35,11 @@ class ProductListAdapter(
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = productList[position]
 
-        holder.bind(product)
+        holder.bind(product, tracker?.isSelected(product.remoteId) ?: false)
 
         holder.itemView.setOnClickListener {
             AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
-            clickListener.onProductClick(product.remoteId)
+            clickListener?.onProductClick(product.remoteId)
         }
 
         if (position == itemCount - 1) {
