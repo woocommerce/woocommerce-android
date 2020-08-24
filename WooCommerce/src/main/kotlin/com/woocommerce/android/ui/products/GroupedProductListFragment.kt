@@ -34,6 +34,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         const val KEY_GROUPED_PRODUCT_IDS_RESULT = "key_grouped_product_ids_result"
     }
 
+    @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -108,6 +109,9 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
             new.hasChanges?.takeIfNotEqualTo(old?.hasChanges) {
                 doneMenuItem?.isVisible = it
             }
+            new.isAddProductButtonVisible.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                showAddProductButton(it)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -124,6 +128,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_GROUPED_PRODUCT_IDS_RESULT, event.data as List<*>)
                 }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })
@@ -131,6 +136,13 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             productListAdapter.setProductList(it)
         })
+    }
+
+    private fun showAddProductButton(show: Boolean) {
+        with(addGroupedProductView) {
+            isVisible = show
+            initView { viewModel.onAddProductButtonClicked() }
+        }
     }
 
     private fun showSkeleton(show: Boolean) {

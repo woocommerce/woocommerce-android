@@ -518,7 +518,7 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_widgets
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewGroupedProducts(this.groupedProductIds.joinToString(",")),
+                    ViewGroupedProducts(this.remoteId, this.groupedProductIds.joinToString(",")),
                     Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
                 )
             }

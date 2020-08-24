@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -64,6 +65,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             hasChanges = oldProductListSize != _productList.getList().size
         )
+    }
+
+    fun onAddProductButtonClicked() {
+        triggerEvent(ViewProductSelectionList(navArgs.remoteProductId))
     }
 
     fun onDoneButtonClicked() {
@@ -126,8 +131,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val hasChanges: Boolean? = null
-    ) : Parcelable
-
+    ) : Parcelable {
+        val isAddProductButtonVisible: Boolean
+            get() = isSkeletonShown == false
+    }
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<GroupedProductListViewModel>
 }
