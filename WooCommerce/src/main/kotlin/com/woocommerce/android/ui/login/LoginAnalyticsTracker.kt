@@ -236,7 +236,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackSubmit2faCodeClicked() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSubmitClicked() {
@@ -260,7 +260,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackSelectEmailField() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackPickEmailFromHint() {
