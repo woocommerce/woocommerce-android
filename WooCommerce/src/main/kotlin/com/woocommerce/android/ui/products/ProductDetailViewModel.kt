@@ -206,8 +206,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(target)
     }
 
-    fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
-
     fun hasImageChanges(): Boolean {
         return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             true
