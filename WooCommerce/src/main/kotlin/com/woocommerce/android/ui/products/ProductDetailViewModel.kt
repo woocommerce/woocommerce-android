@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -97,6 +98,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private const val DEFAULT_ADD_NEW_MEDIA_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -162,14 +164,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().register(this)
         when (navArgs.isAddProduct) {
             true -> startAddNewProduct()
-            else -> loadProduct(navArgs.remoteProductId)
+            else -> loadRemoteProduct(navArgs.remoteProductId)
         }
     }
 
     private fun startAddNewProduct() {
-        viewState = viewState.copy(
-            isAddNewProduct = true
-        )
+        val preferredSavedType = AppPrefs.getSelectedProductType()
+        val defaultProductType = ProductType.fromString(preferredSavedType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
     }
 
     fun getProduct() = viewState
@@ -192,7 +194,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image))
+            triggerEvent(ViewProductImages(it.remoteId, image))
         }
     }
 
@@ -566,7 +568,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductEditAction()
     }
 
-    private fun loadProduct(remoteProductId: Long) {
+    private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -732,7 +734,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadProduct(product.remoteId)
+                loadRemoteProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -805,13 +807,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        var productId = event.remoteProductId
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.remoteProductId)
+            when (navArgs.isAddProduct) {
+                true -> productId = DEFAULT_ADD_NEW_MEDIA_ID
+                else -> loadRemoteProduct(event.remoteProductId)
+            }
         }
-
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(productId)
     }
 
     /**
@@ -1214,8 +1219,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null,
-        val isAddNewProduct: Boolean? = null
+        val showBottomSheetButton: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword

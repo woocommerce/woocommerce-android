@@ -171,7 +171,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductImages -> viewProductImageChooser(fragment, target.product.remoteId)
+            is ViewProductImages -> viewProductImageChooser(fragment, target.remoteId)
 
             is ViewProductMenuOrder -> {
                 val action = ProductSettingsFragmentDirections

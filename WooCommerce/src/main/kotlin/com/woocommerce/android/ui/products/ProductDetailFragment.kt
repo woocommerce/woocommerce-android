@@ -159,9 +159,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
                 productDetail_addMoreContainer.isVisible = isVisible
             }
-            new.isAddNewProduct?.takeIfNotEqualTo(old?.isAddNewProduct) {
-                showDefaultAddProductDetails()
-            }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner, Observer {
@@ -216,12 +213,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             AnalyticsTracker.track(PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageClicked()
         }
-    }
-
-    private fun showDefaultAddProductDetails() {
-        imageGallery.isVisible = false
-        startAddImageContainer()
-        productDetail_addMoreContainer.isVisible = true
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
