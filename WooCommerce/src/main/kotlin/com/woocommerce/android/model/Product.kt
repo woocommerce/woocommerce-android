@@ -244,17 +244,8 @@ data class Product(
      * Compares this product's images with the passed list, returns true only if both lists contain
      * the same images in the same order
      */
-    private fun isSameImages(updatedImages: List<Image>): Boolean {
-        if (this.images.size != updatedImages.size) {
-            return false
-        }
-        for (i in images.indices) {
-            if (images[i].id != updatedImages[i].id) {
-                return false
-            }
-        }
-        return true
-    }
+    private fun isSameImages(updatedImages: List<Image>) = images.size == updatedImages.size &&
+        images.foldIndexed(true) { i, all, image -> all && image.id == updatedImages[i].id }
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
