@@ -220,7 +220,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackLoginMagicLinkOpenEmailClientViewed() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSocialButtonStart() {
@@ -228,7 +228,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackFailure(message: String?) {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSendCodeWithTextClicked() {
@@ -236,31 +236,31 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackSubmit2faCodeClicked() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSubmitClicked() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackRequestMagicLinkClick() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackLoginWithPasswordClick() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackShowHelpClick() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackDismissDialog() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSelectEmailField() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackPickEmailFromHint() {
@@ -272,7 +272,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun emailFormScreenResumed() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackEmailSignupConfirmationViewed() {

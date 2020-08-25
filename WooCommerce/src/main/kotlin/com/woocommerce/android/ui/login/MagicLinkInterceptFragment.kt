@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,6 +48,7 @@ class MagicLinkInterceptFragment : Fragment() {
     private val viewModel: MagicLinkInterceptViewModel by viewModels { viewModelFactory }
 
     private var retryButton: Button? = null
+    private var retryContainer: ScrollView? = null
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -68,17 +70,16 @@ class MagicLinkInterceptFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
-        // TODO AMANDA - login magic link view deleted in login library. Find replacement?
-//        return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
-        return null
+        return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         retryButton = view.findViewById(R.id.login_open_email_client)
+        retryContainer = view.findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)
-        showRetryButton(false)
+        showRetryScreen(false)
         retryButton?.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
             viewModel.fetchAccountInfo()
@@ -120,7 +121,7 @@ class MagicLinkInterceptFragment : Fragment() {
         })
 
         viewModel.showRetryOption.observe(viewLifecycleOwner, Observer {
-            showRetryButton(it)
+            showRetryScreen(it)
         })
     }
 
@@ -159,7 +160,8 @@ class MagicLinkInterceptFragment : Fragment() {
         activity?.finish()
     }
 
-    private fun showRetryButton(show: Boolean) {
+    private fun showRetryScreen(show: Boolean) {
         retryButton?.visibility = if (show) View.VISIBLE else View.GONE
+        retryContainer?.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

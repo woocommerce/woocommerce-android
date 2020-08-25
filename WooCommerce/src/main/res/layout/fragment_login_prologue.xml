@@ -57,11 +57,28 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:text="@string/login_store_address"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/button_login_wpcom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_login_wpcom"
         style="@style/Woo.Button.Colored.White"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_175"
-        android:text="@string/login"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_150"
+        android:text="@string/login_wpcom"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
