@@ -73,7 +73,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     private fun updateGroupedProductList() {
-        _productList.value = groupedProductListRepository.getGroupedProductList(selectedGroupedProductIds)
+        _productList.value = if (selectedGroupedProductIds.isNotEmpty()) {
+            groupedProductListRepository.getGroupedProductList(selectedGroupedProductIds)
+        } else emptyList()
         productListViewState = productListViewState.copy(isDoneButtonVisible = hasChanges)
     }
 
@@ -103,17 +105,22 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     private fun loadGroupedProducts(loadMore: Boolean = false) {
-        val productsInDb = groupedProductListRepository.getGroupedProductList(
-            selectedGroupedProductIds
-        )
-        if (productsInDb.isNotEmpty()) {
-            _productList.value = productsInDb
+        if (selectedGroupedProductIds.isEmpty()) {
+            _productList.value = emptyList()
             productListViewState = productListViewState.copy(isSkeletonShown = false)
         } else {
-            productListViewState = productListViewState.copy(isSkeletonShown = true)
-        }
+            val productsInDb = groupedProductListRepository.getGroupedProductList(
+                selectedGroupedProductIds
+            )
+            if (productsInDb.isNotEmpty()) {
+                _productList.value = productsInDb
+                productListViewState = productListViewState.copy(isSkeletonShown = false)
+            } else {
+                productListViewState = productListViewState.copy(isSkeletonShown = true)
+            }
 
-        launch { fetchGroupedProducts(selectedGroupedProductIds, loadMore = loadMore) }
+            launch { fetchGroupedProducts(selectedGroupedProductIds, loadMore = loadMore) }
+        }
     }
 
     private suspend fun fetchGroupedProducts(
@@ -135,7 +142,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
         )
     }
 
-    private fun getOriginalGroupedProductIds() = navArgs.groupedProductIds.split(",").map { it.toLong() }
+    private fun getOriginalGroupedProductIds(): List<Long> {
+        return if (navArgs.groupedProductIds.isNotEmpty()) {
+            navArgs.groupedProductIds.split(",").map { it.toLong() }
+        } else emptyList()
+    }
 
     @Parcelize
     data class GroupedProductListViewState(
