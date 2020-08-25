@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
@@ -87,11 +88,15 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowedDivider.visibility = View.GONE
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
+        if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled() && viewModel.getProduct().storedProduct?.type == SIMPLE) {
             productIsDownloadable.visibility = View.VISIBLE
+            productIsDownloadableDivider.visibility = View.VISIBLE
             productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
                 updateIsDownloadableFlag(checkbox, isChecked)
             }
+        } else {
+            productIsDownloadable.visibility = View.GONE
+            productIsDownloadableDivider.visibility = View.GONE
         }
 
         productPurchaseNote.setOnClickListener {
