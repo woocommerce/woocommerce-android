@@ -212,7 +212,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             true
         } else {
-            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+            viewState.productBeforeEnteringFragment?.hasImageChanges(viewState.productDraft) ?: false
         }
     }
 
