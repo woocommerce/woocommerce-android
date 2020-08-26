@@ -61,10 +61,15 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     }
 
     fun onDoneOrUpdateClicked() {
+        val urlWithScheme = if (!productDownloadDetailsViewState.fileDraft.url.startsWith("http")) {
+            "http://${productDownloadDetailsViewState.fileDraft.url}"
+        } else productDownloadDetailsViewState.fileDraft.url
+        val updatedFile = productDownloadDetailsViewState.fileDraft.copy(url = urlWithScheme)
+
         if (navArgs.isEditing) {
-            triggerEvent(UpdateFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+            triggerEvent(UpdateFileAndExitEvent(updatedFile))
         } else {
-            triggerEvent(AddFileAndExitEvent(productDownloadDetailsViewState.fileDraft))
+            triggerEvent(AddFileAndExitEvent(updatedFile))
         }
     }
 
@@ -92,23 +97,28 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {
         val hasChanges = !navArgs.isEditing || updatedState.fileDraft != navArgs.productFile
-        val isInputValid = validateInput(updatedState)
-        productDownloadDetailsViewState = updatedState.copy(
-            showDoneButton = hasChanges,
-            urlErrorMessage = if (isInputValid) null else R.string.product_downloadable_files_url_invalid
-        )
+        productDownloadDetailsViewState = updatedState.copy(showDoneButton = hasChanges).validateInput()
     }
 
-    private fun validateInput(updatedState: ProductDownloadDetailsViewState): Boolean {
-        val url = updatedState.fileDraft.url
-        val name = updatedState.fileDraft.name
-        if (url.isEmpty() || !PatternsCompat.WEB_URL.matcher(url).matches()) return false
-        try {
+    private fun ProductDownloadDetailsViewState.validateInput(): ProductDownloadDetailsViewState {
+        // The backend only accepts the protocols http and https, so if the url doesn't start with http, we add it
+        // this way, if the url had a different protocl, the validation will fail
+        val url = if (fileDraft.url.startsWith("http")) fileDraft.url else "http://${fileDraft.url}"
+        val name = fileDraft.name
+        if (url.isEmpty() || !PatternsCompat.WEB_URL.matcher(url).matches()) {
+            return copy(urlErrorMessage = R.string.product_downloadable_files_url_invalid, nameErrorMessage = null)
+        }
+        return try {
             val uri = URI(url)
-            if (uri.scheme == null) return false
-            return uri.path?.length ?: 0 > 1 || name.isNotBlank()
+            if (uri.path?.length ?: 0 > 1 || name.isNotBlank()) {
+                // If the path exists, or the name is not empty, the input is valid
+                copy(urlErrorMessage = null, nameErrorMessage = null)
+            } else {
+                // we need to tell the user to enter a name
+                copy(urlErrorMessage = null, nameErrorMessage = R.string.product_downloadable_files_name_invalid)
+            }
         } catch (e: URISyntaxException) {
-            return false
+            copy(urlErrorMessage = R.string.product_downloadable_files_url_invalid, nameErrorMessage = null)
         }
     }
 
@@ -132,7 +142,8 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
     data class ProductDownloadDetailsViewState(
         val fileDraft: ProductFile,
         val showDoneButton: Boolean,
-        val urlErrorMessage: Int? = null
+        val urlErrorMessage: Int? = null,
+        val nameErrorMessage: Int? = null
     ) : Parcelable
 
     @AssistedInject.Factory

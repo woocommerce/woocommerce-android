@@ -121,7 +121,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
             resourceProvider
         )
 
-        val newUrl = "new url"
+        val newUrl = "http://url.com"
         val newName = "new name"
         viewModel.onFileNameChanged(newName)
         viewModel.onFileUrlChanged(newUrl)
@@ -143,7 +143,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
             resourceProvider
         )
 
-        val newUrl = "new url"
+        val newUrl = "http://url.com"
         val newName = "new name"
         viewModel.onFileNameChanged(newName)
         viewModel.onFileUrlChanged(newUrl)
@@ -189,6 +189,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+        assertThat(state!!.nameErrorMessage).isNull()
     }
 
     @Test
@@ -205,6 +206,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+        assertThat(state!!.nameErrorMessage).isNull()
     }
 
     @Test
@@ -221,7 +223,8 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         var state: ProductDownloadDetailsViewState? = null
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
-        assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
+        assertThat(state!!.urlErrorMessage).isNull()
+        assertThat(state!!.nameErrorMessage).isEqualTo(R.string.product_downloadable_files_name_invalid)
     }
 
     @Test
@@ -239,5 +242,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isNull()
+        assertThat(state!!.nameErrorMessage).isNull()
     }
 }
