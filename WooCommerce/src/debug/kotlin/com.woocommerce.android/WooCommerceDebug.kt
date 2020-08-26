@@ -1,6 +1,5 @@
 package com.woocommerce.android
 
-import com.facebook.stetho.Stetho
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
 
@@ -13,6 +12,5 @@ open class WooCommerceDebug : WooCommerce() {
 
     override fun onCreate() {
         super.onCreate()
-        Stetho.initializeWithDefaults(this)
     }
 }
