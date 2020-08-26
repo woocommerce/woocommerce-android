@@ -86,7 +86,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 showDoneMenuItem(it)
             }
             if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
-                updateUrlErrorMessage(new.urlErrorMessage, new.nameErrorMessage)
+                updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
             }
         })
 
@@ -127,7 +127,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         }
     }
 
-    private fun updateUrlErrorMessage(urlErrorMessage: Int?, nameErrorMessage: Int?) {
+    private fun updateErrorMessages(urlErrorMessage: Int?, nameErrorMessage: Int?) {
         product_download_url.error = if (urlErrorMessage != null) getString(urlErrorMessage) else null
         product_download_name.error = if (nameErrorMessage != null) getString(nameErrorMessage) else null
         enableDoneButton(urlErrorMessage == null && nameErrorMessage == null)
