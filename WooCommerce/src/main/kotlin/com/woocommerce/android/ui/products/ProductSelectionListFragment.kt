@@ -97,13 +97,13 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
         }
 
         tracker = SelectionTracker.Builder(
-            "mySelection",
-            productsRecycler,
-            ProductSelectionItemKeyProvider(productsRecycler),
-            ProductSelectionListItemLookup(productsRecycler),
-            StorageStrategy.createLongStorage()
+            "mySelection", // a string to identity our selection in the context of this fragment
+            productsRecycler, // the RecyclerView where we will apply the tracker
+            ProductSelectionItemKeyProvider(productsRecycler), // the source of selection keys
+            ProductSelectionListItemLookup(productsRecycler), // the source of information about RecyclerView items
+            StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
         ).withSelectionPredicate(
-            SelectionPredicates.createSelectAnything()
+            SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
         ).build()
 
         if (savedInstanceState != null) {

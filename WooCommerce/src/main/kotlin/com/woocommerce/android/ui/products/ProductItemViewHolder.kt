@@ -149,6 +149,9 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         return if (statusHtml != null) "$statusHtml $bullet $stock" else stock
     }
 
+    /**
+     * Method to return details associated with a user selection
+     */
     fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
         object : ItemDetailsLookup.ItemDetails<Long>() {
             override fun getPosition(): Int = adapterPosition
