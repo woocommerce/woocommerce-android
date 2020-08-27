@@ -73,7 +73,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
 
     fun ProductType.getSimpleProductType() = ProductTypesBottomSheetUiItem(
         type = SIMPLE,
-        titleResource = R.string.product_type_physical,
+        titleResource = R.string.product_type_simple,
         descResource = R.string.product_type_physical_desc,
         iconResource = R.drawable.ic_gridicons_product
     )
