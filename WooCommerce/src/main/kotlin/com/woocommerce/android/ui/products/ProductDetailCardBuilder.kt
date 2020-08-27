@@ -463,17 +463,15 @@ open class ProductDetailCardBuilder(
             showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductPricing(
-                    PricingData(
-                        taxClass,
-                        taxStatus,
-                        isSaleScheduled,
-                        saleStartDateGmt,
-                        saleEndDateGmt,
-                        regularPrice,
-                        salePrice
-                    )
-                ),
+                ViewProductPricing(PricingData(
+                    taxClass,
+                    taxStatus,
+                    isSaleScheduled,
+                    saleStartDateGmt,
+                    saleEndDateGmt,
+                    regularPrice,
+                    salePrice
+                )),
                 Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
