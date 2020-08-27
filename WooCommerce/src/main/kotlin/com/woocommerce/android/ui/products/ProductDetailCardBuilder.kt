@@ -9,8 +9,8 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -47,7 +47,7 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.FormatUtils
 
-class ProductDetailCardBuilder(
+open class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
@@ -249,13 +249,16 @@ class ProductDetailCardBuilder(
         return when {
             this.isStockManaged -> {
                 val group = mapOf(
-                    Pair(resources.getString(R.string.product_stock_status),
+                    Pair(
+                        resources.getString(R.string.product_stock_status),
                         ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
                     ),
-                    Pair(resources.getString(R.string.product_backorders),
+                    Pair(
+                        resources.getString(R.string.product_backorders),
                         ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
                     ),
-                    Pair(resources.getString(R.string.product_stock_quantity),
+                    Pair(
+                        resources.getString(R.string.product_stock_quantity),
                         StringUtils.formatCount(this.stockQuantity)
                     ),
                     Pair(resources.getString(R.string.product_sku), this.sku)
@@ -326,26 +329,36 @@ class ProductDetailCardBuilder(
 
     // show stock properties as a group if stock management is enabled and if the product type is [SIMPLE],
     // otherwise show sku separately
-    private fun Product.inventory(): ProductProperty {
+    private fun Product.inventory(): ProductProperty? {
+        return getProductInventory(this)
+    }
+
+    open fun getProductInventory(product: Product): ProductProperty? {
         val inventoryGroup = when {
-            ProductType.isGroupedOrExternalProduct(this.type) ->
+            ProductType.isGroupedOrExternalProduct(product.type) ->
                 mapOf(
-                    Pair(resources.getString(R.string.product_sku), this.sku)
+                    Pair(resources.getString(R.string.product_sku), product.sku)
                 )
-            this.isStockManaged -> mapOf(
-                Pair(resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
-                Pair(resources.getString(R.string.product_stock_quantity),
-                    FormatUtils.formatInt(this.stockQuantity)),
-                Pair(resources.getString(R.string.product_sku), this.sku)
+            product.isStockManaged -> mapOf(
+                Pair(
+                    resources.getString(R.string.product_backorders),
+                    ProductBackorderStatus.backordersToDisplayString(resources, product.backorderStatus)
+                ),
+                Pair(
+                    resources.getString(R.string.product_stock_quantity),
+                    FormatUtils.formatInt(product.stockQuantity)
+                ),
+                Pair(resources.getString(R.string.product_sku), product.sku)
             )
-            this.sku.isNotEmpty() -> mapOf(
-                Pair(resources.getString(R.string.product_sku), this.sku),
-                Pair(resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+            product.sku.isNotEmpty() -> mapOf(
+                Pair(resources.getString(R.string.product_sku), product.sku),
+                Pair(
+                    resources.getString(R.string.product_stock_status),
+                    ProductStockStatus.stockStatusToDisplayString(resources, product.stockStatus)
+                )
             )
             else -> mapOf(
-                Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
+                Pair("", ProductStockStatus.stockStatusToDisplayString(resources, product.stockStatus))
             )
         }
 
@@ -358,12 +371,12 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewProductInventory(
                     InventoryData(
-                        sku = this.sku,
-                        isStockManaged = this.isStockManaged,
-                        stockStatus = this.stockStatus,
-                        stockQuantity = this.stockQuantity,
-                        backorderStatus = this.backorderStatus,
-                        isSoldIndividually = this.isSoldIndividually
+                        sku = product.sku,
+                        isStockManaged = product.isStockManaged,
+                        stockStatus = product.stockStatus,
+                        stockQuantity = product.stockQuantity,
+                        backorderStatus = product.backorderStatus,
+                        isSoldIndividually = product.isSoldIndividually
                     ),
                     originalSku
                 ),
@@ -456,15 +469,17 @@ class ProductDetailCardBuilder(
             showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductPricing(PricingData(
-                    taxClass,
-                    taxStatus,
-                    isSaleScheduled,
-                    saleStartDateGmt,
-                    saleEndDateGmt,
-                    regularPrice,
-                    salePrice
-                )),
+                ViewProductPricing(
+                    PricingData(
+                        taxClass,
+                        taxStatus,
+                        isSaleScheduled,
+                        saleStartDateGmt,
+                        saleEndDateGmt,
+                        regularPrice,
+                        salePrice
+                    )
+                ),
                 Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
@@ -531,7 +546,7 @@ class ProductDetailCardBuilder(
         val name = this.name.fastStripHtml()
         return if (isSimple(this) || FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             Editable(
-                R.string.product_detail_title_hint,
+                getProductTitlePlaceholder(),
                 name,
                 onTextChanged = viewModel::onProductTitleChanged
             )
@@ -539,6 +554,8 @@ class ProductDetailCardBuilder(
             ComplexProperty(R.string.product_name, name)
         }
     }
+
+    open fun getProductTitlePlaceholder(): Int = R.string.product_detail_title_hint
 
     private fun Product.description(): ProductProperty? {
         val productDescription = this.description

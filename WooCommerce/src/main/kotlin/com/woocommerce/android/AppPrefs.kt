@@ -239,7 +239,7 @@ object AppPrefs {
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
 
-    fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
+    fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "SIMPLE")
 
     /**
      * Checks if the user has a saved order list tab position yet. If no position has been saved,

@@ -4,7 +4,9 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
@@ -16,7 +18,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
-class ProductDetailBottomSheetBuilder(
+open class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider
 ) {
     enum class ProductDetailBottomSheetType(
@@ -26,7 +28,8 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_SHIPPING(string.product_shipping, string.bottom_sheet_shipping_desc),
         PRODUCT_CATEGORIES(string.product_categories, string.bottom_sheet_categories_desc),
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
-        SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc)
+        SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
+        PRODUCT_INVENTORY(string.product_inventory, string.bottom_sheet_inventory_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -38,12 +41,7 @@ class ProductDetailBottomSheetBuilder(
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.type) {
             SIMPLE -> {
-                listOfNotNull(
-                    product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription()
-                )
+                getSimpleProductList(product)
             }
             EXTERNAL -> {
                 listOfNotNull(
@@ -71,7 +69,16 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun Product.getShipping(): ProductDetailBottomSheetUiItem? {
+    open fun getSimpleProductList(product: Product): List<ProductDetailBottomSheetUiItem> {
+        return listOfNotNull(
+            product.getShipping(),
+            product.getCategories(),
+            product.getTags(),
+            product.getShortDescription()
+        )
+    }
+
+    protected fun Product.getShipping(): ProductDetailBottomSheetUiItem? {
         return if (!isVirtual && !hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
@@ -92,7 +99,7 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun Product.getCategories(): ProductDetailBottomSheetUiItem? {
+    protected fun Product.getCategories(): ProductDetailBottomSheetUiItem? {
         return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && !hasCategories) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_CATEGORIES,
@@ -104,7 +111,7 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun Product.getTags(): ProductDetailBottomSheetUiItem? {
+    protected fun Product.getTags(): ProductDetailBottomSheetUiItem? {
         return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && !hasTags) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_TAGS,
@@ -115,7 +122,7 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun Product.getShortDescription(): ProductDetailBottomSheetUiItem? {
+    protected fun Product.getShortDescription(): ProductDetailBottomSheetUiItem? {
         return if (!hasShortDescription) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.SHORT_DESCRIPTION,

@@ -620,6 +620,7 @@
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+    <string name="bottom_sheet_inventory_desc">Update product inventory and SKU</string>
 
     <!--
         Variations
@@ -934,6 +935,9 @@
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
     <string name="product_add_type_grouped_desc">@string/product_type_grouped_desc</string>
     <string name="product_add_type_external_desc">@string/product_type_external_desc</string>
+
+    <!-- New Product cards-->
+    <string name="product_add_card_placeholder_title">Enter title</string>
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>

@@ -149,6 +149,7 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
+    val hasInventory get() = sku.isNotEmpty() || stockStatus != ProductStockStatus.InStock
 
     /**
      * Verifies if there are any changes made to the inventory fields

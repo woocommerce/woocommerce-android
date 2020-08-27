@@ -146,14 +146,20 @@ class ProductDetailViewModel @AssistedInject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        when (navArgs.isAddProduct) {
+            true -> ProductAddDetailCardBuilder(this, resources, currencyFormatter, parameters)
+            else -> ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
+        }
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-        ProductDetailBottomSheetBuilder(resources)
+         when (navArgs.isAddProduct) {
+            true -> ProductAddDetailBottomSheetBuilder(resources)
+            else -> ProductDetailBottomSheetBuilder(resources)
+        }
     }
 
     init {
@@ -547,7 +553,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
     }
-
     fun onProductDetailBottomSheetItemSelected(uiItem: ProductDetailBottomSheetUiItem) {
         onEditProductCardClicked(uiItem.clickEvent, uiItem.stat)
     }

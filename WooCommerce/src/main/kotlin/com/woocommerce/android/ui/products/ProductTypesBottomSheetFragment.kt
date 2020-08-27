@@ -114,7 +114,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
 
     private fun getProductTypeListBuilder(): ProductTypeBottomSheetBuilder {
         return when (navArgs.isAddProduct) {
-            true -> ProductAddTypeBottomSheetBuilder()
+            true -> StartProductAddTypeBottomSheetBuilder()
             else -> ProductDetailTypeBottomSheetBuilder()
         }
     }

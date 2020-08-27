@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 
-class ProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
+class StartProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
     override fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
         return listOf(
             ProductTypesBottomSheetUiItem(
