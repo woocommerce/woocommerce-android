@@ -18,8 +18,8 @@ abstract class ProductImagesModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: ProductImagesFragment): Bundle? {
+            return fragment.arguments
         }
 
         @JvmStatic
