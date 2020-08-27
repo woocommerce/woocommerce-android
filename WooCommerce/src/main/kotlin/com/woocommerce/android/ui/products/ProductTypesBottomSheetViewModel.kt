@@ -14,6 +14,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -54,11 +55,11 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
                 iconResource = R.drawable.ic_gridicons_product
             ),
             ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
+                type = VARIABLE,
                 isVirtual = true,
-                titleResource = R.string.product_type_virtual,
-                descResource = R.string.product_type_virtual_desc,
-                iconResource = R.drawable.ic_gridicons_cloud_outline
+                titleResource = R.string.product_type_variable,
+                descResource = R.string.product_type_variation_desc,
+                iconResource = R.drawable.ic_gridicons_types
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
