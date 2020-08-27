@@ -14,6 +14,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -26,6 +27,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
+
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
@@ -40,49 +43,61 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             positiveButtonId = R.string.product_type_confirm_button,
             negativeButtonId = R.string.cancel,
             positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                triggerEvent(ExitWithResult(productTypeUiItem))
+                triggerEvent(ExitWithResult(productTypeUiItem.type))
             }
         ))
     }
 
     private fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> {
-        return listOf(
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                titleResource = R.string.product_type_physical,
-                descResource = R.string.product_type_physical_desc,
-                iconResource = R.drawable.ic_gridicons_product
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                isVirtual = true,
-                titleResource = R.string.product_type_virtual,
-                descResource = R.string.product_type_virtual_desc,
-                iconResource = R.drawable.ic_gridicons_cloud_outline
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = GROUPED,
-                titleResource = R.string.product_type_grouped,
-                descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = EXTERNAL,
-                titleResource = R.string.product_type_external,
-                descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
-            )
-        )
+        val productTypesList = mutableListOf<ProductTypesBottomSheetUiItem>()
+        ProductType.values().forEach {
+            if (it != navArgs.productType) {
+                when (it) {
+                    SIMPLE -> productTypesList.add(it.getSimpleProductType())
+                    VARIABLE -> productTypesList.add(it.getVariableProductType())
+                    GROUPED -> productTypesList.add(it.getGroupedProductType())
+                    EXTERNAL -> productTypesList.add(it.getExternalProductType())
+                }
+            }
+        }
+        return productTypesList
     }
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
         val type: ProductType,
-        val isVirtual: Boolean = false,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int
     ) : Parcelable
+
+    fun ProductType.getSimpleProductType() = ProductTypesBottomSheetUiItem(
+        type = SIMPLE,
+        titleResource = R.string.product_type_simple,
+        descResource = R.string.product_type_physical_desc,
+        iconResource = R.drawable.ic_gridicons_product
+    )
+
+    fun ProductType.getVariableProductType() = ProductTypesBottomSheetUiItem(
+        type = VARIABLE,
+        titleResource = R.string.product_type_variable,
+        descResource = R.string.product_type_variation_desc,
+        iconResource = R.drawable.ic_gridicons_types
+    )
+
+    fun ProductType.getGroupedProductType() = ProductTypesBottomSheetUiItem(
+        type = GROUPED,
+        titleResource = R.string.product_type_grouped,
+        descResource = R.string.product_type_grouped_desc,
+        iconResource = R.drawable.ic_widgets
+    )
+
+    fun ProductType.getExternalProductType() = ProductTypesBottomSheetUiItem(
+        type = EXTERNAL,
+        titleResource = R.string.product_type_external,
+        descResource = R.string.product_type_external_desc,
+        iconResource = R.drawable.ic_gridicons_up_right
+    )
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductTypesBottomSheetViewModel>
