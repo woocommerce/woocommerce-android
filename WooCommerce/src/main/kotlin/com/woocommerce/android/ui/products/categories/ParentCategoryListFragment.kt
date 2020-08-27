@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -125,7 +126,7 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreCategoriesProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreCategoriesProgress.isVisible = show
     }
 
     override fun onRequestLoadMore() {

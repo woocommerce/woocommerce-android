@@ -112,6 +112,11 @@
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
 
     <!--
+        Warning colors
+    -->
+    <color name="warning_foreground_color">@color/woo_orange_30</color>
+    <color name="warning_background_color">@color/woo_orange_5</color>
+    <!--
         Products List
     -->
     <color name="product_stock_fg">@color/color_on_surface_medium</color>

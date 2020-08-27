@@ -115,7 +115,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_GROUPED_PRODUCT_IDS_RESULT, event.item as? List<*>)
+                    navigateBackWithResult(KEY_GROUPED_PRODUCT_IDS_RESULT, event.data as List<*>)
                 }
                 else -> event.isHandled = false
             }

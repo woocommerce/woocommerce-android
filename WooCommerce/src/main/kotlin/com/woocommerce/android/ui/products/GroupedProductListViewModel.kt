@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.getList
@@ -54,7 +56,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
         val oldProductListSize = _productList.getList().size
         _productList.getList()
             .firstOrNull { it.remoteId == product.remoteId }
-            ?.let { _productList.removeItem(it) }
+            ?.let {
+                _productList.removeItem(it)
+                AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED)
+            }
 
         productListViewState = productListViewState.copy(
             hasChanges = oldProductListSize != _productList.getList().size
@@ -62,6 +67,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
+        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED, mapOf(
+            AnalyticsTracker.KEY_HAS_CHANGED_DATA to productListViewState.hasChanges
+        ))
         triggerEvent(ExitWithResult(_productList.getList().map { it.remoteId }))
     }
 

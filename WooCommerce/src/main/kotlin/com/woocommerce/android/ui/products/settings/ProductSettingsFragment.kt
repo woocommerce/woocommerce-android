@@ -69,6 +69,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             productIsVirtual.visibility = View.VISIBLE
             productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
                 viewModel.updateProductDraft(isVirtual = isChecked)
                 activity?.invalidateOptionsMenu()
             }
@@ -80,6 +81,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productReviewsAllowed.visibility = View.VISIBLE
             productReviewsAllowedDivider.visibility = View.VISIBLE
             productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
                 viewModel.updateProductDraft(reviewsAllowed = isChecked)
                 activity?.invalidateOptionsMenu()
             }

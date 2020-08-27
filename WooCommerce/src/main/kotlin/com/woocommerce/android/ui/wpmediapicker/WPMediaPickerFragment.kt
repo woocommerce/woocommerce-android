@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -105,8 +106,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
         })
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { showLoadingProgress(it) }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadingMoreProgress(it) }
+            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { loadingProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadingMoreProgress.isVisible = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
 
@@ -195,14 +196,6 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })
-    }
-
-    private fun showLoadingProgress(show: Boolean) {
-        loadingProgress.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    private fun showLoadingMoreProgress(show: Boolean) {
-        loadingMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showEmptyView(show: Boolean) {

@@ -210,11 +210,12 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
             it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
             it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
         }
-        @IdRes val destinationId = if (navArgs.requestCode == RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE) {
-            R.id.productSettingsFragment
-        } else {
-            R.id.productDetailFragment
+        @IdRes val destinationId = when (navArgs.requestCode) {
+            RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE -> R.id.productSettingsFragment
+            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> R.id.variationDetailFragment
+            else -> R.id.productDetailFragment
         }
+
         requireActivity().navigateBackWithResult(
                 navArgs.requestCode,
                 bundle,
