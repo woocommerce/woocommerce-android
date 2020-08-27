@@ -2,6 +2,7 @@ package com.woocommerce.android
 
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
+import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
@@ -22,6 +23,7 @@ class WooCommerceDebug : WooCommerce() {
             AndroidFlipperClient.getInstance(this).apply {
                 addPlugin(InspectorFlipperPlugin(applicationContext, DescriptorMapping.withDefaults()))
                 addPlugin(NetworkFlipperPlugin())
+                addPlugin(DatabasesFlipperPlugin(this@WooCommerceDebug))
             }.start()
         }
         super.onCreate()
