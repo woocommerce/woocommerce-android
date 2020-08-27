@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -77,6 +78,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
+
+    private val prefs: AppPrefs = mock()
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -198,7 +201,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
-            productTagsRepository
+            productTagsRepository,
+            prefs
         ))
 
         clearInvocations(

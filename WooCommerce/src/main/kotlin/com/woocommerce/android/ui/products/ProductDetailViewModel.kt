@@ -94,7 +94,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -169,7 +170,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private fun startAddNewProduct() {
-        val preferredSavedType = AppPrefs.getSelectedProductType()
+        val preferredSavedType = prefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
         viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
