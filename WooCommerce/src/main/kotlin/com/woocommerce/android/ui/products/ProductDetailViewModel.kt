@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNumeric
 import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -50,10 +51,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
@@ -108,7 +110,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val mediaFilesRepository: MediaFilesRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -157,6 +160,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product tags screen
     final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
+
+    // view state for the product downloads screen
+    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
     val productCategories: LiveData<List<ProductCategory>> = _productCategories
@@ -258,10 +265,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onProductDownloadClicked(file: ProductFile) {
         triggerEvent(
-            EditProductDownload(
-                file,
-                viewState.productDraft!!.downloadLimit,
-                viewState.productDraft!!.downloadExpiry
+            ViewProductDownloadDetails(
+                true,
+                file
             )
         )
     }
@@ -273,6 +279,17 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
             updateProductDraft(
                 downloads = updatedDownloads
+            )
+        }
+    }
+
+    fun addDownloadableFileToDraft(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads + file
+            updateProductDraft(
+                downloads = updatedDownloads,
+                // Make sure to mark the file as downloadable
+                isDownloadable = true
             )
         }
     }
@@ -312,6 +329,35 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun onDownloadsSettingsClicked() {
         triggerEvent(ViewProductDownloadsSettings)
+    }
+
+    fun onAddDownloadableFileClicked() {
+        triggerEvent(AddProductDownloadableFile)
+    }
+
+    fun uploadDownloadableFile(uri: Uri) {
+        launch {
+            viewState = viewState.copy(isUploadingDownloadableFile = true)
+            productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
+            try {
+                val url = mediaFilesRepository.uploadFile(uri)
+                showAddProductDownload(url)
+            } catch (e: Exception) {
+                triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
+            } finally {
+                viewState = viewState.copy(isUploadingDownloadableFile = false)
+                productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+            }
+        }
+    }
+
+    fun showAddProductDownload(url: String) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                isEditing = false,
+                file = ProductFile(id = null, url = url, name = "")
+            )
+        )
     }
 
     fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
@@ -575,11 +621,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
+        // reset the error message when the user starts typing again
+        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
+
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
-            // reset the error message when the user starts typing again
-            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
-
             // cancel any existing verification search, then start a new one after a brief delay
             // so we don't actually perform the fetch until the user stops typing
             skuVerificationJob?.cancel()
@@ -764,6 +810,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
+        mediaFilesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -1510,7 +1557,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null
+        val showBottomSheetButton: Boolean? = null,
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
@@ -1565,6 +1613,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
         val isProgressDialogShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductDownloadsViewState(
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

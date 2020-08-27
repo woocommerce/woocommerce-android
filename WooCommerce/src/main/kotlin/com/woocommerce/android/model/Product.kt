@@ -369,7 +369,11 @@ data class Product(
                 categories = updatedProduct.categories,
                 tags = updatedProduct.tags,
                 type = updatedProduct.type,
-                groupedProductIds = updatedProduct.groupedProductIds
+                groupedProductIds = updatedProduct.groupedProductIds,
+                isDownloadable = updatedProduct.isDownloadable,
+                downloads = updatedProduct.downloads,
+                downloadLimit = updatedProduct.downloadLimit,
+                downloadExpiry = updatedProduct.downloadExpiry
             )
         } ?: this.copy()
     }

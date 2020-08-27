@@ -53,6 +53,10 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewGroupedProducts(val groupedProductIds: String) : ProductNavigationTarget()
     object ViewProductDownloads : ProductNavigationTarget()
     object ViewProductDownloadsSettings : ProductNavigationTarget()
-    data class EditProductDownload(val file: ProductFile, val downloadLimit: Int, val downloadExpiry: Int) :
+    data class ViewProductDownloadDetails(
+        val isEditing: Boolean,
+        val file: ProductFile
+    ) :
         ProductNavigationTarget()
+    object AddProductDownloadableFile : ProductNavigationTarget()
 }

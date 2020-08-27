@@ -24,14 +24,16 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
-class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener {
+class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "captured_photo_uri"
     }
@@ -161,7 +163,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showWPMediaPicker() {
-        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
+        val action = ProductDetailFragmentDirections
+            .actionGlobalWpMediaFragment(RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS, multiSelect = true)
         findNavController().navigateSafely(action)
     }
 
@@ -228,6 +231,19 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         changesMade()
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS -> {
+                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                    ?.let {
+                        viewModel.addProductImageListToDraft(it)
+                        reloadImageGallery()
+                        changesMade()
+                    }
+            }
+        }
     }
 
     /**

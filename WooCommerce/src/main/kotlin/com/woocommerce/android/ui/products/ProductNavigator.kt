@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.products
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
-import com.woocommerce.android.ui.products.ProductNavigationTarget.EditProductDownload
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -228,9 +230,14 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigate(action)
             }
 
-            is EditProductDownload -> {
-                val action = ProductDownloadsFragmentDirections
-                    .actionProductDownloadsFragmentToProductDownloadDetailsFragment(target.file)
+            is ViewProductDownloadDetails -> {
+                val action = NavGraphProductsDirections
+                    .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
+                fragment.findNavController().navigate(action)
+            }
+
+            is AddProductDownloadableFile -> {
+                val action = NavGraphProductsDirections.actionGlobalAddProductDownloadBottomSheetFragment()
                 fragment.findNavController().navigate(action)
             }
 

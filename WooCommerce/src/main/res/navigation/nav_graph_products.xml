@@ -51,7 +51,7 @@
             android:id="@+id/action_productDetailFragment_to_productDownloadsFragment"
             app:destination="@id/productDownloadsFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/productImagesFragment"
@@ -144,11 +144,6 @@
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsFragment"
         tools:layout="@layout/fragment_product_downloads_list">
         <action
-            android:id="@+id/action_productDownloadsFragment_to_productDownloadDetailsFragment"
-            app:destination="@id/productDownloadDetailsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
-        <action
             android:id="@+id/action_productDownloadsFragment_to_productDownloadsSettingsFragment"
             app:destination="@id/productDownloadsSettingsFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -177,7 +172,14 @@
         android:id="@+id/wpMediaPickerFragment"
         android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
         android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker" />
+        tools:layout="@layout/fragment_wpmedia_picker">
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="multiSelect"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:id="@+id/wpMediaViewerFragment"
         android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaViewerFragment"
@@ -301,6 +303,11 @@
         app:destination="@id/groupedProductListFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_addProductDownloadBottomSheetFragment"
+        app:destination="@id/addProductDownloadBottomSheetFragment"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:popExitAnim="@anim/fragment_fade_exit" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
@@ -312,15 +319,26 @@
     <fragment
         android:id="@+id/productDownloadDetailsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
-        android:label="ProductDownloadDetailsFragment" >
+        android:label="ProductDownloadDetailsFragment">
+        <argument
+            android:name="isEditing"
+            app:argType="boolean" />
         <argument
             android:name="productFile"
-            app:argType="com.woocommerce.android.model.ProductFile"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:argType="com.woocommerce.android.model.ProductFile" />
     </fragment>
     <fragment
         android:id="@+id/productDownloadsSettingsFragment"
         android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment"
         android:label="ProductDownloadsSettingsFragment" />
+    <dialog
+        android:id="@+id/addProductDownloadBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment"
+        android:label="AddProductDownloadBottomSheetFragment"
+        tools:layout="@layout/dialog_product_add_downloadable_file" />
+    <action
+        android:id="@+id/action_global_productDownloadDetailsFragment"
+        app:destination="@id/productDownloadDetailsFragment"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:popExitAnim="@anim/fragment_fade_exit" />
 </navigation>

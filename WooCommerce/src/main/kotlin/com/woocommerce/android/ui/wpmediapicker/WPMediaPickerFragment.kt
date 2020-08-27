@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -43,6 +43,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
 
+    private val navArgs by navArgs<WPMediaPickerFragmentArgs>()
+
     private var isConfirmingDiscard = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -59,6 +61,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        wpMediaGallery.allowMultiSelect = navArgs.multiSelect
         initializeViewModel()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
@@ -137,10 +140,10 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
                 it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
             }
             requireActivity().navigateBackWithResult(
-                    RequestCodes.WPMEDIA_LIBRARY_PICKER,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.productDetailFragment
+                navArgs.requestCode,
+                bundle,
+                R.id.nav_host_fragment_main,
+                findNavController().previousBackStackEntry?.destination?.id ?: R.id.productDetailFragment
             )
         } else {
             findNavController().navigateUp()

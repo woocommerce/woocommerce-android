@@ -50,7 +50,7 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/product_is_virtual" />
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+            <View android:id="@+id/productIsDownloadableDivider" style="@style/Woo.Divider.TitleAligned" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/productIsDownloadable"

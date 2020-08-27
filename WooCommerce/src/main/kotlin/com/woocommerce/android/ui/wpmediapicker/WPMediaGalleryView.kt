@@ -63,6 +63,8 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     private lateinit var listener: WPMediaGalleryListener
 
+    var allowMultiSelect: Boolean = true
+
     init {
         layoutManager = GridLayoutManager(context, NUM_COLUMNS)
         itemAnimator = DefaultItemAnimator()
@@ -147,7 +149,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WPMediaViewHolder {
             return WPMediaViewHolder(
-                    layoutInflater.inflate(R.layout.wpmedia_gallery_item, parent, false)
+                layoutInflater.inflate(R.layout.wpmedia_gallery_item, parent, false)
             )
         }
 
@@ -160,7 +162,8 @@ class WPMediaGalleryView @JvmOverloads constructor(
             holder.textSelectionCount.isSelected = isSelected
             if (isSelected) {
                 val count = selectedIds.indexOf(image.id) + 1
-                holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
+                holder.textSelectionCount.text = if (allowMultiSelect) String.format(Locale.getDefault(), "%d", count)
+                else "✓"
             } else {
                 holder.textSelectionCount.text = null
             }
@@ -181,6 +184,12 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         fun toggleItemSelected(holder: WPMediaViewHolder, position: Int) {
             val isSelected = isItemSelectedByPosition(position)
+            if (!isSelected && !allowMultiSelect) {
+                selectedIds.getOrNull(0)?.let { id ->
+                    val previousSelectedPosition = imageList.indexOfFirst { it.id == id }
+                    setItemSelectedByPosition(holder, previousSelectedPosition, false)
+                }
+            }
             setItemSelectedByPosition(holder, position, !isSelected)
         }
 
@@ -229,13 +238,13 @@ class WPMediaGalleryView @JvmOverloads constructor(
                 selectedIds.remove(imageId)
             }
 
-            // show and animate the count
+            // show and animate the count or check mark
             if (selected) {
-                holder.textSelectionCount.text = String.format(
-                        Locale.getDefault(),
-                        "%d",
-                        selectedIds.indexOf(imageId) + 1
-                )
+                holder.textSelectionCount.text = if (allowMultiSelect) String.format(
+                    Locale.getDefault(),
+                    "%d",
+                    selectedIds.indexOf(imageId) + 1
+                ) else "✓"
             } else {
                 holder.textSelectionCount.text = null
             }

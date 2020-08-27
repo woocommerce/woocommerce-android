@@ -1261,4 +1261,15 @@
     <string name="product_uncheck_is_downloadable_warning_message">All files currently attached to this product will be deleted.</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">No</string>
+    <string name="bottom_sheet_downloadable_files_desc">Include downloadable files with purchases</string>
+    <string name="product_downloadable_add_bottomsheet_header">Add downloadable file</string>
+    <string name="product_downloadable_files_add_title">Add downloadable file</string>
+    <string name="product_downloadable_files_upload_failed">Error uploading the file</string>
+    <string name="product_downloadable_files_upload_dialog_title">Uploading files</string>
+    <string name="product_downloadable_files_upload_dialog_message">Please wait…</string>
+    <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
+    <string name="product_downloadable_files_add_from_device">From device</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">From WordPress Media Library</string>
+    <string name="product_downloadable_files_add_manually">Enter file URL</string>
+    <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
 </resources>

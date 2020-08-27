@@ -15,13 +15,19 @@ import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
+import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
-class ProductDownloadsFragment : BaseProductFragment() {
+class ProductDownloadsFragment : BaseProductFragment(), NavigationResult {
     private val itemTouchHelper by lazy {
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(UP or DOWN, 0) {
             override fun onMove(
@@ -47,6 +53,8 @@ class ProductDownloadsFragment : BaseProductFragment() {
             itemTouchHelper
         )
     }
+
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -88,9 +96,28 @@ class ProductDownloadsFragment : BaseProductFragment() {
         }
     }
 
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        if (requestCode == RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE) {
+            result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
+                ?.let {
+                    viewModel.showAddProductDownload(it.first().source)
+                    changesMade()
+                }
+        }
+    }
+
     override fun getFragmentTitle(): String = getString(R.string.product_downloadable_files)
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
+        viewModel.productDownloadsViewStateData.observe(viewLifecycleOwner, { old, new ->
+            new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
+                if (it) {
+                    showUploadingProgressDialog()
+                } else {
+                    hideUploadingProgressDialog()
+                }
+            }
+        })
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is ExitProductDownloads -> findNavController().navigateUp()
@@ -98,7 +125,23 @@ class ProductDownloadsFragment : BaseProductFragment() {
             }
         })
 
+        addProductDownloadsView.initView { viewModel.onAddDownloadableFileClicked() }
+
         updateFilesFromProductDraft()
+    }
+
+    private fun showUploadingProgressDialog() {
+        hideUploadingProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(R.string.product_downloadable_files_upload_dialog_title),
+            getString(R.string.product_downloadable_files_upload_dialog_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideUploadingProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     private fun updateFilesFromProductDraft() {
