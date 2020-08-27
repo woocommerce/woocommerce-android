@@ -746,6 +746,21 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Add a new product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed.
+     */
+    private suspend fun addProduct(product: Product) {
+        if (networkStatus.isConnected()) {
+            if (productRepository.updateProduct(product)) {
+
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+        viewState = viewState.copy(isProgressDialogShown = false)
+    }
+
+    /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
