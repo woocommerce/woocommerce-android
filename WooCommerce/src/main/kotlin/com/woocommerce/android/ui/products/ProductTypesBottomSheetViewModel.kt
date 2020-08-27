@@ -27,6 +27,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
+
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
@@ -47,33 +49,18 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     }
 
     private fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> {
-        return listOf(
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                titleResource = R.string.product_type_physical,
-                descResource = R.string.product_type_physical_desc,
-                iconResource = R.drawable.ic_gridicons_product
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = VARIABLE,
-                isVirtual = true,
-                titleResource = R.string.product_type_variable,
-                descResource = R.string.product_type_variation_desc,
-                iconResource = R.drawable.ic_gridicons_types
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = GROUPED,
-                titleResource = R.string.product_type_grouped,
-                descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = EXTERNAL,
-                titleResource = R.string.product_type_external,
-                descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
-            )
-        )
+        val productTypesList = mutableListOf<ProductTypesBottomSheetUiItem>()
+        ProductType.values().forEach {
+            if (it != navArgs.productType) {
+                when (it) {
+                    SIMPLE -> productTypesList.add(it.getSimpleProductType())
+                    VARIABLE -> productTypesList.add(it.getVariableProductType())
+                    GROUPED -> productTypesList.add(it.getGroupedProductType())
+                    EXTERNAL -> productTypesList.add(it.getExternalProductType())
+                }
+            }
+        }
+        return productTypesList
     }
 
     @Parcelize
@@ -84,6 +71,35 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int
     ) : Parcelable
+
+    fun ProductType.getSimpleProductType() = ProductTypesBottomSheetUiItem(
+        type = SIMPLE,
+        titleResource = R.string.product_type_physical,
+        descResource = R.string.product_type_physical_desc,
+        iconResource = R.drawable.ic_gridicons_product
+    )
+
+    fun ProductType.getVariableProductType() = ProductTypesBottomSheetUiItem(
+        type = VARIABLE,
+        isVirtual = true,
+        titleResource = R.string.product_type_variable,
+        descResource = R.string.product_type_variation_desc,
+        iconResource = R.drawable.ic_gridicons_types
+    )
+
+    fun ProductType.getGroupedProductType() = ProductTypesBottomSheetUiItem(
+        type = GROUPED,
+        titleResource = R.string.product_type_grouped,
+        descResource = R.string.product_type_grouped_desc,
+        iconResource = R.drawable.ic_widgets
+    )
+
+    fun ProductType.getExternalProductType() = ProductTypesBottomSheetUiItem(
+        type = EXTERNAL,
+        titleResource = R.string.product_type_external,
+        descResource = R.string.product_type_external_desc,
+        iconResource = R.drawable.ic_gridicons_up_right
+    )
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductTypesBottomSheetViewModel>
