@@ -164,7 +164,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.string.product_categories,
                     productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
                     R.drawable.ic_gridicons_folder,
-                    showTitle = false,
                     maxLines = 5
                 ),
                 ComplexProperty(
