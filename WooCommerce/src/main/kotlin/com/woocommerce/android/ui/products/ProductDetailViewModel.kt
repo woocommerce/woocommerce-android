@@ -156,7 +156,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-         when (navArgs.isAddProduct) {
+        when (navArgs.isAddProduct) {
             true -> ProductAddDetailBottomSheetBuilder(resources)
             else -> ProductDetailBottomSheetBuilder(resources)
         }

@@ -30,11 +30,8 @@ constructor(resources: ResourceProvider) : ProductDetailBottomSheetBuilder(resou
                     stockStatus = stockStatus,
                     stockQuantity = stockQuantity,
                     backorderStatus = backorderStatus
-                )
-                , sku
-            )
-            ,
-            Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+                ), sku
+            ), Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
         )
     }
 }

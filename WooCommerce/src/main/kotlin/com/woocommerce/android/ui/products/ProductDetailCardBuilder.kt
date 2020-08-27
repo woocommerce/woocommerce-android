@@ -249,16 +249,13 @@ open class ProductDetailCardBuilder(
         return when {
             this.isStockManaged -> {
                 val group = mapOf(
-                    Pair(
-                        resources.getString(R.string.product_stock_status),
+                    Pair(resources.getString(R.string.product_stock_status),
                         ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
                     ),
-                    Pair(
-                        resources.getString(R.string.product_backorders),
+                    Pair(resources.getString(R.string.product_backorders),
                         ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
                     ),
-                    Pair(
-                        resources.getString(R.string.product_stock_quantity),
+                    Pair(resources.getString(R.string.product_stock_quantity),
                         StringUtils.formatCount(this.stockQuantity)
                     ),
                     Pair(resources.getString(R.string.product_sku), this.sku)
@@ -340,12 +337,10 @@ open class ProductDetailCardBuilder(
                     Pair(resources.getString(R.string.product_sku), product.sku)
                 )
             product.isStockManaged -> mapOf(
-                Pair(
-                    resources.getString(R.string.product_backorders),
+                Pair(resources.getString(R.string.product_backorders),
                     ProductBackorderStatus.backordersToDisplayString(resources, product.backorderStatus)
                 ),
-                Pair(
-                    resources.getString(R.string.product_stock_quantity),
+                Pair(resources.getString(R.string.product_stock_quantity),
                     FormatUtils.formatInt(product.stockQuantity)
                 ),
                 Pair(resources.getString(R.string.product_sku), product.sku)
@@ -392,8 +387,7 @@ open class ProductDetailCardBuilder(
             val shippingGroup = mapOf(
                 Pair(resources.getString(R.string.product_weight), weightWithUnits),
                 Pair(resources.getString(R.string.product_dimensions), sizeWithUnits),
-                Pair(
-                    resources.getString(R.string.product_shipping_class),
+                Pair(resources.getString(R.string.product_shipping_class),
                     viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
                 )
             )
