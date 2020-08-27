@@ -43,7 +43,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             positiveButtonId = R.string.product_type_confirm_button,
             negativeButtonId = R.string.cancel,
             positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                triggerEvent(ExitWithResult(productTypeUiItem))
+                triggerEvent(ExitWithResult(productTypeUiItem.type))
             }
         ))
     }
@@ -66,7 +66,6 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
         val type: ProductType,
-        val isVirtual: Boolean = false,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int
@@ -81,7 +80,6 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
 
     fun ProductType.getVariableProductType() = ProductTypesBottomSheetUiItem(
         type = VARIABLE,
-        isVirtual = true,
         titleResource = R.string.product_type_variable,
         descResource = R.string.product_type_variation_desc,
         iconResource = R.drawable.ic_gridicons_types
