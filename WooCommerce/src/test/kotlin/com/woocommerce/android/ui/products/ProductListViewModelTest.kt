@@ -115,4 +115,25 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.loadProducts(loadMore = true)
         assertThat(isLoadingMore).containsExactly(false, true, false)
     }
+
+    @Test
+    fun `Shows and hides add product button correctly when loading list of products`() = test {
+        // when
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+
+        createViewModel()
+
+        val isAddProductButtonVisible = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                isAddProductButtonVisible.add(it)
+            }
+        }
+
+        viewModel.loadProducts()
+
+        // then
+        assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+    }
 }
