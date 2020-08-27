@@ -62,7 +62,8 @@ class ProductDetailRepository @Inject constructor(
     private var continuationUpdateProductPassword: CancellableContinuation<Boolean>? = null
     private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
-    private var continuationAddProduct: Continuation<Boolean>? = null
+
+    private var continuationAddProduct: Continuation<Pair<Boolean, Long>>? = null
 
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
@@ -136,17 +137,18 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun addProduct(product: Product): Boolean {
+    suspend fun addProduct(product: Product): Pair<Boolean,Long> {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(ACTION_TIMEOUT) {
                 continuationAddProduct = it
-                val model = product.toDataModel(null)
+                val cachedModel = getCachedWCProductModel(product.remoteId)
+                val model = product.toDataModel(cachedModel)
                 val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
                 dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
-            } ?: false // request timed out
+            } ?: Pair(false, 0L) // request timed out
         } catch (e: CancellationException) {
-            WooLog.e(PRODUCTS, "Exception encountered while adding a product", e)
-            false
+            WooLog.e(PRODUCTS, "Exception encountered while publishing a product", e)
+            Pair(false, 0L)
         }
     }
 
@@ -349,9 +351,11 @@ class ProductDetailRepository @Inject constructor(
     fun onProductCreated(event: OnProductCreated) {
         if (event.causeOfChange == ADDED_PRODUCT) {
             if (event.isError) {
-                continuationAddProduct?.resume(false)
+                val pair = Pair(false, 0L)
+                continuationAddProduct?.resume(pair)
             } else {
-                continuationAddProduct?.resume(true)
+                val pair = Pair(true, event.remoteProductId)
+                continuationAddProduct?.resume(pair)
             }
             continuationAddProduct = null
         }

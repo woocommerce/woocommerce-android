@@ -171,7 +171,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun startAddNewProduct() {
         val preferredSavedType = AppPrefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
+        val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
         viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
+        updateProductState(defaultProduct)
     }
 
     fun getProduct() = viewState
@@ -279,14 +281,28 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the UPDATE menu button is clicked in the product detail screen.
-     * Displays a progress dialog and updates the product
+     * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
+        when (navArgs.isAddProduct){
+            true -> startPublishProduct()
+            else -> startUpdateProduct()
+        }
+    }
+
+    private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    private fun startPublishProduct() {
+        viewState.productDraft?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch { addProduct(it) }
         }
     }
 
@@ -751,8 +767,17 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun addProduct(product: Product) {
         if (networkStatus.isConnected()) {
-            if (productRepository.updateProduct(product)) {
-
+            val result = productRepository.addProduct(product)
+            if (result.first) {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
+                loadRemoteProduct(result.second)
+            } else {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
