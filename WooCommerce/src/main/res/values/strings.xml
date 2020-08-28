@@ -121,7 +121,7 @@
     <string name="login_store_address">Enter your store address</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
-    <string name="login_pick_store">Pick store</string>
+    <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>

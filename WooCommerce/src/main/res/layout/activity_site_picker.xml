@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/site_picker_root"
+    android:background="@color/color_surface"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
@@ -39,12 +40,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            <LinearLayout
                 android:id="@+id/site_list_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_200"
+                android:layout_marginTop="@dimen/major_75"
                 android:orientation="vertical"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -56,11 +57,13 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/site_list_label"
-                    style="@style/Woo.TextView.Body1"
+                    android:textAppearance="@style/TextAppearance.Woo.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/major_100"
                     android:text="@string/login_pick_store"
-                    android:textColor="?attr/colorPrimary"/>
+                    android:textColor="?attr/colorSecondary"
+                    android:textAllCaps="true"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/sites_recycler"
@@ -69,7 +72,7 @@
                     android:nestedScrollingEnabled="false"
                     tools:listitem="@layout/site_picker_item"
                     tools:itemCount="3"/>
-            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+            </LinearLayout>
 
             <include
                 layout="@layout/view_login_user_info"/>
@@ -93,16 +96,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
                 app:layout_constraintVertical_bias="1.0"
-                tools:visibility="visible"/>
+                tools:visibility="gone"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <View
-        android:id="@+id/view6"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/appbar_elevation"
-        android:background="@drawable/shadow_top"/>
 
     <include layout="@layout/view_login_epilogue_button_bar"/>
 </LinearLayout>
