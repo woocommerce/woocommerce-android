@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -176,7 +177,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun showProductDetails(product: Product) {
-        productName = product.name.fastStripHtml()
+        productName = updateProductNameFromDetails(product)
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
@@ -205,6 +206,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 ViewProductDetailBottomSheet(product.remoteId)
             )
         }
+    }
+
+    private fun updateProductNameFromDetails(product: Product): String {
+        return if (navArgs.isAddProduct && product.name.isEmpty()) {
+            getString(string.product_add_tool_bar_title)
+        } else product.name.fastStripHtml()
     }
 
     private fun startAddImageContainer() {
@@ -244,7 +251,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             R.id.menu_done -> {
-                startMenuDoneAction()
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onUpdateButtonClicked()
                 true
             }
 
@@ -261,16 +269,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun startMenuDoneAction() {
-        when (navArgs.isAddProduct) {
-            true -> Unit
-            else -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onUpdateButtonClicked()
-            }
-        }
-    }
-
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
@@ -282,14 +280,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                    getString(R.string.product_update_dialog_title),
-                    getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog = getSubmitDetailProgressDialog().also {
+                it.show(parentFragmentManager, CustomProgressDialog.TAG)
+            }
             progressDialog?.isCancelable = false
         } else {
             hideProgressDialog()
         }
+    }
+
+    private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
+        val title: Int
+        val message: Int
+        when (navArgs.isAddProduct) {
+            true -> {
+                title = R.string.product_publish_dialog_title
+                message = R.string.product_publish_dialog_message
+            }
+            else -> {
+                title = R.string.product_update_dialog_title
+                message = R.string.product_update_dialog_message
+            }
+        }
+        return CustomProgressDialog.show(getString(title), getString(message))
     }
 
     private fun hideProgressDialog() {
@@ -354,12 +367,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.onAddImageClicked()
     }
 
-    override fun getFragmentTitle(): String {
-        return when (navArgs.isAddProduct) {
-            true -> getString(R.string.product_add_tool_bar_title)
-            else -> productName
-        }
-    }
+    override fun getFragmentTitle(): String = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been
