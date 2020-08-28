@@ -137,12 +137,11 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun addProduct(product: Product): Pair<Boolean,Long> {
+    suspend fun addProduct(product: Product): Pair<Boolean, Long> {
         return try {
             suspendCoroutineWithTimeout<Pair<Boolean, Long>>(ACTION_TIMEOUT) {
                 continuationAddProduct = it
-                val cachedModel = getCachedWCProductModel(product.remoteId)
-                val model = product.toDataModel(cachedModel)
+                val model = product.toDataModel(null)
                 val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
                 dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
             } ?: Pair(false, 0L) // request timed out

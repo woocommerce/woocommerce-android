@@ -285,7 +285,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (navArgs.isAddProduct){
+        when (viewState.productDraft?.remoteId == 0L) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -768,14 +768,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     private suspend fun addProduct(product: Product) {
         if (networkStatus.isConnected()) {
             val result = productRepository.addProduct(product)
-            if (result.first) {
+            val isSuccess = result.first
+            val newProductRemoteId = result.second
+            if (isSuccess) {
                 triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadRemoteProduct(result.second)
+                loadRemoteProduct(newProductRemoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
             }
