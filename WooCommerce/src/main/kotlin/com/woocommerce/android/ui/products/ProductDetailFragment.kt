@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,9 +18,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -29,12 +27,16 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -106,6 +108,40 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                saleStartDate = it.saleStartDate,
+                saleEndDate = Optional(it.saleEndDate),
+                isSaleScheduled = it.isSaleScheduled,
+                taxClass = it.taxClass,
+                taxStatus = it.taxStatus
+            )
+            changesMade()
+        }
+        handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                sku = it.sku,
+                soldIndividually = it.isSoldIndividually,
+                stockStatus = it.stockStatus,
+                stockQuantity = it.stockQuantity,
+                backorderStatus = it.backorderStatus,
+                manageStock = it.isStockManaged
+            )
+            changesMade()
+        }
+        handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
+            )
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -123,8 +159,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
-            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) {
-                productDetail_addMoreContainer.visibility = if (it) View.VISIBLE else View.GONE
+            new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
+                productDetail_addMoreContainer.isVisible = isVisible
             }
             new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
                 if (it) {
@@ -200,23 +236,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_share -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
                 viewModel.onShareButtonClicked()
                 true
             }
 
             R.id.menu_done -> {
-                AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onUpdateButtonClicked()
                 true
             }
 
             R.id.menu_view_product -> {
-                viewModel.getProduct().productDraft?.permalink?.let {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-                    ChromeCustomTabUtils.launchUrl(requireContext(), it)
-                }
+                viewModel.onViewProductOnStoreLinkClicked()
                 true
             }
 

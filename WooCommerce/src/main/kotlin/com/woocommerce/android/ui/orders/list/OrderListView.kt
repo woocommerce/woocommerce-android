@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -97,7 +98,7 @@ class OrderListView @JvmOverloads constructor(
     }
 
     fun setLoadingMoreIndicator(active: Boolean) {
-        load_more_progressbar.visibility = if (active) View.VISIBLE else View.GONE
+        load_more_progressbar.isVisible = active
     }
 
     // TODO remove this commented-out code before merging feature branch

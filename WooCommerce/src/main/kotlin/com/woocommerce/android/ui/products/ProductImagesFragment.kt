@@ -40,6 +40,7 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
+    private var doneButton: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -62,7 +63,9 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasImageChanges()
+        doneButton = menu.findItem(R.id.menu_done)
+
+        refreshDonButtonVisibility()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -98,6 +101,10 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
+    private fun refreshDonButtonVisibility() {
+        doneButton?.isVisible = viewModel.hasImageChanges()
+    }
+
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -110,6 +117,8 @@ class ProductImagesFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.isUploadingImages.takeIfNotEqualTo(old?.isUploadingImages) {
                 reloadImageGallery()
                 imageGallery.setPlaceholderImageUris(viewModel.getProduct().uploadingImageUris)
+
+                refreshDonButtonVisibility()
             }
         }
     }

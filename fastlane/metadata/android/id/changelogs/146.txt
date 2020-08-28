@@ -1,0 +1,4 @@
+4.8:
+* Bagian “Tambah pelacakan pengiriman” diperbarui sehingga hanya tampil jika plugin Pelacakan Pengiriman tersedia.
+* Crash saat mengetuk dua kali elemen navigasi dan crash lainnya akibat menyembunyikan tampilan non-aktif (jarang terjadi) diperbaiki.
+

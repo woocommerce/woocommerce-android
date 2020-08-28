@@ -79,7 +79,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         object Exit : Event()
-        data class ExitWithResult<T>(val item: T) : Event()
+
+        data class ExitWithResult<out T>(val data: T) : Event()
 
         data class ShowDialog(
             @StringRes val titleId: Int? = null,
