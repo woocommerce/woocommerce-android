@@ -292,7 +292,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
         val title: Int
         val message: Int
-         when (navArgs.isAddProduct) {
+        when (navArgs.isAddProduct) {
             true -> {
                 title = R.string.product_publish_dialog_title
                 message = R.string.product_publish_dialog_message
@@ -367,7 +367,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.onAddImageClicked()
     }
 
-    override fun getFragmentTitle(): String =  productName
+    override fun getFragmentTitle(): String = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been
