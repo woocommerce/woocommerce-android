@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -50,13 +49,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    private val navArgs: ProductDetailFragmentArgs by navArgs()
-
     private var productName = ""
         set(value) {
             field = value
             updateActivityTitle()
         }
+
+    private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
 
     private val skeletonView = SkeletonView()
 
@@ -64,6 +63,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private var layoutManager: LayoutManager? = null
 
     private var viewProductOnStoreMenuItem: MenuItem? = null
+
+    private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
+    private val updateTitleId = R.string.update
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -153,7 +155,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it)
+            }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -178,6 +182,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun showProductDetails(product: Product) {
         productName = updateProductNameFromDetails(product)
+        productId = product.remoteId
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.visibility = View.GONE
@@ -206,10 +211,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 ViewProductDetailBottomSheet(product.remoteId)
             )
         }
+
+        updateOptionsMenuDescription(product.remoteId)
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
-        return if (navArgs.isAddProduct && product.name.isEmpty()) {
+        return if (viewModel.isAddFlow && product.name.isEmpty()) {
             getString(string.product_add_tool_bar_title)
         } else product.name.fastStripHtml()
     }
@@ -229,7 +236,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
         menu.findItem(R.id.menu_product_settings).isVisible = true
 
-        when (navArgs.isAddProduct) {
+        when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
             else -> Unit
         }
@@ -237,10 +244,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun setupProductAddOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.menu_done).apply {
-            title = getString(R.string.product_add_tool_bar_menu_button_done)
-            isVisible = true
+        doneOrUpdateMenuItem?.let {
+            it.title = getString(publishTitleId)
+            it.isVisible = true
         }
+    }
+
+    private fun updateOptionsMenuDescription(remoteId: Long) {
+        val doneButtonTitle =
+            when (viewModel.isAddFlow) {
+                true -> getString(publishTitleId)
+                else -> getString(updateTitleId)
+            }
+        doneOrUpdateMenuItem?.title = doneButtonTitle
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -292,7 +308,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
         val title: Int
         val message: Int
-        when (navArgs.isAddProduct) {
+        when (viewModel.isAddFlow) {
             true -> {
                 title = R.string.product_publish_dialog_title
                 message = R.string.product_publish_dialog_message

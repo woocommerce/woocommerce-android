@@ -24,7 +24,8 @@ import kotlinx.android.parcel.Parcelize
 @OpenClassOnDebug
 class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers
+    dispatchers: CoroutineDispatchers,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
@@ -60,7 +61,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         }
     }
 
-    private fun saveUserSelection(type: ProductType) = AppPrefs.setSelectedProductType(type)
+    private fun saveUserSelection(type: ProductType) = prefs.setSelectedProductType(type)
 
     data class ExitWithResult(val productTypeUiItem: ProductTypesBottomSheetUiItem) : Event()
 

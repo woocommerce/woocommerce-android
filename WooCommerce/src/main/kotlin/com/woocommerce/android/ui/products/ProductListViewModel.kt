@@ -40,7 +40,8 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -292,7 +293,7 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun isShowProductTypeBottomSheet() = AppPrefs.getSelectedProductType().isEmpty()
+    fun isShowProductTypeBottomSheet() = prefs.getSelectedProductType().isEmpty()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

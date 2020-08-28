@@ -94,11 +94,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private const val DEFAULT_ADD_NEW_MEDIA_ID: Long = 0L
+        const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -156,20 +157,40 @@ class ProductDetailViewModel @AssistedInject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     * */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product id
+     * value to check.
+     *
+     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     *
+     * [viewState.productDraft.remoteId]
+     * .can be [NULL] - no product draft available yet
+     * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
+     * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
+     * */
+    val isAddFlow: Boolean
+        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
+
     init {
         start()
     }
 
     fun start() {
         EventBus.getDefault().register(this)
-        when (navArgs.isAddProduct) {
+        when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
             else -> loadRemoteProduct(navArgs.remoteProductId)
         }
     }
 
     private fun startAddNewProduct() {
-        val preferredSavedType = AppPrefs.getSelectedProductType()
+        val preferredSavedType = prefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
         viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
@@ -178,7 +199,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -285,7 +306,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (viewState.productDraft?.remoteId == 0L) {
+        when (isAddFlow) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -853,8 +874,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            when (navArgs.isAddProduct) {
-                true -> productId = DEFAULT_ADD_NEW_MEDIA_ID
+            when (isAddFlow) {
+                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.remoteProductId)
             }
         }
