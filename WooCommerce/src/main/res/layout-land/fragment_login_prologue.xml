@@ -71,7 +71,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login"
+            android:id="@+id/button_login_store"
             style="@style/Woo.Button.Colored"
             android:layout_width="0dp"
             android:layout_weight="1"

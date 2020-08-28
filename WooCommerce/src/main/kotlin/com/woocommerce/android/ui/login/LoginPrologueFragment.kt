@@ -49,7 +49,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        button_login.setOnClickListener {
+        button_login_store.setOnClickListener {
             prologueFinishedListener?.onPrologueFinished()
             AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED)
         }
