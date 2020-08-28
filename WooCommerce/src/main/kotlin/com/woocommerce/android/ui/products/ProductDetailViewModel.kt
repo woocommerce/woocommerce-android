@@ -157,13 +157,33 @@ class ProductDetailViewModel @AssistedInject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     * */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product id
+     * value to check.
+     *
+     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     *
+     * [viewState.productDraft.remoteId]
+     * .can be [NULL] - no product draft available yet
+     * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
+     * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
+     * */
+    val isAddFlow: Boolean
+        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
+
     init {
         start()
     }
 
     fun start() {
         EventBus.getDefault().register(this)
-        when (navArgs.isAddProduct) {
+        when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
             else -> loadRemoteProduct(navArgs.remoteProductId)
         }
@@ -286,7 +306,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID) {
+        when (isAddFlow) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -854,7 +874,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            when (navArgs.isAddProduct) {
+            when (isAddFlow) {
                 true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.remoteProductId)
             }
