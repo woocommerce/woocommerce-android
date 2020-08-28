@@ -99,7 +99,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
-        private const val DEFAULT_ADD_NEW_MEDIA_ID: Long = 0L
+        const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -179,7 +179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -286,7 +286,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
-        when (viewState.productDraft?.remoteId == 0L) {
+        when (viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID) {
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
@@ -855,7 +855,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
             when (navArgs.isAddProduct) {
-                true -> productId = DEFAULT_ADD_NEW_MEDIA_ID
+                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
                 else -> loadRemoteProduct(event.remoteProductId)
             }
         }

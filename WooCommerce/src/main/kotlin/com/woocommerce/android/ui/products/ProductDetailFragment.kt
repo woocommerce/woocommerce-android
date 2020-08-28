@@ -65,6 +65,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private var viewProductOnStoreMenuItem: MenuItem? = null
 
+    private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
+    private val updateTitleId = R.string.update
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
@@ -153,7 +156,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it, new.productDraft)
+            }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -206,6 +211,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 ViewProductDetailBottomSheet(product.remoteId)
             )
         }
+
+        updateOptionsMenuDescription(product.remoteId)
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
@@ -238,9 +245,18 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupProductAddOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menu_done).apply {
-            title = getString(R.string.product_add_tool_bar_menu_button_done)
+            title = getString(publishTitleId)
             isVisible = true
         }
+    }
+
+    private fun updateOptionsMenuDescription(remoteId: Long) {
+        val doneButtonTitle =
+            when (navArgs.isAddProduct && remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID) {
+                true -> getString(publishTitleId)
+                else -> getString(updateTitleId)
+            }
+        doneOrUpdateMenuItem?.title = doneButtonTitle
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -277,10 +293,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
+    private fun showProgressDialog(show: Boolean, productDraft: Product?) {
         if (show) {
             hideProgressDialog()
-            progressDialog = getSubmitDetailProgressDialog().also {
+            progressDialog = getSubmitDetailProgressDialog(productDraft).also {
                 it.show(parentFragmentManager, CustomProgressDialog.TAG)
             }
             progressDialog?.isCancelable = false
@@ -289,10 +305,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
+    private fun getSubmitDetailProgressDialog(productDraft: Product?): CustomProgressDialog {
         val title: Int
         val message: Int
-        when (navArgs.isAddProduct) {
+        when (navArgs.isAddProduct && productDraft?.remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID) {
             true -> {
                 title = R.string.product_publish_dialog_title
                 message = R.string.product_publish_dialog_message

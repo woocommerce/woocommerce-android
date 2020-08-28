@@ -33,7 +33,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         viewModelFactory.get()
     }
 
-    private var doneOrUpdateMenuItem: MenuItem? = null
+    protected var doneOrUpdateMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

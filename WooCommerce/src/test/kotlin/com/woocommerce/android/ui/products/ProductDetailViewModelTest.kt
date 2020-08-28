@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECON
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.util.ProductUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
@@ -80,6 +81,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private val prefs: AppPrefs = mock()
+    private val productUtils = ProductUtils()
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -229,25 +231,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var cards: List<ProductPropertyCard>? = null
         viewModel.productDetailCards.observeForever {
-            cards = it.map { card -> stripCallbacks(card) }
+            cards = it.map { card -> productUtils.stripCallbacks(card) }
         }
 
         viewModel.start()
 
         assertThat(cards).isEqualTo(expectedCards)
-    }
-
-    private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {
-        return card.copy(properties = card.properties.map { p ->
-            when (p) {
-                is ComplexProperty -> p.copy(onClick = null)
-                is Editable -> p.copy(onTextChanged = null)
-                is PropertyGroup -> p.copy(onClick = null)
-                is Link -> p.copy(onClick = null)
-                is RatingBar -> p.copy(onClick = null)
-                else -> p
-            }
-        })
     }
 
     @Test

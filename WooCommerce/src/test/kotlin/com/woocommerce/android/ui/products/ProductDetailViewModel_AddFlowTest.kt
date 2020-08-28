@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -80,6 +81,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val prefs: AppPrefs = mock {
         on(it.getSelectedProductType()).then { "" }
     }
+
+    private val productUtils = ProductUtils()
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -173,25 +176,12 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         var cards: List<ProductPropertyCard>? = null
         viewModel.productDetailCards.observeForever {
-            cards = it.map { card -> stripCallbacks(card) }
+            cards = it.map { card -> productUtils.stripCallbacks(card) }
         }
 
         viewModel.start()
 
         assertThat(cards).isEqualTo(expectedCards)
-    }
-
-    private fun stripCallbacks(card: ProductPropertyCard): ProductPropertyCard {
-        return card.copy(properties = card.properties.map { p ->
-            when (p) {
-                is ComplexProperty -> p.copy(onClick = null)
-                is Editable -> p.copy(onTextChanged = null)
-                is PropertyGroup -> p.copy(onClick = null)
-                is Link -> p.copy(onClick = null)
-                is RatingBar -> p.copy(onClick = null)
-                else -> p
-            }
-        })
     }
 
     @Test
