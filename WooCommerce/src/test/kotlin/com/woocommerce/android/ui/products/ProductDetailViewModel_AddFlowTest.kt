@@ -266,4 +266,53 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         assertThat(successSnackbarShown).isTrue()
         assertThat(productData?.isProgressDialogShown).isFalse()
     }
+
+    @Test
+    fun `Display correct message on updating a freshly added product`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        // given
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
+
+        var successSnackbarShown = false
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar && it.message == R.string.product_detail_publish_product_success) {
+                successSnackbarShown = true
+            }
+        }
+
+        var productData: ProductDetailViewState? = null
+
+        // when
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        viewModel.onUpdateButtonClicked()
+
+        // then
+        verify(productRepository, times(1)).getProduct(1L)
+
+        assertThat(successSnackbarShown).isTrue()
+        assertThat(productData?.isProgressDialogShown).isFalse()
+        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.productDraft).isEqualTo(product)
+
+        // when
+        doReturn(true).whenever(productRepository).updateProduct(any())
+
+        viewModel.onUpdateButtonClicked()
+        verify(productRepository, times(1)).updateProduct(any())
+
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                successSnackbarShown = true
+            }
+        }
+
+        // then
+        assertThat(successSnackbarShown).isTrue()
+        assertThat(productData?.isProgressDialogShown).isFalse()
+        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(productData?.productDraft).isEqualTo(product)
+    }
 }
