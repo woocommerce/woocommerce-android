@@ -31,7 +31,6 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY

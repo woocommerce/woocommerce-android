@@ -20,9 +20,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesV
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -87,10 +85,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
-    private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private lateinit var viewModel: ProductDetailViewModel
 
-    private val defaultPricingGroup : Map<String, String> = mapOf("" to resources.getString(R.string.product_price_empty))
+    private val defaultPricingGroup: Map<String, String> =
+        mapOf("" to resources.getString(R.string.product_price_empty))
 
     private val expectedCards = listOf(
         ProductPropertyCard(
@@ -268,51 +266,52 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display correct message on updating a freshly added product`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        // given
-        doReturn(product).whenever(productRepository).getProduct(any())
-        doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
+    fun `Display correct message on updating a freshly added product`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            // given
+            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
-        var successSnackbarShown = false
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_publish_product_success) {
-                successSnackbarShown = true
+            var successSnackbarShown = false
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar && it.message == R.string.product_detail_publish_product_success) {
+                    successSnackbarShown = true
+                }
             }
-        }
 
-        var productData: ProductDetailViewState? = null
+            var productData: ProductDetailViewState? = null
 
-        // when
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+            // when
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.start()
+            viewModel.start()
 
-        viewModel.onUpdateButtonClicked()
+            viewModel.onUpdateButtonClicked()
 
-        // then
-        verify(productRepository, times(1)).getProduct(1L)
+            // then
+            verify(productRepository, times(1)).getProduct(1L)
 
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
-        assertThat(productData?.productDraft).isEqualTo(product)
+            assertThat(successSnackbarShown).isTrue()
+            assertThat(productData?.isProgressDialogShown).isFalse()
+            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(productData?.productDraft).isEqualTo(product)
 
-        // when
-        doReturn(true).whenever(productRepository).updateProduct(any())
+            // when
+            doReturn(true).whenever(productRepository).updateProduct(any())
 
-        viewModel.onUpdateButtonClicked()
-        verify(productRepository, times(1)).updateProduct(any())
+            viewModel.onUpdateButtonClicked()
+            verify(productRepository, times(1)).updateProduct(any())
 
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
-                successSnackbarShown = true
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar && it.message == R.string.product_detail_update_product_success) {
+                    successSnackbarShown = true
+                }
             }
-        }
 
-        // then
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
-        assertThat(productData?.productDraft).isEqualTo(product)
-    }
+            // then
+            assertThat(successSnackbarShown).isTrue()
+            assertThat(productData?.isProgressDialogShown).isFalse()
+            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(productData?.productDraft).isEqualTo(product)
+        }
 }

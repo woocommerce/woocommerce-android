@@ -133,7 +133,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         CrashUtils.initCrashLogging(this)
 
-
         dispatcher.register(this)
 
         AppRatingDialog.init(this)
