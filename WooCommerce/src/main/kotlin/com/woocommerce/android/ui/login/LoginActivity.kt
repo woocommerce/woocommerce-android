@@ -109,10 +109,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 .commitAllowingStateLoss()
     }
 
-    override fun onPrologueFinished() {
-        startLogin()
-    }
-
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
@@ -166,6 +162,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return loginMode as LoginMode
     }
 
+    override fun onPrimaryButtonClicked() {
+        startLoginViaSiteAddress()
+    }
+
+    override fun onSecondaryButtonClicked() {
+        startLoginViaWPCom()
+    }
+
     private fun showMainActivityAndFinish() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -181,13 +185,17 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
-    private fun startLogin() {
+    private fun startLoginViaSiteAddress() {
         if (getLoginViaSiteAddressFragment() != null) {
             // login by site address is already shown so, login has already started. Just bail.
             return
         }
 
         loginViaSiteAddress()
+    }
+
+    private fun startLoginViaWPCom() {
+        // TODO AMANDA - add logic
     }
 
     //  -- BEGIN: LoginListener implementation methods
