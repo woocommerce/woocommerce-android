@@ -123,8 +123,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         fragmentTransaction.commitAllowingStateLoss()
     }
 
-    private fun getLoginEmailFragment(): LoginEmailFragment? {
-        val fragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
+    private fun getLoginEmailFragment(useAltLayout: Boolean): LoginEmailFragment? {
+        val fragment = if (useAltLayout) {
+            supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG_ALT_LAYOUT)
+        } else {
+            supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
+        }
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
 
@@ -195,7 +199,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun startLoginViaWPCom() {
-        // TODO AMANDA - add logic
+        if (getLoginEmailFragment(useAltLayout = false) != null) {
+            // login by wpcom is already shown so login has already started. Just bail.
+            return
+        }
+
+        showEmailLoginScreen()
     }
 
     //  -- BEGIN: LoginListener implementation methods
@@ -532,8 +541,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(siteAddress, true)
-        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        if (siteAddress != null) {
+            val loginEmailFragment = getLoginEmailFragment(useAltLayout = false) ?: LoginEmailFragment.newInstance(siteAddress, true)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        } else {
+            val loginEmailFragment = getLoginEmailFragment(useAltLayout = true) ?: LoginEmailFragment.newInstance(false, false, true)
+            slideInFragment(
+                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_ALT_LAYOUT)
+        }
     }
 
     override fun showUsernamePasswordScreen(
