@@ -354,14 +354,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                coroutineScope.launch {
-                    orderModel?.let { order ->
-                        orderView?.showOrderDetail(order, isFreshData = true)
-                        orderView?.showSkeleton(false)
-                        loadOrderNotes()
-                        fetchOrderDetailInfo(order)
-                    } ?: orderView?.showLoadOrderError()
-                }
+                orderModel?.let { order ->
+                    orderView?.showOrderDetail(order, isFreshData = true)
+                    orderView?.showSkeleton(false)
+                    loadOrderNotes()
+                    fetchOrderDetailInfo(order)
+                } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
