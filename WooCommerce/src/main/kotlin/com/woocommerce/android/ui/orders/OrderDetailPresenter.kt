@@ -166,7 +166,7 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         // Display the shipment tracking list only if it's available and if there are no shipping labels available
-        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.shipmentTrackingList.isNotEmpty()) {
+        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.isShipmentTrackingAvailable) {
             orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
         }
     }
