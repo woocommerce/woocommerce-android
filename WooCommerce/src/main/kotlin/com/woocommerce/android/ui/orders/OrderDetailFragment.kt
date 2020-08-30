@@ -24,7 +24,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.fetchTrackingLinks
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -214,13 +213,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
-        // Shipment tracking links are not available by default from the shipping label API
-        // Until this is available on the API side, we need to fetch the tracking link from the
-        // shipment tracking API (if available) and link the tracking link to the corresponding
-        // tracking number of a shipping label
-        val shipmentTrackingList = presenter.getOrderShipmentTrackingsFromDb(order)
-        shippingLabels.map { it.fetchTrackingLinks(shipmentTrackingList) }
-
         orderDetail_shippingLabelList.initView(
             order.toAppModel(),
             shippingLabels,
