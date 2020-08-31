@@ -25,8 +25,11 @@ import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -109,6 +112,9 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 )
                 is ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
+                is ShowStorageChooser -> chooseProductImage()
+                is ShowCamera -> captureProductImage()
+                is ShowWPMediaPicker -> showWPMediaPicker()
                 else -> event.isHandled = false
             }
         })
@@ -135,33 +141,21 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     private fun showImageSourceDialog() {
         val inflater = requireActivity().layoutInflater
         val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
-                .also {
-                    it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-                        )
-                        chooseProductImage()
-                    }
-                    it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-                        )
-                        captureProductImage()
-                    }
-                    it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
-                        AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
-                        )
-                        showWPMediaPicker()
-                    }
+            .also {
+                it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
+                    viewModel.onShowStorageChooserButtonClicked()
                 }
+                it.findViewById<View>(R.id.textCamera)?.setOnClickListener {
+                    viewModel.onShowCameraButtonClicked()
+                }
+                it.findViewById<View>(R.id.textWPMediaLibrary)?.setOnClickListener {
+                    viewModel.onShowWPMediaPickerButtonClicked()
+                }
+            }
 
         imageSourceDialog = MaterialAlertDialogBuilder(activity)
-                .setView(contentView)
-                .show()
+            .setView(contentView)
+            .show()
     }
 
     private fun showWPMediaPicker() {
@@ -230,8 +224,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 }
             }
         }
-
-        viewModel.onImagesChanged()
     }
 
     /**

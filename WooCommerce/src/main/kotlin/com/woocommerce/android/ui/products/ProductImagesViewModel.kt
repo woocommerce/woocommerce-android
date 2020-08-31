@@ -24,7 +24,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -51,7 +50,11 @@ class ProductImagesViewModel @AssistedInject constructor(
             isImageDeletingAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES,
             images = navArgs.images.toList()
         )
-    )
+    ) { old, new ->
+        if (old != new) {
+            updateDoneButtonVisibility()
+        }
+    }
     private var viewState by viewStateData
 
     private val originalImages = navArgs.images.toList()
@@ -89,13 +92,32 @@ class ProductImagesViewModel @AssistedInject constructor(
         productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
-    fun onImageRemoved(imageId: Long) {
-        viewState = viewState.copy(images = images.filter { it.id != imageId})
-        onImagesChanged()
+    fun onShowStorageChooserButtonClicked() {
+        AnalyticsTracker.track(
+            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+        )
+        triggerEvent(ShowStorageChooser)
     }
 
-    fun onImagesChanged() {
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
+    fun onShowCameraButtonClicked() {
+        AnalyticsTracker.track(
+            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+        )
+        triggerEvent(ShowCamera)
+    }
+
+    fun onShowWPMediaPickerButtonClicked() {
+        AnalyticsTracker.track(
+            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+        )
+        triggerEvent(ShowWPMediaPicker)
+    }
+
+    fun onImageRemoved(imageId: Long) {
+        viewState = viewState.copy(images = images.filter { it.id != imageId})
     }
 
     fun onImageSourceButtonClicked() {
@@ -140,6 +162,11 @@ class ProductImagesViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private fun updateDoneButtonVisibility() {
+        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
+    }
+
     /**
      * The list of product images has started uploading
      */
@@ -161,7 +188,6 @@ class ProductImagesViewModel @AssistedInject constructor(
             checkImageUploads(event.id)
         }
     }
-
 
     /**
      * Checks whether product images are uploading and ensures the view state reflects any currently
@@ -206,6 +232,9 @@ class ProductImagesViewModel @AssistedInject constructor(
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()
+    object ShowStorageChooser : Event()
+    object ShowCamera : Event()
+    object ShowWPMediaPicker : Event()
     data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
 
     @AssistedInject.Factory
