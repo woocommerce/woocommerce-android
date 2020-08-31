@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
@@ -26,7 +27,6 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
@@ -36,7 +36,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
@@ -90,7 +89,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository
@@ -118,10 +116,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
     private var viewState by productDetailViewStateData
-
-    // view state for the product images screen
-    val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
-    private var productImagesViewState by productImagesViewStateData
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -193,7 +187,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId))
+            triggerEvent(ViewProductImageChooser(it.remoteId, it.images, RequestCodes.PRODUCT_DETAIL_IMAGES))
         }
     }
 
@@ -204,14 +198,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-    }
-
-    fun hasImageChanges(): Boolean {
-        return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            true
-        } else {
-            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
-        }
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -241,10 +227,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
-            is ExitImages -> {
-                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasImageChanges()
-            }
             is ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
@@ -362,14 +344,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
-            is ExitImages -> isUploadingImages || hasImageChanges()
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
-                        discardEditChanges(event)
+                        discardEditChanges()
 
                         // If user in Product detail screen, exit product detail,
                         // otherwise, redirect to Product Detail screen
@@ -381,18 +362,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                     }
             ))
             return false
-        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
+        } else if (event is ExitProductDetail && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                        triggerEvent(event)
                     }
             ))
             return false
@@ -543,12 +520,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when discard is clicked on any of the product screens to restore the product to
      * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges(event: ProductExitEvent) {
+    private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
-
-        if (event is ExitImages) {
-            ProductImagesService.cancel()
-        }
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -671,30 +644,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
-            return
-        }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
-    }
-
     /**
      * Checks whether product images are uploading and ensures the view state reflects any currently
      * uploading images
      */
     private fun checkImageUploads(remoteProductId: Long) {
-        if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
-            viewState = viewState.copy(uploadingImageUris = uris)
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = true)
-        } else if (productImagesViewState.isUploadingImages) {
-            viewState = viewState.copy(uploadingImageUris = emptyList())
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = false)
+        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
+            val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
+            viewState.copy(uploadingImageUris = uris)
+        } else {
+            viewState.copy(uploadingImageUris = emptyList())
         }
     }
 
@@ -785,7 +744,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(event.id)
     }
 
     /**
@@ -797,10 +756,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.remoteProductId)
+            loadProduct(event.id)
         }
 
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(event.id)
     }
 
     /**
@@ -1161,7 +1120,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1206,11 +1164,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
-
-    @Parcelize
-    data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false
-    ) : Parcelable
 
     @Parcelize
     data class ProductCategoriesViewState(
