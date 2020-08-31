@@ -59,6 +59,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
+    private var doneButton: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         savedInstanceState?.let { bundle ->

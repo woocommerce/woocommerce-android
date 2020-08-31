@@ -479,7 +479,7 @@ class ProductDetailCardBuilder(
                 R.drawable.ic_gridicons_product
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductTypes(this.remoteId),
+                    ViewProductTypes(this.type),
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
                 )
             }

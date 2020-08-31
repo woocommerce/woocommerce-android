@@ -200,9 +200,8 @@
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="productType"
+            app:argType="com.woocommerce.android.ui.products.ProductType" />
     </dialog>
     <fragment
         android:id="@+id/productReviewsFragment"
