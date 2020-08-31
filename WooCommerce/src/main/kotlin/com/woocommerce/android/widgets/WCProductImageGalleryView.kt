@@ -120,6 +120,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.showImages(images)
     }
 
+    fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
+        this.listener = listener
+        adapter.showImages(listOf(images))
+    }
+
     /**
      * Show upload placeholders for the passed local image Uris
      */

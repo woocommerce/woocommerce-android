@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.content.DialogInterface
+import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,8 +14,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -22,7 +28,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -36,6 +42,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.math.BigDecimal
 import java.util.Date
 
@@ -88,6 +96,8 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     init {
+        EventBus.getDefault().register(this)
+
         viewState = viewState.copy(parentProduct = productRepository.getProduct(viewState.variation.remoteProductId))
         showVariation(originalVariation.copy())
     }
@@ -125,12 +135,18 @@ class VariationDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onImageClicked() {
-        viewState.variation.image?.let {
-            AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-            triggerEvent(ShowImage(it))
-        }
+    fun onImageClicked(image: Image) {
+        AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
+        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image), selectedImage =  image))
     }
+
+    fun onAddImageButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
+        val images = viewState.variation.image?.let { listOf(it) } ?: emptyList()
+        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, images, showChooser = true))
+    }
+
+    fun isUploadingImages(remoteId: Long) = ProductImagesService.isUploadingForProduct(remoteId)
 
     fun onVariationVisibilitySwitchChanged(isVisible: Boolean) {
         AnalyticsTracker.track(PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED)
@@ -278,6 +294,60 @@ class VariationDetailViewModel @AssistedInject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.variation.shippingClass ?: ""
 
+    /**
+     * Checks whether product images are uploading and ensures the view state reflects any currently
+     * uploading images
+     */
+    private fun checkImageUploads(remoteProductId: Long) {
+        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
+            val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
+            viewState.copy(uploadingImageUri = uri)
+        } else {
+            viewState.copy(uploadingImageUri = null)
+        }
+    }
+
+    /**
+     * The list of product images has started uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
+        checkImageUploads(event.id)
+    }
+
+    /**
+     * The list of product images has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        if (event.isCancelled) {
+            viewState = viewState.copy(uploadingImageUri = null)
+        } else {
+//            loadProduct(event.id)
+        }
+
+        checkImageUploads(event.id)
+    }
+
+    /**
+     * A single product image has finished uploading
+     */
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onEventMainThread(event: OnProductImageUploaded) {
+        if (event.isError) {
+            triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
+        } else {
+            event.media?.let { media ->
+                val variation = viewState.variation.copy(image = media.toAppModel())
+                viewState = viewState.copy(variation = variation)
+            }
+        }
+        checkImageUploads(viewState.variation.remoteVariationId)
+    }
+
     @Parcelize
     data class VariationViewState(
         val variation: ProductVariation,
@@ -291,8 +361,9 @@ class VariationDetailViewModel @AssistedInject constructor(
         val regularPriceWithCurrency: String? = null,
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
-        val parentProduct: Product? = null
-    ) : Parcelable
+        val parentProduct: Product? = null,
+        val uploadingImageUri: Uri? = null
+        ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<VariationDetailViewModel>
