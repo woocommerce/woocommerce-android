@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_image_gallery"
+    app:startDestination="@id/productImagesFragment">
+    <fragment
+        android:id="@+id/productImagesFragment"
+        android:name="com.woocommerce.android.ui.products.ProductImagesFragment"
+        android:label="ProductImagesFragment"
+        tools:layout="@layout/fragment_product_images">
+        <argument
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="images"
+            app:argType="com.woocommerce.android.model.Product$Image[]" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/productImageViewerFragment"
+        android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"
+        android:label="ProductImageViewerFragment"
+        tools:layout="@layout/fragment_image_viewer">
+        <argument
+            android:name="isDeletingAllowed"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="mediaId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/wpMediaPickerFragment"
+        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
+        android:label="WPMediaPickerFragment"
+        tools:layout="@layout/fragment_wpmedia_picker" />
+
+    <action
+        android:id="@+id/action_global_productImageViewerFragment"
+        app:destination="@id/productImageViewerFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
+
+    <action
+        android:id="@+id/action_global_wpMediaFragment"
+        app:destination="@id/wpMediaPickerFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
+
+</navigation>

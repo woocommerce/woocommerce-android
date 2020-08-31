@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -131,7 +132,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
+            is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId, target.images)
 
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
@@ -170,7 +171,7 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductImages -> {
-                viewProductImageChooser(fragment, target.product.remoteId)
+                viewProductImageChooser(fragment, target.product.remoteId, target.product.images)
             }
 
             is ViewProductMenuOrder -> {
@@ -225,15 +226,13 @@ class ProductNavigator @Inject constructor() {
         }
     }
 
-    private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
+    private fun viewProductImageChooser(fragment: Fragment, remoteId: Long, images: List<Image>) {
         val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(remoteId)
-        fragment.findNavController().navigateSafely(action)
-    }
-
-    private fun viewProductImageViewer(fragment: Fragment, remoteId: Long) {
-        val action = ProductImageViewerFragmentDirections
-                .actionGlobalProductImageViewerFragment(remoteId)
+                .actionProductDetailFragmentToNavGraphImageGallery(
+                    remoteId,
+                    images.toTypedArray(),
+                    RequestCodes.PRODUCT_DETAIL_IMAGES
+                )
         fragment.findNavController().navigateSafely(action)
     }
 }

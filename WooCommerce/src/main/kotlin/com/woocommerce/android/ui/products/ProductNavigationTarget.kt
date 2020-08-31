@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
@@ -34,7 +35,11 @@ sealed class ProductNavigationTarget : Event() {
         val product: Product,
         val imageModel: Product.Image? = null
     ) : ProductNavigationTarget()
-    data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductImageChooser(
+        val remoteId: Long,
+        val images: List<Image>,
+        val requestCode: Int
+    ) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :

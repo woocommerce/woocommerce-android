@@ -18,19 +18,19 @@ abstract class ProductImagesModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: ProductImagesFragment): Bundle? {
+            return fragment.arguments
         }
 
         @JvmStatic
         @Provides
         fun provideSavedStateRegistryOwner(fragment: ProductImagesFragment): SavedStateRegistryOwner {
-            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_products)
+            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_image_gallery)
         }
     }
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProductDetailViewModel::class)
-    abstract fun bindFactory(factory: ProductDetailViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(ProductImagesViewModel::class)
+    abstract fun bindFactory(factory: ProductImagesViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 }
