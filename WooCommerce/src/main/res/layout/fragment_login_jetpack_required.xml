@@ -40,27 +40,15 @@
                 android:textAlignment="center"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_150"
+                android:layout_marginEnd="@dimen/major_150"
                 android:textColor="@color/color_on_surface_high"
                 android:text="@string/login_jetpack_required_msg"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/btn_jetpack_instructions"
-                app:layout_constraintStart_toStartOf="@+id/btn_jetpack_instructions"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.48000002" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_jetpack_instructions"
-                style="@style/Woo.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_200"
-                android:layout_marginBottom="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_300"
-                android:layout_marginEnd="@dimen/major_300"
-                android:text="@string/login_jetpack_view_instructions"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/jetpack_required_msg"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.48000002" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_what_is_jetpack"
@@ -71,30 +59,15 @@
                 android:layout_marginStart="@dimen/major_300"
                 android:layout_marginEnd="@dimen/major_300"
                 android:text="@string/login_jetpack_what_is"
+                android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_jetpack_instructions"
+                app:layout_constraintTop_toBottomOf="@+id/jetpack_required_msg"
                 app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <com.woocommerce.android.widgets.WCElevatedLinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/txt_signin_jetpack"
-            style="@style/TextAppearance.Woo.Body2"
-            android:textColor="@color/color_on_surface_high"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/min_tap_target"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/login_jetpack_installed_sign_in"
-            tools:text="Already have Jetpack? Sign in" />
-    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    <include layout="@layout/view_login_epilogue_button_bar" />
 
 </LinearLayout>

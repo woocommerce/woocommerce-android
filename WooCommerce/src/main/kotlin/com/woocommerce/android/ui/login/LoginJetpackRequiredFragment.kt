@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
+import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 
 /**
@@ -74,40 +75,27 @@ class LoginJetpackRequiredFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        btn_jetpack_instructions.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
-            jetpackLoginListener?.showJetpackInstructions()
+        with(button_primary) {
+            text = getString(R.string.login_jetpack_view_instructions)
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
+                jetpackLoginListener?.showJetpackInstructions()
+            }
+        }
+
+        with(button_secondary) {
+            visibility = View.VISIBLE
+            text = getString(R.string.login_refresh_after_install)
+            setOnClickListener {
+                // TODO AMANDA : track event
+
+                // TODO AMANDA : retry to connect via Jetpack
+            }
         }
 
         btn_what_is_jetpack.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
-        }
-
-        // Already have Jetpack? Sign in button setup
-        with(txt_signin_jetpack) {
-            val signInText = getString(R.string.login_sign_in)
-            val jetpackInstalledText = getString(R.string.login_jetpack_installed_sign_in, signInText)
-            val spannable = SpannableString(jetpackInstalledText)
-            spannable.setSpan(
-                    WooClickableSpan {
-                        AnalyticsTracker.track(
-                                Stat.LOGIN_JETPACK_REQUIRED_SIGN_IN_LINK_TAPPED,
-                                mapOf(AnalyticsTracker.KEY_URL to siteAddress.orEmpty()))
-
-                        // Save this decision to preferences so it may be used later
-                        // if the login is not successful.
-                        AppPrefs.setLoginUserBypassedJetpackRequired()
-
-                        // Display the login by email screen
-                        jetpackLoginListener?.showEmailLoginScreen(siteAddress.orEmpty())
-                    },
-                    (jetpackInstalledText.length - signInText.length),
-                    jetpackInstalledText.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            setText(spannable, TextView.BufferType.SPANNABLE)
-            movementMethod = LinkMovementMethod.getInstance()
         }
     }
 
