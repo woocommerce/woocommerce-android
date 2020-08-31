@@ -66,7 +66,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     private val hasChanges: Boolean
-        get() = !originalImages.areSameImagesAs(images)
+        get() = !originalImages.areSameImagesAs(images) || !viewState.uploadingImageUris.isNullOrEmpty()
 
     init {
         EventBus.getDefault().register(this)
