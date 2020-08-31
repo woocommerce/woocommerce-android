@@ -17,12 +17,13 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import dagger.Lazy
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) : BaseFragment(), BackPressListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     companion object {

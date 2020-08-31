@@ -16,7 +16,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -34,9 +33,10 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
 import javax.inject.Inject
+import dagger.Lazy
 
 class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPressListener {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     companion object {
@@ -47,7 +47,7 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by navGraphViewModels(R.id.nav_graph_image_gallery) {
-        viewModelFactory
+        viewModelFactory.get()
     }
 
     private var isConfirmationShowing = false

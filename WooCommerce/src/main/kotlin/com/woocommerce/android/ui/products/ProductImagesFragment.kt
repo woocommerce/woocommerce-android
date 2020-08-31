@@ -45,7 +45,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by navGraphViewModels(R.id.nav_graph_image_gallery) {
-        viewModelFactory
+        viewModelFactory.get()
     }
 
     override val isDoneButtonVisible: Boolean
