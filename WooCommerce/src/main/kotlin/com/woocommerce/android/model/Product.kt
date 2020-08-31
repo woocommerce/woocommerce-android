@@ -151,48 +151,6 @@ data class Product(
         }
 
     /**
-     * Verifies if there are any changes made to the inventory fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasInventoryChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            sku != it.sku ||
-                isStockManaged != it.isStockManaged ||
-                stockStatus != it.stockStatus ||
-                stockQuantity != it.stockQuantity ||
-                backorderStatus != it.backorderStatus ||
-                isSoldIndividually != it.isSoldIndividually
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the shipping fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasShippingChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            weight != it.weight ||
-                length != it.length ||
-                width != it.width ||
-                height != it.height ||
-                shippingClass != it.shippingClass
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the product images
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasImageChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            !isSameImages(it.images)
-        } ?: false
-    }
-
-    /**
      * Verifies if there are any changes made to the external link settings
      */
     fun hasExternalLinkChanges(updatedProduct: Product?): Boolean {
@@ -239,13 +197,6 @@ data class Product(
             !isSameTags(it.tags)
         } ?: false
     }
-
-    /**
-     * Compares this product's images with the passed list, returns true only if both lists contain
-     * the same images in the same order
-     */
-    private fun isSameImages(updatedImages: List<Image>) = images.size == updatedImages.size &&
-        images.foldIndexed(true) { i, all, image -> all && image.id == updatedImages[i].id }
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -526,20 +477,6 @@ fun MediaModel.toAppModel(): Product.Image {
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
-}
-
-fun List<Product>.isSameList(productList: List<Product>): Boolean {
-    if (this.size != productList.size) {
-        return false
-    }
-    for (index in this.indices) {
-        val oldItem = productList[index]
-        val newItem = this[index]
-        if (!oldItem.isSameProduct(newItem)) {
-            return false
-        }
-    }
-    return true
 }
 
 /**

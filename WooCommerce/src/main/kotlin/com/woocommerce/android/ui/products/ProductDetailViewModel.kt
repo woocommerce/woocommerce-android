@@ -802,16 +802,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Removes a single product image from the product draft
-     */
-    fun removeProductImageFromDraft(remoteMediaId: Long) {
-        viewState.productDraft?.let { product ->
-            val imageList = product.images.filter { it.id != remoteMediaId }
-            updateProductDraft(images = imageList)
-        }
-    }
-
     fun fetchProductCategories() {
         if (_productCategories.value == null) {
             loadProductCategories()
