@@ -18,8 +18,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -27,11 +25,12 @@ import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -84,8 +83,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     private fun setupViews() {
         addImageButton.setOnClickListener {
-            AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
-            showImageSourceDialog()
+            viewModel.onImageSourceButtonClicked()
         }
     }
 
@@ -102,14 +100,15 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
-                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
                     event.messageId
                 )
+                is ShowImageSourceDialog -> showImageSourceDialog()
+                is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
                 else -> event.isHandled = false
             }
         })
@@ -123,11 +122,14 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     override fun getFragmentTitle() = getString(R.string.product_images_title)
 
     override fun onGalleryImageClicked(image: Image) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        viewModel.onGalleryImageClicked(image)
+    }
+
+    private fun showImageDetail(image: Image, skipThrottling: Boolean) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
             viewModel.isImageDeletingAllowed, image.id
         )
-        findNavController().navigateSafely(action)
+        findNavController().navigateSafely(action, skipThrottling)
     }
 
     private fun showImageSourceDialog() {

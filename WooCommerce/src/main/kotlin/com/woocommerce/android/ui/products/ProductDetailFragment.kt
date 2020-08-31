@@ -21,6 +21,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -138,6 +139,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 height = it.height,
                 shippingClass = it.shippingClassSlug,
                 shippingClassId = it.shippingClassId
+            )
+            changesMade()
+        }
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                images = it
             )
             changesMade()
         }

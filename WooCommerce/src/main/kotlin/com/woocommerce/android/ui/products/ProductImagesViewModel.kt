@@ -9,7 +9,10 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -62,8 +65,17 @@ class ProductImagesViewModel @AssistedInject constructor(
     private val hasChanges: Boolean
         get() = !originalImages.areSameImagesAs(images)
 
+    init {
+        EventBus.getDefault().register(this)
+
+        if (navArgs.showChooser) {
+            triggerEvent(ShowImageSourceDialog)
+        } else {
+            navArgs.selectedImage?.let {
+                triggerEvent(ShowImageDetail(it, true))
             }
         }
+    }
 
     fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
         if (!networkStatus.isConnected()) {
@@ -86,6 +98,16 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(isDoneButtonVisible = hasChanges)
     }
 
+    fun onImageSourceButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
+        triggerEvent(ShowImageSourceDialog)
+    }
+
+    fun onGalleryImageClicked(image: Image) {
+        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+        triggerEvent(ShowImageDetail(image))
+    }
+
     fun onDoneButtonClicked() {
         AnalyticsTracker.track(
             Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
@@ -96,16 +118,26 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onExit() {
-        if (hasChanges) {
-            triggerEvent(ShowDiscardDialog(
-                messageId = string.discard_images_message,
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    ProductImagesService.cancel()
-                    triggerEvent(Exit)
-                }
-            ))
-        } else {
-            triggerEvent(Exit)
+        when {
+            ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
+                triggerEvent(ShowDiscardDialog(
+                    messageId = string.images_still_uploading_message,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        ProductImagesService.cancel()
+                        triggerEvent(ExitWithResult(originalImages))
+                    }
+                ))
+            }
+            hasChanges -> {
+                triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        triggerEvent(ExitWithResult(originalImages))
+                    }
+                ))
+            }
+            else -> {
+                triggerEvent(ExitWithResult(originalImages))
+            }
         }
     }
     /**
@@ -125,12 +157,9 @@ class ProductImagesViewModel @AssistedInject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
+        } else {
+            checkImageUploads(event.id)
         }
-//        else {
-//            loadProduct(event.id)
-//        }
-
-        checkImageUploads(event.id)
     }
 
 
@@ -175,6 +204,9 @@ class ProductImagesViewModel @AssistedInject constructor(
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null
     ) : Parcelable
+
+    object ShowImageSourceDialog : Event()
+    data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductImagesViewModel>

@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
@@ -44,8 +43,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCat
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
@@ -177,8 +175,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onImageGalleryClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, selectedImage = image))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -187,8 +186,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onAddImageClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId, it.images, RequestCodes.PRODUCT_DETAIL_IMAGES))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -198,6 +198,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
+        updateProductBeforeEnteringFragment()
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
