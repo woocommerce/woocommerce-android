@@ -138,12 +138,13 @@
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_refresh_app">refresh the app</string>
+    <string name="login_refresh_after_install">Refresh after install</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
-    <string name="login_jetpack_view_instructions">View instructions</string>
+    <string name="login_jetpack_view_instructions">See instructions</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
