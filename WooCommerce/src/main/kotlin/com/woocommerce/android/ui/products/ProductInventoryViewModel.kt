@@ -142,6 +142,11 @@ class ProductInventoryViewModel @AssistedInject constructor(
         viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        productRepository.onCleanup()
+    }
+
     @Parcelize
     data class ViewState(
         val inventoryData: InventoryData = InventoryData(),
