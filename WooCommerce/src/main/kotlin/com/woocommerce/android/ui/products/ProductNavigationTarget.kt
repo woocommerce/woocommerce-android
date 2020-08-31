@@ -31,14 +31,11 @@ sealed class ProductNavigationTarget : Event() {
 
     data class ViewProductShortDescriptionEditor(val shortDescription: String, val title: String) :
             ProductNavigationTarget()
-    data class ViewProductImages(
-        val product: Product,
-        val imageModel: Product.Image? = null
-    ) : ProductNavigationTarget()
-    data class ViewProductImageChooser(
+    data class ViewProductImageGallery(
         val remoteId: Long,
         val images: List<Image>,
-        val requestCode: Int
+        val showChooser: Boolean = false,
+        val selectedImage: Image? = null
     ) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()

@@ -17,6 +17,13 @@
             android:name="images"
             app:argType="com.woocommerce.android.model.Product$Image[]" />
         <argument
+            android:name="selectedImage"
+            app:argType="com.woocommerce.android.model.Product$Image"
+            app:nullable="true" />
+        <argument
+            android:name="showChooser"
+            app:argType="boolean" />
+        <argument
             android:name="requestCode"
             app:argType="integer" />
     </fragment>
