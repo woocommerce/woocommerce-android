@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
@@ -181,22 +183,22 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productName = product.name.fastStripHtml()
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
-            imageGallery.visibility = View.GONE
-            addImageContainer.visibility = View.VISIBLE
+            imageGallery.hide()
+            addImageContainer.show()
             addImageContainer.setOnClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                viewModel.onAddImageClicked()
+                viewModel.onAddImageButtonClicked()
             }
         } else {
-            addImageContainer.visibility = View.GONE
-            imageGallery.visibility = View.VISIBLE
+            addImageContainer.hide()
+            imageGallery.show()
             imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
+                frameStatusBadge.show()
                 textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
 
@@ -324,12 +326,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onGalleryImageClicked(image: Product.Image) {
-        viewModel.onImageGalleryClicked(image)
+        viewModel.onImageClicked(image)
     }
 
     override fun onGalleryAddImageClicked() {
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-        viewModel.onAddImageClicked()
+        viewModel.onAddImageButtonClicked()
     }
 
     override fun getFragmentTitle() = productName

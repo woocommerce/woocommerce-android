@@ -173,7 +173,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image) {
+    fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images, selectedImage = image))
@@ -184,7 +184,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when the add image icon is clicked in Product detail screen
      */
-    fun onAddImageClicked() {
+    fun onAddImageButtonClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
