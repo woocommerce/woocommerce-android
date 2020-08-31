@@ -60,11 +60,8 @@ class ProductImagesViewModel @AssistedInject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     private val hasChanges: Boolean
-        get() {
-            return if (ProductImagesService.isUploadingForProduct(navArgs.remoteId)) {
-                true
-            } else {
-                originalImages == images
+        get() = !originalImages.areSameImagesAs(images)
+
             }
         }
 

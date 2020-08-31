@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
@@ -134,7 +135,7 @@ data class Product(
             externalUrl == product.externalUrl &&
             buttonText == product.buttonText &&
             menuOrder == product.menuOrder &&
-            isSameImages(product.images) &&
+            images.areSameImagesAs(product.images) &&
             isSameCategories(product.categories) &&
             isSameTags(product.tags) &&
             groupedProductIds == product.groupedProductIds
