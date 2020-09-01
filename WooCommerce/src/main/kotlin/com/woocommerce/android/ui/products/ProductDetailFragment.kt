@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -310,13 +309,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                     changesMade()
                 }
-            }
-            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
-                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                        ?.let {
-                            viewModel.addProductImageListToDraft(it)
-                            changesMade()
-                        }
             }
         }
     }

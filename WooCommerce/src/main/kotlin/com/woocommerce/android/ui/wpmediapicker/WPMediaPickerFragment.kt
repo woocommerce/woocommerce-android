@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -35,8 +34,8 @@ import javax.inject.Inject
 
 class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressListener {
     companion object {
-        const val ARG_SELECTED_IMAGES = "selected_image_ids"
         private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        const val KEY_WP_IMAGE_PICKER_RESULT = "key_wp_image_picker_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -112,7 +111,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> activity?.onBackPressed()
+                is Exit -> findNavController().navigateUp()
             }
         })
     }
@@ -135,15 +134,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      */
     private fun navigateBackWithResult() {
         if (wpMediaGallery.getSelectedCount() > 0) {
-            val bundle = Bundle().also {
-                it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
-            }
-            requireActivity().navigateBackWithResult(
-                    RequestCodes.WPMEDIA_LIBRARY_PICKER,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.productDetailFragment
-            )
+            navigateBackWithResult(KEY_WP_IMAGE_PICKER_RESULT, wpMediaGallery.getSelectedImages())
         } else {
             findNavController().navigateUp()
         }

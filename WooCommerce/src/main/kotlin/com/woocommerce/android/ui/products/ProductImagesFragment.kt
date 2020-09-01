@@ -19,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetai
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -82,7 +84,15 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
         setupViews()
+    }
+
+
+    private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
+        handleResult<List<Image>>(KEY_WP_IMAGE_PICKER_RESULT) {
+            viewModel.onImagesAdded(it)
+        }
     }
 
     private fun setupViews() {

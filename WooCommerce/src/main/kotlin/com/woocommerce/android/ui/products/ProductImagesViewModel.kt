@@ -122,6 +122,10 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
+    fun onImagesAdded(newImages: List<Image>) {
+        viewState = viewState.copy(images = images + newImages)
+    }
+
     fun onImageSourceButtonClicked() {
         AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
         triggerEvent(ShowImageSourceDialog)
