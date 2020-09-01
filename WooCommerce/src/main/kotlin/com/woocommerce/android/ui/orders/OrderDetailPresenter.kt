@@ -60,7 +60,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
@@ -102,7 +102,6 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
-        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
@@ -163,6 +162,8 @@ class OrderDetailPresenter @Inject constructor(
         // Display the shipment tracking list only if it's available and if there are no shipping labels available
         if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.isShipmentTrackingAvailable) {
             orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
+        } else {
+            orderView?.hideOrderShipmentTrackings()
         }
     }
 
@@ -352,8 +353,8 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel?.let { order ->
                     orderView?.showOrderDetail(order, isFreshData = true)
                     orderView?.showSkeleton(false)
+                    loadOrderDetailInfo(order)
                     loadOrderNotes()
-                    fetchOrderDetailInfo(order)
                 } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
