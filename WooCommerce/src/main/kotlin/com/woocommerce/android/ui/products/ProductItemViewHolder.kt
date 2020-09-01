@@ -152,9 +152,9 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     /**
      * Method to return details associated with a user selection
      */
-    fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+    fun getItemDetails() =
         object : ItemDetailsLookup.ItemDetails<Long>() {
-            override fun getPosition(): Int = adapterPosition
-            override fun getSelectionKey(): Long? = itemId
+            override fun getPosition() = adapterPosition
+            override fun getSelectionKey() = itemId
         }
 }

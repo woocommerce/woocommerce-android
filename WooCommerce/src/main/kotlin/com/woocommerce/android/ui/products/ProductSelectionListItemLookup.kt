@@ -13,11 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
  * return the details of that item.
  */
 class ProductSelectionListItemLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<Long>() {
-    override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? {
-        val view = recyclerView.findChildViewUnder(event.x, event.y)
-        if (view != null) {
-            return (recyclerView.getChildViewHolder(view) as? ProductItemViewHolder)?.getItemDetails()
-        }
-        return null
-    }
+    override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? =
+        recyclerView
+            .findChildViewUnder(event.x, event.y)
+            ?.let { recyclerView.getChildViewHolder(it) as? ProductItemViewHolder }
+            ?.getItemDetails()
 }
