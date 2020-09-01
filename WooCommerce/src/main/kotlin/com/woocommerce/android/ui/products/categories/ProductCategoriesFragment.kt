@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -149,12 +150,12 @@ class ProductCategoriesFragment : BaseProductFragment(),
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreCategoriesProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreCategoriesProgress.isVisible = show
     }
 
     private fun showAddCategoryButton(show: Boolean) {
         with(addProductCategoryView) {
-            visibility = if (show) View.VISIBLE else View.GONE
+            isVisible = show
             initView { viewModel.onAddCategoryButtonClicked() }
         }
     }

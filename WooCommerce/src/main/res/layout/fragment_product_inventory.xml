@@ -51,9 +51,12 @@
                 android:layout_marginTop="@dimen/major_75"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
+                app:layout_goneMarginBottom="@dimen/major_75"
                 android:inputType="text"
                 android:visibility="gone"
+                tools:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
                 android:hint="@string/product_stock_status" />
@@ -63,12 +66,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_75"
+                app:layout_goneMarginBottom="@dimen/major_75"
                 android:visibility="gone"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
                 app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                     android:id="@+id/product_stock_quantity"

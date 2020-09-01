@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-08 08:54:03+0000
+Translation-Revision-Date: 2020-08-20 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="feedback_request_like_it">마음에 들어요</string>
+    <string name="feedback_request_make_better">조금 마음에 들지 않아요</string>
+    <string name="feedback_request_title">WooCommerce 앱이 마음에 드시나요?</string>
+    <string name="variation_detail_update_variation_error">버전을 업데이트하는 중 오류 발생</string>
+    <string name="variation_detail_fetch_variation_error">버전을 가져오는 중 오류 발생</string>
+    <string name="product_add_tag_error">태그를 추가하던 중 오류 발생</string>
+    <string name="product_add_tag_dialog_title">태그 추가 중</string>
+    <string name="shipping_label_refund_progress_message">환불을 처리하는 중입니다. 기다려주세요…</string>
+    <string name="shipping_label_refund_success">환불이 제출되었습니다.</string>
+    <string name="shipping_label_refund_button">환불 레이블(-%1$s)</string>
+    <string name="shipping_label_refund_amount_title">환불 가능 금액</string>
+    <string name="shipping_label_refund_purchase_date_title">구매 날짜</string>
+    <string name="shipping_label_refund_message">패키지를 배송하는 데 사용되지 않은 배송 레이블은 환불을 요청할 수 있습니다. 처리되는 데 14일 이상 걸립니다.</string>
+    <string name="orderdetail_shipping_label_request_refund">환불 요청</string>
+    <string name="orderdetail_shipping_label_item_menu">배송 레이블 환불</string>
     <string name="product_add_category_dialog_message">기다려주세요…</string>
     <string name="product_add_category_dialog_title">카테고리 추가 중</string>
     <string name="product_category_parent">상위 카테고리</string>
@@ -193,7 +208,6 @@ Language: ko_KR
     <string name="product_add_image_content_description">이미지 추가</string>
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
-    <string name="product_variation_hidden">숨김</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
     <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
@@ -238,7 +252,7 @@ Language: ko_KR
     <string name="product_list_empty_search">일치하는 제품이 없음</string>
     <string name="product_list_empty">아직 제품이 없음</string>
     <string name="product_stock_count">%s 재고 있음</string>
-    <string name="product_stock_status_instock_with_variations">재고 있음 \u2022 %d 변형</string>
+    <string name="product_stock_status_instock_with_variations">재고 있음 \u2022 %d 버전</string>
     <string name="product_image_content_description">상품 이미지</string>
     <string name="review_list_item_title">%1$s 님이 %2$s에 대한 검토를 남김</string>
     <string name="wc_unapproved">받아들이지 않기</string>
@@ -296,7 +310,6 @@ Language: ko_KR
     <string name="install">설치</string>
     <string name="error_disabled_apis">설정을 가져올 수 없음: 이 OAuth 앱 ID + 계정 조합에 일부 API를 사용할 수 없습니다.</string>
     <string name="settings_hiring">우리와 함께해요!</string>
-    <string name="feature_requests">기능 요청</string>
     <string name="orderdetail_copy_tracking_number">추적 번호 복사</string>
     <string name="login_refresh_app_progress">WooCommerce 확인 중…</string>
     <string name="login_refresh_app">앱 새로 고침</string>

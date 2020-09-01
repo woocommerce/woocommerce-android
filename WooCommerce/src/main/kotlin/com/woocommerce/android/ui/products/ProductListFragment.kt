@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -79,7 +80,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
+        productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
@@ -321,7 +322,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreProgress.isVisible = show
     }
 
     private fun showProductList(products: List<Product>) {
