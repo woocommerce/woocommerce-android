@@ -41,6 +41,9 @@ class ProductImagesViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
+    private val originalImages = navArgs.images.toList()
+
+    val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
     val viewStateData = LiveDataDelegate(
         savedState,
