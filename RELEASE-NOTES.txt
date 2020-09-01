@@ -1,5 +1,6 @@
 5.0
 -----
+* Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
  
 4.9
 -----
