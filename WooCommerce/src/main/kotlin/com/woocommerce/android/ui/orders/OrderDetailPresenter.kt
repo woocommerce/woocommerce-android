@@ -353,7 +353,7 @@ class OrderDetailPresenter @Inject constructor(
                 orderModel?.let { order ->
                     orderView?.showOrderDetail(order, isFreshData = true)
                     orderView?.showSkeleton(false)
-                    loadOrderDetailInfo(order)
+                    fetchOrderDetailInfo(order)
                     loadOrderNotes()
                 } ?: orderView?.showLoadOrderError()
             }
