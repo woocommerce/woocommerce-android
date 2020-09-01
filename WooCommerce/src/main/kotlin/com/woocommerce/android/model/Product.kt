@@ -10,7 +10,7 @@ import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
-import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -51,7 +51,7 @@ data class Product(
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
-    val manageStock: Boolean,
+    val isStockManaged: Boolean,
     val stockQuantity: Int,
     val sku: String,
     val shippingClass: String,
@@ -66,13 +66,13 @@ data class Product(
     val attributes: List<Attribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
-    val isOnSale: Boolean,
-    val soldIndividually: Boolean,
+    val isSoldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
+    val groupedProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -103,9 +103,9 @@ data class Product(
             stockQuantity == product.stockQuantity &&
             stockStatus == product.stockStatus &&
             status == product.status &&
-            manageStock == product.manageStock &&
+            isStockManaged == product.isStockManaged &&
             backorderStatus == product.backorderStatus &&
-            soldIndividually == product.soldIndividually &&
+            isSoldIndividually == product.isSoldIndividually &&
             reviewsAllowed == product.reviewsAllowed &&
             sku == product.sku &&
             slug == product.slug &&
@@ -136,7 +136,8 @@ data class Product(
             menuOrder == product.menuOrder &&
             isSameImages(product.images) &&
             isSameCategories(product.categories) &&
-            isSameTags(product.tags)
+            isSameTags(product.tags) &&
+            groupedProductIds == product.groupedProductIds
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -157,28 +158,11 @@ data class Product(
     fun hasInventoryChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             sku != it.sku ||
-                manageStock != it.manageStock ||
+                isStockManaged != it.isStockManaged ||
                 stockStatus != it.stockStatus ||
                 stockQuantity != it.stockQuantity ||
                 backorderStatus != it.backorderStatus ||
-                soldIndividually != it.soldIndividually
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the pricing fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasPricingChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            regularPrice.isNotEqualTo(it.regularPrice) ||
-                salePrice.isNotEqualTo(it.salePrice) ||
-                saleStartDateGmt != it.saleStartDateGmt ||
-                saleEndDateGmt != it.saleEndDateGmt ||
-                isOnSale != it.isOnSale ||
-                taxClass != it.taxClass ||
-                taxStatus != it.taxStatus
+                isSoldIndividually != it.isSoldIndividually
         } ?: false
     }
 
@@ -326,14 +310,13 @@ data class Product(
                 status = updatedProduct.status,
                 catalogVisibility = updatedProduct.catalogVisibility,
                 isFeatured = updatedProduct.isFeatured,
-                manageStock = updatedProduct.manageStock,
+                isStockManaged = updatedProduct.isStockManaged,
                 stockStatus = updatedProduct.stockStatus,
                 stockQuantity = updatedProduct.stockQuantity,
                 backorderStatus = updatedProduct.backorderStatus,
-                soldIndividually = updatedProduct.soldIndividually,
+                isSoldIndividually = updatedProduct.isSoldIndividually,
                 regularPrice = updatedProduct.regularPrice,
                 salePrice = updatedProduct.salePrice,
-                isOnSale = updatedProduct.isOnSale,
                 isVirtual = updatedProduct.isVirtual,
                 isSaleScheduled = updatedProduct.isSaleScheduled,
                 saleStartDateGmt = updatedProduct.saleStartDateGmt,
@@ -354,7 +337,8 @@ data class Product(
                 menuOrder = updatedProduct.menuOrder,
                 categories = updatedProduct.categories,
                 tags = updatedProduct.tags,
-                type = updatedProduct.type
+                type = updatedProduct.type,
+                groupedProductIds = updatedProduct.groupedProductIds
             )
         } ?: this.copy()
     }
@@ -420,14 +404,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.status = status.toString()
         it.catalogVisibility = catalogVisibility.toString()
         it.featured = isFeatured
-        it.manageStock = manageStock
+        it.manageStock = isStockManaged
         it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
         it.stockQuantity = stockQuantity
-        it.soldIndividually = soldIndividually
+        it.soldIndividually = isSoldIndividually
         it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = if (regularPrice isEquivalentTo BigDecimal.ZERO) "" else regularPrice.toString()
-        it.salePrice = if (salePrice isEquivalentTo BigDecimal.ZERO) "" else salePrice.toString()
-        it.onSale = isOnSale
+        it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
+        it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
         it.length = if (length == 0f) "" else length.formatToString()
         it.width = if (width == 0f) "" else width.formatToString()
         it.weight = if (weight == 0f) "" else weight.formatToString()
@@ -454,6 +437,11 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
         it.type = type.value
+        it.groupedProductIds = groupedProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
     }
 }
 
@@ -484,7 +472,7 @@ fun WCProductModel.toAppModel(): Product {
         // In Core, if a tax class is empty it is considered as standard and we are following the same
         // procedure here
         taxClass = if (this.taxClass.isEmpty()) Product.TAX_CLASS_DEFAULT else this.taxClass,
-        manageStock = this.manageStock,
+        isStockManaged = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
         slug = this.slug,
@@ -518,8 +506,7 @@ fun WCProductModel.toAppModel(): Product {
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        isOnSale = this.onSale,
-        soldIndividually = this.soldIndividually,
+        isSoldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder,
@@ -536,7 +523,8 @@ fun WCProductModel.toAppModel(): Product {
                 it.name,
                 it.slug
             )
-        }
+        },
+        groupedProductIds = this.getGroupedProductIds()
     )
 }
 
@@ -547,6 +535,20 @@ fun MediaModel.toAppModel(): Product.Image {
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
+}
+
+fun List<Product>.isSameList(productList: List<Product>): Boolean {
+    if (this.size != productList.size) {
+        return false
+    }
+    for (index in this.indices) {
+        val oldItem = productList[index]
+        val newItem = this[index]
+        if (!oldItem.isSameProduct(newItem)) {
+            return false
+        }
+    }
+    return true
 }
 
 /**

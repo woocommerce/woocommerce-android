@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
@@ -98,13 +99,20 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductInventory -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductInventoryFragment(
+                            RequestCodes.PRODUCT_DETAIL_INVENTORY,
+                            target.inventoryData,
+                            target.sku
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductPricingFragment(
+                            RequestCodes.PRODUCT_DETAIL_PRICING,
+                            target.pricingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -116,7 +124,10 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(
+                            RequestCodes.PRODUCT_DETAIL_SHIPPING,
+                            target.shippingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -171,37 +182,43 @@ class ProductNavigator @Inject constructor() {
             is ViewProductCategories -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductCategoriesFragment(target.remoteId)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductCategory -> {
                 val action = ProductCategoriesFragmentDirections
                     .actionProductCategoriesFragmentToAddProductCategoryFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductTags -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductTagsFragment(target.remoteId)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDetailBottomSheet -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductDetailBottomSheetFragment(target.remoteId)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductTypes -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.remoteId)
-                fragment.findNavController().navigate(action)
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.productType)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductReviews -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductReviewsFragment(target.remoteId)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewGroupedProducts -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalGroupedProductListFragment(target.groupedProductIds)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

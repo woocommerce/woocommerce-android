@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -184,7 +185,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreTagsProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreTagsProgress.isVisible = show
     }
 
     override fun onRequestLoadMore() {
