@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils.Duration.LONG
 
@@ -127,21 +128,19 @@ object WooAnimUtils {
         animateBar(view, show, false, duration)
     }
 
-    private fun animateBar(view: View?, show: Boolean, isTopBar: Boolean, duration: Duration) {
-        val newVisibility = if (show) View.VISIBLE else View.GONE
-
-        if (view == null || view.visibility == newVisibility) {
+    private fun animateBar(view: View?, isVisible: Boolean, isTopBar: Boolean, duration: Duration) {
+        if (view == null || view.isVisible == isVisible) {
             return
         }
 
         val fromY: Float
         val toY: Float
         if (isTopBar) {
-            fromY = if (show) -1f else 0f
-            toY = if (show) 0f else -1f
+            fromY = if (isVisible) -1f else 0f
+            toY = if (isVisible) 0f else -1f
         } else {
-            fromY = if (show) 1f else 0f
-            toY = if (show) 0f else 1f
+            fromY = if (isVisible) 1f else 0f
+            toY = if (isVisible) 0f else 1f
         }
         val animation = TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0.0f,
@@ -152,7 +151,7 @@ object WooAnimUtils {
         val durationMillis = duration.toMillis(view.context)
         animation.duration = durationMillis
 
-        if (show) {
+        if (isVisible) {
             animation.interpolator = DecelerateInterpolator()
         } else {
             animation.interpolator = AccelerateInterpolator()
@@ -160,11 +159,11 @@ object WooAnimUtils {
 
         view.clearAnimation()
         view.startAnimation(animation)
-        view.visibility = newVisibility
+        view.isVisible = isVisible
     }
 
     fun pop(view: View, duration: Duration = LONG) {
-        AnimationUtils.loadAnimation(view.getContext(), R.anim.pop)?.let { animation ->
+        AnimationUtils.loadAnimation(view.context, R.anim.pop)?.let { animation ->
             animation.duration = duration.toMillis(view.context)
             view.startAnimation(animation)
         }

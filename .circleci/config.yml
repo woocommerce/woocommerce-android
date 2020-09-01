@@ -13,9 +13,8 @@ orbs:
 version: 2.1
 jobs:
   Lint:
-    executor:
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - android/restore-gradle-cache:
@@ -42,9 +41,8 @@ jobs:
           path: WooCommerce/build/reports
           destination: reports
   Test:
-    executor:
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - android/restore-gradle-cache:
@@ -57,9 +55,8 @@ jobs:
           cache-prefix: tests-cache-v1
       - android/save-test-results
   Ensure Screenshots Tests Build:
-    executor:
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - android/restore-gradle-cache:
@@ -79,9 +76,8 @@ jobs:
           command: ./gradlew assembleVanillaDebugAndroidTest
 
   Installable Build:
-    executor:
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - checkout
       - bundle-install/bundle-install
@@ -111,9 +107,8 @@ jobs:
           path: Artifacts
           destination: Artifacts
   Release Build:
-    executor:
-      name: android/default
-      api-version: "28"
+    docker:
+      - image: circleci/android@sha256:061e2535826cc3fe4c4a440e716bf06c36c80401ee635c339c6803b3e427ebb3
     steps:
       - git/shallow-checkout
       - bundle-install/bundle-install

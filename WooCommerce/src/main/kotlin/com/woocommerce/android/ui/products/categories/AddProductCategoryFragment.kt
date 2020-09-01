@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -21,8 +22,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.AddProductCategoryEvent.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -77,7 +78,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_DONE_BUTTON_TAPPED)
+                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }
@@ -133,9 +134,9 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
                     event.negativeBtnAction,
                     event.messageId
                 )
-                is ExitWithResult -> {
+                is ExitWithResult<*> -> {
                     val bundle = Bundle()
-                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.addedCategory)
+                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.data as Parcelable)
                     requireActivity().navigateBackWithResult(
                         RequestCodes.PRODUCT_ADD_CATEGORY,
                         bundle,

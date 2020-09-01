@@ -20,13 +20,15 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
     private var isTextChangeListenerActive: Boolean = false
 
-    fun show(hint: String, detail: String?, isFocused: Boolean) {
+    fun show(hint: String, detail: String?, isFocused: Boolean, isReadOnly: Boolean) {
         editableText.hint = hint
 
         if (!detail.isNullOrEmpty() && detail != editableText.text.toString()) {
             editableText.setText(detail)
             editableText.setSelection(detail.length)
         }
+
+        editableText.isEnabled = !isReadOnly
 
         if (isFocused) {
             editableText.requestFocus()

@@ -10,25 +10,31 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.ShowImage
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
+import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
+import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -39,13 +45,14 @@ import kotlinx.android.synthetic.main.fragment_variation_detail.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener {
+class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var navigator: VariationNavigator
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
@@ -122,11 +129,51 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    private fun setupResultHandlers(viewModel: VariationDetailViewModel) {
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                regularPrice = it.regularPrice,
+                salePrice = it.salePrice,
+                isSaleScheduled = it.isSaleScheduled,
+                saleStartDate = Optional(it.saleStartDate),
+                saleEndDate = Optional(it.saleEndDate)
+            )
+        }
+        handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                sku = it.sku,
+                stockStatus = it.stockStatus,
+                stockQuantity = it.stockQuantity,
+                backorderStatus = it.backorderStatus,
+                isStockManaged = it.isStockManaged
+            )
+        }
+        handleResult<ShippingData>(BaseProductEditorFragment.KEY_SHIPPING_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                weight = it.weight,
+                length = it.length,
+                width = it.width,
+                height = it.height,
+                shippingClass = it.shippingClassSlug,
+                shippingClassId = it.shippingClassId
+            )
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
+            new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
+                if (variationName.isEmpty()) {
+                    variationName = product?.attributes?.joinToString(
+                        separator = " - ",
+                        transform = { "Any ${it.name}" }
+                    ) ?: ""
+                }
+            }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
@@ -139,11 +186,8 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowImage -> {
-                    val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(
-                        event.image.source
-                    )
-                    findNavController().navigateSafely(action)
+                is VariationNavigationTarget -> {
+                    navigator.navigate(this, event)
                 }
                 is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
                     requireActivity(),
@@ -158,7 +202,10 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        variationName = variation.optionName.fastStripHtml()
+        val optionName = variation.optionName.fastStripHtml()
+        if (optionName.isNotBlank()) {
+            variationName = variation.optionName.fastStripHtml()
+        }
 
         if (variation.image == null) {
             variationImage.visibility = View.GONE
@@ -226,6 +273,18 @@ class VariationDetailFragment : BaseFragment(), BackPressListener {
         } else {
             viewModel.onExit()
             false
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        when (requestCode) {
+            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> {
+                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                    viewModel.onVariationChanged(
+                        description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                    )
+                }
+            }
         }
     }
 
