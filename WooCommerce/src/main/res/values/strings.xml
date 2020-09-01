@@ -921,6 +921,7 @@
     <!-- Product Add more details Bottom sheet -->
     <string name="product_type_list_header">Select a product type</string>
     <string name="product_type_physical_desc">An item you ship to the customer</string>
+    <string name="product_type_variation_desc">A product with variations like color or size</string>
     <string name="product_type_virtual_desc">A service or digital download</string>
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_desc">Link a product to an external website</string>

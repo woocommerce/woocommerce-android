@@ -142,11 +142,12 @@ class GroupedProductListViewModel @AssistedInject constructor(
         )
     }
 
-    private fun getOriginalGroupedProductIds(): List<Long> {
-        return if (navArgs.groupedProductIds.isNotEmpty()) {
-            navArgs.groupedProductIds.split(",").map { it.toLong() }
-        } else emptyList()
-    }
+        private val originalGroupedProductIds = 
+        navArgs.groupedProductIds
+            .takeIf { it.isNotEmpty() }
+            ?.split(",")
+            ?.mapNotNull { it.toLongOrNull() }
+            .orEmpty()
 
     @Parcelize
     data class GroupedProductListViewState(
