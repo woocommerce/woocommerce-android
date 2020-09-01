@@ -49,8 +49,8 @@ class ProductFilterListAdapter(
 
     override fun getItemCount() = filterList.size
 
-    private fun isSameList(newList: List<FilterListItemUiModel>): Boolean
-        = filterList.areSameAs(newList) { this.isSameFilter(it) }
+    private fun isSameList(newList: List<FilterListItemUiModel>) =
+        filterList.areSameAs(newList) { this.isSameFilter(it) }
 
     class ProductFilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtFilterName: TextView = view.filterItemName
