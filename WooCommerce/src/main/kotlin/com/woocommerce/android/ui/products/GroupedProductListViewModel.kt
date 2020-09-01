@@ -34,18 +34,25 @@ class GroupedProductListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
+    private val originalGroupedProductIds =
+        navArgs.groupedProductIds
+            .takeIf { it.isNotEmpty() }
+            ?.split(",")
+            ?.mapNotNull { it.toLongOrNull() }
+            .orEmpty()
+
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
     final val productListViewStateData =
-        LiveDataDelegate(savedState, GroupedProductListViewState(getOriginalGroupedProductIds()))
+        LiveDataDelegate(savedState, GroupedProductListViewState(originalGroupedProductIds))
     private var productListViewState by productListViewStateData
 
     private val selectedGroupedProductIds
         get() = productListViewState.selectedGroupedProductIds
 
     val hasChanges: Boolean
-        get() = selectedGroupedProductIds != getOriginalGroupedProductIds()
+        get() = selectedGroupedProductIds != originalGroupedProductIds
 
     override fun onCleared() {
         super.onCleared()
@@ -141,13 +148,6 @@ class GroupedProductListViewModel @AssistedInject constructor(
             isLoadingMore = false
         )
     }
-
-        private val originalGroupedProductIds = 
-        navArgs.groupedProductIds
-            .takeIf { it.isNotEmpty() }
-            ?.split(",")
-            ?.mapNotNull { it.toLongOrNull() }
-            .orEmpty()
 
     @Parcelize
     data class GroupedProductListViewState(
