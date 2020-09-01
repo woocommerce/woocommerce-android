@@ -117,7 +117,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onImageRemoved(imageId: Long) {
-        viewState = viewState.copy(images = images.filter { it.id != imageId})
+        viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
     fun onImageSourceButtonClicked() {
