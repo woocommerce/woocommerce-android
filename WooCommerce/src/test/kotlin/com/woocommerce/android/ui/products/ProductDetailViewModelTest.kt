@@ -90,7 +90,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             storedProduct = product,
             productBeforeEnteringFragment = product,
             isSkeletonShown = false,
-            uploadingImageUris = null,
+            uploadingImageUris = emptyList(),
             showBottomSheetButton = true
     )
 
