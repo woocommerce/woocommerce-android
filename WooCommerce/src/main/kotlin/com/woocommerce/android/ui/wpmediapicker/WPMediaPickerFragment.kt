@@ -99,7 +99,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun setupObservers() {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            wpMediaGallery.showImages(it, this)
+            val isMultiSelectAllowed = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
+            wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
         })
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
