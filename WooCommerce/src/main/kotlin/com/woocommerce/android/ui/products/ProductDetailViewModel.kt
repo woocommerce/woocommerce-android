@@ -19,6 +19,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.removeItem
@@ -212,7 +213,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             true
         } else {
-            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+            viewState.productBeforeEnteringFragment?.hasImageChanges(viewState.productDraft) ?: false
         }
     }
 
@@ -404,7 +405,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onProductTitleChanged(title: String) {
-        updateProductDraft(title = title)
+        if (title != viewState.productDraft?.name?.fastStripHtml()) {
+            updateProductDraft(title = title)
+        }
     }
 
     /**
