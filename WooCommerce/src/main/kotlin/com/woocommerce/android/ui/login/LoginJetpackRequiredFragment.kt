@@ -85,11 +85,11 @@ class LoginJetpackRequiredFragment : Fragment() {
 
         with(button_secondary) {
             visibility = View.VISIBLE
-            text = getString(R.string.login_refresh_after_install)
+            text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 // TODO AMANDA : track event
 
-                // TODO AMANDA : retry to connect via Jetpack
+                loginListener?.startOver()
             }
         }
 

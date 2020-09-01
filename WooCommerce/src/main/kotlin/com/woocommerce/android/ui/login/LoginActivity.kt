@@ -166,8 +166,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return loginMode as LoginMode
     }
 
+    override fun startOver() {
+        showPrologueFragment()
+    }
+
     override fun onPrimaryButtonClicked() {
-        startLoginViaSiteAddress()
+        loginViaSiteAddress()
     }
 
     override fun onSecondaryButtonClicked() {
@@ -187,15 +191,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 "wordpress.com", "wordpress.com", "WordPress.com", "https://s0.wp.com/i/webclip.png", username,
                 password, true)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
-    }
-
-    private fun startLoginViaSiteAddress() {
-        if (getLoginViaSiteAddressFragment() != null) {
-            // login by site address is already shown so, login has already started. Just bail.
-            return
-        }
-
-        loginViaSiteAddress()
     }
 
     private fun startLoginViaWPCom() {
@@ -221,7 +216,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loginViaSiteAddress() {
-        val loginSiteAddressFragment = LoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
