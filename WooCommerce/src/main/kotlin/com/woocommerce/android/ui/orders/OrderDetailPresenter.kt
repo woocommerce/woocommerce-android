@@ -60,7 +60,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
@@ -102,7 +102,6 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
-        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
@@ -133,41 +132,38 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun loadOrderDetailInfo(order: WCOrderModel) {
-        orderModel?.let {
-            val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
+        val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(order)
 
-            // if there are no shipping labels cached in the db, we prefer not to show the product list
-            // till it can be fetched from the API
-            displayOrderDetailInfo(order, cachedOrderDetailUiItem, cachedOrderDetailUiItem.shippingLabels.isNotEmpty())
+        // if there are no shipping labels cached in the db, we prefer not to show the product list
+        // till it can be fetched from the API
+        displayOrderDetailInfo(order, cachedOrderDetailUiItem)
 
-            fetchOrderDetailInfo(it)
-        }
+        fetchOrderDetailInfo(order)
     }
 
     override fun fetchOrderDetailInfo(order: WCOrderModel) {
         coroutineScope.launch {
             val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
-            displayOrderDetailInfo(order, freshOrderDetailUiItem, true)
+            displayOrderDetailInfo(order, freshOrderDetailUiItem)
         }
     }
 
     private fun displayOrderDetailInfo(
         order: WCOrderModel,
-        orderDetailUiItem: OrderDetailUiItem,
-        displayProductList: Boolean
+        orderDetailUiItem: OrderDetailUiItem
     ) {
         orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
         orderView?.showShippingLabels(orderDetailUiItem.orderModel, orderDetailUiItem.shippingLabels)
 
         // display the product list only if we know for sure,
         // that there are no shipping labels available for the order
-        if (displayProductList) {
-            orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
-        }
+        orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
 
         // Display the shipment tracking list only if it's available and if there are no shipping labels available
-        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.shipmentTrackingList.isNotEmpty()) {
+        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.isShipmentTrackingAvailable) {
             orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
+        } else {
+            orderView?.hideOrderShipmentTrackings()
         }
     }
 
@@ -354,14 +350,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                coroutineScope.launch {
-                    orderModel?.let { order ->
-                        orderView?.showOrderDetail(order, isFreshData = true)
-                        orderView?.showSkeleton(false)
-                        loadOrderNotes()
-                        fetchOrderDetailInfo(order)
-                    } ?: orderView?.showLoadOrderError()
-                }
+                orderModel?.let { order ->
+                    orderView?.showOrderDetail(order, isFreshData = true)
+                    orderView?.showSkeleton(false)
+                    fetchOrderDetailInfo(order)
+                    loadOrderNotes()
+                } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
