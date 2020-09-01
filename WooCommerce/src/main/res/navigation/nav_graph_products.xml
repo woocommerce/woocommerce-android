@@ -240,12 +240,6 @@
         app:popExitAnim="@anim/activity_scale_out" />
 
     <action
-        android:id="@+id/action_global_wpMediaFragment"
-        app:destination="@id/wpMediaPickerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
-
-    <action
         android:id="@+id/action_global_wpMediaViewerFragment"
         app:destination="@id/wpMediaViewerFragment"
         app:popExitAnim="@anim/activity_scale_out" />
