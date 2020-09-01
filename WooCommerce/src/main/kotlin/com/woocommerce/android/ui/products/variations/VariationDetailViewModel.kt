@@ -157,7 +157,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         remoteProductId: Long? = null,
         remoteVariationId: Long? = null,
         sku: String? = null,
-        image: Product.Image? = null,
+        image: Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         saleEndDate: Optional<Date>? = null,

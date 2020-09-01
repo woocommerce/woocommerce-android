@@ -50,17 +50,16 @@ class ProductImagesViewModel @AssistedInject constructor(
         ViewState(
             isDoneButtonVisible = false,
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
-            isImageDeletingAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES,
-            images = navArgs.images.toList()
+            isImageDeletingAllowed = isProduct,
+            images = navArgs.images.toList(),
+            isWarningVisible = !isProduct
         )
     ) { old, new ->
         if (old != new) {
-            updateDoneButtonVisibility()
+            updateButtonStates()
         }
     }
     private var viewState by viewStateData
-
-    private val originalImages = navArgs.images.toList()
 
     val images
         get() = viewState.images ?: emptyList()
@@ -146,7 +145,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
                 triggerEvent(ShowDiscardDialog(
-                    messageId = string.images_still_uploading_message,
+                    messageId = string.product_images_still_uploading_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
                         triggerEvent(ExitWithResult(originalImages))
@@ -166,8 +165,16 @@ class ProductImagesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateDoneButtonVisibility() {
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
+    private fun updateButtonStates() {
+        val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
+        viewState = viewState.copy(
+            isDoneButtonVisible = hasChanges,
+            chooserButtonButtonTitleRes = when {
+                isProduct -> string.product_add_photos
+                numImages > 0 -> string.product_replace_photo
+                else -> string.product_add_photo
+            }
+        )
     }
 
     /**
@@ -231,7 +238,9 @@ class ProductImagesViewModel @AssistedInject constructor(
         val uploadingImageUris: List<Uri>? = null,
         val isDoneButtonVisible: Boolean? = null,
         val isImageDeletingAllowed: Boolean? = null,
-        val images: List<Image>? = null
+        val images: List<Image>? = null,
+        val chooserButtonButtonTitleRes: Int? = null,
+        val isWarningVisible: Boolean? = null
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()

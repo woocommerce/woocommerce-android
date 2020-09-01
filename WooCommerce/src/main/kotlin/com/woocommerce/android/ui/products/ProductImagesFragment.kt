@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -100,6 +101,12 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneButton?.isVisible = isVisible
+            }
+            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
+                textWarning.isVisible = isVisible
+            }
+            new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
+                addImageButton.setText(titleRes)
             }
         }
 
