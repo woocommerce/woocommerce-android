@@ -2,6 +2,7 @@ package com.woocommerce.android.helpers
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.di.AndroidNotifier
@@ -31,6 +32,7 @@ open class TestBase {
     @Rule @JvmField
     val wireMockRule = WireMockRule(options().port(wireMockPort)
         .fileSource(AssetFileSource(getInstrumentation().context.assets))
+        .extensions(ResponseTemplateTransformer(true))
         .notifier(AndroidNotifier())
     )
 }

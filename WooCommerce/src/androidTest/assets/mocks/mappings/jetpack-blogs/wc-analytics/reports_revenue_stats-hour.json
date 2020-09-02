@@ -7,7 +7,7 @@
         "equalTo": "true"
       },
       "path": {
-        "matches": "\/wc-analytics\/reports\/revenue\/stats(.*)&interval=year(.*)"
+        "matches": "\/wc-analytics\/reports\/revenue\/stats/(.*)&interval=hour(.*)"
       }
     }
   },

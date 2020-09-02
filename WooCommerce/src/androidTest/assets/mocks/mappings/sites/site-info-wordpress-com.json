@@ -1,7 +1,7 @@
 {
     "request": {
         "method": "GET",
-        "urlPath": "/rest/v1.1/connect/site-info"
+        "urlPath": "/rest/v1.1/connect/site-info/"
     },
     "response": {
         "status": 200,

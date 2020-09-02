@@ -7,7 +7,7 @@
         "equalTo": "true"
       },
       "path": {
-        "equalTo": "/wc/v3/settings/general&_method=get"
+        "equalTo": "/wc/v3/settings/general/&_method=get"
       }
     }
   },
