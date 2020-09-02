@@ -10,10 +10,12 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
+import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -115,6 +117,7 @@ object AppRatingDialog {
                 .setMessage(R.string.app_rating_message)
                 .setCancelable(true)
                 .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
+                    AppPrefs.lastFeedbackDate = Calendar.getInstance().time
                     val appPackage = context.packageName
                     val url: String? = "market://details?id=$appPackage"
                     try {
