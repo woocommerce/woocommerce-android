@@ -13,7 +13,7 @@
                 "matches": "(.*)"
             },
             "_fields": {
-                "matches": "date,fields"
+                "matches": "data,fields"
             }
         }
     },
