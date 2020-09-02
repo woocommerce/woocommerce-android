@@ -27,9 +27,6 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
-import kotlinx.android.synthetic.main.fragment_my_store.empty_stats_view
-import kotlinx.android.synthetic.main.fragment_my_store.empty_view
-import kotlinx.android.synthetic.main.fragment_my_store.scroll_view
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import kotlinx.android.synthetic.main.my_store_stats.*
 import kotlinx.coroutines.launch
@@ -83,8 +80,8 @@ class MyStoreFragment : TopLevelFragment(),
         get() = activity as? MainNavigationRouter
 
     private val feedbackCardShouldBeVisible
-        get() = APP_FEEDBACK.isEnabled()
-            && DateUtils.userFeedbackIsDue
+        get() = APP_FEEDBACK.isEnabled() &&
+            DateUtils.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -370,7 +367,7 @@ class MyStoreFragment : TopLevelFragment(),
     private fun handleFeedbackRequestCardState() = with(store_feedback_request_card) {
         if (feedbackCardShouldBeVisible && visibility == View.GONE) {
             setupFeedbackRequestCard(requireContext())
-        } else if(visibility == View.VISIBLE) {
+        } else if (visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }

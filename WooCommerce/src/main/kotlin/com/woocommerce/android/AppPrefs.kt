@@ -74,7 +74,7 @@ object AppPrefs {
 
     fun init(context: Context) {
         AppPrefs.context = context.applicationContext
-        if(installationDate == null) installationDate = Calendar.getInstance().time
+        if (installationDate == null) installationDate = Calendar.getInstance().time
     }
 
     var installationDate: Date?
@@ -95,7 +95,6 @@ object AppPrefs {
         set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.LAST_FEEDBACK_DATE, it) }
-
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)

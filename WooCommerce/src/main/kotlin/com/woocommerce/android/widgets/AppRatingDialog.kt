@@ -10,12 +10,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
-import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
 

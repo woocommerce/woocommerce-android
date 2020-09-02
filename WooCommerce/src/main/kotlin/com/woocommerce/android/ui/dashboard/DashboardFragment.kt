@@ -26,10 +26,6 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
-import kotlinx.android.synthetic.main.fragment_dashboard.dashboard_feedback_request_card
-import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
-import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
-import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -68,8 +64,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         get() = activity as? MainNavigationRouter
 
     private val feedbackCardShouldBeVisible
-        get() = APP_FEEDBACK.isEnabled()
-            && DateUtils.userFeedbackIsDue
+        get() = APP_FEEDBACK.isEnabled() &&
+            DateUtils.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -321,7 +317,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private fun handleFeedbackRequestCardState() = with(dashboard_feedback_request_card) {
         if (feedbackCardShouldBeVisible && visibility == View.GONE) {
             setupFeedbackRequestCard(requireContext())
-        } else if(visibility == View.VISIBLE) {
+        } else if (visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
