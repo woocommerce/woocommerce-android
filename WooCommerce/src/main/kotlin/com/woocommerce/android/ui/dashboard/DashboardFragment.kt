@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -91,7 +92,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 scrollUpChild = scroll_view
             }
 
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
+            if (FeatureFlag.APP_FEEDBACK.isEnabled() && DateUtils.userFeedbackIsDue) {
                 dashboard_feedback_request_card.visibility = View.VISIBLE
                 val positiveCallback = { AppRatingDialog.showRateDialog(context) }
                 val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }

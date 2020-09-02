@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -101,7 +102,7 @@ class MyStoreFragment : TopLevelFragment(),
                 }
             }
 
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
+            if (FeatureFlag.APP_FEEDBACK.isEnabled() && DateUtils.userFeedbackIsDue) {
                 store_feedback_request_card.visibility = View.VISIBLE
                 val positiveCallback = { AppRatingDialog.showRateDialog(context) }
                 val negativeCallback = {
