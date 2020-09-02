@@ -147,9 +147,11 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    // Exclude Jackson Core to resolve a conflict with WireMock for UI tests
-    implementation ('com.automattic:tracks:1.2.1') {
-        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    implementation 'com.automattic:tracks:1.2.1'
+    constraints {
+        implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
+            because 'previous version from tracks conflicts with WireMock for UI tests'
+        }
     }
 
     implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
