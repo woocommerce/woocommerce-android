@@ -14,6 +14,8 @@ import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import java.util.Calendar
+import java.util.Date
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -63,12 +65,37 @@ object AppPrefs {
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
         // Application permissions
-        ASKED_PERMISSION_CAMERA
+        ASKED_PERMISSION_CAMERA,
+        // Date of the app installation
+        APP_INSTALATION_DATE,
+        // Date of the last time the user sent feedback on the app
+        LAST_FEEDBACK_DATE
     }
 
     fun init(context: Context) {
         AppPrefs.context = context.applicationContext
+        if(installationDate == null) installationDate = Calendar.getInstance().time
     }
+
+    var installationDate: Date?
+        get() = getString(UndeletablePrefKey.APP_INSTALATION_DATE)
+            .toLongOrNull()
+            ?.let { Date(it) }
+
+        private set(value) = value
+            ?.time.toString()
+            .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
+
+    var lastFeedbackDate: Date?
+        get() = getString(UndeletablePrefKey.LAST_FEEDBACK_DATE)
+            .toLongOrNull()
+            ?.let { Date(it) }
+            ?: Date(0)
+
+        set(value) = value
+            ?.time.toString()
+            .let { setString(UndeletablePrefKey.LAST_FEEDBACK_DATE, it) }
+
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)
