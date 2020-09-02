@@ -203,8 +203,14 @@ dependencies {
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 
     // Debug dependencies
-    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
-    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
+    debugImplementation "com.facebook.soloader:soloader:0.9.0"
+    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+        // Force Flipper to use the okhttp version defined in the fluxc module
+        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
+        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
+        exclude group: 'com.squareup.okhttp3'
+    }
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-3'
 
     // Dependencies for local unit tests
