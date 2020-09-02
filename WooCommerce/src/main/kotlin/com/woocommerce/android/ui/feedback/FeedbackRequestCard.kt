@@ -27,10 +27,12 @@ class FeedbackRequestCard @JvmOverloads constructor(
     fun initView(negativeButtonAction: (() -> Unit), positiveButtonAction: (() -> Unit)) {
         btn_feedbackReq_negative.setOnClickListener {
             AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+            visibility = View.GONE
             negativeButtonAction()
         }
         btn_feedbackReq_positive.setOnClickListener {
             AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+            visibility = View.GONE
             positiveButtonAction()
         }
     }
