@@ -140,6 +140,7 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
+        tabLayout.setId(R.id.stats_tab_layout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
