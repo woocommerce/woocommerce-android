@@ -123,6 +123,15 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         fragmentTransaction.commitAllowingStateLoss()
     }
 
+    /**
+     * The normal layout for the login library will include social login but
+     * there is an alternative layout used specifically for logging in using the
+     * site address flow. This layout includes an option to sign in with site
+     * credentials.
+     *
+     * @param useAltLayout If true, use the layout that includes the option to log
+     * in with site credentials.
+     */
     private fun getLoginEmailFragment(useAltLayout: Boolean): LoginEmailFragment? {
         val fragment = if (useAltLayout) {
             supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG_ALT_LAYOUT)
