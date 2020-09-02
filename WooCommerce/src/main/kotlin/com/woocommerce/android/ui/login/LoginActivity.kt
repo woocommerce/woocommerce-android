@@ -329,7 +329,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // not needed and may cause issues when attempting to match the url to the authenticated account later
         // in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
+        val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
+        AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
             showEmailLoginScreen(inputSiteAddress)
@@ -338,7 +339,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress)
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
             slideInFragment(
                     fragment = jetpackReqFragment as Fragment,
                     shouldAddToBackStack = true,
