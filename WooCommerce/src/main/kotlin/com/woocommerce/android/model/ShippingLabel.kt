@@ -164,8 +164,12 @@ fun List<ShippingLabel>.appendTrackingUrls(
             )
         } else {
             orderShipmentTrackings.forEach { shipmentTracking ->
-                if (shipmentTracking.trackingNumber == shippingLabel.trackingNumber) {
-                    shippingLabel.trackingLink = shipmentTracking.trackingLink
+                shippingLabel.trackingLink = if (shipmentTracking.trackingNumber == shippingLabel.trackingNumber) {
+                    shipmentTracking.trackingLink
+                } else {
+                    ShipmentTrackingUrls.fromCarrier(
+                        shippingLabel.carrierId, shippingLabel.trackingNumber
+                    )
                 }
             }
         }
