@@ -73,7 +73,8 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun fetchProductList(
         loadMore: Boolean = false,
-        productFilterOptions: Map<ProductFilterOption, String>
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        excludedProductIds: List<Long>? = null
     ): List<Product> {
         try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -85,7 +86,8 @@ class ProductListRepository @Inject constructor(
                         PRODUCT_PAGE_SIZE,
                         offset,
                         productSortingChoice,
-                        filterOptions = productFilterOptions
+                        filterOptions = productFilterOptions,
+                        excludedProductIds = excludedProductIds
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -93,7 +95,7 @@ class ProductListRepository @Inject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
-        return getProductList(productFilterOptions)
+        return getProductList(productFilterOptions, excludedProductIds)
     }
 
     /**
@@ -101,7 +103,11 @@ class ProductListRepository @Inject constructor(
      * query and returns only that page of products - note that this returns null if the search
      * is interrupted (which means the user submitted another search while this was running)
      */
-    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
+    suspend fun searchProductList(
+        searchQuery: String,
+        loadMore: Boolean = false,
+        excludedProductIds: List<Long>? = null
+    ): List<Product>? {
         // cancel any existing load or search
         loadContinuation?.cancel()
         searchContinuation?.cancel()
@@ -116,7 +122,8 @@ class ProductListRepository @Inject constructor(
                         searchQuery,
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        productSortingChoice
+                        productSortingChoice,
+                        excludedProductIds = excludedProductIds
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
             }
@@ -131,12 +138,16 @@ class ProductListRepository @Inject constructor(
     /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(productFilterOptions: Map<ProductFilterOption, String>): List<Product> {
+    fun getProductList(
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        excludedProductIds: List<Long>? = null
+    ): List<Product> {
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
-                    sortType = productSortingChoice
+                    sortType = productSortingChoice,
+                    excludedProductIds = excludedProductIds
             )
             wcProducts.map { it.toAppModel() }
         } else {
