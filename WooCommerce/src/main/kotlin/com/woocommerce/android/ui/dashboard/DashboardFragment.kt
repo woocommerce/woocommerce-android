@@ -26,11 +26,11 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.dashboard_feedback_request_card
 import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
 import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
 import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
-import kotlinx.android.synthetic.main.fragment_dashboard.view.dashboard_refresh_layout
-import kotlinx.android.synthetic.main.fragment_dashboard.view.scroll_view
+import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
@@ -326,9 +326,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
         }
     }
 
-    private fun setupFeedbackRequestCard(context: Context) {
+    private fun View.setupFeedbackRequestCard(context: Context) {
         if (APP_FEEDBACK.isEnabled() && DateUtils.userFeedbackIsDue) {
-            dashboard_feedback_request_card.visibility = View.VISIBLE
+            this.dashboard_feedback_request_card.visibility = View.VISIBLE
             val positiveCallback = { AppRatingDialog.showRateDialog(context) }
             val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
             dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)

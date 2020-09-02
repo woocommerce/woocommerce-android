@@ -108,7 +108,6 @@ class MyStoreFragment : TopLevelFragment(),
                     refreshMyStoreStats(forced = true)
                 }
             }
-
             setupFeedbackRequestCard(context)
         }
         return view
@@ -376,9 +375,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    private fun setupFeedbackRequestCard(context: Context) {
+    private fun View.setupFeedbackRequestCard(context: Context) {
         if (APP_FEEDBACK.isEnabled() && DateUtils.userFeedbackIsDue) {
-            store_feedback_request_card.visibility = View.VISIBLE
+            this.store_feedback_request_card.visibility = View.VISIBLE
             val positiveCallback = { AppRatingDialog.showRateDialog(context) }
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()
