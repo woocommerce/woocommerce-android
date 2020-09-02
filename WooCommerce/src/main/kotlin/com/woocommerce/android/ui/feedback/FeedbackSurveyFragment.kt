@@ -11,14 +11,12 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls.CROWDSIGNAL_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_licenses.*
-import java.util.Calendar
 
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     companion object {
@@ -96,7 +94,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun completeSurvey() {
-        AppPrefs.lastFeedbackDate = Calendar.getInstance().time
         FeedbackSurveyFragmentDirections.actionFeedbackSurveyFragmentToFeedbackCompletedFragment().apply {
             findNavController().navigateSafely(this)
         }
