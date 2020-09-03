@@ -22,5 +22,6 @@ object AppUrls {
     const val JETPACK_TROUBLESHOOTING =
             "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
 
-    const val CROWDSIGNAL_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-test-survey"
+    const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-test-survey"
+    const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
 }
