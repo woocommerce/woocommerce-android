@@ -317,7 +317,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private fun handleFeedbackRequestCardState() = with(dashboard_feedback_request_card) {
         if (feedbackCardShouldBeVisible && visibility == View.GONE) {
             setupFeedbackRequestCard(requireContext())
-        } else if (visibility == View.VISIBLE) {
+        } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
