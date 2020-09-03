@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,28 +16,64 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_gridicons_tools"
-            tools:textOff="@string/product_wip_title"
-            tools:textOn="@string/product_wip_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:textOff="@string/product_wip_title"
+            tools:textOn="@string/product_wip_title" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/products_wip_message"
-            style="@style/Woo.Card.Body"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/products_wip_morePanel"
+            android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
-            android:gravity="start"
-            android:layout_marginStart="@dimen/minor_00"
-            android:layout_marginTop="@dimen/minor_00"
-            android:layout_marginBottom="@dimen/major_100"
             android:visibility="gone"
-            tools:text="@string/product_wip_message"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toEndOf="@+id/guideline7"
             app:layout_constraintTop_toBottomOf="@+id/products_wip_viewMore"
-            tools:visibility="visible"/>
+            tools:visibility="visible">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/products_wip_message"
+                style="@style/Woo.Card.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/minor_00"
+                android:layout_marginEnd="@dimen/major_300"
+                android:gravity="start"
+                app:layout_constraintBottom_toTopOf="@+id/btn_dismiss"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/product_wip_message" />
+
+            <!-- PRIMARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_dismiss"
+                style="@style/Woo.Card.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/dismiss"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/products_wip_message" />
+
+            <!-- SECONDARY button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_give_feedback"
+                style="@style/Woo.Card.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/minor_100"
+                android:text="@string/feedback_product_give_feedback_button_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_dismiss"
+                app:layout_constraintTop_toBottomOf="@+id/products_wip_message" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline7"
