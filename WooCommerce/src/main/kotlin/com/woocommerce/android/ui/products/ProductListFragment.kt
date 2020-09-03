@@ -340,7 +340,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
-                getString(R.string.product_wip_message)
+                getString(R.string.product_wip_message),
+                onGiveFeedbackClick = ::onGiveFeedbackClicked,
+                onDismissClick = ::onDismissProductWIPNoticeCardClicked
             )
         } else {
             products_wip_card.visibility = View.GONE
@@ -386,4 +388,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         val bottomSheet = ProductSortingFragment()
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
+
+    private fun onGiveFeedbackClicked(view: View) {}
+
+    private fun onDismissProductWIPNoticeCardClicked(view: View) {}
 }

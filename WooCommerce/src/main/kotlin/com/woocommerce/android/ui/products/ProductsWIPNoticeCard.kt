@@ -21,14 +21,19 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
         set(value) {
             products_wip_viewMore.isChecked = value
             if (value) {
-                WooAnimUtils.fadeIn(products_wip_message)
+                WooAnimUtils.fadeIn(products_wip_morePanel)
             } else {
-            WooAnimUtils.fadeOut(products_wip_message)
+            WooAnimUtils.fadeOut(products_wip_morePanel)
             }
         }
         get() = products_wip_viewMore.isChecked
 
-    fun initView(title: String, message: String) {
+    fun initView(
+        title: String,
+        message: String,
+        onGiveFeedbackClick: (View) -> Unit = {},
+        onDismissClick: (View) -> Unit = {}
+    ) {
         products_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
             isExpanded = isChecked
         }
@@ -38,5 +43,8 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
         products_wip_viewMore.textOff = title
         products_wip_viewMore.text = title
         products_wip_message.text = message
+
+        btn_give_feedback.setOnClickListener(onGiveFeedbackClick)
+        btn_dismiss.setOnClickListener(onDismissClick)
     }
 }
