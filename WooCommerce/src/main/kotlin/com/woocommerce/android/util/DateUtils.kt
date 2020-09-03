@@ -2,8 +2,11 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.text.format.DateFormat
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.greaterThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -32,6 +35,13 @@ object DateUtils {
     private val yyyyMMddFormat by lazy {
         SimpleDateFormat("yyyy-MM-dd", Locale.US)
     }
+
+    private const val THREE_MONTHS_IN_DAYS = 90
+    private const val SIX_MONTHS_IN_DAYS = 180
+
+    val userFeedbackIsDue: Boolean
+        get() = AppPrefs.installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
+            AppPrefs.lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
 
     /**
      * Takes a date string in ISO8601 standard and returns a string, such as Jan 3, 2000
