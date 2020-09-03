@@ -1,4 +1,0 @@
-4.7:
-<b>İstatistikler:</b> İstatistik grafiğiniz artık wp-admin'de gördüklerinizle aynı olacak. WooCommerce 4.0 veya üstünü çalıştırmanız gerektiğinden güncelleme yaptığınızdan emin olun.
-
-<b>Kilitlenmeyle İlgili Düzeltme:</b> Büyük miktarda veri aktarılırken kilitlenmeler yaşanıyordu. Daha büyük bir arabellekle, Android P ve daha yeni sürümleri çalıştıran cihazlarda bu sorun düzeltildi.

@@ -1,3 +1,4 @@
-* Updated the “Add shipment tracking” section to display only if the Shipment Tracking plugin is available.
-* Fixed a crash when double-tapping a navigation element, and another (rare) crash caused by trying to hide a non-active view.
+- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.
+- Edit product variations like price, description, inventory, visibility, and shipping.
+- Experiment with new features in the Products section! Go to Settings to enable them.
  

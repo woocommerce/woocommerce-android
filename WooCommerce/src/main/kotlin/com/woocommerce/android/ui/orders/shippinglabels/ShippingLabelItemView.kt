@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.view_shipping_label_item.view.*
 
@@ -39,7 +40,7 @@ class ShippingLabelItemView @JvmOverloads constructor(
                 // show/hide shipment tracking button
                 val showTrackingBtn =
                 a.getBoolean(R.styleable.ShippingLabelItemView_showTrackShipmentButton, false)
-                shippingLabelItem_btnTrack.visibility = if (showTrackingBtn) View.VISIBLE else View.GONE
+                shippingLabelItem_btnTrack.isVisible = showTrackingBtn
             } finally {
                 a.recycle()
             }
@@ -55,7 +56,7 @@ class ShippingLabelItemView @JvmOverloads constructor(
     }
 
     fun showTrackingLinkButton(show: Boolean) {
-        shippingLabelItem_btnTrack.visibility = if (show) View.VISIBLE else View.GONE
+        shippingLabelItem_btnTrack.isVisible = show
     }
 
     fun setTrackingLinkClickListener(clickListener: (() -> Unit)) {

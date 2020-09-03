@@ -72,7 +72,8 @@ class OrderDetailRepository @Inject constructor(
             orderModel = order,
             refunds = refunds,
             shippingLabels = shippingLabels,
-            shipmentTrackingList = shipmentTrackingList
+            shipmentTrackingList = shipmentTrackingList,
+            isShipmentTrackingAvailable = shipmentTrackingList.isNotEmpty()
         )
     }
 
@@ -109,10 +110,11 @@ class OrderDetailRepository @Inject constructor(
             } else emptyList()
 
             OrderDetailUiItem(
-                order,
-                refunds,
-                shippingLabels,
-                shipmentTrackingList
+                orderModel = order,
+                refunds = refunds,
+                shippingLabels = shippingLabels,
+                shipmentTrackingList = shipmentTrackingList,
+                isShipmentTrackingAvailable = fetchedShipmentTrackingList
             )
         }
     }
@@ -157,6 +159,7 @@ class OrderDetailRepository @Inject constructor(
         val orderModel: WCOrderModel,
         val refunds: List<Refund>,
         val shippingLabels: List<ShippingLabel>,
-        val shipmentTrackingList: List<WCOrderShipmentTrackingModel>
+        val shipmentTrackingList: List<WCOrderShipmentTrackingModel>,
+        val isShipmentTrackingAvailable: Boolean
     )
 }

@@ -236,6 +236,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
     </style>
 
+    <style name="Woo.TextView.Warning" parent="Woo.TextView.Body2">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
     <style name="Woo.TextView.Caption">
         <item name="android:textAppearance">?attr/textAppearanceCaption</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
@@ -480,6 +484,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Divider.TitleAligned">
         <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
+    <style name="Woo.Divider.Warning">
+        <item name="android:background">@color/warning_foreground_color</item>
     </style>
 
     <!--

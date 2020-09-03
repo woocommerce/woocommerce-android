@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:parentTag="com.google.android.material.card.MaterialCardView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,15 +14,15 @@
         android:paddingBottom="@dimen/major_75">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/addCategoriesButton"
+            android:id="@+id/addElementButton"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_125"
             android:layout_marginEnd="@dimen/major_125"
-            android:text="@string/product_add_category"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Add" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

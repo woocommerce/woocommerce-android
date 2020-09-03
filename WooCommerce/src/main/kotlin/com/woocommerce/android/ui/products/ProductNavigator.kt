@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -99,13 +100,20 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductInventory -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductInventoryFragment(
+                            RequestCodes.PRODUCT_DETAIL_INVENTORY,
+                            target.inventoryData,
+                            target.sku
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductPricingFragment(
+                            RequestCodes.PRODUCT_DETAIL_PRICING,
+                            target.pricingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -117,7 +125,10 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(
+                            RequestCodes.PRODUCT_DETAIL_SHIPPING,
+                            target.shippingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -195,7 +206,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductTypes -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.remoteId)
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.productType)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -207,7 +218,13 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.groupedProductIds)
+                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductSelectionList -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductSelectionListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 

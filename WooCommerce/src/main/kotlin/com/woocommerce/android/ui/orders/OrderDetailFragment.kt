@@ -322,6 +322,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
     }
 
+    override fun hideOrderShipmentTrackings() {
+        if (orderDetail_shipmentList.visibility != View.GONE) {
+            WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+        }
+    }
+
     override fun showOrderNotesSkeleton(show: Boolean) {
         orderDetail_noteList.showSkeleton(show)
     }
