@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -9,7 +13,11 @@ import java.util.HashMap
 import javax.inject.Singleton
 
 @Singleton
-class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteStore) : LoginAnalyticsListener {
+class LoginAnalyticsTracker(
+    val accountStore: AccountStore,
+    val siteStore: SiteStore,
+    val unifiedLoginTracker: UnifiedLoginTracker
+) : LoginAnalyticsListener {
     override fun trackAnalyticsSignIn(isWpcomLogin: Boolean) {
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
         val properties = HashMap<String, Boolean>()
@@ -194,8 +202,9 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
 
     override fun trackConnectedSiteInfoRequested(url: String?) {
         AnalyticsTracker.track(
-                AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
-                mapOf(AnalyticsTracker.KEY_URL to url))
+            AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
+            mapOf(AnalyticsTracker.KEY_URL to url)
+        )
     }
 
     override fun trackConnectedSiteInfoFailed(
@@ -205,10 +214,11 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
         errorDescription: String?
     ) {
         AnalyticsTracker.track(
-                AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_FAILED,
-                errorContext,
-                errorType,
-                errorDescription)
+            AnalyticsTracker.Stat.LOGIN_CONNECTED_SITE_INFO_FAILED,
+            errorContext,
+            errorType,
+            errorDescription
+        )
     }
 
     override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
@@ -220,59 +230,61 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackLoginMagicLinkOpenEmailClientViewed() {
-        // TODO AMANDA - implement track event
+        AnalyticsTracker.track(LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED)
+        unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.MAGIC_LINK_REQUESTED)
     }
 
     override fun trackSocialButtonStart() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.track(Flow.GOOGLE_LOGIN, Step.START)
     }
 
     override fun trackFailure(message: String?) {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackFailure(message)
     }
 
     override fun trackSendCodeWithTextClicked() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.SEND_CODE_WITH_TEXT)
     }
 
     override fun trackSubmit2faCodeClicked() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.SUBMIT_2FA_CODE)
     }
 
     override fun trackSubmitClicked() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.SUBMIT)
     }
 
     override fun trackRequestMagicLinkClick() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.REQUEST_MAGIC_LINK)
     }
 
     override fun trackLoginWithPasswordClick() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
     }
 
     override fun trackShowHelpClick() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.SHOW_HELP)
+        unifiedLoginTracker.track(step = Step.HELP)
     }
 
     override fun trackDismissDialog() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.DISMISS)
     }
 
     override fun trackSelectEmailField() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.trackClick(Click.SELECT_EMAIL_FIELD)
     }
 
     override fun trackPickEmailFromHint() {
-        TODO("Not yet implemented")
+        unifiedLoginTracker.trackClick(Click.PICK_EMAIL_FROM_HINT)
     }
 
     override fun trackShowEmailHints() {
-        TODO("Not yet implemented")
+        unifiedLoginTracker.track(step = Step.SHOW_EMAIL_HINTS)
     }
 
     override fun emailFormScreenResumed() {
-        // TODO AMANDA - implement track event
+        unifiedLoginTracker.setFlowAndStep(Flow.WORDPRESS_COM, Step.START)
     }
 
     override fun trackEmailSignupConfirmationViewed() {
