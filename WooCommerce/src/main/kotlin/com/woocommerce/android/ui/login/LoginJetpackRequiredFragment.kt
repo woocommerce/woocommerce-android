@@ -69,7 +69,7 @@ class LoginJetpackRequiredFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        jetpack_required_msg.text = getString(R.string.login_jetpack_required_msg, siteAddress.orEmpty())
+        jetpack_required_msg.text = getString(R.string.login_jetpack_required_text, siteAddress.orEmpty())
 
         with(button_primary) {
             text = getString(R.string.login_jetpack_view_instructions)

@@ -30,7 +30,7 @@
                 android:layout_marginStart="@dimen/major_150"
                 android:layout_marginEnd="@dimen/major_150"
                 android:layout_marginBottom="@dimen/major_200"
-                android:text="@string/login_jetpack_required_msg"
+                android:text="@string/login_jetpack_required_text"
                 android:textColor="@color/color_on_surface_high"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

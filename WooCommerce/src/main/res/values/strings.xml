@@ -142,7 +142,7 @@
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
     <string name="login_view_connected_stores">View connected stores</string>
-    <string name="login_jetpack_required_msg">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
+    <string name="login_jetpack_required_text">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
     <string name="login_jetpack_view_instructions">Learn how to install and connect Jetpack</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
