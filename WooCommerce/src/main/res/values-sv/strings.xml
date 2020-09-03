@@ -38,7 +38,6 @@ Language: sv_SE
     <string name="product_detail_product_type_hint">%1$s produkt</string>
     <string name="product_type_downloadable">nedladdningsbar</string>
     <string name="product_type_description">%s produkt</string>
-    <string name="orderdetail_shipping_label_virtual_products_header">Återstående produkter</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Resterande artiklar som ska skickas</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s returetikett</string>
