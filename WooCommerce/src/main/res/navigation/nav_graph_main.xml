@@ -7,19 +7,24 @@
     <fragment
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
-        tools:layout="@layout/fragment_root" />
+        tools:layout="@layout/fragment_root"/>
 
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
         android:label="FeedbackSurveyFragment">
+        <argument
+            android:name="surveyUrl"
+            android:defaultValue='@null'
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"
             app:popUpTo="@id/rootFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"

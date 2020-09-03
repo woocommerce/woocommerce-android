@@ -56,6 +56,11 @@
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
         android:label="FeedbackSurveyFragment">
+        <argument
+            android:name="surveyUrl"
+            android:defaultValue='@null'
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
