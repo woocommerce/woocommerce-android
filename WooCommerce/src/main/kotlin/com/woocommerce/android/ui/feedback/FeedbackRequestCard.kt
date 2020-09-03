@@ -3,11 +3,9 @@ package com.woocommerce.android.ui.feedback
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.WCElevatedConstraintLayout
 import kotlinx.android.synthetic.main.feedback_request_card.view.*
-import java.util.Calendar
 
 class FeedbackRequestCard @JvmOverloads constructor(
     ctx: Context,
