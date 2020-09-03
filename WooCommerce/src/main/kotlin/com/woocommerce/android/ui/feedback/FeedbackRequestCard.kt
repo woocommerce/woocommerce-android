@@ -25,15 +25,7 @@ class FeedbackRequestCard @JvmOverloads constructor(
      * @param positiveButtonAction The action to perform when the user clicks "I like it"
      */
     fun initView(negativeButtonAction: (() -> Unit), positiveButtonAction: (() -> Unit)) {
-        btn_feedbackReq_negative.setOnClickListener {
-            AppPrefs.lastFeedbackDate = Calendar.getInstance().time
-            visibility = View.GONE
-            negativeButtonAction()
-        }
-        btn_feedbackReq_positive.setOnClickListener {
-            AppPrefs.lastFeedbackDate = Calendar.getInstance().time
-            visibility = View.GONE
-            positiveButtonAction()
-        }
+        btn_feedbackReq_negative.setOnClickListener { negativeButtonAction() }
+        btn_feedbackReq_positive.setOnClickListener { positiveButtonAction() }
     }
 }

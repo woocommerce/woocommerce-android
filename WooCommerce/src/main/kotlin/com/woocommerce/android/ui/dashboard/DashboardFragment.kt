@@ -26,9 +26,13 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
+import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -94,7 +98,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 scrollUpChild = scroll_view
             }
 
-            setupFeedbackRequestCard(context)
+            setupFeedbackRequestCard()
         }
         return view
     }
@@ -316,18 +320,41 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
      */
     private fun handleFeedbackRequestCardState() = with(dashboard_feedback_request_card) {
         if (feedbackCardShouldBeVisible && visibility == View.GONE) {
-            setupFeedbackRequestCard(requireContext())
+            setupFeedbackRequestCard()
         } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
 
-    private fun View.setupFeedbackRequestCard(context: Context) {
+    private fun View.setupFeedbackRequestCard() {
         if (feedbackCardShouldBeVisible) {
             this.dashboard_feedback_request_card.visibility = View.VISIBLE
-            val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-            val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
-            dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)
+            val negativeCallback = {
+                mainNavigationRouter?.showFeedbackSurvey()
+                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                visibility = View.GONE
+            }
+            dashboard_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        }
+    }
+
+    private fun handleFeedbackRequestPositiveClick() {
+        context?.let { context ->
+            dashboard_feedback_request_card.apply {
+                val feedbackGiven = {
+                    AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                    visibility = View.GONE
+                }
+                val feedbackPostponed = {
+                    visibility = View.GONE
+                }
+                AppRatingDialog.showRateDialog(
+                    context = context,
+                    ratingAccepted = feedbackGiven,
+                    ratingDeclined = feedbackGiven,
+                    ratingPostponed = feedbackPostponed
+                )
+            }
         }
     }
 
