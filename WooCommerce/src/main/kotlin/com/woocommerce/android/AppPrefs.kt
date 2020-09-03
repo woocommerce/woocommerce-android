@@ -74,10 +74,34 @@ object AppPrefs {
 
     fun init(context: Context) {
         AppPrefs.context = context.applicationContext
-        if (installationDate == null) installationDate = Calendar.getInstance().time
+        if (relativeInstallationDate == null) relativeInstallationDate = Calendar.getInstance().time
     }
 
-    var installationDate: Date?
+    /**
+     * This property tries to acquire the installation date as informed by the Android OS
+     * if the value can't be obtained it falls back to the relative installation date controlled by the app
+     */
+    val installationDate: Date?
+        get() = try {
+            context
+                .packageManager
+                .getPackageInfo(context.packageName, 0)
+                .firstInstallTime
+                .let { Date(it) }
+        } catch (ex: Throwable) {
+            relativeInstallationDate
+        }
+
+    /**
+     * This property informs a installation date relative to the moment the shared preferences data
+     * is empty, which can be the accurate installation date or only the moment where the app was updated
+     * to support this property, or even the date the app was opened right after the user cleared the store data
+     * in the Android App Settings.
+     *
+     * Considering that, this should be used only as a fall back data to be able to decide
+     * an approximate installation date if there's none available
+     */
+    private var relativeInstallationDate: Date?
         get() = getString(UndeletablePrefKey.APP_INSTALATION_DATE)
             .toLongOrNull()
             ?.let { Date(it) }
