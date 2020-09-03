@@ -323,7 +323,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     private fun View.setupFeedbackRequestCard(context: Context) {
-        if (APP_FEEDBACK.isEnabled() && DateUtils.userFeedbackIsDue) {
+        if (feedbackCardShouldBeVisible) {
             this.dashboard_feedback_request_card.visibility = View.VISIBLE
             val positiveCallback = { AppRatingDialog.showRateDialog(context) }
             val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
