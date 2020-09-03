@@ -26,9 +26,6 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
-import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
-import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
-import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -339,22 +336,20 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     private fun handleFeedbackRequestPositiveClick() {
-        context?.let { context ->
-            dashboard_feedback_request_card.apply {
-                val feedbackGiven = {
-                    AppPrefs.lastFeedbackDate = Calendar.getInstance().time
-                    visibility = View.GONE
-                }
-                val feedbackPostponed = {
-                    visibility = View.GONE
-                }
-                AppRatingDialog.showRateDialog(
-                    context = context,
-                    ratingAccepted = feedbackGiven,
-                    ratingDeclined = feedbackGiven,
-                    ratingPostponed = feedbackPostponed
-                )
+        context?.let {
+            val feedbackGiven = {
+                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                dashboard_feedback_request_card.visibility = View.GONE
             }
+            val feedbackPostponed = {
+                dashboard_feedback_request_card.visibility = View.GONE
+            }
+            AppRatingDialog.showRateDialog(
+                context = it,
+                ratingAccepted = feedbackGiven,
+                ratingDeclined = feedbackGiven,
+                ratingPostponed = feedbackPostponed
+            )
         }
     }
 

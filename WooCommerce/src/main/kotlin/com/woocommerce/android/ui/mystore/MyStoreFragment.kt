@@ -388,22 +388,20 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun handleFeedbackRequestPositiveClick() {
-        context?.let { context ->
-            store_feedback_request_card.apply {
-                val feedbackGiven = {
-                    AppPrefs.lastFeedbackDate = Calendar.getInstance().time
-                    visibility = View.GONE
-                }
-                val feedbackPostponed = {
-                    visibility = View.GONE
-                }
-                AppRatingDialog.showRateDialog(
-                    context = context,
-                    ratingAccepted = feedbackGiven,
-                    ratingDeclined = feedbackGiven,
-                    ratingPostponed = feedbackPostponed
-                )
+        context?.let {
+            val feedbackGiven = {
+                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                store_feedback_request_card.visibility = View.GONE
             }
+            val feedbackPostponed = {
+                store_feedback_request_card.visibility = View.GONE
+            }
+            AppRatingDialog.showRateDialog(
+                context = it,
+                ratingAccepted = feedbackGiven,
+                ratingDeclined = feedbackGiven,
+                ratingPostponed = feedbackPostponed
+            )
         }
     }
 
