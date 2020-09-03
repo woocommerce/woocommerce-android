@@ -563,6 +563,7 @@
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
     <string name="product_visibility_private">Private</string>
+    <string name="product_visibility_password_protected_hint">Enter password</string>
     <string name="product_visibility_password_protected">Password protected</string>
     <string name="product_visibility_password_required">Password is required</string>
     <string name="product_catalog_visibility">Catalog visibility</string>
