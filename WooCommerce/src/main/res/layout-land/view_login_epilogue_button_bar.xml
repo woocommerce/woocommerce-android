@@ -20,6 +20,7 @@
         android:layout_weight="1"
         android:visibility="gone"
         android:text="@string/login_view_connected_stores"
+        android:textAllCaps="false"
         tools:visibility="visible"/>
 
     <com.google.android.material.button.MaterialButton
@@ -30,5 +31,6 @@
         android:layout_weight="1"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/minor_00"
+        android:textAllCaps="false"
         android:text="@string/login_try_another_account"/>
 </com.woocommerce.android.widgets.WCElevatedLinearLayout>

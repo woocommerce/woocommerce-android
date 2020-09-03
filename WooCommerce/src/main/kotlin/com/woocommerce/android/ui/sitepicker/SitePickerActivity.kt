@@ -282,7 +282,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        button_primary.text = getString(R.string.continue_button)
+        button_primary.text = getString(R.string.done)
         button_primary.isEnabled = true
         button_primary.setOnClickListener {
             presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }

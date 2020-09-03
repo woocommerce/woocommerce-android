@@ -224,7 +224,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackSocialButtonStart() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackFailure(message: String?) {
@@ -232,7 +232,7 @@ class LoginAnalyticsTracker(val accountStore: AccountStore, val siteStore: SiteS
     }
 
     override fun trackSendCodeWithTextClicked() {
-        TODO("Not yet implemented")
+        // TODO AMANDA - implement track event
     }
 
     override fun trackSubmit2faCodeClicked() {

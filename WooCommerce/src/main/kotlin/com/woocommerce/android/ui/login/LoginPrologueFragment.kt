@@ -20,7 +20,8 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     }
 
     interface PrologueFinishedListener {
-        fun onPrologueFinished()
+        fun onPrimaryButtonClicked()
+        fun onSecondaryButtonClicked()
     }
 
     private var prologueFinishedListener: PrologueFinishedListener? = null
@@ -49,9 +50,15 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        button_login.setOnClickListener {
-            prologueFinishedListener?.onPrologueFinished()
+        button_login_store.setOnClickListener {
+            prologueFinishedListener?.onPrimaryButtonClicked()
             AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED)
+        }
+
+        button_login_wpcom.setOnClickListener {
+            prologueFinishedListener?.onSecondaryButtonClicked()
+
+            // TODO AMANDA - add new tracks event
         }
     }
 }

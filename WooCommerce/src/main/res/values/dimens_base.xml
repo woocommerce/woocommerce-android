@@ -68,6 +68,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_50">48dp</dimen>
     <dimen name="image_major_64">64dp</dimen>
+    <dimen name="image_major_72">72dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
     <dimen name="image_major_120">128dp</dimen>
     <dimen name="image_major_150">156dp</dimen>

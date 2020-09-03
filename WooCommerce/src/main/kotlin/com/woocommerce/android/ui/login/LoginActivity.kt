@@ -109,10 +109,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 .commitAllowingStateLoss()
     }
 
-    override fun onPrologueFinished() {
-        startLogin()
-    }
-
     private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(
@@ -127,8 +123,21 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         fragmentTransaction.commitAllowingStateLoss()
     }
 
-    private fun getLoginEmailFragment(): LoginEmailFragment? {
-        val fragment = supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
+    /**
+     * The normal layout for the login library will include social login but
+     * there is an alternative layout used specifically for logging in using the
+     * site address flow. This layout includes an option to sign in with site
+     * credentials.
+     *
+     * @param useAltLayout If true, use the layout that includes the option to log
+     * in with site credentials.
+     */
+    private fun getLoginEmailFragment(useAltLayout: Boolean): LoginEmailFragment? {
+        val fragment = if (useAltLayout) {
+            supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG_ALT_LAYOUT)
+        } else {
+            supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
+        }
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
 
@@ -166,6 +175,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return loginMode as LoginMode
     }
 
+    override fun onPrimaryButtonClicked() {
+        startLoginViaSiteAddress()
+    }
+
+    override fun onSecondaryButtonClicked() {
+        startLoginViaWPCom()
+    }
+
     private fun showMainActivityAndFinish() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -181,13 +198,22 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
-    private fun startLogin() {
+    private fun startLoginViaSiteAddress() {
         if (getLoginViaSiteAddressFragment() != null) {
             // login by site address is already shown so, login has already started. Just bail.
             return
         }
 
         loginViaSiteAddress()
+    }
+
+    private fun startLoginViaWPCom() {
+        if (getLoginEmailFragment(useAltLayout = false) != null) {
+            // login by wpcom is already shown so login has already started. Just bail.
+            return
+        }
+
+        showEmailLoginScreen()
     }
 
     //  -- BEGIN: LoginListener implementation methods
@@ -524,8 +550,16 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {
-        val loginEmailFragment = getLoginEmailFragment() ?: LoginEmailFragment.newInstance(siteAddress, true)
-        slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        if (siteAddress != null) {
+            val loginEmailFragment = getLoginEmailFragment(
+                useAltLayout = false) ?: LoginEmailFragment.newInstance(siteAddress, true)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+        } else {
+            val loginEmailFragment = getLoginEmailFragment(
+                useAltLayout = true) ?: LoginEmailFragment.newInstance(false, false, true)
+            slideInFragment(
+                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_ALT_LAYOUT)
+        }
     }
 
     override fun showUsernamePasswordScreen(
