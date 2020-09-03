@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import javax.inject.Inject
@@ -45,6 +47,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        unifiedLoginTracker.setFlowAndStep(Flow.PROLOGUE, Step.PROLOGUE)
     }
 
     override fun onDetach() {
@@ -55,14 +58,15 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         button_login_store.setOnClickListener {
+            // Login with site address
+            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
             prologueFinishedListener?.onPrimaryButtonClicked()
-            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED)
         }
 
         button_login_wpcom.setOnClickListener {
+            // Login with WordPress.com account
+            unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
             prologueFinishedListener?.onSecondaryButtonClicked()
-
-            // TODO AMANDA - add new tracks event
         }
     }
 }
