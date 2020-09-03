@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
+import javax.inject.Inject
 
 class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     companion object {
@@ -24,6 +26,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
         fun onSecondaryButtonClicked()
     }
 
+    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,6 +34,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (activity is PrologueFinishedListener) {
