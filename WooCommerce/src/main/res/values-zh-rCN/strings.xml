@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-02 12:54:52+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="feedback_completed_back_to_store_button_text">返回商店</string>
+    <string name="feedback_completed_contact_us">点击此处联系我们</string>
+    <string name="feedback_completed_description">请注意，这不是支持工单，我们无法处理个人反馈。\n\n需要一些帮助？ %1$s</string>
+    <string name="feedback_completed_title_message">感谢您与我们分享您的\n想法</string>
+    <string name="feedback_completed_title">反馈已发送</string>
+    <string name="web_view_loading_message">请稍候…</string>
+    <string name="web_view_loading_title">正在加载</string>
+    <string name="feedback_survey_request_title">我们应该如何改善？</string>
+    <string name="product_type_confirm_button">是的，更改</string>
+    <string name="product_type_confirm_dialog_message">更改产品类型将修改某些产品数据</string>
+    <string name="product_type_confirm_dialog_title">是否确定要更改产品类型？</string>
+    <string name="product_type_external_desc">将产品链接到外部网站</string>
+    <string name="product_type_grouped_desc">相关产品集合</string>
+    <string name="product_type_virtual_desc">服务或数字下载</string>
+    <string name="product_type_physical_desc">您配送给客户的商品</string>
+    <string name="product_type_list_header">选择产品类型</string>
+    <string name="send_feedback">发送反馈</string>
+    <string name="variation_detail_price_warning_title">某些变体没有价格</string>
+    <string name="variation_detail_price_warning">没有价格的变体不会在您的商店中显示</string>
+    <string name="variation_detail_update_product_success">变体已更新</string>
+    <string name="grouped_product_btn_delete">删除分组产品</string>
+    <string name="grouped_products_single">%d 个产品</string>
+    <string name="grouped_products_count">%d 个产品</string>
+    <string name="grouped_products">分组产品</string>
+    <string name="product_type_edit">更改产品类型</string>
+    <string name="product_variation_no_price_set">未设置价格</string>
+    <string name="product_variation_enabled">已启用</string>
+    <string name="product_pricing_scheduled_sale_price_error">如果预发布了销售，您必须设置销售价格</string>
+    <string name="product_wip_message">现在，您可以编辑分组的外部可变产品、更改产品类型，以及更新类别和标签</string>
+    <string name="product_reviews_count">\u2022 %d 评论</string>
+    <string name="product_review_list_item_title">%1$s 发表了评论</string>
     <string name="feedback_request_like_it">我喜欢</string>
     <string name="feedback_request_make_better">可以更好</string>
     <string name="feedback_request_title">喜欢 WooCommerce 应用程序？</string>
@@ -21,6 +52,7 @@ Language: zh_CN
     <string name="shipping_label_refund_message">您可以对尚未用于配送包裹的配送标签申请退款。 此过程至少需要 14 天的处理时间。</string>
     <string name="orderdetail_shipping_label_request_refund">申请退款</string>
     <string name="orderdetail_shipping_label_item_menu">配送标签退款</string>
+    <string name="product_variation_disabled">已停用</string>
     <string name="product_add_category_dialog_message">请稍候…</string>
     <string name="product_add_category_dialog_title">添加类别</string>
     <string name="product_category_parent">父级类别</string>
@@ -38,7 +70,6 @@ Language: zh_CN
     <string name="settings_privacy_policy_ca">面向加州用户的隐私声明</string>
     <string name="keep_changes">保存更改</string>
     <string name="product_sale_date_to">直至 %1$s</string>
-    <string name="product_wip_message">我们为产品添加了更多的编辑功能。您现在可以更新图像、编辑产品设置和共享产品！</string>
     <string name="product_wip_title">提供新的编辑选项</string>
     <string name="product_limited_editing_title">提供有限编辑功能</string>
     <string name="orderdetail_product_multiple">产品</string>
@@ -310,7 +341,6 @@ Language: zh_CN
     <string name="install">安装</string>
     <string name="error_disabled_apis">无法获取设置：一些 API 不适用于此 OAuth 应用程序 ID + 帐户组合。</string>
     <string name="settings_hiring">我们正在招贤纳士！</string>
-    <string name="feature_requests">功能请求</string>
     <string name="orderdetail_copy_tracking_number">复制跟踪编号</string>
     <string name="login_refresh_app_progress">正在检查 WooCommerce…</string>
     <string name="login_refresh_app">刷新应用程序</string>

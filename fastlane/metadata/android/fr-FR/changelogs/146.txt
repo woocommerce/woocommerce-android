@@ -1,4 +1,0 @@
-4.8 :
-* Mise à jour de la section « Ajouter le suivi de l’expédition » pour qu’elle ne s’affiche que si l’extension Suivi de l’expédition est disponible.
-* Résolution d’un problème en effectuant un double-clic sur un élément de navigation et d’un autre (rare) problème causé par la tentative de masquer une vue non active.
-

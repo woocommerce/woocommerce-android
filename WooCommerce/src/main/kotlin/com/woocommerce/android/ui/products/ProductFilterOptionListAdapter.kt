@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
@@ -40,7 +41,7 @@ class ProductFilterOptionListAdapter(
         holder.txtFilterName.text = filter.filterOptionItemName
 
         val isChecked = filter.isSelected
-        holder.selectedFilterItemRadioButton.visibility = if (isChecked) View.VISIBLE else View.GONE
+        holder.selectedFilterItemRadioButton.isVisible = isChecked
         holder.selectedFilterItemRadioButton.isChecked = isChecked
 
         holder.itemView.setOnClickListener {

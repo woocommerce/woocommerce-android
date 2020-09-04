@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.dashboard_refresh_layout
 import kotlinx.android.synthetic.main.fragment_dashboard.view.scroll_view
-import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
@@ -62,6 +61,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private val mainActivity
         get() = activity as? MainActivity
 
+    private val mainNavigationRouter
+        get() = activity as? MainNavigationRouter
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -92,7 +94,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
                 dashboard_feedback_request_card.visibility = View.VISIBLE
                 val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { /* TODO */ }
+                val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
                 dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
@@ -303,7 +305,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+        mainNavigationRouter?.showProductDetail(topEarner.id)
     }
 
     override fun showEmptyView(show: Boolean) {

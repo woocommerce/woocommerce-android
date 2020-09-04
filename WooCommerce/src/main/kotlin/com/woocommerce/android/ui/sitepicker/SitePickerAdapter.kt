@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
@@ -53,7 +54,7 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
 
     override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
         val site = siteList[position]
-        holder.radio.visibility = if (siteList.size > 1) View.VISIBLE else View.GONE
+        holder.radio.isVisible = siteList.size > 1
         holder.radio.isChecked = site.siteId == selectedSiteId
         holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
         holder.txtSiteDomain.text = StringUtils.getSiteDomainAndPath(site)

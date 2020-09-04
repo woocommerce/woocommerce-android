@@ -30,6 +30,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val variationListRepository: VariationListRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val productRepository: ProductDetailRepository = mock()
 
     private val productRemoteId = 1L
     private lateinit var viewModel: VariationListViewModel
@@ -50,6 +51,7 @@ class VariationListViewModelTest : BaseUnitTest() {
                 savedState,
                 coroutineDispatchers,
                 variationListRepository,
+                productRepository,
                 networkStatus,
                 currencyFormatter
             )

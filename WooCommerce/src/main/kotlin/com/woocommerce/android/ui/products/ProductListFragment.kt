@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -79,7 +81,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
+        productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
@@ -321,7 +323,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreProgress.isVisible = show
     }
 
     private fun showProductList(products: List<Product>) {
@@ -336,10 +338,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show) {
+            val wipCardMessageId = if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+                R.string.product_wip_message_m3
+            } else R.string.product_wip_message_m2
+
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
-                getString(R.string.product_wip_message)
+                getString(wipCardMessageId)
             )
         } else {
             products_wip_card.visibility = View.GONE

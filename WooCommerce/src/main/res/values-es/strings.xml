@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-04 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="feedback_completed_back_to_store_button_text">Volver a la tienda</string>
+    <string name="feedback_completed_contact_us">Ponte en contacto con nosotros aquí</string>
+    <string name="feedback_completed_description">Ten en cuenta que esto no es una petición de asistencia y que no podremos enviar comentarios individuales.\n\n¿Necesitas ayuda? %1$s</string>
+    <string name="feedback_completed_title_message">Gracias por compartir tus\n comentarios con nosotros</string>
+    <string name="feedback_completed_title">Comentarios enviados</string>
+    <string name="web_view_loading_message">Por favor, espera…</string>
+    <string name="web_view_loading_title">Cargando…</string>
+    <string name="feedback_survey_request_title">¿Cómo podemos mejorar?</string>
+    <string name="product_type_confirm_button">Sí, cambiar</string>
+    <string name="product_type_confirm_dialog_message">Si cambias el tipo de producto, se modificarán algunos de los datos de producto</string>
+    <string name="product_type_confirm_dialog_title">¿Seguro que quieres cambiar el tipo de producto?</string>
+    <string name="product_type_external_desc">Vincula un producto a un sitio web externo</string>
+    <string name="product_type_grouped_desc">Una colección de productos relacionados</string>
+    <string name="product_type_virtual_desc">Un servicio o una descarga digital</string>
+    <string name="product_type_physical_desc">Un artículo que envías al cliente</string>
+    <string name="product_type_list_header">Selecciona un tipo de producto</string>
+    <string name="send_feedback">Enviar comentarios</string>
+    <string name="variation_detail_price_warning_title">Algunas variaciones no tienen precios</string>
+    <string name="variation_detail_price_warning">Las variaciones sin precio no se mostrarán en tu tienda</string>
+    <string name="variation_detail_update_product_success">Variación actualizada</string>
+    <string name="grouped_product_btn_delete">Eliminar el producto agrupado</string>
+    <string name="grouped_products_single">%d producto</string>
+    <string name="grouped_products_count">%d productos</string>
+    <string name="grouped_products">Productos agrupados</string>
+    <string name="product_type_edit">Cambiar tipo de producto</string>
+    <string name="product_variation_no_price_set">Sin precio</string>
+    <string name="product_variation_enabled">Activado</string>
+    <string name="product_pricing_scheduled_sale_price_error">Debes indicar el precio rebajado si se ha programado una rebaja</string>
+    <string name="product_wip_message">Ahora, puedes editar productos agrupados, externos y variables, cambiar el tipo de producto y actualizar categorías y etiquetas</string>
+    <string name="product_reviews_count">\u2022 %d reseñas</string>
+    <string name="product_review_list_item_title">%1$s ha dejado una reseña</string>
     <string name="feedback_request_like_it">Me gusta</string>
     <string name="feedback_request_make_better">Podría ser mejor</string>
     <string name="feedback_request_title">¿Te gusta la aplicación de WooCommerce?</string>
@@ -21,6 +52,7 @@ Language: es
     <string name="shipping_label_refund_message">Puedes solicitar un reembolso para una etiqueta de envío que no se haya utilizado para enviar un paquete.  Tardará al menos 14 días en procesarse.</string>
     <string name="orderdetail_shipping_label_request_refund">Solicitar un reembolso</string>
     <string name="orderdetail_shipping_label_item_menu">Etiqueta de envío de reembolso</string>
+    <string name="product_variation_disabled">Desactivado</string>
     <string name="product_add_category_dialog_message">Por favor, espera…</string>
     <string name="product_add_category_dialog_title">Añadir categoría</string>
     <string name="product_category_parent">Categoría padre</string>
@@ -38,7 +70,6 @@ Language: es
     <string name="settings_privacy_policy_ca">Aviso de privacidad para usuarios de California</string>
     <string name="keep_changes">Conservar los cambios</string>
     <string name="product_sale_date_to">Hasta el %1$s</string>
-    <string name="product_wip_message">Hemos añadido más funciones de edición a los productos Ahora, puedes actualizar imágenes, editar la configuración de productos y compartirlos.</string>
     <string name="product_wip_title">Nuevas opciones de edición disponibles</string>
     <string name="product_limited_editing_title">Edición limitada disponible</string>
     <string name="orderdetail_product_multiple">Productos</string>
@@ -310,7 +341,6 @@ Language: es
     <string name="install">Instalar</string>
     <string name="error_disabled_apis">No se ha podido recuperar la configuración: Algunas APIs no están disponibles para la cuenta e ID de esta aplicación OAuth.</string>
     <string name="settings_hiring">¡Buscamos personal!</string>
-    <string name="feature_requests">Solicitud de función</string>
     <string name="orderdetail_copy_tracking_number">Copiar número de seguimiento</string>
     <string name="login_refresh_app_progress">Comprobando WooCommerce…</string>
     <string name="login_refresh_app">actualizar la aplicación</string>

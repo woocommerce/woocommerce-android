@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -31,6 +33,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.fragment_variation_list.*
+import kotlinx.android.synthetic.main.product_property_warning_layout.*
 import javax.inject.Inject
 
 class VariationListFragment : BaseFragment(),
@@ -114,7 +117,8 @@ class VariationListFragment : BaseFragment(),
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { variationListRefreshLayout.isRefreshing = it }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadMoreProgress.isVisible = it }
+            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(empty_view)
@@ -126,7 +130,7 @@ class VariationListFragment : BaseFragment(),
         }
 
         viewModel.variationList.observe(viewLifecycleOwner, Observer {
-            showVariations(it)
+            showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -136,6 +140,12 @@ class VariationListFragment : BaseFragment(),
                 is Exit -> activity?.onBackPressed()
             }
         })
+    }
+
+    private fun showWarning(isVisible: Boolean) {
+        variationVisibilityWarning.isVisible = isVisible
+        warningTitle.isVisible = isVisible
+        warningDivider.isVisible = isVisible
     }
 
     private fun openVariationDetail(variation: ProductVariation) {
@@ -159,15 +169,12 @@ class VariationListFragment : BaseFragment(),
         }
     }
 
-    private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    private fun showVariations(variations: List<ProductVariation>) {
+    private fun showVariations(variations: List<ProductVariation>, parentProduct: Product?) {
         val adapter = (variationList.adapter ?: VariationListAdapter(
             requireContext(),
             GlideApp.with(this),
             this,
+            parentProduct,
             viewModel::onItemClick
         )) as VariationListAdapter
 
