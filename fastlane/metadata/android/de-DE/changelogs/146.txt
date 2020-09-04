@@ -1,4 +1,0 @@
-4.8:
-* Bereich „Sendungsverfolgung hinzufügen“ aktualisiert, sodass er nur noch angezeigt wird, wenn das Sendungsverfolgungs-Plugin vorhanden ist.
-* Absturz beim Doppeltippen auf ein Navigationselement und ein weiterer (seltener) Absturz beim Verbergen einer nicht aktiven Anzeige behoben.
-
