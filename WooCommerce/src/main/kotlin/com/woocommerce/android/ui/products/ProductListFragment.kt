@@ -15,15 +15,19 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.FeedbackSurveyFragment.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
@@ -389,7 +393,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 
-    private fun onGiveFeedbackClicked(view: View) {}
+    private fun onGiveFeedbackClicked(view: View) {
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT.url)
+            .apply { findNavController().navigateSafely(this) }
+    }
 
-    private fun onDismissProductWIPNoticeCardClicked(view: View) {}
+    private fun onDismissProductWIPNoticeCardClicked(view: View) {
+        showProductWIPNoticeCard(false)
+    }
 }
