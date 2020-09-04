@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -33,7 +36,11 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
-class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActionModeEventListener {
+class ProductSelectionListFragment : BaseFragment(),
+    OnLoadMoreListener,
+    OnActionModeEventListener,
+    OnQueryTextListener,
+    OnActionExpandListener {
     companion object {
         const val KEY_SELECTED_PRODUCT_IDS_RESULT = "key_selected_product_ids_result"
     }
@@ -55,6 +62,9 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
         ProductSelectionActionModeCallback(this)
     }
 
+    private var searchMenuItem: MenuItem? = null
+    private var searchView: SearchView? = null
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -62,6 +72,8 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
 
     override fun onDestroyView() {
         skeletonView.hide()
+        disableSearchListeners()
+        searchView = null
         super.onDestroyView()
     }
 
@@ -148,13 +160,18 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_list_fragment, menu)
+
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getString(R.string.product_search_hint)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-                // TODO: enable search
+                enableSearchListeners()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -173,7 +190,15 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
                 if (isVisible) {
-                    empty_view.show(EmptyViewType.PRODUCT_LIST)
+                    when {
+                        new.isSearchActive == true -> {
+                            empty_view.show(
+                                EmptyViewType.SEARCH_RESULTS,
+                                searchQueryOrFilter = viewModel.searchQuery
+                            )
+                        }
+                        else -> empty_view.show(EmptyViewType.PRODUCT_LIST)
+                    }
                 } else {
                     empty_view.hide()
                 }
@@ -209,6 +234,44 @@ class ProductSelectionListFragment : BaseFragment(), OnLoadMoreListener, OnActio
 
     private fun enableProductsRefresh(enable: Boolean) {
         productsRefreshLayout?.isEnabled = enable
+    }
+
+    private fun closeSearchView() {
+        disableSearchListeners()
+        updateActivityTitle()
+        searchMenuItem?.collapseActionView()
+    }
+
+    private fun disableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(null)
+        searchView?.setOnQueryTextListener(null)
+    }
+
+    private fun enableSearchListeners() {
+        searchMenuItem?.setOnActionExpandListener(this)
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        viewModel.onRefreshRequested()
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        viewModel.onSearchQueryChanged(newText)
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        viewModel.onSearchOpened()
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+        viewModel.onSearchClosed()
+        closeSearchView()
+        return true
     }
 
     override fun onRequestLoadMore() {
