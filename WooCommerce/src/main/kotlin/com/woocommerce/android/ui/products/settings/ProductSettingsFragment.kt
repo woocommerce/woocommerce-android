@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
@@ -63,7 +64,8 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+        val isSimple = viewModel.getProduct().productDraft?.type == ProductType.SIMPLE
+        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && isSimple) {
             productIsVirtual.visibility = View.VISIBLE
             productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
                 AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)

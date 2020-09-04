@@ -8,6 +8,7 @@ import android.text.Html
 import android.util.Patterns
 import androidx.annotation.StringRes
 import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import java.io.IOException
 import java.util.Locale
@@ -43,6 +44,33 @@ object StringUtils {
             0 -> context.getString(zero ?: default, quantity)
             1 -> context.getString(one ?: default, quantity)
             else -> context.getString(default, quantity)
+        }
+    }
+
+    /**
+     * Borrowed and modified from WordPress-Android :)
+     *
+     * Formats the string for the given [quantity], using the given params.
+     * We need this because our translation platform doesn't support Android plurals.
+     *
+     * If a string resource is not provided for [zero] or [one] the [default] resource will be used.
+     *
+     * @param [quantity] The number used to pick the correct string
+     * @param [default] The desired string identifier to get when [quantity] is not (0 or 1)
+     * @param [zero] Optional. The desired string identifier to use when [quantity] is exactly 0.
+     * @param [one] Optional. The desired string identifier to use when the [quantity] is exactly 1
+     */
+    fun getQuantityString(
+        resourceProvider: ResourceProvider,
+        quantity: Int,
+        @StringRes default: Int,
+        @StringRes zero: Int? = null,
+        @StringRes one: Int? = null
+    ): String {
+        return when (quantity) {
+            0 -> resourceProvider.getString(zero ?: default, quantity)
+            1 -> resourceProvider.getString(one ?: default, quantity)
+            else -> resourceProvider.getString(default, quantity)
         }
     }
 
