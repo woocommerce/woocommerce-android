@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -24,6 +25,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -67,6 +73,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -340,7 +349,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show) {
+        if (show && feedbackState == UNANSWERED) {
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
@@ -394,12 +403,19 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun onGiveFeedbackClicked(view: View) {
+        registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT.url)
             .apply { findNavController().navigateSafely(this) }
     }
 
     private fun onDismissProductWIPNoticeCardClicked(view: View) {
+        registerFeedbackSetting(DISMISSED)
         showProductWIPNoticeCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeedbackState) {
+        FeatureFeedbackSettings(products_wip_card.wipFeatureType.name, state)
+            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }

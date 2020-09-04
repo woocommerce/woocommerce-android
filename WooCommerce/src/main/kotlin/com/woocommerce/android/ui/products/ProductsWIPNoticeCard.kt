@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.GROUPED_PRODUCTS
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.products_wip_notice.view.*
 
@@ -16,6 +17,9 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.products_wip_notice, this)
     }
+
+    val wipFeatureType
+        get() = GROUPED_PRODUCTS
 
     private var isExpanded: Boolean
         set(value) {
