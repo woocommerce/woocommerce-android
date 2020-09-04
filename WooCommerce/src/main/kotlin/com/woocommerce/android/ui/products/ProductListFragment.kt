@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -337,10 +338,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show) {
+            val wipCardMessageId = if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+                R.string.product_wip_message_m3
+            } else R.string.product_wip_message_m2
+
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
-                getString(R.string.product_wip_message)
+                getString(wipCardMessageId)
             )
         } else {
             products_wip_card.visibility = View.GONE

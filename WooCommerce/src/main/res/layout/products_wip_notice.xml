@@ -33,7 +33,7 @@
             android:layout_marginTop="@dimen/minor_00"
             android:layout_marginBottom="@dimen/major_100"
             android:visibility="gone"
-            tools:text="@string/product_wip_message"
+            tools:text="@string/product_wip_message_m2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline7"
