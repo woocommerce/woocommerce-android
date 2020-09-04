@@ -25,11 +25,12 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/jetpack_required_msg"
                 style="@style/Woo.TextView.Body1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_150"
                 android:layout_marginEnd="@dimen/major_150"
                 android:layout_marginBottom="@dimen/major_200"
+                android:textAlignment="center"
                 android:text="@string/login_jetpack_required_text"
                 android:textColor="@color/color_on_surface_high"
                 app:layout_constraintBottom_toBottomOf="parent"
