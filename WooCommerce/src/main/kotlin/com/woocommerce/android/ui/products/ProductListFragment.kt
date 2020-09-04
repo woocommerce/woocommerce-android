@@ -33,7 +33,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.FeedbackSurveyFragment.SurveyType
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
@@ -405,7 +405,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun onGiveFeedbackClicked(view: View) {
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT.url)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
             .apply { findNavController().navigateSafely(this) }
     }
 

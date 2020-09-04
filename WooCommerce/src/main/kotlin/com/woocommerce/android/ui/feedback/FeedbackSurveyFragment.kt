@@ -12,13 +12,11 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.woocommerce.android.AppUrls.CROWDSIGNAL_MAIN_SURVEY
-import com.woocommerce.android.AppUrls.CROWDSIGNAL_PRODUCT_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_licenses.*
+import kotlinx.android.synthetic.main.fragment_licenses.webView
 
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     companion object {
@@ -30,10 +28,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     private var progressDialog: CustomProgressDialog? = null
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
-    private val surveyUrl
-        get() = arguments.surveyUrl
-            ?.takeIf { it.isNotEmpty() }
-            ?: SurveyType.MAIN.url
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -45,7 +39,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         configureWebView()
         savedInstanceState?.let {
             webView.restoreState(it)
-        } ?: webView.loadUrl(surveyUrl)
+        } ?: webView.loadUrl(arguments.surveyType.url)
     }
 
     override fun onResume() {
@@ -118,10 +112,5 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
                 ?.let { completeSurvey() }
             return super.shouldOverrideUrlLoading(view, request)
         }
-    }
-
-    enum class SurveyType(val url: String) {
-        PRODUCT(CROWDSIGNAL_PRODUCT_SURVEY),
-        MAIN(CROWDSIGNAL_MAIN_SURVEY)
     }
 }
