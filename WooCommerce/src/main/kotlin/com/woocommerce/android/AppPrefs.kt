@@ -67,9 +67,7 @@ object AppPrefs {
         // Application permissions
         ASKED_PERMISSION_CAMERA,
         // Date of the app installation
-        APP_INSTALATION_DATE,
-        // Date of the last time the user sent feedback on the app
-        LAST_FEEDBACK_DATE
+        APP_INSTALATION_DATE
     }
 
     fun init(context: Context) {
@@ -109,16 +107,6 @@ object AppPrefs {
         private set(value) = value
             ?.time.toString()
             .let { setString(UndeletablePrefKey.APP_INSTALATION_DATE, it) }
-
-    var lastFeedbackDate: Date?
-        get() = getString(UndeletablePrefKey.LAST_FEEDBACK_DATE)
-            .toLongOrNull()
-            ?.let { Date(it) }
-            ?: Date(0)
-
-        set(value) = value
-            ?.time.toString()
-            .let { setString(UndeletablePrefKey.LAST_FEEDBACK_DATE, it) }
 
     fun getLastAppVersionCode(): Int {
         return getDeletableInt(UndeletablePrefKey.LAST_APP_VERSION_CODE)

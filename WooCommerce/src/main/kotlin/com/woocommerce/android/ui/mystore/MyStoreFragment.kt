@@ -11,6 +11,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -379,7 +380,7 @@ class MyStoreFragment : TopLevelFragment(),
             this.store_feedback_request_card.visibility = View.VISIBLE
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()
-                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                 removeTabLayoutFromAppBar(tabLayout)
                 visibility = View.GONE
             }
@@ -390,7 +391,7 @@ class MyStoreFragment : TopLevelFragment(),
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
             val feedbackGiven = {
-                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                 store_feedback_request_card.visibility = View.GONE
             }
             val feedbackPostponed = {
