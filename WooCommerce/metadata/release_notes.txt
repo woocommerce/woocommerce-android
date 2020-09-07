@@ -1,4 +1,3 @@
-- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.
-- Edit product variations like price, description, inventory, visibility, and shipping.
-- Experiment with new features in the Products section! Go to Settings to enable them.
+* Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
+* Fixed a common crash when choosing a product image
  
