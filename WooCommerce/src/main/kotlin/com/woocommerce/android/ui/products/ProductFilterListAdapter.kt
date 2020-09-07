@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import kotlinx.android.synthetic.main.product_filter_list_item.view.*
@@ -48,19 +49,8 @@ class ProductFilterListAdapter(
 
     override fun getItemCount() = filterList.size
 
-    private fun isSameList(newList: List<FilterListItemUiModel>): Boolean {
-        if (newList.size != filterList.size) {
-            return false
-        }
-        for (index in newList.indices) {
-            val oldItem = filterList[index]
-            val newItem = newList[index]
-            if (!oldItem.isSameFilter(newItem)) {
-                return false
-            }
-        }
-        return true
-    }
+    private fun isSameList(newList: List<FilterListItemUiModel>) =
+        filterList.areSameAs(newList) { this.isSameFilter(it) }
 
     class ProductFilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtFilterName: TextView = view.filterItemName

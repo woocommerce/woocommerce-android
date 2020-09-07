@@ -84,6 +84,7 @@
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
+    <string name="images_still_uploading_message">Images are still uploading</string>
     <string name="more_options">More options</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
