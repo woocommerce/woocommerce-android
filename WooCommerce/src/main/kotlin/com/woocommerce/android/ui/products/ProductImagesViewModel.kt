@@ -43,16 +43,16 @@ class ProductImagesViewModel @AssistedInject constructor(
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
     private val originalImages = navArgs.images.toList()
 
-    val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
+    val isLimitedToSingleImage = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             isDoneButtonVisible = false,
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
-            isImageDeletingAllowed = isProduct,
+            isImageDeletingAllowed = isLimitedToSingleImage,
             images = navArgs.images.toList(),
-            isWarningVisible = !isProduct
+            isWarningVisible = !isLimitedToSingleImage
         )
     ) { old, new ->
         if (old != new) {
@@ -123,7 +123,11 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onImagesAdded(newImages: List<Image>) {
-        viewState = viewState.copy(images = images + newImages)
+        viewState = if (isLimitedToSingleImage) {
+            viewState.copy(images = images + newImages)
+        } else {
+            viewState.copy(images = newImages)
+        }
     }
 
     fun onImageSourceButtonClicked() {
@@ -174,7 +178,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(
             isDoneButtonVisible = hasChanges,
             chooserButtonButtonTitleRes = when {
-                isProduct -> string.product_add_photos
+                isLimitedToSingleImage -> string.product_add_photos
                 numImages > 0 -> string.product_replace_photo
                 else -> string.product_add_photo
             }
@@ -210,7 +214,8 @@ class ProductImagesViewModel @AssistedInject constructor(
     private fun checkImageUploads(remoteProductId: Long) {
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
-            viewState.copy(uploadingImageUris = uris)
+            val images = if (isLimitedToSingleImage) viewState.images else emptyList()
+            viewState.copy(images = images, uploadingImageUris = uris)
         } else {
             viewState.copy(uploadingImageUris = emptyList())
         }
@@ -231,7 +236,11 @@ class ProductImagesViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                viewState = viewState.copy(images = images + media.toAppModel())
+                viewState = if (isLimitedToSingleImage) {
+                    viewState.copy(images = images + media.toAppModel())
+                } else {
+                    viewState.copy(images = listOf(media.toAppModel()))
+                }
             }
         }
         checkImageUploads(navArgs.remoteId)
