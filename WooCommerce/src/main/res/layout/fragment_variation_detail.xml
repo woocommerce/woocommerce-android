@@ -40,7 +40,7 @@
                     android:layout_marginStart="@dimen/minor_100"
                     android:layout_marginEnd="@dimen/minor_100"
                     app:isGridView="false"
-                    app:showAddImageIcon="true" />
+                    app:showAddImageIcon="false" />
 
                 <FrameLayout
                     android:id="@+id/addImageContainer"
