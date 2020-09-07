@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-04 08:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="feedback_completed_back_to_store_button_text">Mağazaya dön</string>
+    <string name="feedback_completed_contact_us">Buradan bize ulaşın</string>
+    <string name="feedback_completed_description">Bunun bir destek bileti olmadığını ve bireysel geri bildirimleri işleme alamayacağımızı unutmayın.\n\nBiraz yardıma mı ihtiyacınız var? %1$s</string>
+    <string name="feedback_completed_title_message">Düşüncelerinizi bizimle paylaştığınız\n için teşekkür ederiz</string>
+    <string name="feedback_completed_title">Geri bildirim gönderildi</string>
+    <string name="web_view_loading_message">Lütfen bekleyin…</string>
+    <string name="web_view_loading_title">Yükleniyor</string>
+    <string name="feedback_survey_request_title">Nasıl iyileştirebiliriz?</string>
+    <string name="product_type_confirm_button">Evet, değiştir</string>
+    <string name="product_type_confirm_dialog_message">Ürün türünün değiştirilmesi bazı ürün verilerini değiştirir</string>
+    <string name="product_type_confirm_dialog_title">Ürün türünü değiştirmek istediğinizden emin misiniz?</string>
+    <string name="product_type_external_desc">Bir ürünü harici bir web sitesine bağlayın</string>
+    <string name="product_type_grouped_desc">İlgili ürünlerden oluşan bir koleksiyon</string>
+    <string name="product_type_virtual_desc">Bir hizmet veya dijital indirme</string>
+    <string name="product_type_physical_desc">Müşteriye gönderdiğiniz bir ürün</string>
+    <string name="product_type_list_header">Bir ürün türü seç</string>
+    <string name="send_feedback">Geri bildirim gönder</string>
+    <string name="variation_detail_price_warning_title">Bazı varyasyonların fiyatı yok</string>
+    <string name="variation_detail_price_warning">Fiyatı olmayan varyasyonlar mağazanızda gösterilmeyecektir</string>
+    <string name="variation_detail_update_product_success">Varyasyon güncellendi</string>
+    <string name="grouped_product_btn_delete">Gruplanmış ürünü sil</string>
+    <string name="grouped_products_single">%d ürün</string>
+    <string name="grouped_products_count">%d ürünler</string>
+    <string name="grouped_products">Gruplanmış ürünler</string>
+    <string name="product_type_edit">Ürün türünü değiştir</string>
+    <string name="product_variation_no_price_set">Fiyat belirtilmemiş</string>
+    <string name="product_variation_enabled">Etkin</string>
+    <string name="product_pricing_scheduled_sale_price_error">Bir satış planlandıysa satış fiyatını ayarlamalısınız</string>
+    <string name="product_wip_message">Artık gruplanmış, harici ve değişken ürünleri düzenleyebilir, ürün türünü değiştirebilir ve kategorileri ile etiketleri güncelleyebilirsiniz.</string>
+    <string name="product_reviews_count">\u2022 %d yorum</string>
+    <string name="product_review_list_item_title">%1$s bir yorum yaz</string>
     <string name="feedback_request_like_it">Beğendim</string>
     <string name="feedback_request_make_better">Daha iyi olabilirdi</string>
     <string name="feedback_request_title">WooCommerce uygulaması hoşunuza gidiyor mu?</string>
@@ -21,6 +52,7 @@ Language: tr
     <string name="shipping_label_refund_message">Bir paketi göndermek için kullanılmamış bir gönderi etiketi için para iadesi talep edebilirsiniz. İşleme alınması en az 14 gün sürer.</string>
     <string name="orderdetail_shipping_label_request_refund">Para iadesi iste</string>
     <string name="orderdetail_shipping_label_item_menu">Geri ödeme gönderim etiketi</string>
+    <string name="product_variation_disabled">Devre dışı</string>
     <string name="product_add_category_dialog_message">Lütfen bekleyin…</string>
     <string name="product_add_category_dialog_title">Kategori ekleniyor</string>
     <string name="product_category_parent">Üst kategori</string>
@@ -38,7 +70,6 @@ Language: tr
     <string name="settings_privacy_policy_ca">Kaliforniya\'daki kullanıcılar için gizlilik bildirimi</string>
     <string name="keep_changes">Değişiklikleri koru</string>
     <string name="product_sale_date_to">%1$s tarihine kadar</string>
-    <string name="product_wip_message">Ürünlere daha fazla düzenleme işlevi ekledik. Artık görüntüleri güncelleyebilir, ürün ayarlarını düzenleyebilir ve ürünleri paylaşabilirsiniz!</string>
     <string name="product_wip_title">Yeni düzenleme seçenekleri kullanılabilir</string>
     <string name="product_limited_editing_title">Sınırlı düzenleme mevcut</string>
     <string name="orderdetail_product_multiple">Ürünler</string>

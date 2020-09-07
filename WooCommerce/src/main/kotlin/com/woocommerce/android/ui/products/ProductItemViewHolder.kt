@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
@@ -30,8 +31,12 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
     private val statusColor = ContextCompat.getColor(parent.context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(parent.context, R.color.product_status_fg_pending)
 
-    fun bind(product: Product) {
+    fun bind(
+        product: Product,
+        isActivated: Boolean = false
+    ) {
         val context = itemView.context
+        itemView.isActivated = isActivated
 
         itemView.productName.text = if (product.name.isEmpty()) {
             context.getString(R.string.untitled)
@@ -54,17 +59,26 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val firstImage = product.firstImageUrl
         val size: Int
-        if (firstImage.isNullOrEmpty()) {
-            size = imageSize / 2
-            itemView.productImage.setImageResource(R.drawable.ic_product)
-        } else {
-            size = imageSize
-            val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
-            GlideApp.with(context)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_product)
-                .into(itemView.productImage)
+        when {
+            itemView.isActivated -> {
+                size = imageSize / 2
+                itemView.productImage.setImageResource(R.drawable.ic_menu_check)
+                itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
+            }
+            firstImage.isNullOrEmpty() -> {
+                size = imageSize / 2
+                itemView.productImage.setImageResource(R.drawable.ic_product)
+            }
+            else -> {
+                size = imageSize
+                val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
+                GlideApp.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(itemView.productImage)
+            }
         }
+
         itemView.productImage.layoutParams.apply {
             height = size
             width = size
@@ -134,4 +148,13 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         return if (statusHtml != null) "$statusHtml $bullet $stock" else stock
     }
+
+    /**
+     * Method to return details associated with a user selection
+     */
+    fun getItemDetails() =
+        object : ItemDetailsLookup.ItemDetails<Long>() {
+            override fun getPosition() = adapterPosition
+            override fun getSelectionKey() = itemId
+        }
 }

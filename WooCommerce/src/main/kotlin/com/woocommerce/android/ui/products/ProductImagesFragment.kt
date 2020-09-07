@@ -170,6 +170,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         val intent = Intent(Intent.ACTION_GET_CONTENT).also {
             it.type = "image/*"
             it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            it.addCategory(Intent.CATEGORY_OPENABLE)
         }
         val chooser = Intent.createChooser(intent, null)
         activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)

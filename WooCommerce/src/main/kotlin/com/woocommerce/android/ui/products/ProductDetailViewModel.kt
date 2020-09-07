@@ -147,6 +147,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
+    val isProductPublished: Boolean
+    get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+
     init {
         start()
     }
