@@ -168,6 +168,13 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 shippingClassId = it.shippingClassId
             )
         }
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+            if (it.isNotEmpty()) {
+                viewModel.onVariationChanged(
+                    image = it.first()
+                )
+            }
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
@@ -179,6 +186,14 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                         separator = " - ",
                         transform = { "Any ${it.name}" }
                     ) ?: ""
+                }
+            }
+            new.uploadingImageUri?.takeIfNotEqualTo(old?.uploadingImageUri) {
+                if (it.value != null) {
+                    imageGallery.clearImages()
+                    imageGallery.setPlaceholderImageUris(listOf(it.value))
+                } else {
+                    imageGallery.clearPlaceholders()
                 }
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }

@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.OptionalViewState
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -301,9 +302,9 @@ class VariationDetailViewModel @AssistedInject constructor(
     private fun checkImageUploads(remoteProductId: Long) {
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
-            viewState.copy(uploadingImageUri = uri)
+            viewState.copy(uploadingImageUri = OptionalViewState(uri))
         } else {
-            viewState.copy(uploadingImageUri = null)
+            viewState.copy(uploadingImageUri = OptionalViewState())
         }
     }
 
@@ -339,7 +340,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         } else {
             event.media?.let { media ->
                 val variation = viewState.variation.copy(image = media.toAppModel())
-                viewState = viewState.copy(variation = variation)
+                showVariation(variation)
             }
         }
         checkImageUploads(viewState.variation.remoteVariationId)
@@ -359,7 +360,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: Uri? = null
+        val uploadingImageUri: OptionalViewState<Uri>? = null
         ) : Parcelable
 
     @AssistedInject.Factory
