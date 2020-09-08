@@ -324,10 +324,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUri = null)
-        } else {
-//            loadProduct(event.id)
         }
-
         checkImageUploads(event.id)
     }
 
