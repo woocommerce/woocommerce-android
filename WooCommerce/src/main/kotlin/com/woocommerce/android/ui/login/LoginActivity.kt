@@ -8,6 +8,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.automattic.android.tracks.CrashLogging.CrashLogging
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -25,6 +27,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.SiteStore
@@ -175,8 +178,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         return loginMode as LoginMode
     }
 
+    override fun startOver() {
+        showPrologueFragment()
+    }
+
     override fun onPrimaryButtonClicked() {
-        startLoginViaSiteAddress()
+        loginViaSiteAddress()
     }
 
     override fun onSecondaryButtonClicked() {
@@ -196,15 +203,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
                 "wordpress.com", "wordpress.com", "WordPress.com", "https://s0.wp.com/i/webclip.png", username,
                 password, true)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
-    }
-
-    private fun startLoginViaSiteAddress() {
-        if (getLoginViaSiteAddressFragment() != null) {
-            // login by site address is already shown so, login has already started. Just bail.
-            return
-        }
-
-        loginViaSiteAddress()
     }
 
     private fun startLoginViaWPCom() {
@@ -230,7 +228,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loginViaSiteAddress() {
-        val loginSiteAddressFragment = LoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
@@ -331,7 +329,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // not needed and may cause issues when attempting to match the url to the authenticated account later
         // in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        AppPrefs.setLoginSiteAddress(inputSiteAddress.replaceFirst(protocolRegex, ""))
+        val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
+        AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
             showEmailLoginScreen(inputSiteAddress)
@@ -340,7 +339,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(inputSiteAddress)
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
             slideInFragment(
                     fragment = jetpackReqFragment as Fragment,
                     shouldAddToBackStack = true,
@@ -522,7 +521,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onGoogleSignupError(msg: String?) {
-        // TODO: Signup
+        Snackbar.make(main_view, msg ?: "", BaseTransientBottomBar.LENGTH_LONG).show()
     }
 
     //  -- END: GoogleListener implementation methods

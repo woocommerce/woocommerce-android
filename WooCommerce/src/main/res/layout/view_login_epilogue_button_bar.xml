@@ -13,6 +13,15 @@
     tools:showIn="@layout/activity_site_picker">
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_primary"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_10"
+        android:textAllCaps="false"
+        android:text="@string/login_try_another_account"/>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_secondary"
         style="@style/Woo.Button.Outlined"
         android:layout_width="match_parent"
@@ -21,13 +30,4 @@
         android:text="@string/login_view_connected_stores"
         android:textAllCaps="false"
         tools:visibility="visible"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_primary"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_10"
-        android:textAllCaps="false"
-        android:text="@string/login_try_another_account"/>
 </LinearLayout>
