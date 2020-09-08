@@ -1,0 +1,5 @@
+4.9:
+- Tocca il nuovo pulsante Invia feedback per inviarci le tue idee e i tuoi suggerimenti mediante un'indagine CrowdSignal.
+- Modifica le varianti di prodotto come prezzo, descrizione, inventario, visibilità e spedizione.
+- Prova le nuove funzionalità nella sezione Prodotti. Vai alle Impostazioni per abilitarle.
+

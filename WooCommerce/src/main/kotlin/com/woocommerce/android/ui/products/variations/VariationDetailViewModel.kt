@@ -248,6 +248,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        productRepository.onCleanup()
         variationRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }

@@ -1,102 +1,105 @@
 <ar>
-4.8:
-* تم تحديث قسم "إضافة تعقُّب الشحنة" لعرضه فقط في حالة توافر إضافة تعقُّب الشحنة
-* تم إصلاح عطل كان يحدث عند النقر المزدوج على عنصر التنقل، وعطل آخر (نادر) ناتج عن محاولة إخفاء العرض غير النشط.
+4.9:
+- انقر على زر "إرسال الملاحظات" الجديد لإرسال أفكارك واقتراحاتك إلينا في استطلاع رأي CrowdSignal.
+- حرِّر تباينات المنتجات كالسعر والوصف والمخزون والرؤية والشحن.
+- جرِّب الميزات الجديدة في قسم المنتجات! انتقل إلى الإعدادات لتمكينها.
 
 </ar>
 <de-DE>
-4.8:
-* Bereich „Sendungsverfolgung hinzufügen“ aktualisiert, sodass er nur noch angezeigt wird, wenn das Sendungsverfolgungs-Plugin vorhanden ist.
-* Absturz beim Doppeltippen auf ein Navigationselement und ein weiterer (seltener) Absturz beim Verbergen einer nicht aktiven Anzeige behoben.
+4.9:
+- Tippe in einer CrowdSignal-Umfrage auf den neuen Button „Feedback senden“, um deine Ideen und Vorschläge an uns zu senden.
+- Bearbeite Produktvarianten wie Preis, Beschreibung, Bestand, Sichtbarkeit und Versand.
+- Experimentiere mit neuen Funktionen im Abschnitt „Produkte“! Navigiere zu „Einstellungen“, um sie zu aktivieren.
 
 </de-DE>
-<es-ES>
-4.8:
-* Se ha actualizado la sección "Add shipment tracking" (Añadir seguimiento de envío) a la sección para que se muestre únicamente si está disponible el plugin Shipment Tracking (Seguimiento de envío).
-* Se ha solucionado un fallo que se producía al tocar dos veces un elemento de navegación y otro (en raras ocasiones) que se producía al intentar ocultar una vista no activa.
-
-</es-ES>
 <fr-FR>
-4.8 :
-* Mise à jour de la section « Ajouter le suivi de l’expédition » pour qu’elle ne s’affiche que si l’extension Suivi de l’expédition est disponible.
-* Résolution d’un problème en effectuant un double-clic sur un élément de navigation et d’un autre (rare) problème causé par la tentative de masquer une vue non active.
+4.9 :
+- Appuyez sur le nouveau bouton Envoyer un commentaire pour nous envoyer vos idées et suggestions dans une étude CrowdSignal.
+- Modifiez les variantes du produit, comme le prix, la description, le stock, la visibilité et la livraison.
+- Testez les nouvelles fonctionnalités dans la section Produits ! Allez dans Réglages pour les activer.
 
 </fr-FR>
 <iw-IL>
-4.8:
-* עדכנו את המקטע 'להוסיף מעקב אחר משלוח' כדי שיוצג רק כאשר התוסף של מעקב המשלוח זמין.
-* תיקנו קריסה שהתרחשה בהקשה כפולה על אלמנט ניווט ועוד קריסה (נדירה) שנגרמה בניסיון להסתיר תצוגה לא פעילה.
+4.9:
+ - ניתן להקיש על הכפתור החדש 'לשלוח משוב' כדי לשלוח לנו רעיונות והצעות באמצעות סקר של CrowdSignal.
+- ניתן לערוך פרטים של סוגי מוצר, כגון מחיר, תיאור, מלאי, נראות ומשלוח.
+- אפשר להתנסות בתכונות חדשות במקטע המוצרים! יש לעבור ל'הגדרות' כדי להפעיל אותן.
 
 </iw-IL>
 <id>
-4.8:
-* Bagian “Tambah pelacakan pengiriman” diperbarui sehingga hanya tampil jika plugin Pelacakan Pengiriman tersedia.
-* Crash saat mengetuk dua kali elemen navigasi dan crash lainnya akibat menyembunyikan tampilan non-aktif (jarang terjadi) diperbaiki.
+4.9:
+- Ketuk tombol Kirim Masukan untuk mengirim ide dan saran Anda kepada kami di survei CrowdSignal.
+- Sunting variasi produk seperti harga, deskripsi, persediaan, visibilitas, dan pengiriman.
+- Bereksperimen dengan fitur baru di bagian Produk! Buka Pengaturan untuk mengaktifkannya.
 
 </id>
 <it-IT>
-4.8:
-* Sezione per aggiungere la tracciabilità della spedizione aggiornata per essere mostrata solo se il plugin Tracciabilità della spedizione è disponibile.
-* Risolto un arresto anomalo che si verificava toccando due volte un elemento di navigazione e un altro (raro) arresto anomalo causato dal tentativo di nascondere una vista non attiva.
+4.9:
+- Tocca il nuovo pulsante Invia feedback per inviarci le tue idee e i tuoi suggerimenti mediante un'indagine CrowdSignal.
+- Modifica le varianti di prodotto come prezzo, descrizione, inventario, visibilità e spedizione.
+- Prova le nuove funzionalità nella sezione Prodotti. Vai alle Impostazioni per abilitarle.
 
 </it-IT>
 <ja-JP>
-4.8:
-* 配送追跡プラグインが利用できる場合のみ「配送追跡を追加」セクションが表示されるように変更。
-* ナビゲーション要素をダブルタップした際に発生するクラッシュ、およびアクティブになっていないビューを非表示にしようとすると (稀に) 発生するクラッシュを修正。
+4.9:
+- 新しい「意見を送る」ボタンをタップし、CrowdSignal のアンケートでご意見やご提案をお寄せください。
+- 価格、説明、在庫、公開状態、配送などの商品のバリエーションを編集します。
+-「商品」セクションの新しい機能をお試しください ! 有効にするには「設定」に移動します。
 
 </ja-JP>
 <ko-KR>
-4.8:
-"배송 추적 추가" 섹션이 배송 추적 플러그인을 사용하는 경우에만 표시되도록 업데이트했습니다.
-* 탐색 요소를 두 번 누를 때 발생하는 충돌과 활성화되지 않은 화면을 숨기려고 할 때 발생하는 (드문) 충돌을 해결했습니다.
+4.9:
+- CrowdSignal 설문 조사에서 새롭게 추가된 '피드백 보내기' 버튼을 탭하여 저희에게 아이디어와 의견을 제출해주세요.
+- 가격, 설명, 재고, 가시성, 배송과 같은 제품 선택사항을 편집하세요.
+- '제품' 섹션에서 기능을 사용해보세요! 기능을 활성화하려면 '설정'으로 이동하세요.
 
 </ko-KR>
 <nl-NL>
-4.8:
-* Het gedeelte 'Verzending bijhouden toevoegen' is bijgewerkt om alleen de Shipment Tracking-plugin te laten zien als deze beschikbaar is.
-* Een crash na het dubbeltikken op een navigatie-element en nog een (zeldzame) crash veroorzaakt door het proberen verbergen van een non-actief overzicht zijn opgelost.
+4.9:
+- Tik op de nieuwe knop Feedback verzenden om je ideeën en suggesties met ons te delen via een CrowdSignal-enquête.
+- Bewerk productvariaties zoals prijs, beschrijving, voorraad, zichtbaarheid en verzending.
+- Experimenteer met nieuwe functies in het gedeelte Producten! Ga naar Instellingen om ze in te schakelen.
 
 </nl-NL>
-<pt-BR>
-4.8:
-* Seção "Adicionar rastreamento de envio" atualizada para ser exibida somente se o plugin Shipment Tracking estiver disponível.
-* Correção de falha causada ao dar dois cliques em um elemento de navegação, e de uma falha (rara) causada ao tentar ocultar uma visualização não ativa.
-
-</pt-BR>
 <ru-RU>
-4.8:
-* Обновлен раздел «Добавить отслеживание заказов», который теперь отображается, только если доступен плагин отслеживания.
-* Исправлена ошибка, из-за которой возникал сбой при двойном нажатии на элементы навигации, а также еще одна (редкая) ошибка, происходившая при попытке скрыть неактивные представления.
+4,9:
+- Нажмите кнопку «Отправить отзыв», чтобы поделиться идеями и предложениями в опросе CrowdSignal.
+- Вы можете редактировать такие параметры товара, как цена, описание, наличие на складе, видимость и доставка.
+- Испытайте новые возможности в разделе «Товары»! Чтобы включить их, перейдите в раздел «Настройки».
 
 </ru-RU>
 <sv-SE>
-4.8:
-* Avsnittet "Lägg till leveransspårning" uppdaterades så att det endast visas om tillägget Leveransspårning är tillgängligt.
-* En krasch som uppstod vid dubbeltryck på ett navigationselement och en annan (sällsynt) krasch som uppstod vid försök att dölja en icke-aktiv vy åtgärdades.
+4.9:
+- Tryck på den nya knappen Skicka feedback för att skicka dina idéer och förslag till oss i en CrowdSignal-undersökning.
+- Redigera produktvariationer som pris, beskrivning, lager, synlighet och frakt.
+- Experimentera med nya funktioner i avsnittet Produkter! Gå till Inställningar för att aktivera dem.
 
 </sv-SE>
 <tr-TR>
-4,8:
-* "Gönderi takibi ekle" bölümü yalnızca Gönderi Takibi eklentisi mevcutsa görüntülenecek şekilde güncellendi.
-* Bir gezinme öğesine çift dokunulduğunda yaşanan kilitlenme ile, etkin olmayan bir görünümü gizlemeye çalışırken oluşan başka bir (nadir) kilitlenme sorunu düzeltildi.
+4.9:
+- Bir CrowdSignal anketiyle fikirlerinizi ve önerilerinizi bize göndermek için yeni Geri Bildirim Gönder düğmesine dokunun.
+- Fiyat, açıklama, stok, görünürlük ve gönderim gibi ürün varyasyonlarını düzenleyin.
+- Ürünler bölümünde yeni özelliklerle denemeler yapın. Bunları etkinleştirmek için Ayarlar'a gidin.
 
 </tr-TR>
 <zh-CN>
-4.8:
-* 更新了“添加配送跟踪”部分，以仅在 Shipment Tracking 插件可用时显示。
-* 修复了双击导航元素时出现的崩溃问题，以及因尝试隐藏非活动视图导致的另一个（极少出现）崩溃问题。
+4.9：
+- 轻点新的“发送反馈”按钮，以在 CrowdSignal 调查中向我们提交您的想法和建议。
+- 编辑产品变体，如价格、描述、库存、可见性和配送。
+- 尝试“产品”部分中的新功能！ 转到“设置”以启用这些功能。
 
 </zh-CN>
 <zh-TW>
-4.8：
-* 更新「新增貨件追蹤」區段，只有安裝「貨件追蹤」外掛程式時才會顯示此區段。
-* 修復按兩下導覽元素時發生的當機問題，以及嘗試隱藏非使用中檢視畫面而導致的其他 (少見) 當機情況 。
+4.9：
+- 點選新的「傳送意見回饋」按鈕，即可透過 CrowdSignal 調查傳送想法與建議給我們。
+- 編輯商品變化項目資訊，例如價格、說明、庫存、可見度和貨運資訊。
+- 體驗「商品」區段的新功能！ 前往「設定」即可啟用這些功能。
 
 </zh-TW>
 <en-US>
-4.8:
-* Updated the “Add shipment tracking” section to display only if the Shipment Tracking plugin is available.
-* Fixed a crash when double-tapping a navigation element, and another (rare) crash caused by trying to hide a non-active view.
+4.9:
+- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.
+- Edit product variations like price, description, inventory, visibility, and shipping.
+- Experiment with new features in the Products section! Go to Settings to enable them.
  
 </en-US>

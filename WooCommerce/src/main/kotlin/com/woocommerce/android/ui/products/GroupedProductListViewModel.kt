@@ -66,9 +66,12 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onGroupedProductsAdded(selectedProductIds: List<Long>) {
+        // ignore already added products
+        val uniqueSelectedProductIds = selectedProductIds.minus(selectedGroupedProductIds)
         productListViewState = productListViewState.copy(
-            selectedGroupedProductIds = selectedGroupedProductIds + selectedProductIds
+            selectedGroupedProductIds = selectedGroupedProductIds + uniqueSelectedProductIds
         )
+        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED)
         updateGroupedProductList()
     }
 
@@ -76,6 +79,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             selectedGroupedProductIds = selectedGroupedProductIds - product.remoteId
         )
+        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED)
         updateGroupedProductList()
     }
 
@@ -87,6 +91,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
+        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED)
         triggerEvent(ViewProductSelectionList(navArgs.remoteProductId))
     }
 

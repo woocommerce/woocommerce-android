@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.fragment_product_shipping.*
  * Fragment which enables updating product shipping data.
  */
 class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping), NavigationResult {
-    private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
         get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
