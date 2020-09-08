@@ -85,7 +85,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '1.6.20'
+    fluxCVersion = '1.6.21'
     daggerVersion = '2.25.2'
     glideVersion = '4.10.0'
     testRunnerVersion = '1.0.1'
@@ -101,6 +101,7 @@ ext {
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.40'
+    flipperVersion = '0.52.0'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks

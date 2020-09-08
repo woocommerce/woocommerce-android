@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -215,7 +216,13 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.groupedProductIds)
+                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductSelectionList -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductSelectionListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 

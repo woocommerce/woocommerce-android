@@ -1,0 +1,5 @@
+4.9:
+- Ketuk tombol Kirim Masukan untuk mengirim ide dan saran Anda kepada kami di survei CrowdSignal.
+- Sunting variasi produk seperti harga, deskripsi, persediaan, visibilitas, dan pengiriman.
+- Bereksperimen dengan fitur baru di bagian Produk! Buka Pengaturan untuk mengaktifkannya.
+

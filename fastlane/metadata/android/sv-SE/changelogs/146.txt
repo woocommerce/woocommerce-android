@@ -1,4 +1,0 @@
-4.8:
-* Avsnittet "Lägg till leveransspårning" uppdaterades så att det endast visas om tillägget Leveransspårning är tillgängligt.
-* En krasch som uppstod vid dubbeltryck på ett navigationselement och en annan (sällsynt) krasch som uppstod vid försök att dölja en icke-aktiv vy åtgärdades.
-
