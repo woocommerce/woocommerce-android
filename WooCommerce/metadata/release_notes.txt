@@ -1,3 +1,2 @@
-* Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
-* Fixed a common crash when choosing a product image
+We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
  
