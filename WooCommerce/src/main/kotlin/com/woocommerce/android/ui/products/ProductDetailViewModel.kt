@@ -371,7 +371,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
-                    messageId = string.discard_images_message   ,
+                    messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
                         triggerEvent(event)
