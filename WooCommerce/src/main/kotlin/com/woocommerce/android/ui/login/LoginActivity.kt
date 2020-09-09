@@ -179,6 +179,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun startOver() {
+        // Clear logged in url from AppPrefs
+        AppPrefs.removeLoginSiteAddress()
+
         showPrologueFragment()
     }
 
