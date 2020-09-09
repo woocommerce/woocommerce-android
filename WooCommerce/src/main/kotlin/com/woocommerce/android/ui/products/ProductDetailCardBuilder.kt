@@ -478,8 +478,9 @@ class ProductDetailCardBuilder(
                 resources.getString(R.string.product_detail_product_type_hint, productType),
                 R.drawable.ic_gridicons_product
             ) {
+                val isAddProductFlow = this.remoteId == 0L
                 viewModel.onEditProductCardClicked(
-                    ViewProductTypes(this.type),
+                    ViewProductTypes(isAddProductFlow),
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
                 )
             }

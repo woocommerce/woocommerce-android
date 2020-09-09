@@ -47,10 +47,6 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
-                android:name="remoteProductId"
-                android:defaultValue="0L"
-                app:argType="long" />
-            <argument
                 android:name="isAddProduct"
                 android:defaultValue="false"
                 app:argType="boolean" />

@@ -210,7 +210,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productDetail_addMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
-                ViewProductDetailBottomSheet(product.remoteId)
+                ViewProductDetailBottomSheet(product.type)
             )
         }
 

@@ -17,7 +17,6 @@ class ProductDetailTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
-                isVirtual = true,
                 titleResource = R.string.product_type_virtual,
                 descResource = R.string.product_type_virtual_desc,
                 iconResource = R.drawable.ic_gridicons_cloud_outline
