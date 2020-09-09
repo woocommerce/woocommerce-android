@@ -17,7 +17,6 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductImagesViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -95,7 +94,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             storedProduct = product,
             productBeforeEnteringFragment = product,
             isSkeletonShown = false,
-            uploadingImageUris = null,
+            uploadingImageUris = emptyList(),
             showBottomSheetButton = true
     )
 
@@ -187,8 +186,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(MutableLiveData(ProductDetailViewState()))
             .whenever(savedState).getLiveData<ProductDetailViewState>(any(), any())
-        doReturn(MutableLiveData(ProductImagesViewState()))
-            .whenever(savedState).getLiveData<ProductImagesViewState>(any(), any())
 
         doReturn(true).whenever(networkStatus).isConnected()
 
@@ -199,7 +196,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             productRepository,
             networkStatus,
             currencyFormatter,
-            productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
             productTagsRepository,

@@ -344,10 +344,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show) {
+            val wipCardMessageId = if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
+                R.string.product_wip_message_m3
+            } else R.string.product_wip_message_m2
+
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
-                getString(R.string.product_wip_message)
+                getString(wipCardMessageId)
             )
         } else {
             products_wip_card.visibility = View.GONE

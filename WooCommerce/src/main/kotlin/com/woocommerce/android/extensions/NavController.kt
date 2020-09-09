@@ -20,9 +20,13 @@ object CallThrottler {
     }
 }
 
-fun NavController.navigateSafely(directions: NavDirections) {
-    CallThrottler.throttle {
+fun NavController.navigateSafely(directions: NavDirections, skipThrottling: Boolean = false) {
+    if (skipThrottling) {
         currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
+    } else {
+        CallThrottler.throttle {
+            currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
+        }
     }
 }
 

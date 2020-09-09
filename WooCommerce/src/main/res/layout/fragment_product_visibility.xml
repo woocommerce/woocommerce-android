@@ -37,7 +37,8 @@
             android:layout_marginBottom="@dimen/major_100"
             android:inputType="textPassword"
             android:visibility="gone"
-            app:hintEnabled="false"
+            android:hint="@string/product_visibility_password_protected_hint"
+            app:hintEnabled="true"
             tools:visibility="visible" />
 
         <View

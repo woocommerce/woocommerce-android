@@ -80,7 +80,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        verify(productRepository, times(1)).getProductList(any())
+        verify(productRepository, times(1)).getProductList(productFilterOptions = emptyMap())
         verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -88,8 +88,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -106,7 +106,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 

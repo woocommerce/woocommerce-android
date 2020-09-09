@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import org.wordpress.android.util.ActivityUtils
 
 /**
  * All fragments shown from the main product settings fragment should extend this class.
@@ -73,6 +74,7 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
     override fun onStop() {
         super.onStop()
         CustomDiscardDialog.onCleared()
+        activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
     override fun onRequestAllowBackPress(): Boolean {

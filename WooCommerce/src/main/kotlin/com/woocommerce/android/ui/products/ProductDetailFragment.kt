@@ -21,8 +21,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -32,7 +35,6 @@ import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryDa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
-import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -61,8 +63,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-
-    private var viewProductOnStoreMenuItem: MenuItem? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
@@ -106,8 +106,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
-        handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it.type, isVirtual = it.isVirtual)
+        handleResult<ProductType>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
+            viewModel.updateProductDraft(type = it)
             changesMade()
         }
         handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
@@ -148,6 +148,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                images = it
+            )
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -185,24 +191,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productId = product.remoteId
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
-            imageGallery.visibility = View.GONE
+            imageGallery.hide()
             startAddImageContainer()
         } else {
-            addImageContainer.visibility = View.GONE
-            imageGallery.visibility = View.VISIBLE
+            addImageContainer.hide()
+            imageGallery.show()
             imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.visibility = View.VISIBLE
+                frameStatusBadge.show()
                 textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
-
-            // display View Product on Store menu button only if the Product status is published,
-            // otherwise the page is redirected to a 404
-            viewProductOnStoreMenuItem?.isVisible = status == ProductStatus.PUBLISH
         }
 
         productDetail_addMoreContainer.setOnClickListener {
@@ -222,10 +224,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     private fun startAddImageContainer() {
-        addImageContainer.visibility = View.VISIBLE
+        addImageContainer.show()
         addImageContainer.setOnClickListener {
-            AnalyticsTracker.track(PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-            viewModel.onAddImageClicked()
+            AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            viewModel.onAddImageButtonClicked()
         }
     }
 
@@ -233,7 +235,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
-        viewProductOnStoreMenuItem = menu.findItem(R.id.menu_view_product)
+        // display View Product on Store menu button only if the Product status is published,
+        // otherwise the page is redirected to a 404
+        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished
         menu.findItem(R.id.menu_product_settings).isVisible = true
 
         when (viewModel.isAddFlow) {
@@ -375,12 +379,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onGalleryImageClicked(image: Product.Image) {
-        viewModel.onImageGalleryClicked(image)
+        viewModel.onImageClicked(image)
     }
 
     override fun onGalleryAddImageClicked() {
         AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-        viewModel.onAddImageClicked()
+        viewModel.onAddImageButtonClicked()
     }
 
     override fun getFragmentTitle(): String = productName

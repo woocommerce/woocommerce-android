@@ -11,20 +11,21 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_049"
+msgid ""
+"4.9:\n"
+"- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.\n"
+"- Edit product variations like price, description, inventory, visibility, and shipping.\n"
+"- Experiment with new features in the Products section! Go to Settings to enable them.\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_048"
 msgid ""
 "4.8:\n"
 "* Updated the “Add shipment tracking” section to display only if the Shipment Tracking plugin is available.\n"
 "* Fixed a crash when double-tapping a navigation element, and another (rare) crash caused by trying to hide a non-active view.\n"
 "\n"
-msgstr ""
-
-msgctxt "release_note_047"
-msgid ""
-"4.7:\n"
-"<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.\n"
-"\n"
-"<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
