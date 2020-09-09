@@ -138,7 +138,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     fun onImageClicked(image: Image) {
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image), selectedImage =  image))
+        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image), selectedImage = image))
     }
 
     fun onAddImageButtonClicked() {
@@ -361,7 +361,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
         val uploadingImageUri: OptionalViewState<Uri>? = null
-        ) : Parcelable
+    ) : Parcelable
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<VariationDetailViewModel>

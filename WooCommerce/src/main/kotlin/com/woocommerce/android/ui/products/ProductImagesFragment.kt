@@ -88,7 +88,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         setupViews()
     }
 
-
     private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
         handleResult<List<Image>>(KEY_WP_IMAGE_PICKER_RESULT) {
             viewModel.onImagesAdded(it)

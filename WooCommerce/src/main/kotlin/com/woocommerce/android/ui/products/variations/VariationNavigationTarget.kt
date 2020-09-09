@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.variations
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
