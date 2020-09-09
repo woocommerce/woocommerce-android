@@ -12,22 +12,33 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
+import javax.inject.Inject
+import dagger.Lazy
 
-class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
+class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPressListener {
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     companion object {
         private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
@@ -35,6 +46,9 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
+    private val viewModel: ProductImagesViewModel by navGraphViewModels(R.id.nav_graph_image_gallery) {
+        viewModelFactory.get()
+    }
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
@@ -46,7 +60,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.remoteMediaId
+        remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.mediaId
 
         setHasOptionsMenu(false)
     }
@@ -64,9 +78,14 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             findNavController().navigateUp()
         }
 
-        iconTrash.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
-            confirmRemoveProductImage()
+        if (navArgs.isDeletingAllowed) {
+            iconTrash.setOnClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+                confirmRemoveProductImage()
+            }
+            iconTrash.isVisible = true
+        } else {
+            iconTrash.isVisible = false
         }
 
         savedInstanceState?.let { bundle ->
@@ -102,9 +121,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
 
     private fun resetAdapter() {
         val images = ArrayList<Product.Image>()
-        viewModel.getProduct().productDraft?.let { draft ->
-            images.addAll(draft.images)
-        }
+        images.addAll(viewModel.images)
 
         pagerAdapter = ImageViewerAdapter(childFragmentManager, images)
         viewPager.adapter = pagerAdapter
@@ -156,7 +173,7 @@ class ProductImageViewerFragment : BaseProductFragment(), ImageViewerListener {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     remoteMediaId = newMediaId
-                    viewModel.removeProductImageFromDraft(currentMediaId)
+                    viewModel.onImageRemoved(currentMediaId)
                     // animate it back in if there are any images left, others return to the previous fragment
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(viewPager)

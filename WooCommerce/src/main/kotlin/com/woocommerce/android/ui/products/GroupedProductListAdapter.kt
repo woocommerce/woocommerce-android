@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.products
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.extensions.areSameProductsAs
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.isSameList
 
 class GroupedProductListAdapter(
     private val onItemDeleted: (product: Product) -> Unit
@@ -29,7 +29,7 @@ class GroupedProductListAdapter(
     }
 
     fun setProductList(products: List<Product>) {
-        if (!productList.isSameList(products)) {
+        if (!productList.areSameProductsAs(products)) {
             val diffResult = DiffUtil.calculateDiff(ProductItemDiffUtil(productList, products))
             productList.clear()
             productList.addAll(products)

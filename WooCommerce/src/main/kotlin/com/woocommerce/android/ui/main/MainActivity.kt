@@ -359,7 +359,8 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderNoteFragment,
                 R.id.productSettingsFragment,
                 R.id.addProductCategoryFragment,
-                R.id.parentCategoryListFragment -> {
+                R.id.parentCategoryListFragment,
+                R.id.productSelectionListFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -792,6 +793,12 @@ class MainActivity : AppUpgradeActivity(),
         val orderId = OrderIdentifier(localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigateSafely(action)
+    }
+
+    override fun showFeedbackSurvey() {
+        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment().apply {
+            navController.navigateSafely(this)
+        }
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.tabs.TabLayout
@@ -104,7 +105,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(
     }
 
     private fun showEmptyView(show: Boolean) {
-        topEarners_emptyView.visibility = if (show) View.VISIBLE else View.GONE
+        topEarners_emptyView.isVisible = show
     }
 
     fun updateView(topEarnerList: List<WCTopEarnerModel>) {
@@ -114,8 +115,8 @@ class DashboardTopEarnersView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        topEarners_error.visibility = if (show) View.VISIBLE else View.GONE
-        topEarners_recycler.visibility = if (show) View.GONE else View.VISIBLE
+        topEarners_error.isVisible = show
+        topEarners_recycler.isVisible = !show
     }
 
     @StringRes
@@ -177,7 +178,7 @@ class DashboardTopEarnersView @JvmOverloads constructor(
             holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topEarner.name)
             holder.productOrdersText.text = numOrders
             holder.totalSpendText.text = total
-            holder.divider.visibility = if (position < itemCount - 1) View.VISIBLE else View.GONE
+            holder.divider.isVisible = position < itemCount - 1
 
             val imageUrl = PhotonUtils.getPhotonImageUrl(topEarner.image, imageSize, 0)
             GlideApp.with(holder.itemView.context)

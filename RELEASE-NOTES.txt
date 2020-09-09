@@ -1,5 +1,16 @@
+5.1
+-----
+ 
+5.0
+-----
+* Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
+* Fixed a common crash when choosing a product image
+ 
 4.9
 -----
+* Creates CrowdSignal integration for app Feedback survey
+* You can now edit variations (price, description, inventory, visibility and shipping)
+* Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
  
 4.8
 -----

@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -15,13 +16,13 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -99,13 +100,20 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductInventory -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductInventoryFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductInventoryFragment(
+                            RequestCodes.PRODUCT_DETAIL_INVENTORY,
+                            target.inventoryData,
+                            target.sku
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
-                        .actionProductDetailFragmentToProductPricingFragment(target.remoteId)
+                        .actionProductDetailFragmentToProductPricingFragment(
+                            RequestCodes.PRODUCT_DETAIL_PRICING,
+                            target.pricingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -117,11 +125,12 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductShipping -> {
                 val action = ProductDetailFragmentDirections
-                        .actionGlobalProductShippingFragment(target.remoteId)
+                        .actionGlobalProductShippingFragment(
+                            RequestCodes.PRODUCT_DETAIL_SHIPPING,
+                            target.shippingData
+                        )
                 fragment.findNavController().navigateSafely(action)
             }
-
-            is ViewProductImageChooser -> viewProductImageChooser(fragment, target.remoteId)
 
             is ViewProductSettings -> {
                 val action = ProductDetailFragmentDirections
@@ -159,8 +168,8 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductImages -> {
-                viewProductImageChooser(fragment, target.product.remoteId)
+            is ViewProductImageGallery -> {
+                viewProductImages(fragment, target.remoteId, target.images, target.selectedImage, target.showChooser)
             }
 
             is ViewProductMenuOrder -> {
@@ -195,7 +204,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductTypes -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.remoteId)
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.productType)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -207,7 +216,13 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.groupedProductIds)
+                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewProductSelectionList -> {
+                val action = ProductDetailFragmentDirections
+                    .actionGlobalProductSelectionListFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -215,15 +230,21 @@ class ProductNavigator @Inject constructor() {
         }
     }
 
-    private fun viewProductImageChooser(fragment: Fragment, remoteId: Long) {
+    private fun viewProductImages(
+        fragment: Fragment,
+        remoteId: Long,
+        images: List<Image>,
+        selectedImage: Image?,
+        showChooser: Boolean
+    ) {
         val action = ProductDetailFragmentDirections
-                .actionProductDetailFragmentToProductImagesFragment(remoteId)
-        fragment.findNavController().navigateSafely(action)
-    }
-
-    private fun viewProductImageViewer(fragment: Fragment, remoteId: Long) {
-        val action = ProductImageViewerFragmentDirections
-                .actionGlobalProductImageViewerFragment(remoteId)
+                .actionProductDetailFragmentToNavGraphImageGallery(
+                    remoteId,
+                    images.toTypedArray(),
+                    selectedImage,
+                    showChooser,
+                    RequestCodes.PRODUCT_DETAIL_IMAGES
+                )
         fragment.findNavController().navigateSafely(action)
     }
 }

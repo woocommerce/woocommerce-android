@@ -156,7 +156,7 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun verifySkuAvailability(sku: String): Boolean? {
+    suspend fun isSkuAvailableRemotely(sku: String): Boolean? {
         continuationVerifySku?.cancel()
         return try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -219,7 +219,7 @@ class ProductDetailRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
-    fun geProductExistsBySku(sku: String) = productStore.geProductExistsBySku(selectedSite.get(), sku)
+    fun isProductSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
     fun getCachedVariationCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
