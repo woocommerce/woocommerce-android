@@ -98,7 +98,9 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        showUpdateMenuItem(viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false)
+
+        doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
+        doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -111,10 +113,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showUpdateMenuItem(show: Boolean) {
-        doneOrUpdateMenuItem?.isVisible = show
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -198,7 +196,12 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
+                doneOrUpdateMenuItem?.isVisible = it
+            }
+            new.isDoneButtonEnabled?.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
+                doneOrUpdateMenuItem?.isEnabled = it
+            }
         }
 
         viewModel.variationDetailCards.observe(viewLifecycleOwner, Observer {

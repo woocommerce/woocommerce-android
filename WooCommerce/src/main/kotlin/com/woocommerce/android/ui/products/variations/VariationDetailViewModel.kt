@@ -302,9 +302,15 @@ class VariationDetailViewModel @AssistedInject constructor(
     private fun checkImageUploads(remoteProductId: Long) {
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
-            viewState.copy(uploadingImageUri = OptionalViewState(uri))
+            viewState.copy(
+                uploadingImageUri = OptionalViewState(uri),
+                isDoneButtonEnabled = false
+            )
         } else {
-            viewState.copy(uploadingImageUri = OptionalViewState())
+            viewState.copy(
+                uploadingImageUri = OptionalViewState(),
+                isDoneButtonEnabled = true
+            )
         }
     }
 
@@ -324,7 +330,10 @@ class VariationDetailViewModel @AssistedInject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
         if (event.isCancelled) {
-            viewState = viewState.copy(uploadingImageUri = null)
+            viewState = viewState.copy(
+                uploadingImageUri = null,
+                isDoneButtonEnabled = true
+            )
         }
         checkImageUploads(event.id)
     }
@@ -350,6 +359,7 @@ class VariationDetailViewModel @AssistedInject constructor(
     data class VariationViewState(
         val variation: ProductVariation,
         val isDoneButtonVisible: Boolean? = null,
+        val isDoneButtonEnabled: Boolean? = null,
         val isSkeletonShown: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val weightWithUnits: String? = null,
