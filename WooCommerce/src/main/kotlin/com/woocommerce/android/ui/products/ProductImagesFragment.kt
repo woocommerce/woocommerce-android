@@ -127,7 +127,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)

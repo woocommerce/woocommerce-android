@@ -153,7 +153,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
                 triggerEvent(ShowDiscardDialog(
-                    messageId = string.product_images_still_uploading_message,
+                    messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
                         triggerEvent(ExitWithResult(originalImages))

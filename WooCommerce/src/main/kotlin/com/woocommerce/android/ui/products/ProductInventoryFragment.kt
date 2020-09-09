@@ -100,7 +100,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                         requireActivity(),
                         event.positiveBtnAction,
                         event.negativeBtnAction,
-                        event.messageId
+                        messageId = event.messageId
                     )
                     else -> event.isHandled = false
                 }

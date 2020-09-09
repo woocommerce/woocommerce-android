@@ -116,7 +116,7 @@ class ProductPricingFragment
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 else -> event.isHandled = false
             }

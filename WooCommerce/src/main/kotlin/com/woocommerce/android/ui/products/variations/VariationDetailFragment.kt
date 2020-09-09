@@ -215,7 +215,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is Exit -> requireActivity().onBackPressed()
                 else -> event.isHandled = false
