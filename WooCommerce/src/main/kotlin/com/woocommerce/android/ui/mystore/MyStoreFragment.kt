@@ -69,7 +69,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
 
     private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
+            it.setId(R.id.stats_tab_layout)
+        }
     }
 
     private val appBarLayout
@@ -140,7 +142,6 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
-        tabLayout.setId(R.id.stats_tab_layout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
