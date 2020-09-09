@@ -239,6 +239,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 // Make "show connected stores" visible to the user
                 button_secondary.visibility = View.VISIBLE
+                button_secondary.text = getString(R.string.login_view_connected_stores)
             } else {
                 hasConnectedStores = false
 
@@ -249,9 +250,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             loginSiteUrl?.let { processLoginSite(it) }
             return
         }
-        // Hide "show connected stores" button now that we're displaying
-        // the store list.
-        button_secondary.visibility = View.GONE
+
+        // Show the 'try another account' button in case the user
+        // doesn't see the store they want to log into.
+        with(button_secondary) {
+            visibility = View.VISIBLE
+            text = getString(R.string.login_try_another_account)
+            setOnClickListener { presenter.logout() }
+        }
 
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_STORES_SHOWN,
@@ -282,10 +288,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        button_primary.text = getString(R.string.done)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+        with(button_primary) {
+            text = getString(R.string.done)
+            isEnabled = true
+            setOnClickListener {
+                presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+            }
         }
     }
 
@@ -379,10 +387,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        button_primary.text = getString(R.string.login_try_another_account)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.logout()
+        with(button_primary) {
+            text = getString(R.string.login_try_another_account)
+            isEnabled = true
+            setOnClickListener { presenter.logout() }
+        }
+
+        with(button_secondary) {
+            visibility = View.GONE
         }
     }
 
