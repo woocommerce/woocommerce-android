@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import javax.inject.Inject
@@ -33,6 +34,14 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState == null) {
+            unifiedLoginTracker.track(Flow.PROLOGUE, PROLOGUE)
+        }
     }
 
     override fun onAttach(context: Context) {
