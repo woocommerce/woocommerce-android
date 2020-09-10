@@ -6,6 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.FeedbackPrefs.FeedbackPrefKey.FEATURE_FEEDBACK_SETTINGS
 import com.woocommerce.android.FeedbackPrefs.FeedbackPrefKey.LAST_FEEDBACK_DATE
+import com.woocommerce.android.extensions.greaterThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.util.PreferenceUtils
 import java.util.Date
@@ -16,12 +18,19 @@ object FeedbackPrefs {
     private val featureMapTypeToken by lazy { object : TypeToken<Map<String, String>>() {}.type }
     private val sharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
 
+    private const val THREE_MONTHS_IN_DAYS = 90
+    private const val SIX_MONTHS_IN_DAYS = 180
+
     private val featureMap
         get() = getString(FEATURE_FEEDBACK_SETTINGS)
             .takeIf { it.isNotEmpty() }
             ?.let {
                 gson.fromJson<Map<String, String>>(it, featureMapTypeToken)
             } ?: mapOf()
+
+    val userFeedbackIsDue: Boolean
+        get() = AppPrefs.installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
+            lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
 
     var lastFeedbackDate: Date?
         get() = getString(LAST_FEEDBACK_DATE)

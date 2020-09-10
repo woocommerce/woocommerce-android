@@ -66,7 +66,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     private val feedbackCardShouldBeVisible
         get() = APP_FEEDBACK.isEnabled() &&
-            AppPrefs.userFeedbackIsDue
+            FeedbackPrefs.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
