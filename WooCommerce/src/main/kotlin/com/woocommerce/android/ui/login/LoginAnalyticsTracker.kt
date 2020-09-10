@@ -59,6 +59,7 @@ class LoginAnalyticsTracker(
 
     override fun trackLoginForgotPasswordClicked() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_FORGOT_PASSWORD_CLICKED)
+        unifiedLoginTracker.trackClick(Click.FORGOTTEN_PASSWORD)
     }
 
     override fun trackLoginMagicLinkExited() {
@@ -72,6 +73,7 @@ class LoginAnalyticsTracker(
     override fun trackLoginMagicLinkOpenEmailClientClicked() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
         unifiedLoginTracker.track(step = Step.EMAIL_OPENED)
+        unifiedLoginTracker.trackClick(Click.OPEN_EMAIL_CLIENT)
     }
 
     override fun trackLoginMagicLinkSucceeded() {

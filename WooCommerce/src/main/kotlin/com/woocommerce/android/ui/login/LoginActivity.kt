@@ -292,6 +292,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
@@ -378,6 +379,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
 
