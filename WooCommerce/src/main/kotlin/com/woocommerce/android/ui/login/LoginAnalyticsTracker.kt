@@ -34,6 +34,7 @@ class LoginAnalyticsTracker(
 
     override fun trackEmailFormViewed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_EMAIL_FORM_VIEWED)
+        unifiedLoginTracker.track(step = Step.ENTER_EMAIL_ADDRESS)
     }
 
     override fun trackInsertedInvalidUrl() {
@@ -70,6 +71,7 @@ class LoginAnalyticsTracker(
 
     override fun trackLoginMagicLinkOpenEmailClientClicked() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
+        unifiedLoginTracker.track(step = Step.EMAIL_OPENED)
     }
 
     override fun trackLoginMagicLinkSucceeded() {
@@ -94,10 +96,12 @@ class LoginAnalyticsTracker(
 
     override fun trackMagicLinkRequestFormViewed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUEST_FORM_VIEWED)
+        unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.START)
     }
 
     override fun trackPasswordFormViewed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_PASSWORD_FORM_VIEWED)
+        unifiedLoginTracker.track(Flow.LOGIN_PASSWORD, Step.START)
     }
 
     override fun trackSignupCanceled() {
@@ -186,6 +190,7 @@ class LoginAnalyticsTracker(
 
     override fun trackUrlFormViewed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_URL_FORM_VIEWED)
+        unifiedLoginTracker.track(Flow.LOGIN_SITE_ADDRESS, Step.START)
     }
 
     override fun trackUrlHelpScreenViewed() {
@@ -194,6 +199,7 @@ class LoginAnalyticsTracker(
 
     override fun trackUsernamePasswordFormViewed() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_USERNAME_PASSWORD_FORM_VIEWED)
+        unifiedLoginTracker.track(Flow.LOGIN_STORE_CREDS, Step.USERNAME_PASSWORD)
     }
 
     override fun trackWpComBackgroundServiceUpdate(properties: Map<String, *>) {
@@ -231,7 +237,7 @@ class LoginAnalyticsTracker(
 
     override fun trackLoginMagicLinkOpenEmailClientViewed() {
         AnalyticsTracker.track(LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_VIEWED)
-        unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.MAGIC_LINK_REQUESTED)
+        unifiedLoginTracker.track(step = Step.MAGIC_LINK_REQUESTED)
     }
 
     override fun trackSocialButtonStart() {

@@ -123,6 +123,7 @@ class UnifiedLoginTracker
         GOOGLE_LOGIN("google_login"),
         LOGIN_MAGIC_LINK("login_magic_link"),
         LOGIN_PASSWORD("login_password"),
+        LOGIN_STORE_CREDS("login_store_creds"),
         LOGIN_SITE_ADDRESS("login_site_address"),
         SIGNUP("signup"),
         GOOGLE_SIGNUP("google_signup")
