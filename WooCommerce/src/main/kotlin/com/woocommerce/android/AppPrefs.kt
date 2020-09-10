@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
+import com.woocommerce.android.extensions.greaterThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -23,6 +25,13 @@ object AppPrefs {
     interface PrefKey
 
     private lateinit var context: Context
+
+    private const val THREE_MONTHS_IN_DAYS = 90
+    private const val SIX_MONTHS_IN_DAYS = 180
+
+    val userFeedbackIsDue: Boolean
+        get() = installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
+            lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
 
     /**
      * Application related preferences. When the user logs out, these preferences are erased.
@@ -67,7 +76,9 @@ object AppPrefs {
         // Application permissions
         ASKED_PERMISSION_CAMERA,
         // Date of the app installation
-        APP_INSTALATION_DATE
+        APP_INSTALATION_DATE,
+        // Date of the last time the user was requested for feedback on the app
+        LAST_FEEDBACK_REQUEST_DATE
     }
 
     fun init(context: Context) {
