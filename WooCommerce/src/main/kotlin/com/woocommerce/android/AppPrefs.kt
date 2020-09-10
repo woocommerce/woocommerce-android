@@ -30,8 +30,8 @@ object AppPrefs {
     private const val SIX_MONTHS_IN_DAYS = 180
 
     val userFeedbackIsDue: Boolean
-        get() = AppPrefs.installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
-            AppPrefs.lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
+        get() = installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
+            lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
 
     /**
      * Application related preferences. When the user logs out, these preferences are erased.

@@ -2,11 +2,8 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.extensions.greaterThan
-import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.util.DateTimeUtils
