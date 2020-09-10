@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -83,7 +82,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private val feedbackCardShouldBeVisible
         get() = APP_FEEDBACK.isEnabled() &&
-            DateUtils.userFeedbackIsDue
+            AppPrefs.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)

@@ -36,13 +36,6 @@ object DateUtils {
         SimpleDateFormat("yyyy-MM-dd", Locale.US)
     }
 
-    private const val THREE_MONTHS_IN_DAYS = 90
-    private const val SIX_MONTHS_IN_DAYS = 180
-
-    val userFeedbackIsDue: Boolean
-        get() = AppPrefs.installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
-            AppPrefs.lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
-
     /**
      * Takes a date string in ISO8601 standard and returns a string, such as Jan 3, 2000
      */
