@@ -20,16 +20,15 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
-import kotlinx.android.synthetic.main.fragment_dashboard.view.dashboard_refresh_layout
-import kotlinx.android.synthetic.main.fragment_dashboard.view.scroll_view
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -64,6 +63,10 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
+    private val feedbackCardShouldBeVisible
+        get() = APP_FEEDBACK.isEnabled() &&
+            AppPrefs.userFeedbackIsDue
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -91,12 +94,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 scrollUpChild = scroll_view
             }
 
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
-                dashboard_feedback_request_card.visibility = View.VISIBLE
-                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { mainNavigationRouter?.showFeedbackSurvey() ?: Unit }
-                dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)
-            }
+            setupFeedbackRequestCard()
         }
         return view
     }
@@ -140,6 +138,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onResume() {
         super.onResume()
+        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -306,6 +305,51 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
         mainNavigationRouter?.showProductDetail(topEarner.id)
+    }
+
+    /**
+     * This method verifies if the feedback card should be visible.
+     *
+     * If it should but it's not, the feedback card is reconfigured and presented
+     * If should not and it's visible, the card visibility is changed to gone
+     * If should be and it's already visible, nothing happens
+     */
+    private fun handleFeedbackRequestCardState() = with(dashboard_feedback_request_card) {
+        if (feedbackCardShouldBeVisible && visibility == View.GONE) {
+            setupFeedbackRequestCard()
+        } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
+            visibility = View.GONE
+        }
+    }
+
+    private fun View.setupFeedbackRequestCard() {
+        if (feedbackCardShouldBeVisible) {
+            this.dashboard_feedback_request_card.visibility = View.VISIBLE
+            val negativeCallback = {
+                mainNavigationRouter?.showFeedbackSurvey()
+                this.dashboard_feedback_request_card.visibility = View.GONE
+                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+            }
+            dashboard_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        }
+    }
+
+    private fun handleFeedbackRequestPositiveClick() {
+        context?.let {
+            val feedbackGiven = {
+                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                dashboard_feedback_request_card.visibility = View.GONE
+            }
+            val feedbackPostponed = {
+                dashboard_feedback_request_card.visibility = View.GONE
+            }
+            AppRatingDialog.showRateDialog(
+                context = it,
+                ratingAccepted = feedbackGiven,
+                ratingDeclined = feedbackGiven,
+                ratingPostponed = feedbackPostponed
+            )
+        }
     }
 
     override fun showEmptyView(show: Boolean) {
