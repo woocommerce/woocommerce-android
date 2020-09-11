@@ -5,6 +5,7 @@
 -----
 * Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
 * Fixed a common crash when choosing a product image
+* You can now give your opinion for the Product sections with the new Give Feedback Banner
  
 4.9
 -----

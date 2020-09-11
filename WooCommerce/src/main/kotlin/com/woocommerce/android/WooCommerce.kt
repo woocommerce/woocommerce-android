@@ -120,6 +120,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
         // to catch crashes that may occur before we can access the site and account (most notably crashes with
         // initializing WellSql). In order to do this, we must first init AppPrefs since Crash Logging uses it.
         AppPrefs.init(this)
+        FeedbackPrefs.init(this)
 
         // Apply Theme
         AppThemeUtils.setAppTheme()

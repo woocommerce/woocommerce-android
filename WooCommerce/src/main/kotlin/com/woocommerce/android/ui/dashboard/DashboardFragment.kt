@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -65,7 +66,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     private val feedbackCardShouldBeVisible
         get() = APP_FEEDBACK.isEnabled() &&
-            AppPrefs.userFeedbackIsDue
+            FeedbackPrefs.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -328,7 +329,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()
                 this.dashboard_feedback_request_card.visibility = View.GONE
-                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
             }
             dashboard_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
         }
@@ -337,7 +338,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
             val feedbackGiven = {
-                AppPrefs.lastFeedbackDate = Calendar.getInstance().time
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                 dashboard_feedback_request_card.visibility = View.GONE
             }
             val feedbackPostponed = {
