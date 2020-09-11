@@ -327,8 +327,8 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
             this.dashboard_feedback_request_card.visibility = View.VISIBLE
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()
+                this.dashboard_feedback_request_card.visibility = View.GONE
                 AppPrefs.lastFeedbackDate = Calendar.getInstance().time
-                visibility = View.GONE
             }
             dashboard_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
         }
