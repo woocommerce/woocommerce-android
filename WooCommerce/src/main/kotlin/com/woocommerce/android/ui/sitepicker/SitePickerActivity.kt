@@ -32,6 +32,8 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
@@ -70,6 +72,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
@@ -371,6 +374,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // if we came here from login, start the main activity
         if (calledFromLogin) {
+            // Track login flow completed successfully
+            unifiedLoginTracker.track(step = Step.SUCCESS)
+
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
