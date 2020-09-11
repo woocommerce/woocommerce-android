@@ -179,7 +179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, selectedImage = image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
         updateProductBeforeEnteringFragment()
     }

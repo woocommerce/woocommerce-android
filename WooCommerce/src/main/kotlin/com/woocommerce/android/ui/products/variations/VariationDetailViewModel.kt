@@ -138,7 +138,7 @@ class VariationDetailViewModel @AssistedInject constructor(
 
     fun onImageClicked(image: Image) {
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image), selectedImage = image))
+        triggerEvent(ViewImageGallery(viewState.variation.remoteVariationId, listOf(image)))
     }
 
     fun onAddImageButtonClicked() {
