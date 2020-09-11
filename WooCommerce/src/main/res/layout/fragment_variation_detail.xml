@@ -56,7 +56,7 @@
                         android:drawableTop="@drawable/ic_gridicons_add_image"
                         android:drawablePadding="@dimen/minor_100"
                         android:layout_gravity="center"
-                        android:text="@string/product_image_add" />
+                        android:text="@string/variation_detail_image_add" />
 
                 </FrameLayout>
 
