@@ -16,6 +16,7 @@ data class FeatureFeedbackSettings(
     }
 
     enum class Feature(val description: String) {
-        GROUPED_PRODUCTS("grouped_products")
+        PRODUCTS_M3("products_m3"),
+        PRODUCTS_M2("products_m2")
     }
 }

@@ -5,7 +5,9 @@ import android.util.AttributeSet
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.GROUPED_PRODUCTS
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M2
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
+import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.products_wip_notice.view.*
 
@@ -19,7 +21,9 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
     }
 
     val wipFeatureType
-        get() = GROUPED_PRODUCTS
+        get() =
+            if (PRODUCT_RELEASE_M3.isEnabled()) PRODUCTS_M3
+            else PRODUCTS_M2
 
     private var isExpanded: Boolean
         set(value) {
@@ -27,7 +31,7 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
             if (value) {
                 WooAnimUtils.fadeIn(products_wip_morePanel)
             } else {
-            WooAnimUtils.fadeOut(products_wip_morePanel)
+                WooAnimUtils.fadeOut(products_wip_morePanel)
             }
         }
         get() = products_wip_viewMore.isChecked
