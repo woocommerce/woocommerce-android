@@ -271,8 +271,8 @@ dependencies {
 task copyGoogleServicesExampleFile(type: Copy) {
     from('.')
     into('.')
-    include('google-services.json')
-    rename('google-services.json', 'google-services.json')
+    include('google-services.json-example')
+    rename('google-services.json-example', 'google-services.json')
 }
 
 // Add properties named "wc.xxx" to our BuildConfig
@@ -296,7 +296,7 @@ android.buildTypes.all { buildType ->
     }
 
     // Print warning message if example Google services file is used.
-    if ((file("google-services.json").text) == (file("google-services.json").text)) {
+    if ((file("google-services.json").text) == (file("google-services.json-example").text)) {
         println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
