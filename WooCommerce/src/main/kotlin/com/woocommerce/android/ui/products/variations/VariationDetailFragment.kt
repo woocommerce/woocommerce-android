@@ -100,7 +100,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
         super.onPrepareOptionsMenu(menu)
 
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
-        doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: false
+        doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
