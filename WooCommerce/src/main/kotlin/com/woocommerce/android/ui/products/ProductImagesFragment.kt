@@ -178,7 +178,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     private fun showWPMediaPicker() {
-        val action = ProductImagesFragmentDirections.actionGlobalWpMediaFragment(viewModel.isLimitedToSingleImage)
+        val action = ProductImagesFragmentDirections.actionGlobalWpMediaFragment(viewModel.isMultiSelectionAllowed)
         findNavController().navigateSafely(action)
     }
 
@@ -186,7 +186,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         val intent = Intent(Intent.ACTION_GET_CONTENT).also {
             it.type = "image/*"
             it.addCategory(Intent.CATEGORY_OPENABLE)
-            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isLimitedToSingleImage)
+            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
         }
         val chooser = Intent.createChooser(intent, null)
         activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)
