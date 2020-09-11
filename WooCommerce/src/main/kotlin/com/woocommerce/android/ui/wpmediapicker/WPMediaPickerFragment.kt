@@ -45,6 +45,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     private val isMultiSelectAllowed: Boolean
         get() = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
 
+    private var doneOrUpdateMenuItem: MenuItem? = null
     private var isConfirmingDiscard = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,7 +56,14 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        doneOrUpdateMenuItem?.isVisible = isMultiSelectAllowed
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,6 +115,9 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
             new.isLoading?.takeIfNotEqualTo(old?.isLoading) { loadingProgress.isVisible = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadingMoreProgress.isVisible = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
+            new.isMultiSelectionAllowed?.takeIfNotEqualTo(old?.isEmptyViewVisible) {
+                doneOrUpdateMenuItem?.isVisible = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
