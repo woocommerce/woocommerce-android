@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
@@ -42,6 +43,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
+    private val isMultiSelectAllowed: Boolean
+        get() = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
 
     private var isConfirmingDiscard = false
 
@@ -98,7 +101,6 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun setupObservers() {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            val isMultiSelectAllowed = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
             wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
         })
 
@@ -152,6 +154,10 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      */
     override fun onSelectionCountChanged() {
         requireActivity().title = getFragmentTitle()
+
+        if (!isMultiSelectAllowed && wpMediaGallery.getSelectedCount() == 1) {
+            navigateBackWithResult()
+        }
     }
 
     /**
