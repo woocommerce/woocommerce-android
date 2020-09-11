@@ -160,13 +160,16 @@ class WPMediaGalleryView @JvmOverloads constructor(
             val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
             glideRequest.load(photonUrl).apply(glideTransform).into(holder.imageView)
 
-            val isSelected = isItemSelected(image.id)
-            holder.textSelectionCount.isSelected = isSelected
-            if (isSelected) {
-                val count = selectedIds.indexOf(image.id) + 1
-                holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
-            } else {
-                holder.textSelectionCount.text = null
+            holder.textSelectionCount.isVisible = isMultiSelectionAllowed
+            if (isMultiSelectionAllowed) {
+                val isSelected = isItemSelected(image.id)
+                holder.textSelectionCount.isSelected = isSelected
+                if (isSelected) {
+                    val count = selectedIds.indexOf(image.id) + 1
+                    holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
+                } else {
+                    holder.textSelectionCount.text = null
+                }
             }
 
             // make sure the thumbnail scale reflects its selection state
@@ -241,18 +244,20 @@ class WPMediaGalleryView @JvmOverloads constructor(
                 selectedIds.remove(imageId)
             }
 
-            // show and animate the count
-            if (selected) {
-                holder.textSelectionCount.text = String.format(
+            if (isMultiSelectionAllowed) {
+                // show and animate the count
+                if (selected) {
+                    holder.textSelectionCount.text = String.format(
                         Locale.getDefault(),
                         "%d",
                         selectedIds.indexOf(imageId) + 1
-                )
-            } else {
-                holder.textSelectionCount.text = null
+                    )
+                } else {
+                    holder.textSelectionCount.text = null
+                }
+                WooAnimUtils.pop(holder.textSelectionCount)
+                holder.textSelectionCount.isVisible = selected
             }
-            WooAnimUtils.pop(holder.textSelectionCount)
-            holder.textSelectionCount.isVisible = selected
 
             // scale the thumbnail based on whether it's selected
             if (selected) {
