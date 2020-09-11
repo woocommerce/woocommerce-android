@@ -96,7 +96,7 @@ jobs:
             fi
             VERSION_NAME="${PREFIX}-build-${CIRCLE_BUILD_NUM}"
             echo "export VERSION_NAME=$VERSION_NAME" >> $BASH_ENV
-            ./gradlew --stacktrace assembleWasabiDebug -PversionName="$VERSION_NAME"
+            ./gradlew --stacktrace assembleJalapenoDebug -PversionName="$VERSION_NAME"
       - android/save-gradle-cache
       - run:
           name: Prepare APK
