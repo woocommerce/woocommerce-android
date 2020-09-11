@@ -102,7 +102,7 @@ jobs:
           name: Prepare APK
           command: |
             mkdir -p Artifacts
-            mv WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk "Artifacts/WooCommerce-${VERSION_NAME}.apk"
+            mv WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-jalapeno-debug.apk "Artifacts/WooCommerce-${VERSION_NAME}.apk"
       - store_artifacts:
           path: Artifacts
           destination: Artifacts
