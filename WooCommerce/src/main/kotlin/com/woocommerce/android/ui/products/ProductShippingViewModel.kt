@@ -96,6 +96,11 @@ class ProductShippingViewModel @AssistedInject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: shippingData.shippingClassSlug ?: ""
 
+    override fun onCleared() {
+        super.onCleared()
+        productRepository.onCleanup()
+    }
+
     @Parcelize
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),

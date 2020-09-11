@@ -31,7 +31,7 @@ import javax.inject.Inject
  */
 class ProductImagesService : JobIntentService() {
     companion object {
-        const val KEY_REMOTE_PRODUCT_ID = "key_remote_product_id"
+        const val KEY_ID = "key_id"
         const val KEY_LOCAL_URI_LIST = "key_local_uri_list"
 
         private const val STRIP_LOCATION = true
@@ -39,17 +39,17 @@ class ProductImagesService : JobIntentService() {
 
         private var isCancelled: Boolean = false
 
-        // array of remoteProductId / uploading image uris for that product
+        // array of ID / uploading image uris for that product
         private val currentUploads = LongSparseArray<ArrayList<Uri>>()
 
         // posted when the list of images starts uploading
         class OnProductImagesUpdateStartedEvent(
-            val remoteProductId: Long
+            val id: Long
         )
 
         // posted when the list of images finishes uploading
         class OnProductImagesUpdateCompletedEvent(
-            val remoteProductId: Long,
+            val id: Long,
             val isCancelled: Boolean
         )
 
@@ -62,18 +62,18 @@ class ProductImagesService : JobIntentService() {
         // posted when the upload is cancelled
         class OnUploadCancelled
 
-        fun isUploadingForProduct(remoteProductId: Long): Boolean {
+        fun isUploadingForProduct(id: Long): Boolean {
             return if (isCancelled) {
                 false
             } else {
-                currentUploads.containsKey(remoteProductId)
+                currentUploads.containsKey(id)
             }
         }
 
         fun isBusy() = !currentUploads.isEmpty
 
-        fun getUploadingImageUrisForProduct(remoteProductId: Long): List<Uri>? {
-            return currentUploads.get(remoteProductId)
+        fun getUploadingImageUris(id: Long): List<Uri>? {
+            return currentUploads.get(id)
         }
 
         /**
@@ -117,7 +117,7 @@ class ProductImagesService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         WooLog.i(T.MEDIA, "productImagesService > onHandleWork")
 
-        val remoteProductId = intent.getLongExtra(KEY_REMOTE_PRODUCT_ID, 0L)
+        val id = intent.getLongExtra(KEY_ID, 0L)
         if (!networkStatus.isConnected()) {
             return
         }
@@ -129,14 +129,14 @@ class ProductImagesService : JobIntentService() {
         }
 
         // set the uploads for this product
-        currentUploads.put(remoteProductId, localUriList)
+        currentUploads.put(id, localUriList)
 
         // post an event that the upload is starting
-        val event = OnProductImagesUpdateStartedEvent(remoteProductId)
+        val event = OnProductImagesUpdateStartedEvent(id)
         EventBus.getDefault().post(event)
 
         val totalUploads = localUriList.size
-        notifHandler = ProductImagesNotificationHandler(this, remoteProductId)
+        notifHandler = ProductImagesNotificationHandler(this, id)
 
         isCancelled = false
 
@@ -156,7 +156,7 @@ class ProductImagesService : JobIntentService() {
                 WooLog.w(T.MEDIA, "productImagesService > null media")
                 handleFailure()
             } else {
-                currentMediaUpload!!.postId = remoteProductId
+                currentMediaUpload!!.postId = id
                 currentMediaUpload!!.setUploadState(MediaModel.MediaUploadState.UPLOADING)
 
                 // dispatch the upload request
@@ -178,12 +178,12 @@ class ProductImagesService : JobIntentService() {
             }
 
             // remove this uri from the list of uploads for this product
-            currentUploads.get(remoteProductId)?.let { oldList ->
+            currentUploads.get(id)?.let { oldList ->
                 val newList = ArrayList<Uri>().also {
                     it.addAll(oldList)
                     it.remove(localUri)
                 }
-                currentUploads.put(remoteProductId, newList)
+                currentUploads.put(id, newList)
             }
         }
 
@@ -191,12 +191,12 @@ class ProductImagesService : JobIntentService() {
             currentUploads.clear()
         } else {
             notifHandler.remove()
-            currentUploads.remove(remoteProductId)
-            productImageMap.remove(remoteProductId)
+            currentUploads.remove(id)
+            productImageMap.remove(id)
         }
 
         currentMediaUpload = null
-        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(remoteProductId, isCancelled))
+        EventBus.getDefault().post(OnProductImagesUpdateCompletedEvent(id, isCancelled))
     }
 
     override fun onStopCurrentWork(): Boolean {

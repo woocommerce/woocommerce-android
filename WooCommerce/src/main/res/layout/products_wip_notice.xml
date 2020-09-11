@@ -33,20 +33,20 @@
             app:layout_constraintTop_toBottomOf="@+id/products_wip_viewMore"
             tools:visibility="visible">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/products_wip_message"
-                style="@style/Woo.Card.Body"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/minor_00"
-                android:layout_marginEnd="@dimen/major_300"
-                android:gravity="start"
-                app:layout_constraintBottom_toTopOf="@+id/btn_dismiss"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/product_wip_message" />
+            <<com.google.android.material.textview.MaterialTextView
+            android:id="@+id/products_wip_message"
+            style="@style/Woo.Card.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/major_100"
+            android:visibility="gone"
+            tools:text="@string/product_wip_message_m2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"/>
 
             <!-- PRIMARY button -->
             <com.google.android.material.button.MaterialButton

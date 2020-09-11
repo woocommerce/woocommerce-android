@@ -1,4 +1,0 @@
-4,8:
-* "Gönderi takibi ekle" bölümü yalnızca Gönderi Takibi eklentisi mevcutsa görüntülenecek şekilde güncellendi.
-* Bir gezinme öğesine çift dokunulduğunda yaşanan kilitlenme ile, etkin olmayan bir görünümü gizlemeye çalışırken oluşan başka bir (nadir) kilitlenme sorunu düzeltildi.
-

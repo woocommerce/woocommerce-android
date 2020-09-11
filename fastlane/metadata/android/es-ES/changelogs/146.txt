@@ -1,4 +1,0 @@
-4.8:
-* Se ha actualizado la sección "Add shipment tracking" (Añadir seguimiento de envío) a la sección para que se muestre únicamente si está disponible el plugin Shipment Tracking (Seguimiento de envío).
-* Se ha solucionado un fallo que se producía al tocar dos veces un elemento de navegación y otro (en raras ocasiones) que se producía al intentar ocultar una vista no activa.
-

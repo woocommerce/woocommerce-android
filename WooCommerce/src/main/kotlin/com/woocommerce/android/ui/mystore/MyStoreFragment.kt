@@ -71,7 +71,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
 
     private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
+            it.setId(R.id.stats_tab_layout)
+        }
     }
 
     private val appBarLayout
