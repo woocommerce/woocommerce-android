@@ -401,7 +401,6 @@ class MainActivity : AppUpgradeActivity(),
 
         getActiveTopLevelFragment()?.let {
             if (isAtRoot) {
-                it.view?.visibility = View.VISIBLE
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
             } else {

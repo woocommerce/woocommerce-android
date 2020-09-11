@@ -378,9 +378,9 @@ class MyStoreFragment : TopLevelFragment(),
             this.store_feedback_request_card.visibility = View.VISIBLE
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()
+                this.store_feedback_request_card.visibility = View.GONE
                 FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                 removeTabLayoutFromAppBar(tabLayout)
-                visibility = View.GONE
             }
             store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
         }
