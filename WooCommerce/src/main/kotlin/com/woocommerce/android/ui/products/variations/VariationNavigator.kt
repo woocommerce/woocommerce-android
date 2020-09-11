@@ -4,8 +4,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ShowImage
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
@@ -23,9 +23,13 @@ import javax.inject.Singleton
 class VariationNavigator @Inject constructor() {
     fun navigate(fragment: Fragment, target: VariationNavigationTarget) {
         when (target) {
-            is ShowImage -> {
-                val action = VariationDetailFragmentDirections.actionGlobalWpMediaViewerFragment(
-                    target.image.source
+            is ViewImageGallery -> {
+                val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToNavGraphImageGallery(
+                    target.remoteId,
+                    target.images.toTypedArray(),
+                    target.selectedImage,
+                    target.showChooser,
+                    RequestCodes.VARIATION_DETAIL_IMAGE
                 )
                 fragment.findNavController().navigateSafely(action)
             }

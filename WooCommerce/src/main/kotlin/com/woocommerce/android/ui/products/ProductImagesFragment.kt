@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,6 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -30,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetai
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
@@ -81,7 +84,14 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
         setupViews()
+    }
+
+    private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
+        handleResult<List<Image>>(KEY_WP_IMAGE_PICKER_RESULT) {
+            viewModel.onImagesAdded(it)
+        }
     }
 
     private fun setupViews() {
@@ -101,6 +111,12 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneButton?.isVisible = isVisible
             }
+            new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
+                textWarning.isVisible = isVisible
+            }
+            new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
+                addImageButton.setText(titleRes)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -111,7 +127,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
@@ -162,15 +178,15 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     private fun showWPMediaPicker() {
-        val action = ProductDetailFragmentDirections.actionGlobalWpMediaFragment()
+        val action = ProductImagesFragmentDirections.actionGlobalWpMediaFragment(viewModel.isMultiSelectionAllowed)
         findNavController().navigateSafely(action)
     }
 
     private fun chooseProductImage() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).also {
             it.type = "image/*"
-            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             it.addCategory(Intent.CATEGORY_OPENABLE)
+            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, viewModel.isMultiSelectionAllowed)
         }
         val chooser = Intent.createChooser(intent, null)
         activity?.startActivityFromFragment(this, chooser, RequestCodes.CHOOSE_PHOTO)

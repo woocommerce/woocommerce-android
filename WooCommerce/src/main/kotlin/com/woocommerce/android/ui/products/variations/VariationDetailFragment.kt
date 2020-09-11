@@ -16,11 +16,14 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
@@ -41,11 +44,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_variation_detail.*
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import kotlinx.android.synthetic.main.fragment_variation_detail.addImageContainer
+import kotlinx.android.synthetic.main.fragment_variation_detail.app_bar_layout
+import kotlinx.android.synthetic.main.fragment_variation_detail.cardsRecyclerView
+import kotlinx.android.synthetic.main.fragment_variation_detail.imageGallery
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult {
+class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageClickListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
@@ -91,7 +98,9 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        showUpdateMenuItem(viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false)
+
+        doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
+        doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -104,10 +113,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showUpdateMenuItem(show: Boolean) {
-        doneOrUpdateMenuItem?.isVisible = show
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -161,6 +166,13 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                 shippingClassId = it.shippingClassId
             )
         }
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+            if (it.isNotEmpty()) {
+                viewModel.onVariationChanged(
+                    image = it.first()
+                )
+            }
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
@@ -174,9 +186,22 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                     ) ?: ""
                 }
             }
+            new.uploadingImageUri?.takeIfNotEqualTo(old?.uploadingImageUri) {
+                if (it.value != null) {
+                    imageGallery.clearImages()
+                    imageGallery.setPlaceholderImageUris(listOf(it.value))
+                } else {
+                    imageGallery.clearPlaceholders()
+                }
+            }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { showUpdateMenuItem(it) }
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
+                doneOrUpdateMenuItem?.isVisible = it
+            }
+            new.isDoneButtonEnabled?.takeIfNotEqualTo(old?.isDoneButtonEnabled) {
+                doneOrUpdateMenuItem?.isEnabled = it
+            }
         }
 
         viewModel.variationDetailCards.observe(viewLifecycleOwner, Observer {
@@ -193,7 +218,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is Exit -> requireActivity().onBackPressed()
                 else -> event.isHandled = false
@@ -207,18 +232,24 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             variationName = variation.optionName.fastStripHtml()
         }
 
-        if (variation.image == null) {
-            variationImage.visibility = View.GONE
+        if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
+            imageGallery.hide()
+            addImageContainer.show()
+            addImageContainer.setOnClickListener {
+                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+                viewModel.onAddImageButtonClicked()
+            }
         } else {
-            variationImage.visibility = View.VISIBLE
-            GlideApp.with(this)
-                .load(variation.image.source)
-                .placeholder(R.drawable.ic_product)
-                .into(variationImage)
-            variationImage.setOnClickListener {
-                viewModel.onImageClicked()
+            addImageContainer.hide()
+            imageGallery.show()
+            variation.image?.let {
+                imageGallery.showProductImage(it, this)
             }
         }
+    }
+
+    override fun onGalleryImageClicked(image: Image) {
+        viewModel.onImageClicked(image)
     }
 
     private fun showSkeleton(show: Boolean) {

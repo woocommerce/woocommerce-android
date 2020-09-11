@@ -24,6 +24,14 @@
         android:layout_marginTop="@dimen/margin_extra_large"
         android:layout_marginBottom="@dimen/margin_extra_large" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textWarning"
+        style="@style/Woo.TextView.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/product_images_image_limit_warning" />
+
     <com.woocommerce.android.widgets.WCProductImageGalleryView
         android:id="@+id/imageGallery"
         android:layout_width="match_parent"

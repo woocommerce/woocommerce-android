@@ -179,7 +179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, selectedImage = image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
         updateProductBeforeEnteringFragment()
     }
@@ -348,7 +348,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
+            is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
