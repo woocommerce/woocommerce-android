@@ -634,6 +634,8 @@
     <string name="variation_detail_update_product_success">Variation updated</string>
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
+    <string name="variation_detail_image_add">Add a variation image</string>
+
     <!--
         Product images
     -->
