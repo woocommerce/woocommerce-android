@@ -20,6 +20,10 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -55,10 +59,14 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
+
+        private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
+        private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
 
     private var loginMode: LoginMode? = null
@@ -77,11 +85,25 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             loginAnalyticsListener.trackLoginAccessed()
             showPrologueFragment()
         }
+
+        savedInstanceState?.let { ss ->
+            unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
+            unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
+        }
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString(KEY_UNIFIED_TRACKER_SOURCE, unifiedLoginTracker.getSource().value)
+        unifiedLoginTracker.getFlow()?.value?.let {
+            outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
+        }
     }
 
     private fun showPrologueFragment() {
@@ -228,6 +250,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun loginViaSiteAddress() {
+        unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
         slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
@@ -269,6 +292,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
@@ -355,6 +379,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
 
@@ -385,6 +410,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
+        unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
         zendeskHelper.createNewTicket(this, Origin.LOGIN_SITE_ADDRESS, null)
     }
 
