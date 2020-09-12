@@ -128,6 +128,8 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         component.inject(this)
 
+        FeedbackPrefs.init(this)
+
         // Apply Theme
         AppThemeUtils.setAppTheme()
 

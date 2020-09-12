@@ -3,8 +3,11 @@ package com.woocommerce.android.extensions
 import com.woocommerce.android.util.DateUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 fun Date.formatToYYYYmm(): String = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(this)
 
@@ -36,3 +39,10 @@ fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(
 
 fun Date.formatToYYYYmmDDhhmmss(): String =
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)
+
+val Date.pastTimeDeltaFromNowInDays
+    get() = Calendar.getInstance().time
+        .let { it.time - this.time }
+        .takeIf { it >= 0 }
+        ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
+        ?.toInt()

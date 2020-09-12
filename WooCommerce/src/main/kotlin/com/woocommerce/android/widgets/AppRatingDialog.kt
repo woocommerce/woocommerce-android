@@ -104,7 +104,12 @@ object AppRatingDialog {
         }
     }
 
-    fun showRateDialog(context: Context) {
+    fun showRateDialog(
+        context: Context,
+        ratingAccepted: () -> Unit = {},
+        ratingPostponed: () -> Unit = {},
+        ratingDeclined: () -> Unit = {}
+    ) {
         dialogRef?.get()?.let {
             // Dialog is already present
             return
@@ -115,6 +120,7 @@ object AppRatingDialog {
                 .setMessage(R.string.app_rating_message)
                 .setCancelable(true)
                 .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
+                    ratingAccepted()
                     val appPackage = context.packageName
                     val url: String? = "market://details?id=$appPackage"
                     try {
@@ -132,10 +138,12 @@ object AppRatingDialog {
                     setOptOut(true)
                 }
                 .setNeutralButton(R.string.app_rating_rate_later) { _, _ ->
+                    ratingPostponed()
                     clearSharedPreferences()
                     storeAskLaterDate()
                 }
                 .setNegativeButton(R.string.app_rating_rate_never) { _, _ ->
+                    ratingDeclined()
                     setOptOut(true)
                 }
                 .setOnCancelListener {

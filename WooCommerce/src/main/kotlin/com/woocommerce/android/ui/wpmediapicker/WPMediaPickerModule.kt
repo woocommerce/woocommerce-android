@@ -17,10 +17,11 @@ abstract class WPMediaPickerModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: WPMediaPickerFragment): Bundle? {
+            return fragment.arguments
         }
     }
+
     @Binds
     @IntoMap
     @ViewModelKey(WPMediaPickerViewModel::class)
