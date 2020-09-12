@@ -24,7 +24,6 @@ interface SitePickerContract {
     }
 
     interface View : BaseView<Presenter> {
-        fun showUserInfo()
         fun showStoreList(wcSites: List<SiteModel>)
         fun showNoStoresView()
         fun showSiteNotConnectedAccountView(url: String)

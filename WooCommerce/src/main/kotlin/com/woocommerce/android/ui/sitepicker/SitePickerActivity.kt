@@ -9,6 +9,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -136,7 +137,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         siteAdapter = SitePickerAdapter(this, this)
         sites_recycler.adapter = siteAdapter
 
-        showUserInfo()
+        loadUserInfo()
 
         savedInstanceState?.let { bundle ->
             clickedSiteId = bundle.getLong(KEY_CLICKED_SITE_ID)
@@ -210,24 +211,49 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     /**
-     * Show the current user info if this was called from login, otherwise hide user views
+     * Load the user info view with user information and gravatar.
      */
-    override fun showUserInfo() {
+    private fun loadUserInfo() {
+        text_displayname.text = presenter.getUserDisplayName()
+
+        presenter.getUserName()?.let { userName ->
+            if (userName.isNotEmpty()) {
+                text_username.text = String.format(getString(R.string.at_username), userName)
+            }
+        }
+
+        GlideApp.with(this)
+            .load(presenter.getUserAvatarUrl())
+            .placeholder(R.drawable.img_gravatar_placeholder)
+            .circleCrop()
+            .into(image_avatar)
+    }
+
+    /**
+     * Show the current user info if this was called from login, otherwise hide user views. This method
+     * will also format the views for the type of layout requested.
+     *
+     * @param centered: If true, center the user info views for display in error messages, else, left
+     * align the views.
+     */
+    private fun showUserInfo(centered: Boolean) {
         if (calledFromLogin) {
             user_info_group.visibility = View.VISIBLE
-            text_displayname.text = presenter.getUserDisplayName()
-
-            presenter.getUserName()?.let { userName ->
-                if (userName.isNotEmpty()) {
-                    text_username.text = String.format(getString(R.string.at_username), userName)
+            if (centered) {
+                user_info_group.gravity = Gravity.CENTER
+                with(image_avatar) {
+                    layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_64)
+                    layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_64)
+                    requestLayout()
+                }
+            } else {
+                user_info_group.gravity = Gravity.START
+                with(image_avatar) {
+                    layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_72)
+                    layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_72)
+                    requestLayout()
                 }
             }
-
-            GlideApp.with(this)
-                    .load(presenter.getUserAvatarUrl())
-                    .placeholder(R.drawable.img_gravatar_placeholder)
-                    .circleCrop()
-                    .into(image_avatar)
         } else {
             user_info_group.visibility = View.GONE
         }
@@ -235,6 +261,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun showStoreList(wcSites: List<SiteModel>) {
         progressDialog?.takeIf { it.isShowing }?.dismiss()
+        showUserInfo(centered = false)
 
         if (deferLoadingSitesIntoView) {
             if (wcSites.isNotEmpty()) {
@@ -242,6 +269,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 // Make "show connected stores" visible to the user
                 button_secondary.visibility = View.VISIBLE
+                button_secondary.text = getString(R.string.login_view_connected_stores)
             } else {
                 hasConnectedStores = false
 
@@ -252,9 +280,14 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             loginSiteUrl?.let { processLoginSite(it) }
             return
         }
-        // Hide "show connected stores" button now that we're displaying
-        // the store list.
-        button_secondary.visibility = View.GONE
+
+        // Show the 'try another account' button in case the user
+        // doesn't see the store they want to log into.
+        with(button_secondary) {
+            visibility = View.VISIBLE
+            text = getString(R.string.login_try_another_account)
+            setOnClickListener { presenter.logout() }
+        }
 
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_STORES_SHOWN,
@@ -285,10 +318,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        button_primary.text = getString(R.string.done)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+        with(button_primary) {
+            text = getString(R.string.done)
+            isEnabled = true
+            setOnClickListener {
+                presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+            }
         }
     }
 
@@ -381,14 +416,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        button_primary.text = getString(R.string.login_try_another_account)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.logout()
+        with(button_primary) {
+            text = getString(R.string.login_try_another_account)
+            isEnabled = true
+            setOnClickListener { presenter.logout() }
+        }
+
+        with(button_secondary) {
+            visibility = View.GONE
         }
     }
 
@@ -467,6 +507,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.VISIBLE
@@ -510,6 +551,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
                 mapOf(AnalyticsTracker.KEY_URL to url))
 
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
@@ -581,6 +623,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_URL to site.url,
                         AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
