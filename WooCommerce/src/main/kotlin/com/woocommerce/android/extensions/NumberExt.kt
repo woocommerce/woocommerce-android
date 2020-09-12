@@ -10,3 +10,7 @@ fun Float.formatToString(): String {
         int.toString()
     }
 }
+
+infix fun <T> Comparable<T>?.greaterThan(other: T) =
+    this?.let { it > other }
+        ?: false

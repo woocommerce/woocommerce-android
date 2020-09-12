@@ -15,15 +15,25 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
@@ -64,6 +74,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -337,15 +350,16 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show) {
+        if (show && feedbackState == UNANSWERED) {
             val wipCardMessageId = if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
                 R.string.product_wip_message_m3
             } else R.string.product_wip_message_m2
-
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
                 getString(R.string.product_wip_title),
-                getString(wipCardMessageId)
+                getString(wipCardMessageId),
+                onGiveFeedbackClick = ::onGiveFeedbackClicked,
+                onDismissClick = ::onDismissProductWIPNoticeCardClicked
             )
         } else {
             products_wip_card.visibility = View.GONE
@@ -390,5 +404,22 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         val bottomSheet = ProductSortingFragment()
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
+    }
+
+    private fun onGiveFeedbackClicked(view: View) {
+        registerFeedbackSetting(GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissProductWIPNoticeCardClicked(view: View) {
+        registerFeedbackSetting(DISMISSED)
+        showProductWIPNoticeCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeedbackState) {
+        FeatureFeedbackSettings(products_wip_card.wipFeatureType.name, state)
+            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }

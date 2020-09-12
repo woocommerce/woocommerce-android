@@ -44,7 +44,11 @@
         android:id="@+id/wpMediaPickerFragment"
         android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
         android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker" />
+        tools:layout="@layout/fragment_wpmedia_picker">
+        <argument
+            android:name="allowMultiple"
+            app:argType="boolean" />
+    </fragment>
 
     <action
         android:id="@+id/action_global_productImageViewerFragment"
