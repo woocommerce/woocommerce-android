@@ -32,6 +32,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
@@ -117,6 +118,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.SHOW_HELP)
+                }
             }
             site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
@@ -211,6 +215,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             unifiedLoginTracker.getFlow()?.value?.let {
                 outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
             }
+            outState.putString(unifiedLoginTracker.getSource().value)
         }
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
@@ -506,7 +511,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -517,6 +524,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 
@@ -572,7 +582,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -583,6 +595,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 
@@ -639,7 +654,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -650,6 +667,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 
