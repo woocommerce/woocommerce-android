@@ -206,6 +206,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onPrimaryButtonClicked() {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         loginViaSiteAddress()
     }
 
@@ -295,7 +296,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
-        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }

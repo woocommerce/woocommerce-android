@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -13,7 +14,15 @@ import javax.inject.Singleton
 class UnifiedLoginTracker
 @Inject constructor(private val analyticsTracker: AnalyticsTrackerWrapper) {
     private var currentSource: Source = DEFAULT
+        set(value) {
+            AppPrefs.setUnifiedLoginLastSource(value.value)
+            field = value
+        }
     private var currentFlow: Flow? = null
+        set(value) {
+            value?.let { flow -> AppPrefs.setUnifiedLoginLastFlow(flow.value) }
+            field = value
+        }
     private var currentStep: Step? = null
 
     @JvmOverloads
