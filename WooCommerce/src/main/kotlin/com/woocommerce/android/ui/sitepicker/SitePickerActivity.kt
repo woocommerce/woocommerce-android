@@ -32,6 +32,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
@@ -55,6 +56,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
         private const val KEY_LOGIN_SITE_URL = "login_site"
         private const val KEY_CLICKED_SITE_ID = "clicked_site_id"
+        private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
+        private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -154,7 +157,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             } else {
                 presenter.loadSites()
             }
+
+            // Restore state for the unified login tracker
+            if (calledFromLogin) {
+                unifiedLoginTracker.setSource(bundle.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
+                unifiedLoginTracker.setFlow(bundle.getString(KEY_UNIFIED_TRACKER_FLOW))
+            }
         } ?: run {
+            // Set unified login tracker source and flow
+            if (calledFromLogin) {
+                AppPrefs.getUnifiedLoginLastSource()?.let { unifiedLoginTracker.setSource(it) }
+                AppPrefs.getUnifiedLoginLastFlow()?.let { unifiedLoginTracker.setFlow(it) }
+            }
+
             // Signin M1: If using a url to login, we skip showing the store list
             AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }?.let { url ->
                 deferLoadingSitesIntoView = true
@@ -190,6 +205,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         outState.putIntArray(STATE_KEY_SITE_ID_LIST, sitesList.toIntArray())
         outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
         outState.putLong(KEY_CLICKED_SITE_ID, clickedSiteId)
+
+        // Save state for the unified login tracker
+        if (calledFromLogin) {
+            unifiedLoginTracker.getFlow()?.value?.let {
+                outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
+            }
+        }
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
     }

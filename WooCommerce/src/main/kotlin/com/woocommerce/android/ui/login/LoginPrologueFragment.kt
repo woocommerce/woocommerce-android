@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
@@ -68,13 +67,11 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
         super.onActivityCreated(savedInstanceState)
         button_login_store.setOnClickListener {
             // Login with site address
-            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
 
         button_login_wpcom.setOnClickListener {
             // Login with WordPress.com account
-            unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
     }
