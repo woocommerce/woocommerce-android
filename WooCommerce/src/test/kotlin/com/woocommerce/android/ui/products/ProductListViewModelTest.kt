@@ -122,8 +122,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides add product button correctly when loading list of products`() = test {
         // when
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
