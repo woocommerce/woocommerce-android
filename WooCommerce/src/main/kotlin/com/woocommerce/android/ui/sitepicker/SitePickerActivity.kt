@@ -215,7 +215,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             unifiedLoginTracker.getFlow()?.value?.let {
                 outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
             }
-            outState.putString(unifiedLoginTracker.getSource().value)
+            outState.putString(KEY_UNIFIED_TRACKER_FLOW, unifiedLoginTracker.getSource().value)
         }
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
