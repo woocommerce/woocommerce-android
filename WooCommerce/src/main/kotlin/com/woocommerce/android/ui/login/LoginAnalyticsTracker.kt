@@ -293,7 +293,8 @@ class LoginAnalyticsTracker(
     }
 
     override fun emailFormScreenResumed() {
-        unifiedLoginTracker.setFlowAndStep(Flow.WORDPRESS_COM, Step.START)
+        // Not needed as this should already be set and saved in saveInstanceState.
+        // This screen can be accessed from multiple flows.
     }
 
     override fun trackEmailSignupConfirmationViewed() {

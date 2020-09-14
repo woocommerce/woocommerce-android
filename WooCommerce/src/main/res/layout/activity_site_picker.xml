@@ -57,12 +57,11 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/site_list_label"
-                    android:textAppearance="@style/TextAppearance.Woo.Button"
+                    android:textAppearance="@style/TextAppearance.Woo.Body2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/major_100"
                     android:text="@string/login_pick_store"
-                    android:textColor="?attr/colorSecondary"
                     android:textAllCaps="true"/>
 
                 <androidx.recyclerview.widget.RecyclerView

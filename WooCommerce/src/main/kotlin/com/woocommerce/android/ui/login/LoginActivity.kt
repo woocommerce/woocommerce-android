@@ -202,6 +202,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun startOver() {
+        // Clear logged in url from AppPrefs
+        AppPrefs.removeLoginSiteAddress()
+
         showPrologueFragment()
     }
 
@@ -569,6 +572,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun showHelpFindingConnectedEmail() {
         AnalyticsTracker.track(Stat.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+        unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
         LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
     }

@@ -169,7 +169,8 @@ class UnifiedLoginTracker
         PICK_EMAIL_FROM_HINT("pick_email_from_hint"),
         LOGIN_WITH_SITE_CREDS("login_with_site_creds"),
         VIEW_CONNECTED_STORES("view_connected_stores"),
-        TRY_ANOTHER_ACCOUNT("try_another_account")
+        TRY_ANOTHER_ACCOUNT("try_another_account"),
+        HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email")
     }
 
     companion object {
