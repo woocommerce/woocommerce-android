@@ -39,8 +39,8 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.1'
+    compileSdkVersion 30
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -53,7 +53,7 @@ android {
         versionCode 151
 
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
