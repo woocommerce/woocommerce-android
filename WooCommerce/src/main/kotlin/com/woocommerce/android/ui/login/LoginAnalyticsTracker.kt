@@ -164,6 +164,7 @@ class LoginAnalyticsTracker(
 
     override fun trackSocialButtonClick() {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_SOCIAL_BUTTON_CLICK)
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_GOOGLE)
     }
 
     override fun trackSocialButtonFailure() {

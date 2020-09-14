@@ -21,6 +21,7 @@ import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
@@ -208,10 +209,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onPrimaryButtonClicked() {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         loginViaSiteAddress()
     }
 
     override fun onSecondaryButtonClicked() {
+        unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
         startLoginViaWPCom()
     }
 
@@ -236,6 +239,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             return
         }
 
+        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
 
@@ -295,7 +299,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
-        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
