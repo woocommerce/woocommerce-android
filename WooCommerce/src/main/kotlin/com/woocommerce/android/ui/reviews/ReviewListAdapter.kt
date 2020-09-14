@@ -362,7 +362,10 @@ class ReviewListAdapter(
             }
 
             itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
-            itemHolder.divider.isVisible = position < getContentItemsTotal() - 1
+
+            if (position == getContentItemsTotal() - 1) {
+                itemHolder.divider.visibility = View.INVISIBLE
+            }
 
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
