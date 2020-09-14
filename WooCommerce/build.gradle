@@ -137,7 +137,7 @@ dependencies {
     implementation ("androidx.browser:browser:1.2.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.0"
+    implementation "androidx.preference:preference:1.1.1"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
