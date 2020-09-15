@@ -186,8 +186,8 @@ dependencies {
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
-    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
-    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
+    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
+    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
@@ -234,8 +234,8 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
-    kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
-    androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
+    kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
+    androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
