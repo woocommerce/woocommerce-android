@@ -132,7 +132,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is ExitWithResult<*> -> {
                     val bundle = Bundle()

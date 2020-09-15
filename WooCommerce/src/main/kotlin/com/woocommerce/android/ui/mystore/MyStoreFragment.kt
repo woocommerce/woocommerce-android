@@ -10,6 +10,7 @@ import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -21,7 +22,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
 import javax.inject.Inject
 
 class MyStoreFragment : TopLevelFragment(),
@@ -69,7 +71,9 @@ class MyStoreFragment : TopLevelFragment(),
         }
 
     private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
+            it.setId(R.id.stats_tab_layout)
+        }
     }
 
     private val appBarLayout
@@ -77,6 +81,10 @@ class MyStoreFragment : TopLevelFragment(),
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
+
+    private val feedbackCardShouldBeVisible
+        get() = APP_FEEDBACK.isEnabled() &&
+            FeedbackPrefs.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -100,16 +108,7 @@ class MyStoreFragment : TopLevelFragment(),
                     refreshMyStoreStats(forced = true)
                 }
             }
-
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
-                store_feedback_request_card.visibility = View.VISIBLE
-                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = {
-                    mainNavigationRouter?.showFeedbackSurvey()
-                    removeTabLayoutFromAppBar(tabLayout)
-                }
-                store_feedback_request_card.initView(negativeCallback, positiveCallback)
-            }
+            setupFeedbackRequestCard()
         }
         return view
     }
@@ -177,6 +176,7 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onResume() {
         super.onResume()
         addTabLayoutToAppBar(tabLayout)
+        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -358,6 +358,52 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
         my_store_date_bar.updateDateRangeView(revenueStatsModel, period)
+    }
+
+    /**
+     * This method verifies if the feedback card should be visible.
+     *
+     * If it should but it's not, the feedback card is reconfigured and presented
+     * If should not and it's visible, the card visibility is changed to gone
+     * If should be and it's already visible, nothing happens
+     */
+    private fun handleFeedbackRequestCardState() = with(store_feedback_request_card) {
+        if (feedbackCardShouldBeVisible && visibility == View.GONE) {
+            setupFeedbackRequestCard()
+        } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
+            visibility = View.GONE
+        }
+    }
+
+    private fun View.setupFeedbackRequestCard() {
+        if (feedbackCardShouldBeVisible) {
+            this.store_feedback_request_card.visibility = View.VISIBLE
+            val negativeCallback = {
+                mainNavigationRouter?.showFeedbackSurvey()
+                this.store_feedback_request_card.visibility = View.GONE
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                removeTabLayoutFromAppBar(tabLayout)
+            }
+            store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        }
+    }
+
+    private fun handleFeedbackRequestPositiveClick() {
+        context?.let {
+            val feedbackGiven = {
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                store_feedback_request_card.visibility = View.GONE
+            }
+            val feedbackPostponed = {
+                store_feedback_request_card.visibility = View.GONE
+            }
+            AppRatingDialog.showRateDialog(
+                context = it,
+                ratingAccepted = feedbackGiven,
+                ratingDeclined = feedbackGiven,
+                ratingPostponed = feedbackPostponed
+            )
+        }
     }
 
     override fun showEmptyView(show: Boolean) {

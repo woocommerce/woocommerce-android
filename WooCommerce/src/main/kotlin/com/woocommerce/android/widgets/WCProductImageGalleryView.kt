@@ -125,6 +125,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.showImages(listOf(images))
     }
 
+    fun clearImages() {
+        adapter.clearImages()
+    }
+
+    fun clearPlaceholders() {
+        adapter.clearPlaceholders()
+    }
+
     /**
      * Show upload placeholders for the passed local image Uris
      */
@@ -158,6 +166,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
+
+        fun clearImages() {
+            imageList.clear()
+            notifyDataSetChanged()
+        }
 
         fun showImages(images: List<Product.Image>) {
             if (isSameImageList(images)) {

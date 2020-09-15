@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -34,6 +35,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         const val KEY_GROUPED_PRODUCT_IDS_RESULT = "key_grouped_product_ids_result"
     }
 
+    @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -72,7 +74,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem?.isVisible = false
+        doneMenuItem?.isVisible = viewModel.hasChanges
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -89,6 +91,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        setupResultHandlers()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -105,8 +108,11 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         viewModel.productListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadMoreProgress.isVisible = it }
-            new.hasChanges?.takeIfNotEqualTo(old?.hasChanges) {
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
                 doneMenuItem?.isVisible = it
+            }
+            new.isAddProductButtonVisible.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                showAddProductButton(it)
             }
         }
 
@@ -117,13 +123,14 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId,
+                    messageId = event.messageId,
                     negativeButtonId = event.negativeButtonId
                 )
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_GROUPED_PRODUCT_IDS_RESULT, event.data as List<*>)
                 }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })
@@ -131,6 +138,19 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             productListAdapter.setProductList(it)
         })
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<List<Long>>(ProductSelectionListFragment.KEY_SELECTED_PRODUCT_IDS_RESULT) {
+            viewModel.onGroupedProductsAdded(it)
+        }
+    }
+
+    private fun showAddProductButton(show: Boolean) {
+        with(addGroupedProductView) {
+            isVisible = show
+            initView { viewModel.onAddProductButtonClicked() }
+        }
     }
 
     private fun showSkeleton(show: Boolean) {

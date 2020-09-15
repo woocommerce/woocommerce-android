@@ -39,6 +39,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dashboard.DashboardFragment
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -359,7 +360,8 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.addOrderNoteFragment,
                 R.id.productSettingsFragment,
                 R.id.addProductCategoryFragment,
-                R.id.parentCategoryListFragment -> {
+                R.id.parentCategoryListFragment,
+                R.id.productSelectionListFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -795,7 +797,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showFeedbackSurvey() {
-        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment().apply {
+        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.MAIN).apply {
             navController.navigateSafely(this)
         }
     }

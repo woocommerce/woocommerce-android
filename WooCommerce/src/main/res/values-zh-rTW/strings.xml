@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-18 12:54:03+0000
+Translation-Revision-Date: 2020-09-04 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="feedback_completed_back_to_store_button_text">返回商店</string>
+    <string name="feedback_completed_contact_us">在此處聯絡我們</string>
+    <string name="feedback_completed_description">請注意，這不是客服支援單，因此我們無法個別處理意見回饋。\n\n需要協助嗎？ %1$s</string>
+    <string name="feedback_completed_title_message">感謝你與我們分享你的\n想法</string>
+    <string name="feedback_completed_title">已送出你的意見回饋</string>
+    <string name="web_view_loading_message">請稍候…</string>
+    <string name="web_view_loading_title">讀取中</string>
+    <string name="feedback_survey_request_title">我們可以如何改進？</string>
+    <string name="product_type_confirm_button">是，請變更</string>
+    <string name="product_type_confirm_dialog_message">變更商品類型會修改部分商品資料</string>
+    <string name="product_type_confirm_dialog_title">你確定要變更商品類型？</string>
+    <string name="product_type_external_desc">將商品連結至外部網站</string>
+    <string name="product_type_grouped_desc">相關商品系列</string>
+    <string name="product_type_virtual_desc">服務或數位下載</string>
+    <string name="product_type_physical_desc">寄送給顧客的商品</string>
+    <string name="product_type_list_header">請選取商品類型</string>
+    <string name="send_feedback">傳送意見回饋</string>
+    <string name="variation_detail_price_warning_title">部分商品變化項目沒有標示價格。</string>
+    <string name="variation_detail_price_warning">未標示價格的商品變化項目不會顯示在你的商店中</string>
+    <string name="variation_detail_update_product_success">已更新商品變化項目</string>
+    <string name="grouped_product_btn_delete">刪除組合商品</string>
+    <string name="grouped_products_single">%d 件商品</string>
+    <string name="grouped_products_count">%d 件商品</string>
+    <string name="grouped_products">組合商品</string>
+    <string name="product_type_edit">變更商品類型</string>
+    <string name="product_variation_no_price_set">未設定價格</string>
+    <string name="product_variation_enabled">已啟用</string>
+    <string name="product_pricing_scheduled_sale_price_error">若已排定銷售，則必須設定銷售價格</string>
+    <string name="product_wip_message">你現在可以編輯組合、外部和變化商品、變更商品類型，以及更新類別和標籤</string>
+    <string name="product_reviews_count">\u2022 %d 則評論</string>
+    <string name="product_review_list_item_title">%1$s 留下一則評論</string>
     <string name="feedback_request_like_it">喜歡</string>
     <string name="feedback_request_make_better">還有改善空間</string>
     <string name="feedback_request_title">喜歡 WooCommerce 應用程式嗎？</string>
@@ -21,6 +52,7 @@ Language: zh_TW
     <string name="shipping_label_refund_message">你可以針對尚未用於運送包裹的郵寄標籤要求退款。 退款需至少 14 天處理時間。</string>
     <string name="orderdetail_shipping_label_request_refund">要求退款</string>
     <string name="orderdetail_shipping_label_item_menu">退還郵寄標籤的款項</string>
+    <string name="product_variation_disabled">已停用</string>
     <string name="product_add_category_dialog_message">請稍候…</string>
     <string name="product_add_category_dialog_title">新增類別中</string>
     <string name="product_category_parent">上層類別</string>
@@ -38,7 +70,6 @@ Language: zh_TW
     <string name="settings_privacy_policy_ca">加州使用者的隱私權聲明</string>
     <string name="keep_changes">保留變更</string>
     <string name="product_sale_date_to">%1$s截止</string>
-    <string name="product_wip_message">我們已為產品新增更多編輯功能。你現在可以更新圖片、編輯產品設定並分享產品！</string>
     <string name="product_wip_title">有可用的新編輯選項</string>
     <string name="product_limited_editing_title">僅可進行有限編輯</string>
     <string name="orderdetail_product_multiple">產品</string>
