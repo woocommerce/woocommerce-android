@@ -130,10 +130,12 @@ object WooLog {
      * @param message The message you would like logged.
      * @param tr An exception to log
      */
-    fun e(tag: T, message: String, tr: Throwable) {
-        Log.e("$TAG-$tag", message, tr)
-        addEntry(tag, LogLevel.e, message + " - exception: " + tr.message)
-        addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(tr))
+    fun e(tag: T, message: String, tr: Throwable?) {
+        tr?.let { throwable ->
+            Log.e("$TAG-$tag", message, throwable)
+            addEntry(tag, LogLevel.e, message + " - exception: " + throwable.message)
+            addEntry(tag, LogLevel.e, "StackTrace: " + getStringStackTrace(throwable))
+        } ?: e(tag, message)
     }
 
     /**
