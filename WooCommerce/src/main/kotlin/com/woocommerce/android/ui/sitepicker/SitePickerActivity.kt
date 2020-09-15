@@ -17,6 +17,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -308,12 +309,17 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
-        // Show the 'try another account' button in case the user
-        // doesn't see the store they want to log into.
-        with(button_secondary) {
-            visibility = View.VISIBLE
-            text = getString(R.string.login_try_another_account)
-            setOnClickListener { presenter.logout() }
+        if (calledFromLogin) {
+            // Show the 'try another account' button in case the user
+            // doesn't see the store they want to log into.
+            with(button_secondary) {
+                visibility = View.VISIBLE
+                text = getString(R.string.login_try_another_account)
+                setOnClickListener { presenter.logout() }
+            }
+        } else {
+            // Called from settings. Hide the button.
+            button_secondary.isVisible = false
         }
 
         AnalyticsTracker.track(
