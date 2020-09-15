@@ -109,6 +109,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS(siteless = true),
+        UNIFIED_LOGIN_STEP(siteless = true),
+        UNIFIED_LOGIN_FAILURE(siteless = true),
+        UNIFIED_LOGIN_INTERACTION(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
