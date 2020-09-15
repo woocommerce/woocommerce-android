@@ -108,10 +108,10 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         refundableAmount.toBigDecimal(),
         currency,
         paperSize,
-        getProductNames().map { it.trim() },
+        getProductNamesList().map { it.trim() },
         getOriginAddress()?.toAppModel(),
         getDestinationAddress()?.toAppModel(),
-        getRefund()?.toAppModel()
+        getRefundModel()?.toAppModel()
     )
 }
 
