@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
+// TODO: soon to be removed
 class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetailNoteListener,
         OrderStatusSelectorDialog.OrderStatusDialogListener, NavigationResult, ShippingLabelActionListener {
     companion object {
@@ -268,13 +269,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 //                    })
 
             // check if product is a virtual product. If it is, hide only the shipping details card
-            val isVirtualProduct = presenter.isVirtualProduct(order)
-            orderDetail_customerInfo.initView(
-                    order = order,
-                    shippingOnly = false,
-                    billingOnly = isVirtualProduct)
+//            val isVirtualProduct = presenter.isVirtualProduct(order)
+//            orderDetail_customerInfo.initView(
+//                    order = order,
+//                    shippingOnly = false,
+//                    billingOnly = isVirtualProduct)
 
-            showOrderShippingNotice(isVirtualProduct, order)
+//            showOrderShippingNotice(isVirtualProduct, order)
 
             // Populate the Payment Information Card
             orderDetail_paymentInfo.initView(
@@ -292,7 +293,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun refreshCustomerInfoCard(order: WCOrderModel) {
         // hide the shipping details if products in an order is virtual
         val hideShipping = presenter.isVirtualProduct(order)
-        orderDetail_customerInfo.initShippingSection(order, hideShipping)
+//        orderDetail_customerInfo.initShippingSection(order, hideShipping)
         showOrderShippingNotice(hideShipping, order)
     }
 

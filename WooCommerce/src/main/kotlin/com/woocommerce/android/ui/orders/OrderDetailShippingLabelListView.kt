@@ -175,16 +175,16 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
 
                 shippingLabel.originAddress?.let {
                     itemView.shippingLabelItem_shipFrom.setShippingLabelValue(
-                        AddressUtils.getFullAddress(
-                            it.name, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
+                        it.getFullAddress(
+                            it.firstName, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
                         )
                     )
                 }
 
                 shippingLabel.destinationAddress?.let {
                     itemView.shippingLabelItem_shipTo.setShippingLabelValue(
-                        AddressUtils.getFullAddress(
-                            it.name, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
+                        it.getFullAddress(
+                            it.firstName, it.getEnvelopeAddress(), AddressUtils.getCountryLabelByCountryCode(it.country)
                         )
                     )
                 }

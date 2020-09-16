@@ -214,6 +214,7 @@
     -->
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>

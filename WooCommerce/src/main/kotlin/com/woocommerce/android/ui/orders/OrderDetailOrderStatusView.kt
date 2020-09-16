@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.order_detail_order_status.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 
+// TODO: soon to be removed
 class OrderDetailOrderStatusView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,

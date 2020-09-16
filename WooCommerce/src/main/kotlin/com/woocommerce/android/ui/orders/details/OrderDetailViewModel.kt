@@ -44,6 +44,13 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun hasVirtualProductsOnly(): Boolean {
+        return orderDetailViewState.order?.items?.let { lineItems ->
+            val remoteProductIds = lineItems.map { it.productId }
+            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+        } ?: false
+    }
+
     private suspend fun fetchOrder() {
         if (networkStatus.isConnected()) {
             orderDetailViewState = orderDetailViewState.copy(isOrderDetailSkeletonShown = true)

@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -28,6 +29,7 @@ import kotlin.coroutines.resume
 class OrderDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -70,6 +72,9 @@ class OrderDetailRepository @Inject constructor(
             label = key
         }).toOrderStatus()
     }
+
+    fun getProductsByRemoteIds(remoteIds: List<Long>) =
+        productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
 
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)

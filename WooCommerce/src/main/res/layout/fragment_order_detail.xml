@@ -81,10 +81,9 @@
                     android:focusable="true"/>
 
                 <!-- Customer Info -->
-                <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
                     style="@style/Woo.Card"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
