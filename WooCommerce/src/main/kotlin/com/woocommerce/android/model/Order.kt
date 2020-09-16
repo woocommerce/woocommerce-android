@@ -43,6 +43,7 @@ data class Order(
     val paymentMethod: String,
     val paymentMethodTitle: String,
     val pricesIncludeTax: Boolean,
+    val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
     val items: List<Item>
@@ -184,6 +185,7 @@ fun WCOrderModel.toAppModel(): Order {
             this.paymentMethod,
             this.paymentMethodTitle,
             this.pricesIncludeTax,
+            this.isMultiShippingLinesAvailable(),
             this.getBillingAddress().let {
                 Address(
                         it.address1,
