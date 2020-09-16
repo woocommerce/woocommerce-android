@@ -763,6 +763,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isProductUpdated = false
                 )
                 loadRemoteProduct(newProductRemoteId)
+                triggerEvent(RefreshMenu)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
             }
@@ -1203,6 +1204,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
+    object RefreshMenu : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

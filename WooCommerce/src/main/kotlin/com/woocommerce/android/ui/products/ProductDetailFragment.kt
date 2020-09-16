@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -180,6 +181,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 is LaunchUrlInChromeTab -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+                is RefreshMenu -> activity?.invalidateOptionsMenu()
                 else -> event.isHandled = false
             }
         })
@@ -236,7 +238,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // display View Product on Store menu button only if the Product status is published,
         // otherwise the page is redirected to a 404
-        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished
+        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_product_settings).isVisible = true
 
         when (viewModel.isAddFlow) {
