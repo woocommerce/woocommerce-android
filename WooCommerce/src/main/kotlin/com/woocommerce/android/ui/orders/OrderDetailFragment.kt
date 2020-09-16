@@ -208,11 +208,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             orderDetail_refundsInfo.hide()
         }
 
-        if (refunds.isNotEmpty()) {
-            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })
-        } else {
-            orderDetail_paymentInfo.showRefundTotal()
-        }
+//        if (refunds.isNotEmpty()) {
+//            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })
+//        } else {
+//            orderDetail_paymentInfo.showRefundTotal()
+//        }
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
@@ -278,11 +278,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 //            showOrderShippingNotice(isVirtualProduct, order)
 
             // Populate the Payment Information Card
-            orderDetail_paymentInfo.initView(
-                    order.toAppModel(),
-                    currencyFormatter.buildBigDecimalFormatter(order.currency),
-                    this
-            )
+//            orderDetail_paymentInfo.initView(
+//                    order.toAppModel(),
+//                    currencyFormatter.buildBigDecimalFormatter(order.currency),
+//                    this
+//            )
 
             if (isFreshData) {
                 isRefreshPending = false
@@ -380,11 +380,11 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 //            orderDetail_orderStatus.updateStatus(orderStatus)
             presenter.orderModel?.let {
                 orderDetail_productList.updateView(it, this)
-                orderDetail_paymentInfo.initView(
-                        it.toAppModel(),
-                        currencyFormatter.buildBigDecimalFormatter(it.currency),
-                        this
-                )
+//                orderDetail_paymentInfo.initView(
+//                        it.toAppModel(),
+//                        currencyFormatter.buildBigDecimalFormatter(it.currency),
+//                        this
+//                )
             }
         }
     }
