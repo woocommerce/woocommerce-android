@@ -5,7 +5,7 @@
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
+    tools:context="com.woocommerce.android.ui.orders.details.OrderDetailFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"

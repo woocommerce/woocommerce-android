@@ -4,7 +4,7 @@ import dagger.Binds
 import dagger.Module
 
 @Module
-internal abstract class OrderDetailModule {
+internal abstract class OrderDetailModuleOld {
     @Binds
     abstract fun provideOrderDetailPresenter(orderDetailPresenter: OrderDetailPresenter): OrderDetailContract.Presenter
 }
