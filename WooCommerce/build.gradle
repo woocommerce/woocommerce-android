@@ -81,6 +81,11 @@ android {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
         }
+
+        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+            applicationId "com.woocommerce.android.prealpha"
+            dimension "buildType"
+        }
     }
 
     buildTypes {
@@ -142,7 +147,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.24') {
+    implementation('org.wordpress:utils:1.26') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
