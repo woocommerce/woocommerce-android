@@ -4,7 +4,7 @@ interface LoginNoJetpackListener {
     fun showJetpackInstructions()
     fun showJetpackTroubleshootingTips()
     fun showWhatIsJetpackDialog()
-    fun showEmailLoginScreen(siteAddress: String?)
+    fun showEmailLoginScreen(siteAddress: String? = null)
     fun showUsernamePasswordScreen(
         siteAddress: String?,
         endpointAddress: String?,

@@ -117,10 +117,11 @@
     <string name="at_username">\@%s</string>
     <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
-    <string name="login">Log in</string>
+    <string name="login_wpcom">Continue with WordPress.com</string>
+    <string name="login_store_address">Enter your store address</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
-    <string name="login_pick_store">Pick store</string>
+    <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
@@ -131,7 +132,7 @@
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
-    <string name="login_try_another_account">Try another account</string>
+    <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
@@ -141,8 +142,8 @@
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
     <string name="login_view_connected_stores">View connected stores</string>
-    <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
-    <string name="login_jetpack_view_instructions">View instructions</string>
+    <string name="login_jetpack_required_text">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
+    <string name="login_jetpack_view_instructions">Learn how to install and connect Jetpack</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -839,6 +840,20 @@
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
+    <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
+    <string name="send_verification_email">Send verification email</string>
+    <string name="username">Username</string>
+    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
+    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
+    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
+    <string name="sign_up">Sign Up for WordPress.com</string>
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
@@ -1272,18 +1287,4 @@
     <!-- Z -->
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
-    <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
-    <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
-    <string name="send_verification_email">Send verification email</string>
-    <string name="username">Username</string>
-    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
-    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
-    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
-    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
-    <string name="sign_up">Sign Up for WordPress.com</string>
 </resources>
