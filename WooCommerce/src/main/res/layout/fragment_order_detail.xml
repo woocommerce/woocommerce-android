@@ -25,7 +25,7 @@
                 tools:ignore="UselessParent">
 
                 <!-- Order Status -->
-                <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
                     android:id="@+id/orderDetail_orderStatus"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
@@ -46,6 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:visibility="gone"
                     android:contentDescription="@string/shipping_labels"/>
 
                 <!-- Product List -->
@@ -66,6 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:visibility="gone"
                     android:contentDescription="@string/refunds"/>
 
                 <!-- Payments -->
@@ -75,12 +77,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
+                    android:visibility="gone"
                     android:focusable="true"/>
 
                 <!-- Customer Info -->
                 <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
                     style="@style/Woo.Card"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -99,6 +103,7 @@
                 <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
                     android:id="@+id/orderDetail_noteList"
                     style="@style/Woo.Card"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

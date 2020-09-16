@@ -154,6 +154,12 @@ data class Order(
             }
         return filteredItems
     }
+
+    fun getBillingName(defaultValue: String): String {
+        return if (billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty()) {
+            defaultValue
+        } else "${billingAddress.firstName} ${billingAddress.lastName}"
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {

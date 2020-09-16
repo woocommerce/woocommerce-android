@@ -1,5 +1,7 @@
 package com.woocommerce.android.extensions
 
+import android.content.Context
+import android.text.format.DateFormat
 import com.woocommerce.android.util.DateUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -34,6 +36,12 @@ fun Date.formatToEEEEMMMddhha(): String {
     dateFormat.dateFormatSymbols = symbols
     return dateFormat.format(this)
 }
+
+fun Date.isToday() = org.apache.commons.lang3.time.DateUtils.isSameDay(Date(), this)
+
+fun Date.getTimeString(context: Context) = DateFormat.getTimeFormat(context).format(this.time)
+
+fun Date.getMediumDate(context: Context) = DateFormat.getMediumDateFormat(context).format(this)
 
 fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }
 
