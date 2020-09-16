@@ -118,13 +118,10 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             SqlScoutServer.create(this, getPackageName())
         }
 
-        // We init Crash Logging further down using the selected site and account, but we also want to init it here
-        // to catch crashes that may occur before we can access the site and account (most notably crashes with
-        // initializing WellSql). In order to do this, we must first init AppPrefs since Crash Logging uses it.
-        // AppPrefs.init(this) - injected now
-
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
+
+        CrashUtils.initCrashLogging(this)
 
         component.inject(this)
 
@@ -132,8 +129,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
-
-        CrashUtils.initCrashLogging(this)
 
         dispatcher.register(this)
 
