@@ -13,25 +13,29 @@ class ProductDetailTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
                 type = SIMPLE,
                 titleResource = R.string.product_type_physical,
                 descResource = R.string.product_type_physical_desc,
-                iconResource = R.drawable.ic_gridicons_product
+                iconResource = R.drawable.ic_gridicons_product,
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
                 titleResource = R.string.product_type_virtual,
                 descResource = R.string.product_type_virtual_desc,
-                iconResource = R.drawable.ic_gridicons_cloud_outline
+                iconResource = R.drawable.ic_gridicons_cloud_outline,
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
                 titleResource = R.string.product_type_grouped,
                 descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
+                iconResource = R.drawable.ic_widgets,
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
                 titleResource = R.string.product_type_external,
                 descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
+                iconResource = R.drawable.ic_gridicons_up_right,
+                isEnabled = true
             )
         )
     }

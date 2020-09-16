@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
@@ -16,25 +15,29 @@ class ProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
                 type = SIMPLE,
                 titleResource = string.product_add_type_simple,
                 descResource = string.product_add_type_simple_desc,
-                iconResource = drawable.ic_gridicons_product
+                iconResource = drawable.ic_gridicons_product,
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = VARIABLE,
-                titleResource = R.string.product_add_type_variable,
-                descResource = R.string.product_add_type_variable_desc,
-                iconResource = R.drawable.ic_gridicons_types
+                titleResource = string.product_add_type_variable,
+                descResource = string.product_add_type_variable_desc,
+                iconResource = drawable.ic_gridicons_types,
+                isEnabled = false
             ),
             ProductTypesBottomSheetUiItem(
                 type = GROUPED,
-                titleResource = R.string.product_add_type_grouped,
-                descResource = R.string.product_add_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
+                titleResource = string.product_add_type_grouped,
+                descResource = string.product_add_type_grouped_desc,
+                iconResource = drawable.ic_widgets,
+                isEnabled = false
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
-                titleResource = R.string.product_add_type_external,
-                descResource = R.string.product_add_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
+                titleResource = string.product_add_type_external,
+                descResource = string.product_add_type_external_desc,
+                iconResource = drawable.ic_gridicons_up_right,
+                isEnabled = false
             )
         )
     }

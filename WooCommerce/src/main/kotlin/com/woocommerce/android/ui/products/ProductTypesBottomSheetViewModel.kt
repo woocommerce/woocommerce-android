@@ -60,7 +60,8 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
         val type: ProductType,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
-        @DrawableRes val iconResource: Int
+        @DrawableRes val iconResource: Int,
+        val isEnabled: Boolean
     ) : Parcelable
 
     @AssistedInject.Factory
