@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getBillingName
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.tags.TagView
 import kotlinx.android.synthetic.main.order_detail_order_status.view.*
@@ -58,7 +59,7 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     private fun getTagView(orderStatus: WCOrderStatusModel): TagView {
-        val orderTag = OrderStatusTag(orderStatus)
+        val orderTag = OrderStatusTag(orderStatus.toOrderStatus())
         val tagView = TagView(context)
         tagView.tag = orderTag
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
