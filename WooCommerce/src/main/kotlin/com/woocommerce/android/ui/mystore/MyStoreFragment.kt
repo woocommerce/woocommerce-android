@@ -390,7 +390,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
-            // TODO AMANDA - Send a track event?
+            // TODO - Send a track event (different project)
             //
             // Hide the card and set last feedback date to now
             store_feedback_request_card.visibility = View.GONE
@@ -420,21 +420,6 @@ class MyStoreFragment : TopLevelFragment(),
                     )
                 }
             }
-
-            // TODO AMANDA - Delete this section
-//            val feedbackGiven = {
-//                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-//                store_feedback_request_card.visibility = View.GONE
-//            }
-//            val feedbackPostponed = {
-//                store_feedback_request_card.visibility = View.GONE
-//            }
-//            AppRatingDialog.showRateDialog(
-//                context = it,
-//                ratingAccepted = feedbackGiven,
-//                ratingDeclined = feedbackGiven,
-//                ratingPostponed = feedbackPostponed
-//            )
         }
     }
 
