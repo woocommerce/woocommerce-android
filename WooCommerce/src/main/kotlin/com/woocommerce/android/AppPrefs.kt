@@ -42,7 +42,9 @@ object AppPrefs {
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
-        SELECTED_APP_THEME
+        SELECTED_APP_THEME,
+        UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
+        UNIFIED_LOGIN_LAST_ACTIVE_FLOW
     }
 
     /**
@@ -290,6 +292,42 @@ object AppPrefs {
     }
 
     /**
+     * Used during the unified login process to track the last source the user was in before
+     * closing the app so if the user opens and finishes the flow at a later day the tracks
+     * events will be complete.
+     */
+    fun getUnifiedLoginLastSource(): String? {
+        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE)
+        return if (result.isNotEmpty()) {
+            result
+        } else {
+            null
+        }
+    }
+
+    fun setUnifiedLoginLastSource(source: String) {
+        setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE, source)
+    }
+
+    /**
+     * Used during the unified login process to track the last flow the user was in before
+     * closing the app so if the user opens and finishes the flow at a later day the tracks
+     * events will be complete.
+     */
+    fun getUnifiedLoginLastFlow(): String? {
+        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW)
+        return if (result.isNotEmpty()) {
+            result
+        } else {
+            null
+        }
+    }
+
+    fun setUnifiedLoginLastFlow(flow: String) {
+        setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
+    }
+
+    /**
      * Remove all user-related preferences.
      */
     fun reset() {
@@ -306,9 +344,7 @@ object AppPrefs {
             PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue)?.let {
-            it
-        } ?: defaultValue
+        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
     }
 
     private fun setString(key: PrefKey, value: String) =

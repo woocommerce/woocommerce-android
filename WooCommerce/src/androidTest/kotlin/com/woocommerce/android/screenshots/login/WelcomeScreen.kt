@@ -6,7 +6,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class WelcomeScreen : Screen {
     companion object {
-        const val LOGIN_BUTTON = R.id.button_login
+        const val LOGIN_BUTTON = R.id.button_login_store
 
         fun logoutIfNeeded(): WelcomeScreen {
             if (isElementDisplayed(R.id.dashboard)) {

@@ -138,7 +138,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         this.remoteProductId,
         this.remoteVariationId,
         this.sku,
-        this.getImage()?.let {
+        this.getImageModel()?.let {
             Product.Image(
                 it.id,
                 it.name,

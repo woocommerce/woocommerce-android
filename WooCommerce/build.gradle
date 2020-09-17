@@ -81,6 +81,11 @@ android {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
         }
+
+        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+            applicationId "com.woocommerce.android.prealpha"
+            dimension "buildType"
+        }
     }
 
     buildTypes {

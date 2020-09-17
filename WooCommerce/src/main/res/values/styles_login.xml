@@ -3,44 +3,12 @@
     <!--
         Overloads of Login Themes
      -->
-    <style name="LoginTheme" parent="Theme.Woo.DayNight">
-        <item name="android:statusBarColor">@color/color_status_bar</item>
-        <item name="android:colorBackground">@color/color_surface</item>
-    </style>
-
-    <style name="LoginTheme.Toolbar">
-        <item name="android:background">@color/color_primary_surface</item>
-        <item name="colorControlNormal">@color/woo_white</item>
-    </style>
-
-    <style name="LoginTheme.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+    <style name="LoginTheme" parent="Theme.LoginFlow"/>
 
     <style name="LoginTheme.TextLabel" parent="TextAppearance.Woo.Subtitle1"/>
-
-    <style name="LoginTheme.EditText" parent="Woo.TextInputLayout">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
-
-    <style name="LoginTheme.InputLabelStatic" parent="TextAppearance.Woo.Subtitle2">
-        <item name="android:textColor">@color/color_on_surface_medium</item>
-    </style>
-
-    <style name="LoginTheme.SiteTitle" parent="TextAppearance.MaterialComponents.Subtitle2" />
-
-    <style name="LoginTheme.SiteUrl" parent="TextAppearance.Woo.Subtitle1">
-        <item name="android:textColor">@color/color_on_surface_high</item>
-    </style>
 
     <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
 
     <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
 
-    <style name="LoginTheme.Button.LoginOption" parent="TextAppearance.Woo.Body1">
-        <item name="android:textColor">@color/color_secondary</item>
-    </style>
-
-    <style name="LoginTheme.TextLabel.Icon">
-        <item name="drawableTint">@color/color_on_surface_medium</item>
-        <item name="drawableTintMode">src_atop</item>
-    </style>
 </resources>

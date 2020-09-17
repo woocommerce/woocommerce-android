@@ -68,6 +68,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_minor_100">40dp</dimen>
     <dimen name="image_major_50">48dp</dimen>
     <dimen name="image_major_64">64dp</dimen>
+    <dimen name="image_major_72">72dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
     <dimen name="image_major_120">128dp</dimen>
     <dimen name="image_major_150">156dp</dimen>
@@ -93,6 +94,7 @@ so that's the baseline as defined in `major_100`.
 
     <!-- Corner Radius -->
     <dimen name="corner_radius_small">2dp</dimen>
+    <dimen name="corner_radius_medium">4dp</dimen>
     <dimen name="corner_radius_round_button">20dp</dimen>
 
     <!-- Chart dimens -->
