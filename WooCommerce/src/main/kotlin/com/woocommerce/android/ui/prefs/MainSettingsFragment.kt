@@ -245,7 +245,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.settings_app_theme_title))
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]
