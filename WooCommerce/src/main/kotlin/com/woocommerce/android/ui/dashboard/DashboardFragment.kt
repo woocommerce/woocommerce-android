@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
@@ -22,11 +23,15 @@ import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
-import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
+import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
+import kotlinx.android.synthetic.main.fragment_my_store.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
@@ -94,8 +99,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                 }
                 scrollUpChild = scroll_view
             }
-
-            setupFeedbackRequestCard()
         }
         return view
     }
@@ -337,19 +340,36 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
-            val feedbackGiven = {
-                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                dashboard_feedback_request_card.visibility = View.GONE
+            // TODO - Send a track event (different project)
+            //
+            // Hide the card and set last feedback date to now
+            store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+
+            // Request a ReviewInfo object from the Google Reviews API. If this fails
+            // we just move on as there isn't anything we can do.
+            val manager = ReviewManagerFactory.create(requireContext())
+            val reviewRequest = manager.requestReviewFlow()
+            reviewRequest.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Request to start the Review flow so the user can be prompted to submit
+                    // a play store review. The prompt will only appear if the user hasn't already
+                    // reached their quota for how often we can ask for a review.
+                    val reviewInfo = it.result
+                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                    flow.addOnFailureListener { ex ->
+                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
+                    }
+                } else {
+                    // There was an error, just log and continue. Google doesn't really tell you what
+                    // type of scenario would cause an error.
+                    WooLog.e(
+                        WooLog.T.DASHBOARD,
+                        "Error fetching ReviewInfo object from Review API to start in-app review process",
+                        it.exception
+                    )
+                }
             }
-            val feedbackPostponed = {
-                dashboard_feedback_request_card.visibility = View.GONE
-            }
-            AppRatingDialog.showRateDialog(
-                context = it,
-                ratingAccepted = feedbackGiven,
-                ratingDeclined = feedbackGiven,
-                ratingPostponed = feedbackPostponed
-            )
         }
     }
 
