@@ -411,8 +411,8 @@ class MainActivity : AppUpgradeActivity(),
         previousDestinationId = destination.id
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             // User clicked the "up" button in the action bar
             android.R.id.home -> {
                 onBackPressed()

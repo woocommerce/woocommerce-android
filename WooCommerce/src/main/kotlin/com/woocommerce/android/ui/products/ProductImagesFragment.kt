@@ -172,7 +172,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 }
             }
 
-        imageSourceDialog = MaterialAlertDialogBuilder(activity)
+        imageSourceDialog = MaterialAlertDialogBuilder(requireActivity())
             .setView(contentView)
             .show()
     }
