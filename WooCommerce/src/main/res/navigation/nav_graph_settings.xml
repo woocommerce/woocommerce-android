@@ -71,5 +71,9 @@
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
-        android:label="FeedbackCompletedFragment"/>
+        android:label="FeedbackCompletedFragment">
+        <argument
+            android:name="surveyType"
+            app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+    </fragment>
 </navigation>
