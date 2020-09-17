@@ -36,7 +36,6 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
             else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
         }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_feedback_completed, container, false)
@@ -101,7 +100,6 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
                 null
             )
         )
-
 
     private fun trackSurveyCompletedScreenAnalytics() {
         AnalyticsTracker.trackViewShown(this)

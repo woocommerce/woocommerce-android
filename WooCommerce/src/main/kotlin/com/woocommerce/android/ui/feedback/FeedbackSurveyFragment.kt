@@ -38,8 +38,8 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
     private val feedbackContext =
-            if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
-            else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+        if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
+        else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -61,7 +61,8 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
             SURVEY_SCREEN, mapOf(
             KEY_FEEDBACK_CONTEXT to feedbackContext,
             KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
-        ))
+        )
+        )
 
         activity?.let {
             it.invalidateOptionsMenu()
@@ -88,16 +89,14 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
-            android.R.id.home -> {
-                AnalyticsTracker.track(
+        when (item.itemId) {
+            android.R.id.home -> AnalyticsTracker.track(
                     SURVEY_SCREEN, mapOf(
                     KEY_FEEDBACK_CONTEXT to feedbackContext,
                     KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
-                )).let { true }
-            }
-            else -> super.onOptionsItemSelected(item)
+                ))
         }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showProgressDialog() {
@@ -125,9 +124,9 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun completeSurvey() {
-        FeedbackSurveyFragmentDirections.actionFeedbackSurveyFragmentToFeedbackCompletedFragment(arguments.surveyType).apply {
-            findNavController().navigateSafely(this)
-        }
+        FeedbackSurveyFragmentDirections
+            .actionFeedbackSurveyFragmentToFeedbackCompletedFragment(arguments.surveyType)
+            .apply { findNavController().navigateSafely(this) }
     }
 
     private inner class SurveyWebViewClient : WebViewClient() {
