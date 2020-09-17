@@ -229,15 +229,15 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                         return
                     }
                     AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_ADDED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
                     )
                     viewModel.uploadProductImages(navArgs.remoteId, uriList)
                 }
                 RequestCodes.CAPTURE_PHOTO -> capturedPhotoUri?.let { imageUri ->
                     AnalyticsTracker.track(
-                            Stat.PRODUCT_IMAGE_ADDED,
-                            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
+                        Stat.PRODUCT_IMAGE_ADDED,
+                        mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
                     )
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
                     viewModel.uploadProductImages(navArgs.remoteId, uriList)
@@ -269,7 +269,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         }
 
         val allGranted = WooPermissionUtils.setPermissionListAsked(
-                requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
+            requireActivity(), requestCode, permissions, grantResults, checkForAlwaysDenied = true
         )
 
         if (allGranted) {

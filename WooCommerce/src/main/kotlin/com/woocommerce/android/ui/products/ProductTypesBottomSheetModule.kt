@@ -24,8 +24,10 @@ abstract class ProductTypesBottomSheetModule {
     @Binds
     @IntoMap
     @ViewModelKey(ProductTypesBottomSheetViewModel::class)
-    abstract fun bindFactory(factory: ProductTypesBottomSheetViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract
+    fun bindFactory(factory: ProductTypesBottomSheetViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: ProductTypesBottomSheetFragment): SavedStateRegistryOwner
+    abstract
+    fun bindSavedStateRegistryOwner(fragment: ProductTypesBottomSheetFragment): SavedStateRegistryOwner
 }
