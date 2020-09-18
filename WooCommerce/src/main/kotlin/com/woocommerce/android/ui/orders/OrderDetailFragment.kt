@@ -32,6 +32,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView.OrderDetailNoteListener
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelActionListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -257,13 +259,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             updateActivityTitle()
 
             // Populate the Order Status Card
-            val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
-            orderDetail_orderStatus
-                    .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
-                        override fun openOrderStatusSelector() {
-                            showOrderStatusSelector()
-                        }
-                    })
+//            val orderStatus = presenter.getOrderStatusForStatusKey(order.status)
+//            orderDetail_orderStatus
+//                    .initView(order, orderStatus, object : OrderDetailOrderStatusView.OrderStatusListener {
+//                        override fun openOrderStatusSelector() {
+//                            showOrderStatusSelector()
+//                        }
+//                    })
 
             // check if product is a virtual product. If it is, hide only the shipping details card
             val isVirtualProduct = presenter.isVirtualProduct(order)
@@ -374,7 +376,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     override fun setOrderStatus(newStatus: String) {
         if (isAdded) {
             val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
-            orderDetail_orderStatus.updateStatus(orderStatus)
+//            orderDetail_orderStatus.updateStatus(orderStatus)
             presenter.orderModel?.let {
                 orderDetail_productList.updateView(it, this)
                 orderDetail_paymentInfo.initView(
@@ -539,7 +541,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         // Set the order status back to the previous status
         previousOrderStatus?.let {
             val orderStatus = presenter.getOrderStatusForStatusKey(it)
-            orderDetail_orderStatus.updateStatus(orderStatus)
+//            orderDetail_orderStatus.updateStatus(orderStatus)
             previousOrderStatus = null
         }
     }

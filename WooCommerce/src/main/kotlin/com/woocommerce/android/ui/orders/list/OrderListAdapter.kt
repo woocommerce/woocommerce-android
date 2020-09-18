@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.model.TimeGroup
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
@@ -145,7 +146,7 @@ class OrderListAdapter(
         private fun processTagView(status: String, holder: OrderItemUIViewHolder) {
             val orderStatus = activeOrderStatusMap[status]
                     ?: createTempOrderStatus(status)
-            val orderTag = OrderStatusTag(orderStatus)
+            val orderTag = OrderStatusTag(orderStatus.toOrderStatus())
             val tagView = TagView(holder.itemView.context)
             tagView.tag = orderTag
             holder.orderTagList.addView(tagView)

@@ -7,10 +7,12 @@ import com.woocommerce.android.model.Order.Address
 import com.woocommerce.android.model.Order.Address.Type.BILLING
 import com.woocommerce.android.model.Order.Address.Type.SHIPPING
 import com.woocommerce.android.model.Order.Item
+import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PENDING
@@ -41,10 +43,17 @@ data class Order(
     val paymentMethod: String,
     val paymentMethodTitle: String,
     val pricesIncludeTax: Boolean,
+    val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
     val items: List<Item>
 ) : Parcelable {
+    @Parcelize
+    data class OrderStatus(
+        val statusKey: String,
+        val label: String
+    ) : Parcelable
+
     @Parcelize
     data class Item(
         val itemId: Long,
@@ -146,6 +155,14 @@ data class Order(
             }
         return filteredItems
     }
+
+    fun getBillingName(defaultValue: String): String {
+        return when {
+            billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
+            billingAddress.firstName.isEmpty() -> billingAddress.lastName
+            else -> "${billingAddress.firstName} ${billingAddress.lastName}"
+        }
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
@@ -170,6 +187,7 @@ fun WCOrderModel.toAppModel(): Order {
             this.paymentMethod,
             this.paymentMethodTitle,
             this.pricesIncludeTax,
+            this.isMultiShippingLinesAvailable(),
             this.getBillingAddress().let {
                 Address(
                         it.address1,
@@ -214,5 +232,12 @@ fun WCOrderModel.toAppModel(): Order {
                                 it.variationId ?: 0
                         )
                     }
+    )
+}
+
+fun WCOrderStatusModel.toOrderStatus(): OrderStatus {
+    return OrderStatus(
+        this.statusKey,
+        this.label
     )
 }
