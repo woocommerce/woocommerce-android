@@ -97,12 +97,13 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     override fun onDestroy() {
-        if(surveyCompleted.not()) {
+        if (surveyCompleted.not()) {
             AnalyticsTracker.track(
                 SURVEY_SCREEN, mapOf(
                 KEY_FEEDBACK_CONTEXT to feedbackContext,
                 KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
-            ))
+            )
+            )
         }
         super.onDestroy()
     }
