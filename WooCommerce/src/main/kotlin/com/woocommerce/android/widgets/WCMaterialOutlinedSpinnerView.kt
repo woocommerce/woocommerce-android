@@ -54,7 +54,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        spinner_edit_text.isEnabled = enabled
+        spinner_edit_text?.isEnabled = enabled
     }
 
     override fun onSaveInstanceState(): Parcelable? {

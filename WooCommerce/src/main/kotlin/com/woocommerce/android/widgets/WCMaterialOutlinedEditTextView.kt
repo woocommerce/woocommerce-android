@@ -113,7 +113,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        edit_text.isEnabled = enabled
+        edit_text?.isEnabled = enabled
     }
 
     override fun onSaveInstanceState(): Parcelable? {
