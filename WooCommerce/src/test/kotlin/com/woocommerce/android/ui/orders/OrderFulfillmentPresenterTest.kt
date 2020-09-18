@@ -93,7 +93,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is already fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), true)
@@ -114,7 +114,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)
@@ -142,7 +142,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)
