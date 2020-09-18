@@ -30,11 +30,12 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         const val TAG = "survey_completed"
     }
 
-    private val feedbackContext =
+    private val feedbackContext by lazy {
         (navArgs<FeedbackCompletedFragmentArgs>().value).let {
             if (it.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
             else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
         }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)

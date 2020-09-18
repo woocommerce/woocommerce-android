@@ -35,11 +35,13 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private var progressDialog: CustomProgressDialog? = null
+    private var surveyCompleted: Boolean = false
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
-    private val feedbackContext =
+    private val feedbackContext by lazy {
         if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
         else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -90,13 +92,19 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> AnalyticsTracker.track(
-                    SURVEY_SCREEN, mapOf(
-                    KEY_FEEDBACK_CONTEXT to feedbackContext,
-                    KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
-                ))
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        if(surveyCompleted.not()) {
+            AnalyticsTracker.track(
+                SURVEY_SCREEN, mapOf(
+                KEY_FEEDBACK_CONTEXT to feedbackContext,
+                KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
+            ))
+        }
+        super.onDestroy()
     }
 
     private fun showProgressDialog() {
@@ -124,6 +132,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun completeSurvey() {
+        surveyCompleted = true
         FeedbackSurveyFragmentDirections
             .actionFeedbackSurveyFragmentToFeedbackCompletedFragment(arguments.surveyType)
             .apply { findNavController().navigateSafely(this) }
