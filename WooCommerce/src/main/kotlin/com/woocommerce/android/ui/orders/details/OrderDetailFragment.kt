@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -61,6 +62,7 @@ class OrderDetailFragment : BaseFragment() {
 
     private fun showOrderDetail(order: Order) {
         orderDetail_orderStatus.updateOrder(order)
+        orderDetail_shippingMethodNotice.isVisible = order.multiShippingLinesAvailable
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
