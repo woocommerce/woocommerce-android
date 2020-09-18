@@ -12,6 +12,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment"
@@ -33,15 +37,20 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
-            app:destination="@id/productTypesBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_productDetailFragment_to_productReviewsFragment"
             app:destination="@id/productReviewsFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
+            app:destination="@id/nav_graph_product_type_bottom_sheet"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
         <action
             android:id="@+id/action_productDetailFragment_to_nav_graph_image_gallery"
             app:destination="@id/nav_graph_image_gallery">
@@ -191,15 +200,6 @@
         android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </dialog>
-    <dialog
-        android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
-        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
-        <argument
             android:name="productType"
             app:argType="com.woocommerce.android.ui.products.ProductType" />
     </dialog>
@@ -324,5 +324,6 @@
                 app:argType="integer" />
         </action>
     </fragment>
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
     <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>

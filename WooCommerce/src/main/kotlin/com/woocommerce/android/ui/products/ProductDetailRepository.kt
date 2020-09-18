@@ -21,8 +21,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
@@ -33,6 +35,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductCreated
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
@@ -59,6 +62,8 @@ class ProductDetailRepository @Inject constructor(
     private var continuationUpdateProductPassword: CancellableContinuation<Boolean>? = null
     private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
+
+    private var continuationAddProduct: Continuation<Pair<Boolean, Long>>? = null
 
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
@@ -124,6 +129,25 @@ class ProductDetailRepository @Inject constructor(
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while updating product", e)
             false
+        }
+    }
+
+    /**
+     * Fires the request to add a product
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+        return try {
+            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(ACTION_TIMEOUT) {
+                continuationAddProduct = it
+                val model = product.toDataModel(null)
+                val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
+                dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
+            } ?: Pair(false, 0L) // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "Exception encountered while publishing a product", e)
+            Pair(false, 0L)
         }
     }
 
@@ -314,6 +338,25 @@ class ProductDetailRepository @Inject constructor(
             } else {
                 continuationFetchProductShippingClass?.resume(true)
             }
+        }
+    }
+
+    /**
+     * A new product has been added
+     */
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductCreated(event: OnProductCreated) {
+        if (event.causeOfChange == ADDED_PRODUCT) {
+            if (event.isError) {
+                val pair = Pair(false, 0L)
+                continuationAddProduct?.resume(pair)
+            } else {
+                val pair = Pair(true, event.remoteProductId)
+                continuationAddProduct?.resume(pair)
+            }
+            continuationAddProduct = null
         }
     }
 }
