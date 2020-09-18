@@ -59,7 +59,7 @@ class AddOrderNotePresenter @Inject constructor(
         noteModel.isCustomerNote = isCustomerNote
         noteModel.note = noteText
 
-        val payload = WCOrderStore.PostOrderNotePayload(order, selectedSite.get(), noteModel)
+        val payload = WCOrderStore.PostOrderNotePayload(order.id, order.remoteOrderId, selectedSite.get(), noteModel)
         dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
 
         addNoteView?.showAddOrderNoteSnack()

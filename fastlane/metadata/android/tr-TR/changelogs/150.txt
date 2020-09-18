@@ -1,5 +1,0 @@
-4.9:
-- Bir CrowdSignal anketiyle fikirlerinizi ve önerilerinizi bize göndermek için yeni Geri Bildirim Gönder düğmesine dokunun.
-- Fiyat, açıklama, stok, görünürlük ve gönderim gibi ürün varyasyonlarını düzenleyin.
-- Ürünler bölümünde yeni özelliklerle denemeler yapın. Bunları etkinleştirmek için Ayarlar'a gidin.
-

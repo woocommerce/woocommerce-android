@@ -82,7 +82,9 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        webView.restoreState(savedInstanceState)
+        savedInstanceState?.let {
+            webView.restoreState(it)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

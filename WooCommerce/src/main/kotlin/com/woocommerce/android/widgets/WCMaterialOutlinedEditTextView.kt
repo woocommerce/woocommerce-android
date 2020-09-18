@@ -140,7 +140,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         super.dispatchFreezeSelfOnly(container)
     }
 
-    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>?) {
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
         super.dispatchThawSelfOnly(container)
     }
 }
