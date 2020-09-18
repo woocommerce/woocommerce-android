@@ -98,15 +98,13 @@ class MyStoreFragment : TopLevelFragment(),
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
-            dashboard_refresh_layout.apply {
-                setOnRefreshListener {
+            dashboard_refresh_layout.setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     MyStorePresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
-                }
             }
             setupFeedbackRequestCard()
         }
