@@ -21,9 +21,9 @@ class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLife
     private var lastState = LastApplicationState.BACKGROUND
     private var firstActivityResumed = true
 
-    override fun onActivityPaused(activity: Activity?) {}
+    override fun onActivityPaused(activity: Activity) {}
 
-    override fun onActivityResumed(activity: Activity?) {
+    override fun onActivityResumed(activity: Activity) {
         if (lastState == LastApplicationState.BACKGROUND) {
             lastState = LastApplicationState.FOREGROUND
             lifecycleListener.onAppComesFromBackground()
@@ -35,19 +35,19 @@ class ApplicationLifecycleMonitor(private val lifecycleListener: ApplicationLife
         }
     }
 
-    override fun onActivityStarted(activity: Activity?) {}
+    override fun onActivityStarted(activity: Activity) {}
 
-    override fun onActivityDestroyed(activity: Activity?) {}
+    override fun onActivityDestroyed(activity: Activity) {}
 
-    override fun onActivitySaveInstanceState(activity: Activity?, bundle: Bundle?) {}
+    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {}
 
-    override fun onActivityStopped(activity: Activity?) {}
+    override fun onActivityStopped(activity: Activity) {}
 
-    override fun onActivityCreated(activity: Activity?, p1: Bundle?) {}
+    override fun onActivityCreated(activity: Activity, p1: Bundle?) {}
 
     override fun onLowMemory() {}
 
-    override fun onConfigurationChanged(configuration: Configuration?) {}
+    override fun onConfigurationChanged(configuration: Configuration) {}
 
     override fun onTrimMemory(level: Int) {
         if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {

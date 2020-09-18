@@ -137,9 +137,11 @@ data class Order(
     }
 
     fun getBillingName(defaultValue: String): String {
-        return if (billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty()) {
-            defaultValue
-        } else "${billingAddress.firstName} ${billingAddress.lastName}"
+        return when {
+            billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
+            billingAddress.firstName.isEmpty() -> billingAddress.lastName
+            else -> "${billingAddress.firstName} ${billingAddress.lastName}"
+        }
     }
 
     fun formatBillingInformationForDisplay(): String {
