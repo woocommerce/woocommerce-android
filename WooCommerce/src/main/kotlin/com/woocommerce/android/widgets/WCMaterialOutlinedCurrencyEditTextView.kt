@@ -70,7 +70,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        currency_edit_text.isEnabled = enabled
+        currency_edit_text?.isEnabled = enabled
     }
 
     fun getCurrencyEditText(): CurrencyEditText = currency_edit_text
