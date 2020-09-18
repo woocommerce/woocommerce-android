@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -11,6 +12,8 @@ import com.woocommerce.android.util.WooLog.T.ORDERS
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -23,6 +26,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -31,6 +35,7 @@ class OrderDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
+    private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -39,6 +44,7 @@ class OrderDetailRepository @Inject constructor(
 
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
+    private var continuationFetchOrderRefunds: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -84,6 +90,12 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchOrderRefunds(remoteOrderId: Long): List<Refund> {
+        return withContext(Dispatchers.IO) {
+            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
+        }.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -98,6 +110,12 @@ class OrderDetailRepository @Inject constructor(
 
     fun getProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
+
+    fun getOrderRefunds(remoteOrderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), remoteOrderId)
+        .map { it.toAppModel() }
+        .reversed()
+        .sortedBy { it.id }
 
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
