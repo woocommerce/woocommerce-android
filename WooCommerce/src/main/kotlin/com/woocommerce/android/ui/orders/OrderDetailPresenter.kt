@@ -200,7 +200,7 @@ class OrderDetailPresenter @Inject constructor(
      * for better ui testing
      */
     override fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel> {
-        return orderStore.getOrderNotesForOrder(order)
+        return orderStore.getOrderNotesForOrder(order.id)
     }
 
     /**
@@ -224,7 +224,7 @@ class OrderDetailPresenter @Inject constructor(
      * for better ui testing
      */
     override fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
-        return orderStore.getShipmentTrackingsForOrder(order)
+        return orderStore.getShipmentTrackingsForOrder(selectedSite.get(), order.id)
     }
 
     /**
@@ -269,7 +269,7 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
+            val payload = UpdateOrderStatusPayload(order.id, order.remoteOrderId, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }
@@ -339,7 +339,9 @@ class OrderDetailPresenter @Inject constructor(
             AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
             ))
-            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            val payload = DeleteOrderShipmentTrackingPayload(
+                selectedSite.get(), order.id, order.remoteOrderId, wcOrderShipmentTrackingModel
+            )
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
     }
@@ -373,7 +375,7 @@ class OrderDetailPresenter @Inject constructor(
                             mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedNotes = false
-                    val notes = orderStore.getOrderNotesForOrder(order)
+                    val notes = orderStore.getOrderNotesForOrder(order.id)
                     orderView?.updateOrderNotes(notes)
                 }
             }
@@ -458,7 +460,7 @@ class OrderDetailPresenter @Inject constructor(
      * Request a fresh copy of order notes from the api.
      */
     fun requestOrderNotesFromApi(order: WCOrderModel) {
-        val payload = FetchOrderNotesPayload(order, selectedSite.get())
+        val payload = FetchOrderNotesPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
     }
 
@@ -466,7 +468,7 @@ class OrderDetailPresenter @Inject constructor(
      * Request a fresh copy of order shipment tracking records from the api.
      */
     fun requestShipmentTrackingsFromApi(order: WCOrderModel) {
-        val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+        val payload = FetchOrderShipmentTrackingsPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
