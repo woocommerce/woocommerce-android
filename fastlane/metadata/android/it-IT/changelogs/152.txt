@@ -1,0 +1,3 @@
+5.0:
+Abbiamo corretto arresti anomali che avvenivano quando si sceglieva un'immagine del prodotto e si passava tra temi chiari e scuri su vecchi dispositivi Android.
+

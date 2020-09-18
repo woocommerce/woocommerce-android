@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-03 08:54:04+0000
+Translation-Revision-Date: 2020-09-18 12:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_type_variation_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
+    <string name="product_selection_count_single">%d تم تحديد المنتج</string>
+    <string name="product_selection_count">%d تم تحديد المنتجات</string>
+    <string name="grouped_product_empty">إضافة المنتجات إلى المجموعة</string>
+    <string name="grouped_product_add">إضافة منتج</string>
+    <string name="product_visibility_password_protected_hint">أدخل كلمة المرور</string>
     <string name="feedback_completed_back_to_store_button_text">العودة إلى المتجر</string>
     <string name="feedback_completed_contact_us">التواصل معنا هنا</string>
     <string name="feedback_completed_description">ضع في حسبانك أنَّ هذه ليست بطاقة دعم وإنَّنا لن نتمكن من معالجة الملاحظات الفردية.\n\nهل تحتاج المساعدة؟ %1$s</string>
@@ -34,7 +40,7 @@ Language: ar
     <string name="product_variation_no_price_set">لم يتم تعيين أي سعر</string>
     <string name="product_variation_enabled">مُفعل</string>
     <string name="product_pricing_scheduled_sale_price_error">يجب عليك تعيين سعر البيع إذا تمت جدولة البيع</string>
-    <string name="product_wip_message">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتجات، وتحديث التصنيفات والوسوم</string>
+    <string name="product_wip_message_m3">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتج، وتحديث التصنيفات والوسوم.</string>
     <string name="product_reviews_count">\u2022 %d من المراجعات</string>
     <string name="product_review_list_item_title">⁦%1$s⁩ تم ترك مراجعة</string>
     <string name="feedback_request_like_it">يعجبني</string>
@@ -53,6 +59,7 @@ Language: ar
     <string name="orderdetail_shipping_label_request_refund">طلب استرداد الأموال</string>
     <string name="orderdetail_shipping_label_item_menu">استرداد أموال بطاقة الشحن</string>
     <string name="product_variation_disabled">معطل</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">المنتجات المتبقية</string>
     <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
     <string name="product_add_category_dialog_title">إضافة تصنيف</string>
     <string name="product_category_parent">التصنيف الأب</string>
@@ -70,6 +77,7 @@ Language: ar
     <string name="settings_privacy_policy_ca">إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا</string>
     <string name="keep_changes">الاحتفاظ بالتغييرات</string>
     <string name="product_sale_date_to">حتى %1$s</string>
+    <string name="product_wip_message_m2">أضفنا المزيد من وظائف التحرير إلى المنتجات. يمكنك الآن تحديث الصور والاطِّلاع على المعاينات ومشاركة منتجاتك.</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
     <string name="product_limited_editing_title">تتوافر وظائف تحرير محدودة</string>
     <string name="orderdetail_product_multiple">المنتجات</string>

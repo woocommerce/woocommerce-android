@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-04 08:54:04+0000
+Translation-Revision-Date: 2020-09-17 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_type_variation_desc">設有變化版本 (顏色或尺寸) 的商品</string>
+    <string name="product_selection_count_single">已選取　%d 件商品</string>
+    <string name="product_selection_count">已選取　%d 件商品</string>
+    <string name="grouped_product_empty">新增商品至群組</string>
+    <string name="grouped_product_add">新增商品</string>
+    <string name="product_visibility_password_protected_hint">輸入密碼</string>
     <string name="feedback_completed_back_to_store_button_text">返回商店</string>
     <string name="feedback_completed_contact_us">在此處聯絡我們</string>
     <string name="feedback_completed_description">請注意，這不是客服支援單，因此我們無法個別處理意見回饋。\n\n需要協助嗎？ %1$s</string>
@@ -34,7 +40,7 @@ Language: zh_TW
     <string name="product_variation_no_price_set">未設定價格</string>
     <string name="product_variation_enabled">已啟用</string>
     <string name="product_pricing_scheduled_sale_price_error">若已排定銷售，則必須設定銷售價格</string>
-    <string name="product_wip_message">你現在可以編輯組合、外部和變化商品、變更商品類型，以及更新類別和標籤</string>
+    <string name="product_wip_message_m3">你現在可以編輯組合、外部和變化商品、變更商品類型，以及更新類別和標籤。</string>
     <string name="product_reviews_count">\u2022 %d 則評論</string>
     <string name="product_review_list_item_title">%1$s 留下一則評論</string>
     <string name="feedback_request_like_it">喜歡</string>
@@ -53,6 +59,7 @@ Language: zh_TW
     <string name="orderdetail_shipping_label_request_refund">要求退款</string>
     <string name="orderdetail_shipping_label_item_menu">退還郵寄標籤的款項</string>
     <string name="product_variation_disabled">已停用</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">剩餘商品</string>
     <string name="product_add_category_dialog_message">請稍候…</string>
     <string name="product_add_category_dialog_title">新增類別中</string>
     <string name="product_category_parent">上層類別</string>
@@ -70,6 +77,7 @@ Language: zh_TW
     <string name="settings_privacy_policy_ca">加州使用者的隱私權聲明</string>
     <string name="keep_changes">保留變更</string>
     <string name="product_sale_date_to">%1$s截止</string>
+    <string name="product_wip_message_m2">我們已新增更多商品編輯功能！ 你現在可以更新圖片、查看預覽畫面並分享你的商品。</string>
     <string name="product_wip_title">有可用的新編輯選項</string>
     <string name="product_limited_editing_title">僅可進行有限編輯</string>
     <string name="orderdetail_product_multiple">產品</string>
