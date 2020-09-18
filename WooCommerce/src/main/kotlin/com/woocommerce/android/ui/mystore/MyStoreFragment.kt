@@ -11,6 +11,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -22,7 +23,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
@@ -81,10 +81,6 @@ class MyStoreFragment : TopLevelFragment(),
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
-
-    private val feedbackCardShouldBeVisible
-        get() = APP_FEEDBACK.isEnabled() &&
-            FeedbackPrefs.userFeedbackIsDue
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -366,15 +362,15 @@ class MyStoreFragment : TopLevelFragment(),
      * If should be and it's already visible, nothing happens
      */
     private fun handleFeedbackRequestCardState() = with(store_feedback_request_card) {
-        if (feedbackCardShouldBeVisible && visibility == View.GONE) {
+        if (userFeedbackIsDue && visibility == View.GONE) {
             setupFeedbackRequestCard()
-        } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
+        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
 
     private fun View.setupFeedbackRequestCard() {
-        if (feedbackCardShouldBeVisible) {
+        if (userFeedbackIsDue) {
             this.store_feedback_request_card.visibility = View.VISIBLE
             val negativeCallback = {
                 mainNavigationRouter?.showFeedbackSurvey()

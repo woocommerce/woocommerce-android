@@ -11,14 +11,13 @@ enum class FeatureFlag {
     PRODUCT_RELEASE_M3,
     PRODUCT_RELEASE_M4,
     SHIPPING_LABELS_M1,
-    APP_FEEDBACK,
     DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             // This feature will live switched on from the
             // setting screen. i.e. check AppPrefs.isProductsFeatureEnabled() method
             // Also, turn on the feature during testing
-            APP_FEEDBACK, SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
+            SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
             PRODUCT_RELEASE_M4 -> BuildConfig.DEBUG && AppPrefs.isProductsFeatureEnabled() || isTesting()
             PRODUCT_RELEASE_M3 -> isTesting() || AppPrefs.isProductsFeatureEnabled()
             DB_DOWNGRADE -> {
