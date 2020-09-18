@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -58,7 +60,14 @@ class OrderDetailFragment : BaseFragment() {
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
+            new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
+                showOrderNotesSkeleton(it)
+            }
         }
+
+        viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
+            showOrderNotes(it)
+        })
         viewModel.loadOrderDetail()
     }
 
@@ -84,5 +93,13 @@ class OrderDetailFragment : BaseFragment() {
             true -> skeletonView.show(orderDetail_container, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
+    }
+
+    private fun showOrderNotesSkeleton(show: Boolean) {
+        orderDetail_noteList.showSkeleton(show)
+    }
+
+    private fun showOrderNotes(orderNotes: List<OrderNote>) {
+        orderDetail_noteList.updateOrderNotesView(orderNotes)
     }
 }

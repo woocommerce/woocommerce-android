@@ -98,10 +98,9 @@
                     tools:visibility="visible"/>
 
                 <!-- Order Notes -->
-                <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
                     android:id="@+id/orderDetail_noteList"
                     style="@style/Woo.Card"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
