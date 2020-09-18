@@ -91,17 +91,13 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadOrderNotes() {
-        if (networkStatus.isConnected()) {
-            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
-            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
-            }
-            // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
-            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
+        if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
         }
+        // fetch order notes from the local db and hide the skeleton view
+        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
     }
 
     @Parcelize

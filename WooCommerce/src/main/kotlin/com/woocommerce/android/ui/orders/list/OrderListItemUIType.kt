@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.model.TimeGroup
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
@@ -29,6 +30,7 @@ sealed class OrderListItemUIType {
      * Data required to populate a single order item in the order list view.
      */
     data class OrderListItemUI(
+        val localOrderId: LocalId,
         val remoteOrderId: RemoteId,
         val orderNumber: String,
         val orderName: String,
