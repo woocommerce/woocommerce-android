@@ -35,6 +35,18 @@ data class Refund(
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
     }
+
+    fun getRefundMethod(
+        paymentMethodTitle: String,
+        isCashPayment: Boolean,
+        defaultValue: String
+    ): String {
+        return when {
+            paymentMethodTitle.isBlank() -> defaultValue
+            automaticGatewayRefund || isCashPayment -> paymentMethodTitle
+            else -> "$defaultValue - $paymentMethodTitle"
+        }
+    }
 }
 
 fun WCRefundModel.toAppModel(): Refund {
