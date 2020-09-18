@@ -96,6 +96,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             } else {
                 customerInfo_emailAddr.visibility = View.GONE
                 customerInfo_emailBtn.visibility = View.GONE
+                customerInfo_divider3.visibility = View.GONE
             }
 
             customerInfo_viewMore.setOnClickListener {

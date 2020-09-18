@@ -31,6 +31,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     final val orderDetailViewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
     private var orderDetailViewState by orderDetailViewStateData
 
+    val toolbarTitle: String
+        get() = orderDetailViewState.toolbarTitle ?: ""
+
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()

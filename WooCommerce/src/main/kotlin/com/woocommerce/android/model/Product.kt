@@ -431,7 +431,7 @@ fun WCProductModel.toAppModel(): Product {
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
         numVariations = this.getNumVariations(),
-        images = this.getImages().map {
+        images = this.getImageList().map {
             Product.Image(
                 it.id,
                 it.name,
@@ -439,7 +439,7 @@ fun WCProductModel.toAppModel(): Product {
                 DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        attributes = this.getAttributes().map {
+        attributes = this.getAttributeList().map {
             Product.Attribute(
                 it.id,
                 it.name,
@@ -453,21 +453,21 @@ fun WCProductModel.toAppModel(): Product {
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder,
-        categories = this.getCategories().map {
+        categories = this.getCategoryList().map {
             ProductCategory(
                 it.id,
                 it.name,
                 it.slug
             )
         },
-        tags = this.getTags().map {
+        tags = this.getTagList().map {
             ProductTag(
                 it.id,
                 it.name,
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIds()
+        groupedProductIds = this.getGroupedProductIdList()
     )
 }
 
