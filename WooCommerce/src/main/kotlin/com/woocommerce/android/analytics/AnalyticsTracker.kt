@@ -605,7 +605,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_PRODUCT_M3_CONTEXT = "products_m3"
         const val VALUE_FEEDBACK_SHOWN = "shown"
         const val VALUE_FEEDBACK_LIKED = "liked"
-        const val VALUE_FEEDBACK_NOT_LIKED = "didnt_liked"
+        const val VALUE_FEEDBACK_NOT_LIKED = "didnt_like"
         const val VALUE_FEEDBACK_LATER = "later"
         const val VALUE_FEEDBACK_DECLINED = "declined"
         const val VALUE_FEEDBACK_RATED = "rated"
