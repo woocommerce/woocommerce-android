@@ -311,6 +311,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Grouped products
         GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
+        GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
+        GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED,
 
         // -- Product external link
         PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED,

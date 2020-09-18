@@ -276,8 +276,7 @@
     <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
-    <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining items to ship</string>
-    <string name="orderdetail_shipping_label_virtual_products_header">Remaining products</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
     <string name="order_begin_fulfillment">Begin fulfillment</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -565,6 +564,7 @@
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
     <string name="product_visibility_private">Private</string>
+    <string name="product_visibility_password_protected_hint">Enter password</string>
     <string name="product_visibility_password_protected">Password protected</string>
     <string name="product_visibility_password_required">Password is required</string>
     <string name="product_catalog_visibility">Catalog visibility</string>
@@ -613,6 +613,10 @@
     <string name="grouped_products_count">%d products</string>
     <string name="grouped_products_single">%d product</string>
     <string name="grouped_product_btn_delete">Delete the grouped product</string>
+    <string name="grouped_product_add">Add product</string>
+    <string name="grouped_product_empty">Add products to the group</string>
+    <string name="product_selection_count">%d products selected</string>
+    <string name="product_selection_count_single">%d product selected</string>
     <!--
         Product Add more details Bottom sheet
     -->

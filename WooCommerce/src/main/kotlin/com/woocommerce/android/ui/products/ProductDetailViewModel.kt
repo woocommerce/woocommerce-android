@@ -155,6 +155,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         ProductDetailBottomSheetBuilder(resources)
     }
 
+    val isProductPublished: Boolean
+    get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+
     init {
         start()
     }
@@ -213,7 +216,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
             true
         } else {
-            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
+            viewState.productBeforeEnteringFragment?.hasImageChanges(viewState.productDraft) ?: false
         }
     }
 

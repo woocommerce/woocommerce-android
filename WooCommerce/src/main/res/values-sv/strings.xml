@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-04 11:44:34+0000
+Translation-Revision-Date: 2020-09-08 13:23:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_type_variation_desc">En produkt med variationer som färg eller storlek</string>
+    <string name="product_selection_count_single">%d produkt vald</string>
+    <string name="product_selection_count">%d produkter valda</string>
+    <string name="grouped_product_empty">Lägg till produkter till gruppen</string>
+    <string name="grouped_product_add">Lägg till produkt</string>
+    <string name="product_visibility_password_protected_hint">Ange lösenord</string>
     <string name="feedback_completed_back_to_store_button_text">Tillbaka till butik</string>
     <string name="feedback_completed_contact_us">Kontakta oss här</string>
     <string name="feedback_completed_description">Tänk på att detta inte är ett supportärende och att vi inte kan adressera individuell feedback.\n\nBehöver du hjälp? %1$s</string>
@@ -34,7 +40,7 @@ Language: sv_SE
     <string name="product_variation_no_price_set">Inget pris angivet</string>
     <string name="product_variation_enabled">Aktiverad</string>
     <string name="product_pricing_scheduled_sale_price_error">Du måste ange försäljningspriset om en försäljning är schemalagd</string>
-    <string name="product_wip_message">Du kan nu redigera grupperade, externa och variabla produkter, ändra produkttyp och uppdatera kategorier och etiketter</string>
+    <string name="product_wip_message_m3">Du kan nu redigera grupperade, externa och variabla produkter, ändra produkttyp och uppdatera kategorier och etiketter.</string>
     <string name="product_reviews_count">\u2022 %d recensioner</string>
     <string name="product_review_list_item_title">%1$s lämnade en recension</string>
     <string name="feedback_request_like_it">Jag gillar den</string>
@@ -68,8 +74,7 @@ Language: sv_SE
     <string name="product_detail_product_type_hint">%1$s produkt</string>
     <string name="product_type_downloadable">nedladdningsbar</string>
     <string name="product_type_description">%s produkt</string>
-    <string name="orderdetail_shipping_label_virtual_products_header">Återstående produkter</string>
-    <string name="orderdetail_shipping_label_unpackaged_products_header">Resterande artiklar som ska skickas</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Återstående produkter</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s returetikett</string>
     <string name="orderdetail_shipping_label_tracking_info">Spåra försändelse</string>
@@ -103,6 +108,7 @@ Language: sv_SE
     <string name="settings_privacy_policy_ca">Integritetsnotis för användare i Kalifornien</string>
     <string name="keep_changes">Behåll ändringar</string>
     <string name="product_sale_date_to">Fram till %1$s</string>
+    <string name="product_wip_message_m2">Vi har lagt till fler redigeringsfunktionaliteter till produkter! Du kan nu uppdatera bilder, se förhandsgranskningar och dela dina produkter.</string>
     <string name="product_wip_title">Nya redigeringsalternativ tillgängliga</string>
     <string name="product_limited_editing_title">Begränsad redigering tillgänglig</string>
     <string name="orderdetail_product_multiple">Produkter</string>

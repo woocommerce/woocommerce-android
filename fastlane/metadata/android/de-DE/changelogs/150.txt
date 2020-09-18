@@ -1,5 +1,0 @@
-4.9:
-- Tippe in einer CrowdSignal-Umfrage auf den neuen Button „Feedback senden“, um deine Ideen und Vorschläge an uns zu senden.
-- Bearbeite Produktvarianten wie Preis, Beschreibung, Bestand, Sichtbarkeit und Versand.
-- Experimentiere mit neuen Funktionen im Abschnitt „Produkte“! Navigiere zu „Einstellungen“, um sie zu aktivieren.
-
