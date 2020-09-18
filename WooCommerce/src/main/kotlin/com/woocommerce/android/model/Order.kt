@@ -143,9 +143,11 @@ data class Order(
     }
 
     fun getBillingName(defaultValue: String): String {
-        return if (billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty()) {
-            defaultValue
-        } else "${billingAddress.firstName} ${billingAddress.lastName}"
+        return when {
+            billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
+            billingAddress.firstName.isEmpty() -> billingAddress.lastName
+            else -> "${billingAddress.firstName} ${billingAddress.lastName}"
+        }
     }
 
     fun formatBillingInformationForDisplay(): String {
@@ -161,7 +163,7 @@ data class Order(
         val shippingName = "${shippingAddress.firstName} ${shippingAddress.lastName}"
         val shippingAddress = this.shippingAddress.getEnvelopeAddress()
         val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country)
-        return this.billingAddress.getFullAddress(
+        return this.shippingAddress.getFullAddress(
             shippingName, shippingAddress, shippingCountry
         )
     }

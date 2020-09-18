@@ -47,7 +47,7 @@ class OrderDetailFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun getFragmentTitle() = ""
+    override fun getFragmentTitle() = viewModel.toolbarTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

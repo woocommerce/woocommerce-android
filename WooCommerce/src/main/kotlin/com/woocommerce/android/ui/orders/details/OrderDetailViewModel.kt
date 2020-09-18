@@ -36,6 +36,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val orderIdSet: OrderIdSet
         get() = navArgs.orderId.toIdSet()
 
+    val toolbarTitle: String
+        get() = orderDetailViewState.toolbarTitle ?: ""
+
     final val orderDetailViewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
     private var orderDetailViewState by orderDetailViewStateData
 
