@@ -238,16 +238,16 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                 getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
             } else null
 
-            orderDetail_productList.initView(
-                orderModel = order,
-                orderItems = unpackagedAndNonRefundedProducts,
-                productImageMap = productImageMap,
-                expanded = false,
-                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                orderListener = this,
-                productListener = this,
-                listTitle = listTitle
-            )
+//            orderDetail_productList.initView(
+//                orderModel = order,
+//                orderItems = unpackagedAndNonRefundedProducts,
+//                productImageMap = productImageMap,
+//                expanded = false,
+//                formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+//                orderListener = this,
+//                productListener = this,
+//                listTitle = listTitle
+//            )
             orderDetail_productList.show()
         } else {
             orderDetail_productList.hide()
@@ -379,7 +379,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             val orderStatus = presenter.getOrderStatusForStatusKey(newStatus)
 //            orderDetail_orderStatus.updateStatus(orderStatus)
             presenter.orderModel?.let {
-                orderDetail_productList.updateView(it, this)
+//                orderDetail_productList.updateView(it, this)
 //                orderDetail_paymentInfo.initView(
 //                        it.toAppModel(),
 //                        currencyFormatter.buildBigDecimalFormatter(it.currency),
@@ -486,7 +486,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun refreshProductImages() {
         if (isAdded) {
-            orderDetail_productList.refreshProductImages()
+//            orderDetail_productList.refreshProductImages()
         }
     }
 

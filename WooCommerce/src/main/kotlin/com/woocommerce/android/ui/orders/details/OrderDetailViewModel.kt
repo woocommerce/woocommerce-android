@@ -12,6 +12,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -51,6 +53,9 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private val _orderRefunds = MutableLiveData<List<Refund>>()
     val orderRefunds: LiveData<List<Refund>> = _orderRefunds
+
+    private val _productList = MutableLiveData<List<Order.Item>>()
+    val productList: LiveData<List<Order.Item>> = _productList
 
     override fun onCleared() {
         super.onCleared()
@@ -100,6 +105,7 @@ class OrderDetailViewModel @AssistedInject constructor(
                 string.orderdetail_orderstatus_ordernum, order.number
             )
         )
+        loadOrderProducts()
     }
 
     private suspend fun loadOrderNotes() {
@@ -117,6 +123,19 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
         }
+
+        // display products only if there are some non refunded items in the list
+        loadOrderProducts()
+    }
+
+    private fun loadOrderProducts() {
+        _productList.value = order?.let { order ->
+            _orderRefunds.value?.let { refunds ->
+                if (refunds.hasNonRefundedProducts(order.items)) {
+                    refunds.getNonRefundedProducts(order.items)
+                } else emptyList()
+            } ?: order.items
+        } ?: emptyList()
     }
 
     @Parcelize
