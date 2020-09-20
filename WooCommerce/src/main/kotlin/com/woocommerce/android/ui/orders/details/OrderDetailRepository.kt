@@ -4,6 +4,7 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -24,7 +25,9 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
@@ -44,7 +47,7 @@ class OrderDetailRepository @Inject constructor(
 
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
-    private var continuationFetchOrderRefunds: CancellableContinuation<Boolean>? = null
+    private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
 
     init {
         dispatcher.register(this)
@@ -90,6 +93,24 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchOrderShipmentTrackingList(
+        localOrderId: Int,
+        remoteOrderId: Long
+    ): RequestResult {
+        return try {
+            continuationFetchOrderShipmentTrackingList?.cancel()
+            suspendCancellableCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                continuationFetchOrderShipmentTrackingList = it
+
+                val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
+                dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
+            } ?: RequestResult.ERROR
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while fetching shipment trackings $remoteOrderId")
+            RequestResult.ERROR
+        }
+    }
+
     suspend fun fetchOrderRefunds(remoteOrderId: Long): List<Refund> {
         return withContext(Dispatchers.IO) {
             refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
@@ -117,6 +138,9 @@ class OrderDetailRepository @Inject constructor(
         .reversed()
         .sortedBy { it.id }
 
+    fun getOrderShipmentTrackings(localOrderId: Int) =
+        orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
+
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
@@ -135,6 +159,17 @@ class OrderDetailRepository @Inject constructor(
                     continuationFetchOrderNotes?.resume(true)
                 }
                 continuationFetchOrderNotes = null
+            }
+            WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
+                if (event.isError) {
+                    val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
+                        RequestResult.API_ERROR
+                    } else RequestResult.ERROR
+                    continuationFetchOrderShipmentTrackingList?.resume(error)
+                } else {
+                    continuationFetchOrderShipmentTrackingList?.resume(RequestResult.SUCCESS)
+                }
+                continuationFetchOrderShipmentTrackingList = null
             }
             else -> { }
         }
