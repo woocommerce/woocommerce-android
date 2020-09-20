@@ -5,6 +5,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,6 +24,11 @@ class OrderNavigator @Inject constructor() {
             is IssueOrderRefund -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToIssueRefund(target.remoteOrderId)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewRefundedProducts -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToRefundDetailFragment(target.remoteOrderId)
                 fragment.findNavController().navigateSafely(action)
             }
         }
