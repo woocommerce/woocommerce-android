@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -61,6 +63,7 @@ class OrderDetailRepository @Inject constructor(
     private var continuationUpdateOrderStatus: CancellableContinuation<Boolean>? = null
     private var continuationAddOrderNote: CancellableContinuation<Boolean>? = null
     private var continuationAddShipmentTracking: CancellableContinuation<Boolean>? = null
+    private var continuationDeleteShipmentTracking: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -202,6 +205,27 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteOrderShipmentTracking(
+        localOrderId: Int,
+        remoteOrderId: Long,
+        shipmentTrackingModel: WCOrderShipmentTrackingModel
+    ): Boolean {
+        return try {
+            continuationDeleteShipmentTracking?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationDeleteShipmentTracking = it
+
+                val payload = DeleteOrderShipmentTrackingPayload(
+                    selectedSite.get(), localOrderId, remoteOrderId, shipmentTrackingModel
+                )
+                dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while deleting shipment tracking $remoteOrderId")
+            false
+        }
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -224,6 +248,13 @@ class OrderDetailRepository @Inject constructor(
         .map { it.toAppModel() }
         .reversed()
         .sortedBy { it.id }
+
+    fun getOrderShipmentTrackingByTrackingNumber(
+        localOrderId: Int,
+        trackingNumber: String
+    ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
+        selectedSite.get(), localOrderId, trackingNumber
+    )?.toAppModel()
 
     fun getOrderShipmentTrackings(localOrderId: Int) =
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
@@ -305,6 +336,21 @@ class OrderDetailRepository @Inject constructor(
                     continuationAddShipmentTracking?.resume(true)
                 }
                 continuationAddShipmentTracking = null
+            }
+            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_TRACKING_DELETE_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
+                    ))
+                    continuationDeleteShipmentTracking?.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
+                    continuationDeleteShipmentTracking?.resume(true)
+                }
+                continuationDeleteShipmentTracking = null
             }
             else -> { }
         }

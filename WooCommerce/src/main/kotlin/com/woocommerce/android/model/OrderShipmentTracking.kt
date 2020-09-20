@@ -16,6 +16,9 @@ data class OrderShipmentTracking(
     val isCustomProvider: Boolean = false
 ) : Parcelable {
     fun toDataModel() = WCOrderShipmentTrackingModel().also { orderShipmentTrackingModel ->
+        orderShipmentTrackingModel.localOrderId = this.localOrderId
+        orderShipmentTrackingModel.localSiteId = this.localSiteId
+        orderShipmentTrackingModel.remoteTrackingId = this.remoteTrackingId
         orderShipmentTrackingModel.trackingNumber = this.trackingNumber
         orderShipmentTrackingModel.dateShipped = this.dateShipped
         orderShipmentTrackingModel.trackingProvider = this.trackingProvider

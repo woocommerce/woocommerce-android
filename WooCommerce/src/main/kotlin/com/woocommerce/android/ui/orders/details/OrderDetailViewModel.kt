@@ -66,6 +66,11 @@ class OrderDetailViewModel @AssistedInject constructor(
     val order: Order?
         get() = orderDetailViewState.order
 
+    // Keep track of the deleted shipment tracking number in case
+    // the request to server fails, we need to display an error message
+    // and add the deleted tracking number back to the list
+    private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
+
     final val orderDetailViewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
     private var orderDetailViewState by orderDetailViewStateData
 
@@ -224,6 +229,57 @@ class OrderDetailViewModel @AssistedInject constructor(
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
+    fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
+        if (networkStatus.isConnected()) {
+            orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
+                orderIdSet.id, trackingNumber
+            )?.let { deletedShipmentTracking ->
+                deletedOrderShipmentTrackingSet.add(trackingNumber)
+
+                val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+                shipmentTrackings.remove(deletedShipmentTracking)
+                _shipmentTrackings.value = shipmentTrackings
+
+                triggerEvent(ShowUndoSnackbar(
+                    message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                    undoAction = View.OnClickListener { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                    dismissAction = object : Snackbar.Callback() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            if (event != DISMISS_EVENT_ACTION) {
+                                // delete the shipment only if user has not clicked on the undo snackbar
+                                deleteOrderShipmentTracking(deletedShipmentTracking)
+                            }
+                        }
+                    }
+                ))
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
+    private fun onDeleteShipmentTrackingReverted(shipmentTracking: OrderShipmentTracking) {
+        deletedOrderShipmentTrackingSet.remove(shipmentTracking.trackingNumber)
+        val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+        shipmentTrackings.add(shipmentTracking)
+        _shipmentTrackings.value = shipmentTrackings
+    }
+
+    private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
+        launch {
+            val deletedShipment = orderDetailRepository.deleteOrderShipmentTracking(
+                orderIdSet.id, orderIdSet.remoteOrderId, shipmentTracking.toDataModel()
+            )
+            if (deletedShipment) {
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
+            } else {
+                onDeleteShipmentTrackingReverted(shipmentTracking)
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
+            }
         }
     }
 

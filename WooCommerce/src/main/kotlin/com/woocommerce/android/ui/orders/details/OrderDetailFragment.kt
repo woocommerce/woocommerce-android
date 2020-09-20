@@ -119,7 +119,7 @@ class OrderDetailFragment : BaseFragment() {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUndoSnackbar -> {
-                    displayOrderStatusChangeSnackbar(event.message, event.undoAction, event.dismissAction)
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -228,9 +228,11 @@ class OrderDetailFragment : BaseFragment() {
         }
     }
 
-    private fun showShipmentTrackings(shipmentTrackings: List<OrderShipmentTracking>) {
-        shipmentTrackings.whenNotNullNorEmpty {
-            orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings)
+    private fun showShipmentTrackings(
+        shipmentTrackings: List<OrderShipmentTracking>
+    ) {
+        orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings) {
+            viewModel.onDeleteShipmentTrackingClicked(it)
         }
     }
 
@@ -250,7 +252,7 @@ class OrderDetailFragment : BaseFragment() {
         }.otherwise { orderDetail_shippingLabelList.hide() }
     }
 
-    private fun displayOrderStatusChangeSnackbar(
+    private fun displayUndoSnackbar(
         message: String,
         actionListener: View.OnClickListener,
         dismissCallback: Snackbar.Callback
