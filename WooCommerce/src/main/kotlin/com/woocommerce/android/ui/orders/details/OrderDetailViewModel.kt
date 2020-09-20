@@ -151,6 +151,31 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
+        if (networkStatus.isConnected()) {
+            val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+            shipmentTrackings.add(0, shipmentTracking)
+            _shipmentTrackings.value = shipmentTrackings
+
+            triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
+            launch {
+                val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
+                    orderIdSet.id,
+                    orderIdSet.remoteOrderId,
+                    shipmentTracking.toDataModel(),
+                    shipmentTracking.isCustomProvider
+                )
+                if (!addedShipmentTracking) {
+                    triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
+                    shipmentTrackings.remove(shipmentTracking)
+                    _shipmentTrackings.value = shipmentTrackings
+                }
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
     fun onShippingLabelRefunded() { launch { loadOrderShippingLabels() } }
 
     fun onOrderStatusChanged(newStatus: String) {

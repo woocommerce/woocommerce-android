@@ -24,10 +24,12 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -58,6 +60,7 @@ class OrderDetailRepository @Inject constructor(
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
     private var continuationUpdateOrderStatus: CancellableContinuation<Boolean>? = null
     private var continuationAddOrderNote: CancellableContinuation<Boolean>? = null
+    private var continuationAddShipmentTracking: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -173,6 +176,32 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun addOrderShipmentTracking(
+        localOrderId: Int,
+        remoteOrderId: Long,
+        shipmentTrackingModel: WCOrderShipmentTrackingModel,
+        isCustomProvider: Boolean
+    ): Boolean {
+        return try {
+            continuationAddShipmentTracking?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationAddShipmentTracking = it
+
+                val payload = AddOrderShipmentTrackingPayload(
+                    selectedSite.get(),
+                    localOrderId,
+                    remoteOrderId,
+                    shipmentTrackingModel,
+                    isCustomProvider
+                )
+                dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while adding shipment tracking $remoteOrderId")
+            false
+        }
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -261,6 +290,21 @@ class OrderDetailRepository @Inject constructor(
                     continuationAddOrderNote?.resume(true)
                 }
                 continuationAddOrderNote = null
+            }
+            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_TRACKING_ADD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                    )
+                    continuationAddShipmentTracking?.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
+                    continuationAddShipmentTracking?.resume(true)
+                }
+                continuationAddShipmentTracking = null
             }
             else -> { }
         }

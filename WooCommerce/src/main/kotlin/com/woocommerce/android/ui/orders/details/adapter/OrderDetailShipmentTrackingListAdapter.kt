@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.getLongDate
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShipmentTrackingListAdapter.OrderDetailShipmentTrackingViewHolder
+import com.woocommerce.android.util.DateUtils
 import kotlinx.android.synthetic.main.order_detail_shipment_tracking_list_item.view.*
 
 class OrderDetailShipmentTrackingListAdapter : RecyclerView.Adapter<OrderDetailShipmentTrackingViewHolder>() {
@@ -42,7 +42,9 @@ class OrderDetailShipmentTrackingListAdapter : RecyclerView.Adapter<OrderDetailS
         fun bind(shipmentTracking: OrderShipmentTracking) {
             with(itemView.tracking_type) { text = shipmentTracking.trackingProvider }
             with(itemView.tracking_number) { text = shipmentTracking.trackingNumber }
-            with(itemView.tracking_dateShipped) { text = shipmentTracking.dateShipped.getLongDate(context) }
+            with(itemView.tracking_dateShipped) {
+                text = DateUtils.getLocalizedLongDateString(context, shipmentTracking.dateShipped)
+            }
         }
     }
 
