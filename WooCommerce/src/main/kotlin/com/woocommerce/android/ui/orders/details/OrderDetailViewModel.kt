@@ -130,7 +130,10 @@ class OrderDetailViewModel @AssistedInject constructor(
             dismissAction = object : Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-                    updateOrderStatus()
+                    if (event != DISMISS_EVENT_ACTION) {
+                        // update the order only if user has not clicked on the undo snackbar
+                        updateOrderStatus(newStatus)
+                    }
                 }
             }
         ))
@@ -142,9 +145,19 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
-    private fun updateOrderStatus() {
+    private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
-            // TODO: update order status
+            launch {
+                if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
+                    order?.let {
+                        orderDetailViewState = orderDetailViewState.copy(
+                            order = it.copy(status = CoreOrderStatus.fromValue(newStatus) ?: it.status))
+                    }
+                } else {
+                    onOrderStatusChangeReverted()
+                    triggerEvent(ShowSnackbar(string.order_error_update_general))
+                }
+            }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }

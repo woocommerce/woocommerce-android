@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -29,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
@@ -51,6 +54,7 @@ class OrderDetailRepository @Inject constructor(
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
+    private var continuationUpdateOrderStatus: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -126,6 +130,27 @@ class OrderDetailRepository @Inject constructor(
         }.model?.map { it.toAppModel() } ?: emptyList()
     }
 
+    suspend fun updateOrderStatus(
+        localOrderId: Int,
+        remoteOrderId: Long,
+        newStatus: String
+    ): Boolean {
+        return try {
+            continuationUpdateOrderStatus?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationUpdateOrderStatus = it
+
+                val payload = UpdateOrderStatusPayload(
+                    localOrderId, remoteOrderId, selectedSite.get(), newStatus
+                )
+                dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while updating order status $remoteOrderId")
+            false
+        }
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -184,6 +209,21 @@ class OrderDetailRepository @Inject constructor(
                     continuationFetchOrderShipmentTrackingList?.resume(RequestResult.SUCCESS)
                 }
                 continuationFetchOrderShipmentTrackingList = null
+            }
+            WCOrderAction.UPDATE_ORDER_STATUS -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_STATUS_CHANGE_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                    )
+                    continuationUpdateOrderStatus?.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
+                    continuationUpdateOrderStatus?.resume(true)
+                }
+                continuationUpdateOrderStatus = null
             }
             else -> { }
         }
