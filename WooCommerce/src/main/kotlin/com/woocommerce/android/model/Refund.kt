@@ -103,7 +103,7 @@ fun List<Refund>.getNonRefundedProducts(
 /*
  * Calculates the max quantity for each item by subtracting the number of already-refunded items
  */
-private fun List<Refund>.getMaxRefundQuantities(
+fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Int> {
     val map = mutableMapOf<Long, Int>()

@@ -8,16 +8,20 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
+import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -62,6 +66,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
 
+    private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
+    val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
+
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()
@@ -74,6 +81,7 @@ class OrderDetailViewModel @AssistedInject constructor(
                 loadOrderNotes()
                 loadOrderRefunds()
                 loadShipmentTrackings()
+                loadOrderShippingLabels()
             } ?: fetchOrder()
         }
     }
@@ -94,6 +102,7 @@ class OrderDetailViewModel @AssistedInject constructor(
                 loadOrderNotes()
                 loadOrderRefunds()
                 loadShipmentTrackings()
+                loadOrderShippingLabels()
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
@@ -155,6 +164,29 @@ class OrderDetailViewModel @AssistedInject constructor(
                 orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
                 _shipmentTrackings.value = emptyList()
             }
+        }
+    }
+
+    private suspend fun loadOrderShippingLabels() {
+        order?.let { order ->
+            if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
+                orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
+                    .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
+
+                _shippingLabels.value = orderDetailRepository
+                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                    .loadProducts(order.items)
+            } else {
+                _shippingLabels.value = emptyList()
+            }
+        }
+
+        // hide the shipment tracking section and the product list section if
+        // shipping labels are available for the order
+        _shippingLabels.value?.whenNotNullNorEmpty {
+            _productList.value = emptyList()
+            _shipmentTrackings.value = emptyList()
+            orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
         }
     }
 
