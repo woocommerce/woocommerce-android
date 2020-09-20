@@ -82,12 +82,6 @@ fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.
     )
 }
 
-fun List<ShippingLabel>.getUnPackagedProducts(products: List<Order.Item>): List<Order.Item> {
-    val productNames = mutableSetOf<String>()
-    this.map { productNames.addAll(it.productNames) }
-    return products.filter { !productNames.contains(it.name) }
-}
-
 /**
  * Method fetches a list of product details for the product names associated with each shipping label
  */

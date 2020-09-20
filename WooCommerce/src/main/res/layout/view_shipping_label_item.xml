@@ -55,13 +55,10 @@
     <ImageButton
         android:id="@+id/shippingLabelItem_btnTrack"
         style="@style/Woo.ImageButton.More"
-        android:contentDescription="@string/orderdetail_shipping_label_tracking_info"
+        android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_gridicons_external"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        tools:visibility="gone"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
