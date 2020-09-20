@@ -27,6 +27,7 @@ import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -130,6 +131,10 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onAddOrderNoteClicked() {
         order?.let { triggerEvent(AddOrderNote(orderIdentifier = it.identifier, orderNumber = it.number)) }
+    }
+
+    fun onRefundShippingLabelClick(shippingLabelId: Long) {
+        order?.let { triggerEvent(RefundShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
     }
 
     fun onOrderStatusChanged(newStatus: String) {

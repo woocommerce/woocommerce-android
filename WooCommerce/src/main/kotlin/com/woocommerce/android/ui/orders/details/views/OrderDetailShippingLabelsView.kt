@@ -25,10 +25,15 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
     fun updateShippingLabels(
         shippingLabels: List<ShippingLabel>,
         productImageMap: ProductImageMap,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
     ) {
         val viewAdapter = shippingLabel_list.adapter as? OrderDetailShippingLabelsAdapter
-            ?: OrderDetailShippingLabelsAdapter(formatCurrencyForDisplay, productImageMap)
+            ?: OrderDetailShippingLabelsAdapter(
+                formatCurrencyForDisplay = formatCurrencyForDisplay,
+                productImageMap = productImageMap,
+                onRefundRequested = onRefundRequested
+            )
         shippingLabel_list.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)

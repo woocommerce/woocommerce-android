@@ -229,7 +229,9 @@ class OrderDetailFragment : BaseFragment() {
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
-                )
+                ) {
+                    viewModel.onRefundShippingLabelClick(it.id)
+                }
             }
         }.otherwise { orderDetail_shippingLabelList.hide() }
     }
