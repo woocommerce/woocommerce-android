@@ -23,7 +23,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -215,13 +214,13 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
-        orderDetail_shippingLabelList.initView(
-            order.toAppModel(),
-            shippingLabels,
-            productImageMap,
-            currencyFormatter.buildBigDecimalFormatter(order.currency),
-            this
-        )
+//        orderDetail_shippingLabelList.initView(
+//            order.toAppModel(),
+//            shippingLabels,
+//            productImageMap,
+//            currencyFormatter.buildBigDecimalFormatter(order.currency),
+//            this
+//        )
     }
 
     override fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>) {

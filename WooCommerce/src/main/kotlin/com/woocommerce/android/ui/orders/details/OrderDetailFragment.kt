@@ -19,6 +19,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -88,6 +89,9 @@ class OrderDetailFragment : BaseFragment() {
         })
         viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
             showShipmentTrackings(it)
+        })
+        viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
+            showShippingLabels(it)
         })
         viewModel.loadOrderDetail()
     }
@@ -168,5 +172,19 @@ class OrderDetailFragment : BaseFragment() {
         shipmentTrackings.whenNotNullNorEmpty {
             orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings)
         }
+    }
+
+    private fun showShippingLabels(shippingLabels: List<ShippingLabel>) {
+        shippingLabels.whenNotNullNorEmpty {
+            val order = requireNotNull(viewModel.order)
+            with(orderDetail_shippingLabelList) {
+                show()
+                updateShippingLabels(
+                    shippingLabels = shippingLabels,
+                    productImageMap = productImageMap,
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                )
+            }
+        }.otherwise { orderDetail_shippingLabelList.hide() }
     }
 }

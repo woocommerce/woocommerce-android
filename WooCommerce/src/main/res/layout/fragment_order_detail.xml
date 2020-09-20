@@ -41,7 +41,7 @@
                     tools:visibility="visible" />
 
                 <!-- Product List -->
-                <com.woocommerce.android.ui.orders.OrderDetailShippingLabelListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
                     android:id="@+id/orderDetail_shippingLabelList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
