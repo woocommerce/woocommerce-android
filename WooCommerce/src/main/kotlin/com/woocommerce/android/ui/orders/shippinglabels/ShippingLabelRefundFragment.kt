@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -26,6 +25,10 @@ import kotlinx.android.synthetic.main.fragment_shipping_label_refund.*
 import javax.inject.Inject
 
 class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val KEY_REFUND_SHIPPING_LABEL_RESULT = "key_refund_shipping_label_result"
+    }
+
     @Inject lateinit var viewModelFactory: ViewModelFactory
     val viewModel: ShippingLabelRefundViewModel
         by navGraphViewModels(R.id.nav_graph_shipping_labels) { viewModelFactory }
@@ -60,14 +63,7 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
-                is Exit -> {
-                    requireActivity().navigateBackWithResult(
-                        RequestCodes.ORDER_REFUND,
-                        Bundle(),
-                        R.id.nav_host_fragment_main,
-                        R.id.orderDetailFragment
-                    )
-                }
+                is Exit -> navigateBackWithResult(KEY_REFUND_SHIPPING_LABEL_RESULT, true)
                 else -> event.isHandled = false
             }
         })
