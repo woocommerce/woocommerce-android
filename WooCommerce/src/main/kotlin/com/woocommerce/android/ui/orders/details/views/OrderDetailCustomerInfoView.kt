@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -13,7 +14,9 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.util.PhoneUtils
+import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
@@ -79,6 +82,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 customerInfo_phone.visibility = View.VISIBLE
                 customerInfo_divider3.visibility = View.VISIBLE
                 customerInfo_callOrMessageBtn.visibility = View.VISIBLE
+                customerInfo_callOrMessageBtn.setOnClickListener {
+                    showCallOrMessagePopup(order)
+                }
             } else {
                 customerInfo_phone.visibility = View.GONE
                 customerInfo_divider3.visibility = View.GONE
@@ -91,7 +97,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 customerInfo_emailAddr.visibility = View.VISIBLE
                 customerInfo_emailBtn.visibility - View.VISIBLE
                 customerInfo_emailBtn.setOnClickListener {
-                    // TODO: add click event to open email here
+                    AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
+                    OrderCustomerHelper.createEmail(context, order, order.billingAddress.email)
+                    AppRatingDialog.incrementInteractions()
                 }
             } else {
                 customerInfo_emailAddr.visibility = View.GONE
@@ -118,5 +126,26 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             customerInfo_morePanel.hide()
             customerInfo_viewMore.setOnClickListener(null)
         }
+    }
+
+    private fun showCallOrMessagePopup(order: Order) {
+        val popup = PopupMenu(context, customerInfo_callOrMessageBtn)
+        popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
+
+        popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
+            OrderCustomerHelper.dialPhone(context, order, order.billingAddress.phone)
+            AppRatingDialog.incrementInteractions()
+            true
+        }
+
+        popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
+            OrderCustomerHelper.sendSms(context, order, order.billingAddress.phone)
+            AppRatingDialog.incrementInteractions()
+            true
+        }
+
+        popup.show()
     }
 }
