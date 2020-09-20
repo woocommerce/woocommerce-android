@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -26,6 +27,7 @@ import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -48,6 +50,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 class OrderDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
@@ -135,6 +138,17 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
         order?.let { triggerEvent(RefundShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
+    }
+
+    fun onAddShipmentTrackingClicked() {
+        order?.let {
+            triggerEvent(
+                AddOrderShipmentTracking(
+                orderIdentifier = it.identifier,
+                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+            ))
+        }
     }
 
     fun onShippingLabelRefunded() { launch { loadOrderShippingLabels() } }

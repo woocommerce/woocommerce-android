@@ -35,7 +35,11 @@ class OrderDetailShipmentTrackingListView @JvmOverloads constructor(
         shipmentTrackingAdapter.shipmentTrackingList = shipmentTrackings
     }
 
-    fun showAddTrackingButton(show: Boolean) {
+    fun showAddTrackingButton(
+        show: Boolean,
+        onTap: () -> Unit
+    ) {
         shipmentTrack_btnAddTracking.isVisible = show
+        shipmentTrack_btnAddTracking.setOnClickListener { onTap() }
     }
 }

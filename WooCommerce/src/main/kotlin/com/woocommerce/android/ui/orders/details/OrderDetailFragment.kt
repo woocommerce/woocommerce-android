@@ -91,8 +91,7 @@ class OrderDetailFragment : BaseFragment() {
                 showOrderNotesSkeleton(it)
             }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
-                orderDetail_shipmentList.isVisible = it
-                orderDetail_shipmentList.showAddTrackingButton(it)
+                showAddShipmentTracking(it)
             }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 orderRefreshLayout.isRefreshing = it
@@ -216,6 +215,13 @@ class OrderDetailFragment : BaseFragment() {
                 showOrderFulfillOption(order.status == CoreOrderStatus.PROCESSING)
             }
         }.otherwise { orderDetail_productList.hide() }
+    }
+
+    private fun showAddShipmentTracking(show: Boolean) {
+        with(orderDetail_shipmentList) {
+            isVisible = show
+            showAddTrackingButton(show) { viewModel.onAddShipmentTrackingClicked() }
+        }
     }
 
     private fun showShipmentTrackings(shipmentTrackings: List<OrderShipmentTracking>) {

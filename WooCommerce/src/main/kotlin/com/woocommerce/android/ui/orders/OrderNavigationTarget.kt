@@ -30,4 +30,9 @@ sealed class OrderNavigationTarget : Event() {
     data class ViewRefundedProducts(val remoteOrderId: Long) : OrderNavigationTarget()
     data class AddOrderNote(val orderIdentifier: String, val orderNumber: String) : OrderNavigationTarget()
     data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
+    data class AddOrderShipmentTracking(
+        val orderIdentifier: String,
+        val orderTrackingProvider: String,
+        val isCustomProvider: Boolean
+    ) : OrderNavigationTarget()
 }
