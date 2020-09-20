@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
@@ -66,15 +64,15 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
     }
 
-    fun showOrderFulfillOption(show: Boolean) {
+    fun showOrderFulfillOption(
+        show: Boolean,
+        onOrderFulfillTapped: () -> Unit
+    ) {
         if (show) {
             productList_btnFulfill.visibility = View.VISIBLE
             productList_btnDetails.visibility = View.GONE
             productList_btnDetails.setOnClickListener(null)
-            productList_btnFulfill.setOnClickListener {
-                AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-                // TODO: add click event to open order fulfill
-            }
+            productList_btnFulfill.setOnClickListener { onOrderFulfillTapped() }
         } else {
             productList_btnFulfill.visibility = View.GONE
             productList_btnDetails.visibility = View.GONE
