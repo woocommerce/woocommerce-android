@@ -18,7 +18,6 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.loadProductItems
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelActionListener
 import com.woocommerce.android.util.AddressUtils
@@ -92,7 +91,7 @@ class OrderDetailShippingLabelListView @JvmOverloads constructor(
             holder.bindProductItems(
                 context,
                 productImageMap,
-                shippingLabel.loadProductItems(order.items),
+                emptyList(),
                 formatCurrencyForDisplay,
                 viewPool
             )

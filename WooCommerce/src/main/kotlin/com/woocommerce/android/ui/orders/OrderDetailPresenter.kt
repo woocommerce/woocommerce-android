@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.extensions.isVirtualProduct
-import com.woocommerce.android.model.appendTrackingUrls
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -154,10 +153,10 @@ class OrderDetailPresenter @Inject constructor(
         orderDetailUiItem: OrderDetailUiItem
     ) {
         orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
-        orderView?.showShippingLabels(
-            order = orderDetailUiItem.orderModel,
-            shippingLabels = orderDetailUiItem.shippingLabels.appendTrackingUrls(orderDetailUiItem.shipmentTrackingList)
-        )
+//        orderView?.showShippingLabels(
+//            order = orderDetailUiItem.orderModel,
+//            shippingLabels = orderDetailUiItem.shippingLabels.appendTrackingUrls(orderDetailUiItem.shipmentTrackingList)
+//        )
 
         // display the product list only if we know for sure,
         // that there are no shipping labels available for the order
