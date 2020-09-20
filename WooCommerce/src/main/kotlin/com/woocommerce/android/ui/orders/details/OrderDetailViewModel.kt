@@ -160,6 +160,27 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
+    fun onNewOrderNoteAdded(orderNote: OrderNote) {
+        if (networkStatus.isConnected()) {
+            val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
+            orderNotes.add(0, orderNote)
+            _orderNotes.value = orderNotes
+
+            triggerEvent(ShowSnackbar(string.add_order_note_added))
+            launch {
+                if (!orderDetailRepository
+                        .addOrderNote(orderIdSet.id, orderIdSet.remoteOrderId, orderNote.toDataModel())
+                ) {
+                    triggerEvent(ShowSnackbar(string.add_order_note_error))
+                    orderNotes.remove(orderNote)
+                    _orderNotes.value = orderNotes
+                }
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {

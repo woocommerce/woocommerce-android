@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
+import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -55,6 +57,7 @@ class OrderDetailRepository @Inject constructor(
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
     private var continuationUpdateOrderStatus: CancellableContinuation<Boolean>? = null
+    private var continuationAddOrderNote: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -151,6 +154,25 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun addOrderNote(
+        localOrderId: Int,
+        remoteOrderId: Long,
+        noteModel: WCOrderNoteModel
+    ): Boolean {
+        return try {
+            continuationAddOrderNote?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationAddOrderNote = it
+
+                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), noteModel)
+                dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while adding order note $remoteOrderId")
+            false
+        }
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -224,6 +246,21 @@ class OrderDetailRepository @Inject constructor(
                     continuationUpdateOrderStatus?.resume(true)
                 }
                 continuationUpdateOrderStatus = null
+            }
+            WCOrderAction.POST_ORDER_NOTE -> {
+                if (event.isError) {
+                    AnalyticsTracker.track(
+                        Stat.ORDER_NOTE_ADD_FAILED, mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error.message)
+                    )
+                    continuationAddOrderNote?.resume(false)
+                } else {
+                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
+                    continuationAddOrderNote?.resume(true)
+                }
+                continuationAddOrderNote = null
             }
             else -> { }
         }
