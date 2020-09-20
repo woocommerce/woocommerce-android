@@ -24,9 +24,10 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         View.inflate(context, R.layout.order_detail_order_status, this)
     }
 
-    fun updateStatus(orderStatus: OrderStatus) {
+    fun updateStatus(orderStatus: OrderStatus, onTap: ((view: View) -> Unit)) {
         orderStatus_orderTags.removeAllViews()
         orderStatus_orderTags.addView(getTagView(orderStatus))
+        orderStatus_edit.setOnClickListener(onTap)
     }
 
     fun updateOrder(order: Order) {

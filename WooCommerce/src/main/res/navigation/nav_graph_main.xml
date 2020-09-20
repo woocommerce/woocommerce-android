@@ -100,7 +100,23 @@
             app:destination="@id/refundDetailFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_orderStatusSelectorDialog"
+            app:destination="@id/orderStatusSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
+    <dialog
+        android:id="@+id/orderStatusSelectorDialog"
+        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
+        <argument
+            android:name="currentStatus"
+            app:nullable="false"
+            app:argType="string" />
+        <argument
+            android:name="orderStatusList"
+            app:argType="string[]" />
+    </dialog>
     <fragment
         android:id="@+id/addOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment"

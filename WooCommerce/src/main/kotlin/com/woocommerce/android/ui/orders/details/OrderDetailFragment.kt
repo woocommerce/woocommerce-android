@@ -23,6 +23,8 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -35,6 +37,7 @@ class OrderDetailFragment : BaseFragment() {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: OrderDetailViewModel by viewModels { viewModelFactory }
 
+    @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
@@ -104,6 +107,13 @@ class OrderDetailFragment : BaseFragment() {
         viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
             showShippingLabels(it)
         })
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
+            }
+        })
     }
 
     private fun showOrderDetail(order: Order) {
@@ -120,7 +130,9 @@ class OrderDetailFragment : BaseFragment() {
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
-        orderDetail_orderStatus.updateStatus(orderStatus)
+        orderDetail_orderStatus.updateStatus(orderStatus) {
+            viewModel.onEditOrderStatusSelected()
+        }
     }
 
     private fun showSkeleton(show: Boolean) {

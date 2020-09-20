@@ -135,6 +135,8 @@ class OrderDetailRepository @Inject constructor(
         }).toOrderStatus()
     }
 
+    fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
+
     fun getOrderNotes(localOrderId: Int) =
         orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
 
