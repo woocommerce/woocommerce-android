@@ -95,6 +95,10 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     init {
+        start()
+    }
+
+    final fun start() {
         launch {
             orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
                 updateOrderState(orderInDb)
@@ -283,7 +287,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateOrderStatus(newStatus: String) {
+    fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
@@ -301,7 +305,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun onOrderStatusChangeReverted() {
+    fun onOrderStatusChangeReverted() {
         order?.let {
             orderDetailViewState = orderDetailViewState.copy(
                 orderStatus = orderDetailRepository.getOrderStatus(it.status.value)
