@@ -40,12 +40,17 @@ class OrderDetailOrderNotesView @JvmOverloads constructor(
         }
     }
 
-    fun updateOrderNotesView(orderNotes: List<OrderNote>) {
+    fun updateOrderNotesView(
+        orderNotes: List<OrderNote>,
+        onTapAddOrderNote: () -> Unit
+    ) {
         val adapter = notesList_notes.adapter as? OrderNotesAdapter ?: OrderNotesAdapter()
         enableItemAnimator(adapter.itemCount == 0)
 
         val notesWithHeaders = addHeaders(orderNotes)
         adapter.setNotes(notesWithHeaders)
+
+        noteList_addNoteContainer.setOnClickListener { onTapAddOrderNote() }
     }
 
     private fun addHeaders(notes: List<OrderNote>): List<OrderNoteListItem> {
