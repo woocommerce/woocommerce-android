@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
@@ -27,6 +30,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -34,6 +38,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 @OpenClassOnDebug
 class OrderDetailViewModel @AssistedInject constructor(
@@ -108,7 +113,47 @@ class OrderDetailViewModel @AssistedInject constructor(
                 ViewOrderStatusSelector(
                 currentStatus = order.status.value,
                 orderStatusList = orderDetailRepository.getOrderStatusOptions().map { it.statusKey }.toTypedArray()
-            )
+            ))
+        }
+    }
+
+    fun onOrderStatusChanged(newStatus: String) {
+        val snackMessage = when (newStatus) {
+            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
+            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
+        }
+
+        // display undo snackbar
+        triggerEvent(ShowUndoSnackbar(
+            message = snackMessage,
+            undoAction = View.OnClickListener { onOrderStatusChangeReverted() },
+            dismissAction = object : Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    updateOrderStatus()
+                }
+            }
+        ))
+
+        // change the order status
+        val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
+        orderDetailViewState = orderDetailViewState.copy(
+            orderStatus = newOrderStatus
+        )
+    }
+
+    private fun updateOrderStatus() {
+        if (networkStatus.isConnected()) {
+            // TODO: update order status
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
+    private fun onOrderStatusChangeReverted() {
+        order?.let {
+            orderDetailViewState = orderDetailViewState.copy(
+                orderStatus = orderDetailRepository.getOrderStatus(it.status.value)
             )
         }
     }

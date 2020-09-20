@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -26,6 +28,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -64,6 +68,7 @@ class OrderDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -110,10 +115,20 @@ class OrderDetailFragment : BaseFragment() {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowUndoSnackbar -> {
+                    displayOrderStatusChangeSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
+        handleResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT) {
+            viewModel.onOrderStatusChanged(it)
+        }
     }
 
     private fun showOrderDetail(order: Order) {
@@ -208,5 +223,19 @@ class OrderDetailFragment : BaseFragment() {
                 )
             }
         }.otherwise { orderDetail_shippingLabelList.hide() }
+    }
+
+    private fun displayOrderStatusChangeSnackbar(
+        message: String,
+        actionListener: View.OnClickListener,
+        dismissCallback: Snackbar.Callback
+    ) {
+        uiMessageResolver.getUndoSnack(
+            message = message,
+            actionListener = actionListener
+        ).also {
+            it.addCallback(dismissCallback)
+            it.show()
+        }
     }
 }
