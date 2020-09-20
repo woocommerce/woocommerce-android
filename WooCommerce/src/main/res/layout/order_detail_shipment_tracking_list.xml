@@ -35,9 +35,7 @@
         <View
             android:id="@+id/shipmentTrack_divider"
             style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:layout_marginStart="@dimen/major_100" />
 
         <!-- Button: Add Tracking -->
         <com.google.android.material.button.MaterialButton
