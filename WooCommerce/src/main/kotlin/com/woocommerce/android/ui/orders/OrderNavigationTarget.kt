@@ -25,4 +25,6 @@ sealed class OrderNavigationTarget : Event() {
             return result
         }
     }
+
+    data class IssueOrderRefund(val remoteOrderId: Long) : OrderNavigationTarget()
 }

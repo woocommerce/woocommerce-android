@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import javax.inject.Inject
@@ -17,6 +18,11 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
                         target.currentStatus, target.orderStatusList
                     )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is IssueOrderRefund -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToIssueRefund(target.remoteOrderId)
                 fragment.findNavController().navigateSafely(action)
             }
         }
