@@ -13,7 +13,6 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PENDING
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
@@ -47,6 +46,13 @@ data class Order(
     val shippingMethodList: List<String?>,
     val items: List<Item>
 ) : Parcelable {
+    @IgnoredOnParcel
+    val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
+
+    @IgnoredOnParcel
+    val isAwaitingPayment = status == CoreOrderStatus.PENDING ||
+        status == CoreOrderStatus.ON_HOLD || datePaid == null
+
     @Parcelize
     data class OrderStatus(
         val statusKey: String,
@@ -172,7 +178,7 @@ fun WCOrderModel.toAppModel(): Order {
             DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
             DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
             DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-            CoreOrderStatus.fromValue(this.status) ?: PENDING,
+        CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
             this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             this.getOrderSubtotal().toBigDecimal().roundError(),
             this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
