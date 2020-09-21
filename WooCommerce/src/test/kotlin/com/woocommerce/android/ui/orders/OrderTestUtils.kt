@@ -6,7 +6,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.orders.OrderDetailRepository.OrderDetailUiItem
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -213,16 +212,6 @@ object OrderTestUtils {
             ))
         }
         return result
-    }
-
-    fun generateOrderDetailUiItem(order: WCOrderModel): OrderDetailUiItem {
-        return OrderDetailUiItem(
-            orderModel = order,
-            refunds = generateRefunds(),
-            shippingLabels = emptyList(),
-            shipmentTrackingList = generateOrderShipmentTrackings(5, order.remoteOrderId.toInt()),
-            isShipmentTrackingAvailable = true
-        )
     }
 
     fun generateTestOrder(orderIdentifier: OrderIdentifier = "1-1-1"): Order {
