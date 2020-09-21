@@ -48,7 +48,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             paymentInfo_paymentMsg.show()
 
             if (order.isAwaitingPayment) {
-                paymentInfo_paid.text = formatCurrencyForDisplay(BigDecimal.ZERO) // Waiting for payment
+                paymentInfo_paid.text = formatCurrencyForDisplay(BigDecimal.ZERO)
                 paymentInfo_paymentMsg.text = context.getString(
                     R.string.orderdetail_payment_summary_onhold, order.paymentMethodTitle
                 )
