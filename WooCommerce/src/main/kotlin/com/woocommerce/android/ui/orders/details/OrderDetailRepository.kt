@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderNotesPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -37,6 +38,7 @@ class OrderDetailRepository @Inject constructor(
     }
 
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
+    private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
 
     init {
         dispatcher.register(this)
@@ -64,6 +66,24 @@ class OrderDetailRepository @Inject constructor(
         return getOrder(orderIdentifier)
     }
 
+    suspend fun fetchOrderNotes(
+        localOrderId: Int,
+        remoteOrderId: Long
+    ): Boolean {
+        return try {
+            continuationFetchOrderNotes?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationFetchOrderNotes = it
+
+                val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
+                dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while fetching order notes $remoteOrderId")
+            false
+        }
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -72,6 +92,9 @@ class OrderDetailRepository @Inject constructor(
             label = key
         }).toOrderStatus()
     }
+
+    fun getOrderNotes(localOrderId: Int) =
+        orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
 
     fun getProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
@@ -86,6 +109,14 @@ class OrderDetailRepository @Inject constructor(
                 } else {
                     continuationFetchOrder?.resume(true)
                 }
+            }
+            WCOrderAction.FETCH_ORDER_NOTES -> {
+                if (event.isError) {
+                    continuationFetchOrderNotes?.resume(false)
+                } else {
+                    continuationFetchOrderNotes?.resume(true)
+                }
+                continuationFetchOrderNotes = null
             }
             else -> { }
         }
