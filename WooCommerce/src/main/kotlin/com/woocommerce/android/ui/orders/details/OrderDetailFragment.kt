@@ -63,6 +63,10 @@ class OrderDetailFragment : BaseFragment() {
     private fun showOrderDetail(order: Order) {
         orderDetail_orderStatus.updateOrder(order)
         orderDetail_shippingMethodNotice.isVisible = order.multiShippingLinesAvailable
+        orderDetail_customerInfo.updateCustomerInfo(
+            order = order,
+            isVirtualOrder = viewModel.hasVirtualProductsOnly()
+        )
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {

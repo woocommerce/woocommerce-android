@@ -1,13 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.google.i18n.addressinput.common.AddressData
-import com.google.i18n.addressinput.common.FormOptions
-import com.google.i18n.addressinput.common.FormatInterpreter
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -37,58 +31,6 @@ data class ShippingLabel(
     var trackingLink: String? = null
 
     @Parcelize
-    data class Address(
-        val company: String,
-        val name: String,
-        val phone: String,
-        val country: String,
-        val state: String,
-        val address: String,
-        val address2: String,
-        val city: String,
-        val postcode: String
-    ) : Parcelable {
-        /**
-         * Takes an [ShippingLabel.Address] object and returns its values in a comma-separated string.
-         */
-        private fun addressToString(): String {
-            return StringBuilder()
-                .appendWithIfNotEmpty(address)
-                .appendWithIfNotEmpty(address2, "\n")
-                .appendWithIfNotEmpty(city, "\n")
-                .appendWithIfNotEmpty(state)
-                .appendWithIfNotEmpty(postcode)
-                .toString()
-        }
-
-        private fun getAddressData(): AddressData {
-            return AddressData.builder()
-                .setAddressLines(mutableListOf(address, address2))
-                .setLocality(city)
-                .setAdminArea(state)
-                .setPostalCode(postcode)
-                .setCountry(country)
-                .setOrganization(company)
-                .build()
-        }
-
-        fun getEnvelopeAddress(): String {
-            return getAddressData().takeIf { it.postalCountry != null }?.let {
-                val formatInterpreter = FormatInterpreter(FormOptions().createSnapshot())
-                try {
-                    val separator = System.getProperty("line.separator") ?: ""
-                    formatInterpreter.getEnvelopeAddress(it).joinToString(separator)
-                } catch (e: NullPointerException) {
-                    // in rare cases getEnvelopeAddress() will throw a NPE due to invalid region data
-                    // see https://github.com/woocommerce/woocommerce-android/issues/509
-                    WooLog.e(T.UTILS, e)
-                    this.addressToString()
-                }
-            } ?: this.addressToString()
-        }
-    }
-
-    @Parcelize
     data class Refund(
         val status: String,
         val refundDate: Date?
@@ -115,17 +57,19 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
     )
 }
 
-fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): ShippingLabel.Address {
-    return ShippingLabel.Address(
-        company ?: "",
-        name ?: "",
-        phone ?: "",
-        country ?: "",
-        state ?: "",
-        address ?: "",
-        address2 ?: "",
-        city ?: "",
-        postcode ?: ""
+fun WCShippingLabelModel.ShippingLabelAddress.toAppModel(): Address {
+    return Address(
+        company = company ?: "",
+        firstName = name ?: "",
+        lastName = "",
+        phone = phone ?: "",
+        country = country ?: "",
+        state = state ?: "",
+        address1 = address ?: "",
+        address2 = address2 ?: "",
+        city = city ?: "",
+        postcode = postcode ?: "",
+        email = ""
     )
 }
 

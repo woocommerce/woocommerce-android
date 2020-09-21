@@ -3,12 +3,10 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.model.Order.Address
-import com.woocommerce.android.model.Order.Address.Type.BILLING
-import com.woocommerce.android.model.Order.Address.Type.SHIPPING
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.util.AddressUtils
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -46,6 +44,7 @@ data class Order(
     val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
+    val shippingMethodList: List<String?>,
     val items: List<Item>
 ) : Parcelable {
     @Parcelize
@@ -69,25 +68,6 @@ data class Order(
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
-    }
-
-    @Parcelize
-    data class Address(
-        val address1: String,
-        val address2: String,
-        val city: String,
-        val company: String,
-        val country: String,
-        val firstName: String,
-        val lastName: String,
-        val postcode: String,
-        val state: String,
-        val type: Type
-    ) : Parcelable {
-        enum class Type {
-            BILLING,
-            SHIPPING
-        }
     }
 
     /*
@@ -163,6 +143,24 @@ data class Order(
             else -> "${billingAddress.firstName} ${billingAddress.lastName}"
         }
     }
+
+    fun formatBillingInformationForDisplay(): String {
+        val billingName = getBillingName("")
+        val billingAddress = this.billingAddress.getEnvelopeAddress()
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country)
+        return this.billingAddress.getFullAddress(
+            billingName, billingAddress, billingCountry
+        )
+    }
+
+    fun formatShippingInformationForDisplay(): String {
+        val shippingName = "${shippingAddress.firstName} ${shippingAddress.lastName}"
+        val shippingAddress = this.shippingAddress.getEnvelopeAddress()
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country)
+        return this.shippingAddress.getFullAddress(
+            shippingName, shippingAddress, shippingCountry
+        )
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
@@ -190,32 +188,35 @@ fun WCOrderModel.toAppModel(): Order {
             this.isMultiShippingLinesAvailable(),
             this.getBillingAddress().let {
                 Address(
-                        it.address1,
-                        it.address2,
-                        it.city,
-                        it.company,
-                        it.country,
-                        it.firstName,
-                        it.lastName,
-                        it.postcode,
-                        it.state,
-                        BILLING
+                    it.company,
+                    it.firstName,
+                    it.lastName,
+                    this.billingPhone,
+                    it.country,
+                    it.state,
+                    it.address1,
+                    it.address2,
+                    it.city,
+                    it.postcode,
+                    this.billingEmail
                 )
             },
             this.getShippingAddress().let {
                 Address(
-                        it.address1,
-                        it.address2,
-                        it.city,
-                        it.company,
-                        it.country,
-                        it.firstName,
-                        it.lastName,
-                        it.postcode,
-                        it.state,
-                        SHIPPING
+                    it.company,
+                    it.firstName,
+                    it.lastName,
+                    "",
+                    it.country,
+                    it.state,
+                    it.address1,
+                    it.address2,
+                    it.city,
+                    it.postcode,
+                    ""
                 )
             },
+            getShippingLineList().map { it.methodTitle },
             getLineItemList()
                     .filter { it.productId != null && it.id != null }
                     .map {
