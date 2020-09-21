@@ -1,3 +1,6 @@
+5.2
+-----
+ 
 5.1
 -----
 * Implemented new login flow complete with new screen designs! #2851
