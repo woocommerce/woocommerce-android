@@ -127,6 +127,10 @@ class OrderDetailViewModel @AssistedInject constructor(
         order?.let { triggerEvent(ViewRefundedProducts(remoteOrderId = it.remoteId)) }
     }
 
+    fun onOrderItemRefunded() {
+        launch { fetchOrder(false) }
+    }
+
     fun onOrderStatusChanged(newStatus: String) {
         val snackMessage = when (newStatus) {
             CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
