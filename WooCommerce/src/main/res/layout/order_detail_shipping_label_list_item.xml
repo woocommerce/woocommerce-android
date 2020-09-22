@@ -55,6 +55,21 @@
             style="@style/Woo.Divider.TitleAligned"
             android:layout_marginTop="@dimen/minor_50" />
 
+        <!-- Print shipping label -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shippingLabelList_printBtn"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/orderdetail_shipping_label_reprint"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/minor_100"
+            android:layout_marginStart="@dimen/major_125"
+            android:layout_marginEnd="@dimen/major_125"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <!-- Package Tracking number -->
         <com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelItemView
             android:id="@+id/shippingLabelItem_trackingNumber"

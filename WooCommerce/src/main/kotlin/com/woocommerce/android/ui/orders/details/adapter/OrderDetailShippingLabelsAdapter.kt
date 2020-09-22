@@ -95,7 +95,9 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             // display tracking number details if shipping label is not refunded
-            itemView.shippingLabelList_btnMenu.isVisible = shippingLabel.refund == null
+            val isRefunded = shippingLabel.refund == null
+            itemView.shippingLabelList_btnMenu.isVisible = isRefunded
+            itemView.shippingLabelList_printBtn.isVisible = isRefunded
             with(itemView.shippingLabelItem_trackingNumber) {
                 if (shippingLabel.refund != null) {
                     setShippingLabelTitle(
