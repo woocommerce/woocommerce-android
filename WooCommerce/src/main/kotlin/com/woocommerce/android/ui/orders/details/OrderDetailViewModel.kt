@@ -149,6 +149,10 @@ class OrderDetailViewModel @AssistedInject constructor(
         order?.let { triggerEvent(RefundShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
     }
 
+    fun onPrintShippingLabelClicked(shippingLabelId: Long) {
+        // TODO: redirect to print shipping label fragment
+    }
+
     fun onAddShipmentTrackingClicked() {
         order?.let {
             triggerEvent(

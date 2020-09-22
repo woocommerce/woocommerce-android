@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list.view.*
 import java.math.BigDecimal
 
@@ -26,13 +27,13 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
         shippingLabels: List<ShippingLabel>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
-        onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
+        listener: OnShippingLabelClickListener
     ) {
         val viewAdapter = shippingLabel_list.adapter as? OrderDetailShippingLabelsAdapter
             ?: OrderDetailShippingLabelsAdapter(
                 formatCurrencyForDisplay = formatCurrencyForDisplay,
                 productImageMap = productImageMap,
-                onRefundRequested = onRefundRequested
+                listener = listener
             )
         shippingLabel_list.apply {
             setHasFixedSize(true)

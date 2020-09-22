@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -248,10 +249,17 @@ class OrderDetailFragment : BaseFragment() {
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
-                ) {
-                    viewModel.onRefundShippingLabelClick(it.id)
-                }
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    listener = object : OnShippingLabelClickListener {
+                        override fun onRefundRequested(shippingLabel: ShippingLabel) {
+                            viewModel.onRefundShippingLabelClick(shippingLabel.id)
+                        }
+
+                        override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
+                            viewModel.onPrintShippingLabelClicked(shippingLabel.id)
+                        }
+                    }
+                )
             }
         }.otherwise { orderDetail_shippingLabelList.hide() }
     }

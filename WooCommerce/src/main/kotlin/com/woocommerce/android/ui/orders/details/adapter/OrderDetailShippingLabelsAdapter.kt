@@ -25,9 +25,14 @@ import java.math.BigDecimal
 class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
-    private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
+    private val listener: OnShippingLabelClickListener
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
+
+    interface OnShippingLabelClickListener {
+        fun onRefundRequested(shippingLabel: ShippingLabel)
+        fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel)
+    }
 
     var shippingLabels: List<ShippingLabel> = ArrayList()
         set(value) {
@@ -43,7 +48,7 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ShippingLabelsViewHolder {
         return ShippingLabelsViewHolder(
-            parent, viewPool, productImageMap, formatCurrencyForDisplay, onRefundRequested
+            parent, viewPool, productImageMap, formatCurrencyForDisplay, listener
         )
     }
 
@@ -58,7 +63,7 @@ class OrderDetailShippingLabelsAdapter(
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
-        private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
+        private val listener: OnShippingLabelClickListener
     ) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
     ) {
@@ -117,7 +122,7 @@ class OrderDetailShippingLabelsAdapter(
                     ))
                     setShippingLabelValue(shippingLabel.trackingNumber)
                     itemView.shippingLabelList_btnMenu.setOnClickListener {
-                        showRefundPopup(shippingLabel, onRefundRequested)
+                        showRefundPopup(shippingLabel, listener)
                     }
 
                     // display tracking link if available
@@ -130,6 +135,10 @@ class OrderDetailShippingLabelsAdapter(
                             )
                         }
                     } else showTrackingItemButton(false)
+
+                    itemView.shippingLabelList_printBtn.setOnClickListener {
+                        listener.onPrintShippingLabelClicked(shippingLabel)
+                    }
                 }
             }
 
@@ -194,13 +203,13 @@ class OrderDetailShippingLabelsAdapter(
 
         private fun showRefundPopup(
             shippingLabel: ShippingLabel,
-            onItemSelected: (shippingLabel: ShippingLabel) -> Unit
+            listener: OnShippingLabelClickListener
         ) {
             val popup = PopupMenu(itemView.context, itemView.shippingLabelList_btnMenu)
             popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
 
             popup.menu.findItem(R.id.menu_refund)?.setOnMenuItemClickListener {
-                onItemSelected(shippingLabel)
+                listener.onRefundRequested(shippingLabel)
                 true
             }
             popup.show()
