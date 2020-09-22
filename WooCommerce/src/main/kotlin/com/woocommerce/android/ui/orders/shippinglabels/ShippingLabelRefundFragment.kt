@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
@@ -30,8 +30,7 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ShippingLabelRefundViewModel
-        by navGraphViewModels(R.id.nav_graph_shipping_labels) { viewModelFactory }
+    val viewModel: ShippingLabelRefundViewModel by viewModels { viewModelFactory }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter

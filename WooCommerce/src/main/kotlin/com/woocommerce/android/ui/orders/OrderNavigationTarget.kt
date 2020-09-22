@@ -35,4 +35,5 @@ sealed class OrderNavigationTarget : Event() {
         val orderTrackingProvider: String,
         val isCustomProvider: Boolean
     ) : OrderNavigationTarget()
+    data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
 }

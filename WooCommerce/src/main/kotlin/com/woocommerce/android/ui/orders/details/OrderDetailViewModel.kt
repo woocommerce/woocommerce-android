@@ -29,6 +29,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -150,7 +151,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onPrintShippingLabelClicked(shippingLabelId: Long) {
-        // TODO: redirect to print shipping label fragment
+        order?.let { triggerEvent(PrintShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
     }
 
     fun onAddShipmentTrackingClicked() {

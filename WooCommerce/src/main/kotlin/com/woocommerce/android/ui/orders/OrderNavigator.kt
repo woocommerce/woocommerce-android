@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -50,6 +51,13 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
                         target.orderIdentifier, target.orderTrackingProvider, target.isCustomProvider
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is PrintShippingLabel -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToPrintShippingLabelFragment(
+                        target.remoteOrderId, target.shippingLabelId
                     )
                 fragment.findNavController().navigateSafely(action)
             }
