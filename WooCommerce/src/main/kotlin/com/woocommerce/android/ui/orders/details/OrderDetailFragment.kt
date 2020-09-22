@@ -10,10 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -68,6 +72,9 @@ class OrderDetailFragment : BaseFragment() {
         viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
             showOrderNotes(it)
         })
+        viewModel.orderRefunds.observe(viewLifecycleOwner, Observer {
+            showOrderRefunds(it)
+        })
         viewModel.loadOrderDetail()
     }
 
@@ -101,5 +108,30 @@ class OrderDetailFragment : BaseFragment() {
 
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
         orderDetail_noteList.updateOrderNotesView(orderNotes)
+    }
+
+    private fun showOrderRefunds(refunds: List<Refund>) {
+        // display the refunds count in the refunds section
+        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
+        if (refundsCount > 0) {
+            orderDetail_refundsInfo.show()
+            orderDetail_refundsInfo.updateRefundCount(refundsCount)
+        } else {
+            orderDetail_refundsInfo.hide()
+        }
+
+        // display refunds list in the payment info section, if available
+        val order = requireNotNull(viewModel.order)
+        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+
+        refunds.whenNotNullNorEmpty {
+            orderDetail_paymentInfo.showRefunds(order, it, formatCurrency)
+        }.otherwise {
+            orderDetail_paymentInfo.showRefundTotal(
+                show = order.isRefundAvailable,
+                refundTotal = order.refundTotal,
+                formatCurrencyForDisplay = formatCurrency
+            )
+        }
     }
 }

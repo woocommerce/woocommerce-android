@@ -201,12 +201,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 
     override fun showRefunds(order: WCOrderModel, refunds: List<Refund>) {
         // show the refund products count if at least one refunded
-        if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
-            orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
-            orderDetail_refundsInfo.show()
-        } else {
-            orderDetail_refundsInfo.hide()
-        }
+//        if (refunds.any { refund -> refund.items.sumBy { it.quantity } > 0 }) {
+//            orderDetail_refundsInfo.initView(refunds) { openRefundedProductList(order) }
+//            orderDetail_refundsInfo.show()
+//        } else {
+//            orderDetail_refundsInfo.hide()
+//        }
 
 //        if (refunds.isNotEmpty()) {
 //            orderDetail_paymentInfo.showRefunds(refunds.sortedBy { it.id })

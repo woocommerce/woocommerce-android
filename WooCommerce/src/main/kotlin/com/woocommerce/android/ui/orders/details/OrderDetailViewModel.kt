@@ -11,6 +11,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -39,11 +40,17 @@ class OrderDetailViewModel @AssistedInject constructor(
     val toolbarTitle: String
         get() = orderDetailViewState.toolbarTitle ?: ""
 
+    val order: Order?
+        get() = orderDetailViewState.order
+
     final val orderDetailViewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
     private var orderDetailViewState by orderDetailViewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
     val orderNotes: LiveData<List<OrderNote>> = _orderNotes
+
+    private val _orderRefunds = MutableLiveData<List<Refund>>()
+    val orderRefunds: LiveData<List<Refund>> = _orderRefunds
 
     override fun onCleared() {
         super.onCleared()
@@ -55,6 +62,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
                 updateOrderState(orderInDb)
                 loadOrderNotes()
+                loadOrderRefunds()
             } ?: fetchOrder()
         }
     }
@@ -73,6 +81,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             if (fetchedOrder != null) {
                 updateOrderState(fetchedOrder)
                 loadOrderNotes()
+                loadOrderRefunds()
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
@@ -101,6 +110,13 @@ class OrderDetailViewModel @AssistedInject constructor(
         // fetch order notes from the local db and hide the skeleton view
         _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
         orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
+    }
+
+    private suspend fun loadOrderRefunds() {
+        _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
+        if (networkStatus.isConnected()) {
+            _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+        }
     }
 
     @Parcelize

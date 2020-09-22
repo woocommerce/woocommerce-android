@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Item
@@ -39,6 +40,7 @@ data class Order(
     val discountCodes: String,
     val paymentMethod: String,
     val paymentMethodTitle: String,
+    val isCashPayment: Boolean,
     val pricesIncludeTax: Boolean,
     val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
@@ -52,6 +54,12 @@ data class Order(
     @IgnoredOnParcel
     val isAwaitingPayment = status == CoreOrderStatus.PENDING ||
         status == CoreOrderStatus.ON_HOLD || datePaid == null
+
+    @IgnoredOnParcel
+    val isRefundAvailable = refundTotal < total
+
+    @IgnoredOnParcel
+    val availableRefundQuantity = items.sumBy { it.quantity }
 
     @Parcelize
     data class OrderStatus(
@@ -190,6 +198,7 @@ fun WCOrderModel.toAppModel(): Order {
             this.discountCodes,
             this.paymentMethod,
             this.paymentMethodTitle,
+            CASH_PAYMENTS.contains(this.paymentMethod),
             this.pricesIncludeTax,
             this.isMultiShippingLinesAvailable(),
             this.getBillingAddress().let {
