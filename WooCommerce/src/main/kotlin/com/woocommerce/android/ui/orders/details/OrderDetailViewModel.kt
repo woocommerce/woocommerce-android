@@ -110,11 +110,11 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onEditOrderStatusSelected() {
-        order?.let { order ->
+        orderDetailViewState.orderStatus?.let { orderStatus ->
             triggerEvent(
                 ViewOrderStatusSelector(
-                currentStatus = order.status.value,
-                orderStatusList = orderDetailRepository.getOrderStatusOptions().map { it.statusKey }.toTypedArray()
+                currentStatus = orderStatus.statusKey,
+                orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
             ))
         }
     }

@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.Order
 
 /**
  * Dialog displays a list of order statuses and allows for selecting a single order status for
@@ -22,10 +23,11 @@ class OrderStatusSelectorDialog : DialogFragment() {
     }
 
     private var selectedOrderStatus: String? = null
-    private val orderStatusList: Array<String> by lazy {
+    private val orderStatusList: Array<Order.OrderStatus> by lazy {
         // remove the Refunded status from the dialog to avoid reporting problems (unless it's already Refunded)
         navArgs.orderStatusList
-            .filter { selectedOrderStatus == REFUNDED_ID || it != REFUNDED_ID }
+            .filter { selectedOrderStatus == REFUNDED_ID || it.statusKey != REFUNDED_ID }
+//            .map { it.statusKey }
             .toTypedArray()
     }
     private val navArgs: OrderStatusSelectorDialogArgs by navArgs()
@@ -37,8 +39,8 @@ class OrderStatusSelectorDialog : DialogFragment() {
         return MaterialAlertDialogBuilder(requireActivity())
             .setTitle(resources.getString(R.string.orderstatus_select_status))
             .setCancelable(true)
-            .setSingleChoiceItems(orderStatusList, selectedIndex) { _, which ->
-                selectedOrderStatus = orderStatusList[which]
+            .setSingleChoiceItems(orderStatusList.map { it.label }.toTypedArray(), selectedIndex) { _, which ->
+                selectedOrderStatus = orderStatusList[which].statusKey
                 AnalyticsTracker.track(
                     Stat.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
                     mapOf("status" to selectedOrderStatus)
@@ -66,5 +68,5 @@ class OrderStatusSelectorDialog : DialogFragment() {
     }
 
     private fun getCurrentOrderStatusIndex() =
-        orderStatusList.indexOfFirst { it == selectedOrderStatus }
+        orderStatusList.indexOfFirst { it.statusKey == selectedOrderStatus }
 }
