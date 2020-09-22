@@ -3,12 +3,25 @@
     <!--
         Overloads of Login Themes
      -->
-    <style name="LoginTheme" parent="Theme.LoginFlow"/>
+    <style name="LoginTheme" parent="Theme.LoginFlow">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimarySurface">@color/color_primary_surface</item>
+        <item name="colorPrimaryVariant">@color/color_primary_variant</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
 
-    <style name="LoginTheme.TextLabel" parent="TextAppearance.Woo.Subtitle1"/>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
 
-    <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorOnPrimarySurface">@color/color_on_primary_surface</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnError">@color/color_on_error</item>
 
-    <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
-
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="colorControlNormal">@color/color_primary</item>
+        <item name="android:colorControlActivated">@color/color_primary</item>
+    </style>
 </resources>
