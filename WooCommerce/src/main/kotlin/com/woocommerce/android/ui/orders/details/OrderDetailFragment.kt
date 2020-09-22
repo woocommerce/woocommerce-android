@@ -18,6 +18,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -25,6 +26,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment() {
@@ -33,6 +35,7 @@ class OrderDetailFragment : BaseFragment() {
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var productImageMap: ProductImageMap
 
     private val skeletonView = SkeletonView()
 
@@ -74,6 +77,9 @@ class OrderDetailFragment : BaseFragment() {
         })
         viewModel.orderRefunds.observe(viewLifecycleOwner, Observer {
             showOrderRefunds(it)
+        })
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
+            showOrderProducts(it)
         })
         viewModel.loadOrderDetail()
     }
@@ -133,5 +139,20 @@ class OrderDetailFragment : BaseFragment() {
                 formatCurrencyForDisplay = formatCurrency
             )
         }
+    }
+
+    private fun showOrderProducts(products: List<Order.Item>) {
+        products.whenNotNullNorEmpty {
+            val order = requireNotNull(viewModel.order)
+            with(orderDetail_productList) {
+                show()
+                updateProductList(
+                    orderItems = products,
+                    productImageMap = productImageMap,
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                )
+                showOrderFulfillOption(order.status == CoreOrderStatus.PROCESSING)
+            }
+        }.otherwise { orderDetail_productList.hide() }
     }
 }

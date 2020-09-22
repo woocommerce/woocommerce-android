@@ -50,7 +50,7 @@
                     android:contentDescription="@string/shipping_labels"/>
 
                 <!-- Product List -->
-                <com.woocommerce.android.ui.orders.OrderDetailProductListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
                     style="@style/Woo.Card"
                     android:visibility="gone"
