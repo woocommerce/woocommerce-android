@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
 @OpenClassOnDebug
-class ShippingLabelRefundRepository @Inject constructor(
+class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
@@ -32,5 +32,15 @@ class ShippingLabelRefundRepository @Inject constructor(
         return shippingLabelStore.getShippingLabelById(
             selectedSite.get(), orderId, shippingLabelId)
             ?.toAppModel()
+    }
+
+    suspend fun printShippingLabel(paperSize: String, shippingLabelId: Long): WooResult<String> {
+        return withContext(Dispatchers.IO) {
+            shippingLabelStore.printShippingLabel(
+                site = selectedSite.get(),
+                paperSize = paperSize,
+                remoteShippingLabelId = shippingLabelId
+            )
+        }
     }
 }

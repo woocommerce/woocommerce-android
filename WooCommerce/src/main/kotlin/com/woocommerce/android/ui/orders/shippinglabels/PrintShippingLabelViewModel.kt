@@ -10,7 +10,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 
 class PrintShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    private val repository: ShippingLabelRefundRepository,
+    private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
