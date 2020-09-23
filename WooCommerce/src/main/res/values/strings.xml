@@ -315,6 +315,7 @@
     -->
     <string name="shipping_label_print_message">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
     <string name="shipping_label_paper_size">Paper size</string>
+    <string name="shipping_label_paper_size_options_title">Choose paper size</string>
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
