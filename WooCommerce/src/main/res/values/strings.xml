@@ -319,6 +319,7 @@
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
