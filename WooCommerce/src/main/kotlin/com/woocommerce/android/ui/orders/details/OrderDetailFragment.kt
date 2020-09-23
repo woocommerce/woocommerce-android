@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -70,6 +71,10 @@ class OrderDetailFragment : BaseFragment() {
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
                 showOrderNotesSkeleton(it)
             }
+            new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
+                orderDetail_shipmentList.isVisible = it
+                orderDetail_shipmentList.showAddTrackingButton(it)
+            }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
@@ -80,6 +85,9 @@ class OrderDetailFragment : BaseFragment() {
         })
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             showOrderProducts(it)
+        })
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
+            showShipmentTrackings(it)
         })
         viewModel.loadOrderDetail()
     }
@@ -154,5 +162,11 @@ class OrderDetailFragment : BaseFragment() {
                 showOrderFulfillOption(order.status == CoreOrderStatus.PROCESSING)
             }
         }.otherwise { orderDetail_productList.hide() }
+    }
+
+    private fun showShipmentTrackings(shipmentTrackings: List<OrderShipmentTracking>) {
+        shipmentTrackings.whenNotNullNorEmpty {
+            orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings)
+        }
     }
 }

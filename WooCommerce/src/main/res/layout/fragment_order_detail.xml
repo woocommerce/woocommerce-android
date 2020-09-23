@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"/>
 
                 <!-- Shipment Tracking -->
-                <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
                     android:id="@+id/orderDetail_shipmentList"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"

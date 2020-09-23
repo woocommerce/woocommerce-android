@@ -303,12 +303,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showOrderShipmentTrackings(trackings: List<WCOrderShipmentTrackingModel>) {
-        orderDetail_shipmentList.initView(
-            trackings = trackings,
-            uiMessageResolver = uiMessageResolver,
-            isOrderDetail = true,
-            shipmentTrackingActionListener = this
-        )
         if (orderDetail_shipmentList.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
         }
@@ -572,7 +566,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
      */
     override fun undoDeletedTrackingOnError(wcOrderShipmentTrackingModel: WCOrderShipmentTrackingModel?) {
         wcOrderShipmentTrackingModel?.let {
-            orderDetail_shipmentList.undoDeleteTrackingRecord(it)
+//            orderDetail_shipmentList.undoDeleteTrackingRecord(it)
             orderDetail_shipmentList.visibility = View.VISIBLE
         }
     }
@@ -642,18 +636,18 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         }
 
         deleteOrderShipmentTrackingSet.add(item)
-        orderDetail_shipmentList.deleteTrackingProvider(item)
-        orderDetail_shipmentList.getShipmentTrackingCount()?.let {
-            if (it == 0) {
-                orderDetail_shipmentList.visibility = View.GONE
-            }
-        }
+//        orderDetail_shipmentList.deleteTrackingProvider(item)
+//        orderDetail_shipmentList.getShipmentTrackingCount()?.let {
+//            if (it == 0) {
+//                orderDetail_shipmentList.visibility = View.GONE
+//            }
+//        }
 
         // Listener for the UNDO button in the snackbar
         val actionListener = View.OnClickListener {
             // User canceled the action to delete the shipment tracking
             deleteOrderShipmentTrackingSet.remove(item)
-            orderDetail_shipmentList.undoDeleteTrackingRecord(item)
+//            orderDetail_shipmentList.undoDeleteTrackingRecord(item)
             orderDetail_shipmentList.visibility = View.VISIBLE
         }
 
