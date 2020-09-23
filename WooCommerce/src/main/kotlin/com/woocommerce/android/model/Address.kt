@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.android.parcel.Parcelize
+import java.util.Locale
 
 @Parcelize
 data class Address(
@@ -65,5 +66,10 @@ data class Address(
         if (address.isNotBlank()) fullAddr += "$address\n"
         if (country.isNotBlank()) fullAddr += country
         return fullAddr
+    }
+
+    fun getCountryLabelByCountryCode(): String {
+        val locale = Locale(Locale.getDefault().language, country)
+        return locale.displayCountry
     }
 }

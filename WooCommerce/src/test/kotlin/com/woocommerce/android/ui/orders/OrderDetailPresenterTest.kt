@@ -525,7 +525,6 @@ class OrderDetailPresenterTest {
 
         verify(orderDetailView, times(1)).showOrderDetail(order, true)
         verify(orderDetailView, times(1)).showRefunds(order, orderDetailUiItem.refunds)
-        verify(orderDetailView, times(1)).showShippingLabels(order, orderDetailUiItem.shippingLabels)
         verify(orderDetailView, times(1)).showProductList(
             order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels
         )

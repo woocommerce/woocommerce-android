@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -39,6 +41,7 @@ class OrderDetailRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
+    private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -117,6 +120,12 @@ class OrderDetailRepository @Inject constructor(
         }.model?.map { it.toAppModel() } ?: emptyList()
     }
 
+    suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
+        return withContext(Dispatchers.IO) {
+            shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+        }.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
     fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
 
     fun getOrderStatus(key: String): OrderStatus {
@@ -140,6 +149,9 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderShipmentTrackings(localOrderId: Int) =
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
+
+    fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
+        .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId).map { it.toAppModel() }
 
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)

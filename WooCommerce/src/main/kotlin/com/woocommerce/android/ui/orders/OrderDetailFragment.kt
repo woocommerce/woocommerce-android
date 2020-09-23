@@ -18,13 +18,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -216,27 +214,27 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
-        orderDetail_shippingLabelList.initView(
-            order.toAppModel(),
-            shippingLabels,
-            productImageMap,
-            currencyFormatter.buildBigDecimalFormatter(order.currency),
-            this
-        )
+//        orderDetail_shippingLabelList.initView(
+//            order.toAppModel(),
+//            shippingLabels,
+//            productImageMap,
+//            currencyFormatter.buildBigDecimalFormatter(order.currency),
+//            this
+//        )
     }
 
     override fun showProductList(order: WCOrderModel, refunds: List<Refund>, shippingLabels: List<ShippingLabel>) {
         // populate the Order Product List Card if not all products are associated with any of the shipping labels
         // available or if there is at least 1 product that is not refunded
-        val orderModel = order.toAppModel()
-        val hasUnpackagedProducts = orderModel.hasUnpackagedProducts(shippingLabels)
-        if (hasUnpackagedProducts && orderModel.hasNonRefundedItems(refunds)) {
-            val unpackagedAndNonRefundedProducts =
-                orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels)
-
-            val listTitle = if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
-                getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
-            } else null
+//        val orderModel = order.toAppModel()
+//        val hasUnpackagedProducts = orderModel.hasUnpackagedProducts(shippingLabels)
+//        if (hasUnpackagedProducts && orderModel.hasNonRefundedItems(refunds)) {
+//            val unpackagedAndNonRefundedProducts =
+//                orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels)
+//
+//            val listTitle = if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
+//                getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+//            } else null
 
 //            orderDetail_productList.initView(
 //                orderModel = order,
@@ -249,9 +247,9 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
 //                listTitle = listTitle
 //            )
             orderDetail_productList.show()
-        } else {
-            orderDetail_productList.hide()
-        }
+//        } else {
+//            orderDetail_productList.hide()
+//        }
     }
 
     override fun showOrderDetail(order: WCOrderModel?, isFreshData: Boolean) {

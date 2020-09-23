@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.math.RoundingMode.HALF_UP
 import java.util.Date
 
 @Parcelize
@@ -82,72 +81,6 @@ data class Order(
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
-    }
-
-    /*
-     * Calculates the max quantity for each item by subtracting the number of already-refunded items
-     */
-    fun getMaxRefundQuantities(
-        refunds: List<Refund>,
-        unpackagedOrderItems: List<Item> = this.items
-    ): Map<Long, Int> {
-        val map = mutableMapOf<Long, Int>()
-        val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
-        unpackagedOrderItems.map { item ->
-            map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
-        }
-        return map
-    }
-
-    fun hasNonRefundedItems(refunds: List<Refund>): Boolean = getMaxRefundQuantities(refunds).values.any { it > 0 }
-
-    fun hasUnpackagedProducts(shippingLabels: List<ShippingLabel>): Boolean {
-        val productNames = mutableSetOf<String>()
-        shippingLabels.map { productNames.addAll(it.productNames) }
-        return this.items.size != productNames.size
-    }
-
-    /**
-     * Returns products from an order that is not associated with any shipping labels
-     * AND is also not refunded
-     */
-    fun getUnpackagedAndNonRefundedProducts(
-        refunds: List<Refund>,
-        shippingLabels: List<ShippingLabel>
-    ): List<Item> {
-        val productNames = mutableSetOf<String>()
-        shippingLabels.map { productNames.addAll(it.productNames) }
-
-        val unpackagedProducts = this.items.filter { !productNames.contains(it.name) }
-        return getNonRefundedProducts(refunds, unpackagedProducts)
-    }
-
-    /**
-     * Returns products that are not refunded in an order
-     * @param [refunds] List of refunds for the order
-     * @param [unpackagedProducts] list of products not associated with any shipping labels.
-     * This is left null, in cases where we only want to fetch non refunded products from an order.
-     */
-    fun getNonRefundedProducts(
-        refunds: List<Refund>,
-        unpackagedProducts: List<Item> = this.items
-    ): List<Item> {
-        val leftoverProducts = getMaxRefundQuantities(refunds, unpackagedProducts).filter { it.value > 0 }
-        val filteredItems = unpackagedProducts.filter { leftoverProducts.contains(it.uniqueId) }
-            .map {
-                val newQuantity = leftoverProducts[it.uniqueId]
-                val quantity = it.quantity.toBigDecimal()
-                val totalTax = if (quantity > BigDecimal.ZERO) {
-                    it.totalTax.divide(quantity, 2, HALF_UP)
-                } else BigDecimal.ZERO
-
-                it.copy(
-                    quantity = newQuantity ?: error("Missing product"),
-                    total = it.price.times(newQuantity.toBigDecimal()),
-                    totalTax = totalTax
-                )
-            }
-        return filteredItems
     }
 
     fun getBillingName(defaultValue: String): String {

@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -89,7 +90,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
         // Populate the Order Product List Card
         orderFulfill_products.initView(
                 orderModel = order,
-                orderItems = order.toAppModel().getNonRefundedProducts(refunds),
+                orderItems = refunds.getNonRefundedProducts(order.toAppModel().items),
                 productImageMap = productImageMap,
                 expanded = true,
                 formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
