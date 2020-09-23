@@ -23,6 +23,9 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="colorControlNormal">@color/color_primary</item>
         <item name="android:colorControlActivated">@color/color_primary</item>
+
+        <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
     </style>
 
     <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
