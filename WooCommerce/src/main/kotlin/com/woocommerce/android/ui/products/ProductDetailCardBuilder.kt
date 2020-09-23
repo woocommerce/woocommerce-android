@@ -147,6 +147,8 @@ class ProductDetailCardBuilder(
                 product.productType(),
                 product.productReviews(),
                 product.variations(),
+                product.inventory(),
+                product.shipping(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription()
