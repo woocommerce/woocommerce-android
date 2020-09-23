@@ -117,10 +117,11 @@
     <string name="at_username">\@%s</string>
     <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
-    <string name="login">Log in</string>
+    <string name="login_wpcom">Continue with WordPress.com</string>
+    <string name="login_store_address">Enter your store address</string>
     <string name="login_prologue_banner">Manage orders, track sales, and monitor store activity with real-time alerts.</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
-    <string name="login_pick_store">Pick store</string>
+    <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
@@ -131,7 +132,7 @@
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
-    <string name="login_try_another_account">Try another account</string>
+    <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
@@ -141,8 +142,8 @@
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
     <string name="login_refresh_app_progress_jetpack">Attempting to login with Jetpack…</string>
     <string name="login_view_connected_stores">View connected stores</string>
-    <string name="login_jetpack_required_msg">To use the WooCommerce app you’ll need to set up the Jetpack plugin on your site</string>
-    <string name="login_jetpack_view_instructions">View instructions</string>
+    <string name="login_jetpack_required_text">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
+    <string name="login_jetpack_view_instructions">Learn how to install and connect Jetpack</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -549,7 +550,7 @@
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
     <string name="product_detail_update_product_password_error">Error updating password</string>
-    <string name="product_detail_title_hint">Product title</string>
+    <string name="product_detail_title_hint">Enter Product Title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
     <string name="product_detail_product_type_hint">%1$s product</string>
     <string name="product_detail_add_more">Add more details</string>
@@ -634,11 +635,15 @@
     <string name="variation_detail_update_product_success">Variation updated</string>
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
+    <string name="variation_detail_image_add">Add a variation image</string>
+
     <!--
         Product images
     -->
     <string name="product_images_title">Photos</string>
     <string name="product_add_photos">Add photos</string>
+    <string name="product_add_photo">Add photo</string>
+    <string name="product_replace_photo">Replace photo</string>
     <string name="product_remove_photo">Remove photo</string>
     <string name="product_image_add">Add a product image</string>
     <string name="product_image_error_removing">Error removing product image</string>
@@ -655,6 +660,7 @@
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
+    <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
 
     <!--
         Empty list messages
@@ -781,13 +787,13 @@
     <string name="enter_username_instead">Log in with your username.</string>
     <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
-    <string name="login_text_otp">Text me a code instead.</string>
-    <string name="login_text_otp_another">Text me another code instead.</string>
+    
+    
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
-    <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
-    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    
+    
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
@@ -795,8 +801,8 @@
     <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
-    <string name="connect_more">Connect Another Site</string>
-    <string name="connect_site">Connect Site</string>
+    
+    
     <string name="login_continue">Continue</string>
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
@@ -828,12 +834,26 @@
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
-    <string name="signup_magic_link_message">We sent you a magic signup link! Check your email on this device, and tap the link in the email to finish signing up.</string>
+    
     <string name="signup_magic_link_progress">Sending email</string>
     <string name="signup_terms_of_service_text">By signing up, you agree to our %1$sTerms of Service%2$s.</string>
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
+    
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
+    <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
+    <string name="send_verification_email">Send verification email</string>
+    <string name="username">Username</string>
+    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
+    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
+    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
+    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
+    <string name="sign_up">Sign Up for WordPress.com</string>
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
@@ -929,6 +949,25 @@
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
+    
+    <!-- New Product bottom sheet -->
+    <string name="product_add_type_list_header">@string/product_type_list_header</string>
+    <string name="product_add_type_simple">Simple product</string>
+    <string name="product_add_type_variable">Variable product</string>
+    <string name="product_add_type_grouped">Grouped product</string>
+    <string name="product_add_type_external">External product</string>
+    <string name="product_add_type_simple_desc">A unique item to sell</string>
+    <string name="product_add_type_variable_desc">A product with variations like color or size</string>
+    <string name="product_add_type_grouped_desc">@string/product_type_grouped_desc</string>
+    <string name="product_add_type_external_desc">@string/product_type_external_desc</string>
+
+    <!-- New Product screen -->
+    <string name="product_add_tool_bar_title">New Product</string>
+    <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
+    <string name="product_publish_dialog_title">Publishing product</string>
+    <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
+    <string name="product_detail_publish_product_error">Error publishing product</string>
+    <string name="product_detail_publish_product_success">Product published</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
@@ -942,6 +981,7 @@
     <string name="feedback_completed_description">Keep in mind that this is not a support ticket and we won\'t be able to address individual feedback.\n\nNeed some help? %1$s</string>
     <string name="feedback_completed_contact_us">Contact us here</string>
     <string name="feedback_completed_back_to_store_button_text">Back to store</string>
+    <string name="feedback_product_give_feedback_button_text">Give Feedback</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
@@ -1247,18 +1287,35 @@
     <!-- Z -->
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
+    <string name="send_link_by_email">Send link by email</string>
+    <string name="create_account">Create account</string>
+    <string name="or_type_your_password">Or type your password</string>
     <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
-    <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
-    <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
-    <string name="send_verification_email">Send verification email</string>
-    <string name="username">Username</string>
-    <string name="enter_credentials_for_site">Log in with your %1$s site credentials</string>
-    <string name="enter_site_credentials_instead">Log in with site credentials.</string>
-    <string name="login_site_credentials_magic_link_label">Almost there! We just need to verify your Jetpack connected email address &lt;b&gt;%1$s&lt;/b&gt;</string>
-    <string name="login_discovery_error_xmlrpc">We were unable to access the &lt;b&gt;XMLRPC file&lt;/b&gt; on your site. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_http_auth">We were unable to access your site because it requires &lt;b&gt;HTTP Authentication&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_ssl">We were unable to access your site because of a problem with the &lt;b&gt;SSL Certificate&lt;/b&gt;. You will need to reach out to your host to resolve this.</string>
-    <string name="login_discovery_error_generic">We were unable to access your site. You will need to reach out to your host to resolve this.</string>
-    <string name="sign_up">Sign Up for WordPress.com</string>
+    <string name="enter_email_to_continue_wordpress_com">Enter your email address to log in or create a WordPress.com account.</string>
+    <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
+    <string name="get_started">Get Started</string>
+    <string name="check_email">Check email</string>
+    <string name="login_text_otp">Text me a code instead</string>
+    <string name="login_text_otp_another">Text me another code instead</string>
+    <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed.</string>
+    <string name="login_magic_links_sent_label">Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    <string name="magic_link_not_seeing_email_message">Not seeing the email? Check your Spam or Junk Mail folder.</string>
+    <string name="connect_more">Connect another site</string>
+    <string name="connect_site">Connect a site</string>
+    <string name="login_done">Done</string>
+    <string name="login_find_your_site_adress">Find your site address</string>
+    <string name="login_find_your_connected_email">Find your connected email</string>
+    <string name="continue_google_button_suffix">Continue with Google</string>
+    <string name="continue_site_credentials">Continue with store credentials</string>
+    <string name="login_or">or</string>
+    <string name="sign_up_label">Sign Up</string>
+    <string name="signup_magic_link_message">We’ve emailed you a magic link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
+    <string name="signup_confirmation_message">We’ll use this email address to create your new WordPress.com account.</string>
+    <string name="signup_confirmation_magic_link_message">We’ll email you a magic link to create your new WordPress.com account.</string>
+    <string name="continue_terms_of_service_text">By continuing, you agree to our %1$sTerms of Service%2$s.</string>
+    <string name="continue_with_google_terms_of_service_text">If you continue with Google and don\'t already have a WordPress.com account, you are creating an account and you agree to our %1$sTerms of Service%2$s.</string>
+    <string name="continue_with_wpcom">Continue with WordPress.com</string>
+    <string name="enter_your_site_address">Enter your site address</string>
+    <string name="reset_your_password">Reset your password</string>
+    <string name="signup_confirmation_title">Signup confirmation</string>
 </resources>
