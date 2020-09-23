@@ -1,3 +1,3 @@
-* Implemented new login flow complete with new screen designs! #2851
-* Orders by order status screen now displays actual order count instead of max 99. #2853
+- Login: We implemented a new login flow with new screen designs.
+- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
 
