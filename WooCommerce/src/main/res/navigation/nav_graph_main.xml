@@ -271,7 +271,7 @@
         android:id="@+id/printShippingLabelFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment"
         android:label="PrintShippingLabelFragment"
-        tools:layout="@layout/fragment_shipping_label_print">
+        tools:layout="@layout/fragment_print_shipping_label">
         <argument
             android:name="orderId"
             android:defaultValue="0L"

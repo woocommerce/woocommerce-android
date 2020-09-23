@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:padding="@dimen/major_75">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelPrint_disclaimer"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/major_75"
+        android:text="@string/shipping_label_print_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+        android:id="@+id/shippingLabelPrint_paperSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:hint="@string/shipping_label_paper_size"
+        android:text="@string/shipping_label_paper_size_legal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_disclaimer" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/shippingLabelPrint_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:text="@string/shipping_label_print_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
+
+    <ImageView
+        android:id="@+id/shippingLabelPrint_pagesIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:contentDescription="@string/shipping_label_paper_size_options_info"
+        android:src="@drawable/ic_gridicons_pages"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_btn" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelPrint_pagesInfo"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_paper_size_options_info"
+        app:layout_constraintStart_toEndOf="@id/shippingLabelPrint_pagesIcon"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_btn" />
+
+    <ImageView
+        android:id="@+id/shippingLabelPrint_infoIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:contentDescription="@string/shipping_label_print_info"
+        android:src="@drawable/ic_info_outline_24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pagesIcon" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelPrint_info"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_print_info"
+        app:layout_constraintStart_toEndOf="@id/shippingLabelPrint_infoIcon"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pagesIcon" />
+</androidx.constraintlayout.widget.ConstraintLayout>
