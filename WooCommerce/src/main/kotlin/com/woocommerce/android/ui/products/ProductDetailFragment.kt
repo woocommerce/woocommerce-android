@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -23,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -52,6 +52,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         private const val KEY_IS_CONFIRMING_TRASH = "is_confirming_trash"
+
+        const val KEY_PRODUCT_DETAIL_RESULT = "product_detail_result"
+        const val KEY_PRODUCT_DETAIL_DID_TRASH = "product_detail_did_trash"
+        const val KEY_REMOTE_PRODUCT_ID = "remote_product_id"
     }
 
     private var productName = ""
@@ -257,6 +261,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.findItem(R.id.menu_product_settings).isVisible = true
         menu.findItem(R.id.menu_trash_product).isVisible = !viewModel.isAddFlow
 
+        // TODO: we should show the trash menu item only when product detail is shown from the product list
+
         when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
             else -> Unit
@@ -338,7 +344,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             requireActivity(),
             posBtnAction = DialogInterface.OnClickListener { _, _ ->
                 isConfirmingTrash = false
-                findNavController().navigateUp()
+                navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
+                    it.putLong(KEY_REMOTE_PRODUCT_ID, viewModel.getRemoteProductId())
+                    it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                })
             },
             negBtnAction = DialogInterface.OnClickListener { _, _ ->
                 isConfirmingTrash = false

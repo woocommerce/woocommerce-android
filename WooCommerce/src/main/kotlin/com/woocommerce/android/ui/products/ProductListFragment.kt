@@ -23,6 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -140,6 +141,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -318,6 +320,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers(viewModel: ProductListViewModel) {
+        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
+            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
+                // TODO
+            }
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.products)
