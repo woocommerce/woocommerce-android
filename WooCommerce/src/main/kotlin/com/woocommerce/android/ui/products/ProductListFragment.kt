@@ -33,6 +33,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -51,6 +52,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
@@ -343,12 +345,20 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showTrashSnackbar(remoteProductId: Long) {
-        // TODO remove the product from the list
+        val product = viewModel.getProduct(remoteProductId)
+        if (product == null) {
+            ToastUtils.showToast(requireActivity(), R.string.product_detail_fetch_product_error)
+            return
+        }
+
+        // first remove it from the db only
+        viewModel.removeProductFromDb(remoteProductId)
 
         var trashProductCancelled = false
         val actionListener = View.OnClickListener {
+            // restore the product
+            viewModel.addProductToDb(product.toAppModel())
             trashProductCancelled = true
-            // TODO restoreTrashedProduct()
         }
 
         val callback = object : Snackbar.Callback() {

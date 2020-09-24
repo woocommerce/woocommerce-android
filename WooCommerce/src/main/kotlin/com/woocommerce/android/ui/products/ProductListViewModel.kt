@@ -30,11 +30,11 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
 class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -290,6 +290,20 @@ class ProductListViewModel @AssistedInject constructor(
             DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
             TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
             TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+        }
+    }
+
+    fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
+
+    fun removeProductFromDb(remoteProductId: Long) {
+        if (productRepository.removeProductFromDb(remoteProductId)) {
+            _productList.value = productRepository.getProductList(productFilterOptions)
+        }
+    }
+
+    fun addProductToDb(product: Product) {
+        if (productRepository.addProductToDb(product)) {
+            _productList.value = productRepository.getProductList(productFilterOptions)
         }
     }
 
