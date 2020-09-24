@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -79,6 +80,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
+    private var trashProductUndoSnack: Snackbar? = null
+
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
 
@@ -137,11 +140,16 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        trashProductUndoSnack?.dismiss()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
-        setupResultHandlers(viewModel)
+        setupResultHandlers()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -149,6 +157,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         if (hidden) {
             disableSearchListeners()
+            trashProductUndoSnack?.dismiss()
         } else {
             enableSearchListeners()
         }
@@ -322,12 +331,42 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         })
     }
 
-    private fun setupResultHandlers(viewModel: ProductListViewModel) {
+    private fun setupResultHandlers() {
         handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
             if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
-                // TODO
+                // User chose to trash from product detail, but we do the actual trashing here
+                // so we can show a snackbar enabling the user to undo the trashing.
+                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
+                showTrashSnackbar(remoteProductId)
             }
         }
+    }
+
+    private fun showTrashSnackbar(remoteProductId: Long) {
+        // TODO remove the product from the list
+
+        var trashProductCancelled = false
+        val actionListener = View.OnClickListener {
+            trashProductCancelled = true
+            // TODO restoreTrashedProduct()
+        }
+
+        val callback = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (!trashProductCancelled) {
+                    // TODO viewModel.trashProduct(remoteProductId)
+                }
+            }
+        }
+
+        trashProductUndoSnack = uiMessageResolver.getUndoSnack(
+            R.string.product_trash_undo_snackbar_message,
+            actionListener = actionListener)
+            .also {
+                it.addCallback(callback)
+                it.show()
+            }
     }
 
     override fun getFragmentTitle() = getString(R.string.products)

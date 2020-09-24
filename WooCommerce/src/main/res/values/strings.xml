@@ -564,6 +564,7 @@
     <string name="product_trash">Trash product</string>
     <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
     <string name="product_trash_yes">Move to trash</string>
+    <string name="product_trash_undo_snackbar_message">Product moved to trash</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
