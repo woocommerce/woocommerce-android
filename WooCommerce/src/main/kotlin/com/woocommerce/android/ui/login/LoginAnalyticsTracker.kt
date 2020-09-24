@@ -315,4 +315,16 @@ class LoginAnalyticsTracker(
     override fun siteAddressFormScreenResumed() {
         unifiedLoginTracker.setStep(Step.START)
     }
+
+    override fun magicLinkRequestScreenResumed() {
+        unifiedLoginTracker.setStep(Step.START)
+    }
+
+    override fun magicLinkSentScreenResumed() {
+        unifiedLoginTracker.setStep(Step.MAGIC_LINK_REQUESTED)
+    }
+
+    override fun usernamePasswordScreenResumed() {
+        unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
+    }
 }
