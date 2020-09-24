@@ -562,6 +562,8 @@
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
     <string name="product_trash">Trash product</string>
+    <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
+    <string name="product_trash_yes">Move to trash</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
@@ -662,6 +664,7 @@
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
+
 
     <!--
         Empty list messages
