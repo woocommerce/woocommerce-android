@@ -365,7 +365,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                 super.onDismissed(transientBottomBar, event)
                 if (!trashProductCancelled) {
-                    // TODO viewModel.trashProduct(remoteProductId)
+                    viewModel.trashProduct(remoteProductId)
                 }
             }
         }

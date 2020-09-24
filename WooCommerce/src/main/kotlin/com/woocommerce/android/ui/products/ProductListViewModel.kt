@@ -297,13 +297,19 @@ class ProductListViewModel @AssistedInject constructor(
 
     fun removeProductFromDb(remoteProductId: Long) {
         if (productRepository.removeProductFromDb(remoteProductId)) {
-            _productList.value = productRepository.getProductList(productFilterOptions)
+            reloadProductsFromDb()
         }
     }
 
     fun addProductToDb(product: Product) {
         if (productRepository.addProductToDb(product)) {
-            _productList.value = productRepository.getProductList(productFilterOptions)
+            reloadProductsFromDb()
+        }
+    }
+
+    fun trashProduct(remoteProductId: Long) {
+        launch {
+            productRepository.trashProduct(remoteProductId)
         }
     }
 
