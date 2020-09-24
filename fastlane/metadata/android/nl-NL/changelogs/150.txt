@@ -1,5 +1,0 @@
-4.9:
-- Tik op de nieuwe knop Feedback verzenden om je ideeën en suggesties met ons te delen via een CrowdSignal-enquête.
-- Bewerk productvariaties zoals prijs, beschrijving, voorraad, zichtbaarheid en verzending.
-- Experimenteer met nieuwe functies in het gedeelte Producten! Ga naar Instellingen om ze in te schakelen.
-

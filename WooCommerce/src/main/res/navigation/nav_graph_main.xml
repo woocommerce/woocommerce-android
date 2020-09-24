@@ -33,7 +33,11 @@
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
-        android:label="FeedbackCompletedFragment"/>
+        android:label="FeedbackCompletedFragment">
+        <argument
+            android:name="surveyType"
+            app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+    </fragment>
 
     <fragment
         android:id="@+id/orderDetailFragment"
@@ -175,6 +179,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
     <action
         android:id="@+id/action_global_productFilterListFragment"
@@ -238,4 +246,16 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
+    <action
+        android:id="@+id/action_global_productTypeBottomSheetFragment"
+        app:destination="@id/nav_graph_product_type_bottom_sheet"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </action>
 </navigation>

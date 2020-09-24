@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -39,7 +40,8 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -178,7 +180,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false
+                        displaySortAndFilterCard = false,
+                        isAddProductButtonVisible = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -205,7 +208,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = !showSkeleton
+                        displaySortAndFilterCard = !showSkeleton,
+                        isAddProductButtonVisible = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }
@@ -271,7 +275,8 @@ class ProductListViewModel @AssistedInject constructor(
                 isSkeletonShown = false,
                 isLoading = false,
                 isLoadingMore = false,
-                isRefreshing = false
+                isRefreshing = false,
+                isAddProductButtonVisible = true
         )
 
         if (scrollToTop) {
@@ -287,6 +292,8 @@ class ProductListViewModel @AssistedInject constructor(
             TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
         }
     }
+
+    fun isShowProductTypeBottomSheet() = prefs.getSelectedProductType().isEmpty()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -315,7 +322,8 @@ class ProductListViewModel @AssistedInject constructor(
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
-        val displaySortAndFilterCard: Boolean? = null
+        val displaySortAndFilterCard: Boolean? = null,
+        val isAddProductButtonVisible: Boolean? = null
     ) : Parcelable
 
     sealed class ProductListEvent : Event() {

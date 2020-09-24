@@ -14,9 +14,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_CANCELED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GENERAL_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_OPENED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SURVEY_SCREEN
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_licenses.webView
+import kotlinx.android.synthetic.main.fragment_licenses.*
 
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     companion object {
@@ -26,8 +34,13 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     private var progressDialog: CustomProgressDialog? = null
+    private var surveyCompleted: Boolean = false
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
+    private val feedbackContext by lazy {
+        if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
+        else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -45,6 +58,12 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        AnalyticsTracker.track(
+            SURVEY_SCREEN, mapOf(
+            KEY_FEEDBACK_CONTEXT to feedbackContext,
+            KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
+        )
+        )
 
         activity?.let {
             it.invalidateOptionsMenu()
@@ -62,12 +81,26 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        webView.restoreState(savedInstanceState)
+        savedInstanceState?.let {
+            webView.restoreState(it)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         webView.saveState(outState)
+    }
+
+    override fun onDestroy() {
+        if (surveyCompleted.not()) {
+            AnalyticsTracker.track(
+                SURVEY_SCREEN, mapOf(
+                KEY_FEEDBACK_CONTEXT to feedbackContext,
+                KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_CANCELED
+            )
+            )
+        }
+        super.onDestroy()
     }
 
     private fun showProgressDialog() {
@@ -89,15 +122,20 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         webViewClient = surveyWebViewClient
     }
 
+    /**
+     * We use this dismissAllowingStateLoss for dialog dismissal to avoid any kind of commit operation
+     * from the [FragmentManager] after the `onSaveInstanceState` is called
+     */
     private fun hideProgressDialog() {
-        progressDialog?.dismiss()
+        progressDialog?.dismissAllowingStateLoss()
         progressDialog = null
     }
 
     private fun completeSurvey() {
-        FeedbackSurveyFragmentDirections.actionFeedbackSurveyFragmentToFeedbackCompletedFragment().apply {
-            findNavController().navigateSafely(this)
-        }
+        surveyCompleted = true
+        FeedbackSurveyFragmentDirections
+            .actionFeedbackSurveyFragmentToFeedbackCompletedFragment(arguments.surveyType)
+            .apply { findNavController().navigateSafely(this) }
     }
 
     private inner class SurveyWebViewClient : WebViewClient() {

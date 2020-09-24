@@ -1,2 +1,3 @@
-We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
- 
+- Login: We implemented a new login flow with new screen designs.
+- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
+

@@ -174,8 +174,10 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
     }
 
     @Override public void onDestroyView() {
-        super.onDestroyView();
         mLoginSiteAddressValidator.dispose();
+        mSiteAddressInput = null;
+
+        super.onDestroyView();
     }
 
     protected void discover() {

@@ -1,105 +1,80 @@
 <ar>
-4.9:
-- انقر على زر "إرسال الملاحظات" الجديد لإرسال أفكارك واقتراحاتك إلينا في استطلاع رأي CrowdSignal.
-- حرِّر تباينات المنتجات كالسعر والوصف والمخزون والرؤية والشحن.
-- جرِّب الميزات الجديدة في قسم المنتجات! انتقل إلى الإعدادات لتمكينها.
+5.0:
+أصلحنا الأعطال التي حدثت عند اختيار صورة المنتج، وعند التبديل بين القوالب الفاتحة والداكنة على الأجهزة التي تعمل بإصدارات قديمة من نظام التشغيل Android.
 
 </ar>
 <de-DE>
-4.9:
-- Tippe in einer CrowdSignal-Umfrage auf den neuen Button „Feedback senden“, um deine Ideen und Vorschläge an uns zu senden.
-- Bearbeite Produktvarianten wie Preis, Beschreibung, Bestand, Sichtbarkeit und Versand.
-- Experimentiere mit neuen Funktionen im Abschnitt „Produkte“! Navigiere zu „Einstellungen“, um sie zu aktivieren.
+5.0:
+Die Abstürze wurden behoben, die bei der Auswahl eines Produktbildes sowie beim Wechsel zwischen hellen und dunklen Themes auf älteren Android-Geräten auftraten.
 
 </de-DE>
+<es-ES>
+5.0:
+Hemos corregido los errores que se producían al elegir la imagen de un producto, y al cambiar entre el tema claro y oscuro en las versiones más antiguas de Android.
+
+</es-ES>
 <fr-FR>
-4.9 :
-- Appuyez sur le nouveau bouton Envoyer un commentaire pour nous envoyer vos idées et suggestions dans une étude CrowdSignal.
-- Modifiez les variantes du produit, comme le prix, la description, le stock, la visibilité et la livraison.
-- Testez les nouvelles fonctionnalités dans la section Produits ! Allez dans Réglages pour les activer.
+5.0 :
+nous avons résolu les incidents qui se présentaient lors du choix d'une image de produit et lors du basculement entre les thèmes clair et sombre sur d'anciennes versions d'Android.
 
 </fr-FR>
 <iw-IL>
-4.9:
- - ניתן להקיש על הכפתור החדש 'לשלוח משוב' כדי לשלוח לנו רעיונות והצעות באמצעות סקר של CrowdSignal.
-- ניתן לערוך פרטים של סוגי מוצר, כגון מחיר, תיאור, מלאי, נראות ומשלוח.
-- אפשר להתנסות בתכונות חדשות במקטע המוצרים! יש לעבור ל'הגדרות' כדי להפעיל אותן.
+5.0:
+תיקנו את הקריסות שהתרחשו כאשר בוחרים תמונת מוצר וכאשר מחליפים בין ערכת עיצוב בהירה לכהה בגרסאות ישנות יותר של Android.
 
 </iw-IL>
 <id>
-4.9:
-- Ketuk tombol Kirim Masukan untuk mengirim ide dan saran Anda kepada kami di survei CrowdSignal.
-- Sunting variasi produk seperti harga, deskripsi, persediaan, visibilitas, dan pengiriman.
-- Bereksperimen dengan fitur baru di bagian Produk! Buka Pengaturan untuk mengaktifkannya.
+5.0:
+Kami telah memperbaiki crash yang terjadi saat memilih gambar produk dan saat beralih antara tema terang dan gelap pada versi Android yang lebih lama.
 
 </id>
 <it-IT>
-4.9:
-- Tocca il nuovo pulsante Invia feedback per inviarci le tue idee e i tuoi suggerimenti mediante un'indagine CrowdSignal.
-- Modifica le varianti di prodotto come prezzo, descrizione, inventario, visibilità e spedizione.
-- Prova le nuove funzionalità nella sezione Prodotti. Vai alle Impostazioni per abilitarle.
+5.0:
+Abbiamo corretto arresti anomali che avvenivano quando si sceglieva un'immagine del prodotto e si passava tra temi chiari e scuri su vecchi dispositivi Android.
 
 </it-IT>
 <ja-JP>
-4.9:
-- 新しい「意見を送る」ボタンをタップし、CrowdSignal のアンケートでご意見やご提案をお寄せください。
-- 価格、説明、在庫、公開状態、配送などの商品のバリエーションを編集します。
--「商品」セクションの新しい機能をお試しください ! 有効にするには「設定」に移動します。
+5.0:
+ 商品画像を選択するときと、Android の古いバージョンでライトとダークのテーマを切り替えるときに発生していたクラッシュを修正しました。
 
 </ja-JP>
 <ko-KR>
-4.9:
-- CrowdSignal 설문 조사에서 새롭게 추가된 '피드백 보내기' 버튼을 탭하여 저희에게 아이디어와 의견을 제출해주세요.
-- 가격, 설명, 재고, 가시성, 배송과 같은 제품 선택사항을 편집하세요.
-- '제품' 섹션에서 기능을 사용해보세요! 기능을 활성화하려면 '설정'으로 이동하세요.
+5.0:
+제품 이미지를 선택할 때와 Android 구버전에서 라이트 테마와 다크 테마를 전환할 때 발생하던 비정상 종료 문제를 해결했습니다.
 
 </ko-KR>
 <nl-NL>
-4.9:
-- Tik op de nieuwe knop Feedback verzenden om je ideeën en suggesties met ons te delen via een CrowdSignal-enquête.
-- Bewerk productvariaties zoals prijs, beschrijving, voorraad, zichtbaarheid en verzending.
-- Experimenteer met nieuwe functies in het gedeelte Producten! Ga naar Instellingen om ze in te schakelen.
+5.0:
+We hebben crashes opgelost die zich voordeden wanneer een productafbeelding werd gekozen, en wanneer tussen lichte en donkere thema's werd overgeschakeld op oudere Androids.
 
 </nl-NL>
+<pt-BR>
+5.0:
+Corrigimos as falhas que ocorriam ao escolher uma imagem de produto e ao alternar entre os temas claro e escuro em versões mais antigas do Android.
+
+</pt-BR>
 <ru-RU>
-4,9:
-- Нажмите кнопку «Отправить отзыв», чтобы поделиться идеями и предложениями в опросе CrowdSignal.
-- Вы можете редактировать такие параметры товара, как цена, описание, наличие на складе, видимость и доставка.
-- Испытайте новые возможности в разделе «Товары»! Чтобы включить их, перейдите в раздел «Настройки».
+5.0:
+Устранены сбои, происходящие при выборе изображения товара и при переключении со светлой темы на темную в старых версиях Android.
 
 </ru-RU>
 <sv-SE>
-4.9:
-- Tryck på den nya knappen Skicka feedback för att skicka dina idéer och förslag till oss i en CrowdSignal-undersökning.
-- Redigera produktvariationer som pris, beskrivning, lager, synlighet och frakt.
-- Experimentera med nya funktioner i avsnittet Produkter! Gå till Inställningar för att aktivera dem.
+5.0:
+Vi har åtgärdat de krascher som inträffade vid val av produktbild samt vid byte mellan ljusa och mörka teman på äldre Android-telefoner.
 
 </sv-SE>
-<tr-TR>
-4.9:
-- Bir CrowdSignal anketiyle fikirlerinizi ve önerilerinizi bize göndermek için yeni Geri Bildirim Gönder düğmesine dokunun.
-- Fiyat, açıklama, stok, görünürlük ve gönderim gibi ürün varyasyonlarını düzenleyin.
-- Ürünler bölümünde yeni özelliklerle denemeler yapın. Bunları etkinleştirmek için Ayarlar'a gidin.
-
-</tr-TR>
 <zh-CN>
-4.9：
-- 轻点新的“发送反馈”按钮，以在 CrowdSignal 调查中向我们提交您的想法和建议。
-- 编辑产品变体，如价格、描述、库存、可见性和配送。
-- 尝试“产品”部分中的新功能！ 转到“设置”以启用这些功能。
+5.0：
+我们修复了在选择产品图片以及在较旧的 Android 上切换浅色和深色主题时出现的崩溃问题。
 
 </zh-CN>
 <zh-TW>
-4.9：
-- 點選新的「傳送意見回饋」按鈕，即可透過 CrowdSignal 調查傳送想法與建議給我們。
-- 編輯商品變化項目資訊，例如價格、說明、庫存、可見度和貨運資訊。
-- 體驗「商品」區段的新功能！ 前往「設定」即可啟用這些功能。
+5.0：
+我們已修復選擇商品圖片及使用較舊 Android 版本切換淺色及深色佈景主題時，會造成當機的問題。
 
 </zh-TW>
 <en-US>
-4.9:
-- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.
-- Edit product variations like price, description, inventory, visibility, and shipping.
-- Experiment with new features in the Products section! Go to Settings to enable them.
+5.0:
+We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
  
 </en-US>

@@ -65,6 +65,10 @@ class ProductTypesBottomSheetAdapter(
             view.setOnClickListener {
                 onItemClicked(item)
             }
+
+            view.isEnabled = item.isEnabled
+            productTypeName.isEnabled = item.isEnabled
+            productTypeDesc.isEnabled = item.isEnabled
         }
     }
 

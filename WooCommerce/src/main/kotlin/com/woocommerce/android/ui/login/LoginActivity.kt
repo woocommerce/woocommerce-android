@@ -585,12 +585,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         if (siteAddress != null) {
             val loginEmailFragment = getLoginEmailFragment(
                 useAltLayout = false) ?: LoginEmailFragment.newInstance(siteAddress, true)
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_ALT_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 useAltLayout = true) ?: LoginEmailFragment.newInstance(false, false, true, true)
             slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_ALT_LAYOUT)
+                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 
