@@ -331,13 +331,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the user chooses to trash a product
-     */
-    fun onTrashButtonClicked() {
-        // TODO
-    }
-
-    /**
      * Called when the user taps the product catalog visibility in product settings
      */
     fun onSettingsCatalogVisibilityButtonClicked() {
