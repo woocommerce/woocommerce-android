@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 sealed class OrderNavigationTarget : Event() {
     data class ViewOrderStatusSelector(
         val currentStatus: String,
-        val orderStatusList: Array<String>
+        val orderStatusList: Array<Order.OrderStatus>
     ) : OrderNavigationTarget() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
