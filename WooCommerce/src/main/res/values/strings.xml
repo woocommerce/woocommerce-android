@@ -561,6 +561,7 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_trash">Trash product</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>

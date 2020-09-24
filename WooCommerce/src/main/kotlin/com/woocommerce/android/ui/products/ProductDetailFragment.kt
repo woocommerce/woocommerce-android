@@ -241,6 +241,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
         menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_product_settings).isVisible = true
+        menu.findItem(R.id.menu_trash_product).isVisible = !viewModel.isAddFlow
 
         when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
@@ -287,6 +288,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 viewModel.onSettingsButtonClicked()
                 true
             }
+
+            R.id.menu_trash_product -> {
+                viewModel.onTrashButtonClicked()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
