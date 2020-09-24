@@ -293,8 +293,7 @@ class LoginAnalyticsTracker(
     }
 
     override fun emailFormScreenResumed() {
-        // Not needed as this should already be set and saved in saveInstanceState.
-        // This screen can be accessed from multiple flows.
+        unifiedLoginTracker.setStep(Step.ENTER_EMAIL_ADDRESS)
     }
 
     override fun trackEmailSignupConfirmationViewed() {
@@ -307,5 +306,13 @@ class LoginAnalyticsTracker(
 
     override fun trackCreateAccountClick() {
         TODO("Not yet implemented")
+    }
+
+    override fun emailPasswordFormScreenResumed() {
+        unifiedLoginTracker.setStep(Step.START)
+    }
+
+    override fun siteAddressFormScreenResumed() {
+        unifiedLoginTracker.setStep(Step.START)
     }
 }
