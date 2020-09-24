@@ -88,7 +88,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 customerInfo_emailBtn.visibility = View.VISIBLE
                 customerInfo_emailBtn.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
-                    OrderCustomerHelper.createEmail(context, order, order.billingEmail)
+                    OrderCustomerHelper.createEmail(context, order.toAppModel(), order.billingEmail)
                     AppRatingDialog.incrementInteractions()
                 }
             } else {
@@ -163,14 +163,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
-            OrderCustomerHelper.dialPhone(context, order, order.billingPhone)
+            OrderCustomerHelper.dialPhone(context, order.toAppModel(), order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }
 
         popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
-            OrderCustomerHelper.sendSms(context, order, order.billingPhone)
+            OrderCustomerHelper.sendSms(context, order.toAppModel(), order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }

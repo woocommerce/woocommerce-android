@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -23,7 +26,12 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -31,10 +39,11 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseFragment() {
+class OrderDetailFragment : BaseFragment(), NavigationResult {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: OrderDetailViewModel by viewModels { viewModelFactory }
 
+    @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
@@ -61,6 +70,21 @@ class OrderDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        orderRefreshLayout?.apply {
+            scrollUpChild = scrollView
+            setOnRefreshListener { viewModel.onRefreshRequested() }
+        }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        if (requestCode == RequestCodes.ORDER_REFUND) {
+            viewModel.onOrderItemRefunded()
+        }
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
@@ -75,6 +99,9 @@ class OrderDetailFragment : BaseFragment() {
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 orderDetail_shipmentList.isVisible = it
                 orderDetail_shipmentList.showAddTrackingButton(it)
+            }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                orderRefreshLayout.isRefreshing = it
             }
         }
 
@@ -93,7 +120,23 @@ class OrderDetailFragment : BaseFragment() {
         viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
             showShippingLabels(it)
         })
-        viewModel.loadOrderDetail()
+
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowUndoSnackbar -> {
+                    displayOrderStatusChangeSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
+            }
+        })
+    }
+
+    private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
+        handleResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT) {
+            viewModel.onOrderStatusChanged(it)
+        }
     }
 
     private fun showOrderDetail(order: Order) {
@@ -105,12 +148,15 @@ class OrderDetailFragment : BaseFragment() {
         )
         orderDetail_paymentInfo.updatePaymentInfo(
             order = order,
-            formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
+            formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+            onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() }
         )
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
-        orderDetail_orderStatus.updateStatus(orderStatus)
+        orderDetail_orderStatus.updateStatus(orderStatus) {
+            viewModel.onEditOrderStatusSelected()
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -133,7 +179,9 @@ class OrderDetailFragment : BaseFragment() {
         val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
         if (refundsCount > 0) {
             orderDetail_refundsInfo.show()
-            orderDetail_refundsInfo.updateRefundCount(refundsCount)
+            orderDetail_refundsInfo.updateRefundCount(refundsCount) {
+                viewModel.onViewRefundedProductsClicked()
+            }
         } else {
             orderDetail_refundsInfo.hide()
         }
@@ -186,5 +234,19 @@ class OrderDetailFragment : BaseFragment() {
                 )
             }
         }.otherwise { orderDetail_shippingLabelList.hide() }
+    }
+
+    private fun displayOrderStatusChangeSnackbar(
+        message: String,
+        actionListener: View.OnClickListener,
+        dismissCallback: Snackbar.Callback
+    ) {
+        uiMessageResolver.getUndoSnack(
+            message = message,
+            actionListener = actionListener
+        ).also {
+            it.addCallback(dismissCallback)
+            it.show()
+        }
     }
 }

@@ -28,7 +28,8 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
     fun updatePaymentInfo(
         order: Order,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        onIssueRefundClickListener: ((view: View) -> Unit)
     ) {
         paymentInfo_productsTotal.text = formatCurrencyForDisplay(order.productsTotal)
         paymentInfo_shippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
@@ -90,9 +91,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             paymentInfo_refundSection.hide()
         }
 
-        paymentInfo_issueRefundButton.setOnClickListener {
-            // TODO: implement issue refund button in another PR
-        }
+        paymentInfo_issueRefundButton.setOnClickListener(onIssueRefundClickListener)
     }
 
     fun showRefunds(

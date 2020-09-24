@@ -1,11 +1,16 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -20,10 +25,14 @@ import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,6 +40,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 @OpenClassOnDebug
 class OrderDetailViewModel @AssistedInject constructor(
@@ -74,16 +84,20 @@ class OrderDetailViewModel @AssistedInject constructor(
         orderDetailRepository.onCleanup()
     }
 
-    fun loadOrderDetail() {
-        launch {
-            orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
-                updateOrderState(orderInDb)
-                loadOrderNotes()
-                loadOrderRefunds()
-                loadShipmentTrackings()
-                loadOrderShippingLabels()
-            } ?: fetchOrder()
-        }
+    init {
+        orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
+            updateOrderState(orderInDb)
+            loadOrderNotes()
+            loadOrderRefunds()
+            loadShipmentTrackings()
+            loadOrderShippingLabels()
+        } ?: launch { fetchOrder(true) }
+    }
+
+    fun onRefreshRequested() {
+        AnalyticsTracker.track(Stat.ORDER_DETAIL_PULLED_TO_REFRESH)
+        orderDetailViewState = orderDetailViewState.copy(isRefreshing = true)
+        launch { fetchOrder(false) }
     }
 
     fun hasVirtualProductsOnly(): Boolean {
@@ -93,9 +107,87 @@ class OrderDetailViewModel @AssistedInject constructor(
         } ?: false
     }
 
-    private suspend fun fetchOrder() {
+    fun onEditOrderStatusSelected() {
+        orderDetailViewState.orderStatus?.let { orderStatus ->
+            triggerEvent(
+                ViewOrderStatusSelector(
+                currentStatus = orderStatus.statusKey,
+                orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+            ))
+        }
+    }
+
+    fun onIssueOrderRefundClicked() {
+        order?.let { triggerEvent(IssueOrderRefund(remoteOrderId = it.remoteId)) }
+    }
+
+    fun onViewRefundedProductsClicked() {
+        order?.let { triggerEvent(ViewRefundedProducts(remoteOrderId = it.remoteId)) }
+    }
+
+    fun onOrderItemRefunded() {
+        launch { fetchOrder(false) }
+    }
+
+    fun onOrderStatusChanged(newStatus: String) {
+        val snackMessage = when (newStatus) {
+            CoreOrderStatus.COMPLETED.value -> resourceProvider.getString(string.order_fulfill_marked_complete)
+            else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
+        }
+
+        // display undo snackbar
+        triggerEvent(ShowUndoSnackbar(
+            message = snackMessage,
+            undoAction = View.OnClickListener { onOrderStatusChangeReverted() },
+            dismissAction = object : Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (event != DISMISS_EVENT_ACTION) {
+                        // update the order only if user has not clicked on the undo snackbar
+                        updateOrderStatus(newStatus)
+                    }
+                }
+            }
+        ))
+
+        // change the order status
+        val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
+        orderDetailViewState = orderDetailViewState.copy(
+            orderStatus = newOrderStatus
+        )
+    }
+
+    private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
-            orderDetailViewState = orderDetailViewState.copy(isOrderDetailSkeletonShown = true)
+            launch {
+                if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
+                    order?.let {
+                        orderDetailViewState = orderDetailViewState.copy(
+                            order = it.copy(status = CoreOrderStatus.fromValue(newStatus) ?: it.status))
+                    }
+                } else {
+                    onOrderStatusChangeReverted()
+                    triggerEvent(ShowSnackbar(string.order_error_update_general))
+                }
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+    }
+
+    private fun onOrderStatusChangeReverted() {
+        order?.let {
+            orderDetailViewState = orderDetailViewState.copy(
+                orderStatus = orderDetailRepository.getOrderStatus(it.status.value)
+            )
+        }
+    }
+
+    private suspend fun fetchOrder(showSkeleton: Boolean) {
+        if (networkStatus.isConnected()) {
+            orderDetailViewState = orderDetailViewState.copy(
+                isOrderDetailSkeletonShown = showSkeleton
+            )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
                 updateOrderState(fetchedOrder)
@@ -106,9 +198,17 @@ class OrderDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
+            orderDetailViewState = orderDetailViewState.copy(
+                isOrderDetailSkeletonShown = false,
+                isRefreshing = false
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
             orderDetailViewState = orderDetailViewState.copy(isOrderDetailSkeletonShown = false)
+            orderDetailViewState = orderDetailViewState.copy(
+                isOrderDetailSkeletonShown = false,
+                isRefreshing = false
+            )
         }
     }
 
@@ -124,20 +224,24 @@ class OrderDetailViewModel @AssistedInject constructor(
         loadOrderProducts()
     }
 
-    private suspend fun loadOrderNotes() {
-        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
-        if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
-            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+    private fun loadOrderNotes() {
+        launch {
+            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
+            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+            }
+            // fetch order notes from the local db and hide the skeleton view
+            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
         }
-        // fetch order notes from the local db and hide the skeleton view
-        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
-        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
     }
 
-    private suspend fun loadOrderRefunds() {
+    private fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        if (networkStatus.isConnected()) {
-            _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+        launch {
+            if (networkStatus.isConnected()) {
+                _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+            }
         }
 
         // display products only if there are some non refunded items in the list
@@ -154,28 +258,32 @@ class OrderDetailViewModel @AssistedInject constructor(
         } ?: emptyList()
     }
 
-    private suspend fun loadShipmentTrackings() {
-        when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
-            RequestResult.SUCCESS -> {
-                _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
-            }
-            else -> {
-                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-                _shipmentTrackings.value = emptyList()
+    private fun loadShipmentTrackings() {
+        launch {
+            when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
+                RequestResult.SUCCESS -> {
+                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
+                }
+                else -> {
+                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
+                    _shipmentTrackings.value = emptyList()
+                }
             }
         }
     }
 
-    private suspend fun loadOrderShippingLabels() {
+    private fun loadOrderShippingLabels() {
         order?.let { order ->
             if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
                 orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
                     .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
 
-                _shippingLabels.value = orderDetailRepository
-                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
-                    .loadProducts(order.items)
+                launch {
+                    _shippingLabels.value = orderDetailRepository
+                        .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                        .loadProducts(order.items)
+                }
             } else {
                 _shippingLabels.value = emptyList()
             }

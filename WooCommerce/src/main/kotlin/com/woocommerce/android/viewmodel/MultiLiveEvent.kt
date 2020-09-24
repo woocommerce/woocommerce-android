@@ -1,11 +1,13 @@
 package com.woocommerce.android.viewmodel
 
 import android.content.DialogInterface.OnClickListener
+import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -73,6 +75,33 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 var result = message
                 result = 31 * result + args.contentHashCode()
                 result = 31 * result + (undoAction?.hashCode() ?: 0)
+                return result
+            }
+        }
+
+        data class ShowUndoSnackbar(
+            val message: String,
+            val args: Array<String> = arrayOf(),
+            val undoAction: View.OnClickListener,
+            val dismissAction: Snackbar.Callback
+        ) : Event() {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is ShowUndoSnackbar) return false
+
+                if (message != other.message) return false
+                if (!args.contentEquals(other.args)) return false
+                if (undoAction != other.undoAction) return false
+                if (dismissAction != other.dismissAction) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = message.hashCode()
+                result = 31 * result + args.contentHashCode()
+                result = 31 * result + undoAction.hashCode()
+                result = 31 * result + dismissAction.hashCode()
                 return result
             }
         }
