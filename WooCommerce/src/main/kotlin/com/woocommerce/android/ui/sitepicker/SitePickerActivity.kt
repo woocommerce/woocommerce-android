@@ -44,6 +44,9 @@ import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
@@ -53,7 +56,7 @@ import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
-        LoginEmailHelpDialogFragment.Listener {
+        LoginEmailHelpDialogFragment.Listener, HasAndroidInjector {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
@@ -75,6 +78,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -104,6 +108,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * This controls the "view connected stores" button visibility.
      */
     private var hasConnectedStores: Boolean = false
+
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
