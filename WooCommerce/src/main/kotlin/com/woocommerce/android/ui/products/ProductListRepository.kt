@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
@@ -184,12 +183,6 @@ class ProductListRepository @Inject constructor(
      * Returns a single product
      */
     fun getProduct(remoteProductId: Long) = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-
-    fun removeProductFromDb(remoteProductId: Long) =
-        productStore.removeProductFromDb(selectedSite.get(), remoteProductId)
-
-    fun addProductToDb(product: Product) =
-        productStore.addProductToDb(product.toDataModel(null))
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

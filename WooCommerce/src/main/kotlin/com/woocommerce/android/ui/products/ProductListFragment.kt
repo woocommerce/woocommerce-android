@@ -33,7 +33,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -52,7 +51,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_product_list.*
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
@@ -83,6 +81,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private var searchView: SearchView? = null
 
     private var trashProductUndoSnack: Snackbar? = null
+    private var pendingTrashProductId: Long? = null
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
@@ -169,7 +168,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         showOptionsMenu(true)
 
         if (!viewModel.isSearching()) {
-            viewModel.reloadProductsFromDb()
+            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
 
@@ -345,27 +344,23 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun trashProduct(remoteProductId: Long) {
-        // get the product from the db so we can restore it if user chooses to Undo
-        val product = viewModel.getProduct(remoteProductId)
-        if (product == null) {
-            ToastUtils.showToast(requireActivity(), R.string.product_detail_fetch_product_error)
-            return
-        }
-
-        // remove the product from the db only
-        viewModel.removeProductFromDb(remoteProductId)
-
         var trashProductCancelled = false
+        pendingTrashProductId = remoteProductId
+
+        // reload the product list without this product
+        viewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+
         val actionListener = View.OnClickListener {
-            // restore the product
-            viewModel.addProductToDb(product.toAppModel())
             trashProductCancelled = true
         }
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                 super.onDismissed(transientBottomBar, event)
-                if (!trashProductCancelled) {
+                pendingTrashProductId = null
+                if (trashProductCancelled) {
+                    viewModel.reloadProductsFromDb()
+                } else {
                     viewModel.trashProduct(remoteProductId)
                 }
             }

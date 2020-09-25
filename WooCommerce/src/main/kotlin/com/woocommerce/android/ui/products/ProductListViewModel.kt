@@ -154,8 +154,11 @@ class ProductListViewModel @AssistedInject constructor(
         refreshProducts()
     }
 
-    final fun reloadProductsFromDb() {
-        _productList.value = productRepository.getProductList(productFilterOptions)
+    final fun reloadProductsFromDb(excludeProductId: Long? = null) {
+        val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
+            ArrayList<Long>().also { it.add(id) }
+        }
+        _productList.value = productRepository.getProductList(productFilterOptions, excludedProductIds)
     }
 
     final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
@@ -306,18 +309,6 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
-
-    fun removeProductFromDb(remoteProductId: Long) {
-        if (productRepository.removeProductFromDb(remoteProductId)) {
-            reloadProductsFromDb()
-        }
-    }
-
-    fun addProductToDb(product: Product) {
-        if (productRepository.addProductToDb(product)) {
-            reloadProductsFromDb()
-        }
-    }
 
     fun trashProduct(remoteProductId: Long) {
         if (checkConnection()) {
