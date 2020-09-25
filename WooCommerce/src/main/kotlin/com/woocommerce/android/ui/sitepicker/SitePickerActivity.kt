@@ -322,12 +322,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.SITE_LIST)
+
             // Show the 'try another account' button in case the user
             // doesn't see the store they want to log into.
             with(button_secondary) {
                 visibility = View.VISIBLE
                 text = getString(R.string.login_try_another_account)
-                setOnClickListener { presenter.logout() }
+                setOnClickListener {
+                    presenter.logout()
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                    }
+                }
             }
         } else {
             // Called from settings. Hide the button.
@@ -368,6 +375,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             isEnabled = true
             setOnClickListener {
                 presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.SUBMIT)
+                }
             }
         }
     }
@@ -461,6 +472,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NO_WOO_STORES)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
@@ -469,7 +484,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         with(button_primary) {
             text = getString(R.string.login_try_another_account)
             isEnabled = true
-            setOnClickListener { presenter.logout() }
+            setOnClickListener {
+                presenter.logout()
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
+            }
         }
 
         with(button_secondary) {
@@ -552,6 +573,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.WRONG_WP_ACCOUNT)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -562,6 +587,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         button_email_help.setOnClickListener {
             AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+            unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
             LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
@@ -600,6 +626,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
                 mapOf(AnalyticsTracker.KEY_URL to url))
+
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.JETPACK_NOT_CONNECTED)
+        }
 
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
@@ -678,6 +708,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_URL to site.url,
                         AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NOT_WOO_STORE)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -694,6 +728,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             spannable.setSpan(
                     WooClickableSpan {
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+                        unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
                         progressDialog?.takeIf { !it.isShowing }?.dismiss()
                         progressDialog = ProgressDialog.show(

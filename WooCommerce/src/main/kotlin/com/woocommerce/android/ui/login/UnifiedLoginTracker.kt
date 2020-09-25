@@ -154,7 +154,18 @@ class UnifiedLoginTracker
         USERNAME_PASSWORD("username_password"),
         SUCCESS("success"),
         HELP("help"),
-        SHOW_EMAIL_HINTS("SHOW_EMAIL_HINTS")
+        SHOW_EMAIL_HINTS("show_email_hints"),
+        WRONG_WP_ACCOUNT("wrong_wordpress_account"),
+        NO_WOO_STORES("no_woo_stores"),
+        SITE_LIST("site_list"),
+        JETPACK_NOT_CONNECTED("jetpack_not_connected"),
+        NOT_WOO_STORE("not_woo_store");
+
+        companion object {
+            private val valueMap = Step.values().associateBy(Step::value)
+
+            fun fromValue(value: String) = valueMap[value]
+        }
     }
 
     enum class Click(val value: String) {
@@ -176,7 +187,8 @@ class UnifiedLoginTracker
         LOGIN_WITH_SITE_CREDS("login_with_site_creds"),
         VIEW_CONNECTED_STORES("view_connected_stores"),
         TRY_ANOTHER_ACCOUNT("try_another_account"),
-        HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email")
+        HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
+        REFRESH_APP("refresh_app")
     }
 
     companion object {
