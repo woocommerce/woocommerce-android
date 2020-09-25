@@ -172,6 +172,8 @@ class OrderDetailViewModel @AssistedInject constructor(
                     triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
                     shipmentTrackings.remove(shipmentTracking)
                     _shipmentTrackings.value = shipmentTrackings
+                } else {
+                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
                 }
             }
         } else {
