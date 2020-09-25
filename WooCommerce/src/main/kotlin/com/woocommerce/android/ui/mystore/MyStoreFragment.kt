@@ -370,16 +370,14 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun View.setupFeedbackRequestCard() {
-        if (userFeedbackIsDue) {
-            this.store_feedback_request_card.visibility = View.VISIBLE
-            val negativeCallback = {
-                mainNavigationRouter?.showFeedbackSurvey()
-                this.store_feedback_request_card.visibility = View.GONE
-                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                removeTabLayoutFromAppBar(tabLayout)
-            }
-            store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        this.store_feedback_request_card.visibility = View.VISIBLE
+        val negativeCallback = {
+            mainNavigationRouter?.showFeedbackSurvey()
+            this.store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            removeTabLayoutFromAppBar(tabLayout)
         }
+        store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
