@@ -88,7 +88,6 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         assertThat(actual).isEqualTo(expectedData)
     }
 
-
     @Test
     fun `Test that a discard dialog isn't shown if no data changed`() = test {
         val events = mutableListOf<Event>()
@@ -120,7 +119,6 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         assertThat(events.any { it is ExitWithResult<*> }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
     }
-
 
     @Test
     fun `Test that a the correct data is returned when Done button clicked`() = test {
@@ -166,7 +164,6 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
         assertThat(viewState?.isDoneButtonVisible).isFalse()
     }
-
 
     @Test
     fun `Test that the class section is visible for products`() = test {
