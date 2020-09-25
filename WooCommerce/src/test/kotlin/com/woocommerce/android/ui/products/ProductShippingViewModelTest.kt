@@ -70,7 +70,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Updates the data`() = test {
+    fun `Test that when data is changed the view state is updated`() = test {
         var actual: ShippingData? = null
         viewModel.viewStateData.observeForever { _, new ->
             actual = new.shippingData
