@@ -384,8 +384,6 @@ class MyStoreFragment : TopLevelFragment(),
 
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
-            // TODO - Send a track event (different project)
-            //
             // Hide the card and set last feedback date to now
             store_feedback_request_card.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
