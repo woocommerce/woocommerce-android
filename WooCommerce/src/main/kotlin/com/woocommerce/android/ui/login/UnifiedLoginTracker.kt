@@ -108,6 +108,10 @@ class UnifiedLoginTracker
         currentFlow = Flow.values().find { it.value == value }
     }
 
+    fun setStep(step: Step) {
+        currentStep = step
+    }
+
     fun setFlowAndStep(flow: Flow, step: Step) {
         currentFlow = flow
         currentStep = step
