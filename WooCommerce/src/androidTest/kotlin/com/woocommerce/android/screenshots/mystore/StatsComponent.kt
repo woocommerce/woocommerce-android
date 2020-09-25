@@ -5,7 +5,7 @@ import com.woocommerce.android.screenshots.util.Screen
 
 class StatsComponent : Screen {
     companion object {
-        const val STATS_DASHBOARD = R.id.dashboard_stats
+        const val STATS_DASHBOARD = R.id.dashboardStats_root
     }
 
     constructor(): super(STATS_DASHBOARD)
@@ -34,7 +34,7 @@ class StatsComponent : Screen {
     }
 
     fun switchToStatsDashboardYearsTab() {
-        selectItemWithTitleInTabLayout(R.string.dashboard_stats_granularity_years, R.id.tab_layout, STATS_DASHBOARD)
+        selectItemWithTitleInTabLayout(R.string.this_year, R.id.stats_tab_layout, R.id.app_bar_layout)
         waitForGraphToLoad()
     }
 }

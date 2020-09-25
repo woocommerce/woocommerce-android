@@ -1,5 +1,0 @@
-4.9 :
-- Appuyez sur le nouveau bouton Envoyer un commentaire pour nous envoyer vos idées et suggestions dans une étude CrowdSignal.
-- Modifiez les variantes du produit, comme le prix, la description, le stock, la visibilité et la livraison.
-- Testez les nouvelles fonctionnalités dans la section Produits ! Allez dans Réglages pour les activer.
-

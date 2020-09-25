@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-04 08:54:04+0000
+Translation-Revision-Date: 2020-09-17 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_type_variation_desc">Un prodotto con varianti come colore o misura</string>
+    <string name="product_selection_count_single">%d prodotto selezionato</string>
+    <string name="product_selection_count">%d prodotti selezionati</string>
+    <string name="grouped_product_empty">Aggiungi i prodotti al gruppo</string>
+    <string name="grouped_product_add">Aggiungi prodotto</string>
+    <string name="product_visibility_password_protected_hint">Inserisci una password</string>
     <string name="feedback_completed_back_to_store_button_text">Torna al negozio</string>
     <string name="feedback_completed_contact_us">Contattaci qui</string>
     <string name="feedback_completed_description">Tieni presente che questo non è un ticket di supporto e non saremo in grado di rispondere a feedback individuali.\n\nTi serve aiuto? %1$s</string>
@@ -34,7 +40,7 @@ Language: it
     <string name="product_variation_no_price_set">Nessun prezzo impostato</string>
     <string name="product_variation_enabled">Abilitata</string>
     <string name="product_pricing_scheduled_sale_price_error">Devi impostare il prezzo di vendita se è pianificata una vendita</string>
-    <string name="product_wip_message">Ora puoi modificare i prodotti variabili, esterni e raggruppati, puoi cambiare il tipo di prodotto e aggiornare categorie e tag</string>
+    <string name="product_wip_message_m3">Ora puoi modificare i prodotti variabili, esterni e raggruppati, puoi cambiare il tipo di prodotto e aggiornare categorie e tag.</string>
     <string name="product_reviews_count">\u2022 %d recensioni</string>
     <string name="product_review_list_item_title">%1$s ha lasciato una recensione</string>
     <string name="feedback_request_like_it">Mi piace</string>
@@ -53,6 +59,7 @@ Language: it
     <string name="orderdetail_shipping_label_request_refund">Richiedi un rimborso</string>
     <string name="orderdetail_shipping_label_item_menu">Rimborsa etichetta di spedizione</string>
     <string name="product_variation_disabled">Disabilitata</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Prodotti rimanenti</string>
     <string name="product_add_category_dialog_message">Attendi…</string>
     <string name="product_add_category_dialog_title">Aggiunta della categoria</string>
     <string name="product_category_parent">Categoria madre</string>
@@ -70,6 +77,7 @@ Language: it
     <string name="settings_privacy_policy_ca">Nota sulla privacy per utenti in California</string>
     <string name="keep_changes">Mantieni le modifiche</string>
     <string name="product_sale_date_to">Fino al giorno %1$s</string>
+    <string name="product_wip_message_m2">Abbiamo aggiunto più funzionalità di modifica ai prodotti! Ora puoi aggiornare immagini, vedere anteprime e condividere i prodotti.</string>
     <string name="product_wip_title">Nuove opzioni di modifica disponibili</string>
     <string name="product_limited_editing_title">Funzionalità di editing limitate ora disponibili</string>
     <string name="orderdetail_product_multiple">Prodotti</string>

@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -29,13 +31,13 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -55,10 +57,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             updateActivityTitle()
         }
 
+    private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
+
     private val skeletonView = SkeletonView()
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
+
+    private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
+    private val updateTitleId = R.string.update
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -154,7 +161,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
+            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
+                showProgressDialog(it)
+            }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
@@ -172,21 +181,19 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 is LaunchUrlInChromeTab -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+                is RefreshMenu -> activity?.invalidateOptionsMenu()
                 else -> event.isHandled = false
             }
         })
     }
 
     private fun showProductDetails(product: Product) {
-        productName = product.name.fastStripHtml()
+        productName = updateProductNameFromDetails(product)
+        productId = product.remoteId
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
             imageGallery.hide()
-            addImageContainer.show()
-            addImageContainer.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-                viewModel.onAddImageButtonClicked()
-            }
+            startAddImageContainer()
         } else {
             addImageContainer.hide()
             imageGallery.show()
@@ -204,8 +211,24 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productDetail_addMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
-                ViewProductDetailBottomSheet(product.remoteId)
+                ViewProductDetailBottomSheet(product.type)
             )
+        }
+
+        updateOptionsMenuDescription(product.remoteId)
+    }
+
+    private fun updateProductNameFromDetails(product: Product): String {
+        return if (viewModel.isAddFlow && product.name.isEmpty()) {
+            getString(string.product_add_tool_bar_title)
+        } else product.name.fastStripHtml()
+    }
+
+    private fun startAddImageContainer() {
+        addImageContainer.show()
+        addImageContainer.setOnClickListener {
+            AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            viewModel.onAddImageButtonClicked()
         }
     }
 
@@ -215,10 +238,31 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // display View Product on Store menu button only if the Product status is published,
         // otherwise the page is redirected to a 404
-        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished
+        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_product_settings).isVisible = true
 
+        when (viewModel.isAddFlow) {
+            true -> setupProductAddOptionsMenu(menu)
+            else -> Unit
+        }
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun setupProductAddOptionsMenu(menu: Menu) {
+        doneOrUpdateMenuItem?.let {
+            it.title = getString(publishTitleId)
+            it.isVisible = true
+        }
+    }
+
+    private fun updateOptionsMenuDescription(remoteId: Long) {
+        val doneButtonTitle =
+            when (viewModel.isAddFlow) {
+                true -> getString(publishTitleId)
+                else -> getString(updateTitleId)
+            }
+        doneOrUpdateMenuItem?.title = doneButtonTitle
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -258,14 +302,29 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                    getString(R.string.product_update_dialog_title),
-                    getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+            progressDialog = getSubmitDetailProgressDialog().also {
+                it.show(parentFragmentManager, CustomProgressDialog.TAG)
+            }
             progressDialog?.isCancelable = false
         } else {
             hideProgressDialog()
         }
+    }
+
+    private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
+        val title: Int
+        val message: Int
+        when (viewModel.isAddFlow) {
+            true -> {
+                title = R.string.product_publish_dialog_title
+                message = R.string.product_publish_dialog_message
+            }
+            else -> {
+                title = R.string.product_update_dialog_title
+                message = R.string.product_update_dialog_message
+            }
+        }
+        return CustomProgressDialog.show(getString(title), getString(message))
     }
 
     private fun hideProgressDialog() {
@@ -307,13 +366,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     changesMade()
                 }
             }
-            RequestCodes.WPMEDIA_LIBRARY_PICKER -> {
-                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                        ?.let {
-                            viewModel.addProductImageListToDraft(it)
-                            changesMade()
-                        }
-            }
         }
     }
 
@@ -330,7 +382,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         viewModel.onAddImageButtonClicked()
     }
 
-    override fun getFragmentTitle() = productName
+    override fun getFragmentTitle(): String = productName
 
     /**
      * Override the BaseProductFragment's fun since we want to return True if any changes have been

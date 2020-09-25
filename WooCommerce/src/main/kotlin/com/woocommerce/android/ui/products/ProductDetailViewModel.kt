@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -90,10 +91,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -148,7 +151,27 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     val isProductPublished: Boolean
-    get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     * */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product id
+     * value to check.
+     *
+     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     *
+     * [viewState.productDraft.remoteId]
+     * .can be [NULL] - no product draft available yet
+     * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
+     * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
+     * */
+    val isAddFlow: Boolean
+        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
     init {
         start()
@@ -156,12 +179,23 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        loadProduct(navArgs.remoteProductId)
+        when (isAddFlowEntryPoint) {
+            true -> startAddNewProduct()
+            else -> loadRemoteProduct(navArgs.remoteProductId)
+        }
+    }
+
+    private fun startAddNewProduct() {
+        val preferredSavedType = prefs.getSelectedProductType()
+        val defaultProductType = ProductType.fromString(preferredSavedType)
+        val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
+        updateProductState(defaultProduct)
     }
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -179,7 +213,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, selectedImage = image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
         updateProductBeforeEnteringFragment()
     }
@@ -253,14 +287,28 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the UPDATE menu button is clicked in the product detail screen.
-     * Displays a progress dialog and updates the product
+     * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
+        when (isAddFlow) {
+            true -> startPublishProduct()
+            else -> startUpdateProduct()
+        }
+    }
+
+    private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    private fun startPublishProduct() {
+        viewState.productDraft?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch { addProduct(it) }
         }
     }
 
@@ -342,13 +390,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
         } ?: false
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
+            is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
@@ -357,14 +405,14 @@ class ProductDetailViewModel @AssistedInject constructor(
                         // discard changes made to the current screen
                         discardEditChanges()
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
         } else if (event is ExitProductDetail && isUploadingImages) {
@@ -535,7 +583,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductEditAction()
     }
 
-    private fun loadProduct(remoteProductId: Long) {
+    private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -611,12 +659,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = if (viewState.draftPassword == null) {
             viewState.copy(
-                    storedPassword = password,
-                    draftPassword = password
+                storedPassword = password,
+                draftPassword = password
             )
         } else {
             viewState.copy(
-                    storedPassword = password
+                storedPassword = password
             )
         }
     }
@@ -646,7 +694,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
     }
@@ -687,7 +735,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadProduct(product.remoteId)
+                loadRemoteProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -699,11 +747,38 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Add a new product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed.
+     */
+    private suspend fun addProduct(product: Product) {
+        if (networkStatus.isConnected()) {
+            val result = productRepository.addProduct(product)
+            val isSuccess = result.first
+            val newProductRemoteId = result.second
+            if (isSuccess) {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
+                loadRemoteProduct(newProductRemoteId)
+                triggerEvent(RefreshMenu)
+            } else {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+        viewState = viewState.copy(isProgressDialogShown = false)
+    }
+
+    /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-                    ?: viewState.productDraft?.shippingClass ?: ""
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
@@ -760,13 +835,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        var productId = event.id
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.id)
+            when (isAddFlow) {
+                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
+                else -> loadRemoteProduct(event.id)
+            }
         }
-
-        checkImageUploads(event.id)
+        checkImageUploads(productId)
     }
 
     /**
@@ -900,7 +978,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1095,7 +1174,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true)
+                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1124,6 +1204,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
+    object RefreshMenu : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

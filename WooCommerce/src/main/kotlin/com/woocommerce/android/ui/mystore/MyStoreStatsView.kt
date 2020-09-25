@@ -342,16 +342,17 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.getTotal()?.totalSales ?: 0.0
+        val totalModel = revenueStatsModel?.parseTotal()
+        val grossRevenue = totalModel?.totalSales ?: 0.0
         val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
-        val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
+        val orderCount = totalModel?.ordersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return

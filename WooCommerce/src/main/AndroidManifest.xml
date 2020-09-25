@@ -12,6 +12,13 @@
     <!-- Dangerous permissions, access must be requested at runtime -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Required for Android 11 to allow camera access -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_scheme"
@@ -38,7 +45,7 @@
         </activity>
 
         <activity android:name=".ui.login.LoginActivity"
-                  android:theme="@style/LoginTheme"
+                  android:theme="@style/Theme.LoginFlow"
                   android:windowSoftInputMode="adjustResize">
         </activity>
 

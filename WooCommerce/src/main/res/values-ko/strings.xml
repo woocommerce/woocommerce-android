@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-02 08:54:46+0000
+Translation-Revision-Date: 2020-09-17 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_type_variation_desc">색상이나 크기와 같은 선택사항이 있는 제품</string>
+    <string name="product_selection_count_single">%d 제품 선택됨</string>
+    <string name="product_selection_count">%d 제품 선택됨</string>
+    <string name="grouped_product_empty">그룹에 제품 추가</string>
+    <string name="grouped_product_add">제품 추가</string>
+    <string name="product_visibility_password_protected_hint">비밀번호 입력</string>
     <string name="feedback_completed_back_to_store_button_text">스토어로 돌아가기</string>
     <string name="feedback_completed_contact_us">여기에서 문의하세요.</string>
     <string name="feedback_completed_description">이것은 지원 티켓이 아니며 저희는 개별적인 피드백을 해결할 수 없습니다.\n\n도움이 필요하세요? %1$s</string>
@@ -34,7 +40,7 @@ Language: ko_KR
     <string name="product_variation_no_price_set">가격이 설정되지 않음</string>
     <string name="product_variation_enabled">활성화</string>
     <string name="product_pricing_scheduled_sale_price_error">할인이 예정되어 있으면 할인 가격을 설정해야 합니다.</string>
-    <string name="product_wip_message">이제 그룹화된 제품, 외부 제품, 선택사항이 있는 제품을 편집하고 제품 유형을 변경하고 카테고리와 태그를 업데이트할 수 있습니다.</string>
+    <string name="product_wip_message_m3">이제 그룹화된 제품, 외부 제품, 선택사항이 있는 제품을 편집하고 제품 유형을 변경하고 카테고리와 태그를 업데이트할 수 있습니다.</string>
     <string name="product_reviews_count">\u2022 리뷰 %d개</string>
     <string name="product_review_list_item_title">%1$s 리뷰를 남겼습니다.</string>
     <string name="feedback_request_like_it">마음에 들어요</string>
@@ -53,6 +59,7 @@ Language: ko_KR
     <string name="orderdetail_shipping_label_request_refund">환불 요청</string>
     <string name="orderdetail_shipping_label_item_menu">배송 레이블 환불</string>
     <string name="product_variation_disabled">비활성</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">남은 제품</string>
     <string name="product_add_category_dialog_message">기다려주세요…</string>
     <string name="product_add_category_dialog_title">카테고리 추가 중</string>
     <string name="product_category_parent">상위 카테고리</string>
@@ -70,6 +77,7 @@ Language: ko_KR
     <string name="settings_privacy_policy_ca">캘리포니아 사용자를 위한 개인정보 공지</string>
     <string name="keep_changes">변경 사항 유지</string>
     <string name="product_sale_date_to">%1$s까지</string>
+    <string name="product_wip_message_m2">제품에 더 많은 편집 기능을 추가했습니다! 이제 이미지를 업데이트하고, 미리 보기를 실행하고, 제품을 공유할 수 있습니다.</string>
     <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
     <string name="product_limited_editing_title">제한적인 편집 가능</string>
     <string name="orderdetail_product_multiple">제품</string>

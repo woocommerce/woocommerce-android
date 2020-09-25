@@ -147,6 +147,8 @@ class ProductDetailCardBuilder(
                 product.productType(),
                 product.productReviews(),
                 product.variations(),
+                product.inventory(),
+                product.shipping(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription()
@@ -473,16 +475,19 @@ class ProductDetailCardBuilder(
     private fun Product.productType(): ProductProperty? {
         return if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
             val productType = resources.getString(this.getProductTypeFormattedForDisplay())
-            ComplexProperty(
-                R.string.product_type,
-                resources.getString(R.string.product_detail_product_type_hint, productType),
-                R.drawable.ic_gridicons_product
-            ) {
+            val onClickHandler = {
                 viewModel.onEditProductCardClicked(
-                    ViewProductTypes(this.type),
+                    ViewProductTypes(false),
                     Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
                 )
             }
+
+            ComplexProperty(
+                R.string.product_type,
+                resources.getString(R.string.product_detail_product_type_hint, productType),
+                R.drawable.ic_gridicons_product,
+                onClick = if (remoteId != 0L) onClickHandler else null
+            )
         } else {
             null
         }

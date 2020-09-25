@@ -41,23 +41,25 @@ class ProductImagesViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
+    private val originalImages = navArgs.images.toList()
+
+    val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             isDoneButtonVisible = false,
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
-            isImageDeletingAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES,
-            images = navArgs.images.toList()
+            isImageDeletingAllowed = isMultiSelectionAllowed,
+            images = navArgs.images.toList(),
+            isWarningVisible = !isMultiSelectionAllowed
         )
     ) { old, new ->
         if (old != new) {
-            updateDoneButtonVisibility()
+            updateButtonStates()
         }
     }
     private var viewState by viewStateData
-
-    private val originalImages = navArgs.images.toList()
 
     val images
         get() = viewState.images ?: emptyList()
@@ -120,6 +122,14 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
+    fun onImagesAdded(newImages: List<Image>) {
+        viewState = if (isMultiSelectionAllowed) {
+            viewState.copy(images = images + newImages)
+        } else {
+            viewState.copy(images = newImages)
+        }
+    }
+
     fun onImageSourceButtonClicked() {
         AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
         triggerEvent(ShowImageSourceDialog)
@@ -143,7 +153,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
                 triggerEvent(ShowDiscardDialog(
-                    messageId = string.images_still_uploading_message,
+                    messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
                         triggerEvent(ExitWithResult(originalImages))
@@ -163,8 +173,16 @@ class ProductImagesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateDoneButtonVisibility() {
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
+    private fun updateButtonStates() {
+        val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
+        viewState = viewState.copy(
+            isDoneButtonVisible = hasChanges,
+            chooserButtonButtonTitleRes = when {
+                isMultiSelectionAllowed -> string.product_add_photos
+                numImages > 0 -> string.product_replace_photo
+                else -> string.product_add_photo
+            }
+        )
     }
 
     /**
@@ -196,7 +214,8 @@ class ProductImagesViewModel @AssistedInject constructor(
     private fun checkImageUploads(remoteProductId: Long) {
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
-            viewState.copy(uploadingImageUris = uris)
+            val images = if (isMultiSelectionAllowed) viewState.images else emptyList()
+            viewState.copy(images = images, uploadingImageUris = uris)
         } else {
             viewState.copy(uploadingImageUris = emptyList())
         }
@@ -217,7 +236,11 @@ class ProductImagesViewModel @AssistedInject constructor(
             triggerEvent(ShowSnackbar(string.product_image_service_error_uploading))
         } else {
             event.media?.let { media ->
-                viewState = viewState.copy(images = images + media.toAppModel())
+                viewState = if (isMultiSelectionAllowed) {
+                    viewState.copy(images = images + media.toAppModel())
+                } else {
+                    viewState.copy(images = listOf(media.toAppModel()))
+                }
             }
         }
         checkImageUploads(navArgs.remoteId)
@@ -228,7 +251,9 @@ class ProductImagesViewModel @AssistedInject constructor(
         val uploadingImageUris: List<Uri>? = null,
         val isDoneButtonVisible: Boolean? = null,
         val isImageDeletingAllowed: Boolean? = null,
-        val images: List<Image>? = null
+        val images: List<Image>? = null,
+        val chooserButtonButtonTitleRes: Int? = null,
+        val isWarningVisible: Boolean? = null
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()

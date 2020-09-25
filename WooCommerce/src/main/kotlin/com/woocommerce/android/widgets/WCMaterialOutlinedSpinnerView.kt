@@ -54,7 +54,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        spinner_edit_text.isEnabled = enabled
+        spinner_edit_text?.isEnabled = enabled
     }
 
     override fun onSaveInstanceState(): Parcelable? {
@@ -81,7 +81,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
         super.dispatchFreezeSelfOnly(container)
     }
 
-    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>?) {
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
         super.dispatchThawSelfOnly(container)
     }
 }

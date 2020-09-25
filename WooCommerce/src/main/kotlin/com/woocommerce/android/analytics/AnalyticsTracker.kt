@@ -109,6 +109,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS(siteless = true),
+        UNIFIED_LOGIN_STEP(siteless = true),
+        UNIFIED_LOGIN_FAILURE(siteless = true),
+        UNIFIED_LOGIN_INTERACTION(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -409,6 +412,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         REVIEW_DETAIL_SPAM_BUTTON_TAPPED,
         REVIEW_DETAIL_TRASH_BUTTON_TAPPED,
 
+        // -- In-App Feedback
+        APP_FEEDBACK_PROMPT,
+        APP_FEEDBACK_RATE_APP,
+        SURVEY_SCREEN,
+        FEATURE_FEEDBACK_BANNER,
+
         // -- Errors
         JETPACK_TUNNEL_TIMEOUT,
 
@@ -589,6 +598,24 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
+
+        const val KEY_FEEDBACK_ACTION = "action"
+        const val KEY_FEEDBACK_CONTEXT = "context"
+        const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
+        const val VALUE_FEEDBACK_PRODUCT_M3_CONTEXT = "products_m3"
+        const val VALUE_FEEDBACK_SHOWN = "shown"
+        const val VALUE_FEEDBACK_LIKED = "liked"
+        const val VALUE_FEEDBACK_NOT_LIKED = "didnt_like"
+        const val VALUE_FEEDBACK_LATER = "later"
+        const val VALUE_FEEDBACK_DECLINED = "declined"
+        const val VALUE_FEEDBACK_RATED = "rated"
+        const val VALUE_FEEDBACK_COMPLETED = "completed"
+        const val VALUE_FEEDBACK_OPENED = "opened"
+        const val VALUE_FEEDBACK_CANCELED = "canceled"
+        const val VALUE_FEEDBACK_DISMISSED = "dismissed"
+        const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
+        const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
         const val IMAGE_SOURCE_WPMEDIA = "wpmedia"

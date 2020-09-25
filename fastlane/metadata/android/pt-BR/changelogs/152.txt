@@ -1,0 +1,3 @@
+5.0:
+Corrigimos as falhas que ocorriam ao escolher uma imagem de produto e ao alternar entre os temas claro e escuro em versões mais antigas do Android.
+

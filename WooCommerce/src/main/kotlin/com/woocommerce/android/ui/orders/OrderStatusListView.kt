@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import kotlinx.android.synthetic.main.order_status_list_item.view.*
 import kotlinx.android.synthetic.main.order_status_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import java.text.NumberFormat
 
 /**
  * Custom class that  displays a list of order statuses and allows for
@@ -26,11 +27,6 @@ class OrderStatusListView @JvmOverloads constructor(
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     init {
         View.inflate(context, R.layout.order_status_list_view, this)
-    }
-
-    companion object {
-        private const val ORDER_STATUS_COUNT_MAX = 99
-        private const val ORDER_STATUS_COUNT_MAX_LABEL = "$ORDER_STATUS_COUNT_MAX+"
     }
 
     interface OrderStatusListListener {
@@ -79,7 +75,7 @@ class OrderStatusListView @JvmOverloads constructor(
             holder.orderStatusNameText.text = orderStatusModel.label
 
             val count = orderStatusModel.statusCount
-            val label = if (count > ORDER_STATUS_COUNT_MAX) ORDER_STATUS_COUNT_MAX_LABEL else count.toString()
+            val label = NumberFormat.getInstance().format(count)
             holder.orderStatusCountText.text = label
 
             holder.itemView.setOnClickListener {

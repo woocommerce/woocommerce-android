@@ -31,7 +31,7 @@ class ProductCategoriesAdapter(
     override fun getItemCount() = productCategoryList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductCategoryViewHolder {
-        return ProductCategoryViewHolder(LayoutInflater.from(context)
+        return ProductCategoryViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.product_category_list_item, parent, false))
     }
 

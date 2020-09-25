@@ -39,6 +39,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dashboard.DashboardFragment
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -72,18 +73,20 @@ import java.util.Locale
 import javax.inject.Inject
 
 class MainActivity : AppUpgradeActivity(),
-        MainContract.View,
-        HasAndroidInjector,
-        MainNavigationRouter,
-        MainBottomNavigationView.MainNavigationListener,
-        NavController.OnDestinationChangedListener,
-        WCPromoDialog.PromoDialogListener {
+    MainContract.View,
+    HasAndroidInjector,
+    MainNavigationRouter,
+    MainBottomNavigationView.MainNavigationListener,
+    NavController.OnDestinationChangedListener,
+    WCPromoDialog.PromoDialogListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
+
+        private const val DIALOG_NAVIGATOR_NAME = "dialog"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -136,7 +139,8 @@ class MainActivity : AppUpgradeActivity(),
             if (!isMainThemeApplied) {
                 it.applyStyle(R.style.Theme_Woo_DayNight, true)
                 isMainThemeApplied = true
-            } }
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -193,7 +197,11 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun hideProgressDialog() {
-        progressDialog?.apply { if (isShowing) { cancel() } }
+        progressDialog?.apply {
+            if (isShowing) {
+                cancel()
+            }
+        }
     }
 
     override fun showProgressDialog(@StringRes stringId: Int) {
@@ -292,7 +300,13 @@ class MainActivity : AppUpgradeActivity(),
     /**
      * Return true if one of the nav component fragments is showing (the opposite of the above)
      */
-    override fun isChildFragmentShowing() = !isAtNavigationRoot()
+    override fun isChildFragmentShowing(): Boolean {
+        return navController.currentDestination?.let {
+            !isAtTopLevelNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
+        } ?: run {
+            !isAtNavigationRoot()
+        }
+    }
 
     /**
      * Navigates to the root fragment so only the top level fragment is showing
@@ -316,11 +330,18 @@ class MainActivity : AppUpgradeActivity(),
      */
     private fun getActiveChildFragment(): Fragment? {
         return if (isChildFragmentShowing()) {
-            val navHostFragment = supportFragmentManager.primaryNavigationFragment
-            navHostFragment?.childFragmentManager?.fragments?.get(0)
+            getHostChildFragment()
         } else {
             null
         }
+    }
+
+    /***
+     * Get the actual primary navigation Fragment from the support manager
+     */
+    private fun getHostChildFragment(): Fragment? {
+        val navHostFragment = supportFragmentManager.primaryNavigationFragment
+        return navHostFragment?.childFragmentManager?.fragments?.get(0)
     }
 
     /**
@@ -328,6 +349,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val isAtRoot = isAtNavigationRoot()
+        val isTopLevelNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
 
         // go no further if this is the initial navigation to the root fragment
         if (isAtRoot && previousDestinationId == null) {
@@ -335,8 +357,8 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        // show/hide the top level fragment container depending on whether we're at the root
-        if (isAtRoot) {
+        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
+        if (isTopLevelNavigation) {
             container.visibility = View.VISIBLE
         } else {
             container.visibility = View.INVISIBLE
@@ -344,11 +366,9 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val showBottomNav: Boolean
-        if (isAtRoot) {
+        if (isTopLevelNavigation) {
             showUpIcon = false
             showCrossIcon = false
-            showBottomNav = true
         } else {
             showUpIcon = true
             showCrossIcon = when (destination.id) {
@@ -391,15 +411,15 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        // only show bottom nav if we're at a root fragment
-        if (isAtRoot) {
+        // show bottom nav if this is a dialog destination from root or, just root itself
+        if (isTopLevelNavigation) {
             showBottomNav()
         } else {
             hideBottomNav()
         }
 
         getActiveTopLevelFragment()?.let {
-            if (isAtRoot) {
+            if (isTopLevelNavigation) {
                 it.updateActivityTitle()
                 it.onReturnedFromChildFragment()
             } else {
@@ -410,8 +430,25 @@ class MainActivity : AppUpgradeActivity(),
         previousDestinationId = destination.id
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
+    /**
+     * Returns a Boolean value in order to set the behaviour from a root navigation type in terms of:
+     * .container visibility
+     * .menu items visibility
+     * .top nav bar titles
+     *
+     * @param isAtRoot The value that tells if root fragment is in the current destination
+     * @param destination The object for the next navigation destination
+     */
+
+    private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
+        val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
+        val activeChild = getHostChildFragment()
+        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        return (isDialogDestination && activeChildIsRoot) || isAtRoot
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             // User clicked the "up" button in the action bar
             android.R.id.home -> {
                 onBackPressed()
@@ -510,9 +547,9 @@ class MainActivity : AppUpgradeActivity(),
     private fun restart() {
         val intent = intent
         intent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_NO_ANIMATION
         )
         finish()
         startActivity(intent)
@@ -740,7 +777,8 @@ class MainActivity : AppUpgradeActivity(),
                     }
                 }
                 PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
-                else -> { /* do nothing */ }
+                else -> { /* do nothing */
+                }
             }
         }
     }
@@ -748,6 +786,12 @@ class MainActivity : AppUpgradeActivity(),
     override fun showProductDetail(remoteProductId: Long) {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
+        navController.navigateSafely(action)
+    }
+
+    override fun showAddProduct() {
+        showBottomNav()
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
         navController.navigateSafely(action)
     }
 
@@ -759,16 +803,22 @@ class MainActivity : AppUpgradeActivity(),
         bottom_nav.active(navPos)
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
-                remoteReviewId,
-                tempStatus,
-                launchedFromNotification)
+            remoteReviewId,
+            tempStatus,
+            launchedFromNotification
+        )
         navController.navigateSafely(action)
     }
 
     override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
         val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
-                stockStatus, productStatus, productType
+            stockStatus, productStatus, productType
         )
+        navController.navigateSafely(action)
+    }
+
+    override fun showProductAddBottomSheet() {
+        val action = NavGraphMainDirections.actionGlobalProductTypeBottomSheetFragment(isAddProduct = true)
         navController.navigateSafely(action)
     }
 
@@ -796,7 +846,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showFeedbackSurvey() {
-        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment().apply {
+        NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.MAIN).apply {
             navController.navigateSafely(this)
         }
     }
@@ -831,7 +881,9 @@ class MainActivity : AppUpgradeActivity(),
             PromoButton.SITE_PICKER_TRY_IT -> {
                 WCPromoTooltip.setTooltipShown(this, Feature.SITE_SWITCHER, false)
                 showSettingsScreen()
-            } else -> {}
+            }
+            else -> {
+            }
         }
     }
 
@@ -841,9 +893,10 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun showAppUpdateSuccessSnack(actionListener: View.OnClickListener) {
         uiMessageResolver.getRestartSnack(
-                stringResId = R.string.update_downloaded,
-                actionListener = actionListener)
-                .show()
+            stringResId = R.string.update_downloaded,
+            actionListener = actionListener
+        )
+            .show()
     }
 
     /**
@@ -851,8 +904,10 @@ class MainActivity : AppUpgradeActivity(),
      * Display a failure snack bar and ask users to retry
      */
     override fun showAppUpdateFailedSnack(actionListener: View.OnClickListener) {
-        uiMessageResolver.getRetrySnack(R.string.update_failed,
-                actionListener = actionListener)
-                .show()
+        uiMessageResolver.getRetrySnack(
+            R.string.update_failed,
+            actionListener = actionListener
+        )
+            .show()
     }
 }

@@ -26,7 +26,7 @@ open class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListene
     private var confirmed: Boolean = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(context)
+        val builder = MaterialAlertDialogBuilder(requireActivity())
         val view = View.inflate(activity, R.layout.confirmation_dialog, null)
 
         headerText = view.findViewById(R.id.confirmationDialog_header)

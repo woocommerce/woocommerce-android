@@ -33,7 +33,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
         viewModelFactory.get()
     }
 
-    private var doneOrUpdateMenuItem: MenuItem? = null
+    protected var doneOrUpdateMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +59,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false

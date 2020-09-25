@@ -105,14 +105,16 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun fetchShipmentTrackingsFromApi(order: WCOrderModel) {
-        val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+        val payload = FetchOrderShipmentTrackingsPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
     /**
      * Segregating methods that request data from db for better ui testing
      */
-    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(order)
+    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(
+        selectedSite.get(), order.id
+    )
 
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
@@ -166,7 +168,9 @@ class OrderFulfillmentPresenter @Inject constructor(
                     Stat.ORDER_TRACKING_DELETE, mapOf(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_FULFILL
             ))
-            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            val payload = DeleteOrderShipmentTrackingPayload(
+                selectedSite.get(), order.id, order.remoteOrderId, wcOrderShipmentTrackingModel
+            )
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
     }

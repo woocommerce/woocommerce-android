@@ -6,7 +6,7 @@
     android:id="@+id/categoryItemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground">
 
     <CheckedTextView
         android:id="@+id/parentCategoryName"

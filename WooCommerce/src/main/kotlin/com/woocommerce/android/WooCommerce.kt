@@ -73,6 +73,8 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
+    @Inject lateinit var prefs: AppPrefs
+
     private var connectionReceiverRegistered = false
 
     open val component: AppComponent by lazy {
@@ -116,20 +118,18 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             SqlScoutServer.create(this, getPackageName())
         }
 
-        // We init Crash Logging further down using the selected site and account, but we also want to init it here
-        // to catch crashes that may occur before we can access the site and account (most notably crashes with
-        // initializing WellSql). In order to do this, we must first init AppPrefs since Crash Logging uses it.
-        AppPrefs.init(this)
+        val wellSqlConfig = WooWellSqlConfig(applicationContext)
+        WellSql.init(wellSqlConfig)
+
+        CrashUtils.initCrashLogging(this)
+
+        component.inject(this)
+
+        FeedbackPrefs.init(this)
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
-        CrashUtils.initCrashLogging(this)
-
-        val wellSqlConfig = WooWellSqlConfig(applicationContext)
-        WellSql.init(wellSqlConfig)
-
-        component.inject(this)
         dispatcher.register(this)
 
         AppRatingDialog.init(this)
@@ -255,14 +255,14 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     private fun trackStartupAnalytics() {
         // Track app upgrade and install
         val versionCode = PackageUtils.getVersionCode(this)
-        val oldVersionCode = AppPrefs.getLastAppVersionCode()
+        val oldVersionCode = prefs.getLastAppVersionCode()
 
         if (oldVersionCode == 0) {
             AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
 
             // Store the current app version code to SharedPrefs, even if the value is -1
             // to prevent duplicate install events being called
-            AppPrefs.setLastAppVersionCode(versionCode)
+            prefs.setLastAppVersionCode(versionCode)
         } else if (oldVersionCode < versionCode) {
             // Track upgrade event only if oldVersionCode is not -1, to prevent
             // duplicate upgrade events being called
@@ -272,7 +272,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
 
             // store the latest version code to SharedPrefs, only if the value
             // is greater than the stored version code
-            AppPrefs.setLastAppVersionCode(versionCode)
+            prefs.setLastAppVersionCode(versionCode)
         } else if (versionCode == PACKAGE_VERSION_CODE_DEFAULT) {
             // we are not able to read the current app version code
             // track this event along with the last stored version code
@@ -298,7 +298,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             zendeskHelper.reset()
 
             // Wipe user-specific preferences
-            AppPrefs.reset()
+            prefs.reset()
         } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             // make sure local usage tracking matches the account setting
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats

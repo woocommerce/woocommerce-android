@@ -72,7 +72,7 @@ class OrderStatusSelectorDialog : androidx.fragment.app.DialogFragment() {
         } else {
             resources.getString(R.string.orderstatus_select_status)
         }
-        return MaterialAlertDialogBuilder(context)
+        return MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(title)
                 .setCancelable(true)
                 .setSingleChoiceItems(orderStatusMap.values.toTypedArray(), selectedIndex) { _, which ->

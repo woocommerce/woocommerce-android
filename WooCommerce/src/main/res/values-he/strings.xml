@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-02 14:54:04+0000
+Translation-Revision-Date: 2020-09-16 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_type_variation_desc">מוצר עם סוגים כגון צבע או מידה</string>
+    <string name="product_selection_count_single">%d המוצר נבחר</string>
+    <string name="product_selection_count">%d מוצרים נבחרו</string>
+    <string name="grouped_product_empty">להוסיף מוצרים לקבוצה</string>
+    <string name="grouped_product_add">הוספת מוצר</string>
+    <string name="product_visibility_password_protected_hint">יש להזין סיסמה</string>
     <string name="feedback_completed_back_to_store_button_text">בחזרה לחנות</string>
     <string name="feedback_completed_contact_us">ניתן ליצור איתנו קשר כאן</string>
     <string name="feedback_completed_description">לתשומת ליבך, זה לא כרטיס תמיכה ולא נוכל לענות למשוב באופן פרטי.\n\nנדרשת לך עזרה? %1$s</string>
@@ -34,7 +40,7 @@ Language: he_IL
     <string name="product_variation_no_price_set">טרם צוין מחיר</string>
     <string name="product_variation_enabled">הופעל</string>
     <string name="product_pricing_scheduled_sale_price_error">עליך להגדיר את מחיר המבצע אם נקבע לוח זמנים למבצע</string>
-    <string name="product_wip_message">כעת אפשר להוסיף מוצרים בקבוצות, מוצרים חיצוניים ומוצרים עם סוגים שונים, לשנות את סוג המוצר ולעדכן את הקטגוריות והתגיות</string>
+    <string name="product_wip_message_m3">כעת אפשר להוסיף מוצרים בקבוצות, מוצרים חיצוניים ומוצרים עם סוגים שונים, לשנות את סוג המוצר ולעדכן את הקטגוריות והתגיות.</string>
     <string name="product_reviews_count">\u2022 %d ביקורות</string>
     <string name="product_review_list_item_title">⁦%1$s⁩ הוסיפו ביקורת</string>
     <string name="feedback_request_like_it">אהבתי</string>
@@ -53,6 +59,7 @@ Language: he_IL
     <string name="orderdetail_shipping_label_request_refund">בקשה להחזר כספי</string>
     <string name="orderdetail_shipping_label_item_menu">לבצע החזר כספי על תווית המשלוח</string>
     <string name="product_variation_disabled">הושבת</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">מוצרים שנותרו</string>
     <string name="product_add_category_dialog_message">נא להמתין…</string>
     <string name="product_add_category_dialog_title">מוסיף קטגוריות</string>
     <string name="product_category_parent">קטגוריית אב</string>
@@ -70,6 +77,7 @@ Language: he_IL
     <string name="settings_privacy_policy_ca">הצהרת פרטיות למשתמשים מקליפורניה</string>
     <string name="keep_changes">לשמור את השינויים</string>
     <string name="product_sale_date_to">עד %1$s</string>
+    <string name="product_wip_message_m2">הוספנו עוד אפשרויות עריכה למוצרים! כעת אפשר לעדכן תמונות, להציג תצוגה מקדימה ולשתף את המוצרים שלך.</string>
     <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
     <string name="product_limited_editing_title">עריכה מוגבלת זמינה</string>
     <string name="orderdetail_product_multiple">מוצרים</string>
