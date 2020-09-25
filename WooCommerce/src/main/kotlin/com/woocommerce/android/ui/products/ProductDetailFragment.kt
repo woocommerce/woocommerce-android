@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -103,7 +104,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         initializeViewModel()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_TRASH) == true) {
-            confirmTrashProduct()
+            confirmTrashProduct(viewModel.getRemoteProductId())
         }
     }
 
@@ -200,6 +201,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is RefreshMenu -> activity?.invalidateOptionsMenu()
+                is TrashProduct -> confirmTrashProduct(event.remoteProductId)
                 else -> event.isHandled = false
             }
         })
@@ -310,7 +312,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             }
 
             R.id.menu_trash_product -> {
-                confirmTrashProduct()
+                viewModel.onTrashButtonClicked()
                 true
             }
 
@@ -338,14 +340,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun confirmTrashProduct() {
+    private fun confirmTrashProduct(remoteProductId: Long) {
         isConfirmingTrash = true
         CustomDiscardDialog.showDiscardDialog(
             requireActivity(),
             posBtnAction = DialogInterface.OnClickListener { _, _ ->
                 isConfirmingTrash = false
                 navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
-                    it.putLong(KEY_REMOTE_PRODUCT_ID, viewModel.getRemoteProductId())
+                    it.putLong(KEY_REMOTE_PRODUCT_ID, remoteProductId)
                     it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
                 })
             },

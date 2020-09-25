@@ -154,7 +154,7 @@ class ProductListRepository @Inject constructor(
                 dispatcher.dispatch(WCProductActionBuilder.newDeleteProductAction(payload))
             } ?: false
         } catch (e: CancellationException) {
-            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while deleting product")
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while trashing product")
             false
         }
     }

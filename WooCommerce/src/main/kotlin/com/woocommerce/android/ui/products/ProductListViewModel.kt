@@ -241,35 +241,35 @@ class ProductListViewModel @AssistedInject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (networkStatus.isConnected()) {
-            if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
-            } else {
-                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
-                    // make sure the search query hasn't changed while the fetch was processing
-                    if (searchQuery == productRepository.lastSearchQuery) {
-                        if (loadMore) {
-                            _productList.value = _productList.value.orEmpty() + fetchedProducts
-                        } else {
-                            _productList.value = fetchedProducts
-                        }
+        if (!checkConnection()) {
+            return
+        }
+
+        if (searchQuery.isNullOrEmpty()) {
+            _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
+        } else {
+            productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+                // make sure the search query hasn't changed while the fetch was processing
+                if (searchQuery == productRepository.lastSearchQuery) {
+                    if (loadMore) {
+                        _productList.value = _productList.value.orEmpty() + fetchedProducts
                     } else {
-                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+                        _productList.value = fetchedProducts
                     }
+                } else {
+                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                 }
             }
-
-            viewState = viewState.copy(
-                    isLoading = true,
-                    canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true,
-                    displaySortAndFilterCard = (
-                            productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-                            )
-            )
-        } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
+
+        viewState = viewState.copy(
+            isLoading = true,
+            canLoadMore = productRepository.canLoadMoreProducts,
+            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            displaySortAndFilterCard = (
+                productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+                )
+        )
 
         viewState = viewState.copy(
                 isSkeletonShown = false,
@@ -293,6 +293,18 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Returns true if the network is connected, otherwise shows an offline snackbar and returns false
+     */
+    fun checkConnection(): Boolean {
+        return if (networkStatus.isConnected()) {
+            true
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            false
+        }
+    }
+
     fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
 
     fun removeProductFromDb(remoteProductId: Long) {
@@ -304,12 +316,17 @@ class ProductListViewModel @AssistedInject constructor(
     fun addProductToDb(product: Product) {
         if (productRepository.addProductToDb(product)) {
             reloadProductsFromDb()
+            // TODO figure out why product isn't restored to the list
         }
     }
 
     fun trashProduct(remoteProductId: Long) {
-        launch {
-            productRepository.trashProduct(remoteProductId)
+        if (checkConnection()) {
+            launch {
+                if (!productRepository.trashProduct(remoteProductId)) {
+                    triggerEvent(ShowSnackbar(R.string.product_trash_error))
+                }
+            }
         }
     }
 

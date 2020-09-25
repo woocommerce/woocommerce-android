@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -204,6 +205,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
+        }
+    }
+
+    /**
+     * Called when the Trash menu item is clicked in Product detail screen
+     */
+    fun onTrashButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(TrashProduct(it.remoteId))
         }
     }
 
@@ -583,6 +593,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductEditAction()
     }
 
+    fun checkConnection(): Boolean {
+        return if (networkStatus.isConnected()) {
+            true
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            false
+        }
+    }
+
     private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
@@ -670,7 +689,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
-        if (networkStatus.isConnected()) {
+        if (checkConnection()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
@@ -679,7 +698,6 @@ class ProductDetailViewModel @AssistedInject constructor(
                 triggerEvent(Exit)
             }
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -717,7 +735,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun updateProduct(product: Product) {
-        if (networkStatus.isConnected()) {
+        if (checkConnection()) {
             if (productRepository.updateProduct(product)) {
                 if (viewState.isPasswordChanged) {
                     val password = viewState.draftPassword
@@ -739,8 +757,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -751,7 +767,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun addProduct(product: Product) {
-        if (networkStatus.isConnected()) {
+        if (checkConnection()) {
             val result = productRepository.addProduct(product)
             val isSuccess = result.first
             val newProductRemoteId = result.second
@@ -767,8 +783,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
             }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
         }
         viewState = viewState.copy(isProgressDialogShown = false)
     }
@@ -1204,6 +1218,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
+    data class TrashProduct(val remoteProductId: Long): Event()
     object RefreshMenu : Event()
 
     /**

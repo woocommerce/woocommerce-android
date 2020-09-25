@@ -339,12 +339,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 // User chose to trash from product detail, but we do the actual trashing here
                 // so we can show a snackbar enabling the user to undo the trashing.
                 val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
-                showTrashSnackbar(remoteProductId)
+                trashProduct(remoteProductId)
             }
         }
     }
 
-    private fun showTrashSnackbar(remoteProductId: Long) {
+    private fun trashProduct(remoteProductId: Long) {
         val product = viewModel.getProduct(remoteProductId)
         if (product == null) {
             ToastUtils.showToast(requireActivity(), R.string.product_detail_fetch_product_error)
