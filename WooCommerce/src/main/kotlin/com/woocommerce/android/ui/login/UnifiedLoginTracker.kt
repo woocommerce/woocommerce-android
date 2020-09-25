@@ -23,7 +23,8 @@ class UnifiedLoginTracker
             value?.let { flow -> AppPrefs.setUnifiedLoginLastFlow(flow.value) }
             field = value
         }
-    private var currentStep: Step? = null
+    var currentStep: Step? = null
+        private set
 
     @JvmOverloads
     fun track(
@@ -139,7 +140,8 @@ class UnifiedLoginTracker
         LOGIN_STORE_CREDS("login_store_creds"),
         LOGIN_SITE_ADDRESS("login_site_address"),
         SIGNUP("signup"),
-        GOOGLE_SIGNUP("google_signup")
+        GOOGLE_SIGNUP("google_signup"),
+        EPILOGUE("epilogue")
     }
 
     enum class Step(val value: String) {

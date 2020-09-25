@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
@@ -64,6 +65,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         private const val KEY_CLICKED_SITE_ID = "clicked_site_id"
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_UNIFIED_TRACKER_STEP = "KEY_UNIFIED_TRACKER_STEP"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -174,12 +176,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             if (calledFromLogin) {
                 unifiedLoginTracker.setSource(bundle.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
                 unifiedLoginTracker.setFlow(bundle.getString(KEY_UNIFIED_TRACKER_FLOW))
+                bundle.getString(KEY_UNIFIED_TRACKER_STEP)?.let { stepString ->
+                    Step.fromValue(stepString)?.let { unifiedLoginTracker.setStep(it) }
+                }
             }
         } ?: run {
             // Set unified login tracker source and flow
             if (calledFromLogin) {
                 AppPrefs.getUnifiedLoginLastSource()?.let { unifiedLoginTracker.setSource(it) }
-                AppPrefs.getUnifiedLoginLastFlow()?.let { unifiedLoginTracker.setFlow(it) }
+                unifiedLoginTracker.track(Flow.EPILOGUE, Step.START)
             }
 
             // Signin M1: If using a url to login, we skip showing the store list
@@ -224,6 +229,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
             }
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, unifiedLoginTracker.getSource().value)
+            outState.putString(KEY_UNIFIED_TRACKER_STEP, unifiedLoginTracker.currentStep?.value)
         }
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
