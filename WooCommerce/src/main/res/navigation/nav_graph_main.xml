@@ -285,6 +285,11 @@
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"/>
+        <action
+            android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
+            app:destination="@id/printShippingLabelInfoFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"/>
     </fragment>
     <dialog
         android:id="@+id/shippingLabelPaperSizeSelectorDialog"
@@ -293,6 +298,9 @@
             android:name="currentPaperSize"
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog$ShippingLabelPaperSize" />
     </dialog>
+    <fragment
+        android:id="@+id/printShippingLabelInfoFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelInfoFragment"/>
 
     <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
     <action

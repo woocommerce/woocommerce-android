@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -68,6 +69,11 @@ class OrderNavigator @Inject constructor() {
                     .actionPrintShippingLabelFragmentToShippingLabelPaperSizeSelectorDialog(
                         target.currentPaperSize
                     )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewPrintShippingLabelInfo -> {
+                val action = PrintShippingLabelFragmentDirections
+                    .actionPrintShippingLabelFragmentToPrintShippingLabelInfoFragment()
                 fragment.findNavController().navigateSafely(action)
             }
         }

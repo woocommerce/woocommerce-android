@@ -50,6 +50,7 @@ class PrintShippingLabelFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         shippingLabelPrint_paperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
         shippingLabelPrint_btn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
+        shippingLabelPrint_infoView.setOnClickListener { viewModel.onPrintShippingLabelInfoSelected() }
     }
 
     private fun setupObservers(viewModel: PrintShippingLabelViewModel) {
