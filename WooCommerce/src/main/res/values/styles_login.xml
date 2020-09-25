@@ -26,6 +26,20 @@
 
         <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+
+        <!-- Custom Widgets -->
+        <item name="tagViewStyle">@style/Woo.Tag</item>
+        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+        <item name="settingsToggleOptionStyle">@style/Widget.Woo.Settings.OptionToggle</item>
+        <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
+        <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
+        <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcToggleOutlinedButtonStyle">@style/Widget.Woo.WCToggleOutlinedButton</item>
+        <item name="wcToggleOutlinedSelectorButtonStyle">@style/Widget.Woo.WCToggleOutlinedSelectorButton</item>
+        <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
+        <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
+        <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
+        <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
     </style>
 
     <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
