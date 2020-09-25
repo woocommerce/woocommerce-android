@@ -1,5 +1,6 @@
 5.2
 -----
+* Added the ability to send a product to the trash
  
 5.1
 -----
