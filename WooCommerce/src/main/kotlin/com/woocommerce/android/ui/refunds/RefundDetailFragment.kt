@@ -74,7 +74,7 @@ class RefundDetailFragment : BaseFragment() {
                         imageMap,
                         isProductDetailList = true,
                         onItemClicked = { uniqueId ->
-                            (activity as? MainNavigationRouter)?.showProductDetail(uniqueId)
+                            (activity as? MainNavigationRouter)?.showProductDetail(uniqueId, enableTrash = false)
                         }
                 )
             }

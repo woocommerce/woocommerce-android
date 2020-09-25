@@ -470,7 +470,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showProductDetails(remoteProductId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
 
     private fun showProductTypesBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()

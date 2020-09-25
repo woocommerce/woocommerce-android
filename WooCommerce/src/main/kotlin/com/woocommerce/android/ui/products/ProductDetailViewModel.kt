@@ -174,6 +174,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     val isAddFlow: Boolean
         get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
+    /**
+     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable trash menu
+     */
+    val isTrashEnabled: Boolean
+        get() = navArgs.isTrashEnabled && !isAddFlow
+
     init {
         start()
     }
@@ -1218,7 +1224,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-    data class TrashProduct(val remoteProductId: Long): Event()
+    data class TrashProduct(val remoteProductId: Long) : Event()
     object RefreshMenu : Event()
 
     /**

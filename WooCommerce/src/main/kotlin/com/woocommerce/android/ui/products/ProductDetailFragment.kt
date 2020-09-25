@@ -261,9 +261,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
         menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_product_settings).isVisible = true
-        menu.findItem(R.id.menu_trash_product).isVisible = !viewModel.isAddFlow
-
-        // TODO: we should show the trash menu item only when product detail is shown from the product list
+        menu.findItem(R.id.menu_trash_product).isVisible = viewModel.isTrashEnabled
 
         when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
