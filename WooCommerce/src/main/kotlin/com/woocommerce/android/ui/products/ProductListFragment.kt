@@ -345,13 +345,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun trashProduct(remoteProductId: Long) {
+        // get the product from the db so we can restore it if user chooses to Undo
         val product = viewModel.getProduct(remoteProductId)
         if (product == null) {
             ToastUtils.showToast(requireActivity(), R.string.product_detail_fetch_product_error)
             return
         }
 
-        // first remove it from the db only
+        // remove the product from the db only
         viewModel.removeProductFromDb(remoteProductId)
 
         var trashProductCancelled = false

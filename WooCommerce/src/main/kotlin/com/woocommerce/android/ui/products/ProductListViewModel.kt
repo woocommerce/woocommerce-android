@@ -296,7 +296,7 @@ class ProductListViewModel @AssistedInject constructor(
     /**
      * Returns true if the network is connected, otherwise shows an offline snackbar and returns false
      */
-    fun checkConnection(): Boolean {
+    private fun checkConnection(): Boolean {
         return if (networkStatus.isConnected()) {
             true
         } else {
@@ -316,7 +316,6 @@ class ProductListViewModel @AssistedInject constructor(
     fun addProductToDb(product: Product) {
         if (productRepository.addProductToDb(product)) {
             reloadProductsFromDb()
-            // TODO figure out why product isn't restored to the list
         }
     }
 
