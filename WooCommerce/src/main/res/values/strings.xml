@@ -243,6 +243,7 @@
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
+    <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>

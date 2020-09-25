@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_shipping_label_refund.*
+import dagger.Lazy
 import javax.inject.Inject
 
 class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
@@ -29,9 +30,9 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
         const val KEY_REFUND_SHIPPING_LABEL_RESULT = "key_refund_shipping_label_result"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     val viewModel: ShippingLabelRefundViewModel
-        by navGraphViewModels(R.id.nav_graph_shipping_labels) { viewModelFactory }
+        by navGraphViewModels(R.id.nav_graph_shipping_labels) { viewModelFactory.get() }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
