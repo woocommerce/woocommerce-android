@@ -25,7 +25,9 @@ import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -111,9 +113,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         orderDetailViewState.orderStatus?.let { orderStatus ->
             triggerEvent(
                 ViewOrderStatusSelector(
-                currentStatus = orderStatus.statusKey,
-                orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
-            ))
+                    currentStatus = orderStatus.statusKey,
+                    orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+                ))
         }
     }
 
@@ -124,6 +126,16 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun onViewRefundedProductsClicked() {
         order?.let { triggerEvent(ViewRefundedProducts(remoteOrderId = it.remoteId)) }
     }
+
+    fun onAddOrderNoteClicked() {
+        order?.let { triggerEvent(AddOrderNote(orderIdentifier = it.identifier, orderNumber = it.number)) }
+    }
+
+    fun onRefundShippingLabelClick(shippingLabelId: Long) {
+        order?.let { triggerEvent(RefundShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
+    }
+
+    fun onShippingLabelRefunded() { launch { loadOrderShippingLabels() } }
 
     fun onOrderItemRefunded() {
         launch { fetchOrder(false) }
@@ -155,6 +167,27 @@ class OrderDetailViewModel @AssistedInject constructor(
         orderDetailViewState = orderDetailViewState.copy(
             orderStatus = newOrderStatus
         )
+    }
+
+    fun onNewOrderNoteAdded(orderNote: OrderNote) {
+        if (networkStatus.isConnected()) {
+            val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
+            orderNotes.add(0, orderNote)
+            _orderNotes.value = orderNotes
+
+            triggerEvent(ShowSnackbar(string.add_order_note_added))
+            launch {
+                if (!orderDetailRepository
+                        .addOrderNote(orderIdSet.id, orderIdSet.remoteOrderId, orderNote.toDataModel())
+                ) {
+                    triggerEvent(ShowSnackbar(string.add_order_note_error))
+                    orderNotes.remove(orderNote)
+                    _orderNotes.value = orderNotes
+                }
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
     }
 
     private fun updateOrderStatus(newStatus: String) {

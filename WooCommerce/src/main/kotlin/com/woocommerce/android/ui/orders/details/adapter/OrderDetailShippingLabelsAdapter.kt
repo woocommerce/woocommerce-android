@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
@@ -24,7 +25,8 @@ import java.math.BigDecimal
 
 class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
-    private val productImageMap: ProductImageMap
+    private val productImageMap: ProductImageMap,
+    private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -41,7 +43,9 @@ class OrderDetailShippingLabelsAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ShippingLabelsViewHolder {
-        return ShippingLabelsViewHolder(parent, viewPool, productImageMap, formatCurrencyForDisplay)
+        return ShippingLabelsViewHolder(
+            parent, viewPool, productImageMap, formatCurrencyForDisplay, onRefundRequested
+        )
     }
 
     override fun onBindViewHolder(holder: ShippingLabelsViewHolder, position: Int) {
@@ -54,7 +58,8 @@ class OrderDetailShippingLabelsAdapter(
         parent: ViewGroup,
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
-        private val formatCurrencyForDisplay: (BigDecimal) -> String
+        private val formatCurrencyForDisplay: (BigDecimal) -> String,
+        private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
     ) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
     ) {
@@ -111,7 +116,7 @@ class OrderDetailShippingLabelsAdapter(
                     ))
                     setShippingLabelValue(shippingLabel.trackingNumber)
                     itemView.shippingLabelList_btnMenu.setOnClickListener {
-                        // TODO: popup to request a refund
+                        showRefundPopup(shippingLabel, onRefundRequested)
                     }
 
                     // display tracking link if available
@@ -180,6 +185,20 @@ class OrderDetailShippingLabelsAdapter(
                     )
                 )
             }
+        }
+
+        private fun showRefundPopup(
+            shippingLabel: ShippingLabel,
+            onItemSelected: (shippingLabel: ShippingLabel) -> Unit
+        ) {
+            val popup = PopupMenu(itemView.context, itemView.shippingLabelList_btnMenu)
+            popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
+
+            popup.menu.findItem(R.id.menu_refund)?.setOnMenuItemClickListener {
+                onItemSelected(shippingLabel)
+                true
+            }
+            popup.show()
         }
     }
 
