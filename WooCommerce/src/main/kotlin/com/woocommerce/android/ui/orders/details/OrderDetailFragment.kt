@@ -27,6 +27,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
@@ -99,8 +100,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
                 showOrderNotesSkeleton(it)
             }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
-                orderDetail_shipmentList.isVisible = it
-                orderDetail_shipmentList.showAddTrackingButton(it)
+                showAddShipmentTracking(it)
             }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 orderRefreshLayout.isRefreshing = it
@@ -127,7 +127,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUndoSnackbar -> {
-                    displayOrderStatusChangeSnackbar(event.message, event.undoAction, event.dismissAction)
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -144,6 +144,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
         }
         handleResult<Boolean>(ShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded()
+        }
+        handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
+            viewModel.onNewShipmentTrackingAdded(it)
         }
     }
 
@@ -226,9 +229,18 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
         }.otherwise { orderDetail_productList.hide() }
     }
 
-    private fun showShipmentTrackings(shipmentTrackings: List<OrderShipmentTracking>) {
-        shipmentTrackings.whenNotNullNorEmpty {
-            orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings)
+    private fun showAddShipmentTracking(show: Boolean) {
+        with(orderDetail_shipmentList) {
+            isVisible = show
+            showAddTrackingButton(show) { viewModel.onAddShipmentTrackingClicked() }
+        }
+    }
+
+    private fun showShipmentTrackings(
+        shipmentTrackings: List<OrderShipmentTracking>
+    ) {
+        orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings) {
+            viewModel.onDeleteShipmentTrackingClicked(it)
         }
     }
 
@@ -248,7 +260,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
         }.otherwise { orderDetail_shippingLabelList.hide() }
     }
 
-    private fun displayOrderStatusChangeSnackbar(
+    private fun displayUndoSnackbar(
         message: String,
         actionListener: View.OnClickListener,
         dismissCallback: Snackbar.Callback

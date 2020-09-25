@@ -16,10 +16,9 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_shipping_label_list_item.view.*
 import java.math.BigDecimal
 
@@ -109,7 +108,7 @@ class OrderDetailShippingLabelsAdapter(
                             formatCurrencyForDisplay(shippingLabel.rate),
                             shippingLabel.refund.refundDate?.formatToMMMddYYYYhhmm() ?: ""
                         ))
-                    showTrackingLinkButton(false)
+                    showTrackingItemButton(false)
                 } else {
                     setShippingLabelTitle(context.getString(
                         R.string.order_shipment_tracking_number_label
@@ -120,11 +119,15 @@ class OrderDetailShippingLabelsAdapter(
                     }
 
                     // display tracking link if available
-                    showTrackingLinkButton(true)
-                    setTrackingLinkClickListener {
-                        ChromeCustomTabUtils.launchUrl(context, shippingLabel.trackingLink)
-                        AppRatingDialog.incrementInteractions()
-                    }
+                    if (shippingLabel.trackingNumber.isNotEmpty()) {
+                        showTrackingItemButton(true)
+                        setTrackingItemClickListener {
+                            OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
+                                getTrackingItemButton(), context, shippingLabel.trackingLink,
+                                shippingLabel.trackingNumber
+                            )
+                        }
+                    } else showTrackingItemButton(false)
                 }
             }
 
