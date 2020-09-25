@@ -99,4 +99,4 @@ sentry.properties
 # Markdown Extensions
 .markdownlint.json
 
-included-builds.txt
+local-builds.gradle

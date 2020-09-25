@@ -154,25 +154,13 @@ dependencies {
 
     implementation 'com.automattic:tracks:1.2.1'
 
-    if (project.findProperty("localFluxC")) {
-        println "Building FluxC from local directory"
-        implementation("org.wordpress:fluxc") {
-            exclude group: "com.android.support"
-            exclude group: "org.wordpress", module: "utils"
-        }
-        implementation("org.wordpress:woocommerce") {
-            exclude group: "com.android.support"
-            exclude group: "org.wordpress", module: "utils"
-        }
-    } else {
-        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
-            exclude group: "com.android.support"
-            exclude group: "org.wordpress", module: "utils"
-        }
-        implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:woocommerce:$fluxCVersion") {
-            exclude group: "com.android.support"
-            exclude group: "org.wordpress", module: "utils"
-        }
+    implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("$gradle.ext.fluxCBinaryPath:woocommerce:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
     }
 
     implementation(project(path: ':libs:login:WordPressLoginFlow')) {
