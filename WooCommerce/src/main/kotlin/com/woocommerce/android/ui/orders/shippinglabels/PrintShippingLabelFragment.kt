@@ -51,6 +51,7 @@ class PrintShippingLabelFragment : BaseFragment() {
         shippingLabelPrint_paperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
         shippingLabelPrint_btn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
         shippingLabelPrint_infoView.setOnClickListener { viewModel.onPrintShippingLabelInfoSelected() }
+        shippingLabelPrint_pageOptionsView.setOnClickListener { viewModel.onViewLabelFormatOptionsClicked() }
     }
 
     private fun setupObservers(viewModel: PrintShippingLabelViewModel) {

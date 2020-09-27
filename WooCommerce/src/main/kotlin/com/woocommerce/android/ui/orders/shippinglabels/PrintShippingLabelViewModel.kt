@@ -8,6 +8,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -34,6 +35,10 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
 
     fun onPrintShippingLabelInfoSelected() {
         triggerEvent(ViewPrintShippingLabelInfo)
+    }
+
+    fun onViewLabelFormatOptionsClicked() {
+        triggerEvent(ViewShippingLabelFormatOptions)
     }
 
     fun onPaperSizeOptionsSelected() {
