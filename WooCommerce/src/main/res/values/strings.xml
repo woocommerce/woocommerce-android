@@ -311,7 +311,7 @@
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
-    Print label Refunds
+        Print label Refunds
     -->
     <string name="shipping_label_print_message">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
     <string name="shipping_label_paper_size">Paper size</string>
@@ -323,6 +323,15 @@
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
+    <string name="print_shipping_label_info_title">Print with your phone</string>
+    <string name="print_shipping_label_info_step_count_1" translatable="false">1</string>
+    <string name="print_shipping_label_info_step_count_2" translatable="false">2</string>
+    <string name="print_shipping_label_info_step_count_3" translatable="false">3</string>
+    <string name="print_shipping_label_info_step_count_4" translatable="false">4</string>
+    <string name="print_shipping_label_info_step_1">Make sure your printer and your phone are connected to the <b>same wifi networks</b></string>
+    <string name="print_shipping_label_info_step_2">After selecting <b>\"Print shipping label\"</b>, you should see a modal with the print layout of your label. \n\nSelect \"Save as PDF\" and select <b>\"All printers\"</b> > <b>\"Add printer\"</b></string>
+    <string name="print_shipping_label_info_step_3">You can select your phone\'s <b>default print service</b> or install your <b>printer\'s brand app</b> (this should appear as a recommended option)</string>
+    <string name="print_shipping_label_info_step_4">After loading, you should <b>see your printer appear</b> in the list of options. Select it and select <b>\"Print\"</b> on the print layout modal.</string>
 
     <!--
         Refunds
