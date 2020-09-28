@@ -179,7 +179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable trash menu
      */
     val isTrashEnabled: Boolean
-        get() = navArgs.isTrashEnabled && !isAddFlow
+        get() = navArgs.isTrashEnabled && !isAddFlow && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
 
     init {
         start()
