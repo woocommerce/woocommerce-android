@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.feedback
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -92,12 +91,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         webView.saveState(outState)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onDestroy() {
         if (surveyCompleted.not()) {
             AnalyticsTracker.track(
@@ -129,8 +122,12 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         webViewClient = surveyWebViewClient
     }
 
+    /**
+     * We use this dismissAllowingStateLoss for dialog dismissal to avoid any kind of commit operation
+     * from the [FragmentManager] after the `onSaveInstanceState` is called
+     */
     private fun hideProgressDialog() {
-        progressDialog?.dismiss()
+        progressDialog?.dismissAllowingStateLoss()
         progressDialog = null
     }
 
