@@ -155,6 +155,7 @@ class UnifiedLoginTracker
         SUCCESS("success"),
         HELP("help"),
         SHOW_EMAIL_HINTS("show_email_hints"),
+        CONNECTION_ERROR("connection_error"),
         WRONG_WP_ACCOUNT("wrong_wordpress_account"),
         NO_WOO_STORES("no_woo_stores"),
         SITE_LIST("site_list"),
@@ -188,7 +189,9 @@ class UnifiedLoginTracker
         VIEW_CONNECTED_STORES("view_connected_stores"),
         TRY_ANOTHER_ACCOUNT("try_another_account"),
         HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
-        REFRESH_APP("refresh_app")
+        REFRESH_APP("refresh_app"),
+        HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
+        TRY_AGAIN("try_again")
     }
 
     companion object {
