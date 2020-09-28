@@ -17,6 +17,11 @@ internal abstract class WooLoginFragmentModule {
     @ContributesAndroidInjector(modules = [MagicLinkInterceptModule::class])
     internal abstract fun magicLinkInterceptFragment(): MagicLinkInterceptFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun loginEmailHelpDialogFragment(): LoginEmailHelpDialogFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    internal abstract fun loginDiscoveryErrorFragment(): LoginDiscoveryErrorFragment
 }

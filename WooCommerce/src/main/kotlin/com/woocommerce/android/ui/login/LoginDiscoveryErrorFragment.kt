@@ -16,8 +16,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_discovery_error.*
 import org.wordpress.android.login.LoginListener
+import javax.inject.Inject
 
 class LoginDiscoveryErrorFragment : Fragment() {
     companion object {
@@ -52,6 +56,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var errorMessage: Int? = null
 
@@ -100,6 +105,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
         with(discovery_wordpress_option_view) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
+                unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
                 jetpackLoginListener?.showEmailLoginScreen(siteAddress)
             }
         }
@@ -107,6 +113,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
         with(discovery_troubleshoot_option_view) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
+                unifiedLoginTracker.trackClick(Click.HELP_TROUBLESHOOTING_TIPS)
                 jetpackLoginListener?.showJetpackTroubleshootingTips()
             }
         }
@@ -114,6 +121,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
         with(discovery_try_option_view) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
+                unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
                         siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
@@ -137,6 +145,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
@@ -154,5 +163,6 @@ class LoginDiscoveryErrorFragment : Fragment() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
+        unifiedLoginTracker.track(step = Step.CONNECTION_ERROR)
     }
 }
