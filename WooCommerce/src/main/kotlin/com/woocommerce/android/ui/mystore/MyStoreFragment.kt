@@ -343,7 +343,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
         removeTabLayoutFromAppBar(tabLayout)
-        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId, enableTrash = false)
+        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {

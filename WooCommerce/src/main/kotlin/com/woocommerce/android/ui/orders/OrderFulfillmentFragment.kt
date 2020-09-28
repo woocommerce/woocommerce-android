@@ -197,7 +197,7 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = false)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     override fun openAddOrderShipmentTrackingScreen() {

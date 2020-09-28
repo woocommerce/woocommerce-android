@@ -301,7 +301,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        mainNavigationRouter?.showProductDetail(topEarner.id, enableTrash = false)
+        mainNavigationRouter?.showProductDetail(topEarner.id)
     }
 
     /**

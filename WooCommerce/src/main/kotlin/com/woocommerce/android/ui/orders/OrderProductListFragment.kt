@@ -60,6 +60,6 @@ class OrderProductListFragment : BaseFragment(), OrderProductListContract.View {
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = false)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 }

@@ -368,7 +368,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = false)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     override fun setOrderStatus(newStatus: String) {
