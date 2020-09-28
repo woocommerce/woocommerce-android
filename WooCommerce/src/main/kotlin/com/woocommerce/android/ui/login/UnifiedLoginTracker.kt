@@ -23,7 +23,8 @@ class UnifiedLoginTracker
             value?.let { flow -> AppPrefs.setUnifiedLoginLastFlow(flow.value) }
             field = value
         }
-    private var currentStep: Step? = null
+    var currentStep: Step? = null
+        private set
 
     @JvmOverloads
     fun track(
@@ -139,7 +140,8 @@ class UnifiedLoginTracker
         LOGIN_STORE_CREDS("login_store_creds"),
         LOGIN_SITE_ADDRESS("login_site_address"),
         SIGNUP("signup"),
-        GOOGLE_SIGNUP("google_signup")
+        GOOGLE_SIGNUP("google_signup"),
+        EPILOGUE("epilogue")
     }
 
     enum class Step(val value: String) {
@@ -152,8 +154,19 @@ class UnifiedLoginTracker
         USERNAME_PASSWORD("username_password"),
         SUCCESS("success"),
         HELP("help"),
-        SHOW_EMAIL_HINTS("SHOW_EMAIL_HINTS"),
-        CONNECTION_ERROR("connection_error")
+        SHOW_EMAIL_HINTS("show_email_hints"),
+        CONNECTION_ERROR("connection_error"),
+        WRONG_WP_ACCOUNT("wrong_wordpress_account"),
+        NO_WOO_STORES("no_woo_stores"),
+        SITE_LIST("site_list"),
+        JETPACK_NOT_CONNECTED("jetpack_not_connected"),
+        NOT_WOO_STORE("not_woo_store");
+
+        companion object {
+            private val valueMap = Step.values().associateBy(Step::value)
+
+            fun fromValue(value: String) = valueMap[value]
+        }
     }
 
     enum class Click(val value: String) {
@@ -176,6 +189,7 @@ class UnifiedLoginTracker
         VIEW_CONNECTED_STORES("view_connected_stores"),
         TRY_ANOTHER_ACCOUNT("try_another_account"),
         HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
+        REFRESH_APP("refresh_app"),
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
         TRY_AGAIN("try_again")
     }
