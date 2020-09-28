@@ -222,19 +222,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (!viewState.isConfirmingTrash) {
             triggerEvent(
                 ShowDiscardDialog(
-                    messageId = string.product_confirm_trash,
-                    positiveButtonId = string.product_trash_yes,
-                    negativeButtonId = string.cancel,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
-                            viewState = viewState.copy(isConfirmingTrash = false)
                             triggerEvent(ExitWithResult(product.remoteId))
                         }
                     },
                     negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
                         viewState = viewState.copy(isConfirmingTrash = false)
-                    }
-                )
+                    },
+                    messageId = string.product_confirm_trash,
+                    positiveButtonId = string.product_trash_yes,
+                    negativeButtonId = string.cancel
+                    )
             )
         }
     }
@@ -1240,7 +1240,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-    data class TrashProduct(val remoteProductId: Long) : Event()
     object RefreshMenu : Event()
 
     /**
