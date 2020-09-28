@@ -68,6 +68,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -218,8 +219,23 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the Trash menu item is clicked in Product detail screen
      */
     fun onTrashButtonClicked() {
-        viewState.productDraft?.let {
-            triggerEvent(TrashProduct(it.remoteId))
+        if (!viewState.isConfirmingTrash) {
+            triggerEvent(
+                ShowDiscardDialog(
+                    messageId = string.product_confirm_trash,
+                    positiveButtonId = string.product_trash_yes,
+                    negativeButtonId = string.cancel,
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState.productDraft?.let { product ->
+                            viewState = viewState.copy(isConfirmingTrash = false)
+                            triggerEvent(ExitWithResult(product.remoteId))
+                        }
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(isConfirmingTrash = false)
+                    }
+                )
+            )
         }
     }
 
@@ -1258,7 +1274,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null
+        val showBottomSheetButton: Boolean? = null,
+        val isConfirmingTrash: Boolean = false
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword

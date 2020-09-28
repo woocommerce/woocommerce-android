@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -34,7 +33,6 @@ import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
-import com.woocommerce.android.ui.products.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -43,6 +41,7 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -52,7 +51,6 @@ import org.wordpress.android.util.ActivityUtils
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
-        private const val KEY_IS_CONFIRMING_TRASH = "is_confirming_trash"
 
         const val KEY_PRODUCT_DETAIL_RESULT = "product_detail_result"
         const val KEY_PRODUCT_DETAIL_DID_TRASH = "product_detail_did_trash"
@@ -74,8 +72,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
-
-    private var isConfirmingTrash = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -102,10 +98,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         super.onViewCreated(view, savedInstanceState)
         initializeViews(savedInstanceState)
         initializeViewModel()
-
-        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_TRASH) == true) {
-            confirmTrashProduct(viewModel.getRemoteProductId())
-        }
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
@@ -201,7 +193,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is RefreshMenu -> activity?.invalidateOptionsMenu()
-                is TrashProduct -> confirmTrashProduct(event.remoteProductId)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
+                        it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
+                        it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                    })
+                }
                 else -> event.isHandled = false
             }
         })
@@ -338,26 +335,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun confirmTrashProduct(remoteProductId: Long) {
-        isConfirmingTrash = true
-        CustomDiscardDialog.showDiscardDialog(
-            requireActivity(),
-            posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                isConfirmingTrash = false
-                navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
-                    it.putLong(KEY_REMOTE_PRODUCT_ID, remoteProductId)
-                    it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
-                })
-            },
-            negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                isConfirmingTrash = false
-            },
-            messageId = R.string.product_confirm_trash,
-            positiveButtonId = R.string.product_trash_yes,
-            negativeButtonId = R.string.cancel
-        )
-    }
-
     private fun getSubmitDetailProgressDialog(): CustomProgressDialog {
         val title: Int
         val message: Int
@@ -394,7 +371,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_IS_CONFIRMING_TRASH, isConfirmingTrash)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
