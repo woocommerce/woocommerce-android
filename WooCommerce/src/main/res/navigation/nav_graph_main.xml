@@ -115,7 +115,7 @@
             app:argType="string" />
         <argument
             android:name="orderStatusList"
-            app:argType="string[]" />
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
     </dialog>
     <fragment
         android:id="@+id/addOrderNoteFragment"
