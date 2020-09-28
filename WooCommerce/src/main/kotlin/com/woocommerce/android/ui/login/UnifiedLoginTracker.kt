@@ -152,7 +152,8 @@ class UnifiedLoginTracker
         USERNAME_PASSWORD("username_password"),
         SUCCESS("success"),
         HELP("help"),
-        SHOW_EMAIL_HINTS("SHOW_EMAIL_HINTS")
+        SHOW_EMAIL_HINTS("SHOW_EMAIL_HINTS"),
+        CONNECTION_ERROR("connection_error")
     }
 
     enum class Click(val value: String) {
@@ -174,7 +175,9 @@ class UnifiedLoginTracker
         LOGIN_WITH_SITE_CREDS("login_with_site_creds"),
         VIEW_CONNECTED_STORES("view_connected_stores"),
         TRY_ANOTHER_ACCOUNT("try_another_account"),
-        HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email")
+        HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
+        HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
+        TRY_AGAIN("try_again")
     }
 
     companion object {
