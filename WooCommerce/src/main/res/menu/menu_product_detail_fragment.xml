@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/menu_save_as_draft"
-        android:title="@string/product_detail_safe_as_draft"
+        android:title="@string/product_detail_save_as_draft"
         app:showAsAction="withText" />
 
     <item

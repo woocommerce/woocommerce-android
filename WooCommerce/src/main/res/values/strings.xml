@@ -618,7 +618,7 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
-    <string name="product_detail_safe_as_draft">Save as draft</string>
+    <string name="product_detail_save_as_draft">Save as draft</string>
     <!--
         Product Add more details Bottom sheet
     -->
