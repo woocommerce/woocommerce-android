@@ -555,13 +555,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun fetchBottomSheetList() {
-        val featureFlagCondition = FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() || viewState.productDraft?.type == SIMPLE
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
-                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty() && featureFlagCondition)
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
                 }
             }
         }

@@ -65,7 +65,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         val isSimple = viewModel.getProduct().productDraft?.type == ProductType.SIMPLE
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && isSimple) {
+        if (isSimple) {
             productIsVirtual.visibility = View.VISIBLE
             productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
                 AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
@@ -76,17 +76,12 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productIsVirtual.visibility = View.GONE
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            productReviewsAllowed.visibility = View.VISIBLE
-            productReviewsAllowedDivider.visibility = View.VISIBLE
-            productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
-                viewModel.updateProductDraft(reviewsAllowed = isChecked)
-                activity?.invalidateOptionsMenu()
-            }
-        } else {
-            productReviewsAllowed.visibility = View.GONE
-            productReviewsAllowedDivider.visibility = View.GONE
+        productReviewsAllowed.visibility = View.VISIBLE
+        productReviewsAllowedDivider.visibility = View.VISIBLE
+        productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
+            viewModel.updateProductDraft(reviewsAllowed = isChecked)
+            activity?.invalidateOptionsMenu()
         }
 
         productPurchaseNote.setOnClickListener {
