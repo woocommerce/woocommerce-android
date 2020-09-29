@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -24,7 +23,6 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -148,7 +146,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
-        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+        handleResult<List<Product.Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 images = it
             )
@@ -220,7 +218,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun updateProductNameFromDetails(product: Product): String {
         return if (viewModel.isAddFlow && product.name.isEmpty()) {
-            getString(string.product_add_tool_bar_title)
+            getString(R.string.product_add_tool_bar_title)
         } else product.name.fastStripHtml()
     }
 
