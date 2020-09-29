@@ -1,0 +1,3 @@
+5.0:
+Kami telah memperbaiki crash yang terjadi saat memilih gambar produk dan saat beralih antara tema terang dan gelap pada versi Android yang lebih lama.
+

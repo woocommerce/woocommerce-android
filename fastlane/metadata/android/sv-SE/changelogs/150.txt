@@ -1,5 +1,0 @@
-4.9:
-- Tryck på den nya knappen Skicka feedback för att skicka dina idéer och förslag till oss i en CrowdSignal-undersökning.
-- Redigera produktvariationer som pris, beskrivning, lager, synlighet och frakt.
-- Experimentera med nya funktioner i avsnittet Produkter! Gå till Inställningar för att aktivera dem.
-
