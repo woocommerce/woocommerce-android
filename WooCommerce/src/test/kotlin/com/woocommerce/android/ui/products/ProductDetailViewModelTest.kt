@@ -464,7 +464,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display offline message and don't show trash confirmation when not connected`() {
+    fun `Display offline message and don't show trash confirmation dialog when not connected`() {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: ShowSnackbar? = null

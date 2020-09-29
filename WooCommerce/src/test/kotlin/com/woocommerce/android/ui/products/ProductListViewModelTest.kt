@@ -140,7 +140,6 @@ class ProductListViewModelTest : BaseUnitTest() {
         assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
     }
 
-
     @Test
     fun `Shows offline message when trashing a product without a connection`() {
         doReturn(false).whenever(networkStatus).isConnected()
