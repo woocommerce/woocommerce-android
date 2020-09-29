@@ -457,9 +457,32 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not enable trash menu item during add product flow`() {
+    fun `Do not enable trashing a product during add product flow`() {
         whenever(viewModel.isAddFlow).thenReturn(true)
         viewModel.start()
         assertThat(viewModel.isTrashEnabled).isFalse()
+    }
+
+    @Test
+    fun `Display offline message and don't show trash confirmation when not connected`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var isTrashDialogShown = false
+        viewModel.productDetailViewStateData.observeForever { old, new ->
+            new.isConfirmingTrash.takeIfNotEqualTo(false) {
+                isTrashDialogShown = true
+            }
+        }
+
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(isTrashDialogShown).isFalse()
     }
 }

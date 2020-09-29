@@ -138,4 +138,17 @@ class ProductListViewModelTest : BaseUnitTest() {
         // then
         assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
     }
+
+    @Test
+    fun `Shows undo trash snackbar correctly`() {
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.trashProduct(any())
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_trash_undo_snackbar_message))
+    }
 }

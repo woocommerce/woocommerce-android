@@ -219,7 +219,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the Trash menu item is clicked in Product detail screen
      */
     fun onTrashButtonClicked() {
-        if (!viewState.isConfirmingTrash) {
+        if (checkConnection() && !viewState.isConfirmingTrash) {
             triggerEvent(
                 ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
@@ -234,7 +234,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     messageId = string.product_confirm_trash,
                     positiveButtonId = string.product_trash_yes,
                     negativeButtonId = string.cancel
-                    )
+                )
             )
         }
     }
