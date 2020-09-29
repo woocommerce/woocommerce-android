@@ -35,6 +35,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         savedState,
         ViewState(
             inventoryData = navArgs.inventoryData,
+            isDoneButtonVisible = false,
             isIndividualSaleSwitchVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
         )
     )
@@ -62,9 +63,9 @@ class ProductInventoryViewModel @AssistedInject constructor(
             if (sku == originalSku) {
                 clearSkuError()
             } else {
-                viewState = viewState.copy(explicitlyHideDoneButton = true)
+                viewState = viewState.copy(isDoneButtonDisabled = true)
 
-                if (!productRepository.isProductSkuAvailableLocally(sku)) {
+                if (!productRepository.isSkuAvailableLocally(sku)) {
                     showSkuError()
                 } else {
                     clearSkuError()
@@ -85,7 +86,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
                             showSkuError()
                         }
 
-                        viewState = viewState.copy(explicitlyHideDoneButton = false)
+                        viewState = viewState.copy(isDoneButtonDisabled = false)
                     }
                 }
             }
@@ -153,10 +154,10 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
-        val explicitlyHideDoneButton: Boolean = false
+        val isDoneButtonDisabled: Boolean = false
     ) : Parcelable {
         val isDoneButtonEnabled: Boolean
-            get() = !explicitlyHideDoneButton && (skuErrorMessage == 0 || skuErrorMessage == null)
+            get() = !isDoneButtonDisabled && (skuErrorMessage == 0 || skuErrorMessage == null)
     }
 
     @Parcelize
