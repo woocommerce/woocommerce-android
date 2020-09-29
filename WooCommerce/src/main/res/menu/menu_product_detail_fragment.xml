@@ -6,30 +6,34 @@
     <item
         android:id="@+id/menu_done"
         android:title="@string/update"
-        app:showAsAction="ifRoom"
         android:visible="false"
-        tools:visible="true"/>
+        app:showAsAction="ifRoom"
+        tools:visible="true" />
+
+    <item
+        android:id="@+id/menu_save_as_draft"
+        android:title="@string/product_detail_safe_as_draft"
+        android:visible="false"
+        app:showAsAction="withText"
+        tools:visible="true" />
 
     <item
         android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
         app:showAsAction="withText"
-        tools:visible="true"
-        />
+        tools:visible="true" />
 
     <item
         android:id="@+id/menu_view_product"
         android:title="@string/product_view_in_store"
-        app:showAsAction="withText"
         android:visible="false"
-        tools:visible="true"/>
+        app:showAsAction="withText"
+        tools:visible="true" />
 
     <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
-        app:showAsAction="withText"
         android:visible="false"
-        tools:visible="true"
-        />
+        app:showAsAction="withText"
+        tools:visible="true" />
 </menu>

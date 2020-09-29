@@ -215,6 +215,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
         }
 
+        requireActivity().invalidateOptionsMenu()
         updateOptionsMenuDescription(product.remoteId)
     }
 
@@ -236,17 +237,20 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
 
-        // display View Product on Store menu button only if the Product status is published,
-        // otherwise the page is redirected to a 404
-        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
-        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
-        menu.findItem(R.id.menu_product_settings).isVisible = true
-
         when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
             else -> Unit
         }
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        // visibility of these menu items depends on whether we're in the add product flow
+        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow && viewModel.hasChanges()
+        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
     }
 
     private fun setupProductAddOptionsMenu(menu: Menu) {
