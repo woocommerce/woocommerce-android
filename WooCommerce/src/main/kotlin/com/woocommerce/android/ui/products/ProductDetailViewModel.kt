@@ -304,7 +304,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onSaveAsDraftButtonClicked() {
         // TODO analytics
-        startPublishProduct(isDraft = true)
+        updateProductDraft(productStatus = DRAFT)
+        startPublishProduct()
     }
 
     private fun startUpdateProduct() {
@@ -315,11 +316,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startPublishProduct(isDraft: Boolean = false) {
-        if (isDraft) {
-            updateProductDraft(productStatus = DRAFT)
-        }
-
+    private fun startPublishProduct() {
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { addProduct(it) }
@@ -732,31 +729,17 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
-            val isDraft = product.status?.let { it == DRAFT } ?: false
-
-            @StringRes val successId = if (isDraft) {
-                string.product_detail_update_draft_success
-            } else {
-                string.product_detail_update_product_success
-            }
-
-            @StringRes val failId = if (isDraft) {
-                string.product_detail_update_draft_error
-            } else {
-                string.product_detail_update_product_error
-            }
-
             if (productRepository.updateProduct(product)) {
                 if (viewState.isPasswordChanged) {
                     val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
                         viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(successId))
+                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                     }
                 } else {
-                    triggerEvent(ShowSnackbar(successId))
+                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
                 }
                 viewState = viewState.copy(
                     productDraft = null,
@@ -765,7 +748,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 )
                 loadRemoteProduct(product.remoteId)
             } else {
-                triggerEvent(ShowSnackbar(failId))
+                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
