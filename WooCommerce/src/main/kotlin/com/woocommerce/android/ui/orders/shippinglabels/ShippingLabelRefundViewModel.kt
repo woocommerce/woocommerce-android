@@ -24,13 +24,17 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private var refundJob: Job? = null
-    final val isRefundInProgress: Boolean
+    val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
-    final val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
+    val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
     private var shippingLabelRefundViewState by shippingLabelRefundViewStateData
+
+    init {
+        start()
+    }
 
     fun start() {
         shippingLabelRefundViewState = shippingLabelRefundViewState.copy(
