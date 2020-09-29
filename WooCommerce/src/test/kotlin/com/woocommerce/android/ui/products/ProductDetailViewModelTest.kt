@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
@@ -438,5 +439,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
             assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
         }
+    }
+
+    @Test
+    fun `Displays the trash confirmation dialog correctly`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        var trashDialogShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDiscardDialog && it.messageId == R.string.product_confirm_trash) {
+                trashDialogShown = true
+            }
+        }
+
+        assertThat(trashDialogShown).isTrue()
     }
 }
