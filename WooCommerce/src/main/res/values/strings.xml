@@ -324,6 +324,7 @@
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <string name="print_shipping_label_info_title">Print with your phone</string>
+    <string name="print_shipping_label_format_options_title">Label format options</string>
     <string name="print_shipping_label_info_step_count_1" translatable="false">1</string>
     <string name="print_shipping_label_info_step_count_2" translatable="false">2</string>
     <string name="print_shipping_label_info_step_count_3" translatable="false">3</string>
