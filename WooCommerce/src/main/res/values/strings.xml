@@ -280,7 +280,7 @@
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="order_begin_fulfillment">Begin fulfillment</string>
+    <string name="order_begin_fulfillment">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>

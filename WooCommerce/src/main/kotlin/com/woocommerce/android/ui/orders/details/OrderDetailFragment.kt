@@ -53,6 +53,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val skeletonView = SkeletonView()
+    private var undoSnackbar: Snackbar? = null
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -67,6 +68,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onStop() {
+        undoSnackbar?.dismiss()
+        super.onStop()
     }
 
     override fun getFragmentTitle() = viewModel.toolbarTitle
@@ -269,7 +275,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult {
         actionListener: View.OnClickListener,
         dismissCallback: Snackbar.Callback
     ) {
-        uiMessageResolver.getUndoSnack(
+        undoSnackbar = uiMessageResolver.getUndoSnack(
             message = message,
             actionListener = actionListener
         ).also {
