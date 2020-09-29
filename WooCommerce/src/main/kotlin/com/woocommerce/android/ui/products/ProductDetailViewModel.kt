@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
@@ -51,6 +52,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -297,6 +299,14 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Called when the "Save as draft" button is clicked in Product detail screen
+     */
+    fun onSaveAsDraftButtonClicked() {
+        // TODO analytics
+        startPublishProduct(isDraft = true)
+    }
+
     private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
@@ -305,7 +315,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startPublishProduct() {
+    private fun startPublishProduct(isDraft: Boolean = false) {
+        if (isDraft) {
+            updateProductDraft(productStatus = DRAFT)
+        }
+
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { addProduct(it) }
@@ -718,17 +732,31 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun updateProduct(product: Product) {
         if (networkStatus.isConnected()) {
+            val isDraft = product.status?.let { it == DRAFT } ?: false
+
+            @StringRes val successId = if (isDraft) {
+                string.product_detail_update_draft_success
+            } else {
+                string.product_detail_update_product_success
+            }
+
+            @StringRes val failId = if (isDraft) {
+                string.product_detail_update_draft_error
+            } else {
+                string.product_detail_update_product_error
+            }
+
             if (productRepository.updateProduct(product)) {
                 if (viewState.isPasswordChanged) {
                     val password = viewState.draftPassword
                     if (productRepository.updateProductPassword(product.remoteId, password)) {
                         viewState = viewState.copy(storedPassword = password)
-                        triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                        triggerEvent(ShowSnackbar(successId))
                     } else {
                         triggerEvent(ShowSnackbar(string.product_detail_update_product_password_error))
                     }
                 } else {
-                    triggerEvent(ShowSnackbar(string.product_detail_update_product_success))
+                    triggerEvent(ShowSnackbar(successId))
                 }
                 viewState = viewState.copy(
                     productDraft = null,
@@ -737,7 +765,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 )
                 loadRemoteProduct(product.remoteId)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
+                triggerEvent(ShowSnackbar(failId))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -752,11 +780,25 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun addProduct(product: Product) {
         if (networkStatus.isConnected()) {
+            val isDraft = product.status?.let { it == DRAFT } ?: false
+
+            @StringRes val successId = if (isDraft) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+
+            @StringRes val failId = if (isDraft) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+
             val result = productRepository.addProduct(product)
             val isSuccess = result.first
             val newProductRemoteId = result.second
             if (isSuccess) {
-                triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
+                triggerEvent(ShowSnackbar(successId))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
@@ -765,7 +807,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 loadRemoteProduct(newProductRemoteId)
                 triggerEvent(RefreshMenu)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
+                triggerEvent(ShowSnackbar(failId))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))

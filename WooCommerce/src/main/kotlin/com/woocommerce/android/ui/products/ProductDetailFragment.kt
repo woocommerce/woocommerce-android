@@ -18,7 +18,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -39,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -249,7 +249,9 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // visibility of these menu items depends on whether we're in the add product flow
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
-        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow && viewModel.hasChanges()
+        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
+            viewModel.hasChanges() &&
+            FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
         menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
     }
 
@@ -271,6 +273,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_save_as_draft -> {
+                viewModel.onSaveAsDraftButtonClicked()
+                true
+            }
+
             R.id.menu_share -> {
                 viewModel.onShareButtonClicked()
                 true

@@ -549,6 +549,8 @@
     <string name="product_update_dialog_message">Please wait…</string>
     <string name="product_detail_update_product_error">Error updating product</string>
     <string name="product_detail_update_product_success">Product updated</string>
+    <string name="product_detail_update_draft_success">Product draft saved</string>
+    <string name="product_detail_update_draft_error">Error saving product draft</string>
     <string name="product_detail_update_product_password_error">Error updating password</string>
     <string name="product_detail_title_hint">Enter Product Title</string>
     <string name="product_detail_editable_text_hint">Enter text</string>
@@ -969,6 +971,8 @@
     <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
+    <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
+    <string name="product_detail_publish_product_draft_success">Product draft saved</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
