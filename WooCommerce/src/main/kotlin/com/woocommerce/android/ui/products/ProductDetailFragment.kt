@@ -216,7 +216,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
 
         requireActivity().invalidateOptionsMenu()
-        updateOptionsMenuDescription(product.remoteId)
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
@@ -236,11 +235,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-
-        when (viewModel.isAddFlow) {
-            true -> setupProductAddOptionsMenu(menu)
-            else -> Unit
-        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -249,26 +243,15 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
         // visibility of these menu items depends on whether we're in the add product flow
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
             viewModel.hasChanges() &&
             FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
-        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
-    }
 
-    private fun setupProductAddOptionsMenu(menu: Menu) {
         doneOrUpdateMenuItem?.let {
-            it.title = getString(publishTitleId)
-            it.isVisible = true
+            it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
+            it.isVisible = viewModel.hasChanges()
         }
-    }
-
-    private fun updateOptionsMenuDescription(remoteId: Long) {
-        val doneButtonTitle =
-            when (viewModel.isAddFlow) {
-                true -> getString(publishTitleId)
-                else -> getString(updateTitleId)
-            }
-        doneOrUpdateMenuItem?.title = doneButtonTitle
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
