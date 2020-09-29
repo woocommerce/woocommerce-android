@@ -140,7 +140,9 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Shows undo trash snackbar correctly`() {
+    fun `Shows offline message when trashing a product without a connection`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+
         createViewModel()
 
         var snackbar: ShowSnackbar? = null
@@ -149,6 +151,6 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.trashProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_trash_undo_snackbar_message))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 }
