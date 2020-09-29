@@ -41,6 +41,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -457,9 +458,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not enable trashing a product during add product flow`() {
-        whenever(viewModel.isAddFlow).thenReturn(true)
+    fun `Do not enable trashing a product when in add product flow`() {
         viewModel.start()
+        doReturn(true).whenever(viewModel).isAddFlow
         assertThat(viewModel.isTrashEnabled).isFalse()
     }
 
