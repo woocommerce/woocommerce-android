@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCH
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider

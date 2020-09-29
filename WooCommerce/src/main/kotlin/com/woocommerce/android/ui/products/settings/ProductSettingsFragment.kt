@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companio
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
