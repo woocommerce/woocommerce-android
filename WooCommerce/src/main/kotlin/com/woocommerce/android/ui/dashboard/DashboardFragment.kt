@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -20,17 +23,18 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreStatsAvailabilityListener
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
+import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
+import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
-import kotlinx.android.synthetic.main.fragment_dashboard.view.dashboard_refresh_layout
-import kotlinx.android.synthetic.main.fragment_dashboard.view.scroll_view
-import kotlinx.android.synthetic.main.fragment_my_store.view.*
+import kotlinx.android.synthetic.main.fragment_my_store.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
 import javax.inject.Inject
 
 class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardStatsListener,
@@ -62,6 +66,9 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private val mainActivity
         get() = activity as? MainActivity
 
+    private val mainNavigationRouter
+        get() = activity as? MainNavigationRouter
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -87,13 +94,6 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
                     refreshDashboard(forced = true)
                 }
                 scrollUpChild = scroll_view
-            }
-
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
-                dashboard_feedback_request_card.visibility = View.VISIBLE
-                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { /* TODO */ }
-                dashboard_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
         return view
@@ -138,6 +138,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
 
     override fun onResume() {
         super.onResume()
+        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -303,7 +304,67 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     }
 
     override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
-        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+        mainNavigationRouter?.showProductDetail(topEarner.id)
+    }
+
+    /**
+     * This method verifies if the feedback card should be visible.
+     *
+     * If it should but it's not, the feedback card is reconfigured and presented
+     * If should not and it's visible, the card visibility is changed to gone
+     * If should be and it's already visible, nothing happens
+     */
+    private fun handleFeedbackRequestCardState() = with(dashboard_feedback_request_card) {
+        if (userFeedbackIsDue && visibility == View.GONE) {
+            setupFeedbackRequestCard()
+        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
+            visibility = View.GONE
+        }
+    }
+
+    private fun View.setupFeedbackRequestCard() {
+        if (userFeedbackIsDue) {
+            this.dashboard_feedback_request_card.visibility = View.VISIBLE
+            val negativeCallback = {
+                mainNavigationRouter?.showFeedbackSurvey()
+                this.dashboard_feedback_request_card.visibility = View.GONE
+                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            }
+            dashboard_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        }
+    }
+
+    private fun handleFeedbackRequestPositiveClick() {
+        context?.let {
+            // Hide the card and set last feedback date to now
+            store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+
+            // Request a ReviewInfo object from the Google Reviews API. If this fails
+            // we just move on as there isn't anything we can do.
+            val manager = ReviewManagerFactory.create(requireContext())
+            val reviewRequest = manager.requestReviewFlow()
+            reviewRequest.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Request to start the Review flow so the user can be prompted to submit
+                    // a play store review. The prompt will only appear if the user hasn't already
+                    // reached their quota for how often we can ask for a review.
+                    val reviewInfo = it.result
+                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                    flow.addOnFailureListener { ex ->
+                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
+                    }
+                } else {
+                    // There was an error, just log and continue. Google doesn't really tell you what
+                    // type of scenario would cause an error.
+                    WooLog.e(
+                        WooLog.T.DASHBOARD,
+                        "Error fetching ReviewInfo object from Review API to start in-app review process",
+                        it.exception
+                    )
+                }
+            }
+        }
     }
 
     override fun showEmptyView(show: Boolean) {

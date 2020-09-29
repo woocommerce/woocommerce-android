@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -305,8 +306,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         isRequestingStats = false
-        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
-        chart.visibility = if (show) View.GONE else View.VISIBLE
+        dashboard_stats_error.isVisible = show
+        chart.isVisible = !show
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
@@ -341,16 +342,17 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.getTotal()?.totalSales ?: 0.0
+        val totalModel = revenueStatsModel?.parseTotal()
+        val grossRevenue = totalModel?.totalSales ?: 0.0
         val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
-        val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
+        val orderCount = totalModel?.ordersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return

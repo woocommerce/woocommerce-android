@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-09 14:54:03+0000
+Translation-Revision-Date: 2020-09-18 12:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_type_variation_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
+    <string name="product_selection_count_single">%d تم تحديد المنتج</string>
+    <string name="product_selection_count">%d تم تحديد المنتجات</string>
+    <string name="grouped_product_empty">إضافة المنتجات إلى المجموعة</string>
+    <string name="grouped_product_add">إضافة منتج</string>
+    <string name="product_visibility_password_protected_hint">أدخل كلمة المرور</string>
+    <string name="feedback_completed_back_to_store_button_text">العودة إلى المتجر</string>
+    <string name="feedback_completed_contact_us">التواصل معنا هنا</string>
+    <string name="feedback_completed_description">ضع في حسبانك أنَّ هذه ليست بطاقة دعم وإنَّنا لن نتمكن من معالجة الملاحظات الفردية.\n\nهل تحتاج المساعدة؟ %1$s</string>
+    <string name="feedback_completed_title_message">شكرًا لك على مشاركة \nأفكارك معنا</string>
+    <string name="feedback_completed_title">تم إرسال الملاحظات</string>
+    <string name="web_view_loading_message">يُرجى الانتظار…</string>
+    <string name="web_view_loading_title">تحميل</string>
+    <string name="feedback_survey_request_title">كيف يمكننا تحسين ذلك؟</string>
+    <string name="product_type_confirm_button">نعم، يمكنك التغيير</string>
+    <string name="product_type_confirm_dialog_message">سيؤدي تغيير نوع المنتج إلى تعديل بعض بيانات المنتج</string>
+    <string name="product_type_confirm_dialog_title">هل تريد بالتأكيد تغيير نوع المنتج؟</string>
+    <string name="product_type_external_desc">ربط أحد المنتجات بموقع خارجي على الويب</string>
+    <string name="product_type_grouped_desc">مجموعة متنوعة من المنتجات ذات الصلة</string>
+    <string name="product_type_virtual_desc">تنزيل خدمة أم تنزيل رقمي</string>
+    <string name="product_type_physical_desc">نصر تشحنه إلى العميل</string>
+    <string name="product_type_list_header">تحديد نوع المنتج</string>
+    <string name="send_feedback">إرسال ملاحظات</string>
+    <string name="variation_detail_price_warning_title">لا تتضمن بعض التباينات أي أسعار</string>
+    <string name="variation_detail_price_warning">لن تظهر التباينات من دون السعر في مخزنك</string>
+    <string name="variation_detail_update_product_success">تم تحديث التباين</string>
+    <string name="grouped_product_btn_delete">حذف المنتج المجمَّع</string>
+    <string name="grouped_products_single">%d المنتج</string>
+    <string name="grouped_products_count">%d المنتجات</string>
+    <string name="grouped_products">المنتجات المصنفة</string>
+    <string name="product_type_edit">تغيير نوع المنتج</string>
+    <string name="product_variation_no_price_set">لم يتم تعيين أي سعر</string>
+    <string name="product_variation_enabled">مُفعل</string>
+    <string name="product_pricing_scheduled_sale_price_error">يجب عليك تعيين سعر البيع إذا تمت جدولة البيع</string>
+    <string name="product_wip_message_m3">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتج، وتحديث التصنيفات والوسوم.</string>
+    <string name="product_reviews_count">\u2022 %d من المراجعات</string>
+    <string name="product_review_list_item_title">⁦%1$s⁩ تم ترك مراجعة</string>
+    <string name="feedback_request_like_it">يعجبني</string>
+    <string name="feedback_request_make_better">يمكن أن يكون أفضل</string>
+    <string name="feedback_request_title">هل تستمتع بتطبيق WooCommerce؟</string>
+    <string name="variation_detail_update_variation_error">حدث خطأ في أثناء تحديث التباين</string>
+    <string name="variation_detail_fetch_variation_error">حدث خطأ في أثناء إحضار التباين</string>
+    <string name="product_add_tag_error">حدث خطأ عند إضافة وسوم</string>
+    <string name="product_add_tag_dialog_title">إضافة وسم</string>
+    <string name="shipping_label_refund_progress_message">تتم معالجة عملية استرداد أموالك. يُرجى الانتظار…</string>
+    <string name="shipping_label_refund_success">تم إرسال عملية استرداد الأموال بنجاح</string>
+    <string name="shipping_label_refund_button">بطاقة عملية استرداد الأموال (-⁦%1$s⁩)</string>
+    <string name="shipping_label_refund_amount_title">المبلغ الذي يستحق الاسترداد</string>
+    <string name="shipping_label_refund_purchase_date_title">تاريخ الشراء</string>
+    <string name="shipping_label_refund_message">يمكنك طلب استرداد أموال بطاقة الشحن التي لم يتم استخدامها لشحن طرد. سيستغرق الأمر 14 يومًا على الأقل للمعالجة.</string>
+    <string name="orderdetail_shipping_label_request_refund">طلب استرداد الأموال</string>
+    <string name="orderdetail_shipping_label_item_menu">استرداد أموال بطاقة الشحن</string>
+    <string name="product_variation_disabled">معطل</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">المنتجات المتبقية</string>
     <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
     <string name="product_add_category_dialog_title">إضافة تصنيف</string>
     <string name="product_category_parent">التصنيف الأب</string>
@@ -23,7 +77,7 @@ Language: ar
     <string name="settings_privacy_policy_ca">إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا</string>
     <string name="keep_changes">الاحتفاظ بالتغييرات</string>
     <string name="product_sale_date_to">حتى %1$s</string>
-    <string name="product_wip_message">أضفنا وظائف تحرير إضافية إلى المنتجات. يمكنك الآن تحديث الصور، وتحرير المنتجات والإعدادات، ومشاركة المنتجات!</string>
+    <string name="product_wip_message_m2">أضفنا المزيد من وظائف التحرير إلى المنتجات. يمكنك الآن تحديث الصور والاطِّلاع على المعاينات ومشاركة منتجاتك.</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
     <string name="product_limited_editing_title">تتوافر وظائف تحرير محدودة</string>
     <string name="orderdetail_product_multiple">المنتجات</string>
@@ -193,7 +247,6 @@ Language: ar
     <string name="product_add_image_content_description">إضافة صورة</string>
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
-    <string name="product_variation_hidden">مخفي</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
     <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
@@ -238,7 +291,7 @@ Language: ar
     <string name="product_list_empty_search">لا توجد منتجات متطابقة</string>
     <string name="product_list_empty">لا توجد منتجات حتى الآن</string>
     <string name="product_stock_count">%s متوافرة</string>
-    <string name="product_stock_status_instock_with_variations">\u2022 %dمن التباينات متوافرة</string>
+    <string name="product_stock_status_instock_with_variations">في المخزون \u2022، ثمَّة %d من التباينات</string>
     <string name="product_image_content_description">صورة المنتج</string>
     <string name="review_list_item_title">ترك %1$s مراجعة حول %2$s</string>
     <string name="wc_unapproved">غير موافق عليه</string>
@@ -296,7 +349,6 @@ Language: ar
     <string name="install">تثبيت</string>
     <string name="error_disabled_apis">تعذَّر الوصول إلى الإعدادات: بعض واجهات برمجة التطبيقات غير متاحة لمجموعة الحسابات عند إضافة المعرِّفات على تطبيق OAuth.</string>
     <string name="settings_hiring">إنَّنا نوظِّف!</string>
-    <string name="feature_requests">تمييز الطلب</string>
     <string name="orderdetail_copy_tracking_number">نسخ رقم التعقُّب</string>
     <string name="login_refresh_app_progress">جارٍ التحقُّق من WooCommerce…</string>
     <string name="login_refresh_app">تحديث التطبيق</string>

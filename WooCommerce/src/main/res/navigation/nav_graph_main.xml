@@ -7,7 +7,38 @@
     <fragment
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
-        tools:layout="@layout/fragment_root" />
+        tools:layout="@layout/fragment_root"/>
+
+    <fragment
+        android:id="@+id/feedbackSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
+        android:label="FeedbackSurveyFragment">
+        <argument
+            android:name="surveyType"
+            android:defaultValue='MAIN'
+            app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+        <action
+            android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
+            app:destination="@id/feedbackCompletedFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"
+            app:popUpTo="@id/rootFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_feedbackSurveyFragment"
+        app:destination="@id/feedbackSurveyFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out" />
+    <fragment
+        android:id="@+id/feedbackCompletedFragment"
+        android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
+        android:label="FeedbackCompletedFragment">
+        <argument
+            android:name="surveyType"
+            app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+    </fragment>
+
     <fragment
         android:id="@+id/orderDetailFragment"
         android:name="com.woocommerce.android.ui.orders.OrderDetailFragment"
@@ -148,6 +179,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
     <action
         android:id="@+id/action_global_productFilterListFragment"
@@ -211,4 +246,16 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
+    <action
+        android:id="@+id/action_global_productTypeBottomSheetFragment"
+        app:destination="@id/nav_graph_product_type_bottom_sheet"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </action>
 </navigation>

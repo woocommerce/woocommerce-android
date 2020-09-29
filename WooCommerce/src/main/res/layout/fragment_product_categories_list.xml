@@ -11,12 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.ui.products.categories.AddProductCategoryView
+        <com.woocommerce.android.ui.products.AddProductElementView
             android:id="@+id/addProductCategoryView"
             style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            app:buttonText="@string/product_add_category"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

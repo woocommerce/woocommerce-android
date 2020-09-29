@@ -22,10 +22,8 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.model.fetchTrackingLinks
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -215,13 +213,6 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     }
 
     override fun showShippingLabels(order: WCOrderModel, shippingLabels: List<ShippingLabel>) {
-        // Shipment tracking links are not available by default from the shipping label API
-        // Until this is available on the API side, we need to fetch the tracking link from the
-        // shipment tracking API (if available) and link the tracking link to the corresponding
-        // tracking number of a shipping label
-        val shipmentTrackingList = presenter.getOrderShipmentTrackingsFromDb(order)
-        shippingLabels.map { it.fetchTrackingLinks(shipmentTrackingList) }
-
         orderDetail_shippingLabelList.initView(
             order.toAppModel(),
             shippingLabels,
@@ -240,9 +231,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
             val unpackagedAndNonRefundedProducts =
                 orderModel.getUnpackagedAndNonRefundedProducts(refunds, shippingLabels)
 
-            val listTitle = if (hasVirtualProductsOnly(unpackagedAndNonRefundedProducts)) {
-                getString(R.string.orderdetail_shipping_label_virtual_products_header)
-            } else if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
+            val listTitle = if (shippingLabels.isNotEmpty() && hasUnpackagedProducts) {
                 getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
             } else null
 
@@ -319,6 +308,12 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
         )
         if (orderDetail_shipmentList.visibility != View.VISIBLE) {
             WooAnimUtils.scaleIn(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
+        }
+    }
+
+    override fun hideOrderShipmentTrackings() {
+        if (orderDetail_shipmentList.visibility != View.GONE) {
+            WooAnimUtils.scaleOut(orderDetail_shipmentList, WooAnimUtils.Duration.MEDIUM)
         }
     }
 
@@ -713,7 +708,7 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
                             orderStatus,
                             false,
                             listener = this)
-                    .also { it.show(requireFragmentManager(), OrderStatusSelectorDialog.TAG) }
+                    .also { it.show(parentFragmentManager, OrderStatusSelectorDialog.TAG) }
         }
     }
 
@@ -724,23 +719,5 @@ class OrderDetailFragment : BaseFragment(), OrderDetailContract.View, OrderDetai
     private fun showOrderShippingNotice(isVirtualProduct: Boolean, order: WCOrderModel) {
         val hideShippingMethodNotice = isVirtualProduct || !order.isMultiShippingLinesAvailable()
         orderDetail_shippingMethodNotice.visibility = if (hideShippingMethodNotice) View.GONE else View.VISIBLE
-    }
-
-    private fun hasVirtualProductsOnly(
-        orderItems: List<Item>
-    ): Boolean {
-        val remoteProductIds: List<Long> = orderItems.map { it.productId }
-        if (remoteProductIds.isNullOrEmpty()) {
-            return false
-        }
-
-        // verify that the LineItem product is in the local cache and
-        // that the product count in the local cache matches the lineItem count.
-        val productModels = presenter.getProductsByIds(remoteProductIds)
-        if (productModels.isNullOrEmpty() || productModels.count() != remoteProductIds.count()) {
-            return false
-        }
-
-        return productModels.none { !it.virtual }
     }
 }

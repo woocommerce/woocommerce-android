@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-07-09 08:54:03+0000
+Translation-Revision-Date: 2020-09-16 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_type_variation_desc">מוצר עם סוגים כגון צבע או מידה</string>
+    <string name="product_selection_count_single">%d המוצר נבחר</string>
+    <string name="product_selection_count">%d מוצרים נבחרו</string>
+    <string name="grouped_product_empty">להוסיף מוצרים לקבוצה</string>
+    <string name="grouped_product_add">הוספת מוצר</string>
+    <string name="product_visibility_password_protected_hint">יש להזין סיסמה</string>
+    <string name="feedback_completed_back_to_store_button_text">בחזרה לחנות</string>
+    <string name="feedback_completed_contact_us">ניתן ליצור איתנו קשר כאן</string>
+    <string name="feedback_completed_description">לתשומת ליבך, זה לא כרטיס תמיכה ולא נוכל לענות למשוב באופן פרטי.\n\nנדרשת לך עזרה? %1$s</string>
+    <string name="feedback_completed_title_message">תודה ששיתפת אותנו  \nבדעתך</string>
+    <string name="feedback_completed_title">המשוב נשלח</string>
+    <string name="web_view_loading_message">רק רגע…</string>
+    <string name="web_view_loading_title">טוען</string>
+    <string name="feedback_survey_request_title">איך נוכל לשפר את השירות שלנו?</string>
+    <string name="product_type_confirm_button">כן, אני רוצה לשנות</string>
+    <string name="product_type_confirm_dialog_message">שינוי של סוג המוצר ישנה בהתאם חלק מהנתונים של המוצר</string>
+    <string name="product_type_confirm_dialog_title">האם ברצונך לשנות את סוג המוצר?</string>
+    <string name="product_type_external_desc">לקשר מוצר לאתר חיצוני</string>
+    <string name="product_type_grouped_desc">אוסף של מוצרים קשורים</string>
+    <string name="product_type_virtual_desc">שירות דיגיטלי או הורדה של מוצר דיגיטלי</string>
+    <string name="product_type_physical_desc">פריט ששולחים ללקוח</string>
+    <string name="product_type_list_header">יש לבחור את סוג המוצר</string>
+    <string name="send_feedback">לשלוח משוב</string>
+    <string name="variation_detail_price_warning_title">בחלק מהסוגים לא צוין מחיר</string>
+    <string name="variation_detail_price_warning">סוגים ללא מחיר לא יוצגו בחנות שלך</string>
+    <string name="variation_detail_update_product_success">הסוג עודכן</string>
+    <string name="grouped_product_btn_delete">למחוק את המוצרים בקבוצה</string>
+    <string name="grouped_products_single">%d מוצר</string>
+    <string name="grouped_products_count">%d מוצרים</string>
+    <string name="grouped_products">מוצרים בקבוצות</string>
+    <string name="product_type_edit">לשנות סוג מוצר</string>
+    <string name="product_variation_no_price_set">טרם צוין מחיר</string>
+    <string name="product_variation_enabled">הופעל</string>
+    <string name="product_pricing_scheduled_sale_price_error">עליך להגדיר את מחיר המבצע אם נקבע לוח זמנים למבצע</string>
+    <string name="product_wip_message_m3">כעת אפשר להוסיף מוצרים בקבוצות, מוצרים חיצוניים ומוצרים עם סוגים שונים, לשנות את סוג המוצר ולעדכן את הקטגוריות והתגיות.</string>
+    <string name="product_reviews_count">\u2022 %d ביקורות</string>
+    <string name="product_review_list_item_title">⁦%1$s⁩ הוסיפו ביקורת</string>
+    <string name="feedback_request_like_it">אהבתי</string>
+    <string name="feedback_request_make_better">אפשר לשפר</string>
+    <string name="feedback_request_title">האפליקציה של WooCommerce מהנה לדעתך?</string>
+    <string name="variation_detail_update_variation_error">שגיאה בעדכון הסוג</string>
+    <string name="variation_detail_fetch_variation_error">שגיאה בהבאת הסוג</string>
+    <string name="product_add_tag_error">אירעה שגיאה בהוספת התגיות</string>
+    <string name="product_add_tag_dialog_title">מוסיף תגית</string>
+    <string name="shipping_label_refund_progress_message">ההחזר הכספי שלך נמצא בטיפול. רק רגע…</string>
+    <string name="shipping_label_refund_success">ההחזר הכספי נשלח בהצלחה</string>
+    <string name="shipping_label_refund_button">התווית של ההחזר הכספי (-⁦%1$s⁩)</string>
+    <string name="shipping_label_refund_amount_title">ניתן לקבל החזר כספי עבור הסכום</string>
+    <string name="shipping_label_refund_purchase_date_title">תאריך רכישה</string>
+    <string name="shipping_label_refund_message">אפשר לבקש החזר כספי עבור תווית משלוח שלא נעשה בה שימוש כדי לשלוח חבילה. תהליך העיבוד יימשך לפחות 14 ימים.</string>
+    <string name="orderdetail_shipping_label_request_refund">בקשה להחזר כספי</string>
+    <string name="orderdetail_shipping_label_item_menu">לבצע החזר כספי על תווית המשלוח</string>
+    <string name="product_variation_disabled">הושבת</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">מוצרים שנותרו</string>
     <string name="product_add_category_dialog_message">נא להמתין…</string>
     <string name="product_add_category_dialog_title">מוסיף קטגוריות</string>
     <string name="product_category_parent">קטגוריית אב</string>
@@ -23,7 +77,7 @@ Language: he_IL
     <string name="settings_privacy_policy_ca">הצהרת פרטיות למשתמשים מקליפורניה</string>
     <string name="keep_changes">לשמור את השינויים</string>
     <string name="product_sale_date_to">עד %1$s</string>
-    <string name="product_wip_message">הוספנו עוד אפשרויות לעריכה במוצרים. כעת אפשר לעדכן תמונות, לערוך את הגדרות המוצרים ולשתף מוצרים!</string>
+    <string name="product_wip_message_m2">הוספנו עוד אפשרויות עריכה למוצרים! כעת אפשר לעדכן תמונות, להציג תצוגה מקדימה ולשתף את המוצרים שלך.</string>
     <string name="product_wip_title">אפשרויות עריכה נוספות זמינות</string>
     <string name="product_limited_editing_title">עריכה מוגבלת זמינה</string>
     <string name="orderdetail_product_multiple">מוצרים</string>
@@ -193,7 +247,6 @@ Language: he_IL
     <string name="product_add_image_content_description">להוסיף תמונה</string>
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
-    <string name="product_variation_hidden">מוסתר</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
     <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
@@ -238,7 +291,7 @@ Language: he_IL
     <string name="product_list_empty_search">אין מוצרים תואמים</string>
     <string name="product_list_empty">עדיין אין מוצרים</string>
     <string name="product_stock_count">%s במלאי</string>
-    <string name="product_stock_status_instock_with_variations">משתנים של \u2022 %d מלאי</string>
+    <string name="product_stock_status_instock_with_variations">\u2022 %d סוגים במלאי</string>
     <string name="product_image_content_description">תמונת מוצר</string>
     <string name="review_list_item_title">המשתמש %1$s כתב ביקורת על %2$s</string>
     <string name="wc_unapproved">לא מאושר</string>
@@ -296,7 +349,6 @@ Language: he_IL
     <string name="install">להתקין</string>
     <string name="error_disabled_apis">לא ניתן היה להביא את ההגדרות: חלק ממשקי ה-API לא זמינים בשילוב הנוכחי של מזהה אפליקציית OAuth ושל החשבון.</string>
     <string name="settings_hiring">אנחנו מחפשים עובדים!</string>
-    <string name="feature_requests">בקשת תכונה</string>
     <string name="orderdetail_copy_tracking_number">להעתקת מספר המעקב</string>
     <string name="login_refresh_app_progress">מנסה לאתר את WooCommerce…</string>
     <string name="login_refresh_app">יש לרענן את האפליקציה</string>

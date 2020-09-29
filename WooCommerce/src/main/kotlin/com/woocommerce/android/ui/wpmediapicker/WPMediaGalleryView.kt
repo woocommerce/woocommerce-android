@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +45,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
         private const val SCALE_SELECTED = .8f
         private const val KEY_RECYCLER_STATE = "recycler_state"
         private const val KEY_SELECTED_IMAGES = "selected_images"
+        private const val KEY_MULTI_SELECT_ALLOWED = "multi_select_allowed"
     }
 
     interface WPMediaGalleryListener {
@@ -54,6 +56,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
     private var imageSize = 0
     private val selectedIds = ArrayList<Long>()
+    private var isMultiSelectionAllowed: Boolean = true
 
     private val adapter: WPMediaLibraryGalleryAdapter
     private val layoutInflater: LayoutInflater
@@ -98,8 +101,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
         imageSize = (screenWidth / NUM_COLUMNS) - (margin * NUM_COLUMNS)
     }
 
-    fun showImages(images: List<Product.Image>, listener: WPMediaGalleryListener) {
+    fun showImages(images: List<Product.Image>, listener: WPMediaGalleryListener, isMultiSelectionAllowed: Boolean) {
         this.listener = listener
+        this.isMultiSelectionAllowed = isMultiSelectionAllowed
         adapter.showImages(images)
     }
 
@@ -147,7 +151,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WPMediaViewHolder {
             return WPMediaViewHolder(
-                    layoutInflater.inflate(R.layout.wpmedia_gallery_item, parent, false)
+                layoutInflater.inflate(R.layout.wpmedia_gallery_item, parent, false)
             )
         }
 
@@ -156,13 +160,16 @@ class WPMediaGalleryView @JvmOverloads constructor(
             val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
             glideRequest.load(photonUrl).apply(glideTransform).into(holder.imageView)
 
-            val isSelected = isItemSelected(image.id)
-            holder.textSelectionCount.isSelected = isSelected
-            if (isSelected) {
-                val count = selectedIds.indexOf(image.id) + 1
-                holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
-            } else {
-                holder.textSelectionCount.text = null
+            holder.textSelectionCount.isVisible = isMultiSelectionAllowed
+            if (isMultiSelectionAllowed) {
+                val isSelected = isItemSelected(image.id)
+                holder.textSelectionCount.isSelected = isSelected
+                if (isSelected) {
+                    val count = selectedIds.indexOf(image.id) + 1
+                    holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
+                } else {
+                    holder.textSelectionCount.text = null
+                }
             }
 
             // make sure the thumbnail scale reflects its selection state
@@ -181,6 +188,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         fun toggleItemSelected(holder: WPMediaViewHolder, position: Int) {
             val isSelected = isItemSelectedByPosition(position)
+            if (!isMultiSelectionAllowed && selectedIds.size > 0 && !isSelected) {
+                selectedIds.clear()
+            }
             setItemSelectedByPosition(holder, position, !isSelected)
         }
 
@@ -207,8 +217,13 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         fun setSelectedImages(images: ArrayList<Product.Image>) {
             selectedIds.clear()
-            for (image in images) {
-                selectedIds.add(image.id)
+
+            if (isMultiSelectionAllowed) {
+                for (image in images) {
+                    selectedIds.add(image.id)
+                }
+            } else {
+                selectedIds.add(images.first().id)
             }
             notifyDataSetChanged()
         }
@@ -229,18 +244,20 @@ class WPMediaGalleryView @JvmOverloads constructor(
                 selectedIds.remove(imageId)
             }
 
-            // show and animate the count
-            if (selected) {
-                holder.textSelectionCount.text = String.format(
+            if (isMultiSelectionAllowed) {
+                // show and animate the count
+                if (selected) {
+                    holder.textSelectionCount.text = String.format(
                         Locale.getDefault(),
                         "%d",
                         selectedIds.indexOf(imageId) + 1
-                )
-            } else {
-                holder.textSelectionCount.text = null
+                    )
+                } else {
+                    holder.textSelectionCount.text = null
+                }
+                WooAnimUtils.pop(holder.textSelectionCount)
+                holder.textSelectionCount.isVisible = selected
             }
-            WooAnimUtils.pop(holder.textSelectionCount)
-            holder.textSelectionCount.visibility = if (selected) View.VISIBLE else View.GONE
 
             // scale the thumbnail based on whether it's selected
             if (selected) {
@@ -278,6 +295,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         // save the selected images
         bundle.putParcelableArrayList(KEY_SELECTED_IMAGES, getSelectedImages())
+        bundle.putBoolean(KEY_MULTI_SELECT_ALLOWED, isMultiSelectionAllowed)
 
         return bundle
     }
@@ -291,6 +309,11 @@ class WPMediaGalleryView @JvmOverloads constructor(
         // restore the selected images
         (state as? Bundle)?.getParcelableArrayList<Product.Image>(KEY_SELECTED_IMAGES)?.let { images ->
             setSelectedImages(images)
+        }
+
+        // restore multi-selection
+        (state as? Bundle)?.getBoolean(KEY_MULTI_SELECT_ALLOWED)?.let { isAllowed ->
+            isMultiSelectionAllowed = isAllowed
         }
     }
 

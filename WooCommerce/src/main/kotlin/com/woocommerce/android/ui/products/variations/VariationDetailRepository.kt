@@ -85,10 +85,12 @@ class VariationDetailRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationUpdateVariation = it
 
-                val variation = updatedVariation.toDataModel(getCachedVariation(
-                    updatedVariation.remoteProductId,
-                    updatedVariation.remoteVariationId
-                ))
+                val variation = updatedVariation.toDataModel(
+                    getCachedVariation(
+                        updatedVariation.remoteProductId,
+                        updatedVariation.remoteVariationId
+                    )
+                )
                 val payload = WCProductStore.UpdateVariationPayload(selectedSite.get(), variation)
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateVariationAction(payload))
             } ?: false // request timed out

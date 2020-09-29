@@ -12,14 +12,13 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_productDetailFragment_to_productImagesFragment"
-            app:destination="@id/productImagesFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
@@ -38,25 +37,41 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
-            app:destination="@id/productTypesBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_productDetailFragment_to_productReviewsFragment"
             app:destination="@id/productReviewsFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/productImagesFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImagesFragment"
-        android:label="ProductImagesFragment"
-        tools:layout="@layout/fragment_product_images">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
+            app:destination="@id/nav_graph_product_type_bottom_sheet"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_nav_graph_image_gallery"
+            app:destination="@id/nav_graph_image_gallery">
+            <argument
+                android:name="remoteId"
+                android:defaultValue="0L"
+                app:argType="long" />
+            <argument
+                android:name="images"
+                app:argType="com.woocommerce.android.model.Product$Image[]" />
+            <argument
+                android:name="selectedImage"
+                app:argType="com.woocommerce.android.model.Product$Image"
+                app:nullable="true" />
+            <argument
+                android:name="showChooser"
+                app:argType="boolean" />
+            <argument
+                android:name="requestCode"
+                app:argType="integer" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -100,21 +115,28 @@
         android:name="com.woocommerce.android.ui.products.ProductInventoryFragment"
         tools:layout="@layout/fragment_product_inventory">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="inventoryData"
+            app:argType="com.woocommerce.android.ui.products.ProductInventoryViewModel$InventoryData" />
+        <argument
+            android:name="sku"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
             app:destination="@id/productShippingClassFragment" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="shippingData"
+            app:argType="com.woocommerce.android.ui.products.ProductShippingViewModel$ShippingData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingClassFragment"
@@ -130,18 +152,11 @@
         android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
         tools:layout="@layout/fragment_product_pricing">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/productImageViewerFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"
-        android:label="ProductImageViewerFragment"
-        tools:layout="@layout/fragment_image_viewer">
+            android:name="requestCode"
+            app:argType="integer" />
         <argument
-            android:name="remoteMediaId"
-            app:argType="long" />
+            android:name="pricingData"
+            app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
     </fragment>
     <fragment
         android:id="@+id/productExternalLinkFragment"
@@ -152,11 +167,6 @@
             android:name="remoteMediaId"
             app:argType="long" />
     </fragment>
-    <fragment
-        android:id="@+id/wpMediaPickerFragment"
-        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
-        android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker" />
     <fragment
         android:id="@+id/wpMediaViewerFragment"
         android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaViewerFragment"
@@ -190,18 +200,8 @@
         android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </dialog>
-    <dialog
-        android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
-        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            android:name="productType"
+            app:argType="com.woocommerce.android.ui.products.ProductType" />
     </dialog>
     <fragment
         android:id="@+id/productReviewsFragment"
@@ -217,9 +217,22 @@
         android:name="com.woocommerce.android.ui.products.GroupedProductListFragment"
         tools:layout="@layout/fragment_product_list">
         <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
             android:name="groupedProductIds"
             android:defaultValue='""'
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/productSelectionListFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSelectionListFragment"
+        tools:layout="@layout/fragment_product_list">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
@@ -234,20 +247,8 @@
         app:destination="@id/nav_graph_add_product_category" />
 
     <action
-        android:id="@+id/action_global_productImageViewerFragment"
-        app:destination="@id/productImageViewerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
-
-    <action
         android:id="@+id/action_global_aztecEditorFragment"
         app:destination="@id/aztecEditorFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
-
-    <action
-        android:id="@+id/action_global_wpMediaFragment"
-        app:destination="@id/wpMediaPickerFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
 
@@ -280,6 +281,11 @@
         app:destination="@id/groupedProductListFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
+    <action
+        android:id="@+id/action_global_productSelectionListFragment"
+        app:destination="@id/productSelectionListFragment"
+        app:enterAnim="@anim/activity_scale_in"
+        app:popExitAnim="@anim/activity_scale_out" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
@@ -287,5 +293,37 @@
         <argument
             android:name="variation"
             app:argType="com.woocommerce.android.model.ProductVariation" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
+            app:destination="@id/productPricingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
+            app:destination="@id/productInventoryFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productShippingFragment"
+            app:destination="@id/productShippingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_nav_graph_image_gallery"
+            app:destination="@id/nav_graph_image_gallery">
+            <argument
+                android:name="remoteId"
+                android:defaultValue="0L"
+                app:argType="long" />
+            <argument
+                android:name="images"
+                app:argType="com.woocommerce.android.model.Product$Image[]" />
+            <argument
+                android:name="selectedImage"
+                app:argType="com.woocommerce.android.model.Product$Image"
+                app:nullable="true" />
+            <argument
+                android:name="showChooser"
+                app:argType="boolean" />
+            <argument
+                android:name="requestCode"
+                app:argType="integer" />
+        </action>
     </fragment>
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
+    <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>

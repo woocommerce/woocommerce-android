@@ -1,96 +1,80 @@
 <ar>
-4.7:
-<b>الإحصاءات:</b> سيطابق الرسم البياني لإحصاءاتك الآن ما تراه في wp-admin. نظرًا إلى أنَّك تحتاج إلى تشغيل الإصدار 4.0 من WooCommerce أو إصدار أحدث منه، فتأكَّد من أنَّك قمت بالتحديث.
+5.0:
+أصلحنا الأعطال التي حدثت عند اختيار صورة المنتج، وعند التبديل بين القوالب الفاتحة والداكنة على الأجهزة التي تعمل بإصدارات قديمة من نظام التشغيل Android.
 
-<b>إصلاح العطل:</b> كانت تحدث الأعطال عند نقل كميات كبيرة من البيانات. تم إصلاح هذا على الأجهزة التي تعمل بنظام التشغيل Android P والإصدارات الأحدث مع وجود مخزن مؤقت أكبر.
 </ar>
 <de-DE>
-4.7:
-<b>Statistiken:</b> Dein Statistikdiagramm stimmt jetzt mit deiner Ansicht in wp-admin überein. Bitte führe ein Update durch, da du WooCommerce 4.0 oder höher ausführen musst.
+5.0:
+Die Abstürze wurden behoben, die bei der Auswahl eines Produktbildes sowie beim Wechsel zwischen hellen und dunklen Themes auf älteren Android-Geräten auftraten.
 
-<b>Abstürze behoben:</b> Bei der Übertragung großer Datenmengen kam es zu Abstürzen. Wir haben das auf Geräten, auf denen Android P und höher ausgeführt wird, mit einem größeren Puffer behoben.
 </de-DE>
 <es-ES>
-4.7:
-<b>Estadísticas:</b> tus estadísticas coincidirán con lo que ves en wp-admin. Como tienes que ejecutar WooCommerce 4,0 o una versión posterior, asegúrate de actualizar la versión.
+5.0:
+Hemos corregido los errores que se producían al elegir la imagen de un producto, y al cambiar entre el tema claro y oscuro en las versiones más antiguas de Android.
 
-<b>Resolución de errores:</b> Cuando se transferían grandes cantidades de datos, ocurrían errores. Lo hemos corregido en dispositivos Android P y posteriores con un mayor almacenamiento.
 </es-ES>
 <fr-FR>
-4,7 :
-<b>Stats :</b> votre graphique des statistiques correspondra désormais à ce que vous voyez dans wp-admin. Étant donné que vous devez exécuter WooCommerce 4.0, veillez à effectuer la mise à jour.
+5.0 :
+nous avons résolu les incidents qui se présentaient lors du choix d'une image de produit et lors du basculement entre les thèmes clair et sombre sur d'anciennes versions d'Android.
 
-<b>Correction d’incidents :</b> des incidents se produisaient lors du transfert de gros volumes de données. Ce problème a été résolu sur les appareils exécutant Android P ou version ultérieure grâce à un tampon plus important.
 </fr-FR>
 <iw-IL>
-4.7:
-<b>Stats:</b>  הגרף של הנתונים הסטטיסטיים מתאים כעת לנתונים שמוצגים ב-wp-admin. מאחר שעליך להפעיל את WooCommerce 4.0 או גרסאות מתקדמות יותר, עליך לעדכן את הגרסה.
+5.0:
+תיקנו את הקריסות שהתרחשו כאשר בוחרים תמונת מוצר וכאשר מחליפים בין ערכת עיצוב בהירה לכהה בגרסאות ישנות יותר של Android.
 
-<b>Crash Fix:</b> קריסות התרחשו במהלך העברה של נתונים בכמויות גדולות. תיקנו את הבעיה הזאת במכשירים שמופעלים עם Android P או גרסאות מתקדמות יותר והרחבנו את הטווח.
 </iw-IL>
 <id>
-4.7:
-<b>Statistik:</b> Grafik statistik Anda sekarang akan cocok dengan yang Anda lihat di wp-admin. Anda perlu mengoperasikan WooCommerce 4.0 atau versi lebih baru, pastikan Anda melakukan pembaruan.
+5.0:
+Kami telah memperbaiki crash yang terjadi saat memilih gambar produk dan saat beralih antara tema terang dan gelap pada versi Android yang lebih lama.
 
-<b>Perbaikan Crash:</b> Crash terjadi saat sedang mentransfer data dalam jumlah besar. Kami memperbaikinya pada perangkat yang menjalankan Android P dan versi lebih baru dengan kapasitas penyangga yang lebih besar.
 </id>
 <it-IT>
-4.7:
-<b>Statistiche:</b> il grafico delle tue statistiche ora corrisponde a ciò che visualizzi in wp-admin. Assicurati di effettuare l'aggiornamento perché dovrai utilizzare WooCommerce 4.0 o versioni superiori.
+5.0:
+Abbiamo corretto arresti anomali che avvenivano quando si sceglieva un'immagine del prodotto e si passava tra temi chiari e scuri su vecchi dispositivi Android.
 
-<b>Correzione di un arresto anomalo:</b> quando veniva trasferita una grande quantità di dati avvenivano arresti anomali. Abbiamo corretto questo problema sui dispositivi su cui è in esecuzione Android P e versioni successive con un buffer maggiore.
 </it-IT>
 <ja-JP>
-4.7:
-<b>統計 :</b> 統計グラフが、wp-admin に表示される内容と一致するようになりました。 WooCommerce 4.0 以上を実行する必要があるため、必ずアップデートするようにしてください。
+5.0:
+ 商品画像を選択するときと、Android の古いバージョンでライトとダークのテーマを切り替えるときに発生していたクラッシュを修正しました。
 
-<b>クラッシュの修正 :</b> 大量のデータを転送する際にクラッシュが起こっていました。 Android P を実行するデバイスと、バッファーが大きいデバイスでこの問題を修正しました。
 </ja-JP>
 <ko-KR>
-4.7:
-<b>통계:</b> 이제 통계 그래프에 wp-admin과 일치하는 콘텐츠가 표시됩니다. WooCommerce 4.0 이상을 실행해야 하므로 업데이트했는지 확인하세요.
+5.0:
+제품 이미지를 선택할 때와 Android 구버전에서 라이트 테마와 다크 테마를 전환할 때 발생하던 비정상 종료 문제를 해결했습니다.
 
-<b>충동 해결:</b> 대용량 데이터를 전송할 때 충돌 문제가 발생했었습니다. 버퍼 크기를 늘려 Android P 이상을 실행하는 기기에서 이 문제를 해결했습니다.
 </ko-KR>
 <nl-NL>
-4.7:
-<b>Statistieken:</b> Je grafiek met statistieken komt nu overeen met wat je ziet in wp-admin. Zorg dat je de update uitvoert, want je hebt WooCommerce 4.0 of hoger nodig.
+5.0:
+We hebben crashes opgelost die zich voordeden wanneer een productafbeelding werd gekozen, en wanneer tussen lichte en donkere thema's werd overgeschakeld op oudere Androids.
 
-<b>Crash-fix:</b> Wanneer grote hoeveelheden gegevens werden overgedragen, vonden er crashes plaats. We hebben dit opgelost op toestellen met Android P en hoger dankzij een grotere buffer.
 </nl-NL>
 <pt-BR>
-4.7:
-<b>Estatísticas:</b> agora seu gráfico de estatísticas corresponde ao que é exibido no Painel WP Admin. É necessário atualizar o WooCommerce para a versão 4.0 ou superior.
+5.0:
+Corrigimos as falhas que ocorriam ao escolher uma imagem de produto e ao alternar entre os temas claro e escuro em versões mais antigas do Android.
 
-<b>Correção de falhas:</b> estavam ocorrendo falhas na transferência de um número grande de dados. Isso já foi corrigido para dispositivos com o Android P e superior com um buffer maior.
 </pt-BR>
 <ru-RU>
-4.7:
-<b>Статистика:</b> График статистики теперь совпадает с тем, что используется в wp-admin. Для этого требуется WooCommerce 4.0 или более поздней версии. Не забудьте обновить приложение.
+5.0:
+Устранены сбои, происходящие при выборе изображения товара и при переключении со светлой темы на темную в старых версиях Android.
 
-<b>Исправление ошибок:</b> При переносе больших объемов данных происходили ошибки. Мы исправили эти ошибки на устройствах Android P и более поздних версий, увеличив буфер.
 </ru-RU>
-<tr-TR>
-4.7:
-<b>İstatistikler:</b> İstatistik grafiğiniz artık wp-admin'de gördüklerinizle aynı olacak. WooCommerce 4.0 veya üstünü çalıştırmanız gerektiğinden güncelleme yaptığınızdan emin olun.
+<sv-SE>
+5.0:
+Vi har åtgärdat de krascher som inträffade vid val av produktbild samt vid byte mellan ljusa och mörka teman på äldre Android-telefoner.
 
-<b>Kilitlenmeyle İlgili Düzeltme:</b> Büyük miktarda veri aktarılırken kilitlenmeler yaşanıyordu. Daha büyük bir arabellekle, Android P ve daha yeni sürümleri çalıştıran cihazlarda bu sorun düzeltildi.
-</tr-TR>
+</sv-SE>
 <zh-CN>
-4.7：
-<b>统计数据：</b>现在，您的统计数据图将与您在 wp-admin 中看到的信息相符。 当您需要运行 WooCommerce 4.0 或更高版本时，请务必进行更新。
+5.0：
+我们修复了在选择产品图片以及在较旧的 Android 上切换浅色和深色主题时出现的崩溃问题。
 
-<b>崩溃问题修复：</b>之前，在传输大量数据时，系统会崩溃。 我们在运行具有较大缓冲区的 Android P 及更高版本操作系统的设备上修复了此类问题。
 </zh-CN>
 <zh-TW>
-4.7：
-<b>統計資料：</b>現在你的統計資料圖表資訊會與 wp-admin 中顯示資訊相符。 當你需要執行 WooCommerce 4.0 以上版本時，請務必更新。
+5.0：
+我們已修復選擇商品圖片及使用較舊 Android 版本切換淺色及深色佈景主題時，會造成當機的問題。
 
-<b>當機修正：</b>過去轉移大量資料時會發生當機問題。 我們已改用更大的緩衝區，執行 Android P 以上版本的裝置已不會再出現此問題。
 </zh-TW>
 <en-US>
-4.7:
-<b>Stats:</b> Your stats graph will now match what you see in wp-admin. As you need to be running WooCommerce 4.0 or greater make sure you update.
-
-<b>Crash Fix:</b> Crashes were happening with large amounts of data being transferred. We fixed this on devices running Android P and higher with a larger buffer.
+5.0:
+We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
+ 
 </en-US>

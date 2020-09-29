@@ -9,6 +9,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +33,11 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
@@ -38,6 +45,9 @@ import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
@@ -47,12 +57,15 @@ import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
-        LoginEmailHelpDialogFragment.Listener {
+        LoginEmailHelpDialogFragment.Listener, HasAndroidInjector {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
         private const val KEY_LOGIN_SITE_URL = "login_site"
         private const val KEY_CLICKED_SITE_ID = "clicked_site_id"
+        private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
+        private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_UNIFIED_TRACKER_STEP = "KEY_UNIFIED_TRACKER_STEP"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -67,8 +80,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
@@ -96,6 +111,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private var hasConnectedStores: Boolean = false
 
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -111,6 +128,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             button_help.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.SHOW_HELP)
+                }
             }
             site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
@@ -133,7 +153,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         siteAdapter = SitePickerAdapter(this, this)
         sites_recycler.adapter = siteAdapter
 
-        showUserInfo()
+        loadUserInfo()
 
         savedInstanceState?.let { bundle ->
             clickedSiteId = bundle.getLong(KEY_CLICKED_SITE_ID)
@@ -151,7 +171,22 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             } else {
                 presenter.loadSites()
             }
+
+            // Restore state for the unified login tracker
+            if (calledFromLogin) {
+                unifiedLoginTracker.setSource(bundle.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
+                unifiedLoginTracker.setFlow(bundle.getString(KEY_UNIFIED_TRACKER_FLOW))
+                bundle.getString(KEY_UNIFIED_TRACKER_STEP)?.let { stepString ->
+                    Step.fromValue(stepString)?.let { unifiedLoginTracker.setStep(it) }
+                }
+            }
         } ?: run {
+            // Set unified login tracker source and flow
+            if (calledFromLogin) {
+                AppPrefs.getUnifiedLoginLastSource()?.let { unifiedLoginTracker.setSource(it) }
+                unifiedLoginTracker.track(Flow.EPILOGUE, Step.START)
+            }
+
             // Signin M1: If using a url to login, we skip showing the store list
             AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }?.let { url ->
                 deferLoadingSitesIntoView = true
@@ -188,6 +223,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         outState.putBoolean(KEY_CALLED_FROM_LOGIN, calledFromLogin)
         outState.putLong(KEY_CLICKED_SITE_ID, clickedSiteId)
 
+        // Save state for the unified login tracker
+        if (calledFromLogin) {
+            unifiedLoginTracker.getFlow()?.value?.let {
+                outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
+            }
+            outState.putString(KEY_UNIFIED_TRACKER_FLOW, unifiedLoginTracker.getSource().value)
+            outState.putString(KEY_UNIFIED_TRACKER_STEP, unifiedLoginTracker.currentStep?.value)
+        }
+
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
     }
 
@@ -207,24 +251,49 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     }
 
     /**
-     * Show the current user info if this was called from login, otherwise hide user views
+     * Load the user info view with user information and gravatar.
      */
-    override fun showUserInfo() {
+    private fun loadUserInfo() {
+        text_displayname.text = presenter.getUserDisplayName()
+
+        presenter.getUserName()?.let { userName ->
+            if (userName.isNotEmpty()) {
+                text_username.text = String.format(getString(R.string.at_username), userName)
+            }
+        }
+
+        GlideApp.with(this)
+            .load(presenter.getUserAvatarUrl())
+            .placeholder(R.drawable.img_gravatar_placeholder)
+            .circleCrop()
+            .into(image_avatar)
+    }
+
+    /**
+     * Show the current user info if this was called from login, otherwise hide user views. This method
+     * will also format the views for the type of layout requested.
+     *
+     * @param centered: If true, center the user info views for display in error messages, else, left
+     * align the views.
+     */
+    private fun showUserInfo(centered: Boolean) {
         if (calledFromLogin) {
             user_info_group.visibility = View.VISIBLE
-            text_displayname.text = presenter.getUserDisplayName()
-
-            presenter.getUserName()?.let { userName ->
-                if (userName.isNotEmpty()) {
-                    text_username.text = String.format(getString(R.string.at_username), userName)
+            if (centered) {
+                user_info_group.gravity = Gravity.CENTER
+                with(image_avatar) {
+                    layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_64)
+                    layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_64)
+                    requestLayout()
+                }
+            } else {
+                user_info_group.gravity = Gravity.START
+                with(image_avatar) {
+                    layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_72)
+                    layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_72)
+                    requestLayout()
                 }
             }
-
-            GlideApp.with(this)
-                    .load(presenter.getUserAvatarUrl())
-                    .placeholder(R.drawable.img_gravatar_placeholder)
-                    .circleCrop()
-                    .into(image_avatar)
         } else {
             user_info_group.visibility = View.GONE
         }
@@ -232,6 +301,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun showStoreList(wcSites: List<SiteModel>) {
         progressDialog?.takeIf { it.isShowing }?.dismiss()
+        showUserInfo(centered = false)
 
         if (deferLoadingSitesIntoView) {
             if (wcSites.isNotEmpty()) {
@@ -239,6 +309,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 // Make "show connected stores" visible to the user
                 button_secondary.visibility = View.VISIBLE
+                button_secondary.text = getString(R.string.login_view_connected_stores)
             } else {
                 hasConnectedStores = false
 
@@ -249,9 +320,26 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             loginSiteUrl?.let { processLoginSite(it) }
             return
         }
-        // Hide "show connected stores" button now that we're displaying
-        // the store list.
-        button_secondary.visibility = View.GONE
+
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.SITE_LIST)
+
+            // Show the 'try another account' button in case the user
+            // doesn't see the store they want to log into.
+            with(button_secondary) {
+                visibility = View.VISIBLE
+                text = getString(R.string.login_try_another_account)
+                setOnClickListener {
+                    presenter.logout()
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                    }
+                }
+            }
+        } else {
+            // Called from settings. Hide the button.
+            button_secondary.isVisible = false
+        }
 
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_STORES_SHOWN,
@@ -282,10 +370,16 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        button_primary.text = getString(R.string.continue_button)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+        with(button_primary) {
+            text = getString(R.string.done)
+            isEnabled = true
+            setOnClickListener {
+                presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.SUBMIT)
+                }
+            }
         }
     }
 
@@ -336,6 +430,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // if we came here from login, start the main activity
         if (calledFromLogin) {
+            // Track login flow completed successfully
+            unifiedLoginTracker.track(step = Step.SUCCESS)
+
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
@@ -375,14 +472,29 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NO_WOO_STORES)
+        }
+
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        button_primary.text = getString(R.string.login_try_another_account)
-        button_primary.isEnabled = true
-        button_primary.setOnClickListener {
-            presenter.logout()
+        with(button_primary) {
+            text = getString(R.string.login_try_another_account)
+            isEnabled = true
+            setOnClickListener {
+                presenter.logout()
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
+            }
+        }
+
+        with(button_secondary) {
+            visibility = View.GONE
         }
     }
 
@@ -461,6 +573,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.WRONG_WP_ACCOUNT)
+        }
+
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.VISIBLE
@@ -470,6 +587,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         button_email_help.setOnClickListener {
             AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+            unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
             LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
@@ -478,7 +596,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -489,6 +609,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 
@@ -504,6 +627,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
                 mapOf(AnalyticsTracker.KEY_URL to url))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.JETPACK_NOT_CONNECTED)
+        }
+
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
@@ -544,7 +672,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -555,6 +685,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 
@@ -575,6 +708,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_URL to site.url,
                         AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NOT_WOO_STORE)
+        }
+
+        showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
@@ -590,6 +728,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             spannable.setSpan(
                     WooClickableSpan {
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+                        unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
                         progressDialog?.takeIf { !it.isShowing }?.dismiss()
                         progressDialog = ProgressDialog.show(
@@ -611,7 +750,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
-
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
                 presenter.logout()
             }
         }
@@ -622,6 +763,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
                 setOnClickListener {
                     AnalyticsTracker.track(Stat.SITE_PICKER_VIEW_CONNECTED_STORES_BUTTON_TAPPED)
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.VIEW_CONNECTED_STORES)
+                    }
                     showConnectedSites()
                 }
 

@@ -66,13 +66,14 @@ class OrderDetailRepository @Inject constructor(
                 .map { it.toAppModel() }
         } else emptyList()
 
-        val shipmentTrackingList = orderStore.getShipmentTrackingsForOrder(order)
+        val shipmentTrackingList = orderStore.getShipmentTrackingsForOrder(selectedSite.get(), order.id)
 
         return OrderDetailUiItem(
             orderModel = order,
             refunds = refunds,
             shippingLabels = shippingLabels,
-            shipmentTrackingList = shipmentTrackingList
+            shipmentTrackingList = shipmentTrackingList,
+            isShipmentTrackingAvailable = shipmentTrackingList.isNotEmpty()
         )
     }
 
@@ -105,14 +106,15 @@ class OrderDetailRepository @Inject constructor(
 
             val refunds = fetchedRefunds?.model?.map { it.toAppModel() } ?: emptyList()
             val shipmentTrackingList = if (fetchedShipmentTrackingList) {
-                orderStore.getShipmentTrackingsForOrder(order)
+                orderStore.getShipmentTrackingsForOrder(selectedSite.get(), order.id)
             } else emptyList()
 
             OrderDetailUiItem(
-                order,
-                refunds,
-                shippingLabels,
-                shipmentTrackingList
+                orderModel = order,
+                refunds = refunds,
+                shippingLabels = shippingLabels,
+                shipmentTrackingList = shipmentTrackingList,
+                isShipmentTrackingAvailable = fetchedShipmentTrackingList
             )
         }
     }
@@ -129,7 +131,7 @@ class OrderDetailRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchShipmentTrackingList = it
 
-                val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+                val payload = FetchOrderShipmentTrackingsPayload(order.id, order.remoteOrderId, selectedSite.get())
                 dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
@@ -157,6 +159,7 @@ class OrderDetailRepository @Inject constructor(
         val orderModel: WCOrderModel,
         val refunds: List<Refund>,
         val shippingLabels: List<ShippingLabel>,
-        val shipmentTrackingList: List<WCOrderShipmentTrackingModel>
+        val shipmentTrackingList: List<WCOrderShipmentTrackingModel>,
+        val isShipmentTrackingAvailable: Boolean
     )
 }

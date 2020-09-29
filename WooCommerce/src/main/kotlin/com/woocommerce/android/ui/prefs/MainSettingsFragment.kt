@@ -155,16 +155,16 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
+        option_beta_features.optionValue = getString(R.string.settings_enable_product_teaser_title)
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        option_feature_request.setOnClickListener {
+        option_send_feedback.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
-            context?.let { ChromeCustomTabUtils.launchUrl(it, AppUrls.APP_FEATURE_REQUEST) }
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_feedbackSurveyFragment)
         }
 
         option_about.setOnClickListener {
@@ -245,7 +245,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.settings_app_theme_title))
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]

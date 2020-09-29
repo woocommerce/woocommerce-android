@@ -6,7 +6,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground">
+    android:background="@drawable/list_primary_selector">
 
     <FrameLayout
         android:id="@+id/productImageFrame"

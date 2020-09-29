@@ -10,6 +10,9 @@ import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -17,26 +20,26 @@ import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
 import kotlinx.android.synthetic.main.my_store_stats.*
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.WCTopEarnerModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
 import javax.inject.Inject
 
 class MyStoreFragment : TopLevelFragment(),
-        MyStoreContract.View,
-        DashboardStatsListener {
+    MyStoreContract.View,
+    MyStoreStatsListener {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
@@ -69,11 +72,16 @@ class MyStoreFragment : TopLevelFragment(),
         }
 
     private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
+            it.setId(R.id.stats_tab_layout)
+        }
     }
 
     private val appBarLayout
         get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
+
+    private val mainNavigationRouter
+        get() = activity as? MainNavigationRouter
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -87,22 +95,13 @@ class MyStoreFragment : TopLevelFragment(),
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
-            dashboard_refresh_layout.apply {
-                setOnRefreshListener {
+            dashboard_refresh_layout.setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     MyStorePresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
-                }
-            }
-
-            if (FeatureFlag.APP_FEEDBACK.isEnabled()) {
-                store_feedback_request_card.visibility = View.VISIBLE
-                val positiveCallback = { AppRatingDialog.showRateDialog(context) }
-                val negativeCallback = { /* TODO */ }
-                store_feedback_request_card.initView(negativeCallback, positiveCallback)
             }
         }
         return view
@@ -138,14 +137,17 @@ class MyStoreFragment : TopLevelFragment(),
 
         my_store_date_bar.initView()
         my_store_stats.initView(
-                activeGranularity,
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            activeGranularity,
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
+        )
         my_store_top_earners.initView(
-                listener = this,
-                selectedSite = selectedSite,
-                formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded)
+            listener = this,
+            selectedSite = selectedSite,
+            formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
+            statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
+        )
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -169,6 +171,7 @@ class MyStoreFragment : TopLevelFragment(),
     override fun onResume() {
         super.onResume()
         addTabLayoutToAppBar(tabLayout)
+        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -236,14 +239,14 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
-    override fun showTopEarners(topEarnerList: List<WCTopEarnerModel>, granularity: StatsGranularity) {
+    override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.showErrorView(false)
-            my_store_top_earners.updateView(topEarnerList)
+            my_store_top_earners.updateView(topPerformers)
         }
     }
 
-    override fun showTopEarnersError(granularity: StatsGranularity) {
+    override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_earners.updateView(emptyList())
             my_store_top_earners.showErrorView(true)
@@ -309,9 +312,11 @@ class MyStoreFragment : TopLevelFragment(),
                     my_store_stats.clearChartData()
                     my_store_date_bar.clearDateRangeValues()
                 }
-                presenter.loadStats(activeGranularity, forced)
-                presenter.loadTopEarnerStats(activeGranularity, forced)
-                presenter.fetchHasOrders()
+                presenter.run {
+                    loadStats(activeGranularity, forced)
+                    coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
+                    fetchHasOrders()
+                }
             }
             else -> isRefreshPending = true
         }
@@ -332,12 +337,14 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
         my_store_top_earners.showErrorView(false)
-        presenter.loadTopEarnerStats(period)
+        presenter.coroutineScope.launch {
+            presenter.loadTopPerformersStats(period)
+        }
     }
 
-    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {
+    override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
         removeTabLayoutFromAppBar(tabLayout)
-        (activity as? MainNavigationRouter)?.showProductDetail(topEarner.id)
+        mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
@@ -346,6 +353,65 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
         my_store_date_bar.updateDateRangeView(revenueStatsModel, period)
+    }
+
+    /**
+     * This method verifies if the feedback card should be visible.
+     *
+     * If it should but it's not, the feedback card is reconfigured and presented
+     * If should not and it's visible, the card visibility is changed to gone
+     * If should be and it's already visible, nothing happens
+     */
+    private fun handleFeedbackRequestCardState() = with(store_feedback_request_card) {
+        if (userFeedbackIsDue && visibility == View.GONE) {
+            setupFeedbackRequestCard()
+        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
+            visibility = View.GONE
+        }
+    }
+
+    private fun View.setupFeedbackRequestCard() {
+        this.store_feedback_request_card.visibility = View.VISIBLE
+        val negativeCallback = {
+            mainNavigationRouter?.showFeedbackSurvey()
+            this.store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            removeTabLayoutFromAppBar(tabLayout)
+        }
+        store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+    }
+
+    private fun handleFeedbackRequestPositiveClick() {
+        context?.let {
+            // Hide the card and set last feedback date to now
+            store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+
+            // Request a ReviewInfo object from the Google Reviews API. If this fails
+            // we just move on as there isn't anything we can do.
+            val manager = ReviewManagerFactory.create(requireContext())
+            val reviewRequest = manager.requestReviewFlow()
+            reviewRequest.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Request to start the Review flow so the user can be prompted to submit
+                    // a play store review. The prompt will only appear if the user hasn't already
+                    // reached their quota for how often we can ask for a review.
+                    val reviewInfo = it.result
+                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                    flow.addOnFailureListener { ex ->
+                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
+                    }
+                } else {
+                    // There was an error, just log and continue. Google doesn't really tell you what
+                    // type of scenario would cause an error.
+                    WooLog.e(
+                        WooLog.T.DASHBOARD,
+                        "Error fetching ReviewInfo object from Review API to start in-app review process",
+                        it.exception
+                    )
+                }
+            }
+        }
     }
 
     override fun showEmptyView(show: Boolean) {

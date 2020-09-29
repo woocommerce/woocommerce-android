@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
 import com.woocommerce.android.extensions.isVirtualProduct
+import com.woocommerce.android.model.appendTrackingUrls
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler
@@ -60,7 +61,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class OrderDetailPresenter @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
@@ -102,7 +103,6 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun dropView() {
-        super.dropView()
         orderView = null
         isNotesInit = false
         dispatcher.unregister(this)
@@ -133,41 +133,41 @@ class OrderDetailPresenter @Inject constructor(
     }
 
     override fun loadOrderDetailInfo(order: WCOrderModel) {
-        orderModel?.let {
-            val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(it)
+        val cachedOrderDetailUiItem = orderDetailRepository.getOrderDetailInfoFromDb(order)
 
-            // if there are no shipping labels cached in the db, we prefer not to show the product list
-            // till it can be fetched from the API
-            displayOrderDetailInfo(order, cachedOrderDetailUiItem, cachedOrderDetailUiItem.shippingLabels.isNotEmpty())
+        // if there are no shipping labels cached in the db, we prefer not to show the product list
+        // till it can be fetched from the API
+        displayOrderDetailInfo(order, cachedOrderDetailUiItem)
 
-            fetchOrderDetailInfo(it)
-        }
+        fetchOrderDetailInfo(order)
     }
 
     override fun fetchOrderDetailInfo(order: WCOrderModel) {
         coroutineScope.launch {
             val freshOrderDetailUiItem = orderDetailRepository.fetchOrderDetailInfo(order)
-            displayOrderDetailInfo(order, freshOrderDetailUiItem, true)
+            displayOrderDetailInfo(order, freshOrderDetailUiItem)
         }
     }
 
     private fun displayOrderDetailInfo(
         order: WCOrderModel,
-        orderDetailUiItem: OrderDetailUiItem,
-        displayProductList: Boolean
+        orderDetailUiItem: OrderDetailUiItem
     ) {
         orderView?.showRefunds(orderDetailUiItem.orderModel, orderDetailUiItem.refunds)
-        orderView?.showShippingLabels(orderDetailUiItem.orderModel, orderDetailUiItem.shippingLabels)
+        orderView?.showShippingLabels(
+            order = orderDetailUiItem.orderModel,
+            shippingLabels = orderDetailUiItem.shippingLabels.appendTrackingUrls(orderDetailUiItem.shipmentTrackingList)
+        )
 
         // display the product list only if we know for sure,
         // that there are no shipping labels available for the order
-        if (displayProductList) {
-            orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
-        }
+        orderView?.showProductList(order, orderDetailUiItem.refunds, orderDetailUiItem.shippingLabels)
 
         // Display the shipment tracking list only if it's available and if there are no shipping labels available
-        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.shipmentTrackingList.isNotEmpty()) {
+        if (orderDetailUiItem.shippingLabels.isEmpty() && orderDetailUiItem.isShipmentTrackingAvailable) {
             orderView?.showOrderShipmentTrackings(orderDetailUiItem.shipmentTrackingList)
+        } else {
+            orderView?.hideOrderShipmentTrackings()
         }
     }
 
@@ -200,7 +200,7 @@ class OrderDetailPresenter @Inject constructor(
      * for better ui testing
      */
     override fun fetchOrderNotesFromDb(order: WCOrderModel): List<WCOrderNoteModel> {
-        return orderStore.getOrderNotesForOrder(order)
+        return orderStore.getOrderNotesForOrder(order.id)
     }
 
     /**
@@ -224,7 +224,7 @@ class OrderDetailPresenter @Inject constructor(
      * for better ui testing
      */
     override fun getOrderShipmentTrackingsFromDb(order: WCOrderModel): List<WCOrderShipmentTrackingModel> {
-        return orderStore.getShipmentTrackingsForOrder(order)
+        return orderStore.getShipmentTrackingsForOrder(selectedSite.get(), order.id)
     }
 
     /**
@@ -269,7 +269,7 @@ class OrderDetailPresenter @Inject constructor(
         }
 
         orderModel?.let { order ->
-            val payload = UpdateOrderStatusPayload(order, selectedSite.get(), newStatus)
+            val payload = UpdateOrderStatusPayload(order.id, order.remoteOrderId, selectedSite.get(), newStatus)
             dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
         }
     }
@@ -339,7 +339,9 @@ class OrderDetailPresenter @Inject constructor(
             AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE, mapOf(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_DETAIL
             ))
-            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            val payload = DeleteOrderShipmentTrackingPayload(
+                selectedSite.get(), order.id, order.remoteOrderId, wcOrderShipmentTrackingModel
+            )
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
     }
@@ -354,14 +356,12 @@ class OrderDetailPresenter @Inject constructor(
                 WooLog.e(T.ORDERS, "$TAG - Error fetching order : $message")
             } else {
                 orderModel = loadOrderDetailFromDb(orderIdentifier!!)
-                coroutineScope.launch {
-                    orderModel?.let { order ->
-                        orderView?.showOrderDetail(order, isFreshData = true)
-                        orderView?.showSkeleton(false)
-                        loadOrderNotes()
-                        fetchOrderDetailInfo(order)
-                    } ?: orderView?.showLoadOrderError()
-                }
+                orderModel?.let { order ->
+                    orderView?.showOrderDetail(order, isFreshData = true)
+                    orderView?.showSkeleton(false)
+                    fetchOrderDetailInfo(order)
+                    loadOrderNotes()
+                } ?: orderView?.showLoadOrderError()
             }
         } else if (event.causeOfChange == WCOrderAction.FETCH_ORDER_NOTES) {
             orderView?.showOrderNotesSkeleton(false)
@@ -375,7 +375,7 @@ class OrderDetailPresenter @Inject constructor(
                             mapOf(AnalyticsTracker.KEY_ID to order.remoteOrderId))
 
                     isUsingCachedNotes = false
-                    val notes = orderStore.getOrderNotesForOrder(order)
+                    val notes = orderStore.getOrderNotesForOrder(order.id)
                     orderView?.updateOrderNotes(notes)
                 }
             }
@@ -460,7 +460,7 @@ class OrderDetailPresenter @Inject constructor(
      * Request a fresh copy of order notes from the api.
      */
     fun requestOrderNotesFromApi(order: WCOrderModel) {
-        val payload = FetchOrderNotesPayload(order, selectedSite.get())
+        val payload = FetchOrderNotesPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
     }
 
@@ -468,7 +468,7 @@ class OrderDetailPresenter @Inject constructor(
      * Request a fresh copy of order shipment tracking records from the api.
      */
     fun requestShipmentTrackingsFromApi(order: WCOrderModel) {
-        val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+        val payload = FetchOrderShipmentTrackingsPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 

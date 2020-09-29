@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -18,4 +19,10 @@ class AppConfigModule {
 
     @Provides
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
+
+    @Provides
+    fun providesAppPrefs(appContext: Context): AppPrefs {
+        AppPrefs.init(appContext)
+        return AppPrefs
+    }
 }

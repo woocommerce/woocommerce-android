@@ -1,0 +1,3 @@
+5.0:
+We hebben crashes opgelost die zich voordeden wanneer een productafbeelding werd gekozen, en wanneer tussen lichte en donkere thema's werd overgeschakeld op oudere Androids.
+
