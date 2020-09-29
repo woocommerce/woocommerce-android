@@ -176,10 +176,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
-     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable trash menu
+     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
+     * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = navArgs.isTrashEnabled && !isAddFlow && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
+        get() = !isAddFlow && navArgs.isTrashEnabled && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
 
     init {
         start()
@@ -219,7 +220,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the Trash menu item is clicked in Product detail screen
      */
     fun onTrashButtonClicked() {
-        if (!viewState.isConfirmingTrash) {
+        if (checkConnection() && !viewState.isConfirmingTrash) {
             triggerEvent(
                 ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
@@ -234,7 +235,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     messageId = string.product_confirm_trash,
                     positiveButtonId = string.product_trash_yes,
                     negativeButtonId = string.cancel
-                    )
+                )
             )
         }
     }
