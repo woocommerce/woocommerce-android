@@ -339,7 +339,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 // so we can show a snackbar enabling the user to undo the trashing.
                 val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
                 trashProduct(remoteProductId)
-                bundle.putBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH, false)
             }
         }
     }
