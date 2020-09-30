@@ -35,7 +35,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
