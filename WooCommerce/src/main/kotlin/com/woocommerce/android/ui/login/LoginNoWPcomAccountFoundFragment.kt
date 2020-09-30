@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.zendesk.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_login_no_wpcom_account_found.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
@@ -19,13 +20,27 @@ import org.wordpress.android.login.LoginListener
 class LoginNoWPcomAccountFoundFragment : Fragment() {
     companion object {
         const val TAG = "LoginNoWPcomAccountFoundFragment"
+        const val ARG_EMAIL_ADDRESS = "email_address"
 
-        fun newInstance(): LoginNoWPcomAccountFoundFragment {
-            return LoginNoWPcomAccountFoundFragment()
+        fun newInstance(emailAddress: String?): LoginNoWPcomAccountFoundFragment {
+            val fragment = LoginNoWPcomAccountFoundFragment()
+            val args = Bundle()
+            args.putString(ARG_EMAIL_ADDRESS, emailAddress)
+            fragment.arguments = args
+            return fragment
         }
     }
 
     private var loginListener: LoginListener? = null
+    private var emailAddress: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            emailAddress = it.getString(ARG_EMAIL_ADDRESS, null)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -44,15 +59,28 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
         }
 
         with(button_primary) {
-            // TODO AMANDA - route to site address screen
+            text = getString(R.string.login_store_address)
+            setOnClickListener {
+                // TODO AMANDA - tracks
+
+                loginListener?.loginViaSiteAddress()
+            }
         }
 
         with(button_secondary) {
-            // TODO AMANDA - start over
+            visibility = View.VISIBLE
+            text = getString(R.string.login_try_another_account)
+            setOnClickListener {
+                // TODO AMANDA - tracks
+
+                loginListener?.startOver()
+            }
         }
 
         btn_find_connected_email.setOnClickListener {
-            // TODO AMANDA - show email help
+            // TODO AMANDA - tracks
+
+            loginListener?.showHelpFindingConnectedEmail()
         }
     }
 
@@ -65,7 +93,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
         if (item.itemId == R.id.help) {
             // TODO AMANDA - tracks event
 
-            // TODO AMANDA - show zendesk help
+            loginListener?.helpEmailScreen(emailAddress ?: StringUtils.EMPTY_STRING)
             return true
         }
 

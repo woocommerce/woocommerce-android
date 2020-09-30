@@ -607,7 +607,12 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun gotUnregisteredEmail(email: String?) {
-        TODO("Not yet implemented")
+        // Show the 'No WordPress.com account found' screen
+        val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
+        slideInFragment(
+            fragment = fragment as Fragment,
+            shouldAddToBackStack = true,
+            tag = LoginNoWPcomAccountFoundFragment.TAG)
     }
 
     override fun gotUnregisteredSocialAccount(
