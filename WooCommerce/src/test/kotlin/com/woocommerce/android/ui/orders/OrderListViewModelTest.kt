@@ -27,6 +27,7 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.viewmodel.TestDispatcher
 import com.woocommerce.android.viewmodel.test
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -35,6 +36,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -50,6 +52,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@InternalCoroutinesApi
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
@@ -58,9 +61,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined
+        TestDispatcher,
+        TestDispatcher,
+        TestDispatcher
     )
     private val savedStateArgs: SavedStateWithArgs = mock()
 
