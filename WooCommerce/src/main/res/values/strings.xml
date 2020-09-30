@@ -158,6 +158,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
+    <string name="login_no_wpcom_account_found">It looks like this email isn\'t associated with a WordPress.com account.</string>
     <!--
         Dashboard View
     -->
