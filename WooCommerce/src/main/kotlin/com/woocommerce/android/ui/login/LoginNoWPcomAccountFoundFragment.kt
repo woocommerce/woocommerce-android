@@ -12,10 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.zendesk.util.StringUtils
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_no_wpcom_account_found.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
+import javax.inject.Inject
 
 class LoginNoWPcomAccountFoundFragment : Fragment() {
     companion object {
@@ -33,6 +37,8 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
 
     private var loginListener: LoginListener? = null
     private var emailAddress: String? = null
+
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +67,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
         with(button_primary) {
             text = getString(R.string.login_store_address)
             setOnClickListener {
-                // TODO AMANDA - tracks
+                unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
 
                 loginListener?.loginViaSiteAddress()
             }
@@ -71,15 +77,13 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
-                // TODO AMANDA - tracks
+                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 
                 loginListener?.startOver()
             }
         }
 
         btn_find_connected_email.setOnClickListener {
-            // TODO AMANDA - tracks
-
             loginListener?.showHelpFindingConnectedEmail()
         }
     }
@@ -91,8 +95,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            // TODO AMANDA - tracks event
-
+            unifiedLoginTracker.trackClick(Click.SHOW_HELP)
             loginListener?.helpEmailScreen(emailAddress ?: StringUtils.EMPTY_STRING)
             return true
         }
@@ -101,6 +104,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
@@ -115,6 +119,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        // TODO AMANDA - tracks event
+        unifiedLoginTracker.track(step = Step.NO_WPCOM_ACCOUNT_FOUND)
     }
 }
