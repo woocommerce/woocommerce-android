@@ -314,10 +314,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startPublishProduct() {
+    private fun startPublishProduct(exitWhenDown: Boolean = false) {
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
-            launch { addProduct(it) }
+            launch {
+                val isSuccess = addProduct(it)
+                if (exitWhenDown && isSuccess) {
+                    triggerEvent(ExitProduct)
+                }
+            }
         }
     }
 
@@ -426,7 +431,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             val neutralAction = if (isAddFlow && event is ExitProductDetail) {
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct()
+                    startPublishProduct(exitWhenDown = true)
                     // TODO exit screen after saving
                 }
             } else {
@@ -775,9 +780,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     /**
      * Add a new product to the backend only if network is connected.
-     * Otherwise, an offline snackbar is displayed.
+     * Otherwise, an offline snackbar is displayed. Returns true only
+     * if product successfully added
      */
-    private suspend fun addProduct(product: Product) {
+    private suspend fun addProduct(product: Product): Boolean {
+        val isSuccess: Boolean
         if (networkStatus.isConnected()) {
             @StringRes val successId = if (isDraftProduct()) {
                 string.product_detail_publish_product_draft_success
@@ -792,7 +799,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
 
             val result = productRepository.addProduct(product)
-            val isSuccess = result.first
+            isSuccess = result.first
             val newProductRemoteId = result.second
             if (isSuccess) {
                 triggerEvent(ShowSnackbar(successId))
@@ -808,8 +815,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
+            isSuccess = false
         }
         viewState = viewState.copy(isProgressDialogShown = false)
+        return isSuccess
     }
 
     /**
