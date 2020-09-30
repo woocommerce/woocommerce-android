@@ -1,5 +1,6 @@
 5.2
 -----
+* Product editing is now out of beta and is available for all users
  
 5.1
 -----
