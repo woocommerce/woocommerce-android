@@ -308,7 +308,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val message: Int
         when (viewModel.isAddFlow) {
             true -> {
-                title = R.string.product_publish_dialog_title
+                title = if (viewModel.isDraftProduct()) {
+                    R.string.product_publish_draft_dialog_title
+                } else {
+                    R.string.product_publish_dialog_title
+                }
                 message = R.string.product_publish_dialog_message
             }
             else -> {

@@ -758,20 +758,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Returns true if the product draft has a status of DRAFT
+     */
+    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
+
+    /**
      * Add a new product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun addProduct(product: Product) {
         if (networkStatus.isConnected()) {
-            val isDraft = product.status?.let { it == DRAFT } ?: false
-
-            @StringRes val successId = if (isDraft) {
+            @StringRes val successId = if (isDraftProduct()) {
                 string.product_detail_publish_product_draft_success
             } else {
                 string.product_detail_publish_product_success
             }
 
-            @StringRes val failId = if (isDraft) {
+            @StringRes val failId = if (isDraftProduct()) {
                 string.product_detail_publish_product_draft_error
             } else {
                 string.product_detail_publish_product_error
