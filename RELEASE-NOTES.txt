@@ -1,5 +1,10 @@
 
  5.1
+5.2
+-----
+* Product editing is now out of beta and is available for all users
+ 
+5.1
 -----
 * Implemented new login flow complete with new screen designs! #2851
 * Orders by order status screen now displays actual order count instead of max 99. #2853
