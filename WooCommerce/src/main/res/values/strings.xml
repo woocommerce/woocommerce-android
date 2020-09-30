@@ -789,13 +789,13 @@
     <string name="enter_username_instead">Log in with your username.</string>
     <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
-    <string name="login_text_otp">Text me a code instead.</string>
-    <string name="login_text_otp_another">Text me another code instead.</string>
+    
+    
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
-    <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed. Hunt and peck no more!</string>
-    <string name="login_magic_links_sent_label">Your magic link is on its way! Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    
+    
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
@@ -803,16 +803,16 @@
     <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
-    <string name="connect_more">Connect Another Site</string>
-    <string name="connect_site">Connect Site</string>
+    
+    
     <string name="login_continue">Continue</string>
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-    <string name="login_site_address">Site address</string>
+    <string name="login_site_address">Store address</string>
     <string name="login_site_address_help">Need help finding your site address?</string>
-    <string name="login_site_address_help_title">What\'s my site address?</string>
-    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    <string name="login_site_address_help_title">What\'s my store address?</string>
+    <string name="login_site_address_help_content">Your store address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -836,13 +836,13 @@
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
-    <string name="signup_magic_link_message">We sent you a magic signup link! Check your email on this device, and tap the link in the email to finish signing up.</string>
+    
     <string name="signup_magic_link_progress">Sending email</string>
     <string name="signup_terms_of_service_text">By signing up, you agree to our %1$sTerms of Service%2$s.</string>
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
-    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
+    
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
@@ -1289,4 +1289,35 @@
     <!-- Z -->
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
+    <string name="send_link_by_email">Send link by email</string>
+    <string name="create_account">Create account</string>
+    <string name="or_type_your_password">Or type your password</string>
+    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="enter_email_to_continue_wordpress_com">Enter your email address to log in or create a WordPress.com account.</string>
+    <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
+    <string name="get_started">Get Started</string>
+    <string name="check_email">Check email</string>
+    <string name="login_text_otp">Text me a code instead</string>
+    <string name="login_text_otp_another">Text me another code instead</string>
+    <string name="login_magic_links_label">We\'ll email you a magic link that\'ll log you in instantly, no password needed.</string>
+    <string name="login_magic_links_sent_label">Check your email on this device and tap the link in the email you received from WordPress.com.</string>
+    <string name="magic_link_not_seeing_email_message">Not seeing the email? Check your Spam or Junk Mail folder.</string>
+    <string name="connect_more">Connect another site</string>
+    <string name="connect_site">Connect a site</string>
+    <string name="login_done">Done</string>
+    <string name="login_find_your_site_adress">Find your store address</string>
+    <string name="login_find_your_connected_email">Find your connected email</string>
+    <string name="continue_google_button_suffix">Continue with Google</string>
+    <string name="continue_site_credentials">Continue with store credentials</string>
+    <string name="login_or">or</string>
+    <string name="sign_up_label">Sign Up</string>
+    <string name="signup_magic_link_message">We’ve emailed you a magic link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
+    <string name="signup_confirmation_message">We’ll use this email address to create your new WordPress.com account.</string>
+    <string name="signup_confirmation_magic_link_message">We’ll email you a magic link to create your new WordPress.com account.</string>
+    <string name="continue_terms_of_service_text">By continuing, you agree to our %1$sTerms of Service%2$s.</string>
+    <string name="continue_with_google_terms_of_service_text">If you continue with Google and don\'t already have a WordPress.com account, you are creating an account and you agree to our %1$sTerms of Service%2$s.</string>
+    <string name="continue_with_wpcom">Continue with WordPress.com</string>
+    <string name="enter_your_site_address">Enter your site address</string>
+    <string name="reset_your_password">Reset your password</string>
+    <string name="signup_confirmation_title">Signup confirmation</string>
 </resources>

@@ -78,9 +78,7 @@ object AppPrefs {
         // Application permissions
         ASKED_PERMISSION_CAMERA,
         // Date of the app installation
-        APP_INSTALATION_DATE,
-        // Date of the last time the user was requested for feedback on the app
-        LAST_FEEDBACK_REQUEST_DATE
+        APP_INSTALATION_DATE
     }
 
     fun init(context: Context) {

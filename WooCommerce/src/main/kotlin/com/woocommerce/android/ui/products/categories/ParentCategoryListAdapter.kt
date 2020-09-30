@@ -35,7 +35,7 @@ class ParentCategoryListAdapter(
     override fun getItemCount() = parentCategoryList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentCategoryListViewHolder {
-        return ParentCategoryListViewHolder(LayoutInflater.from(context)
+        return ParentCategoryListViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.parent_category_list_item, parent, false))
     }
 

@@ -10,7 +10,9 @@ import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -22,8 +24,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag.APP_FEEDBACK
-import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
@@ -82,10 +83,6 @@ class MyStoreFragment : TopLevelFragment(),
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
-    private val feedbackCardShouldBeVisible
-        get() = APP_FEEDBACK.isEnabled() &&
-            FeedbackPrefs.userFeedbackIsDue
-
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -98,17 +95,14 @@ class MyStoreFragment : TopLevelFragment(),
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
-            dashboard_refresh_layout.apply {
-                setOnRefreshListener {
+            dashboard_refresh_layout.setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     MyStorePresenter.resetForceRefresh()
                     dashboard_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
-                }
             }
-            setupFeedbackRequestCard()
         }
         return view
     }
@@ -368,41 +362,54 @@ class MyStoreFragment : TopLevelFragment(),
      * If should be and it's already visible, nothing happens
      */
     private fun handleFeedbackRequestCardState() = with(store_feedback_request_card) {
-        if (feedbackCardShouldBeVisible && visibility == View.GONE) {
+        if (userFeedbackIsDue && visibility == View.GONE) {
             setupFeedbackRequestCard()
-        } else if (feedbackCardShouldBeVisible.not() && visibility == View.VISIBLE) {
+        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
 
     private fun View.setupFeedbackRequestCard() {
-        if (feedbackCardShouldBeVisible) {
-            this.store_feedback_request_card.visibility = View.VISIBLE
-            val negativeCallback = {
-                mainNavigationRouter?.showFeedbackSurvey()
-                this.store_feedback_request_card.visibility = View.GONE
-                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                removeTabLayoutFromAppBar(tabLayout)
-            }
-            store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        this.store_feedback_request_card.visibility = View.VISIBLE
+        val negativeCallback = {
+            mainNavigationRouter?.showFeedbackSurvey()
+            this.store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            removeTabLayoutFromAppBar(tabLayout)
         }
+        store_feedback_request_card.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
-            val feedbackGiven = {
-                FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                store_feedback_request_card.visibility = View.GONE
+            // Hide the card and set last feedback date to now
+            store_feedback_request_card.visibility = View.GONE
+            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+
+            // Request a ReviewInfo object from the Google Reviews API. If this fails
+            // we just move on as there isn't anything we can do.
+            val manager = ReviewManagerFactory.create(requireContext())
+            val reviewRequest = manager.requestReviewFlow()
+            reviewRequest.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Request to start the Review flow so the user can be prompted to submit
+                    // a play store review. The prompt will only appear if the user hasn't already
+                    // reached their quota for how often we can ask for a review.
+                    val reviewInfo = it.result
+                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                    flow.addOnFailureListener { ex ->
+                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
+                    }
+                } else {
+                    // There was an error, just log and continue. Google doesn't really tell you what
+                    // type of scenario would cause an error.
+                    WooLog.e(
+                        WooLog.T.DASHBOARD,
+                        "Error fetching ReviewInfo object from Review API to start in-app review process",
+                        it.exception
+                    )
+                }
             }
-            val feedbackPostponed = {
-                store_feedback_request_card.visibility = View.GONE
-            }
-            AppRatingDialog.showRateDialog(
-                context = it,
-                ratingAccepted = feedbackGiven,
-                ratingDeclined = feedbackGiven,
-                ratingPostponed = feedbackPostponed
-            )
         }
     }
 

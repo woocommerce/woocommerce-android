@@ -80,8 +80,9 @@ class WCToggleSingleOptionView @JvmOverloads constructor(
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        switchSetting_switch.isEnabled = enabled
-        switchSetting_title.isEnabled = enabled
+
+        switchSetting_switch?.isEnabled = enabled
+        switchSetting_title?.isEnabled = enabled
     }
 
     private fun onCheckChanged() {

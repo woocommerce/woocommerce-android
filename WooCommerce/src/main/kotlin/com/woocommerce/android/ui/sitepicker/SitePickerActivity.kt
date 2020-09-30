@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
@@ -44,6 +45,9 @@ import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
@@ -53,7 +57,7 @@ import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteClickListener,
-        LoginEmailHelpDialogFragment.Listener {
+        LoginEmailHelpDialogFragment.Listener, HasAndroidInjector {
     companion object {
         private const val STATE_KEY_SITE_ID_LIST = "key-supported-site-id-list"
         private const val KEY_CALLED_FROM_LOGIN = "called_from_login"
@@ -61,6 +65,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         private const val KEY_CLICKED_SITE_ID = "clicked_site_id"
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_UNIFIED_TRACKER_STEP = "KEY_UNIFIED_TRACKER_STEP"
 
         fun showSitePickerFromLogin(context: Context) {
             val intent = Intent(context, SitePickerActivity::class.java)
@@ -75,6 +80,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
     }
 
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -104,6 +110,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * This controls the "view connected stores" button visibility.
      */
     private var hasConnectedStores: Boolean = false
+
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -168,12 +176,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             if (calledFromLogin) {
                 unifiedLoginTracker.setSource(bundle.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
                 unifiedLoginTracker.setFlow(bundle.getString(KEY_UNIFIED_TRACKER_FLOW))
+                bundle.getString(KEY_UNIFIED_TRACKER_STEP)?.let { stepString ->
+                    Step.fromValue(stepString)?.let { unifiedLoginTracker.setStep(it) }
+                }
             }
         } ?: run {
             // Set unified login tracker source and flow
             if (calledFromLogin) {
                 AppPrefs.getUnifiedLoginLastSource()?.let { unifiedLoginTracker.setSource(it) }
-                AppPrefs.getUnifiedLoginLastFlow()?.let { unifiedLoginTracker.setFlow(it) }
+                unifiedLoginTracker.track(Flow.EPILOGUE, Step.START)
             }
 
             // Signin M1: If using a url to login, we skip showing the store list
@@ -218,6 +229,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
             }
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, unifiedLoginTracker.getSource().value)
+            outState.putString(KEY_UNIFIED_TRACKER_STEP, unifiedLoginTracker.currentStep?.value)
         }
 
         loginSiteUrl?.let { outState.putString(KEY_LOGIN_SITE_URL, it) }
@@ -310,12 +322,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.SITE_LIST)
+
             // Show the 'try another account' button in case the user
             // doesn't see the store they want to log into.
             with(button_secondary) {
                 visibility = View.VISIBLE
                 text = getString(R.string.login_try_another_account)
-                setOnClickListener { presenter.logout() }
+                setOnClickListener {
+                    presenter.logout()
+                    if (calledFromLogin) {
+                        unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                    }
+                }
             }
         } else {
             // Called from settings. Hide the button.
@@ -356,6 +375,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             isEnabled = true
             setOnClickListener {
                 presenter.getSiteBySiteId(siteAdapter.selectedSiteId)?.let { site -> siteSelected(site) }
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.SUBMIT)
+                }
             }
         }
     }
@@ -449,6 +472,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NO_WOO_STORES)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
@@ -457,7 +484,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         with(button_primary) {
             text = getString(R.string.login_try_another_account)
             isEnabled = true
-            setOnClickListener { presenter.logout() }
+            setOnClickListener {
+                presenter.logout()
+
+                if (calledFromLogin) {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                }
+            }
         }
 
         with(button_secondary) {
@@ -540,6 +573,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
                 mapOf(AnalyticsTracker.KEY_URL to url, AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.WRONG_WP_ACCOUNT)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -550,6 +587,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         button_email_help.setOnClickListener {
             AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+            unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
             LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
@@ -588,6 +626,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         AnalyticsTracker.track(
                 Stat.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_JETPACK,
                 mapOf(AnalyticsTracker.KEY_URL to url))
+
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.JETPACK_NOT_CONNECTED)
+        }
 
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
@@ -666,6 +708,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_URL to site.url,
                         AnalyticsTracker.KEY_HAS_CONNECTED_STORES to hasConnectedStores))
 
+        if (calledFromLogin) {
+            unifiedLoginTracker.track(step = Step.NOT_WOO_STORE)
+        }
+
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
@@ -682,6 +728,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             spannable.setSpan(
                     WooClickableSpan {
                         AnalyticsTracker.track(Stat.SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED)
+                        unifiedLoginTracker.trackClick(Click.REFRESH_APP)
 
                         progressDialog?.takeIf { !it.isShowing }?.dismiss()
                         progressDialog = ProgressDialog.show(
