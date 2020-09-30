@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -63,7 +62,6 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -566,13 +564,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun fetchBottomSheetList() {
-        val featureFlagCondition = FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() || viewState.productDraft?.type == SIMPLE
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
                     _productDetailBottomSheetList.value = detailList
-                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty() && featureFlagCondition)
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
                 }
             }
         }
