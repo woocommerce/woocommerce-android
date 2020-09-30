@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -258,7 +261,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
         menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
         menu.findItem(R.id.menu_product_settings).isVisible = true
-        menu.findItem(R.id.menu_trash_product).isVisible = viewModel.isTrashEnabled
+
+        // change the font color of the trash menu item to red, and only show it if it should be enabled
+        with(menu.findItem(R.id.menu_trash_product)) {
+            val title = SpannableString(this.title)
+            title.setSpan(ForegroundColorSpan(Color.RED), 0, title.length, 0)
+            this.setTitle(title)
+            this.isVisible = viewModel.isTrashEnabled
+        }
 
         when (viewModel.isAddFlow) {
             true -> setupProductAddOptionsMenu(menu)
