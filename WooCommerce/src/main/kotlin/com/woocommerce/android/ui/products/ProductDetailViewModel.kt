@@ -409,19 +409,33 @@ class ProductDetailViewModel @AssistedInject constructor(
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges()
+            val positiveAction = DialogInterface.OnClickListener { _, _ ->
+                // discard changes made to the current screen
+                discardEditChanges()
 
-                    // If user in Product detail screen, exit product detail,
-                    // otherwise, redirect to Product Detail screen
-                    if (event is ExitProductDetail) {
-                        triggerEvent(ExitProduct)
-                    } else {
-                        triggerEvent(event)
-                    }
+                // If user in Product detail screen, exit product detail,
+                // otherwise, redirect to Product Detail screen
+                if (event is ExitProductDetail) {
+                    triggerEvent(ExitProduct)
+                } else {
+                    triggerEvent(event)
                 }
+            }
+
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral button
+            val neutralAction = if (isAddFlow && event is ExitProductDetail) {
+                DialogInterface.OnClickListener { _, _ ->
+                    updateProductDraft(productStatus = DRAFT)
+                    startPublishProduct()
+                    // TODO exit screen after saving
+                }
+            } else {
+                null
+            }
+
+            triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = positiveAction,
+                    neutralBtnAction = neutralAction
             ))
             return false
         } else if (event is ExitProductDetail && isUploadingImages) {
