@@ -90,7 +90,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             @StringRes val positiveButtonId: Int? = null,
             @StringRes val negativeButtonId: Int? = null,
             @StringRes val neutralButtonId: Int? = null
-            ) : Event() {
+        ) : Event() {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
                 if (other !is ShowDiscardDialog) return false
