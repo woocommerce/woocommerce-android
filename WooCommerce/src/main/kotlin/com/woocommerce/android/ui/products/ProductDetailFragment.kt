@@ -19,7 +19,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -39,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -153,6 +153,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(
                 images = it
             )
+            changesMade()
+        }
+
+        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
+            viewModel.showAddProductDownload(it.first().source)
             changesMade()
         }
     }
@@ -313,18 +318,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = getSubmitDetailProgressDialog().also {
-                it.show(parentFragmentManager, CustomProgressDialog.TAG)
-            }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
-    }
-
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
@@ -388,13 +381,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                     changesMade()
                 }
-            }
-            RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE -> {
-                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                    ?.let {
-                        viewModel.showAddProductDownload(it.first().source)
-                        changesMade()
-                    }
             }
         }
     }
