@@ -13,9 +13,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
-import com.woocommerce.android.ui.products.ProductType.EXTERNAL
-import com.woocommerce.android.ui.products.ProductType.GROUPED
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
