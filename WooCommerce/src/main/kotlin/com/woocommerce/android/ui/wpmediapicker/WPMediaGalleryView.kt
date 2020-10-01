@@ -54,9 +54,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
         fun onImageLongClicked(image: Product.Image)
     }
 
+    var isMultiSelectionAllowed: Boolean = true
     private var imageSize = 0
     private val selectedIds = ArrayList<Long>()
-    private var isMultiSelectionAllowed: Boolean = true
 
     private val adapter: WPMediaLibraryGalleryAdapter
     private val layoutInflater: LayoutInflater

@@ -72,7 +72,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        wpMediaGallery.allowMultiSelect = navArgs.multiSelect
+        wpMediaGallery.isMultiSelectionAllowed = navArgs.allowMultiple
         initializeViewModel()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
@@ -150,16 +150,6 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      */
     private fun navigateBackWithResult() {
         if (wpMediaGallery.getSelectedCount() > 0) {
-            val bundle = Bundle().also {
-                it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
-            }
-
-            requireActivity().navigateBackWithResult(
-                navArgs.requestCode,
-                bundle,
-                R.id.nav_host_fragment_main,
-                findNavController().previousBackStackEntry?.destination?.id ?: R.id.productDetailFragment
-            )
             navigateBackWithResult(KEY_WP_IMAGE_PICKER_RESULT, wpMediaGallery.getSelectedImages())
         } else {
             findNavController().navigateUp()
