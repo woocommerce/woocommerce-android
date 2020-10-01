@@ -316,7 +316,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Save as draft shown in discard dialog when changes made in add flow`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(true).whenever(viewModel).isAddFlow
 
         viewModel.start()
@@ -340,7 +339,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Save as draft not shown when not in add flow`() {
-        doReturn(product).whenever(productRepository).getProduct(any())
         doReturn(false).whenever(viewModel).isAddFlow
 
         viewModel.start()
