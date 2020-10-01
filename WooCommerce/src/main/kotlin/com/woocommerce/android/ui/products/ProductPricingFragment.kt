@@ -153,7 +153,7 @@ class ProductPricingFragment
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.localDateToGmt(
+                    val selectedDate = DateUtils().localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
 
@@ -167,7 +167,7 @@ class ProductPricingFragment
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.localDateToGmt(
+                    val selectedDate = DateUtils().localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
                     )
 
@@ -275,9 +275,9 @@ class ProductPricingFragment
         dateSetListener: OnDateSetListener
     ): DatePickerDialog {
         val dateString = if (spinnerEditText.getText().isNotBlank())
-            DateUtils.formatToYYYYmmDD(spinnerEditText.getText())
+            DateUtils().formatToYYYYmmDD(spinnerEditText.getText())
         else
-            DateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
+            DateUtils().formatToYYYYmmDD(Date().formatToMMMddYYYY())
         val (year, month, day) = dateString.split("-")
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
@@ -294,7 +294,7 @@ class ProductPricingFragment
      * If given [date] is null, current date is used
      */
     private fun formatSaleDateForDisplay(date: Date?, gmtOffset: Float): String {
-        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
+        val currentDate = DateUtils().offsetGmtDate(Date(), gmtOffset)
         val dateOnSaleFrom = date?.offsetGmtDate(gmtOffset) ?: currentDate
         return dateOnSaleFrom.formatToMMMddYYYY()
     }

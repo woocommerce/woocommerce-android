@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companio
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
 import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.android.synthetic.main.fragment_product_settings.*
 
 class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
@@ -68,7 +67,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         }
 
         val isSimple = viewModel.getProduct().productDraft?.type == ProductType.SIMPLE
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled() && isSimple) {
+        if (isSimple) {
             productIsVirtual.visibility = View.VISIBLE
             productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
                 AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
@@ -79,17 +78,12 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             productIsVirtual.visibility = View.GONE
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            productReviewsAllowed.visibility = View.VISIBLE
-            productReviewsAllowedDivider.visibility = View.VISIBLE
-            productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
-                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
-                viewModel.updateProductDraft(reviewsAllowed = isChecked)
-                activity?.invalidateOptionsMenu()
-            }
-        } else {
-            productReviewsAllowed.visibility = View.GONE
-            productReviewsAllowedDivider.visibility = View.GONE
+        productReviewsAllowed.visibility = View.VISIBLE
+        productReviewsAllowedDivider.visibility = View.VISIBLE
+        productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
+            viewModel.updateProductDraft(reviewsAllowed = isChecked)
+            activity?.invalidateOptionsMenu()
         }
 
         if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled() && viewModel.getProduct().storedProduct?.type == SIMPLE) {

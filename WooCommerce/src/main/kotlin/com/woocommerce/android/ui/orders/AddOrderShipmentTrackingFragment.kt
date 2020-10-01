@@ -294,10 +294,10 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
      * example: May 9, 2019 -> 2019-05-09
      */
     override fun getDateShippedText(): String {
-        val dateSelected = DateUtils.getDateFromLocalizedLongDateString(
+        val dateSelected = DateUtils().getDateFromLocalizedLongDateString(
                 requireActivity(),
                 addTracking_date.text.toString())
-        return DateUtils.getYearMonthDayStringFromDate(dateSelected)
+        return DateUtils().getYearMonthDayStringFromDate(dateSelected)
     }
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
@@ -331,7 +331,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     private fun displayFormatDateShippedText(dateString: String) {
         context?.let {
-            addTracking_date.setText(DateUtils.getLocalizedLongDateString(
+            addTracking_date.setText(DateUtils().getLocalizedLongDateString(
                     it,
                     dateString
             ))
