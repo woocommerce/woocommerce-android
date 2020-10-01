@@ -90,7 +90,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
 
     private fun setupObservers(viewModel: AddProductDownloadViewModel) {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PickFileFromMedialLibrary -> showWPMediaPicker()
                 is PickFileFromDevice -> chooseFile()
@@ -101,7 +101,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
                 is ViewProductDownloadDetails -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
-        })
+        }
     }
 
     private fun showWPMediaPicker() {
