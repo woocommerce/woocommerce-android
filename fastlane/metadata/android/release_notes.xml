@@ -1,102 +1,80 @@
 <ar>
-4.8:
-* تم تحديث قسم "إضافة تعقُّب الشحنة" لعرضه فقط في حالة توافر إضافة تعقُّب الشحنة
-* تم إصلاح عطل كان يحدث عند النقر المزدوج على عنصر التنقل، وعطل آخر (نادر) ناتج عن محاولة إخفاء العرض غير النشط.
+5.0:
+أصلحنا الأعطال التي حدثت عند اختيار صورة المنتج، وعند التبديل بين القوالب الفاتحة والداكنة على الأجهزة التي تعمل بإصدارات قديمة من نظام التشغيل Android.
 
 </ar>
 <de-DE>
-4.8:
-* Bereich „Sendungsverfolgung hinzufügen“ aktualisiert, sodass er nur noch angezeigt wird, wenn das Sendungsverfolgungs-Plugin vorhanden ist.
-* Absturz beim Doppeltippen auf ein Navigationselement und ein weiterer (seltener) Absturz beim Verbergen einer nicht aktiven Anzeige behoben.
+5.0:
+Die Abstürze wurden behoben, die bei der Auswahl eines Produktbildes sowie beim Wechsel zwischen hellen und dunklen Themes auf älteren Android-Geräten auftraten.
 
 </de-DE>
 <es-ES>
-4.8:
-* Se ha actualizado la sección "Add shipment tracking" (Añadir seguimiento de envío) a la sección para que se muestre únicamente si está disponible el plugin Shipment Tracking (Seguimiento de envío).
-* Se ha solucionado un fallo que se producía al tocar dos veces un elemento de navegación y otro (en raras ocasiones) que se producía al intentar ocultar una vista no activa.
+5.0:
+Hemos corregido los errores que se producían al elegir la imagen de un producto, y al cambiar entre el tema claro y oscuro en las versiones más antiguas de Android.
 
 </es-ES>
 <fr-FR>
-4.8 :
-* Mise à jour de la section « Ajouter le suivi de l’expédition » pour qu’elle ne s’affiche que si l’extension Suivi de l’expédition est disponible.
-* Résolution d’un problème en effectuant un double-clic sur un élément de navigation et d’un autre (rare) problème causé par la tentative de masquer une vue non active.
+5.0 :
+nous avons résolu les incidents qui se présentaient lors du choix d'une image de produit et lors du basculement entre les thèmes clair et sombre sur d'anciennes versions d'Android.
 
 </fr-FR>
 <iw-IL>
-4.8:
-* עדכנו את המקטע 'להוסיף מעקב אחר משלוח' כדי שיוצג רק כאשר התוסף של מעקב המשלוח זמין.
-* תיקנו קריסה שהתרחשה בהקשה כפולה על אלמנט ניווט ועוד קריסה (נדירה) שנגרמה בניסיון להסתיר תצוגה לא פעילה.
+5.0:
+תיקנו את הקריסות שהתרחשו כאשר בוחרים תמונת מוצר וכאשר מחליפים בין ערכת עיצוב בהירה לכהה בגרסאות ישנות יותר של Android.
 
 </iw-IL>
 <id>
-4.8:
-* Bagian “Tambah pelacakan pengiriman” diperbarui sehingga hanya tampil jika plugin Pelacakan Pengiriman tersedia.
-* Crash saat mengetuk dua kali elemen navigasi dan crash lainnya akibat menyembunyikan tampilan non-aktif (jarang terjadi) diperbaiki.
+5.0:
+Kami telah memperbaiki crash yang terjadi saat memilih gambar produk dan saat beralih antara tema terang dan gelap pada versi Android yang lebih lama.
 
 </id>
 <it-IT>
-4.8:
-* Sezione per aggiungere la tracciabilità della spedizione aggiornata per essere mostrata solo se il plugin Tracciabilità della spedizione è disponibile.
-* Risolto un arresto anomalo che si verificava toccando due volte un elemento di navigazione e un altro (raro) arresto anomalo causato dal tentativo di nascondere una vista non attiva.
+5.0:
+Abbiamo corretto arresti anomali che avvenivano quando si sceglieva un'immagine del prodotto e si passava tra temi chiari e scuri su vecchi dispositivi Android.
 
 </it-IT>
 <ja-JP>
-4.8:
-* 配送追跡プラグインが利用できる場合のみ「配送追跡を追加」セクションが表示されるように変更。
-* ナビゲーション要素をダブルタップした際に発生するクラッシュ、およびアクティブになっていないビューを非表示にしようとすると (稀に) 発生するクラッシュを修正。
+5.0:
+ 商品画像を選択するときと、Android の古いバージョンでライトとダークのテーマを切り替えるときに発生していたクラッシュを修正しました。
 
 </ja-JP>
 <ko-KR>
-4.8:
-"배송 추적 추가" 섹션이 배송 추적 플러그인을 사용하는 경우에만 표시되도록 업데이트했습니다.
-* 탐색 요소를 두 번 누를 때 발생하는 충돌과 활성화되지 않은 화면을 숨기려고 할 때 발생하는 (드문) 충돌을 해결했습니다.
+5.0:
+제품 이미지를 선택할 때와 Android 구버전에서 라이트 테마와 다크 테마를 전환할 때 발생하던 비정상 종료 문제를 해결했습니다.
 
 </ko-KR>
 <nl-NL>
-4.8:
-* Het gedeelte 'Verzending bijhouden toevoegen' is bijgewerkt om alleen de Shipment Tracking-plugin te laten zien als deze beschikbaar is.
-* Een crash na het dubbeltikken op een navigatie-element en nog een (zeldzame) crash veroorzaakt door het proberen verbergen van een non-actief overzicht zijn opgelost.
+5.0:
+We hebben crashes opgelost die zich voordeden wanneer een productafbeelding werd gekozen, en wanneer tussen lichte en donkere thema's werd overgeschakeld op oudere Androids.
 
 </nl-NL>
 <pt-BR>
-4.8:
-* Seção "Adicionar rastreamento de envio" atualizada para ser exibida somente se o plugin Shipment Tracking estiver disponível.
-* Correção de falha causada ao dar dois cliques em um elemento de navegação, e de uma falha (rara) causada ao tentar ocultar uma visualização não ativa.
+5.0:
+Corrigimos as falhas que ocorriam ao escolher uma imagem de produto e ao alternar entre os temas claro e escuro em versões mais antigas do Android.
 
 </pt-BR>
 <ru-RU>
-4.8:
-* Обновлен раздел «Добавить отслеживание заказов», который теперь отображается, только если доступен плагин отслеживания.
-* Исправлена ошибка, из-за которой возникал сбой при двойном нажатии на элементы навигации, а также еще одна (редкая) ошибка, происходившая при попытке скрыть неактивные представления.
+5.0:
+Устранены сбои, происходящие при выборе изображения товара и при переключении со светлой темы на темную в старых версиях Android.
 
 </ru-RU>
 <sv-SE>
-4.8:
-* Avsnittet "Lägg till leveransspårning" uppdaterades så att det endast visas om tillägget Leveransspårning är tillgängligt.
-* En krasch som uppstod vid dubbeltryck på ett navigationselement och en annan (sällsynt) krasch som uppstod vid försök att dölja en icke-aktiv vy åtgärdades.
+5.0:
+Vi har åtgärdat de krascher som inträffade vid val av produktbild samt vid byte mellan ljusa och mörka teman på äldre Android-telefoner.
 
 </sv-SE>
-<tr-TR>
-4,8:
-* "Gönderi takibi ekle" bölümü yalnızca Gönderi Takibi eklentisi mevcutsa görüntülenecek şekilde güncellendi.
-* Bir gezinme öğesine çift dokunulduğunda yaşanan kilitlenme ile, etkin olmayan bir görünümü gizlemeye çalışırken oluşan başka bir (nadir) kilitlenme sorunu düzeltildi.
-
-</tr-TR>
 <zh-CN>
-4.8:
-* 更新了“添加配送跟踪”部分，以仅在 Shipment Tracking 插件可用时显示。
-* 修复了双击导航元素时出现的崩溃问题，以及因尝试隐藏非活动视图导致的另一个（极少出现）崩溃问题。
+5.0：
+我们修复了在选择产品图片以及在较旧的 Android 上切换浅色和深色主题时出现的崩溃问题。
 
 </zh-CN>
 <zh-TW>
-4.8：
-* 更新「新增貨件追蹤」區段，只有安裝「貨件追蹤」外掛程式時才會顯示此區段。
-* 修復按兩下導覽元素時發生的當機問題，以及嘗試隱藏非使用中檢視畫面而導致的其他 (少見) 當機情況 。
+5.0：
+我們已修復選擇商品圖片及使用較舊 Android 版本切換淺色及深色佈景主題時，會造成當機的問題。
 
 </zh-TW>
 <en-US>
-4.8:
-* Updated the “Add shipment tracking” section to display only if the Shipment Tracking plugin is available.
-* Fixed a crash when double-tapping a navigation element, and another (rare) crash caused by trying to hide a non-active view.
+5.0:
+We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
  
 </en-US>

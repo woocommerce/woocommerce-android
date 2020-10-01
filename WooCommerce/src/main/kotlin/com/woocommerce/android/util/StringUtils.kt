@@ -48,6 +48,8 @@ object StringUtils {
     }
 
     /**
+     * Borrowed and modified from WordPress-Android :)
+     *
      * Formats the string for the given [quantity], using the given params.
      * We need this because our translation platform doesn't support Android plurals.
      *

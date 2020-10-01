@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-18 12:54:03+0000
+Translation-Revision-Date: 2020-09-16 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_type_variation_desc">Un produit avec des variantes comme la couleur ou la taille</string>
+    <string name="product_selection_count_single">%d produit sélectionné</string>
+    <string name="product_selection_count">%d produits sélectionnés</string>
+    <string name="grouped_product_empty">Ajouter des produits au groupe</string>
+    <string name="grouped_product_add">Ajouter un produit</string>
+    <string name="product_visibility_password_protected_hint">Entrer un mot de passe</string>
+    <string name="feedback_completed_back_to_store_button_text">Retour à la boutique</string>
+    <string name="feedback_completed_contact_us">Nous contacter ici</string>
+    <string name="feedback_completed_description">Gardez à l’esprit qu’il ne s’agit pas d’un ticket d’assistance et que nous ne pourrons pas répondre aux commentaires individuels.\n\nBesoin d’aide ? %1$s</string>
+    <string name="feedback_completed_title_message">Nous vous remercions d’avoir partagé vos\n idées avec nous</string>
+    <string name="feedback_completed_title">Commentaire envoyé</string>
+    <string name="web_view_loading_message">Veuillez patienter…</string>
+    <string name="web_view_loading_title">Chargement…</string>
+    <string name="feedback_survey_request_title">Comment nous améliorer ?</string>
+    <string name="product_type_confirm_button">Oui, modifier</string>
+    <string name="product_type_confirm_dialog_message">La modification du type de produit modifiera certaines données du produit</string>
+    <string name="product_type_confirm_dialog_title">Voulez-vous vraiment modifier le type de produit ?</string>
+    <string name="product_type_external_desc">Lier un produit à un site Web externe</string>
+    <string name="product_type_grouped_desc">Une collection de produits apparentés</string>
+    <string name="product_type_virtual_desc">Un service ou un téléchargement</string>
+    <string name="product_type_physical_desc">Un article que vous expédiez au client</string>
+    <string name="product_type_list_header">Sélectionner un type de produit</string>
+    <string name="send_feedback">Envoyer un commentaire</string>
+    <string name="variation_detail_price_warning_title">Certaines variantes n’ont pas de prix</string>
+    <string name="variation_detail_price_warning">Les variantes sans prix n’apparaîtront pas dans votre boutique</string>
+    <string name="variation_detail_update_product_success">Variante mise à jour</string>
+    <string name="grouped_product_btn_delete">Supprimer le produit groupé</string>
+    <string name="grouped_products_single">%d produit</string>
+    <string name="grouped_products_count">%d produits</string>
+    <string name="grouped_products">Produits groupés</string>
+    <string name="product_type_edit">Choisir le type de produit</string>
+    <string name="product_variation_no_price_set">Aucun prix défini</string>
+    <string name="product_variation_enabled">Activé</string>
+    <string name="product_pricing_scheduled_sale_price_error">Vous devez définir le tarif promotionnel si une promotion est programmée</string>
+    <string name="product_wip_message_m3">Vous pouvez maintenant modifier des produits groupés, externes et variables, changer de type de produit et mettre à jour les catégories et les étiquettes.</string>
+    <string name="product_reviews_count">\u2022 %d avis</string>
+    <string name="product_review_list_item_title">%1$s a laissé un avis</string>
     <string name="feedback_request_like_it">J’aime</string>
     <string name="feedback_request_make_better">Pourrait être mieux</string>
     <string name="feedback_request_title">Vous appréciez l’application WooCommerce ?</string>
@@ -21,6 +58,8 @@ Language: fr
     <string name="shipping_label_refund_message">Vous pouvez demander le remboursement d’une étiquette d’expédition qui n’a pas été utilisée pour expédier un colis. Cela prendra au moins 14 jours.</string>
     <string name="orderdetail_shipping_label_request_refund">Demander un remboursement</string>
     <string name="orderdetail_shipping_label_item_menu">Remboursement d’une étiquette d’expédition</string>
+    <string name="product_variation_disabled">Désactivée</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Produits restants</string>
     <string name="product_add_category_dialog_message">Veuillez patienter…</string>
     <string name="product_add_category_dialog_title">Ajout d’une catégorie</string>
     <string name="product_category_parent">Catégorie parente</string>
@@ -38,7 +77,7 @@ Language: fr
     <string name="settings_privacy_policy_ca">Avis de confidentialité pour les utilisateurs en Californie</string>
     <string name="keep_changes">Conserver les modifications</string>
     <string name="product_sale_date_to">Avant %1$s</string>
-    <string name="product_wip_message">Nous avons ajouté davantage de fonctionnalités de modification aux produits. Vous pouvez désormais mettre à jour les images, modifier les paramètres des produits et partager des produits !</string>
+    <string name="product_wip_message_m2">Nous avons ajouté d’autres fonctionnalités d’édition aux produits ! Vous pouvez désormais mettre à jour des images, afficher des aperçus et partager vos produits.</string>
     <string name="product_wip_title">Nouvelles options de modification disponibles</string>
     <string name="product_limited_editing_title">Modification limitée disponible</string>
     <string name="orderdetail_product_multiple">Produits</string>

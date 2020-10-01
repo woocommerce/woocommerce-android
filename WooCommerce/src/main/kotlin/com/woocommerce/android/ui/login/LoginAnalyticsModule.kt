@@ -9,7 +9,11 @@ import org.wordpress.android.login.LoginAnalyticsListener
 @Module
 class LoginAnalyticsModule {
     @Provides
-    fun provideAnalyticsListener(accountStore: AccountStore, siteStore: SiteStore): LoginAnalyticsListener {
-        return LoginAnalyticsTracker(accountStore, siteStore)
+    fun provideAnalyticsListener(
+        accountStore: AccountStore,
+        siteStore: SiteStore,
+        unifiedLoginTracker: UnifiedLoginTracker
+    ): LoginAnalyticsListener {
+        return LoginAnalyticsTracker(accountStore, siteStore, unifiedLoginTracker)
     }
 }

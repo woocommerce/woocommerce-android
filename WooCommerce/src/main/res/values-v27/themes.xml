@@ -2,8 +2,8 @@
 <resources>
 
     <style name="Theme.Woo.Splash" parent="Theme.Woo">
-        <item name="android:navigationBarColor">@color/woo_purple_60</item>
-        <item name="android:statusBarColor">@color/woo_purple_60</item>
+        <item name="android:navigationBarColor">@color/splash_background</item>
+        <item name="android:statusBarColor">@color/splash_background</item>
         <item name="android:windowBackground">@drawable/bg_splash</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>

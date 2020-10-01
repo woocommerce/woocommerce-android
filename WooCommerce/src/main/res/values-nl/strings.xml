@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_type_variation_desc">Een product met variaties zoals kleur of maat</string>
+    <string name="product_selection_count_single">%d product geselecteerd</string>
+    <string name="product_selection_count">%d producten geselecteerd</string>
+    <string name="grouped_product_empty">Producten toevoegen aan de groep</string>
+    <string name="grouped_product_add">Product toevoegen</string>
+    <string name="product_visibility_password_protected_hint">Voer wachtwoord in</string>
+    <string name="feedback_completed_back_to_store_button_text">Terug naar winkel</string>
+    <string name="feedback_completed_contact_us">Neem hier contact met ons op</string>
+    <string name="feedback_completed_description">Houd in gedachten dat dit geen ondersteuningsticket is en we niet op je individuele feedback in kunnen gaan.\n\nHulp nodig? %1$s</string>
+    <string name="feedback_completed_title_message">Bedankt dat je je\n gedachten met ons gedeeld hebt</string>
+    <string name="feedback_completed_title">Feedback verzonden</string>
+    <string name="web_view_loading_message">Een moment geduld …</string>
+    <string name="web_view_loading_title">Laden</string>
+    <string name="feedback_survey_request_title">Hoe kunnen we verbeteren?</string>
+    <string name="product_type_confirm_button">Ja, wijzigen</string>
+    <string name="product_type_confirm_dialog_message">Door het producttype te wijzigen, worden sommige productgegevens aangepast</string>
+    <string name="product_type_confirm_dialog_title">Weet je zeker dat je het producttype wilt wijzigen?</string>
+    <string name="product_type_external_desc">Koppel een product aan een externe website</string>
+    <string name="product_type_grouped_desc">Een verzameling gerelateerde producten</string>
+    <string name="product_type_virtual_desc">Een service of digitale download</string>
+    <string name="product_type_physical_desc">Een artikel dat je naar de klant verzendt</string>
+    <string name="product_type_list_header">Selecteer een producttype</string>
+    <string name="send_feedback">Feedback verzenden</string>
+    <string name="variation_detail_price_warning_title">Sommige variaties hebben geen prijzen</string>
+    <string name="variation_detail_price_warning">Variaties zonder prijs worden niet weergegeven in je winkel</string>
+    <string name="variation_detail_update_product_success">Variatie bijgewerkt</string>
+    <string name="grouped_product_btn_delete">Het gegroepeerde product verwijderen</string>
+    <string name="grouped_products_single">%d product</string>
+    <string name="grouped_products_count">%d producten</string>
+    <string name="grouped_products">Gegroepeerde producten</string>
+    <string name="product_type_edit">Producttype wijzigen</string>
+    <string name="product_variation_no_price_set">Geen prijs ingesteld</string>
+    <string name="product_variation_enabled">Geactiveerd</string>
+    <string name="product_pricing_scheduled_sale_price_error">Je moet de verkoopprijs instellen als een verkoop gepland staat</string>
+    <string name="product_wip_message_m3">Je kan nu gegroepeerde, externe en variabele producten bewerken, het producttype wijzigen en categorieën en tags bijwerken.</string>
+    <string name="product_reviews_count">\u2022 %d beoordelingen</string>
+    <string name="product_review_list_item_title">%1$s heeft een beoordeling geplaatst</string>
     <string name="feedback_request_like_it">Ik vind het leuk</string>
     <string name="feedback_request_make_better">Kan beter</string>
     <string name="feedback_request_title">Vind je de WooCommerce-app leuk?</string>
@@ -21,6 +58,8 @@ Language: nl
     <string name="shipping_label_refund_message">Je kan een terugbetaling aanvragen voor een verzendlabel dat niet is gebruikt om een pakket te verzenden. Het duurt minimaal 14 dagen voordat dit is verwerkt.</string>
     <string name="orderdetail_shipping_label_request_refund">Een terugbetaling aanvragen</string>
     <string name="orderdetail_shipping_label_item_menu">Label verzendrestitutie</string>
+    <string name="product_variation_disabled">Uitgeschakeld</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Resterende producten</string>
     <string name="product_add_category_dialog_message">Een moment geduld…</string>
     <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
     <string name="product_category_parent">Hoofdcategorie</string>
@@ -38,7 +77,7 @@ Language: nl
     <string name="settings_privacy_policy_ca">Privacyverklaring voor gebruikers in Californië</string>
     <string name="keep_changes">Wijzigingen bewaren</string>
     <string name="product_sale_date_to">Tot %1$s</string>
-    <string name="product_wip_message">We hebben meer bewerkingsfuncties aan producten toegevoegd. Je kunt nu afbeeldingen bijwerken, productinstellingen bewerken en producten delen!</string>
+    <string name="product_wip_message_m2">We hebben meer bewerkingsfuncties aan producten toegevoegd! Je kan nu afbeeldingen bijwerken, voorbeeldweergaven bekijken en je producten delen!</string>
     <string name="product_wip_title">Nieuwe bewerkingsopties beschikbaar</string>
     <string name="product_limited_editing_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
     <string name="orderdetail_product_multiple">Producten</string>

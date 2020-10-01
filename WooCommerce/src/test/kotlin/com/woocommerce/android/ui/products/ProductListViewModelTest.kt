@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -28,6 +29,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateWithArgs = mock()
+    private val prefs: AppPrefs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
             Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
@@ -47,7 +49,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                         savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus
+                        networkStatus,
+                        prefs
                 )
         )
     }
@@ -77,7 +80,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        verify(productRepository, times(1)).getProductList(any())
+        verify(productRepository, times(1)).getProductList(productFilterOptions = emptyMap())
         verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -85,8 +88,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -103,7 +106,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -114,5 +117,25 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.loadProducts(loadMore = true)
         assertThat(isLoadingMore).containsExactly(false, true, false)
+    }
+
+    @Test
+    fun `Shows and hides add product button correctly when loading list of products`() = test {
+        // when
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+        createViewModel()
+
+        val isAddProductButtonVisible = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                isAddProductButtonVisible.add(it)
+            }
+        }
+
+        viewModel.loadProducts()
+
+        // then
+        assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
     }
 }

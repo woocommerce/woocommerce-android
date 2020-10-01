@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/color_ripple_overlay"
+    android:exitFadeDuration="@android:integer/config_shortAnimTime">
+
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/color_surface" />
+        </shape>
+    </item>
+
+    <item>
+        <selector>
+            <item android:state_activated="true">
+                <color android:color="@color/woo_purple_60_alpha_33" />
+            </item>
+        </selector>
+    </item>
+</ripple>

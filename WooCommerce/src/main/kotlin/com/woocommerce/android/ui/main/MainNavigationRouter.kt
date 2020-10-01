@@ -6,7 +6,9 @@ interface MainNavigationRouter {
 
     fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long = 0, markComplete: Boolean = false)
     fun showProductDetail(remoteProductId: Long)
+    fun showAddProduct()
     fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String? = null)
     fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)
     fun showFeedbackSurvey()
+    fun showProductAddBottomSheet()
 }

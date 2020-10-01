@@ -8,9 +8,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -24,64 +26,45 @@ import kotlinx.android.parcel.Parcelize
 @OpenClassOnDebug
 class ProductTypesBottomSheetViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    dispatchers: CoroutineDispatchers
+    dispatchers: CoroutineDispatchers,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
+
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    fun loadProductTypes() {
-        _productTypesBottomSheetList.value = buildProductTypeList()
+    fun loadProductTypes(builder: ProductTypeBottomSheetBuilder) {
+        _productTypesBottomSheetList.value = builder.buildBottomSheetList()
     }
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
-        triggerEvent(ShowDialog(
-            titleId = R.string.product_type_confirm_dialog_title,
-            messageId = R.string.product_type_confirm_dialog_message,
-            positiveButtonId = R.string.product_type_confirm_button,
-            positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                triggerEvent(ExitWithResult(productTypeUiItem))
-            },
-            negativeButtonId = R.string.cancel
-        ))
+        if (navArgs.isAddProduct) {
+            saveUserSelection(productTypeUiItem.type)
+            triggerEvent(ViewProductAdd)
+            triggerEvent(ExitWithResult(productTypeUiItem.type))
+        } else {
+            triggerEvent(ShowDialog(
+                titleId = R.string.product_type_confirm_dialog_title,
+                messageId = R.string.product_type_confirm_dialog_message,
+                positiveButtonId = R.string.product_type_confirm_button,
+                negativeButtonId = R.string.cancel,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    triggerEvent(ExitWithResult(productTypeUiItem.type))
+                }
+            ))
+        }
     }
 
-    private fun buildProductTypeList(): List<ProductTypesBottomSheetUiItem> {
-        return listOf(
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                titleResource = R.string.product_type_physical,
-                descResource = R.string.product_type_physical_desc,
-                iconResource = R.drawable.ic_gridicons_product
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = SIMPLE,
-                isVirtual = true,
-                titleResource = R.string.product_type_virtual,
-                descResource = R.string.product_type_virtual_desc,
-                iconResource = R.drawable.ic_gridicons_cloud_outline
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = GROUPED,
-                titleResource = R.string.product_type_grouped,
-                descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets
-            ),
-            ProductTypesBottomSheetUiItem(
-                type = EXTERNAL,
-                titleResource = R.string.product_type_external,
-                descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
-            )
-        )
-    }
+    private fun saveUserSelection(type: ProductType) = prefs.setSelectedProductType(type)
 
     @Parcelize
     data class ProductTypesBottomSheetUiItem(
         val type: ProductType,
-        val isVirtual: Boolean = false,
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
-        @DrawableRes val iconResource: Int
+        @DrawableRes val iconResource: Int,
+        val isEnabled: Boolean
     ) : Parcelable
 
     @AssistedInject.Factory

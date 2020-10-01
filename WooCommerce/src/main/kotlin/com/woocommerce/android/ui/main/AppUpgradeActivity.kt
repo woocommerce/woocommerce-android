@@ -202,7 +202,7 @@ abstract class AppUpgradeActivity : AppCompatActivity(),
     private fun isAppUpdateImmediate() = AppUpdateType.IMMEDIATE == inAppUpdateType
     private fun isAppUpdateFlexible() = AppUpdateType.FLEXIBLE == inAppUpdateType
 
-    private fun requestAppUpdate(appUpdateInfo: AppUpdateInfo?) {
+    private fun requestAppUpdate(appUpdateInfo: AppUpdateInfo) {
         try {
             appUpdateManager.startUpdateFlowForResult(
                 appUpdateInfo,

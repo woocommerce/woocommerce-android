@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-18 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_type_variation_desc">Produk dengan variasi seperti warna atau ukuran</string>
+    <string name="product_selection_count_single">%d produk dipilih</string>
+    <string name="product_selection_count">%d produk dipilih</string>
+    <string name="grouped_product_empty">Tambahkan produk ke grup</string>
+    <string name="grouped_product_add">Tambahkan produk</string>
+    <string name="product_visibility_password_protected_hint">Masukkan kata sandi</string>
+    <string name="feedback_completed_back_to_store_button_text">Kembali ke toko</string>
+    <string name="feedback_completed_contact_us">Hubungi kami di sini</string>
+    <string name="feedback_completed_description">Harap perhatikan bahwa ini bukan tiket dukungan, kami tidak dapat merespons umpan balik secara perorangan.\n\nButuh bantuan? %1$s</string>
+    <string name="feedback_completed_title_message">Terima kasih telah berbagi\n pendapat Anda dengan kami</string>
+    <string name="feedback_completed_title">Umpan balik terkirim</string>
+    <string name="web_view_loading_message">Harap tunggu…</string>
+    <string name="web_view_loading_title">Sedang memuat</string>
+    <string name="feedback_survey_request_title">Bagaimana kami dapat meningkatkan layanan?</string>
+    <string name="product_type_confirm_button">Ya, ubah</string>
+    <string name="product_type_confirm_dialog_message">Mengubah jenis produk akan mengubah beberapa data produk</string>
+    <string name="product_type_confirm_dialog_title">Apakah Anda yakin ingin mengubah jenis produk?</string>
+    <string name="product_type_external_desc">Tautkan produk ke situs web eksternal</string>
+    <string name="product_type_grouped_desc">Kumpulan produk terkait</string>
+    <string name="product_type_virtual_desc">Layanan atau unduhan digital</string>
+    <string name="product_type_physical_desc">Item yang Anda kirim kepada pelanggan</string>
+    <string name="product_type_list_header">Pilih jenis produk</string>
+    <string name="send_feedback">Kirim masukan</string>
+    <string name="variation_detail_price_warning_title">Beberapa variasi tidak memiliki harga</string>
+    <string name="variation_detail_price_warning">Variasi tanpa harga tidak akan ditampilkan di toko Anda</string>
+    <string name="variation_detail_update_product_success">Variasi diperbarui</string>
+    <string name="grouped_product_btn_delete">Hapus produk yang dikelompokkan</string>
+    <string name="grouped_products_single">%d produk</string>
+    <string name="grouped_products_count">%d produk</string>
+    <string name="grouped_products">Produk yang dikelompokkan</string>
+    <string name="product_type_edit">Ubah jenis produk</string>
+    <string name="product_variation_no_price_set">Tidak ada harga yang ditentukan</string>
+    <string name="product_variation_enabled">Diaktifkan</string>
+    <string name="product_pricing_scheduled_sale_price_error">Anda harus menentukan harga obral jika ada obral yang dijadwalkan</string>
+    <string name="product_wip_message_m3">Anda kini dapat menyunting produk yang dikelompokkan, eksternal, dan variabel; mengubah jenis produk; serta memperbarui kategori dan tag.</string>
+    <string name="product_reviews_count">\u2022 %d ulasan</string>
+    <string name="product_review_list_item_title">%1$s berikan ulasan</string>
     <string name="feedback_request_like_it">Saya suka</string>
     <string name="feedback_request_make_better">Perlu ditingkatkan</string>
     <string name="feedback_request_title">Suka dengan aplikasi WooCommerce?</string>
@@ -21,6 +58,8 @@ Language: id
     <string name="shipping_label_refund_message">Anda dapat meminta pengembalian dana untuk label pengiriman yang belum digunakan untuk mengirim paket. Pengembalian dana akan diproses paling cepat dalam 14 hari.</string>
     <string name="orderdetail_shipping_label_request_refund">Minta pengembalian dana</string>
     <string name="orderdetail_shipping_label_item_menu">Kembalikan dana label pengiriman</string>
+    <string name="product_variation_disabled">Dinonaktifkan</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Produk yang tersisa</string>
     <string name="product_add_category_dialog_message">Harap tunggu…</string>
     <string name="product_add_category_dialog_title">Menambahkan kategori</string>
     <string name="product_category_parent">Kategori induk</string>
@@ -38,7 +77,7 @@ Language: id
     <string name="settings_privacy_policy_ca">Pemberitahuan privasi untuk pengguna di California</string>
     <string name="keep_changes">Simpan perubahan</string>
     <string name="product_sale_date_to">Sampai %1$s</string>
-    <string name="product_wip_message">Kami menambahkan fungsionalitas penyuntingan lebih banyak pada produk. Anda kini dapat memperbarui gambar, menyunting pengaturan produk &amp; membagikan produk!</string>
+    <string name="product_wip_message_m2">Kami telah menambahkan lebih banyak fungsi penyuntingan ke produk! Sekarang Anda dapat memperbarui gambar, melihat pratinjau, dan berbagi produk Anda.</string>
     <string name="product_wip_title">Tersedia pilihan penyuntingan baru</string>
     <string name="product_limited_editing_title">Penyuntingan terbatas tersedia</string>
     <string name="orderdetail_product_multiple">Produk</string>

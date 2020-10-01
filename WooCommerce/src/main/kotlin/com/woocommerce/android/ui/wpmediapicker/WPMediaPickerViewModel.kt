@@ -24,10 +24,12 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     private val mediaPickerRepository: WPMediaPickerRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val navArgs: WPMediaPickerFragmentArgs by savedState.navArgs()
+
     private val _mediaList = MutableLiveData<List<Product.Image>>()
     val mediaList: LiveData<List<Product.Image>> = _mediaList
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(isMultiSelectionAllowed = navArgs.allowMultiple))
     private var viewState by viewStateLiveData
 
     fun start() {
@@ -97,7 +99,8 @@ class WPMediaPickerViewModel @AssistedInject constructor(
     data class ViewState(
         val isLoading: Boolean? = null,
         val isLoadingMore: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isMultiSelectionAllowed: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

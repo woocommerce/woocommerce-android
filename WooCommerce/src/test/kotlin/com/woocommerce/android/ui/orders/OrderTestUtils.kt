@@ -202,7 +202,8 @@ object OrderTestUtils {
             orderModel = order,
             refunds = generateRefunds(),
             shippingLabels = generateShippingLabels(lOrderId = order.remoteOrderId),
-            shipmentTrackingList = generateOrderShipmentTrackings(5, order.remoteOrderId.toInt())
+            shipmentTrackingList = generateOrderShipmentTrackings(5, order.remoteOrderId.toInt()),
+            isShipmentTrackingAvailable = true
         )
     }
 }

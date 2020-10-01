@@ -1,4 +1,3 @@
-* Creates CrowdSignal integration for app Feedback survey
-* You can now edit variations (price, description, inventory, visibility and shipping)
-* Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
- 
+- Login: We implemented a new login flow with new screen designs.
+- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
+

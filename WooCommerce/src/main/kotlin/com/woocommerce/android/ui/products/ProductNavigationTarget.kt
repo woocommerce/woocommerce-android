@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
@@ -31,11 +31,12 @@ sealed class ProductNavigationTarget : Event() {
 
     data class ViewProductShortDescriptionEditor(val shortDescription: String, val title: String) :
             ProductNavigationTarget()
-    data class ViewProductImages(
-        val product: Product,
-        val imageModel: Product.Image? = null
+    data class ViewProductImageGallery(
+        val remoteId: Long,
+        val images: List<Image>,
+        val showChooser: Boolean = false,
+        val selectedImage: Image? = null
     ) : ProductNavigationTarget()
-    data class ViewProductImageChooser(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSettings(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductStatus(val status: ProductStatus?) : ProductNavigationTarget()
     data class ViewProductCatalogVisibility(val catalogVisibility: ProductCatalogVisibility?, val isFeatured: Boolean) :
@@ -50,10 +51,12 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
     object AddProductCategory : ProductNavigationTarget()
     data class ViewProductTags(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductDetailBottomSheet(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductTypes(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductDetailBottomSheet(val productType: ProductType) : ProductNavigationTarget()
+    data class ViewProductTypes(val isAddProduct: Boolean) : ProductNavigationTarget()
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewGroupedProducts(val groupedProductIds: String) : ProductNavigationTarget()
+    object ViewProductAdd : ProductNavigationTarget()
+    data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: String) : ProductNavigationTarget()
+    data class ViewProductSelectionList(val remoteId: Long) : ProductNavigationTarget()
     object ViewProductDownloads : ProductNavigationTarget()
     object ViewProductDownloadsSettings : ProductNavigationTarget()
     data class ViewProductDownloadDetails(

@@ -33,6 +33,7 @@ class ProductShippingViewModel @AssistedInject constructor(
         savedState,
         ViewState(
             shippingData = navArgs.shippingData,
+            isDoneButtonVisible = false,
             isShippingClassSectionVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_SHIPPING
         )
     )
@@ -95,6 +96,11 @@ class ProductShippingViewModel @AssistedInject constructor(
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: shippingData.shippingClassSlug ?: ""
+
+    override fun onCleared() {
+        super.onCleared()
+        productRepository.onCleanup()
+    }
 
     @Parcelize
     data class ViewState(

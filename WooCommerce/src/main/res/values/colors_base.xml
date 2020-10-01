@@ -71,6 +71,7 @@
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
+    <color name="splash_background">@color/woo_purple_60</color>
 
     <!--
         Elevation colors

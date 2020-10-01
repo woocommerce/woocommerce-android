@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
@@ -135,7 +136,7 @@ data class Product(
             externalUrl == product.externalUrl &&
             buttonText == product.buttonText &&
             menuOrder == product.menuOrder &&
-            isSameImages(product.images) &&
+            images.areSameImagesAs(product.images) &&
             isSameCategories(product.categories) &&
             isSameTags(product.tags) &&
             groupedProductIds == product.groupedProductIds &&
@@ -154,48 +155,6 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
-
-    /**
-     * Verifies if there are any changes made to the inventory fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasInventoryChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            sku != it.sku ||
-                isStockManaged != it.isStockManaged ||
-                stockStatus != it.stockStatus ||
-                stockQuantity != it.stockQuantity ||
-                backorderStatus != it.backorderStatus ||
-                isSoldIndividually != it.isSoldIndividually
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the shipping fields
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasShippingChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            weight != it.weight ||
-                length != it.length ||
-                width != it.width ||
-                height != it.height ||
-                shippingClass != it.shippingClass
-        } ?: false
-    }
-
-    /**
-     * Verifies if there are any changes made to the product images
-     * by comparing the updated product model ([updatedProduct]) with the product model stored
-     * in the local db and returns a [Boolean] flag
-     */
-    fun hasImageChanges(updatedProduct: Product?): Boolean {
-        return updatedProduct?.let {
-            !isSameImages(it.images)
-        } ?: false
-    }
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -250,22 +209,6 @@ data class Product(
         return updatedProduct?.let {
             downloads != it.downloads
         } ?: false
-    }
-
-    /**
-     * Compares this product's images with the passed list, returns true only if both lists contain
-     * the same images in the same order
-     */
-    private fun isSameImages(updatedImages: List<Image>): Boolean {
-        if (this.images.size != updatedImages.size) {
-            return false
-        }
-        for (i in images.indices) {
-            if (images[i].id != updatedImages[i].id) {
-                return false
-            }
-        }
-        return true
     }
 
     /**
@@ -521,7 +464,7 @@ fun WCProductModel.toAppModel(): Product {
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
         numVariations = this.getNumVariations(),
-        images = this.getImages().map {
+        images = this.getImageList().map {
             Product.Image(
                 it.id,
                 it.name,
@@ -529,7 +472,7 @@ fun WCProductModel.toAppModel(): Product {
                 DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        attributes = this.getAttributes().map {
+        attributes = this.getAttributeList().map {
             Product.Attribute(
                 it.id,
                 it.name,
@@ -543,21 +486,21 @@ fun WCProductModel.toAppModel(): Product {
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         menuOrder = this.menuOrder,
-        categories = this.getCategories().map {
+        categories = this.getCategoryList().map {
             ProductCategory(
                 it.id,
                 it.name,
                 it.slug
             )
         },
-        tags = this.getTags().map {
+        tags = this.getTagList().map {
             ProductTag(
                 it.id,
                 it.name,
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIds()
+        groupedProductIds = this.getGroupedProductIdList()
     )
 }
 
@@ -568,20 +511,6 @@ fun MediaModel.toAppModel(): Product.Image {
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )
-}
-
-fun List<Product>.isSameList(productList: List<Product>): Boolean {
-    if (this.size != productList.size) {
-        return false
-    }
-    for (index in this.indices) {
-        val oldItem = productList[index]
-        val newItem = this[index]
-        if (!oldItem.isSameProduct(newItem)) {
-            return false
-        }
-    }
-    return true
 }
 
 /**

@@ -35,17 +35,20 @@ import javax.inject.Inject
 
 class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressListener {
     companion object {
-        const val ARG_SELECTED_IMAGES = "selected_image_ids"
         private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        const val KEY_WP_IMAGE_PICKER_RESULT = "key_wp_image_picker_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
+    private val isMultiSelectAllowed: Boolean
+        get() = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
 
     private val navArgs by navArgs<WPMediaPickerFragmentArgs>()
 
+    private var doneOrUpdateMenuItem: MenuItem? = null
     private var isConfirmingDiscard = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,7 +59,14 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
+        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        doneOrUpdateMenuItem?.isVisible = isMultiSelectAllowed
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,19 +112,22 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun setupObservers() {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            wpMediaGallery.showImages(it, this)
+            wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
         })
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isLoading?.takeIfNotEqualTo(old?.isLoading) { loadingProgress.isVisible = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadingMoreProgress.isVisible = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
+            new.isMultiSelectionAllowed?.takeIfNotEqualTo(old?.isEmptyViewVisible) {
+                doneOrUpdateMenuItem?.isVisible = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> activity?.onBackPressed()
+                is Exit -> findNavController().navigateUp()
             }
         })
     }
@@ -140,12 +153,14 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
             val bundle = Bundle().also {
                 it.putParcelableArrayList(ARG_SELECTED_IMAGES, wpMediaGallery.getSelectedImages())
             }
+
             requireActivity().navigateBackWithResult(
                 navArgs.requestCode,
                 bundle,
                 R.id.nav_host_fragment_main,
                 findNavController().previousBackStackEntry?.destination?.id ?: R.id.productDetailFragment
             )
+            navigateBackWithResult(KEY_WP_IMAGE_PICKER_RESULT, wpMediaGallery.getSelectedImages())
         } else {
             findNavController().navigateUp()
         }
@@ -163,6 +178,10 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      */
     override fun onSelectionCountChanged() {
         requireActivity().title = getFragmentTitle()
+
+        if (!isMultiSelectAllowed && wpMediaGallery.getSelectedCount() == 1) {
+            navigateBackWithResult()
+        }
     }
 
     /**

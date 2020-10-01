@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-08-20 10:54:04+0000
+Translation-Revision-Date: 2020-09-17 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_type_variation_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
+    <string name="product_selection_count_single">%d товар выбран</string>
+    <string name="product_selection_count">%d тов. выбрано</string>
+    <string name="grouped_product_empty">Добавление товаров в группу</string>
+    <string name="grouped_product_add">Добавить товар</string>
+    <string name="product_visibility_password_protected_hint">Введите пароль</string>
+    <string name="feedback_completed_back_to_store_button_text">Назад в магазин</string>
+    <string name="feedback_completed_contact_us">Свяжитесь с нами</string>
+    <string name="feedback_completed_description">Обратите внимание, что это не заявка в службу поддержки и мы не сможем ответить на ваш отзыв.\n\nНужна какая-то помощь? %1$s</string>
+    <string name="feedback_completed_title_message">Спасибо, что поделились \nмнением</string>
+    <string name="feedback_completed_title">Отзыв отправлен</string>
+    <string name="web_view_loading_message">Пожалуйста, подождите…</string>
+    <string name="web_view_loading_title">Загрузка</string>
+    <string name="feedback_survey_request_title">Что можно улучшить?</string>
+    <string name="product_type_confirm_button">Да, изменить</string>
+    <string name="product_type_confirm_dialog_message">Изменение типа товара приведет к изменению некоторых данных о нем.</string>
+    <string name="product_type_confirm_dialog_title">Вы уверены, что хотите изменить тип товара?</string>
+    <string name="product_type_external_desc">Связать товар с внешним веб-сайтом</string>
+    <string name="product_type_grouped_desc">Коллекция сопутствующих товаров</string>
+    <string name="product_type_virtual_desc">Услуга или цифровой продукт</string>
+    <string name="product_type_physical_desc">Позиция, отгружаемая заказчику</string>
+    <string name="product_type_list_header">Выбрать тип товара</string>
+    <string name="send_feedback">Отправить отзыв</string>
+    <string name="variation_detail_price_warning_title">У некоторых вариантов нет цен</string>
+    <string name="variation_detail_price_warning">Варианты без цены не будут показаны в вашем магазине.</string>
+    <string name="variation_detail_update_product_success">Вариант обновлен</string>
+    <string name="grouped_product_btn_delete">Удалить сгруппированные товары</string>
+    <string name="grouped_products_single">%d товар</string>
+    <string name="grouped_products_count">%d товаров (товара)</string>
+    <string name="grouped_products">Товары в группе</string>
+    <string name="product_type_edit">Изменить тип товара</string>
+    <string name="product_variation_no_price_set">Не установлена цена</string>
+    <string name="product_variation_enabled">Включить</string>
+    <string name="product_pricing_scheduled_sale_price_error">Если продажа запланирована, необходимо установить цену.</string>
+    <string name="product_wip_message_m3">Теперь вы можете редактировать сгруппированные, внешние и вариативные товары, менять тип товаров, а также обновлять категории и теги.</string>
+    <string name="product_reviews_count">\u2022 %d отзывов</string>
+    <string name="product_review_list_item_title">%1$s оставил (-а) отзыв</string>
     <string name="feedback_request_like_it">Мне нравится</string>
     <string name="feedback_request_make_better">Есть над чем работать</string>
     <string name="feedback_request_title">Нравится приложение WooCommerce?</string>
@@ -21,6 +58,8 @@ Language: ru
     <string name="shipping_label_refund_message">Вы можете запросить возврат средств за неиспользованный почтовый бланк Обработка займет не менее 14 дней.</string>
     <string name="orderdetail_shipping_label_request_refund">Запросить возврат средств</string>
     <string name="orderdetail_shipping_label_item_menu">Вернуть средства за почтовый бланк</string>
+    <string name="product_variation_disabled">Отключено</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Оставшиеся товары</string>
     <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_add_category_dialog_title">Добавление категории</string>
     <string name="product_category_parent">Родительская рубрика</string>
@@ -38,7 +77,7 @@ Language: ru
     <string name="settings_privacy_policy_ca">Заявление о защите конфиденциальности для пользователей из Калифорнии</string>
     <string name="keep_changes">Сохранить изменения</string>
     <string name="product_sale_date_to">До %1$s</string>
-    <string name="product_wip_message">Мы добавили дополнительные функции редактирования. Теперь вы можете загружать изображения, изменять настройки товаров и делиться ими!</string>
+    <string name="product_wip_message_m2">Появилось больше возможностей редактирования товаров. Теперь можно изменять изображения, пользоваться предварительным просмотром и делиться товарами.</string>
     <string name="product_wip_title">Доступны новые опции редактирования</string>
     <string name="product_limited_editing_title">Доступны ограниченные возможности редактирования</string>
     <string name="orderdetail_product_multiple">Товары</string>

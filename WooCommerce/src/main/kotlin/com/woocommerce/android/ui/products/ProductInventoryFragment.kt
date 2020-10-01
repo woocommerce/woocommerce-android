@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_product_inventory.*
 
 class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
     BackPressListener, ProductItemSelectorDialogListener {
-    private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
         get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
