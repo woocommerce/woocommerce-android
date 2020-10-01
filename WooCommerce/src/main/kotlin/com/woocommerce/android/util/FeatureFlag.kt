@@ -8,7 +8,6 @@ import com.woocommerce.android.BuildConfig
  */
 enum class FeatureFlag {
     PRODUCT_RELEASE_M4,
-    PRODUCT_RELEASE_M3,
     SHIPPING_LABELS_M1,
     DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
