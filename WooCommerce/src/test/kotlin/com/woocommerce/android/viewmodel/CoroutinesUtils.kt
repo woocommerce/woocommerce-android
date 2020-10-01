@@ -4,8 +4,6 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Delay
-import kotlinx.coroutines.Dispatchers.Unconfined
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.CoroutineContext
@@ -16,11 +14,8 @@ fun <T> test(context: CoroutineContext = EmptyCoroutineContext, block: suspend C
     runBlocking(context, block)
 }
 
-@ExperimentalCoroutinesApi val TEST_SCOPE = CoroutineScope(Unconfined)
-@InternalCoroutinesApi val TEST_DISPATCHER: CoroutineDispatcher = TestDispatcher()
-
 @InternalCoroutinesApi
-private class TestDispatcher : CoroutineDispatcher(), Delay {
+object TestDispatcher : CoroutineDispatcher(), Delay {
     @InternalCoroutinesApi
     override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
         continuation.resume(Unit)

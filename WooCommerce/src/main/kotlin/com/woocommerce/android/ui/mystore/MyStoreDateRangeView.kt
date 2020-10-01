@@ -91,10 +91,10 @@ class MyStoreDateRangeView @JvmOverloads constructor(ctx: Context, attrs: Attrib
         activeGranularity: StatsGranularity
     ): String {
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getDayMonthDateString(dateString)
+            StatsGranularity.DAYS -> DateUtils().getDayMonthDateString(dateString)
             StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
-            StatsGranularity.MONTHS -> DateUtils.getMonthString(dateString)
-            StatsGranularity.YEARS -> DateUtils.getYearString(dateString)
+            StatsGranularity.MONTHS -> DateUtils().getMonthString(dateString)
+            StatsGranularity.YEARS -> DateUtils().getYearString(dateString)
         }
     }
 }

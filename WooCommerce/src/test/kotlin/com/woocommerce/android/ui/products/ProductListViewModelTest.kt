@@ -33,7 +33,10 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val prefs: AppPrefs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
+        Dispatchers.Unconfined,
+        Dispatchers.Unconfined,
+        Dispatchers.Unconfined
+    )
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 

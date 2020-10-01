@@ -121,7 +121,7 @@ class OrderListItemDataSource(
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
                 val currentDate = Date()
-                if (DateUtils.isAfterDate(currentDate, date)) {
+                if (DateUtils().isAfterDate(currentDate, date)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }
