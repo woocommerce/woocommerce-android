@@ -234,11 +234,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     private fun startLoginViaWPCom() {
-        if (getLoginEmailFragment(useAltLayout = false) != null) {
-            // login by wpcom is already shown so login has already started. Just bail.
-            return
-        }
-
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
