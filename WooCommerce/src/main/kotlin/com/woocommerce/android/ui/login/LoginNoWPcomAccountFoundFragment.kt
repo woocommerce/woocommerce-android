@@ -64,6 +64,8 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
+        no_wp_account_msg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
+
         with(button_primary) {
             text = getString(R.string.login_store_address)
             setOnClickListener {
