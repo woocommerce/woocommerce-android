@@ -24,12 +24,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
@@ -42,13 +37,13 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
 class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_product_images),
-    BackPressListener, OnGalleryImageClickListener, NavigationResult {
+    BackPressListener, OnGalleryImageClickListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
     }
@@ -127,12 +122,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    messageId = event.messageId
-                )
+                is ShowDialog -> event.showDialog()
                 is ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
                 is ShowStorageChooser -> chooseProductImage()
@@ -183,8 +173,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     private fun showWPMediaPicker() {
         val action = ProductImagesFragmentDirections.actionGlobalWpMediaFragment(viewModel.isMultiSelectionAllowed)
-        val action = ProductDetailFragmentDirections
-            .actionGlobalWpMediaFragment(RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS, multiSelect = true)
         findNavController().navigateSafely(action)
     }
 
@@ -248,19 +236,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                     val uriList = ArrayList<Uri>().also { it.add(imageUri) }
                     viewModel.uploadProductImages(navArgs.remoteId, uriList)
                 }
-            }
-        }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.WPMEDIA_LIBRARY_PICK_PHOTOS -> {
-                result.getParcelableArrayList<Product.Image>(WPMediaPickerFragment.ARG_SELECTED_IMAGES)
-                    ?.let {
-                        viewModel.addProductImageListToDraft(it)
-                        reloadImageGallery()
-                        changesMade()
-                    }
             }
         }
     }
