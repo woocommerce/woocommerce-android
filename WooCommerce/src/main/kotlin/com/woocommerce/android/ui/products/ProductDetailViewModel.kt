@@ -418,7 +418,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 // discard changes made to the current screen
                 discardEditChanges()
 
-                // If user in Product detail screen, exit product detail,
+                // if the user is in Product detail screen, exit product detail,
                 // otherwise, redirect to Product Detail screen
                 if (event is ExitProductDetail) {
                     triggerEvent(ExitProduct)
@@ -427,12 +427,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 }
             }
 
-            // if the user is adding a product and this is product detail, include a "Save as draft" neutral button
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
+            // button in the discard dialog
             val neutralAction = if (isAddFlow && event is ExitProductDetail) {
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
                     startPublishProduct(exitWhenDown = true)
-                    // TODO exit screen after saving
                 }
             } else {
                 null
