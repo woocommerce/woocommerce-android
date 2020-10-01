@@ -314,12 +314,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startPublishProduct(exitWhenDown: Boolean = false) {
+    private fun startPublishProduct(exitWhenDone: Boolean = false) {
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val isSuccess = addProduct(it)
-                if (exitWhenDown && isSuccess) {
+                if (isSuccess && exitWhenDone) {
                     triggerEvent(ExitProduct)
                 }
             }
@@ -434,7 +434,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct(exitWhenDown = true)
+                    startPublishProduct(exitWhenDone = true)
                 }
             } else {
                 neutralBtnId = null
