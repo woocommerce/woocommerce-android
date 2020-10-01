@@ -429,12 +429,15 @@ class ProductDetailViewModel @AssistedInject constructor(
 
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
+            @StringRes val neutralBtnId: Int?
             val neutralAction = if (isAddFlow && event is ExitProductDetail) {
+                neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
                     startPublishProduct(exitWhenDown = true)
                 }
             } else {
+                neutralBtnId = null
                 null
             }
 

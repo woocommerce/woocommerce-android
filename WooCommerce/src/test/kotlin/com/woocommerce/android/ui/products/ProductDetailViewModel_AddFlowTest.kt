@@ -16,6 +16,8 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -29,6 +31,7 @@ import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -310,4 +313,28 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             assertThat(productData?.isProductUpdated).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
         }
+
+    @Test
+    fun `Display save as draft in discard dialog when changes made in add flow`() {
+        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(true).whenever(viewModel).isAddFlow
+
+        viewModel.start()
+
+        // change the status to draft so we can verify that isDraftProduct works - this will also
+        // force the viewModel to consider the product as changed, so when we click the back button
+        // below it will show the discard dialog
+        viewModel.updateProductDraft(productStatus = DRAFT)
+        assertThat(viewModel.isDraftProduct()).isTrue()
+
+        var saveAsDraftShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDiscardDialog && it.neutralBtnAction != null) {
+                saveAsDraftShown = true
+            }
+        }
+
+        viewModel.onBackButtonClicked(ExitProductDetail())
+        assertThat(saveAsDraftShown).isTrue()
+    }
 }
