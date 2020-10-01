@@ -180,7 +180,7 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) null else product.downloadsLegacy(),
+                if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) null else product.downloadsLegacy(),
                 product.purchaseNote()
             ).filterNotEmpty()
         )

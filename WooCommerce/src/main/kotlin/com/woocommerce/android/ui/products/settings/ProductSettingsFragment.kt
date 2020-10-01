@@ -87,7 +87,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             activity?.invalidateOptionsMenu()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled() && viewModel.getProduct().storedProduct?.type == SIMPLE) {
+        if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled() && viewModel.getProduct().storedProduct?.type == SIMPLE) {
             productIsDownloadable.visibility = View.VISIBLE
             productIsDownloadableDivider.visibility = View.VISIBLE
             productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
