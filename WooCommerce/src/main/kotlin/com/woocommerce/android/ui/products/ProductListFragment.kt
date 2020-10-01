@@ -333,7 +333,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
+        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT, R.id.rootFragment) { bundle ->
             if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
                 // User chose to trash from product detail, but we do the actual trashing here
                 // so we can show a snackbar enabling the user to undo the trashing.
