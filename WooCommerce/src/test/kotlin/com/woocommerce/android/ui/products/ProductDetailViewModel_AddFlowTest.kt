@@ -12,6 +12,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -53,6 +54,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
+    private val mediaFilesRepository: MediaFilesRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -145,6 +147,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 resources,
                 productCategoriesRepository,
                 productTagsRepository,
+                mediaFilesRepository,
                 prefs
             )
         )

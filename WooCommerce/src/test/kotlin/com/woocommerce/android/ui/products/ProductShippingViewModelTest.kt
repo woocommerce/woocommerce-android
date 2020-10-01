@@ -12,7 +12,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
 import org.assertj.core.api.Assertions.assertThat
@@ -100,7 +100,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         viewModel.onExit()
 
         assertThat(events.singleOrNull { it is Exit }).isNotNull
-        assertThat(events.any { it is ShowDiscardDialog }).isFalse()
+        assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is ExitWithResult<*> }).isFalse()
     }
 
@@ -115,7 +115,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
         viewModel.onExit()
 
-        assertThat(events.singleOrNull { it is ShowDiscardDialog }).isNotNull
+        assertThat(events.singleOrNull { it is ShowDialog }).isNotNull
         assertThat(events.any { it is ExitWithResult<*> }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
     }
@@ -138,7 +138,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
         viewModel.onDoneButtonClicked()
 
-        assertThat(events.any { it is ShowDiscardDialog }).isFalse()
+        assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
 
         @Suppress("UNCHECKED_CAST")
