@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -63,13 +62,11 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -176,13 +173,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     val isAddFlow: Boolean
         get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
-    /**
-     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
-     * trash menu. Always returns false when we're in the add flow.
-     */
-    val isTrashEnabled: Boolean
-        get() = !isAddFlow && navArgs.isTrashEnabled && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
-
     init {
         start()
     }
@@ -214,30 +204,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
-        }
-    }
-
-    /**
-     * Called when the Trash menu item is clicked in Product detail screen
-     */
-    fun onTrashButtonClicked() {
-        if (checkConnection() && !viewState.isConfirmingTrash) {
-            triggerEvent(
-                ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(isConfirmingTrash = false)
-                        viewState.productDraft?.let { product ->
-                            triggerEvent(ExitWithResult(product.remoteId))
-                        }
-                    },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        viewState = viewState.copy(isConfirmingTrash = false)
-                    },
-                    messageId = string.product_confirm_trash,
-                    positiveButtonId = string.product_trash_yes,
-                    negativeButtonId = string.cancel
-                )
-            )
         }
     }
 
@@ -348,10 +314,15 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startPublishProduct() {
+    private fun startPublishProduct(exitWhenDone: Boolean = false) {
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
-            launch { addProduct(it) }
+            launch {
+                val isSuccess = addProduct(it)
+                if (isSuccess && exitWhenDone) {
+                    triggerEvent(ExitProduct)
+                }
+            }
         }
     }
 
@@ -443,19 +414,36 @@ class ProductDetailViewModel @AssistedInject constructor(
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges()
+            val positiveAction = DialogInterface.OnClickListener { _, _ ->
+                // discard changes made to the current screen
+                discardEditChanges()
 
-                    // If user in Product detail screen, exit product detail,
-                    // otherwise, redirect to Product Detail screen
-                    if (event is ExitProductDetail) {
-                        triggerEvent(ExitProduct)
-                    } else {
-                        triggerEvent(event)
-                    }
+                // if the user is in Product detail screen, exit product detail,
+                // otherwise, redirect to Product Detail screen
+                if (event is ExitProductDetail) {
+                    triggerEvent(ExitProduct)
+                } else {
+                    triggerEvent(event)
                 }
+            }
+
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
+            // button in the discard dialog
+            @StringRes val neutralBtnId: Int?
+            val neutralAction = if (isAddFlow && event is ExitProductDetail) {
+                neutralBtnId = string.product_detail_save_as_draft
+                DialogInterface.OnClickListener { _, _ ->
+                    updateProductDraft(productStatus = DRAFT)
+                    startPublishProduct(exitWhenDone = true)
+                }
+            } else {
+                neutralBtnId = null
+                null
+            }
+
+            triggerEvent(ShowDiscardDialog(
+                    positiveBtnAction = positiveAction,
+                    neutralBtnAction = neutralAction
             ))
             return false
         } else if (event is ExitProductDetail && isUploadingImages) {
@@ -625,15 +613,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductEditAction()
     }
 
-    fun checkConnection(): Boolean {
-        return if (networkStatus.isConnected()) {
-            true
-        } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
-            false
-        }
-    }
-
     private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
@@ -721,7 +700,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
-        if (checkConnection()) {
+        if (networkStatus.isConnected()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
@@ -730,6 +709,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 triggerEvent(Exit)
             }
         } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -767,7 +747,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun updateProduct(product: Product) {
-        if (checkConnection()) {
+        if (networkStatus.isConnected()) {
             if (productRepository.updateProduct(product)) {
                 if (viewState.isPasswordChanged) {
                     val password = viewState.draftPassword
@@ -789,6 +769,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -801,10 +783,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     /**
      * Add a new product to the backend only if network is connected.
-     * Otherwise, an offline snackbar is displayed.
+     * Otherwise, an offline snackbar is displayed. Returns true only
+     * if product successfully added
      */
-    private suspend fun addProduct(product: Product) {
-        if (checkConnection()) {
+    private suspend fun addProduct(product: Product): Boolean {
+        val isSuccess: Boolean
+        if (networkStatus.isConnected()) {
             @StringRes val successId = if (isDraftProduct()) {
                 string.product_detail_publish_product_draft_success
             } else {
@@ -818,7 +802,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
 
             val result = productRepository.addProduct(product)
-            val isSuccess = result.first
+            isSuccess = result.first
             val newProductRemoteId = result.second
             if (isSuccess) {
                 triggerEvent(ShowSnackbar(successId))
@@ -832,8 +816,12 @@ class ProductDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(failId))
             }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+            isSuccess = false
         }
         viewState = viewState.copy(isProgressDialogShown = false)
+        return isSuccess
     }
 
     /**
@@ -1300,8 +1288,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isProductUpdated: Boolean? = null,
         val storedPassword: String? = null,
         val draftPassword: String? = null,
-        val showBottomSheetButton: Boolean? = null,
-        val isConfirmingTrash: Boolean = false
+        val showBottomSheetButton: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
