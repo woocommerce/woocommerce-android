@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
@@ -51,6 +52,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -293,6 +295,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             true -> startPublishProduct()
             else -> startUpdateProduct()
         }
+    }
+
+    /**
+     * Called when the "Save as draft" button is clicked in Product detail screen
+     */
+    fun onSaveAsDraftButtonClicked() {
+        // TODO analytics
+        updateProductDraft(productStatus = DRAFT)
+        startPublishProduct()
     }
 
     private fun startUpdateProduct() {
@@ -744,16 +755,33 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Returns true if the product draft has a status of DRAFT
+     */
+    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
+
+    /**
      * Add a new product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun addProduct(product: Product) {
         if (networkStatus.isConnected()) {
+            @StringRes val successId = if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+
+            @StringRes val failId = if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+
             val result = productRepository.addProduct(product)
             val isSuccess = result.first
             val newProductRemoteId = result.second
             if (isSuccess) {
-                triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
+                triggerEvent(ShowSnackbar(successId))
                 viewState = viewState.copy(
                     productDraft = null,
                     productBeforeEnteringFragment = getProduct().storedProduct,
@@ -762,7 +790,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 loadRemoteProduct(newProductRemoteId)
                 triggerEvent(RefreshMenu)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
+                triggerEvent(ShowSnackbar(failId))
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))

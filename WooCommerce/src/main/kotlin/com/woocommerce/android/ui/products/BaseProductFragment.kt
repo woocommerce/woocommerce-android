@@ -106,6 +106,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
      * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
     protected fun changesMade() {
+        requireActivity().invalidateOptionsMenu()
         showUpdateMenuItem(hasChanges())
     }
 }

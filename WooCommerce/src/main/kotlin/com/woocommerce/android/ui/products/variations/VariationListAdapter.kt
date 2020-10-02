@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations
 import android.content.Context
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,9 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.ProductStockStatus.InStock
+import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
+import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import kotlinx.android.synthetic.main.variation_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
@@ -59,15 +63,19 @@ class VariationListAdapter(
             variation.optionName
         }
 
+        val stockStatus = variation.getStockStatusText()
+        val bullet = context.getString(R.string.product_bullet)
         holder.txtVariationOptionPriceAndStock.text = if (variation.isVisible) {
             if (variation.isSaleInEffect || variation.regularPrice.isSet()) {
-                variation.priceWithCurrency
+                StringBuilder(stockStatus).appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
             } else {
-                highlightText(context.getString(R.string.product_variation_no_price_set))
+                val highlightedText = highlightText(context.getString(R.string.product_variation_no_price_set))
+                TextUtils.concat(stockStatus, bullet, highlightedText)
             }
         } else {
-            StringBuilder().append(context.getString(R.string.product_variation_disabled))
-                .appendWithIfNotEmpty(variation.priceWithCurrency, context.getString(R.string.product_bullet))
+            StringBuilder(stockStatus)
+                .appendWithIfNotEmpty(context.getString(R.string.product_variation_disabled), bullet)
+                .appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
         }
 
         variation.image?.let {
@@ -86,7 +94,24 @@ class VariationListAdapter(
         }
     }
 
-    private fun highlightText(text: String): Spannable {
+    private fun ProductVariation.getStockStatusText(): String {
+        return when (stockStatus) {
+            InStock -> {
+                context.getString(R.string.product_stock_status_instock)
+            }
+            OutOfStock -> {
+                context.getString(R.string.product_stock_status_out_of_stock)
+            }
+            OnBackorder -> {
+                context.getString(R.string.product_stock_status_on_backorder)
+            }
+            else -> {
+                stockStatus.value
+            }
+        }
+    }
+
+    private fun highlightText(text: String): SpannableString {
         val spannable = SpannableString(text)
         spannable.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(context, R.color.warning_foreground_color)),
