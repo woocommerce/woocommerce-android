@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.downloads
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -14,8 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -23,8 +23,7 @@ import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -64,6 +63,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+        setupResultHandlers(viewModel)
         add_downloadable_from_wpmedia_library.setOnClickListener { viewModel.onMediaGalleryClicked() }
         add_downloadable_from_device.setOnClickListener { viewModel.onDeviceClicked() }
         add_downloadable_manually.setOnClickListener { viewModel.onEnterURLClicked() }
@@ -74,18 +74,11 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                CHOOSE_FILE_REQUEST_CODE -> {
-                    if (intent?.data == null) {
-                        WooLog.w(T.MEDIA, "File picker return an null data")
-                        return
-                    }
-                    viewModel.launchFileUpload(intent.data!!)
-                }
-            }
+
+
+    private fun setupResultHandlers(viewModel: AddProductDownloadViewModel) {
+        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
+            // viewModel.launchFileUpload(it)
         }
     }
 
@@ -106,7 +99,7 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
 
     private fun showWPMediaPicker() {
         val action = AddProductDownloadBottomSheetFragmentDirections
-            .actionGlobalWpMediaFragment(RequestCodes.WPMEDIA_LIBRARY_PICK_DOWNLOADABLE_FILE, multiSelect = false)
+            .actionGlobalWpMediaFragment(false)
         findNavController().navigateSafely(action)
     }
 
