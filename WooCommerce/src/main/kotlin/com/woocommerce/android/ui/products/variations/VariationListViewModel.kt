@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
@@ -26,6 +27,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class VariationListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -126,10 +128,14 @@ class VariationListViewModel @AssistedInject constructor(
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationListRepository.getCurrencyCode()
         variations.map { variation ->
-            variation.regularPrice?.let { price ->
+            if (variation.isSaleInEffect) {
                 variation.priceWithCurrency = currencyCode?.let {
-                    currencyFormatter.formatCurrency(price, it)
-                } ?: price.toString()
+                    currencyFormatter.formatCurrency(variation.salePrice!!, it)
+                } ?: variation.salePrice!!.toString()
+            } else if (variation.regularPrice.isSet()) {
+                variation.priceWithCurrency = currencyCode?.let {
+                    currencyFormatter.formatCurrency(variation.regularPrice!!, it)
+                } ?: variation.regularPrice!!.toString()
             }
         }
         return variations
