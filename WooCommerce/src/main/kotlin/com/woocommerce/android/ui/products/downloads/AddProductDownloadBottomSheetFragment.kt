@@ -74,8 +74,6 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         outState.putParcelable(KEY_CAPTURED_PHOTO_URI, capturedPhotoUri)
     }
 
-
-
     private fun setupResultHandlers(viewModel: AddProductDownloadViewModel) {
         handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
             // viewModel.launchFileUpload(it)
