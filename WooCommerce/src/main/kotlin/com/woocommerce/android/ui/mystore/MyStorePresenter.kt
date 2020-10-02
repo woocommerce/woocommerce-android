@@ -72,30 +72,30 @@ class MyStorePresenter @Inject constructor(
         }
     }
 
-    private var dashboardView: View? = null
+    private var myStoreView: View? = null
 
     override fun takeView(view: View) {
-        dashboardView = view
+        myStoreView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
     }
 
     override fun dropView() {
-        dashboardView = null
+        myStoreView = null
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
     override fun loadStats(granularity: StatsGranularity, forced: Boolean) {
         if (!networkStatus.isConnected()) {
-            dashboardView?.isRefreshPending = true
+            myStoreView?.isRefreshPending = true
             return
         }
 
         val forceRefresh = forced || statsForceRefresh[granularity.ordinal]
         if (forceRefresh) {
             statsForceRefresh[granularity.ordinal] = false
-            dashboardView?.showChartSkeleton(true)
+            myStoreView?.showChartSkeleton(true)
         }
 
         // fetch revenue stats
@@ -110,14 +110,14 @@ class MyStorePresenter @Inject constructor(
         forced: Boolean
     ) {
         if (!networkStatus.isConnected()) {
-            dashboardView?.isRefreshPending = true
+            myStoreView?.isRefreshPending = true
         }
 
         val forceRefresh = forced || topPerformersForceRefresh[granularity.ordinal]
         if (forceRefresh) {
             topPerformersForceRefresh[granularity.ordinal] = false
             withContext(Dispatchers.Main) {
-                dashboardView?.showTopEarnersSkeleton(true)
+                myStoreView?.showTopEarnersSkeleton(true)
             }
         }
 
@@ -149,10 +149,10 @@ class MyStorePresenter @Inject constructor(
         granularity: StatsGranularity
     ) {
         withContext(Dispatchers.Main) {
-            dashboardView?.showTopEarnersSkeleton(false)
+            myStoreView?.showTopEarnersSkeleton(false)
             result.model?.let {
                 onWCTopPerformersChanged(it, granularity)
-            } ?: dashboardView?.showTopPerformersError(granularity)
+            } ?: myStoreView?.showTopPerformersError(granularity)
         }
     }
 
@@ -190,16 +190,16 @@ class MyStorePresenter @Inject constructor(
     fun onWCRevenueStatsChanged(event: OnWCRevenueStatsChanged) {
         when (event.causeOfChange) {
             FETCH_REVENUE_STATS -> {
-                dashboardView?.showChartSkeleton(false)
+                myStoreView?.showChartSkeleton(false)
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
                         AppPrefs.setV4StatsSupported(false)
-                        dashboardView?.updateStatsAvailabilityError()
+                        myStoreView?.updateStatsAvailabilityError()
                     } else {
-                        dashboardView?.showStatsError(event.granularity)
+                        myStoreView?.showStatsError(event.granularity)
                     }
                     return
                 }
@@ -213,7 +213,7 @@ class MyStorePresenter @Inject constructor(
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
                     selectedSite.get(), event.granularity, event.startDate!!, event.endDate!!
                 )
-                dashboardView?.showStats(revenueStatsModel, event.granularity)
+                myStoreView?.showStats(revenueStatsModel, event.granularity)
             }
         }
     }
@@ -225,14 +225,14 @@ class MyStorePresenter @Inject constructor(
             FETCH_NEW_VISITOR_STATS -> {
                 if (event.isError) {
                     WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
-                    dashboardView?.showVisitorStatsError(event.granularity)
+                    myStoreView?.showVisitorStatsError(event.granularity)
                     return
                 }
 
                 val visitorStats = wcStatsStore.getNewVisitorStats(
                     selectedSite.get(), event.granularity, event.quantity, event.date, event.isCustomField
                 )
-                dashboardView?.showVisitorStats(visitorStats, event.granularity)
+                myStoreView?.showVisitorStats(visitorStats, event.granularity)
             }
         }
     }
@@ -251,8 +251,8 @@ class MyStorePresenter @Inject constructor(
                     Stat.DASHBOARD_TOP_PERFORMERS_LOADED,
                     mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.toLowerCase())
                 )
-                dashboardView?.showTopPerformers(it, granularity)
-            } ?: dashboardView?.showTopPerformersError(granularity)
+                myStoreView?.showTopPerformers(it, granularity)
+            } ?: myStoreView?.showTopPerformersError(granularity)
     }
 
     @Suppress("unused")
@@ -267,7 +267,7 @@ class MyStorePresenter @Inject constructor(
                     )
                 } else {
                     val hasNoOrders = event.rowsAffected == 0
-                    dashboardView?.showEmptyView(hasNoOrders)
+                    myStoreView?.showEmptyView(hasNoOrders)
                 }
             }
         }
@@ -278,7 +278,7 @@ class MyStorePresenter @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data if needed now that a connection is active
-            dashboardView?.let { view ->
+            myStoreView?.let { view ->
                 if (view.isRefreshPending) {
                     view.refreshMyStoreStats(forced = false)
                 }
