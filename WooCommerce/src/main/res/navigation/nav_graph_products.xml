@@ -84,9 +84,22 @@
         android:label="ProductImagesFragment"
         tools:layout="@layout/fragment_product_images">
         <argument
-            android:name="remoteProductId"
+            android:name="remoteId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="images"
+            app:argType="com.woocommerce.android.model.Product$Image[]" />
+        <argument
+            android:name="selectedImage"
+            app:argType="com.woocommerce.android.model.Product$Image"
+            app:nullable="true" />
+        <argument
+            android:name="showChooser"
+            app:argType="boolean" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -199,10 +212,7 @@
         android:label="WPMediaPickerFragment"
         tools:layout="@layout/fragment_wpmedia_picker">
         <argument
-            android:name="requestCode"
-            app:argType="integer" />
-        <argument
-            android:name="multiSelect"
+            android:name="allowMultiple"
             app:argType="boolean" />
     </fragment>
     <fragment
