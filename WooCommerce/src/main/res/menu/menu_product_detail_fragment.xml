@@ -1,40 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_done"
         android:title="@string/update"
         android:visible="false"
-        app:showAsAction="ifRoom"
-        tools:visible="true" />
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_save_as_draft"
+        android:title="@string/product_detail_save_as_draft"
+        app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
-        app:showAsAction="withText"
-        tools:visible="true" />
+        app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_view_product"
         android:title="@string/product_view_in_store"
-        android:visible="false"
-        app:showAsAction="withText"
-        tools:visible="true" />
+        app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
-        android:visible="false"
-        app:showAsAction="withText"
-        tools:visible="true" />
-
-    <item
-        android:id="@+id/menu_trash_product"
-        android:title="@string/product_trash"
-        android:visible="false"
-        app:showAsAction="withText"
-        tools:visible="true" />
+        app:showAsAction="withText" />
 </menu>
