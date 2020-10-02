@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.dashboard.DashboardFragment
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.products.ProductListFragment
 import com.woocommerce.android.ui.reviews.ReviewListFragment
@@ -25,41 +23,15 @@ fun findNavigationPositionById(id: Int): BottomNavigationPosition = when (id) {
 }
 
 fun BottomNavigationPosition.getTag(): String = when (this) {
-    BottomNavigationPosition.DASHBOARD -> getMyStoreTag()
+    BottomNavigationPosition.DASHBOARD -> MyStoreFragment.TAG
     BottomNavigationPosition.ORDERS -> OrderListFragment.TAG
     BottomNavigationPosition.PRODUCTS -> ProductListFragment.TAG
     BottomNavigationPosition.REVIEWS -> ReviewListFragment.TAG
 }
 
 fun BottomNavigationPosition.createFragment(): TopLevelFragment = when (this) {
-    BottomNavigationPosition.DASHBOARD -> createMyStoreFragment()
+    BottomNavigationPosition.DASHBOARD -> MyStoreFragment.newInstance()
     BottomNavigationPosition.ORDERS -> OrderListFragment.newInstance()
     BottomNavigationPosition.PRODUCTS -> ProductListFragment.newInstance()
     BottomNavigationPosition.REVIEWS -> ReviewListFragment.newInstance()
-}
-
-/**
- * Temp method that returns
- * [DashboardFragment] if v4 stats api is not supported for the site
- * [MyStoreFragment] if v4 stats api is supported for the site
- */
-private fun createMyStoreFragment(): TopLevelFragment {
-    return if (AppPrefs.isV4StatsSupported()) {
-        MyStoreFragment.newInstance()
-    } else {
-        DashboardFragment.newInstance()
-    }
-}
-
-/**
- * Temp method that returns
- * [DashboardFragment.TAG] if v4 stats api is not supported for the site
- * [MyStoreFragment.TAG] if v4 stats api is supported for the site
- */
-private fun getMyStoreTag(): String {
-    return if (AppPrefs.isV4StatsSupported()) {
-        MyStoreFragment.TAG
-    } else {
-        DashboardFragment.TAG
-    }
 }

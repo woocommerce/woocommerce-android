@@ -35,8 +35,6 @@ interface MainContract {
         fun showOrderBadge(count: Int)
         fun updateOrderBadge(hideCountUntilComplete: Boolean)
         fun fetchRevenueStatsAvailability(site: SiteModel)
-        fun updateStatsView(isAvailable: Boolean)
-        fun replaceStatsFragment()
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
     }

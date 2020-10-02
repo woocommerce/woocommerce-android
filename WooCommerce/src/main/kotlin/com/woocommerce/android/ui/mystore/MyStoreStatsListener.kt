@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
-import org.wordpress.android.fluxc.model.WCTopEarnerModel
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
-interface MyStoreStatsListener : DashboardStatsListener {
+interface MyStoreStatsListener {
     fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel)
-    override fun onTopEarnerClicked(topEarner: WCTopEarnerModel) {}
+    fun onRequestLoadStats(period: StatsGranularity)
+    fun onRequestLoadTopEarnerStats(period: StatsGranularity)
+    fun onChartValueSelected(dateString: String, period: StatsGranularity) {}
+    fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {}
 }
