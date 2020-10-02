@@ -20,9 +20,7 @@ import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.text.DateFormat
 import java.util.Date
-import java.util.TimeZone
 
 @Parcelize
 data class ProductVariation(
