@@ -59,10 +59,12 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
+                    event.neutralBtnAction,
                     titleId = event.titleId,
                     messageId = event.messageId,
                     positiveButtonId = event.positiveButtonId,
-                    negativeButtonId = event.negativeButtonId
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
