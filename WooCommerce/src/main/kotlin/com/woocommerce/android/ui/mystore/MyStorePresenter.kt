@@ -192,7 +192,7 @@ class MyStorePresenter @Inject constructor(
             FETCH_REVENUE_STATS -> {
                 myStoreView?.showChartSkeleton(false)
                 if (event.isError) {
-                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
+                    WooLog.e(T.MY_STORE, "$TAG - Error fetching stats: ${event.error.message}")
                     // display a different error snackbar if the error type is not "plugin not active", since
                     // this error is already being handled by the activity class
                     if (event.error.type == PLUGIN_NOT_ACTIVE) {
@@ -224,7 +224,7 @@ class MyStorePresenter @Inject constructor(
         when (event.causeOfChange) {
             FETCH_NEW_VISITOR_STATS -> {
                 if (event.isError) {
-                    WooLog.e(T.DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
+                    WooLog.e(T.MY_STORE, "$TAG - Error fetching visitor stats: ${event.error.message}")
                     myStoreView?.showVisitorStatsError(event.granularity)
                     return
                 }
@@ -262,7 +262,7 @@ class MyStorePresenter @Inject constructor(
             FETCH_HAS_ORDERS -> {
                 if (event.isError) {
                     WooLog.e(
-                        T.DASHBOARD,
+                        T.MY_STORE,
                         "$TAG - Error fetching whether orders exist: ${event.error.message}"
                     )
                 } else {

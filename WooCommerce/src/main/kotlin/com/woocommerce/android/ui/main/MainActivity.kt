@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
+import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
@@ -251,7 +251,7 @@ class MainActivity : AppUpgradeActivity(),
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.also {
-            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, DASHBOARD.id)
+            val id = it.getInt(KEY_BOTTOM_NAV_POSITION, MY_STORE.id)
             bottomNavView.restoreSelectedItemState(id)
 
             val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
@@ -277,8 +277,8 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (bottomNavView.currentPosition != DASHBOARD) {
-            bottomNavView.currentPosition = DASHBOARD
+        if (bottomNavView.currentPosition != MY_STORE) {
+            bottomNavView.currentPosition = MY_STORE
         } else {
             super.onBackPressed()
         }
@@ -606,7 +606,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_SELECTED
+            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_SELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_SELECTED
@@ -627,7 +627,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
-            DASHBOARD -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
+            MY_STORE -> Stat.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> Stat.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> Stat.MAIN_TAB_PRODUCTS_RESELECTED
             REVIEWS -> Stat.MAIN_TAB_NOTIFICATIONS_RESELECTED
@@ -688,7 +688,7 @@ class MainActivity : AppUpgradeActivity(),
 
                 // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
                 // the app is in the right section
-                bottomNavView.currentPosition = DASHBOARD
+                bottomNavView.currentPosition = MY_STORE
 
                 // launch 'Tickets' page of Zendesk
                 startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -715,7 +715,7 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         } else {
-            bottomNavView.currentPosition = DASHBOARD
+            bottomNavView.currentPosition = MY_STORE
         }
     }
     // endregion

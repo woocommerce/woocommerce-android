@@ -20,7 +20,6 @@ import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -398,13 +397,13 @@ class MyStoreFragment : TopLevelFragment(),
                     val reviewInfo = it.result
                     val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
                     flow.addOnFailureListener { ex ->
-                        WooLog.e(WooLog.T.DASHBOARD, "Error launching google review API flow.", ex)
+                        WooLog.e(WooLog.T.MY_STORE, "Error launching google review API flow.", ex)
                     }
                 } else {
                     // There was an error, just log and continue. Google doesn't really tell you what
                     // type of scenario would cause an error.
                     WooLog.e(
-                        WooLog.T.DASHBOARD,
+                        WooLog.T.MY_STORE,
                         "Error fetching ReviewInfo object from Review API to start in-app review process",
                         it.exception
                     )
