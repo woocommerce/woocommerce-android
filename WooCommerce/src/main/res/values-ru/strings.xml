@@ -723,7 +723,7 @@ Language: ru
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
-    <string name="product_type_virtual">Virtual %s</string>
+    <string name="product_type_virtual">Virtual</string>
     <string name="product_type_grouped">Сборный</string>
     <string name="product_type_variable">С вариантами</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
