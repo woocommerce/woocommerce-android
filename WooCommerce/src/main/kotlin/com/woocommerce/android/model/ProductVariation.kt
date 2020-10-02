@@ -66,7 +66,6 @@ data class ProductVariation(
                 stockStatus == variation.stockStatus &&
                 backorderStatus == variation.backorderStatus &&
                 optionName.fastStripHtml() == variation.optionName.fastStripHtml() &&
-                priceWithCurrency == variation.priceWithCurrency &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&
