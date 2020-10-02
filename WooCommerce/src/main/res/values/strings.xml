@@ -932,6 +932,7 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
+    <string name="product_status_trashed">Trashed</string>
 
     <!-- Product type -->
     <string name="product_type_simple">Simple</string>
