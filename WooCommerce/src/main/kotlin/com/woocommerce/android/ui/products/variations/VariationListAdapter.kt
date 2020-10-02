@@ -65,16 +65,15 @@ class VariationListAdapter(
 
         val stockStatus = variation.getStockStatusText()
         val bullet = context.getString(R.string.product_bullet)
-        if (variation.isVisible) {
-            if (variation.regularPrice.isSet()) {
-                holder.txtVariationOptionPriceAndStock.text = StringBuilder(stockStatus)
-                    .appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
+        holder.txtVariationOptionPriceAndStock.text = if (variation.isVisible) {
+            if (variation.isSaleInEffect || variation.regularPrice.isSet()) {
+                StringBuilder(stockStatus).appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
             } else {
                 val highlightedText = highlightText(context.getString(R.string.product_variation_no_price_set))
-                holder.txtVariationOptionPriceAndStock.text = TextUtils.concat(stockStatus, bullet, highlightedText)
+                TextUtils.concat(stockStatus, bullet, highlightedText)
             }
         } else {
-            holder.txtVariationOptionPriceAndStock.text = StringBuilder(stockStatus)
+            StringBuilder(stockStatus)
                 .appendWithIfNotEmpty(context.getString(R.string.product_variation_disabled), bullet)
                 .appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
         }
