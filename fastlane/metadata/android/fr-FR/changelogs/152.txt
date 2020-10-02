@@ -1,3 +1,0 @@
-5.0 :
-nous avons résolu les incidents qui se présentaient lors du choix d'une image de produit et lors du basculement entre les thèmes clair et sombre sur d'anciennes versions d'Android.
-
