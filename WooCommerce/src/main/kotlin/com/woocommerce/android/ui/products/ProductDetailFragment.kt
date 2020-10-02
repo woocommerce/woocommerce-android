@@ -14,18 +14,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
@@ -39,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -148,7 +146,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
-        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
+        handleResult<List<Product.Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 images = it
             )
@@ -215,12 +213,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
         }
 
-        updateOptionsMenuDescription(product.remoteId)
+        requireActivity().invalidateOptionsMenu()
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
         return if (viewModel.isAddFlow && product.name.isEmpty()) {
-            getString(string.product_add_tool_bar_title)
+            getString(R.string.product_add_tool_bar_title)
         } else product.name.fastStripHtml()
     }
 
@@ -235,38 +233,32 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-
-        // display View Product on Store menu button only if the Product status is published,
-        // otherwise the page is redirected to a 404
-        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
-        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
-        menu.findItem(R.id.menu_product_settings).isVisible = true
-
-        when (viewModel.isAddFlow) {
-            true -> setupProductAddOptionsMenu(menu)
-            else -> Unit
-        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun setupProductAddOptionsMenu(menu: Menu) {
-        doneOrUpdateMenuItem?.let {
-            it.title = getString(publishTitleId)
-            it.isVisible = true
-        }
-    }
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
 
-    private fun updateOptionsMenuDescription(remoteId: Long) {
-        val doneButtonTitle =
-            when (viewModel.isAddFlow) {
-                true -> getString(publishTitleId)
-                else -> getString(updateTitleId)
-            }
-        doneOrUpdateMenuItem?.title = doneButtonTitle
+        // visibility of these menu items depends on whether we're in the add product flow
+        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
+        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
+            viewModel.hasChanges() &&
+            FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
+
+        doneOrUpdateMenuItem?.let {
+            it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
+            it.isVisible = viewModel.hasChanges()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_save_as_draft -> {
+                viewModel.onSaveAsDraftButtonClicked()
+                true
+            }
+
             R.id.menu_share -> {
                 viewModel.onShareButtonClicked()
                 true
@@ -316,7 +308,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         val message: Int
         when (viewModel.isAddFlow) {
             true -> {
-                title = R.string.product_publish_dialog_title
+                title = if (viewModel.isDraftProduct()) {
+                    R.string.product_publish_draft_dialog_title
+                } else {
+                    R.string.product_publish_dialog_title
+                }
                 message = R.string.product_publish_dialog_message
             }
             else -> {

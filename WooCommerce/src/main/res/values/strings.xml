@@ -619,6 +619,7 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
+    <string name="product_detail_save_as_draft">Save as draft</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -966,9 +967,12 @@
     <string name="product_add_tool_bar_title">New Product</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
     <string name="product_publish_dialog_title">Publishing product</string>
+    <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
+    <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
+    <string name="product_detail_publish_product_draft_success">Product draft saved</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
