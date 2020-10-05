@@ -215,6 +215,7 @@
     -->
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
@@ -243,6 +244,7 @@
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
+    <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
@@ -279,7 +281,7 @@
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="order_begin_fulfillment">Begin fulfillment</string>
+    <string name="order_begin_fulfillment">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>

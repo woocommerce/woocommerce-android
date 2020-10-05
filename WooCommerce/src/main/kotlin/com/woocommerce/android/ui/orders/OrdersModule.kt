@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.orders.OrdersModule.OrderDetailFragmentModule
 import com.woocommerce.android.ui.orders.OrdersModule.OrderFulfillmentFragmentModule
 import com.woocommerce.android.ui.orders.OrdersModule.OrderListFragmentModule
 import com.woocommerce.android.ui.orders.OrdersModule.OrderProductListFragmentModule
+import com.woocommerce.android.ui.orders.details.OrderDetailFragment
+import com.woocommerce.android.ui.orders.details.OrderDetailModule
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListModule
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
