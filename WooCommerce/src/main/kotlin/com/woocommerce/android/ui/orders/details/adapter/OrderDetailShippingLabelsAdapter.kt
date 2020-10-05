@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -25,7 +26,8 @@ import java.math.BigDecimal
 class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
-    private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
+    private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit,
+    private val productClickListener: OrderProductActionListener
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -43,7 +45,7 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ShippingLabelsViewHolder {
         return ShippingLabelsViewHolder(
-            parent, viewPool, productImageMap, formatCurrencyForDisplay, onRefundRequested
+            parent, viewPool, productImageMap, formatCurrencyForDisplay, onRefundRequested, productClickListener
         )
     }
 
@@ -58,7 +60,8 @@ class OrderDetailShippingLabelsAdapter(
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
-        private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit
+        private val onRefundRequested: (shippingLabel: ShippingLabel) -> Unit,
+        private val productClickListener: OrderProductActionListener
     ) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
     ) {
@@ -69,7 +72,8 @@ class OrderDetailShippingLabelsAdapter(
                 adapter = OrderDetailProductListAdapter(
                     shippingLabel.products,
                     productImageMap,
-                    formatCurrencyForDisplay
+                    formatCurrencyForDisplay,
+                    productClickListener
                 )
 
                 if (itemDecorationCount == 0) {
