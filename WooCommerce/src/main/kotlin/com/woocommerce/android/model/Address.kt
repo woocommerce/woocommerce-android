@@ -61,7 +61,8 @@ data class Address(
     }
 
     fun getFullAddress(name: String, address: String, country: String): String {
-        var fullAddr = name
+        var fullAddr = ""
+        if (name.isNotBlank()) fullAddr += "$name\n"
         if (address.isNotBlank()) fullAddr += "$address\n"
         if (country.isNotBlank()) fullAddr += country
         return fullAddr
@@ -70,5 +71,12 @@ data class Address(
     fun getCountryLabelByCountryCode(): String {
         val locale = Locale(Locale.getDefault().language, country)
         return locale.displayCountry
+    }
+
+    fun hasInfo(): Boolean {
+        return firstName.isNotEmpty() || lastName.isNotEmpty() ||
+            address1.isNotEmpty() || country.isNotEmpty() ||
+            phone.isNotEmpty() || email.isNotEmpty() ||
+            state.isNotEmpty() || city.isNotEmpty()
     }
 }

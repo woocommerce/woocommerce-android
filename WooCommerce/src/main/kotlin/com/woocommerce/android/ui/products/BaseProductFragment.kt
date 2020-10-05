@@ -59,7 +59,11 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    messageId = event.messageId
+                    event.neutralBtnAction,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -106,6 +110,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
      * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
     protected fun changesMade() {
+        requireActivity().invalidateOptionsMenu()
         showUpdateMenuItem(hasChanges())
     }
 }

@@ -243,7 +243,7 @@ class ProductDetailRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
-    fun isProductSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
+    fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
     fun getCachedVariationCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size

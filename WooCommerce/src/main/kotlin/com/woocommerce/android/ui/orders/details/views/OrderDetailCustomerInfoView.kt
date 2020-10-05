@@ -30,8 +30,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     fun updateCustomerInfo(
         order: Order,
-        isVirtualOrder: Boolean, // don't display shipping section for virtual products
-        displayBilling: Boolean = true // don't display billing section
+        isVirtualOrder: Boolean // don't display shipping section for virtual products
     ) {
         // shipping address info
         val shippingAddress = order.formatShippingInformationForDisplay()
@@ -66,7 +65,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         // billing info
         val billingInfo = order.formatBillingInformationForDisplay()
-        if (displayBilling) {
+        if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
                 customerInfo_billingAddr.visibility = View.VISIBLE
                 customerInfo_billingAddr.text = billingInfo

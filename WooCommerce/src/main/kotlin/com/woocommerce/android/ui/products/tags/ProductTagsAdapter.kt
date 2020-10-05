@@ -35,7 +35,7 @@ class ProductTagsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
-            LayoutInflater.from(context)
+            LayoutInflater.from(parent.context)
             .inflate(R.layout.product_tag_list_item, parent, false)
         )
     }

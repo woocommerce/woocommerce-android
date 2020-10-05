@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-03 14:54:58+0000
+Translation-Revision-Date: 2020-09-24 15:27:36+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="signup_confirmation_title">Inschrijfbevestiging</string>
+    <string name="reset_your_password">Stel je wachtwoord opnieuw in</string>
+    <string name="enter_your_site_address">Voer je site adres in</string>
+    <string name="continue_with_wpcom">Ga verder met WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">Als je doorgaat met Google en nog geen WordPress.com account hebt, maakt je een account aan en gaat je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
+    <string name="continue_terms_of_service_text">Als je doorgaat, ga je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">We sturen je een magische link per e-mail om je nieuwe WordPress.com account aan te maken.</string>
+    <string name="signup_confirmation_message">We gebruiken dit e-mailadres om je nieuwe WordPress.com account aan te maken.</string>
+    <string name="signup_magic_link_message">We hebben je een magische link gestuurd om je nieuwe WordPress.com account aan te maken. Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
+    <string name="sign_up_label">Abonneren</string>
+    <string name="login_or">of</string>
+    <string name="continue_google_button_suffix">Doorgaan met Google</string>
+    <string name="login_find_your_site_adress">Vind het adres van je site</string>
+    <string name="login_done">Klaar</string>
+    <string name="magic_link_not_seeing_email_message">Zie je de e-mail niet? Controleer je spam-map of ongewenste e-mail.</string>
+    <string name="login_magic_links_sent_label">Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com hebt ontvangen.</string>
+    <string name="login_magic_links_label">We sturen je een e-mail met een magische link waarmee je direct kan inloggen, geen wachtwoord nodig.</string>
+    <string name="check_email">E-mail controleren</string>
+    <string name="get_started">Aan de slag</string>
+    <string name="enter_account_info_for_site">Voer je accountgegevens in voor %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">Voer je e-mailadres in om in te loggen of maak een WordPress.com account aan.</string>
+    <string name="or_type_your_password">Of typ je wachtwoord</string>
+    <string name="create_account">Account aanmaken</string>
+    <string name="send_link_by_email">Link per e-mail verzenden</string>
+    <string name="product_type_variation_desc">Een product met variaties zoals kleur of maat</string>
+    <string name="product_selection_count_single">%d product geselecteerd</string>
+    <string name="product_selection_count">%d producten geselecteerd</string>
+    <string name="grouped_product_empty">Producten toevoegen aan de groep</string>
+    <string name="grouped_product_add">Product toevoegen</string>
+    <string name="product_visibility_password_protected_hint">Voer wachtwoord in</string>
     <string name="feedback_completed_back_to_store_button_text">Terug naar winkel</string>
     <string name="feedback_completed_contact_us">Neem hier contact met ons op</string>
     <string name="feedback_completed_description">Houd in gedachten dat dit geen ondersteuningsticket is en we niet op je individuele feedback in kunnen gaan.\n\nHulp nodig? %1$s</string>
@@ -34,7 +64,7 @@ Language: nl
     <string name="product_variation_no_price_set">Geen prijs ingesteld</string>
     <string name="product_variation_enabled">Geactiveerd</string>
     <string name="product_pricing_scheduled_sale_price_error">Je moet de verkoopprijs instellen als een verkoop gepland staat</string>
-    <string name="product_wip_message">Je kan nu gegroepeerde, externe en variabele producten bewerken, het producttype wijzigen en categorieën en tags bijwerken</string>
+    <string name="product_wip_message_m3">Je kan nu gegroepeerde, externe en variabele producten bewerken, het producttype wijzigen en categorieën en tags bijwerken.</string>
     <string name="product_reviews_count">\u2022 %d beoordelingen</string>
     <string name="product_review_list_item_title">%1$s heeft een beoordeling geplaatst</string>
     <string name="feedback_request_like_it">Ik vind het leuk</string>
@@ -52,7 +82,38 @@ Language: nl
     <string name="shipping_label_refund_message">Je kan een terugbetaling aanvragen voor een verzendlabel dat niet is gebruikt om een pakket te verzenden. Het duurt minimaal 14 dagen voordat dit is verwerkt.</string>
     <string name="orderdetail_shipping_label_request_refund">Een terugbetaling aanvragen</string>
     <string name="orderdetail_shipping_label_item_menu">Label verzendrestitutie</string>
+    <string name="product_type_physical">Fysiek</string>
+    <string name="bottom_sheet_short_description_desc">Een korte samenvatting van je product.</string>
+    <string name="bottom_sheet_tags_desc">Maak je producten eenvoudiger te vinden met tags</string>
+    <string name="bottom_sheet_categories_desc">Organiseer je producten in gerelateerde groepen</string>
+    <string name="bottom_sheet_shipping_desc">Gewicht en afmetingen toevoegen</string>
+    <string name="bottom_sheet_add_details_list_header">Meer gegevens toevoegen</string>
+    <string name="product_tag_list_empty_message">Deel je producten onder in tags</string>
+    <string name="product_tag_list_empty_title">Voeg je eerste tag toe</string>
+    <string name="product_tags">Tags</string>
+    <string name="product_tag_empty">Tag toevoegen</string>
     <string name="product_variation_disabled">Uitgeschakeld</string>
+    <string name="product_is_virtual">Virtueel product</string>
+    <string name="product_detail_add_more">Meer gegevens toevoegen</string>
+    <string name="product_detail_product_type_hint">%1$s product</string>
+    <string name="product_type_downloadable">downloadbaar</string>
+    <string name="product_type_description">%s product</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Resterende producten</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label gerestitueerd</string>
+    <string name="orderdetail_shipping_label_tracking_info">Verzending tracken</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Verzendingsgegevens verbergen</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Verzendingsgegevens tonen</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Creditcard</string>
+    <string name="orderdetail_shipping_label_item_payment">Betaalmethode</string>
+    <string name="orderdetail_shipping_label_item_carrier">Bezorgservices en tarieven</string>
+    <string name="orderdetail_shipping_label_item_package_info">Pakketgegevens</string>
+    <string name="orderdetail_shipping_label_item_shipto">Verzenden naar</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Verzenden van</string>
+    <string name="orderdetail_shipping_label_item_header">Pakket %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s opties)</string>
+    <string name="shipping_labels">Verzendlabels</string>
     <string name="product_add_category_dialog_message">Een moment geduld…</string>
     <string name="product_add_category_dialog_title">Categorie wordt toegevoegd</string>
     <string name="product_category_parent">Hoofdcategorie</string>
@@ -70,6 +131,7 @@ Language: nl
     <string name="settings_privacy_policy_ca">Privacyverklaring voor gebruikers in Californië</string>
     <string name="keep_changes">Wijzigingen bewaren</string>
     <string name="product_sale_date_to">Tot %1$s</string>
+    <string name="product_wip_message_m2">We hebben meer bewerkingsfuncties aan producten toegevoegd! Je kan nu afbeeldingen bijwerken, voorbeeldweergaven bekijken en je producten delen!</string>
     <string name="product_wip_title">Nieuwe bewerkingsopties beschikbaar</string>
     <string name="product_limited_editing_title">Beperkte bewerkingsmogelijkheden beschikbaar</string>
     <string name="orderdetail_product_multiple">Producten</string>
@@ -140,6 +202,7 @@ Language: nl
     <string name="product_short_description_empty">Korte samenvatting van het product</string>
     <string name="product_short_description">Korte beschrijving</string>
     <string name="my_store_stats_availability_message">We voeren verbeteringen door aan statistieken voor winkels met WooCommerce 4.0 of winkels waarvoor de WooCommerce Admin-plugin is geïnstalleerd</string>
+    <string name="my_store_stats_reverted_message">We hebben verbeteringen doorgevoerd voor analyses. Upgrade naar WooCommerce 4.0 of hoger of installeer de WooCommerce Admin-plugin om je statistieken te kunnen blijven bekijken na dinsdag 1 september 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade om je statistieken te kunnen blijven bekijken</string>
     <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
     <string name="product_schedule_remove_end_date_link_label">Verwijder einddatum</string>
@@ -195,7 +258,6 @@ Language: nl
     <string name="product_inventory_empty">Voorraad toevoegen</string>
     <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
-    <string name="product_detail_title_hint">Producttitel</string>
     <string name="product_detail_update_product_success">Product bijgewerkt</string>
     <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
     <string name="product_update_dialog_message">Een moment geduld…</string>
@@ -625,17 +687,14 @@ Language: nl
     <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de gekoppelde e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
-    <string name="login_jetpack_view_instructions">Instructies bekijken</string>
-    <string name="login_jetpack_required_msg">Om de WooCommerce-app te kunnen gebruiken, moet je de Jetpack-plugin op je site installeren</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_try_another_account">Een ander account proberen</string>
     <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
-    <string name="login">Inloggen</string>
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
     <string name="no_site_error">De site op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet de site gebruikmaken van WordPress.</string>
     <string name="support_help_center">Help Center</string>
+    <string name="product_type_virtual">Virtueel</string>
     <string name="product_type_grouped">Gegroepeerd</string>
     <string name="product_type_variable">Variabele</string>
     <string name="product_backorders_notify">Toestaan, maar melden bij klant</string>
@@ -821,7 +880,6 @@ Language: nl
     <string name="signup_with_email_button">Registreren via e-mail</string>
     <string name="signup_terms_of_service_text">Als je je registreert, ga je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
     <string name="signup_magic_link_progress">E-mail versturen</string>
-    <string name="signup_magic_link_message">We hebben je een magische aanmeldlink gestuurd! Controleer je e-mail op dit apparaat en tik op de link in de e-mail om je aanmelding te voltooien.</string>
     <string name="signup_magic_link_error_button_positive">Opnieuw proberen</string>
     <string name="signup_magic_link_error_button_negative">Sluit</string>
     <string name="signup_magic_link_error">Er is een fout opgetreden bij het verzenden van de e-mail. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
@@ -853,14 +911,11 @@ Language: nl
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Al ingelogd op WordPress.com</string>
     <string name="login_continue">Doorgaan</string>
-    <string name="connect_site">Site koppelen</string>
     <string name="connect_more">Andere site koppelen</string>
     <string name="enter_wpcom_password_google">Om door te gaan met dit Google-account moet je eerst het wachtwoord van WordPress.com opgeven. Je hoeft dit slechts één keer in te vullen.</string>
     <string name="enter_wpcom_password">Voer je WordPress.com wachtwoord in.</string>
     <string name="magic_link_unavailable_error_message">Momenteel niet beschikbaar. Voer je wachtwoord in</string>
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
-    <string name="login_magic_links_sent_label">Je magische link is onderweg! Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
-    <string name="login_magic_links_label">We sturen je een e-mail met een magische link waarmee je onmiddellijk kunt inloggen, zonder wachtwoord. Nooit meer moeite doen!</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres. Probeer de link hieronder om in te loggen met je site-adres.</string>
     <string name="requesting_otp">Verificatiecode via sms aanvragen.</string>
@@ -936,6 +991,7 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>
@@ -977,7 +1033,6 @@ Language: nl
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>
     <string name="login_connected_store">Gekoppelde winkel</string>
-    <string name="login_pick_store">Kies winkel</string>
     <string name="login_configure_link">Lees de %sconfiguratie-instructies%s.</string>
     <string name="login_prologue_banner">Beheer bestellingen, houd de verkoop bij en bewaak de winkelactiviteit met waarschuwingen in real time.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>

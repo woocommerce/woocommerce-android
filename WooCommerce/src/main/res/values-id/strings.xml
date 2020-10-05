@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-04 08:54:22+0000
+Translation-Revision-Date: 2020-09-24 15:25:59+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="signup_confirmation_title">Konfirmasi pendaftaran</string>
+    <string name="reset_your_password">Reset kata sandi</string>
+    <string name="enter_your_site_address">Masukkan alamat situs Anda</string>
+    <string name="continue_with_wpcom">Lanjutkan dengan WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">Jika Anda melanjutkan dengan Google dan belum memiliki akun WordPress.com, Anda akan membuat akun dan menyetujui  %1$sKetentuan Layanan%2$s kami.</string>
+    <string name="continue_terms_of_service_text">Dengan melanjutkan, Anda menyetujui %1$sKetentuan Layanan%2$s kami.</string>
+    <string name="signup_confirmation_magic_link_message">Kami akan mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru.</string>
+    <string name="signup_confirmation_message">Kami akan menggunakan alamat email ini untuk membuat akun WordPress.com baru Anda.</string>
+    <string name="signup_magic_link_message">Kami telah mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru. Periksa email Anda pada perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com.</string>
+    <string name="login_or">atau</string>
+    <string name="continue_google_button_suffix">Lanjutkan dengan Google</string>
+    <string name="login_find_your_site_adress">Temukan alamat situs Anda</string>
+    <string name="login_done">Selesai</string>
+    <string name="magic_link_not_seeing_email_message">Tidak menerima email? Periksa folder Spam atau Junk.</string>
+    <string name="login_magic_links_sent_label">Periksa email Anda di perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com</string>
+    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan yang dapat Anda gunakan untuk login langsung, tanpa kata sandi.</string>
+    <string name="check_email">Periksa email</string>
+    <string name="get_started">Mulai</string>
+    <string name="enter_account_info_for_site">Masukkan informasi akun Anda untuk %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">Masukkan alamat email Anda untuk login atau membuat akun WordPress.com.</string>
+    <string name="or_type_your_password">Atau ketik kata sandi Anda</string>
+    <string name="create_account">Buat akun</string>
+    <string name="send_link_by_email">Kirim tautan lewat email</string>
+    <string name="product_type_variation_desc">Produk dengan variasi seperti warna atau ukuran</string>
+    <string name="product_selection_count_single">%d produk dipilih</string>
+    <string name="product_selection_count">%d produk dipilih</string>
+    <string name="grouped_product_empty">Tambahkan produk ke grup</string>
+    <string name="grouped_product_add">Tambahkan produk</string>
+    <string name="product_visibility_password_protected_hint">Masukkan kata sandi</string>
     <string name="feedback_completed_back_to_store_button_text">Kembali ke toko</string>
     <string name="feedback_completed_contact_us">Hubungi kami di sini</string>
     <string name="feedback_completed_description">Harap perhatikan bahwa ini bukan tiket dukungan, kami tidak dapat merespons umpan balik secara perorangan.\n\nButuh bantuan? %1$s</string>
@@ -34,7 +63,7 @@ Language: id
     <string name="product_variation_no_price_set">Tidak ada harga yang ditentukan</string>
     <string name="product_variation_enabled">Diaktifkan</string>
     <string name="product_pricing_scheduled_sale_price_error">Anda harus menentukan harga obral jika ada obral yang dijadwalkan</string>
-    <string name="product_wip_message">Anda kini dapat menyunting produk yang dikelompokkan, eksternal, dan variabel; mengubah jenis produk; serta memperbarui kategori dan tag</string>
+    <string name="product_wip_message_m3">Anda kini dapat menyunting produk yang dikelompokkan, eksternal, dan variabel; mengubah jenis produk; serta memperbarui kategori dan tag.</string>
     <string name="product_reviews_count">\u2022 %d ulasan</string>
     <string name="product_review_list_item_title">%1$s berikan ulasan</string>
     <string name="feedback_request_like_it">Saya suka</string>
@@ -52,7 +81,38 @@ Language: id
     <string name="shipping_label_refund_message">Anda dapat meminta pengembalian dana untuk label pengiriman yang belum digunakan untuk mengirim paket. Pengembalian dana akan diproses paling cepat dalam 14 hari.</string>
     <string name="orderdetail_shipping_label_request_refund">Minta pengembalian dana</string>
     <string name="orderdetail_shipping_label_item_menu">Kembalikan dana label pengiriman</string>
+    <string name="product_type_physical">Fisik</string>
+    <string name="bottom_sheet_short_description_desc">Kutipan singkat tentang produk Anda</string>
+    <string name="bottom_sheet_tags_desc">Buat produk Anda lebih mudah ditemukan dengan tag</string>
+    <string name="bottom_sheet_categories_desc">Tata produk Anda ke dalam kelompok yang berkaitan</string>
+    <string name="bottom_sheet_shipping_desc">Tambahkan berat dan dimensi</string>
+    <string name="bottom_sheet_add_details_list_header">Tambahkan detail selengkapnya</string>
+    <string name="product_tag_list_empty_message">Atur produk Anda dalam tag</string>
+    <string name="product_tag_list_empty_title">Tambahkan tag pertama Anda</string>
+    <string name="product_tags">Tag</string>
+    <string name="product_tag_empty">Tambahkan tag</string>
     <string name="product_variation_disabled">Dinonaktifkan</string>
+    <string name="product_is_virtual">Produk virtual</string>
+    <string name="product_detail_add_more">Tambahkan detail selengkapnya</string>
+    <string name="product_detail_product_type_hint">%1$s produk</string>
+    <string name="product_type_downloadable">dapat diunduh</string>
+    <string name="product_type_description">%s produk</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Produk yang tersisa</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label dikembalikan</string>
+    <string name="orderdetail_shipping_label_tracking_info">Lacak pengiriman</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Sembunyikan detail pengiriman</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Tampilkan detail pengiriman</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Kartu Kredit</string>
+    <string name="orderdetail_shipping_label_item_payment">Metode pembayaran</string>
+    <string name="orderdetail_shipping_label_item_carrier">Operator dan tarif pengiriman</string>
+    <string name="orderdetail_shipping_label_item_package_info">Detail paket</string>
+    <string name="orderdetail_shipping_label_item_shipto">Dikirim ke</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Dikirim dari</string>
+    <string name="orderdetail_shipping_label_item_header">Paket %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s opsi)</string>
+    <string name="shipping_labels">Label Pengiriman</string>
     <string name="product_add_category_dialog_message">Harap tunggu…</string>
     <string name="product_add_category_dialog_title">Menambahkan kategori</string>
     <string name="product_category_parent">Kategori induk</string>
@@ -70,6 +130,7 @@ Language: id
     <string name="settings_privacy_policy_ca">Pemberitahuan privasi untuk pengguna di California</string>
     <string name="keep_changes">Simpan perubahan</string>
     <string name="product_sale_date_to">Sampai %1$s</string>
+    <string name="product_wip_message_m2">Kami telah menambahkan lebih banyak fungsi penyuntingan ke produk! Sekarang Anda dapat memperbarui gambar, melihat pratinjau, dan berbagi produk Anda.</string>
     <string name="product_wip_title">Tersedia pilihan penyuntingan baru</string>
     <string name="product_limited_editing_title">Penyuntingan terbatas tersedia</string>
     <string name="orderdetail_product_multiple">Produk</string>
@@ -140,6 +201,7 @@ Language: id
     <string name="product_short_description_empty">Rangkuman ringkas tentang produk</string>
     <string name="product_short_description">Deskripsi singkat</string>
     <string name="my_store_stats_availability_message">Kami meluncurkan peningkatan pada statistik untuk toko dengan WooCommerce 4.0 atau toko yang menginstal plugin WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">Kami telah meluncurkan peningkatan pada analitik kami. Upgrade ke WooCommerce 4.0 atau versi lebih baru atau instal plugin WooCommerce Admin untuk tetap bisa melihat statistik Anda setelah tanggal 1 September 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade untuk bisa tetap melihat statistik Anda</string>
     <string name="product_pricing_update_sale_price_error">Harga penjualan harus kurang dari harga biasa</string>
     <string name="product_schedule_remove_end_date_link_label">Hapus tanggal akhir</string>
@@ -195,7 +257,6 @@ Language: id
     <string name="product_inventory_empty">Tambahkan inventaris</string>
     <string name="orderlist_loading">Mencari pesanan Anda…</string>
     <string name="product_detail_editable_text_hint">Masukkan teks</string>
-    <string name="product_detail_title_hint">Nama produk</string>
     <string name="product_detail_update_product_success">Produk diperbarui</string>
     <string name="product_detail_update_product_error">Error saat memperbarui produk</string>
     <string name="product_update_dialog_message">Harap tunggu…</string>
@@ -625,17 +686,14 @@ Language: id
     <string name="login_need_help_finding_email">Perlu bantuan untuk menemukan email yang terhubung?</string>
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
-    <string name="login_jetpack_view_instructions">Lihat instruksi</string>
-    <string name="login_jetpack_required_msg">Untuk menggunakan aplikasi WooCommerce, Anda perlu menyiapkan plugin Jetpack di situs Anda</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_try_another_account">Coba akun lain</string>
     <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
-    <string name="login">Login</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
     <string name="no_site_error">Situs di alamat ini bukan situs WordPress. Agar kami dapat menghubungkannya, situs harus menggunakan WordPress.</string>
     <string name="support_help_center">Pusat Bantuan</string>
+    <string name="product_type_virtual">Virtual</string>
     <string name="product_type_grouped">Dikelompokkan</string>
     <string name="product_type_variable">Variabel</string>
     <string name="product_backorders_notify">Izinkan, tetapi beri tahu pelanggan</string>
@@ -821,7 +879,6 @@ Language: id
     <string name="signup_with_email_button">Daftar dengan Email</string>
     <string name="signup_terms_of_service_text">Dengan mendaftar, berarti Anda menyetujui %1$sKetentuan Layanan%2$s kami.</string>
     <string name="signup_magic_link_progress">Mengirim email</string>
-    <string name="signup_magic_link_message">Kami mengirimkan tautan pendaftaran tanpa kata sandi kepada Anda! Periksa email Anda di perangkat ini, dan ketuk tautan pada email untuk menyelesaikan pendaftaran.</string>
     <string name="signup_magic_link_error_button_positive">Coba lagi</string>
     <string name="signup_magic_link_error_button_negative">Tutup</string>
     <string name="signup_magic_link_error">Ada beberapa masalah saat mengirim email. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
@@ -853,14 +910,11 @@ Language: id
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Sudah login ke WordPress.com</string>
     <string name="login_continue">Lanjutkan</string>
-    <string name="connect_site">Hubungkan Situs</string>
     <string name="connect_more">Hubungkan Situs Lainnya</string>
     <string name="enter_wpcom_password_google">Untuk melanjutkan dengan akun Google ini, silakan masukkan kata sandi WordPress.com yang sesuai. Tindakan ini hanya akan ditanyakan satu kali.</string>
     <string name="enter_wpcom_password">Masukkan kata sandi WordPress.com Anda.</string>
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
-    <string name="login_magic_links_sent_label">Tautan ajaib Anda segera tiba! Periksa email Anda di perangkat ini, dan ketuk tautan dalam email yang Anda terima dari WordPress.com</string>
-    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan ajaib yang bisa Anda gunakan untuk login dalam sekejap, tanpa kata sandi. Tak perlu lagi repot mengetik!</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>
     <string name="requesting_otp">Meminta kode verifikasi melalui SMS.</string>
@@ -936,6 +990,7 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>
@@ -977,7 +1032,6 @@ Language: id
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
-    <string name="login_pick_store">Pilih toko</string>
     <string name="login_configure_link">Baca %sinstruksi konfigurasi%s.</string>
     <string name="login_prologue_banner">Kelola pesanan, lacak penjualan, dan pantau aktivitas toko dengan pemberitahuan real-time.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>

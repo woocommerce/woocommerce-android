@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-03 08:54:04+0000
+Translation-Revision-Date: 2020-09-24 15:28:14+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="signup_confirmation_title">تأكيد التسجيل</string>
+    <string name="reset_your_password">إعادة تعيين كلمة المرور الخاصة بك</string>
+    <string name="enter_your_site_address">أدخل رابط موقعك</string>
+    <string name="continue_with_wpcom">المتابعة باستخدام WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">إذا تابعت مع Google وليس لديك حساب WordPress.com بالفعل، فأنت تقوم بإنشاء حساب وتوافق على %1$sشروط الخدمة%2$s.</string>
+    <string name="continue_terms_of_service_text">بالمتابعة، أنت توافق على %1$sشروط الخدمة%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">سنرسل إليك رسالة على البريد الإلكتروني تحتوي على رابط سحري لإنشاء حساب WordPress.com.</string>
+    <string name="signup_confirmation_message">سنستخدم عنوان البريد الإلكتروني هذا لإنشاء حسابك الجديد على WordPress.com.</string>
+    <string name="signup_magic_link_message">لقد أرسلنا إليك رسالة على بريدك الإلكتروني تحتوي على رابط سحري لإنشاء حسابك على ووردبريس.كوم. تحقّق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط في رسالة البريد الإلكتروني التي استلمتها من ووردبريس.كوم.</string>
+    <string name="sign_up_label">التسجيل</string>
+    <string name="login_or">أو</string>
+    <string name="continue_google_button_suffix">المتابعة باستخدام Google</string>
+    <string name="login_find_your_site_adress">اعثر على عنوان موقعك</string>
+    <string name="login_done">تمّ</string>
+    <string name="magic_link_not_seeing_email_message">لم تشاهد البريد الإلكتروني؟ تحقّق من مجلد البريد المزعج أو البريد العشوائي.</string>
+    <string name="login_magic_links_sent_label">تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط في رسالة البريد الإلكتروني التي ستستلمها من WordPress.com.</string>
+    <string name="login_magic_links_label">سنرسل إليك رسالة على البريد الإلكتروني تحتوي على رابط سحري يمكنك من تسجيل الدخول على الفور، دون الحاجة إلى كلمة مرور.</string>
+    <string name="check_email">التحقق من البريد الإلكتروني</string>
+    <string name="get_started">البدء</string>
+    <string name="enter_account_info_for_site">أدخل معلومات حسابك %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">أدخل عنوان بريدك الإلكتروني لتسجيل الدخول أو إنشاء حساب WordPress.com.</string>
+    <string name="or_type_your_password">أو اكتب كلمة المرور الخاصة بك</string>
+    <string name="create_account">إنشاء حساب</string>
+    <string name="send_link_by_email">إرسال الرابط عبر البريد الإلكتروني</string>
+    <string name="product_type_variation_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
+    <string name="product_selection_count_single">%d تم تحديد المنتج</string>
+    <string name="product_selection_count">%d تم تحديد المنتجات</string>
+    <string name="grouped_product_empty">إضافة المنتجات إلى المجموعة</string>
+    <string name="grouped_product_add">إضافة منتج</string>
+    <string name="product_visibility_password_protected_hint">أدخل كلمة المرور</string>
     <string name="feedback_completed_back_to_store_button_text">العودة إلى المتجر</string>
     <string name="feedback_completed_contact_us">التواصل معنا هنا</string>
     <string name="feedback_completed_description">ضع في حسبانك أنَّ هذه ليست بطاقة دعم وإنَّنا لن نتمكن من معالجة الملاحظات الفردية.\n\nهل تحتاج المساعدة؟ %1$s</string>
@@ -34,7 +64,7 @@ Language: ar
     <string name="product_variation_no_price_set">لم يتم تعيين أي سعر</string>
     <string name="product_variation_enabled">مُفعل</string>
     <string name="product_pricing_scheduled_sale_price_error">يجب عليك تعيين سعر البيع إذا تمت جدولة البيع</string>
-    <string name="product_wip_message">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتجات، وتحديث التصنيفات والوسوم</string>
+    <string name="product_wip_message_m3">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتج، وتحديث التصنيفات والوسوم.</string>
     <string name="product_reviews_count">\u2022 %d من المراجعات</string>
     <string name="product_review_list_item_title">⁦%1$s⁩ تم ترك مراجعة</string>
     <string name="feedback_request_like_it">يعجبني</string>
@@ -52,7 +82,38 @@ Language: ar
     <string name="shipping_label_refund_message">يمكنك طلب استرداد أموال بطاقة الشحن التي لم يتم استخدامها لشحن طرد. سيستغرق الأمر 14 يومًا على الأقل للمعالجة.</string>
     <string name="orderdetail_shipping_label_request_refund">طلب استرداد الأموال</string>
     <string name="orderdetail_shipping_label_item_menu">استرداد أموال بطاقة الشحن</string>
+    <string name="product_type_physical">فعلي</string>
+    <string name="bottom_sheet_short_description_desc">مقتطف موجز حول منتجك</string>
+    <string name="bottom_sheet_tags_desc">جعل العثور على منتجاتك سهلاً باستخدام الوسوم</string>
+    <string name="bottom_sheet_categories_desc">ترتيب منتجاتك في مجموعات ذات صلة</string>
+    <string name="bottom_sheet_shipping_desc">إضافة الوزن والأبعاد</string>
+    <string name="bottom_sheet_add_details_list_header">إضافة مزيد من التفاصيل</string>
+    <string name="product_tag_list_empty_message">تنظيم منتجاتك في وسوم</string>
+    <string name="product_tag_list_empty_title">إضافة وسمك الأول</string>
+    <string name="product_tags">الوسوم</string>
+    <string name="product_tag_empty">إضافة وسم</string>
     <string name="product_variation_disabled">معطل</string>
+    <string name="product_is_virtual">منتج افتراضي</string>
+    <string name="product_detail_add_more">إضافة مزيد من التفاصيل</string>
+    <string name="product_detail_product_type_hint">⁦%1$s⁩ المنتج</string>
+    <string name="product_type_downloadable">قابل للتنزيل</string>
+    <string name="product_type_description">%s المنتج</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">المنتجات المتبقية</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">⁦%1$s⁩ تم استرداد البطاقة</string>
+    <string name="orderdetail_shipping_label_tracking_info">تعقب الشحنة</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">إخفاء تفاصيل الشحن</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">عرض تفاصيل الشحن</string>
+    <string name="orderdetail_shipping_label_item_payment_type">بطاقة إئتمان</string>
+    <string name="orderdetail_shipping_label_item_payment">طريقة الدفع</string>
+    <string name="orderdetail_shipping_label_item_carrier">شركات النقل المخصصة للشحن وأسعارها</string>
+    <string name="orderdetail_shipping_label_item_package_info">تفاصيل الحزمة</string>
+    <string name="orderdetail_shipping_label_item_shipto">الشحن إلى</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">الشحن من</string>
+    <string name="orderdetail_shipping_label_item_header">الحزمة %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">وحدة SKU: ⁦%1$s⁩</string>
+    <string name="product_variation_options">⁦%1$s⁩ (خيارات ⁦%2$s⁩)</string>
+    <string name="shipping_labels">بطاقات الشحن</string>
     <string name="product_add_category_dialog_message">يُرجى الانتظار…</string>
     <string name="product_add_category_dialog_title">إضافة تصنيف</string>
     <string name="product_category_parent">التصنيف الأب</string>
@@ -70,6 +131,7 @@ Language: ar
     <string name="settings_privacy_policy_ca">إشعار الخصوصية الخاص بالمستخدمين في كاليفورنيا</string>
     <string name="keep_changes">الاحتفاظ بالتغييرات</string>
     <string name="product_sale_date_to">حتى %1$s</string>
+    <string name="product_wip_message_m2">أضفنا المزيد من وظائف التحرير إلى المنتجات. يمكنك الآن تحديث الصور والاطِّلاع على المعاينات ومشاركة منتجاتك.</string>
     <string name="product_wip_title">تتوافر خيارات تحرير جديدة</string>
     <string name="product_limited_editing_title">تتوافر وظائف تحرير محدودة</string>
     <string name="orderdetail_product_multiple">المنتجات</string>
@@ -140,6 +202,7 @@ Language: ar
     <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
     <string name="product_short_description">وصف قصير</string>
     <string name="my_store_stats_availability_message">نطرح تحسينات على إحصاءات المتاجر باستخدام الإصدار 4.0 من WooCommerce أو المتاجر التي يتم تثبيت إضافة مسؤول WooCommerce بها</string>
+    <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى WooCommerce 4.0 أو إصدار أعلى منه، أو يمكنك تثبيت إضافة مسؤول WooCommerce للاستمرار في رؤية إحصاءاتك بعد الأول من سبتمبر 2020.</string>
     <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
     <string name="product_schedule_remove_end_date_link_label">إزالة تاريخ الانتهاء</string>
@@ -195,7 +258,6 @@ Language: ar
     <string name="product_inventory_empty">إضافة المخزون</string>
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
-    <string name="product_detail_title_hint">عنوان المنتج</string>
     <string name="product_detail_update_product_success">تم تحديث المنتج</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
@@ -625,17 +687,14 @@ Language: ar
     <string name="login_need_help_finding_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني المتصل؟</string>
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>
     <string name="login_jetpack_what_is">ما المقصود بـ Jetpack؟</string>
-    <string name="login_jetpack_view_instructions">عرض الإرشادات</string>
-    <string name="login_jetpack_required_msg">لاستخدام تطبيق WooCommerce الذي تحتاج إليه لإعداد إضافة Jetpack على موقعك</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
-    <string name="login_try_another_account">تجربة حساب آخر</string>
     <string name="login_not_connected_to_account">يبدو أنَّ %1$s متصل بحساب وردبرس.كوم مختلف.</string>
-    <string name="login">تسجيل الدخول</string>
     <string name="keep_editing">متابعة التحرير</string>
     <string name="notification_wpcom_username_needed">يرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك وكلمة مرورك.</string>
     <string name="error_user_username_instead_of_email">يُرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك على وردبرس.كوم بدلاً من عنوان البريد الإلكتروني.</string>
     <string name="no_site_error">الموقع الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب أن يستخدم وردبرس.</string>
     <string name="support_help_center">مركز المساعدة</string>
+    <string name="product_type_virtual">منتج افتراضي</string>
     <string name="product_type_grouped">مجمَّع</string>
     <string name="product_type_variable">متغيِّر</string>
     <string name="product_backorders_notify">اسمح بذلك، ولكن مع تنبيه العميل</string>
@@ -821,7 +880,6 @@ Language: ar
     <string name="signup_with_email_button">تسجيل الدخول باستخدام البريد الإلكتروني</string>
     <string name="signup_terms_of_service_text">يعني تسجيل الدخول موافقتك على %1$sشروط الخدمة%2$s.</string>
     <string name="signup_magic_link_progress">إرسال البريد الإلكتروني</string>
-    <string name="signup_magic_link_message">أرسلنا إليك رابطًا لا يحتاج إلى كلمة مرور لتسجيل الدخول! تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط الموجود في البريد الإلكتروني لإنهاء تسجيل الدخول.</string>
     <string name="signup_magic_link_error_button_positive">إعادة المحاولة</string>
     <string name="signup_magic_link_error_button_negative">إغلاق</string>
     <string name="signup_magic_link_error">حدثت بعض المشكلات أثناء إرسال البريد الإلكتروني. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
@@ -853,14 +911,11 @@ Language: ar
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">تم التسجيل بالفعل في موقع وردبرس.كوم</string>
     <string name="login_continue">المتابعة</string>
-    <string name="connect_site">الاتصال بالموقع</string>
     <string name="connect_more">الاتصال بموقع آخر</string>
     <string name="enter_wpcom_password_google">للمتابعة باستخدام حساب Google هذا، يرجى إدخال كلمة مرور متطابقة في وردبرس.كوم. ستتم المطالبة بها لمرة واحدة.</string>
     <string name="enter_wpcom_password">أدخل كلمة مرور وردبرس.كوم.</string>
     <string name="magic_link_unavailable_error_message">غير متاح حاليًا. يُرجى إدخال كلمة مرورك</string>
     <string name="login_magic_link_email_requesting">طلب بريد إلكتروني لتسجيل الدخول</string>
-    <string name="login_magic_links_sent_label">رابطك السحري على وشك الحدوث! تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط الوارد في رسالة البريد الإلكتروني التي تلقيتها من ووردبريس.كوم.</string>
-    <string name="login_magic_links_label">سنرسل إليك رسالة على البريد الإلكتروني تحتوي على ارتباط سحري يمكنك من تسجيل الدخول على الفور، دون الحاجة إلى كلمة مرور. لا توجد حاجة إلى تحديد المزيد أو النقر عليه!</string>
     <string name="password_incorrect">يبدو أن كلمة المرور هذه غير صحيحة. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="email_not_registered_wpcom">حسنًا، لا يمكننا العثور على حساب وردبرس.كوم متصل بعنوان البريد الإلكتروني هذا. حاول الرابط أدناه لتسجيل الدخول باستخدام عنوان موقعك.</string>
     <string name="requesting_otp">طلب رمز تحقق عن طريق رسالة نصية قصيرة (SMS).</string>
@@ -936,6 +991,7 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>
@@ -977,7 +1033,6 @@ Language: ar
     <string name="login_nostores_content_description">لا توجد متاجر WooCommerce</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
     <string name="login_connected_store">المتجر الذي تم الاتصال به</string>
-    <string name="login_pick_store">اختر متجرًا</string>
     <string name="login_configure_link">اقرأ %sتعليمات التكوين%s.</string>
     <string name="login_prologue_banner">قم بإدارة الطلبات، وتعقب المبيعات، وراقب نشاط المتجر من خلال تنبيهات في الوقت الحقيقي.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>

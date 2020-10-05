@@ -90,7 +90,7 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">normal</item>
-        <item name="lineHeight">@dimen/line_height_minor_70</item>
+        <item name="lineHeight">@dimen/line_height_minor_80</item>
     </style>
 
     <style name="TextAppearance.Woo.Caption" parent="TextAppearance.MaterialComponents.Caption">

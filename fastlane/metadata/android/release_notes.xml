@@ -1,105 +1,60 @@
-<ar>
-4.9:
-- انقر على زر "إرسال الملاحظات" الجديد لإرسال أفكارك واقتراحاتك إلينا في استطلاع رأي CrowdSignal.
-- حرِّر تباينات المنتجات كالسعر والوصف والمخزون والرؤية والشحن.
-- جرِّب الميزات الجديدة في قسم المنتجات! انتقل إلى الإعدادات لتمكينها.
+<es-ES>
+5.1:
+- Acceso: Hemos implementado un nuevo flujo de acceso con diseños de pantalla renovados.
+- Pedidos: Ahora, la pantalla del estado del pedido muestra el recuento real de pedidos en lugar de “99 máximo”.
 
-</ar>
-<de-DE>
-4.9:
-- Tippe in einer CrowdSignal-Umfrage auf den neuen Button „Feedback senden“, um deine Ideen und Vorschläge an uns zu senden.
-- Bearbeite Produktvarianten wie Preis, Beschreibung, Bestand, Sichtbarkeit und Versand.
-- Experimentiere mit neuen Funktionen im Abschnitt „Produkte“! Navigiere zu „Einstellungen“, um sie zu aktivieren.
-
-</de-DE>
+</es-ES>
 <fr-FR>
-4.9 :
-- Appuyez sur le nouveau bouton Envoyer un commentaire pour nous envoyer vos idées et suggestions dans une étude CrowdSignal.
-- Modifiez les variantes du produit, comme le prix, la description, le stock, la visibilité et la livraison.
-- Testez les nouvelles fonctionnalités dans la section Produits ! Allez dans Réglages pour les activer.
+5.1 :
+- Connexion : nous avons implémenté un nouveau flux de connexion avec de nouvelles conceptions d’écran.
+- Commandes : l’écran État de la commande affiche désormais le nombre réel de commandes plutôt que « max 99 ».
 
 </fr-FR>
 <iw-IL>
-4.9:
- - ניתן להקיש על הכפתור החדש 'לשלוח משוב' כדי לשלוח לנו רעיונות והצעות באמצעות סקר של CrowdSignal.
-- ניתן לערוך פרטים של סוגי מוצר, כגון מחיר, תיאור, מלאי, נראות ומשלוח.
-- אפשר להתנסות בתכונות חדשות במקטע המוצרים! יש לעבור ל'הגדרות' כדי להפעיל אותן.
+5.1:
+- התחברות: הטמענו תהליך התחברות חדש ועיצבנו מחדש את המסכים.
+- הזמנות: המסך 'מצב ההזמנה' כעת מציג את מספר ההזמנות בפועל במקום 'עד 99'.
 
 </iw-IL>
-<id>
-4.9:
-- Ketuk tombol Kirim Masukan untuk mengirim ide dan saran Anda kepada kami di survei CrowdSignal.
-- Sunting variasi produk seperti harga, deskripsi, persediaan, visibilitas, dan pengiriman.
-- Bereksperimen dengan fitur baru di bagian Produk! Buka Pengaturan untuk mengaktifkannya.
-
-</id>
 <it-IT>
-4.9:
-- Tocca il nuovo pulsante Invia feedback per inviarci le tue idee e i tuoi suggerimenti mediante un'indagine CrowdSignal.
-- Modifica le varianti di prodotto come prezzo, descrizione, inventario, visibilità e spedizione.
-- Prova le nuove funzionalità nella sezione Prodotti. Vai alle Impostazioni per abilitarle.
+5.1:
+- Accesso: abbiamo implementato un nuovo flusso di accesso con nuovi design della schermata.
+- Ordini: la schermata dello stato dell'ordine mostra ora il conteggio degli ordini attuali invece di "max 99".
 
 </it-IT>
 <ja-JP>
-4.9:
-- 新しい「意見を送る」ボタンをタップし、CrowdSignal のアンケートでご意見やご提案をお寄せください。
-- 価格、説明、在庫、公開状態、配送などの商品のバリエーションを編集します。
--「商品」セクションの新しい機能をお試しください ! 有効にするには「設定」に移動します。
+5.1:
+- ﻿ログイン : 画面のデザインを一新して新しいログインのフローを実装しました。
+- 注文 : 注文ステータスの画面で、「最大99」の代わりに実際の注文数が表示されるようになりました。
 
 </ja-JP>
-<ko-KR>
-4.9:
-- CrowdSignal 설문 조사에서 새롭게 추가된 '피드백 보내기' 버튼을 탭하여 저희에게 아이디어와 의견을 제출해주세요.
-- 가격, 설명, 재고, 가시성, 배송과 같은 제품 선택사항을 편집하세요.
-- '제품' 섹션에서 기능을 사용해보세요! 기능을 활성화하려면 '설정'으로 이동하세요.
+<pt-BR>
+5.1:
+- Login: implementamos um novo fluxo de login com novos designs de tela.
+- Pedidos: agora a tela Status do pedido exibe a contagem real do pedido em vez de "máx. 99".
 
-</ko-KR>
-<nl-NL>
-4.9:
-- Tik op de nieuwe knop Feedback verzenden om je ideeën en suggesties met ons te delen via een CrowdSignal-enquête.
-- Bewerk productvariaties zoals prijs, beschrijving, voorraad, zichtbaarheid en verzending.
-- Experimenteer met nieuwe functies in het gedeelte Producten! Ga naar Instellingen om ze in te schakelen.
-
-</nl-NL>
+</pt-BR>
 <ru-RU>
-4,9:
-- Нажмите кнопку «Отправить отзыв», чтобы поделиться идеями и предложениями в опросе CrowdSignal.
-- Вы можете редактировать такие параметры товара, как цена, описание, наличие на складе, видимость и доставка.
-- Испытайте новые возможности в разделе «Товары»! Чтобы включить их, перейдите в раздел «Настройки».
+5.1:
+— Вход: теперь используется новая процедура входа в систему с новым дизайном страниц.
+— Заказы: на экране статуса заказа теперь отображается реальное количество заказов, а не "макс. 99".
 
 </ru-RU>
 <sv-SE>
-4.9:
-- Tryck på den nya knappen Skicka feedback för att skicka dina idéer och förslag till oss i en CrowdSignal-undersökning.
-- Redigera produktvariationer som pris, beskrivning, lager, synlighet och frakt.
-- Experimentera med nya funktioner i avsnittet Produkter! Gå till Inställningar för att aktivera dem.
+5.1:
+- Inloggning: Vi har implementerat ett nytt inloggningsflöde med nya skärmdesigner.
+- Ordrar: På skärmen Orderstatus visas nu det faktiska orderantalet istället för "max 99".
 
 </sv-SE>
-<tr-TR>
-4.9:
-- Bir CrowdSignal anketiyle fikirlerinizi ve önerilerinizi bize göndermek için yeni Geri Bildirim Gönder düğmesine dokunun.
-- Fiyat, açıklama, stok, görünürlük ve gönderim gibi ürün varyasyonlarını düzenleyin.
-- Ürünler bölümünde yeni özelliklerle denemeler yapın. Bunları etkinleştirmek için Ayarlar'a gidin.
-
-</tr-TR>
-<zh-CN>
-4.9：
-- 轻点新的“发送反馈”按钮，以在 CrowdSignal 调查中向我们提交您的想法和建议。
-- 编辑产品变体，如价格、描述、库存、可见性和配送。
-- 尝试“产品”部分中的新功能！ 转到“设置”以启用这些功能。
-
-</zh-CN>
 <zh-TW>
-4.9：
-- 點選新的「傳送意見回饋」按鈕，即可透過 CrowdSignal 調查傳送想法與建議給我們。
-- 編輯商品變化項目資訊，例如價格、說明、庫存、可見度和貨運資訊。
-- 體驗「商品」區段的新功能！ 前往「設定」即可啟用這些功能。
+5.1：
+- 登入：我們推出了使用新畫面設計的全新登入流程。
+- 訂單：訂單狀態畫面現在會顯示實際訂單數，而不是「上限為 99」。
 
 </zh-TW>
 <en-US>
-4.9:
-- Tap the new Send Feedback button to submit your ideas and suggestions to us in a CrowdSignal survey.
-- Edit product variations like price, description, inventory, visibility, and shipping.
-- Experiment with new features in the Products section! Go to Settings to enable them.
- 
+5.1:
+- Login: We implemented a new login flow with new screen designs.
+- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
+
 </en-US>

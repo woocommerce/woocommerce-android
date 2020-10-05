@@ -90,7 +90,7 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        option_title.isEnabled = enabled
-        option_value.isEnabled = enabled
+        option_title?.isEnabled = enabled
+        option_value?.isEnabled = enabled
     }
 }

@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-02 08:54:46+0000
+Translation-Revision-Date: 2020-09-24 15:25:49+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="signup_confirmation_title">등록 확인</string>
+    <string name="reset_your_password">비밀번호 재설정하기</string>
+    <string name="enter_your_site_address">연결할 사이트 주소 입력하기</string>
+    <string name="continue_with_wpcom">워드프레스닷컴으로 계속하기</string>
+    <string name="continue_with_google_terms_of_service_text">워드프레스닷컴 계정이 없는 상태에서 Google로 계속하기를 선택하는 경우, 계정을 만들고 %1$s서비스 약관%2$s에 동의하는 것으로 간주됩니다.</string>
+    <string name="continue_terms_of_service_text">계속하면 %1$s서비스 약관%2$s에 동의하는 것으로 간주합니다.</string>
+    <string name="signup_confirmation_magic_link_message">워드프레스닷컴 신규 계정 생성용 링크가 이메일로 발송됩니다.</string>
+    <string name="signup_confirmation_message">이 이메일 주소를 사용하여 새 워드프레스닷컴 계정을 만들 것입니다.</string>
+    <string name="signup_magic_link_message">워드프레스닷컴 신규 계정 생성용 링크를 이메일로 발송했습니다. 워드프레스닷컴에서 발송한 이메일을 본 기기에서 확인하고 링크를 클릭하세요.</string>
+    <string name="sign_up_label">가입</string>
+    <string name="login_or">또는</string>
+    <string name="continue_google_button_suffix">Google로 계속하기</string>
+    <string name="login_find_your_site_adress">사이트 주소 찾기</string>
+    <string name="login_done">완료</string>
+    <string name="magic_link_not_seeing_email_message">이메일을 받지 못하셨나요? 스팸메일함이나 정크메일함을 확인하세요.</string>
+    <string name="login_magic_links_sent_label">이 장치에서 이메일을 확인하여 워드프레스닷컴에서 받은 이메일의 링크를 누르세요.</string>
+    <string name="login_magic_links_label">비밀번호 없이 바로 로그인할 수 있는 링크가 이메일로 발송될 것입니다.</string>
+    <string name="check_email">이메일 확인하기</string>
+    <string name="get_started">시작하기</string>
+    <string name="enter_account_info_for_site">%1$s에 대한 계정 정보를 입력합니다.</string>
+    <string name="enter_email_to_continue_wordpress_com">이메일 주소를 입력하여 로그인하거나 워드프레스닷컴 계정을 만드세요.</string>
+    <string name="or_type_your_password">아니요. 비밀번호를 입력하겠습니다.</string>
+    <string name="create_account">계정 만들기</string>
+    <string name="send_link_by_email">이메일로 링크 보내기</string>
+    <string name="product_type_variation_desc">색상이나 크기와 같은 선택사항이 있는 제품</string>
+    <string name="product_selection_count_single">%d 제품 선택됨</string>
+    <string name="product_selection_count">%d 제품 선택됨</string>
+    <string name="grouped_product_empty">그룹에 제품 추가</string>
+    <string name="grouped_product_add">제품 추가</string>
+    <string name="product_visibility_password_protected_hint">비밀번호 입력</string>
     <string name="feedback_completed_back_to_store_button_text">스토어로 돌아가기</string>
     <string name="feedback_completed_contact_us">여기에서 문의하세요.</string>
     <string name="feedback_completed_description">이것은 지원 티켓이 아니며 저희는 개별적인 피드백을 해결할 수 없습니다.\n\n도움이 필요하세요? %1$s</string>
@@ -34,7 +64,7 @@ Language: ko_KR
     <string name="product_variation_no_price_set">가격이 설정되지 않음</string>
     <string name="product_variation_enabled">활성화</string>
     <string name="product_pricing_scheduled_sale_price_error">할인이 예정되어 있으면 할인 가격을 설정해야 합니다.</string>
-    <string name="product_wip_message">이제 그룹화된 제품, 외부 제품, 선택사항이 있는 제품을 편집하고 제품 유형을 변경하고 카테고리와 태그를 업데이트할 수 있습니다.</string>
+    <string name="product_wip_message_m3">이제 그룹화된 제품, 외부 제품, 선택사항이 있는 제품을 편집하고 제품 유형을 변경하고 카테고리와 태그를 업데이트할 수 있습니다.</string>
     <string name="product_reviews_count">\u2022 리뷰 %d개</string>
     <string name="product_review_list_item_title">%1$s 리뷰를 남겼습니다.</string>
     <string name="feedback_request_like_it">마음에 들어요</string>
@@ -52,7 +82,38 @@ Language: ko_KR
     <string name="shipping_label_refund_message">패키지를 배송하는 데 사용되지 않은 배송 레이블은 환불을 요청할 수 있습니다. 처리되는 데 14일 이상 걸립니다.</string>
     <string name="orderdetail_shipping_label_request_refund">환불 요청</string>
     <string name="orderdetail_shipping_label_item_menu">배송 레이블 환불</string>
+    <string name="product_type_physical">실제</string>
+    <string name="bottom_sheet_short_description_desc">제품 요약문</string>
+    <string name="bottom_sheet_tags_desc">태그를 사용하여 제품을 더 쉽게 찾을 수 있습니다.</string>
+    <string name="bottom_sheet_categories_desc">제품을 관련 그룹으로 구성</string>
+    <string name="bottom_sheet_shipping_desc">무게 및 치수 추가</string>
+    <string name="bottom_sheet_add_details_list_header">세부사항 추가</string>
+    <string name="product_tag_list_empty_message">태그로 제품 정리</string>
+    <string name="product_tag_list_empty_title">첫 태그 추가</string>
+    <string name="product_tags">태그</string>
+    <string name="product_tag_empty">태그 추가</string>
     <string name="product_variation_disabled">비활성</string>
+    <string name="product_is_virtual">가상 제품</string>
+    <string name="product_detail_add_more">세부사항 추가</string>
+    <string name="product_detail_product_type_hint">%1$s 제품</string>
+    <string name="product_type_downloadable">다운로드 가능</string>
+    <string name="product_type_description">%s 제품</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">남은 제품</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s 레이블 환불됨</string>
+    <string name="orderdetail_shipping_label_tracking_info">배송 추적</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">배송 상세 정보 숨기기</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">배송 상세 정보 표시</string>
+    <string name="orderdetail_shipping_label_item_payment_type">신용카드</string>
+    <string name="orderdetail_shipping_label_item_payment">지불 수단</string>
+    <string name="orderdetail_shipping_label_item_carrier">운송업체 및 요금</string>
+    <string name="orderdetail_shipping_label_item_package_info">패키지 상세 정보</string>
+    <string name="orderdetail_shipping_label_item_shipto">배송지</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">출발지</string>
+    <string name="orderdetail_shipping_label_item_header">패키지 %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s(옵션 %2$s개)</string>
+    <string name="shipping_labels">배송 레이블</string>
     <string name="product_add_category_dialog_message">기다려주세요…</string>
     <string name="product_add_category_dialog_title">카테고리 추가 중</string>
     <string name="product_category_parent">상위 카테고리</string>
@@ -70,6 +131,7 @@ Language: ko_KR
     <string name="settings_privacy_policy_ca">캘리포니아 사용자를 위한 개인정보 공지</string>
     <string name="keep_changes">변경 사항 유지</string>
     <string name="product_sale_date_to">%1$s까지</string>
+    <string name="product_wip_message_m2">제품에 더 많은 편집 기능을 추가했습니다! 이제 이미지를 업데이트하고, 미리 보기를 실행하고, 제품을 공유할 수 있습니다.</string>
     <string name="product_wip_title">사용 가능한 새 편집 옵션</string>
     <string name="product_limited_editing_title">제한적인 편집 가능</string>
     <string name="orderdetail_product_multiple">제품</string>
@@ -140,6 +202,7 @@ Language: ko_KR
     <string name="product_short_description_empty">간단한 제품 요약</string>
     <string name="product_short_description">간단한 설명</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0을 통한 스토어 또는 WooCommerce 관리자 플러그인이 설치된 스토어의 통계 개선 사항을 공개하고 있습니다.</string>
+    <string name="my_store_stats_reverted_message">분석 개선 사항을 공개했습니다. 2020년 9월 1일 이후 계속해서 통계를 확인하려면 WooCommerce 4.0 이상으로 업그레이드하거나 WooCommerce 관리자 플러그인을 설치하세요.</string>
     <string name="my_store_stats_reverted_title">업그레이드하여 계속 통계 확인</string>
     <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
     <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
@@ -195,7 +258,6 @@ Language: ko_KR
     <string name="product_inventory_empty">재고 추가</string>
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
-    <string name="product_detail_title_hint">제품 제목</string>
     <string name="product_detail_update_product_success">제품 업데이트됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
@@ -625,17 +687,14 @@ Language: ko_KR
     <string name="login_need_help_finding_email">연결된 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
-    <string name="login_jetpack_view_instructions">지침 보기</string>
-    <string name="login_jetpack_required_msg">WooCommerce 앱을 사용하려면 사이트에서 Jetpack 플러그인을 설정해야 합니다.</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_try_another_account">다른 계정 사용해 보기</string>
     <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
-    <string name="login">로그인</string>
     <string name="keep_editing">계속 편집하기</string>
     <string name="notification_wpcom_username_needed">사용자 이름과 비밀번호를 사용하여 로그인하세요.</string>
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>
     <string name="no_site_error">이 주소의 사이트는 워드프레스 사이트가 아닙니다. 연결하려면 사이트에서 워드프레스를 사용해야 합니다.</string>
     <string name="support_help_center">도움말 센터</string>
+    <string name="product_type_virtual">가상</string>
     <string name="product_type_grouped">그룹</string>
     <string name="product_type_variable">옵션</string>
     <string name="product_backorders_notify">허용하지만 고객에게 알림</string>
@@ -821,7 +880,6 @@ Language: ko_KR
     <string name="signup_with_email_button">이메일로 가입</string>
     <string name="signup_terms_of_service_text">가입하려면 %1$s서비스 약관%2$s에 동의해야 합니다.</string>
     <string name="signup_magic_link_progress">이메일 전송 중</string>
-    <string name="signup_magic_link_message">매직 가입 링크를 보냈습니다! 이 장치에서 이메일을 확인하고 이메일의 링크를 눌러 가입을 완료하세요.</string>
     <string name="signup_magic_link_error_button_positive">다시 시도</string>
     <string name="signup_magic_link_error_button_negative">닫기</string>
     <string name="signup_magic_link_error">이메일을 보내는 중에 문제가 발생했습니다. 지금 다시 시도하거나 닫고 나중에 다시 시도할 수 있습니다.</string>
@@ -853,14 +911,11 @@ Language: ko_KR
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">워드프레스닷컴에 이미 로그인되어 있습니다.</string>
     <string name="login_continue">계속</string>
-    <string name="connect_site">사이트 연결</string>
     <string name="connect_more">다른 사이트 연결</string>
     <string name="enter_wpcom_password_google">이 Google 계정으로 진행하려면 일치하는 워드프레스닷컴 비밀번호를 제공하세요. 이 메시지는 한 번만 표시됩니다.</string>
     <string name="enter_wpcom_password">워드프레스닷컴 비밀번호를 입력합니다.</string>
     <string name="magic_link_unavailable_error_message">현재 사용할 수 없습니다. 비밀번호를 입력하세요.</string>
     <string name="login_magic_link_email_requesting">로그인 이메일 요청 중</string>
-    <string name="login_magic_links_sent_label">매직 링크를 처리 중입니다! 이 기기에서 이메일을 확인하고 워드프레스닷컴에서 받은 이메일의 링크를 누르세요.</string>
-    <string name="login_magic_links_label">암호 없이 즉시 로그인되는 링크를 이메일로 보내드립니다. 더 이상 암호를 직접 입력할 필요가 없습니다!</string>
     <string name="password_incorrect">이 비밀번호가 올바르지 않은 것 같습니다. 정보를 확인하고 다시 시도하세요.</string>
     <string name="email_not_registered_wpcom">이 이메일 주소에 연결된 워드프레스닷컴 계정을 찾을 수 없습니다. 아래 링크를 클릭하여 고객님의 사이트 주소로 로그인해 보세요.</string>
     <string name="requesting_otp">SMS를 통해 확인 코드를 요청 중입니다.</string>
@@ -936,6 +991,7 @@ Language: ko_KR
     <string name="orderdetail_product_image_contentdesc">상품 이미지</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">세금:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s(%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">고객에게 이메일 보내기</string>
     <string name="orderdetail_billing_details">청구 상세 내역</string>
     <string name="orderdetail_shipping_details">배송 상세 내역</string>
@@ -977,7 +1033,6 @@ Language: ko_KR
     <string name="login_nostores_content_description">우커머스 스토어 없음</string>
     <string name="login_avatar_content_description">프로필 사진</string>
     <string name="login_connected_store">연결된 스토어</string>
-    <string name="login_pick_store">스토어 선택</string>
     <string name="login_configure_link">%s구성 지침%s을 읽어보세요.</string>
     <string name="login_prologue_banner">실시간 알림을 통해 주문을 관리하고, 판매를 추적하고, 스토어 활동을 모니터링하세요.</string>
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
