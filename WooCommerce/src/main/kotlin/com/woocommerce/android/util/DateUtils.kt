@@ -6,7 +6,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
 import org.apache.commons.lang3.time.DateUtils
-import org.wordpress.android.util.DateTimeUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -30,17 +29,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     /**
-     * Takes a date string in ISO8601 standard and returns a string, such as Jan 3, 2000
-     */
-    fun getMediumDateFromString(context: Context, rawDate: String): String {
-        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
-        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
-        // UTC.
-        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
-        return DateFormat.getMediumDateFormat(context).format(date)
-    }
-
-    /**
      * Returns a string in the format of {date} at {time}.
      */
     fun getFriendlyShortDateAtTimeString(context: Context, date: Date): String {
@@ -53,38 +41,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             }
             else -> {
                 DateFormat.getDateFormat(context).format(date)
-            }
-        }
-        val timeString = DateFormat.getTimeFormat(context).format(date.time)
-        return context.getString(R.string.date_at_time, dateLabel, timeString)
-    }
-
-    fun getFriendlyShortDateAtTimeString(context: Context, rawDate: String): String {
-        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
-        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
-        // UTC.
-        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
-        return getFriendlyShortDateAtTimeString(context, date)
-    }
-
-    fun getFriendlyLongDateAtTimeString(context: Context, rawDate: String): String {
-        // Note: dateUTCFromIso8601 has an unfortunate method name. It returns a date object appropriately created
-        // from a UTC date string. This means that the date object will properly reflect the local date conversion from
-        // UTC.
-        val date = DateTimeUtils.dateUTCFromIso8601(rawDate) ?: Date()
-        return getFriendlyShortDateAtTimeString(context, date)
-    }
-
-    fun getFriendlyLongDateAtTimeString(context: Context, date: Date): String {
-        val dateLabel = when (TimeGroup.getTimeGroupForDate(date)) {
-            TimeGroup.GROUP_TODAY -> {
-                context.getString(R.string.date_timeframe_today).toLowerCase(locale)
-            }
-            TimeGroup.GROUP_YESTERDAY -> {
-                context.getString(R.string.date_timeframe_yesterday).toLowerCase(locale)
-            }
-            else -> {
-                DateFormat.getLongDateFormat(context).format(date)
             }
         }
         val timeString = DateFormat.getTimeFormat(context).format(date.time)
@@ -206,48 +162,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             shortMonths[month.toInt() - 1]
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Month")
-        }
-    }
-
-    /**
-     * Given a date of format YYYY-MM, returns whether it's on a weekend
-     *
-     * @throws IllegalArgumentException if the argument is not a valid iso8601 date string.
-     */
-    @Throws(IllegalArgumentException::class)
-    fun isWeekend(iso8601Date: String): Boolean {
-        return try {
-            val (year, month, day) = iso8601Date.split("-")
-            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt())
-            val dayOfWeek = date.get(Calendar.DAY_OF_WEEK)
-            (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Date string argument is not of format YYYY-MM: $iso8601Date")
-        }
-    }
-
-    /**
-     * Given a date of format MMMM d, YYYY, returns true if it's today
-     */
-    fun isToday(dateString: String): Boolean {
-        val then = DateTimeUtils.dateUTCFromIso8601(dateString)
-        return DateUtils.isSameDay(Date(), then)
-    }
-
-    /**
-     * Given a date of format MMMM d, YYYY, returns just the time
-     *
-     * @throws IllegalArgumentException if the argument is not a valid date string.
-     */
-    @Throws(IllegalArgumentException::class)
-    fun getTimeString(context: Context, dateString: String): String {
-        try {
-            val date = GregorianCalendar.getInstance().also {
-                it.time = DateTimeUtils.dateUTCFromIso8601(dateString)
-            }
-            return DateFormat.getTimeFormat(context).format(date.time)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Date string argument is not of format MMMM dd, yyyy: $dateString")
         }
     }
 
@@ -418,26 +332,14 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             calendar.time = date
 
             localDateToGmt(
-                    year = calendar.get(Calendar.YEAR),
-                    month = calendar.get(Calendar.MONTH),
-                    day = calendar.get(Calendar.DATE),
-                    gmtOffset = gmtOffset,
-                    timeAtStartOfDay = timeAtStartOfDay
+                year = calendar.get(Calendar.YEAR),
+                month = calendar.get(Calendar.MONTH),
+                day = calendar.get(Calendar.DATE),
+                gmtOffset = gmtOffset,
+                timeAtStartOfDay = timeAtStartOfDay
             )
         } catch (e: Exception) {
             throw IllegalArgumentException("Date string argument is not of format MMM dd, yyyy: $this")
-        }
-    }
-
-    fun localDateToGmtOrNull(
-        dateString: String,
-        gmtOffset: Float,
-        timeAtStartOfDay: Boolean
-    ): Date? {
-        return try {
-            localDateToGmt(dateString, gmtOffset, timeAtStartOfDay)
-        } catch (e: Exception) {
-            null
         }
     }
 

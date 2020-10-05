@@ -1,5 +1,7 @@
 package com.woocommerce.android.extensions
 
+import android.content.Context
+import android.text.format.DateFormat
 import com.woocommerce.android.util.DateUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -53,10 +55,16 @@ fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     return dateFormat.format(this)
 }
 
+fun Date.isToday() = org.apache.commons.lang3.time.DateUtils.isSameDay(Date(), this)
+
+fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
+
+fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
+
 fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils().offsetGmtDate(it, gmtOffset) }
 
 fun Date.formatToYYYYmmDDhhmmss(): String =
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)
 
 val Date.pastTimeDeltaFromNowInDays
     get() = Calendar.getInstance().time

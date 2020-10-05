@@ -1,3 +1,0 @@
-5.0:
-Vi har åtgärdat de krascher som inträffade vid val av produktbild samt vid byte mellan ljusa och mörka teman på äldre Android-telefoner.
-

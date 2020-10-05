@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
-import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
@@ -772,7 +772,7 @@ class MainActivity : AppUpgradeActivity(),
                 NEW_ORDER -> {
                     selectedSite.getIfExists()?.let { site ->
                         note.getRemoteOrderId()?.let { orderId ->
-                            showOrderDetail(site.id, orderId, note.remoteNoteId)
+                            showOrderDetail(site.id, remoteOrderId = orderId, remoteNoteId = note.remoteNoteId)
                         }
                     }
                 }
@@ -825,7 +825,13 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+    override fun showOrderDetail(
+        localSiteId: Int,
+        localOrderId: Int,
+        remoteOrderId: Long,
+        remoteNoteId: Long,
+        markComplete: Boolean
+    ) {
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS
             val navPos = ORDERS.position
@@ -843,7 +849,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
+        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigateSafely(action)
     }
