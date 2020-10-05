@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -50,6 +51,14 @@ data class ProductVariation(
     override val height: Float,
     override val weight: Float
 ) : Parcelable, IProduct {
+    val isSaleInEffect: Boolean
+        get() {
+            val now = Date()
+            return salePrice.isSet() &&
+                (!isSaleScheduled || ((saleStartDateGmt == null || now.after(saleStartDateGmt)) &&
+                    (saleEndDateGmt == null || now.before(saleEndDateGmt))))
+        }
+
     override fun equals(other: Any?): Boolean {
         val variation = other as? ProductVariation
         return variation?.let {
@@ -66,7 +75,6 @@ data class ProductVariation(
                 stockStatus == variation.stockStatus &&
                 backorderStatus == variation.backorderStatus &&
                 optionName.fastStripHtml() == variation.optionName.fastStripHtml() &&
-                priceWithCurrency == variation.priceWithCurrency &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&

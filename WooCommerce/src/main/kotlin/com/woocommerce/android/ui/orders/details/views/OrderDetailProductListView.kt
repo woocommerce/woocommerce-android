@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -29,7 +30,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
     fun updateProductList(
         orderItems: List<Order.Item>,
         productImageMap: ProductImageMap,
-        formatCurrencyForDisplay: (BigDecimal) -> String
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        productClickListener: OrderProductActionListener
     ) {
         productList_lblProduct.text = StringUtils.getQuantityString(
             context,
@@ -43,7 +45,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             adapter = OrderDetailProductListAdapter(
-                orderItems, productImageMap, formatCurrencyForDisplay
+                orderItems, productImageMap, formatCurrencyForDisplay, productClickListener
             )
 
             if (itemDecorationCount == 0) {

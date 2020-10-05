@@ -49,7 +49,7 @@ class OrderDetailRefundsAdapter(
     ) {
         fun bind(refund: Refund) {
             with(itemView.refundsList_refundAmount) {
-                text = context.getString(R.string.orderdetail_customer_note, formatCurrency(refund.amount))
+                text = context.getString(R.string.orderdetail_refund_amount, formatCurrency(refund.amount))
             }
             with(itemView.refundsList_refundMethod) {
                 text = itemView.resources.getString(R.string.orderdetail_refund_detail).format(

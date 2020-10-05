@@ -100,15 +100,13 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     final fun start() {
-        launch {
-            orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
-                updateOrderState(orderInDb)
-                loadOrderNotes()
-                loadOrderRefunds()
-                loadShipmentTrackings()
-                loadOrderShippingLabels()
-            } ?: fetchOrder(true)
-        }
+        orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
+            updateOrderState(orderInDb)
+            loadOrderNotes()
+            loadOrderRefunds()
+            loadShipmentTrackings()
+            loadOrderShippingLabels()
+        } ?: launch { fetchOrder(true) }
     }
 
     fun onRefreshRequested() {
@@ -125,12 +123,12 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onEditOrderStatusSelected() {
-        order?.let { order ->
+        orderDetailViewState.orderStatus?.let { orderStatus ->
             triggerEvent(
                 ViewOrderStatusSelector(
-                currentStatus = order.status.value,
-                orderStatusList = orderDetailRepository.getOrderStatusOptions().map { it.statusKey }.toTypedArray()
-            ))
+                    currentStatus = orderStatus.statusKey,
+                    orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+                ))
         }
     }
 
@@ -183,6 +181,8 @@ class OrderDetailViewModel @AssistedInject constructor(
                     triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
                     shipmentTrackings.remove(shipmentTracking)
                     _shipmentTrackings.value = shipmentTrackings
+                } else {
+                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
                 }
             }
         } else {
@@ -191,6 +191,10 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onShippingLabelRefunded() { launch { loadOrderShippingLabels() } }
+
+    fun onOrderItemRefunded() {
+        launch { fetchOrder(false) }
+    }
 
     fun onOrderStatusChanged(newStatus: String) {
         val snackMessage = when (newStatus) {
@@ -359,20 +363,24 @@ class OrderDetailViewModel @AssistedInject constructor(
         loadOrderProducts()
     }
 
-    private suspend fun loadOrderNotes() {
-        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
-        if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
-            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+    private fun loadOrderNotes() {
+        launch {
+            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
+            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+            }
+            // fetch order notes from the local db and hide the skeleton view
+            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
         }
-        // fetch order notes from the local db and hide the skeleton view
-        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
-        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
     }
 
-    private suspend fun loadOrderRefunds() {
+    private fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        if (networkStatus.isConnected()) {
-            _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+        launch {
+            if (networkStatus.isConnected()) {
+                _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+            }
         }
 
         // display products only if there are some non refunded items in the list
@@ -389,28 +397,32 @@ class OrderDetailViewModel @AssistedInject constructor(
         } ?: emptyList()
     }
 
-    private suspend fun loadShipmentTrackings() {
-        when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
-            RequestResult.SUCCESS -> {
-                _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
-            }
-            else -> {
-                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-                _shipmentTrackings.value = emptyList()
+    private fun loadShipmentTrackings() {
+        launch {
+            when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
+                RequestResult.SUCCESS -> {
+                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
+                }
+                else -> {
+                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
+                    _shipmentTrackings.value = emptyList()
+                }
             }
         }
     }
 
-    private suspend fun loadOrderShippingLabels() {
+    private fun loadOrderShippingLabels() {
         order?.let { order ->
             if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
                 orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
                     .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
 
-                _shippingLabels.value = orderDetailRepository
-                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
-                    .loadProducts(order.items)
+                launch {
+                    _shippingLabels.value = orderDetailRepository
+                        .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                        .loadProducts(order.items)
+                }
             } else {
                 _shippingLabels.value = emptyList()
             }

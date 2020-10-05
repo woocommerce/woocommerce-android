@@ -13,7 +13,8 @@ enum class ProductStatus(@StringRes val stringResource: Int = 0, val value: Stri
     PUBLISH(R.string.product_status_published, CoreProductStatus.PUBLISH.value),
     DRAFT(R.string.product_status_draft, CoreProductStatus.DRAFT.value),
     PENDING(R.string.product_status_pending, CoreProductStatus.PENDING.value),
-    PRIVATE(R.string.product_status_private, CoreProductStatus.PRIVATE.value);
+    PRIVATE(R.string.product_status_private, CoreProductStatus.PRIVATE.value),
+    TRASH(R.string.product_status_trashed, CoreProductStatus.TRASH.value);
 
     /**
      * Returns a localized string used when displaying the status in the UI. The "long" parameter
@@ -26,6 +27,7 @@ enum class ProductStatus(@StringRes val stringResource: Int = 0, val value: Stri
             DRAFT -> R.string.product_status_draft
             PENDING -> R.string.product_status_pending
             PRIVATE -> if (long) R.string.product_status_privately_published else R.string.product_status_private
+            TRASH -> R.string.product_status_trashed
         }
         return context.getString(resId)
     }

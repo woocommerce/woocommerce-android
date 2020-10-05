@@ -519,13 +519,24 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Add shipment tracking - Displays add shipment tracking snackbar correctly`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
+            val shipmentTracking = OrderShipmentTracking(
+                trackingNumber = "12345",
+                trackingProvider = "test",
+                dateShipped = "132434323",
+                isCustomProvider = true
+            )
+
             doReturn(order).whenever(repository).getOrder(any())
 
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
 
+            val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+            addedShipmentTrackings.add(shipmentTracking)
+
+            doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings).whenever(repository)
+                .getOrderShipmentTrackings(any())
             doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
             doReturn(true).whenever(repository).addOrderShipmentTracking(any(), any(), any(), any())
 
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
@@ -541,17 +552,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 it?.let { orderShipmentTrackings = it }
             }
 
-            val shipmentTracking = OrderShipmentTracking(
-                trackingNumber = "12345",
-                trackingProvider = "test",
-                dateShipped = "132434323",
-                isCustomProvider = true
-            )
             viewModel.start()
             viewModel.onNewShipmentTrackingAdded(shipmentTracking)
 
             verify(repository, times(1)).addOrderShipmentTracking(any(), any(), any(), any())
             assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_shipment_tracking_added))
-            assertThat(orderShipmentTrackings.size).isEqualTo(testOrderShipmentTrackings.size + 1)
+            assertThat(orderShipmentTrackings.size).isEqualTo(addedShipmentTrackings.size)
         }
 }
