@@ -41,6 +41,8 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.StartAddProductFlow
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -315,6 +317,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
+                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is StartAddProductFlow -> startAddProductFlow()
                 else -> event.isHandled = false
             }
         })
@@ -391,10 +395,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
                     addProductButton.setOnClickListener {
-                        when (viewModel.isShowProductTypeBottomSheet()) {
-                            true -> showProductTypesBottomSheet()
-                            else -> showAddProduct()
-                        }
+                        viewModel.onAddProductButtonClicked()
                     }
                 } else {
                     hideButton()
@@ -412,9 +413,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
-    private fun showProductTypesBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
+    private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
 
-    private fun showAddProduct() {
+    private fun startAddProductFlow() {
         disableSearchListeners()
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showAddProduct()
