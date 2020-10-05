@@ -4,6 +4,7 @@ interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 
+    fun showProductDetail(remoteProductId: Long, enableTrash: Boolean = false)
     fun showOrderDetail(
         localSiteId: Int,
         localOrderId: Int = 0,
@@ -11,7 +12,6 @@ interface MainNavigationRouter {
         remoteNoteId: Long = 0,
         markComplete: Boolean = false
     )
-    fun showProductDetail(remoteProductId: Long)
     fun showAddProduct()
     fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String? = null)
     fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)

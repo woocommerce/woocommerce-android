@@ -28,8 +28,14 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * called, the boolean value is updated. This puts a limit on the number of observers for a particular key-result pair
  * to 1.
  */
-fun <T> Fragment.handleResult(key: String, handler: (T) -> Unit) {
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Pair<T, AtomicBoolean>>(key)?.observe(
+fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) -> Unit) {
+    val entry = if (entryId != null) {
+        findNavController().getBackStackEntry(entryId)
+    } else {
+        findNavController().currentBackStackEntry
+    }
+
+    entry?.savedStateHandle?.getLiveData<Pair<T, AtomicBoolean>>(key)?.observe(
         this.viewLifecycleOwner,
         Observer {
             val isFresh = it.second.getAndSet(false)
