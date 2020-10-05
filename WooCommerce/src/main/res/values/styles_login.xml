@@ -3,44 +3,48 @@
     <!--
         Overloads of Login Themes
      -->
-    <style name="LoginTheme" parent="Theme.Woo.DayNight">
-        <item name="android:statusBarColor">@color/color_status_bar</item>
-        <item name="android:colorBackground">@color/color_surface</item>
+    <style name="LoginTheme" parent="Theme.LoginFlow">
+        <!-- Colors -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimarySurface">@color/color_primary_surface</item>
+        <item name="colorPrimaryVariant">@color/color_primary_variant</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
+
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
+
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorOnPrimarySurface">@color/color_on_primary_surface</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnError">@color/color_on_error</item>
+
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="colorControlNormal">@color/color_primary</item>
+        <item name="android:colorControlActivated">@color/color_primary</item>
+
+        <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+
+        <!-- Custom Widgets -->
+        <item name="tagViewStyle">@style/Woo.Tag</item>
+        <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
+        <item name="settingsToggleOptionStyle">@style/Widget.Woo.Settings.OptionToggle</item>
+        <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
+        <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
+        <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+        <item name="wcToggleOutlinedButtonStyle">@style/Widget.Woo.WCToggleOutlinedButton</item>
+        <item name="wcToggleOutlinedSelectorButtonStyle">@style/Widget.Woo.WCToggleOutlinedSelectorButton</item>
+        <item name="wcMaterialOutlinedSpinnerViewStyle">@style/Widget.Woo.WCMaterialOutlinedSpinnerView</item>
+        <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
+        <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
+        <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
     </style>
 
-    <style name="LoginTheme.Toolbar">
-        <item name="android:background">@color/color_primary_surface</item>
-        <item name="colorControlNormal">@color/woo_white</item>
-    </style>
-
-    <style name="LoginTheme.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
-
-    <style name="LoginTheme.TextLabel" parent="TextAppearance.Woo.Subtitle1"/>
-
-    <style name="LoginTheme.EditText" parent="Woo.TextInputLayout">
-        <item name="android:layout_margin">@dimen/minor_00</item>
-    </style>
-
-    <style name="LoginTheme.InputLabelStatic" parent="TextAppearance.Woo.Subtitle2">
-        <item name="android:textColor">@color/color_on_surface_medium</item>
-    </style>
-
-    <style name="LoginTheme.SiteTitle" parent="TextAppearance.MaterialComponents.Subtitle2" />
-
-    <style name="LoginTheme.SiteUrl" parent="TextAppearance.Woo.Subtitle1">
-        <item name="android:textColor">@color/color_on_surface_high</item>
-    </style>
-
-    <style name="LoginTheme.Button.Primary" parent="Woo.Button.Colored"/>
-
-    <style name="LoginTheme.Button.Secondary" parent="Woo.Button.Secondary"/>
-
-    <style name="LoginTheme.Button.LoginOption" parent="TextAppearance.Woo.Body1">
+    <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="textColor">@color/color_secondary</item>
         <item name="android:textColor">@color/color_secondary</item>
-    </style>
-
-    <style name="LoginTheme.TextLabel.Icon">
-        <item name="drawableTint">@color/color_on_surface_medium</item>
-        <item name="drawableTintMode">src_atop</item>
     </style>
 </resources>

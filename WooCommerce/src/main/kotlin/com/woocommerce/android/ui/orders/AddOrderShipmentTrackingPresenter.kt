@@ -70,7 +70,7 @@ class AddOrderShipmentTrackingPresenter @Inject constructor(
         )
 
         val payload = AddOrderShipmentTrackingPayload(
-                selectedSite.get(), order, wcOrderShipmentTrackingModel, isCustomProvider
+                selectedSite.get(), order.id, order.remoteOrderId, wcOrderShipmentTrackingModel, isCustomProvider
         )
         dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
 

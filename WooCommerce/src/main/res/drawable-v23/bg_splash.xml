@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
-    <item android:drawable="@color/woo_purple_60"/>
+    <item android:drawable="@color/splash_background"/>
     <item
         android:drawable="@drawable/img_woo_bubble_white"
         android:gravity="center"/>

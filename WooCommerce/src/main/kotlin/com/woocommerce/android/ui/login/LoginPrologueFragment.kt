@@ -7,8 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_prologue.*
+import javax.inject.Inject
 
 class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     companion object {
@@ -20,16 +24,27 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     }
 
     interface PrologueFinishedListener {
-        fun onPrologueFinished()
+        fun onPrimaryButtonClicked()
+        fun onSecondaryButtonClicked()
     }
 
+    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login_prologue, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState == null) {
+            unifiedLoginTracker.track(Flow.PROLOGUE, PROLOGUE)
+        }
+    }
+
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (activity is PrologueFinishedListener) {
@@ -40,6 +55,7 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        unifiedLoginTracker.setFlowAndStep(Flow.PROLOGUE, Step.PROLOGUE)
     }
 
     override fun onDetach() {
@@ -49,9 +65,14 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        button_login.setOnClickListener {
-            prologueFinishedListener?.onPrologueFinished()
-            AnalyticsTracker.track(Stat.LOGIN_PROLOGUE_JETPACK_LOGIN_BUTTON_TAPPED)
+        button_login_store.setOnClickListener {
+            // Login with site address
+            prologueFinishedListener?.onPrimaryButtonClicked()
+        }
+
+        button_login_wpcom.setOnClickListener {
+            // Login with WordPress.com account
+            prologueFinishedListener?.onSecondaryButtonClicked()
         }
     }
 }

@@ -29,7 +29,7 @@ import java.util.Date
 class ProductPricingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    productRepository: ProductDetailRepository,
+    private val productRepository: ProductDetailRepository,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     parameterRepository: ParameterRepository
@@ -155,6 +155,11 @@ class ProductPricingViewModel @AssistedInject constructor(
                 endDate
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        productRepository.onCleanup()
     }
 
     fun onExit() {

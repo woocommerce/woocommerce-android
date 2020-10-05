@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -48,6 +49,7 @@ class MagicLinkInterceptFragment : Fragment() {
     private val viewModel: MagicLinkInterceptViewModel by viewModels { viewModelFactory }
 
     private var retryButton: Button? = null
+    private var retryContainer: ScrollView? = null
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -68,6 +70,7 @@ class MagicLinkInterceptFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+
         return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
     }
 
@@ -75,8 +78,9 @@ class MagicLinkInterceptFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         retryButton = view.findViewById(R.id.login_open_email_client)
+        retryContainer = view.findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)
-        retryButton?.isVisible = false
+        showRetryScreen(false)
         retryButton?.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_MAGIC_LINK_INTERCEPT_RETRY_TAPPED)
             viewModel.fetchAccountInfo()
@@ -117,8 +121,8 @@ class MagicLinkInterceptFragment : Fragment() {
             }
         })
 
-        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer { isVisible ->
-            retryButton?.isVisible = isVisible
+        viewModel.showRetryOption.observe(viewLifecycleOwner, Observer {
+            showRetryScreen(it)
         })
     }
 
@@ -155,5 +159,10 @@ class MagicLinkInterceptFragment : Fragment() {
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
         startActivityForResult(intent, REQUEST_CODE_ADD_ACCOUNT)
         activity?.finish()
+    }
+
+    private fun showRetryScreen(show: Boolean) {
+        retryButton?.isVisible = show
+        retryContainer?.isVisible = show
     }
 }

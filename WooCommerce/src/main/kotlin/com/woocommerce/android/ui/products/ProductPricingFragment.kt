@@ -34,7 +34,7 @@ import java.util.Date
 
 class ProductPricingFragment
     : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
-    private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
         get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
@@ -116,7 +116,7 @@ class ProductPricingFragment
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    event.messageId
+                    messageId = event.messageId
                 )
                 else -> event.isHandled = false
             }

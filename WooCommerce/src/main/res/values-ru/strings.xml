@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-17 11:54:04+0000
+Translation-Revision-Date: 2020-10-01 10:55:05+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="signup_confirmation_title">Подтверждение регистрации</string>
+    <string name="reset_your_password">Сбросить пароль</string>
+    <string name="enter_your_site_address">Введите адрес вашего сайта</string>
+    <string name="continue_with_wpcom">Продолжить с WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">Если вы продолжите работу с учетной записью Google, не имея учётной записи WordPress.com, вы создадите учётную запись и примете наши %1$sУсловия обслуживания%2$s.</string>
+    <string name="continue_terms_of_service_text">Продолжив, вы соглашаетесь с нашими %1$sПравилами пользования%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">Мы пришлём вам волшебную ссылку для создания учётной записи WordPress.com.</string>
+    <string name="signup_confirmation_message">Этот адрес эл.почты будет использован при создании вашей новой учётной записи WordPress.com.</string>
+    <string name="signup_magic_link_message">Мы отослали вам волшебную ссылку для создания учётной записи WordPress.com. Проверьте почту на вашем устройстве и нажмите на ссылку, полученную с WordPress.com.</string>
+    <string name="sign_up_label">Зарегистрироваться</string>
+    <string name="login_or">или</string>
+    <string name="continue_site_credentials">Продолжить с учетными данными магазина</string>
+    <string name="continue_google_button_suffix">Продолжить с Google</string>
+    <string name="login_find_your_connected_email">Узнать адрес привязанной эл. почты</string>
+    <string name="login_find_your_site_adress">Найдите адрес вашего сайта</string>
+    <string name="login_done">Готово</string>
+    <string name="magic_link_not_seeing_email_message">Не нашли письмо? Загляните в папку со спамом.</string>
+    <string name="login_magic_links_sent_label">Проверьте почту на этом устройстве и нажмите ссылку в письме от WordPress.com</string>
+    <string name="login_magic_links_label">Мы пришлём вам волшебную ссылку для входа, которая позволит вам сразу войти без пароля.</string>
+    <string name="check_email">Проверка почты</string>
+    <string name="get_started">Начать </string>
+    <string name="enter_account_info_for_site">Введите данные вашей учётной записи для %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">Введите ваш адрес электронной почты чтобы войти или создать учётную запись WordPress.com.</string>
+    <string name="or_type_your_password">или введите ваш пароль</string>
+    <string name="create_account">Создать учётную запись</string>
+    <string name="send_link_by_email">Прислать ссылку по электронной почте</string>
+    <string name="feedback_product_give_feedback_button_text">Оставить отзыв</string>
+    <string name="product_detail_publish_product_success">Товар опубликован</string>
+    <string name="product_detail_publish_product_error">Не удалось опубликовать товар</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Публикация товара</string>
+    <string name="product_add_tool_bar_menu_button_done">ОПУБЛИКОВАТЬ</string>
+    <string name="product_add_tool_bar_title">Новый товар</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
+    <string name="product_add_type_simple_desc">Уникальная позиция для продажи</string>
+    <string name="product_add_type_external">Внешний товар</string>
+    <string name="product_add_type_grouped">Сгруппированный товар</string>
+    <string name="product_add_type_variable">Вариативный товар</string>
+    <string name="product_add_type_simple">Простой товар</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Для каждого варианта товара можно добавить только одну фотографию</string>
+    <string name="product_replace_photo">Заменить фотографию</string>
+    <string name="product_add_photo">Добавить фотографию</string>
+    <string name="variation_detail_image_add">Добавить изображение варианта</string>
+    <string name="login_jetpack_view_instructions">Узнать, как установить и подключить Jetpack</string>
+    <string name="login_jetpack_required_text">Чтобы использовать это приложение для %1$s, нужно подключить плагин Jetpack к магазину.</string>
+    <string name="login_try_another_account">Войдите с помощью другой учетной записи</string>
+    <string name="login_pick_store">Выберите магазин для подключения</string>
+    <string name="login_store_address">Введите адрес магазина</string>
+    <string name="login_wpcom">Продолжить с WordPress.com</string>
     <string name="product_type_variation_desc">Товар с вариантами исполнения, например по цвету или размеру</string>
     <string name="product_selection_count_single">%d товар выбран</string>
     <string name="product_selection_count">%d тов. выбрано</string>
@@ -58,8 +110,38 @@ Language: ru
     <string name="shipping_label_refund_message">Вы можете запросить возврат средств за неиспользованный почтовый бланк Обработка займет не менее 14 дней.</string>
     <string name="orderdetail_shipping_label_request_refund">Запросить возврат средств</string>
     <string name="orderdetail_shipping_label_item_menu">Вернуть средства за почтовый бланк</string>
+    <string name="product_type_physical">Физический</string>
+    <string name="bottom_sheet_short_description_desc">Краткое описание товара</string>
+    <string name="bottom_sheet_tags_desc">Используйте метки, чтобы товары было проще искать</string>
+    <string name="bottom_sheet_categories_desc">Объедините продукты в группы</string>
+    <string name="bottom_sheet_shipping_desc">Добавить вес и размеры</string>
+    <string name="bottom_sheet_add_details_list_header">Добавить другие сведения</string>
+    <string name="product_tag_list_empty_message">Организуйте свои товары с помощью меток</string>
+    <string name="product_tag_list_empty_title">Добавьте первую метку</string>
+    <string name="product_tags">Метки</string>
+    <string name="product_tag_empty">Добавить метку</string>
     <string name="product_variation_disabled">Отключено</string>
+    <string name="product_is_virtual">Виртуальный товар</string>
+    <string name="product_detail_add_more">Добавить другие сведения</string>
+    <string name="product_detail_product_type_hint">%1$s товар</string>
+    <string name="product_type_downloadable">загружаемый</string>
+    <string name="product_type_description">%s товар</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Оставшиеся товары</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s оплата возвращена</string>
+    <string name="orderdetail_shipping_label_tracking_info">Отследить посылку</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Скрыть сведения о доставке</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Показать сведения о доставке</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Банковская карта</string>
+    <string name="orderdetail_shipping_label_item_payment">Способ оплаты</string>
+    <string name="orderdetail_shipping_label_item_carrier">Перевозчики и тарифы</string>
+    <string name="orderdetail_shipping_label_item_package_info">Сведения о посылке</string>
+    <string name="orderdetail_shipping_label_item_shipto">Доставка в</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Доставка из</string>
+    <string name="orderdetail_shipping_label_item_header">Посылка %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">Артикул: %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s пар.)</string>
+    <string name="shipping_labels">Транспортные этикетки</string>
     <string name="product_add_category_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_add_category_dialog_title">Добавление категории</string>
     <string name="product_category_parent">Родительская рубрика</string>
@@ -204,7 +286,7 @@ Language: ru
     <string name="product_inventory_empty">Добавить запасы</string>
     <string name="orderlist_loading">Просмотр информации о ваших заказах…</string>
     <string name="product_detail_editable_text_hint">Введите текст</string>
-    <string name="product_detail_title_hint">Название продукта</string>
+    <string name="product_detail_title_hint">Введите название товара</string>
     <string name="product_detail_update_product_success">Продукт обновлен</string>
     <string name="product_detail_update_product_error">Ошибка обновления продукта</string>
     <string name="product_update_dialog_message">Пожалуйста, подождите…</string>
@@ -634,17 +716,14 @@ Language: ru
     <string name="login_need_help_finding_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
-    <string name="login_jetpack_view_instructions">Открыть инструкции</string>
-    <string name="login_jetpack_required_msg">Чтобы использовать приложение WooCommerce необходимо настроить плагин Jetpack на своем сайте.</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_try_another_account">Используйте другую учётную запись</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
-    <string name="login">Войти</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
+    <string name="product_type_virtual">Virtual</string>
     <string name="product_type_grouped">Сборный</string>
     <string name="product_type_variable">С вариантами</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>
@@ -830,7 +909,6 @@ Language: ru
     <string name="signup_with_email_button">Зарегистрироваться с адресом Email</string>
     <string name="signup_terms_of_service_text">Регистрируясь, вы соглашаетесь с нашими %1$sПравилами пользования%2$s.</string>
     <string name="signup_magic_link_progress">Отправка email</string>
-    <string name="signup_magic_link_message">Мы послали вам магическую ссылку для регистрации. Проверьте вашу почту и нажмите присланную ссылку для завершения регистрации.</string>
     <string name="signup_magic_link_error_button_positive">Повторить</string>
     <string name="signup_magic_link_error_button_negative">Закрыть</string>
     <string name="signup_magic_link_error">Возникла проблема при отправке почты. Вы можете повторить сейчас или закрыть и попробовать еще раз позже.</string>
@@ -868,8 +946,6 @@ Language: ru
     <string name="enter_wpcom_password">Введите свой пароль на WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">В настоящий момент ссылка недоступна. Введите пароль</string>
     <string name="login_magic_link_email_requesting">Выполняется запрос электронного письма со ссылкой для входа</string>
-    <string name="login_magic_links_sent_label">Ваша волшебная ссылка уже в пути! Проверьте почту с этого устройства и нажмите ссылку в письме от WordPress.com.</string>
-    <string name="login_magic_links_label">Мы отправим вам волшебную ссылку, по которой вы сможете сразу войти в систему без пароля. Не нужно больше тыкать по клавиатуре!</string>
     <string name="password_incorrect">Похоже, пароль введён неправильно. Проверьте правильность введенных данных и повторите попытку.</string>
     <string name="email_not_registered_wpcom">Хм, мы не можем найти учетную запись WordPress.com по указанному email адресу. Попробуйте войти по ссылке ниже указав адрес сайта.</string>
     <string name="requesting_otp">Выполняется запрос на получение проверочного кода в SMS-сообщении.</string>
@@ -987,7 +1063,6 @@ Language: ru
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
     <string name="login_connected_store">Подключенный магазин</string>
-    <string name="login_pick_store">Выбрать магазин</string>
     <string name="login_configure_link">Ознакомьтесь с %sинструкциями по настройке%s.</string>
     <string name="login_prologue_banner">Управляйте заказами, следите за продажами и контролируйте работу магазина с помощью уведомлений в реальном времени.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>

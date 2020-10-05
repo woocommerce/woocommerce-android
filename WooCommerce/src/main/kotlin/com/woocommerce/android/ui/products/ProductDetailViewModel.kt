@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -27,7 +28,6 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
@@ -37,7 +37,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
@@ -46,8 +45,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCat
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
@@ -91,13 +89,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository
+    private val productTagsRepository: ProductTagsRepository,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -119,10 +118,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
     private var viewState by productDetailViewStateData
-
-    // view state for the product images screen
-    val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
-    private var productImagesViewState by productImagesViewStateData
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -156,7 +151,27 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     val isProductPublished: Boolean
-    get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     * */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product id
+     * value to check.
+     *
+     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     *
+     * [viewState.productDraft.remoteId]
+     * .can be [NULL] - no product draft available yet
+     * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
+     * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
+     * */
+    val isAddFlow: Boolean
+        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
 
     init {
         start()
@@ -164,12 +179,23 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun start() {
         EventBus.getDefault().register(this)
-        loadProduct(navArgs.remoteProductId)
+        when (isAddFlowEntryPoint) {
+            true -> startAddNewProduct()
+            else -> loadRemoteProduct(navArgs.remoteProductId)
+        }
+    }
+
+    private fun startAddNewProduct() {
+        val preferredSavedType = prefs.getSelectedProductType()
+        val defaultProductType = ProductType.fromString(preferredSavedType)
+        val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
+        updateProductState(defaultProduct)
     }
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
@@ -184,21 +210,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image) {
+    fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
      * Called when the add image icon is clicked in Product detail screen
      */
-    fun onAddImageClicked() {
+    fun onAddImageButtonClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -208,16 +236,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-    }
-
-    fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
-
-    fun hasImageChanges(): Boolean {
-        return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            true
-        } else {
-            viewState.productBeforeEnteringFragment?.hasImageChanges(viewState.productDraft) ?: false
-        }
+        updateProductBeforeEnteringFragment()
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -247,10 +266,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
-            is ExitImages -> {
-                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasImageChanges()
-            }
             is ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
@@ -272,14 +287,28 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the UPDATE menu button is clicked in the product detail screen.
-     * Displays a progress dialog and updates the product
+     * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
+        when (isAddFlow) {
+            true -> startPublishProduct()
+            else -> startUpdateProduct()
+        }
+    }
+
+    private fun startUpdateProduct() {
         AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
+        }
+    }
+
+    private fun startPublishProduct() {
+        viewState.productDraft?.let {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch { addProduct(it) }
         }
     }
 
@@ -361,44 +390,39 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
         } ?: false
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
-            is ExitImages -> isUploadingImages || hasImageChanges()
+            is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
             triggerEvent(ShowDiscardDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         // discard changes made to the current screen
-                        discardEditChanges(event)
+                        discardEditChanges()
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                    // If user in Product detail screen, exit product detail,
+                    // otherwise, redirect to Product Detail screen
+                    if (event is ExitProductDetail) {
+                        triggerEvent(ExitProduct)
+                    } else {
+                        triggerEvent(event)
                     }
+                }
             ))
             return false
-        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
+        } else if (event is ExitProductDetail && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
             triggerEvent(ShowDiscardDialog(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                        triggerEvent(event)
                     }
             ))
             return false
@@ -551,19 +575,15 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when discard is clicked on any of the product screens to restore the product to
      * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges(event: ProductExitEvent) {
+    private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
-
-        if (event is ExitImages) {
-            ProductImagesService.cancel()
-        }
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
         updateProductEditAction()
     }
 
-    private fun loadProduct(remoteProductId: Long) {
+    private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -639,12 +659,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = if (viewState.draftPassword == null) {
             viewState.copy(
-                    storedPassword = password,
-                    draftPassword = password
+                storedPassword = password,
+                draftPassword = password
             )
         } else {
             viewState.copy(
-                    storedPassword = password
+                storedPassword = password
             )
         }
     }
@@ -674,21 +694,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
-    }
-
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
-            return
-        }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
     /**
@@ -696,13 +704,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      * uploading images
      */
     private fun checkImageUploads(remoteProductId: Long) {
-        if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
-            viewState = viewState.copy(uploadingImageUris = uris)
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = true)
-        } else if (productImagesViewState.isUploadingImages) {
-            viewState = viewState.copy(uploadingImageUris = emptyList())
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = false)
+        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
+            val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
+            viewState.copy(uploadingImageUris = uris)
+        } else {
+            viewState.copy(uploadingImageUris = emptyList())
         }
     }
 
@@ -729,7 +735,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadProduct(product.remoteId)
+                loadRemoteProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
@@ -741,11 +747,38 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Add a new product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed.
+     */
+    private suspend fun addProduct(product: Product) {
+        if (networkStatus.isConnected()) {
+            val result = productRepository.addProduct(product)
+            val isSuccess = result.first
+            val newProductRemoteId = result.second
+            if (isSuccess) {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_success))
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
+                loadRemoteProduct(newProductRemoteId)
+                triggerEvent(RefreshMenu)
+            } else {
+                triggerEvent(ShowSnackbar(string.product_detail_publish_product_error))
+            }
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+        viewState = viewState.copy(isProgressDialogShown = false)
+    }
+
+    /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-                    ?: viewState.productDraft?.shippingClass ?: ""
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
@@ -793,7 +826,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(event.id)
     }
 
     /**
@@ -802,13 +835,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        var productId = event.id
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.remoteProductId)
+            when (isAddFlow) {
+                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
+                else -> loadRemoteProduct(event.id)
+            }
         }
-
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(productId)
     }
 
     /**
@@ -848,16 +884,6 @@ class ProductDetailViewModel @AssistedInject constructor(
 
             // ...then update the draft's images  with the combined list
             updateProductDraft(images = updatedImageList)
-        }
-    }
-
-    /**
-     * Removes a single product image from the product draft
-     */
-    fun removeProductImageFromDraft(remoteMediaId: Long) {
-        viewState.productDraft?.let { product ->
-            val imageList = product.images.filter { it.id != remoteMediaId }
-            updateProductDraft(images = imageList)
         }
     }
 
@@ -952,7 +978,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1147,7 +1174,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true)
+                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1169,7 +1197,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1177,6 +1204,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
+    object RefreshMenu : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
@@ -1214,11 +1242,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
-
-    @Parcelize
-    data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false
-    ) : Parcelable
 
     @Parcelize
     data class ProductCategoriesViewState(
