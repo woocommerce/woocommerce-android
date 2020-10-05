@@ -72,4 +72,11 @@ data class Address(
         val locale = Locale(Locale.getDefault().language, country)
         return locale.displayCountry
     }
+
+    fun hasInfo(): Boolean {
+        return firstName.isNotEmpty() || lastName.isNotEmpty() ||
+            address1.isNotEmpty() || country.isNotEmpty() ||
+            phone.isNotEmpty() || email.isNotEmpty() ||
+            state.isNotEmpty() || city.isNotEmpty()
+    }
 }
