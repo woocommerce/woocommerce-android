@@ -15,16 +15,6 @@ class ShippingLabelPaperSizeSelectorDialog : DialogFragment() {
         LABEL(string.shipping_label_paper_size_label),
         LEGAL(string.shipping_label_paper_size_legal),
         LETTER(string.shipping_label_paper_size_letter);
-
-        companion object {
-            fun fromString(type: String): ShippingLabelPaperSize {
-                return when (type.toLowerCase(Locale.US)) {
-                    "LEGAL" -> LEGAL
-                    "LETTER" -> LETTER
-                    else -> LABEL
-                }
-            }
-        }
     }
 
     companion object {
