@@ -15,7 +15,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.StartAddProductFlow
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -133,12 +132,7 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
-        val shouldShowProductBottomSheet = prefs.getSelectedProductType().isEmpty()
-        if (shouldShowProductBottomSheet) {
-            triggerEvent(ShowAddProductBottomSheet)
-        } else {
-            triggerEvent(StartAddProductFlow)
-        }
+        triggerEvent(ShowAddProductBottomSheet)
     }
 
     fun onSearchOpened() {
@@ -365,7 +359,6 @@ class ProductListViewModel @AssistedInject constructor(
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
         object ShowAddProductBottomSheet : ProductListEvent()
-        object StartAddProductFlow : ProductListEvent()
     }
 
     @AssistedInject.Factory
