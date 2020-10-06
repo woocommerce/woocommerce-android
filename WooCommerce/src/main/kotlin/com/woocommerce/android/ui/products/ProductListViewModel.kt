@@ -14,6 +14,8 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.StartAddProductFlow
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -128,6 +130,15 @@ class ProductListViewModel @AssistedInject constructor(
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
+    }
+
+    fun onAddProductButtonClicked() {
+        val shouldShowProductBottomSheet = prefs.getSelectedProductType().isEmpty()
+        if (shouldShowProductBottomSheet) {
+            triggerEvent(ShowAddProductBottomSheet)
+        } else {
+            triggerEvent(StartAddProductFlow)
+        }
     }
 
     fun onSearchOpened() {
@@ -320,8 +331,6 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun isShowProductTypeBottomSheet() = prefs.getSelectedProductType().isEmpty()
-
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
@@ -355,6 +364,8 @@ class ProductListViewModel @AssistedInject constructor(
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
+        object ShowAddProductBottomSheet : ProductListEvent()
+        object StartAddProductFlow : ProductListEvent()
     }
 
     @AssistedInject.Factory
