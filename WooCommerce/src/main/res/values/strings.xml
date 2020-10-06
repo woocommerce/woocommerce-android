@@ -315,7 +315,8 @@
     <!--
     Print label Refunds
     -->
-    <string name="shipping_label_print_message">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
+    <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
+    <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
     <string name="shipping_label_paper_size">Paper size</string>
     <string name="shipping_label_paper_size_options_title">Choose paper size</string>
     <string name="shipping_label_print_button">Print shipping label</string>

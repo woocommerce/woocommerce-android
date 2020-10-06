@@ -8,7 +8,6 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateBackWithResult
-import java.util.Locale
 
 class ShippingLabelPaperSizeSelectorDialog : DialogFragment() {
     enum class ShippingLabelPaperSize(@StringRes val stringResource: Int) {
