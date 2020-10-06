@@ -67,7 +67,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_btn">
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_btn"
+        android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/shippingLabelPrint_pagesIcon"
@@ -98,7 +99,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pageOptionsView">
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_pageOptionsView"
+        android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/shippingLabelPrint_infoIcon"
