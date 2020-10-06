@@ -330,7 +330,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
-                is StartAddProductFlow -> startAddProductFlow()
                 else -> event.isHandled = false
             }
         })
@@ -469,12 +468,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
-
-    private fun startAddProductFlow() {
-        disableSearchListeners()
-        showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showAddProduct()
-    }
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
