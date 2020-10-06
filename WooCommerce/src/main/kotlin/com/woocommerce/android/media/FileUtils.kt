@@ -22,7 +22,7 @@ object FileUtils {
             val imageFileName = "PDF_" + timeStamp + "_"
             File.createTempFile(imageFileName, ".$fileExtension", storageDir)
         } catch (e: Exception) {
-            WooLog.d(UTILS, "Unable to create a temp file")
+            WooLog.e(UTILS, "Unable to create a temp file", e)
             null
         }
     }
@@ -45,7 +45,7 @@ object FileUtils {
 
             tempFile
         } catch (e: Exception) {
-            WooLog.d(UTILS, "Unable to write to temp file")
+            WooLog.e(UTILS, "Unable to write to temp file", e)
             null
         }
     }
