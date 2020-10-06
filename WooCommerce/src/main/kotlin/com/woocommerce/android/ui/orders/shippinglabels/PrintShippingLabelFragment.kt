@@ -6,6 +6,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -13,9 +14,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_print_shipping_label.*
@@ -24,6 +27,7 @@ import javax.inject.Inject
 
 class PrintShippingLabelFragment : BaseFragment() {
     @Inject lateinit var navigator: OrderNavigator
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     val viewModel: PrintShippingLabelViewModel by viewModels { viewModelFactory }
@@ -66,6 +70,7 @@ class PrintShippingLabelFragment : BaseFragment() {
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> displayError(event.message)
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
@@ -96,10 +101,14 @@ class PrintShippingLabelFragment : BaseFragment() {
         progressDialog = null
     }
 
+    private fun displayError(@StringRes messageId: Int) {
+        uiMessageResolver.showSnack(messageId)
+    }
+
     private fun openShippingLabelPreview(base: String) {
         requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.let {
             viewModel.writeShippingLabelToFile(it, base)
-        }
+        } ?: displayError(R.string.shipping_label_preview_error)
     }
 
     private fun openPreview(file: File) {

@@ -313,7 +313,7 @@
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
-    Print label Refunds
+        Print shipping labels
     -->
     <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
     <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
@@ -326,7 +326,6 @@
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
-
     <!--
         Refunds
     -->
