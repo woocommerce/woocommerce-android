@@ -53,13 +53,13 @@
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_global_wpMediaFragment"
         app:destination="@id/wpMediaPickerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
 </navigation>
