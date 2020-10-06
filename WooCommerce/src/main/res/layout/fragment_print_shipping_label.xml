@@ -7,14 +7,38 @@
     android:padding="@dimen/major_75">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/shippingLabelPrint_disclaimer"
-        style="@style/Woo.ListItem.Body"
+        android:id="@+id/shippingLabelPrint_errorMessage"
+        style="@style/Woo.Card.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/major_75"
-        android:text="@string/shipping_label_print_message"
+        android:paddingBottom="@dimen/major_100"
+        android:text="@string/shipping_label_print_error_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/shippingLabelPrint_disclaimerIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/minor_25"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:contentDescription="@string/shipping_label_print_disclaimer"
+        android:src="@drawable/ic_info_outline_24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_errorMessage" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shippingLabelPrint_disclaimer"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/major_75"
+        android:text="@string/shipping_label_print_disclaimer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/shippingLabelPrint_disclaimerIcon"
+        app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_errorMessage" />
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
         android:id="@+id/shippingLabelPrint_paperSize"

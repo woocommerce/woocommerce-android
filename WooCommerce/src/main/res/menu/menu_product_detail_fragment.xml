@@ -5,7 +5,6 @@
     <item
         android:id="@+id/menu_done"
         android:title="@string/update"
-        android:visible="false"
         app:showAsAction="ifRoom" />
 
     <item
@@ -21,10 +20,17 @@
     <item
         android:id="@+id/menu_view_product"
         android:title="@string/product_view_in_store"
+        android:visible="false"
         app:showAsAction="withText" />
 
     <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
+        android:visible="false"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/menu_trash_product"
+        android:title="@string/product_trash"
         app:showAsAction="withText" />
 </menu>

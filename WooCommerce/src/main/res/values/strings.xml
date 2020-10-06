@@ -313,9 +313,14 @@
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
+<<<<<<< HEAD
         Print label Refunds
+=======
+        Print shipping labels
+>>>>>>> issue/2291-print-shipping-labels
     -->
-    <string name="shipping_label_print_message">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
+    <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
+    <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
     <string name="shipping_label_paper_size">Paper size</string>
     <string name="shipping_label_paper_size_options_title">Choose paper size</string>
     <string name="shipping_label_print_button">Print shipping label</string>
@@ -589,6 +594,11 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_trash">Trash product</string>
+    <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
+    <string name="product_trash_yes">Move to trash</string>
+    <string name="product_trash_undo_snackbar_message">Product moved to trash</string>
+    <string name="product_trash_error">Error trashing product</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
@@ -690,6 +700,7 @@
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
+
 
     <!--
         Empty list messages

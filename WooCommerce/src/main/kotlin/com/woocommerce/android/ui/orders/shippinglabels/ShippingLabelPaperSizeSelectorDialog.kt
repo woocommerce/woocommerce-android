@@ -8,23 +8,12 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateBackWithResult
-import java.util.Locale
 
 class ShippingLabelPaperSizeSelectorDialog : DialogFragment() {
     enum class ShippingLabelPaperSize(@StringRes val stringResource: Int) {
         LABEL(string.shipping_label_paper_size_label),
         LEGAL(string.shipping_label_paper_size_legal),
         LETTER(string.shipping_label_paper_size_letter);
-
-        companion object {
-            fun fromString(type: String): ShippingLabelPaperSize {
-                return when (type.toLowerCase(Locale.US)) {
-                    "LEGAL" -> LEGAL
-                    "LETTER" -> LETTER
-                    else -> LABEL
-                }
-            }
-        }
     }
 
     companion object {
