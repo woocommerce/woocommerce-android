@@ -11,9 +11,9 @@ import java.util.Locale
 
 object FileUtils {
     /**
-     * Creates a temp pdf file to store the shipping label pdf
+     * Creates a temp file with the given [fileExtension]
      */
-    fun createTempPdfFile(
+    fun createTempFile(
         storageDir: File,
         fileExtension: String = "pdf"
     ): File? {
@@ -28,9 +28,9 @@ object FileUtils {
     }
 
     /**
-     * writes the preview string for a shipping label into the [tempFile]
+     * writes the incoming [stringToWrite] into the [tempFile]
      */
-    fun writePdfToTempFile(
+    fun writeToTempFile(
         tempFile: File,
         stringToWrite: String
     ): File? {
