@@ -281,6 +281,7 @@
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
+    <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
     <string name="order_begin_fulfillment">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -302,7 +303,7 @@
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
-        Refunds
+        Shipping label Refunds
     -->
     <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take a least 14 days to process.</string>
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
@@ -311,6 +312,20 @@
     <string name="shipping_label_refund_success">Refund was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
+    <!--
+        Print shipping labels
+    -->
+    <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
+    <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
+    <string name="shipping_label_paper_size">Paper size</string>
+    <string name="shipping_label_paper_size_options_title">Choose paper size</string>
+    <string name="shipping_label_print_button">Print shipping label</string>
+    <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
+    <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_preview_error">Error previewing shipping label</string>
+    <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
+    <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
     <!--
         Refunds
     -->
@@ -797,13 +812,13 @@
     <string name="enter_username_instead">Log in with your username.</string>
     <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
-    
-    
+
+
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
-    
-    
+
+
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
     <string name="login_magic_link_token_updating">Connecting to your site…</string>
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
@@ -811,8 +826,8 @@
     <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
     <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
-    
-    
+
+
     <string name="login_continue">Continue</string>
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
@@ -844,13 +859,13 @@
     <string name="signup_magic_link_error">There was some trouble sending the email. You can retry now or close and try again later.</string>
     <string name="signup_magic_link_error_button_negative">Close</string>
     <string name="signup_magic_link_error_button_positive">Retry</string>
-    
+
     <string name="signup_magic_link_progress">Sending email</string>
     <string name="signup_terms_of_service_text">By signing up, you agree to our %1$sTerms of Service%2$s.</string>
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
-    
+
     <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
@@ -960,7 +975,7 @@
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
-    
+
     <!-- New Product bottom sheet -->
     <string name="product_add_type_list_header">@string/product_type_list_header</string>
     <string name="product_add_type_simple">Simple product</string>

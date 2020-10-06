@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -272,10 +273,17 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                    productClickListener = this@OrderDetailFragment
-                ) {
-                    viewModel.onRefundShippingLabelClick(it.id)
-                }
+                    productClickListener = this@OrderDetailFragment,
+                    shippingLabelClickListener = object : OnShippingLabelClickListener {
+                        override fun onRefundRequested(shippingLabel: ShippingLabel) {
+                            viewModel.onRefundShippingLabelClick(shippingLabel.id)
+                        }
+
+                        override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel) {
+                            viewModel.onPrintShippingLabelClicked(shippingLabel.id)
+                        }
+                    }
+                )
             }
         }.otherwise { orderDetail_shippingLabelList.hide() }
     }
