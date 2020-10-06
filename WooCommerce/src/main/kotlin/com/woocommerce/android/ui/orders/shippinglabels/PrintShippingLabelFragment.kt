@@ -78,7 +78,10 @@ class PrintShippingLabelFragment : BaseFragment() {
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {
-        handleResult<ShippingLabelPaperSize>(ShippingLabelPaperSizeSelectorDialog.KEY_PAPER_SIZE_RESULT) {
+        handleResult<ShippingLabelPaperSize>(
+            ShippingLabelPaperSizeSelectorDialog.KEY_PAPER_SIZE_RESULT,
+            R.id.printShippingLabelFragment
+        ) {
             viewModel.onPaperSizeSelected(it)
         }
     }
