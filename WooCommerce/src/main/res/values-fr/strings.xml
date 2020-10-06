@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-16 10:54:04+0000
+Translation-Revision-Date: 2020-09-30 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="signup_confirmation_title">Confirmation de l’inscription</string>
+    <string name="reset_your_password">Réinitialiser votre mot de passe</string>
+    <string name="enter_your_site_address">Saisir l’adresse de votre site</string>
+    <string name="continue_with_wpcom">Continuer avec WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">Si vous continuez avec Google sans disposer au préalable d’un compte WordPress.com, vous créez un compte et acceptez nos %1$sconditions d’utilisation%2$s.</string>
+    <string name="continue_terms_of_service_text">En poursuivant, vous acceptez nos %1$sConditions d’utilisation%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">Nous vous enverrons un lien magique par e-mail pour créer votre nouveau compte WordPress.com.</string>
+    <string name="signup_confirmation_message">Nous utiliserons cette adresse e-mail pour créer votre nouveau compte WordPress.com.</string>
+    <string name="signup_magic_link_message">Nous vous avons envoyé un lien magique par e-mail pour créer votre nouveau compte WordPress.com. Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l’e-mail que vous avez reçu de WordPress.com.</string>
+    <string name="sign_up_label">S’inscrire</string>
+    <string name="login_or">ou</string>
+    <string name="continue_site_credentials">Continuer avec les identifiants de connexion de la boutique</string>
+    <string name="continue_google_button_suffix">Continuer avec Google</string>
+    <string name="login_find_your_connected_email">Trouver votre e-mail connecté</string>
+    <string name="login_find_your_site_adress">Trouver l’adresse de votre site</string>
+    <string name="login_done">Terminé</string>
+    <string name="magic_link_not_seeing_email_message">Vous ne voyez pas l’e-mail ? Vérifiez votre dossier de courrier indésirable.</string>
+    <string name="login_magic_links_sent_label">Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l’e-mail que vous avez reçu de WordPress.com.</string>
+    <string name="login_magic_links_label">Nous allons vous envoyer par e-mail un lien magique qui vous connectera instantanément, sans mot de passe.</string>
+    <string name="check_email">Vérifier les e-mails</string>
+    <string name="get_started">Commencer</string>
+    <string name="enter_account_info_for_site">Saisissez vos informations de compte pour %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">Entrez votre adresse e-mail pour vous connecter ou créez un compte WordPress.com.</string>
+    <string name="or_type_your_password">Vous pouvez également saisir votre mot de passe.</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="send_link_by_email">Envoyer un lien par e-mail</string>
+    <string name="feedback_product_give_feedback_button_text">Faire un commentaire</string>
+    <string name="product_detail_publish_product_success">Produit publié</string>
+    <string name="product_detail_publish_product_error">Erreur lors de la publication du produit</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Publication du produit</string>
+    <string name="product_add_tool_bar_menu_button_done">PUBLIER</string>
+    <string name="product_add_tool_bar_title">Nouveau produit</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">Un produit avec des variantes comme la couleur ou la taille</string>
+    <string name="product_add_type_simple_desc">Un article unique à vendre</string>
+    <string name="product_add_type_external">Produit externe</string>
+    <string name="product_add_type_grouped">Produits groupés</string>
+    <string name="product_add_type_variable">Produit variable</string>
+    <string name="product_add_type_simple">Produit simple</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Une seule photo peut être affichée par variante de produit</string>
+    <string name="product_replace_photo">Remplacer une photo</string>
+    <string name="product_add_photo">Ajouter une photo</string>
+    <string name="variation_detail_image_add">Ajouter une image de variante</string>
+    <string name="login_jetpack_view_instructions">Apprendre comment installer et connecter Jetpack</string>
+    <string name="login_jetpack_required_text">Pour utiliser cette application pour %1$s, l’extension Jetpack doit être connectée sur votre boutique.</string>
+    <string name="login_try_another_account">Se connecter avec un autre compte</string>
+    <string name="login_pick_store">Sélectionner la boutique à connecter</string>
+    <string name="login_store_address">Saisissez l’adresse de votre boutique</string>
+    <string name="login_wpcom">Continuer avec WordPress.com</string>
     <string name="product_type_variation_desc">Un produit avec des variantes comme la couleur ou la taille</string>
     <string name="product_selection_count_single">%d produit sélectionné</string>
     <string name="product_selection_count">%d produits sélectionnés</string>
@@ -58,8 +110,38 @@ Language: fr
     <string name="shipping_label_refund_message">Vous pouvez demander le remboursement d’une étiquette d’expédition qui n’a pas été utilisée pour expédier un colis. Cela prendra au moins 14 jours.</string>
     <string name="orderdetail_shipping_label_request_refund">Demander un remboursement</string>
     <string name="orderdetail_shipping_label_item_menu">Remboursement d’une étiquette d’expédition</string>
+    <string name="product_type_physical">Physique</string>
+    <string name="bottom_sheet_short_description_desc">Description brève de votre produit</string>
+    <string name="bottom_sheet_tags_desc">Facilitez la recherche de vos produits à l’aide d’étiquettes</string>
+    <string name="bottom_sheet_categories_desc">Organisez vos produits dans des groupes connexes</string>
+    <string name="bottom_sheet_shipping_desc">Ajouter le poids et les dimensions</string>
+    <string name="bottom_sheet_add_details_list_header">Ajouter des détails supplémentaires</string>
+    <string name="product_tag_list_empty_message">Organiser vos produits à l’aide d’étiquettes</string>
+    <string name="product_tag_list_empty_title">Ajouter votre première étiquette</string>
+    <string name="product_tags">Étiquettes</string>
+    <string name="product_tag_empty">Ajouter une étiquette</string>
     <string name="product_variation_disabled">Désactivée</string>
+    <string name="product_is_virtual">Produit virtuel</string>
+    <string name="product_detail_add_more">Ajouter des détails supplémentaires</string>
+    <string name="product_detail_product_type_hint">%1$s produit</string>
+    <string name="product_type_downloadable">téléchargeable</string>
+    <string name="product_type_description">%s produit</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Produits restants</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s libellé remboursé</string>
+    <string name="orderdetail_shipping_label_tracking_info">Suivre l\'expédition</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Masquer les détails de l’expédition</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Afficher les détails de l’expédition</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Carte de crédit</string>
+    <string name="orderdetail_shipping_label_item_payment">Moyen de paiement</string>
+    <string name="orderdetail_shipping_label_item_carrier">Transporteurs et frais de port</string>
+    <string name="orderdetail_shipping_label_item_package_info">Détails du colis</string>
+    <string name="orderdetail_shipping_label_item_shipto">Livrée à</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Livrer à partir de</string>
+    <string name="orderdetail_shipping_label_item_header">Colis %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">UGS : %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s options)</string>
+    <string name="shipping_labels">Étiquettes d’expédition</string>
     <string name="product_add_category_dialog_message">Veuillez patienter…</string>
     <string name="product_add_category_dialog_title">Ajout d’une catégorie</string>
     <string name="product_category_parent">Catégorie parente</string>
@@ -148,6 +230,7 @@ Language: fr
     <string name="product_short_description_empty">Bref récapitulatif sur le produit</string>
     <string name="product_short_description">Courte description</string>
     <string name="my_store_stats_availability_message">Nous déployons des améliorations afin d\'optimiser les statistiques des boutiques possédant WooCommerce 4.0 ou l\'extension d\'administration WooCommerce</string>
+    <string name="my_store_stats_reverted_message">Nous avons apporté des améliorations à nos analyses. Effectuez la mise à niveau vers WooCommerce 4.0 ou version supérieure ou installez l’extension WooCommerce Admin pour continuer de voir vos statistiques après le 1er septembre 2020.</string>
     <string name="my_store_stats_reverted_title">Procéder à la mise à niveau pour conserver l\'accès à vos statistiques</string>
     <string name="product_pricing_update_sale_price_error">Le tarif promotionnel doit être inférieur au tarif normal</string>
     <string name="product_schedule_remove_end_date_link_label">Supprimer la date d’expiration</string>
@@ -203,7 +286,7 @@ Language: fr
     <string name="product_inventory_empty">Ajouter un inventaire</string>
     <string name="orderlist_loading">Recherche dans vos commandes…</string>
     <string name="product_detail_editable_text_hint">Saisissez du texte</string>
-    <string name="product_detail_title_hint">Titre du produit</string>
+    <string name="product_detail_title_hint">Entrer le nom du produit</string>
     <string name="product_detail_update_product_success">Produit mis à jour</string>
     <string name="product_detail_update_product_error">Erreur lors de la mise à jour du produit</string>
     <string name="product_update_dialog_message">Veuillez patienter…</string>
@@ -633,17 +716,14 @@ Language: fr
     <string name="login_need_help_finding_email">Besoin d\'aide pour trouver l\'adresse e-mail de connexion ?</string>
     <string name="login_jetpack_what_is_description">Jetpack est une extension WordPress gratuite qui connecte votre boutique aux outils dont vous avez besoin pour vous offrir une expérience optimale, dont les notifications push et les statistiques</string>
     <string name="login_jetpack_what_is">Qu\'est-ce que Jetpack ?</string>
-    <string name="login_jetpack_view_instructions">Voir les instructions</string>
-    <string name="login_jetpack_required_msg">Pour utiliser l\'application WooCommerce, vous devrez configurer l\'extension Jetpack sur votre site</string>
     <string name="login_view_connected_stores">Voir les boutiques connectées</string>
-    <string name="login_try_another_account">Essayer un autre compte</string>
     <string name="login_not_connected_to_account">Il semblerait que %1$s soit connecté à un autre compte WordPress.com.</string>
-    <string name="login">Connexion</string>
     <string name="keep_editing">Continuer à écrire</string>
     <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
     <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>
     <string name="no_site_error">Le site à cette adresse n\'est pas un site WordPress. Le site doit utiliser WordPress pour que nous puissions nous y connecter.</string>
     <string name="support_help_center">Centre d\'aide</string>
+    <string name="product_type_virtual">Virtuel</string>
     <string name="product_type_grouped">Groupé</string>
     <string name="product_type_variable">Variable</string>
     <string name="product_backorders_notify">Autoriser, mais avec notification client</string>
@@ -829,7 +909,6 @@ Language: fr
     <string name="signup_with_email_button">S\'inscrire avec une adresse e-mail</string>
     <string name="signup_terms_of_service_text">En vous inscrivant, vous acceptez nos %1$sConditions d\'Utilisation%2$s.</string>
     <string name="signup_magic_link_progress">Envoi de l\'e-mail</string>
-    <string name="signup_magic_link_message">Nous vous avons envoyé un lien de connexion sans mot de passe. Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l\'e-mail pour terminer l\'inscription.</string>
     <string name="signup_magic_link_error_button_positive">Réessayer</string>
     <string name="signup_magic_link_error_button_negative">Fermer</string>
     <string name="signup_magic_link_error">Une erreur s\'est produite lors de l’envoi de l\'e-mail. Vous pouvez recommencer maintenant ou fermer et réessayer ultérieurement.</string>
@@ -861,14 +940,12 @@ Language: fr
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Déjà connecté·e à WordPress.com</string>
     <string name="login_continue">Continuer</string>
-    <string name="connect_site">Connecter le site</string>
+    <string name="connect_site">Connecter un site</string>
     <string name="connect_more">Connecter un autre site</string>
     <string name="enter_wpcom_password_google">Pour faire cela avec ce compte Google, veuillez fournir le mot de passe WordPress.com correspondant. Ceci ne sera demandé qu’une seule fois.</string>
     <string name="enter_wpcom_password">Saisissez votre mot de passe WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
-    <string name="login_magic_links_sent_label">Votre lien magique arrive ! Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l\'e-mail que vous avez reçu de WordPress.com.</string>
-    <string name="login_magic_links_label">Nous allons vous envoyer un lien magique qui vous connectera instantanément, sans mot de passe. Fini la frappe au clavier !</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>
@@ -944,6 +1021,7 @@ Language: fr
     <string name="orderdetail_product_image_contentdesc">Image produit</string>
     <string name="orderdetail_product_lineitem_sku">UGS :</string>
     <string name="orderdetail_product_lineitem_tax">TVA :</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">envoyer un e-mail au client</string>
     <string name="orderdetail_billing_details">Détails de facturation</string>
     <string name="orderdetail_shipping_details">Détails de livraison</string>
@@ -985,7 +1063,6 @@ Language: fr
     <string name="login_nostores_content_description">Aucune boutique WooCommerce</string>
     <string name="login_avatar_content_description">Votre photo de profil</string>
     <string name="login_connected_store">Boutique connectée</string>
-    <string name="login_pick_store">Sélectionner la boutique</string>
     <string name="login_configure_link">Lisez les %sinstructions de configuration%s.</string>
     <string name="login_prologue_banner">Gérez les commandes, suivez l’évolution des ventes et surveillez l’activité de la boutique avec des alertes en temps réel.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>

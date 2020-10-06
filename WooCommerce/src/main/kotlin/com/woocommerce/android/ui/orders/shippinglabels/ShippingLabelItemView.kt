@@ -55,11 +55,13 @@ class ShippingLabelItemView @JvmOverloads constructor(
         shippingLabelValue.text = value
     }
 
-    fun showTrackingLinkButton(show: Boolean) {
+    fun showTrackingItemButton(show: Boolean) {
         shippingLabelItem_btnTrack.isVisible = show
     }
 
-    fun setTrackingLinkClickListener(clickListener: (() -> Unit)) {
+    fun setTrackingItemClickListener(clickListener: (() -> Unit)) {
         shippingLabelItem_btnTrack.setOnClickListener { clickListener.invoke() }
     }
+
+    fun getTrackingItemButton(): View = shippingLabelItem_btnTrack
 }

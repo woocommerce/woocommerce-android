@@ -44,4 +44,12 @@
 
     <View style="@style/Woo.Divider" />
 
+    <CheckedTextView
+        android:id="@+id/btnTrashed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/product_status_trashed" />
+
+    <View style="@style/Woo.Divider" />
+
 </LinearLayout>

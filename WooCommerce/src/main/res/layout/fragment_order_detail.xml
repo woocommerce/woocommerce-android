@@ -5,7 +5,7 @@
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.orders.OrderDetailFragment">
+    tools:context="com.woocommerce.android.ui.orders.details.OrderDetailFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -25,7 +25,7 @@
                 tools:ignore="UselessParent">
 
                 <!-- Order Status -->
-                <com.woocommerce.android.ui.orders.OrderDetailOrderStatusView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
                     android:id="@+id/orderDetail_orderStatus"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
@@ -41,15 +41,16 @@
                     tools:visibility="visible" />
 
                 <!-- Product List -->
-                <com.woocommerce.android.ui.orders.OrderDetailShippingLabelListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
                     android:id="@+id/orderDetail_shippingLabelList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:visibility="gone"
                     android:contentDescription="@string/shipping_labels"/>
 
                 <!-- Product List -->
-                <com.woocommerce.android.ui.orders.OrderDetailProductListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
                     style="@style/Woo.Card"
                     android:visibility="gone"
@@ -60,16 +61,17 @@
                     android:contentDescription="@string/products"/>
 
                 <!-- Refunds Info -->
-                <com.woocommerce.android.ui.orders.RefundsInfoView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
                     android:id="@+id/orderDetail_refundsInfo"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
+                    android:visibility="gone"
                     android:contentDescription="@string/refunds"/>
 
                 <!-- Payments -->
-                <com.woocommerce.android.ui.orders.OrderDetailPaymentView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
                     android:id="@+id/orderDetail_paymentInfo"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
@@ -78,14 +80,14 @@
                     android:focusable="true"/>
 
                 <!-- Customer Info -->
-                <com.woocommerce.android.ui.orders.OrderDetailCustomerInfoView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <!-- Shipment Tracking -->
-                <com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
                     android:id="@+id/orderDetail_shipmentList"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
@@ -96,7 +98,7 @@
                     tools:visibility="visible"/>
 
                 <!-- Order Notes -->
-                <com.woocommerce.android.ui.orders.notes.OrderDetailOrderNoteListView
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
                     android:id="@+id/orderDetail_noteList"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
