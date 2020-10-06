@@ -313,11 +313,7 @@
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
-<<<<<<< HEAD
-        Print label Refunds
-=======
         Print shipping labels
->>>>>>> issue/2291-print-shipping-labels
     -->
     <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
     <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
