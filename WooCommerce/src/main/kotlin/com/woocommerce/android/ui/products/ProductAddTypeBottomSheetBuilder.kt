@@ -30,7 +30,7 @@ class ProductAddTypeBottomSheetBuilder : ProductTypeBottomSheetBuilder {
                 titleResource = string.product_add_type_grouped,
                 descResource = string.product_add_type_grouped_desc,
                 iconResource = drawable.ic_widgets,
-                isEnabled = false
+                isEnabled = true
             ),
             ProductTypesBottomSheetUiItem(
                 type = EXTERNAL,
