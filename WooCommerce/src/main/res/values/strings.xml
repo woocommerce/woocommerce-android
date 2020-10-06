@@ -800,7 +800,7 @@
     
     
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
+    
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     
     
@@ -817,10 +817,10 @@
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-    <string name="login_site_address">Store address</string>
+    
     <string name="login_site_address_help">Need help finding your site address?</string>
-    <string name="login_site_address_help_title">What\'s my store address?</string>
-    <string name="login_site_address_help_content">Your store address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    
+    
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -1317,7 +1317,7 @@
     <string name="connect_more">Connect another site</string>
     <string name="connect_site">Connect a site</string>
     <string name="login_done">Done</string>
-    <string name="login_find_your_site_adress">Find your store address</string>
+    
     <string name="login_find_your_connected_email">Find your connected email</string>
     <string name="continue_google_button_suffix">Continue with Google</string>
     <string name="continue_site_credentials">Continue with store credentials</string>
@@ -1332,4 +1332,9 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
+    <string name="login_site_address">Site address</string>
+    <string name="login_site_address_help_title">What\'s my site address?</string>
+    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    <string name="login_find_your_site_adress">Find your site address</string>
 </resources>
