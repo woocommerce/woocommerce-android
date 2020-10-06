@@ -24,31 +24,43 @@
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productExternalLinkFragment"
             app:destination="@id/productExternalLinkFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productReviewsFragment"
             app:destination="@id/productReviewsFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/nav_graph_product_type_bottom_sheet"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="isAddProduct"
@@ -59,6 +71,8 @@
             android:id="@+id/action_productDetailFragment_to_nav_graph_image_gallery"
             app:destination="@id/nav_graph_image_gallery"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="remoteId"
@@ -92,6 +106,8 @@
             android:id="@+id/action_variationListFragment_to_variationDetailFragment"
             app:destination="@id/variationDetailFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
@@ -138,6 +154,8 @@
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
             app:destination="@id/productShippingClassFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <argument
             android:name="requestCode"
@@ -250,24 +268,32 @@
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
         app:destination="@id/nav_graph_product_settings"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
         app:destination="@id/nav_graph_add_product_category"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_global_aztecEditorFragment"
         app:destination="@id/aztecEditorFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_global_wpMediaViewerFragment"
         app:destination="@id/wpMediaViewerFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productDetailBottomSheetFragment"
@@ -278,26 +304,36 @@
         android:id="@+id/action_global_productShippingFragment"
         app:destination="@id/productShippingFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productCategoriesFragment"
         app:destination="@id/productCategoriesFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productTagsFragment"
         app:destination="@id/productTagsFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_groupedProductListFragment"
         app:destination="@id/groupedProductListFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productSelectionListFragment"
         app:destination="@id/productSelectionListFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/variationDetailFragment"
@@ -319,6 +355,8 @@
             android:id="@+id/action_variationDetailFragment_to_nav_graph_image_gallery"
             app:destination="@id/nav_graph_image_gallery"
             app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="remoteId"

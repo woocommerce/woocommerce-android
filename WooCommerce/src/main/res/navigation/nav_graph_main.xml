@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/rootFragment"
         android:name="com.woocommerce.android.ui.main.RootFragment"
-        tools:layout="@layout/fragment_root"/>
+        tools:layout="@layout/fragment_root" />
 
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -79,12 +79,12 @@
             android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
             app:destination="@id/shippingLabelRefundFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printShippingLabelFragment"
             app:destination="@id/printShippingLabelFragment"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_orderDetailFragment_to_issue_refund"
             app:destination="@id/nav_graph_refunds"
@@ -111,8 +111,8 @@
         android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
         <argument
             android:name="currentStatus"
-            app:nullable="false"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="false" />
         <argument
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
@@ -207,16 +207,16 @@
         app:popExitAnim="@anim/activity_fade_out">
         <argument
             android:name="selectedStockStatus"
-            app:nullable="true"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="selectedProductStatus"
-            app:nullable="true"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="selectedProductType"
-            app:nullable="true"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true" />
     </action>
     <action
         android:id="@+id/action_global_orderDetailFragment"
@@ -243,8 +243,10 @@
     <action
         android:id="@+id/action_global_reviewDetailFragment"
         app:destination="@id/reviewDetailFragment"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
@@ -292,7 +294,7 @@
             android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <dialog
         android:id="@+id/shippingLabelPaperSizeSelectorDialog"
@@ -302,7 +304,7 @@
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog$ShippingLabelPaperSize" />
     </dialog>
 
-    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <action
         android:id="@+id/action_global_productTypeBottomSheetFragment"
         app:destination="@id/nav_graph_product_type_bottom_sheet"
