@@ -380,7 +380,9 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.productSettingsFragment,
                 R.id.addProductCategoryFragment,
                 R.id.parentCategoryListFragment,
-                R.id.productSelectionListFragment -> {
+                R.id.productSelectionListFragment,
+                R.id.printShippingLabelInfoFragment,
+                R.id.shippingLabelFormatOptionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
