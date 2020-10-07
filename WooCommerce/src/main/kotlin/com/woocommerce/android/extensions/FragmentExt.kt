@@ -11,9 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * This mechanism is used to facilitate the request-result communication between 2 separate fragments.
  *
- * Note: The value is stored along with a boolean value (true), which signifies that the data is fresh and has not been
- * observed yet. AtomicBoolean type is used to store the boolean so that the value can be updated once once the data is
- * handled/observed.
  */
 fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
@@ -24,9 +21,9 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
  * with the supplied key.
  *
- * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
- * called, the boolean value is updated. This puts a limit on the number of observers for a particular key-result pair
- * to 1.
+ * Note: Once the observer is called, the value is removed from the SavedStateHandle so that the handler isn't called
+ * repeatedly on device rotation. Another reason is that the value does not need to be serialized.
+ * This puts a limit on the number of observers for a particular key-result pair to 1.
  */
 fun <T> Fragment.handleResult(key: String, handler: (T) -> Unit) {
     findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)?.observe(
