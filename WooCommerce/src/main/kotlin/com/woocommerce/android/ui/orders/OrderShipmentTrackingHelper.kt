@@ -6,6 +6,8 @@ import android.content.Context
 import android.view.View
 import android.widget.PopupMenu
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -49,12 +51,18 @@ object OrderShipmentTrackingHelper {
         with(popup.menu.findItem(R.id.menu_track_shipment)) {
             isVisible = trackingLink.isNotEmpty()
             setOnMenuItemClickListener {
+                AnalyticsTracker.track(Stat.SHIPMENT_TRACKING_MENU_ACTION, mapOf(
+                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_TRACK
+                ))
                 trackShipment(context, trackingLink)
                 true
             }
         }
 
         popup.menu.findItem(R.id.menu_copy_tracking)?.setOnMenuItemClickListener {
+            AnalyticsTracker.track(Stat.SHIPMENT_TRACKING_MENU_ACTION, mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_COPY
+            ))
             copyTrackingNumber(context, trackingNumber)
             true
         }
