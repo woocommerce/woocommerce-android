@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * handled/observed.
  */
 fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
-    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, Pair(result, AtomicBoolean(true)))
+    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
     findNavController().navigateUp()
 }
 
@@ -29,13 +29,11 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * to 1.
  */
 fun <T> Fragment.handleResult(key: String, handler: (T) -> Unit) {
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Pair<T, AtomicBoolean>>(key)?.observe(
+    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)?.observe(
         this.viewLifecycleOwner,
         Observer {
-            val isFresh = it.second.getAndSet(false)
-            if (isFresh) {
-                handler(it.first)
-            }
+            findNavController().currentBackStackEntry?.savedStateHandle?.remove<T>(key)
+            handler(it)
         }
     )
 }
