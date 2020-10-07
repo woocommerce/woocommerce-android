@@ -206,8 +206,8 @@
     <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out">
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -242,8 +242,8 @@
     <action
         android:id="@+id/action_global_orderDetailFragment"
         app:destination="@id/orderDetailFragment"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -265,8 +265,6 @@
         android:id="@+id/action_global_reviewDetailFragment"
         app:destination="@id/reviewDetailFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_products" />
