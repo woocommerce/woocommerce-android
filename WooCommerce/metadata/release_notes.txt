@@ -1,3 +1,2 @@
-- Login: We implemented a new login flow with new screen designs.
-- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
-
+* Product editing is now out of beta and is available for all users
+ 
