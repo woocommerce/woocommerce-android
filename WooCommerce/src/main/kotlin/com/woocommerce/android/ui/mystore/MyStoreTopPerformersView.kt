@@ -96,7 +96,11 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(dashboard_top_performers_container, R.layout.skeleton_dashboard_top_performers, delayed = true)
+            skeletonView.show(
+                dashboard_top_performers_container,
+                R.layout.skeleton_dashboard_top_performers,
+                delayed = true
+            )
         } else {
             skeletonView.hide()
         }
