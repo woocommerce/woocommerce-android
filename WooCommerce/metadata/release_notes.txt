@@ -1,2 +1,6 @@
-* Product editing is now out of beta and is available for all users
+Enhancements to the editing capabilities for all product types:
+
+Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
+
+Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
  
