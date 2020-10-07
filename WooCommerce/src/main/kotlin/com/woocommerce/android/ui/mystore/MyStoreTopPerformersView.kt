@@ -20,7 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
 import kotlinx.android.synthetic.main.my_store_top_performers.view.*
-import kotlinx.android.synthetic.main.top_earner_list_item.view.*
+import kotlinx.android.synthetic.main.top_performers_list_item.view.*
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -54,19 +54,19 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
         this.statsCurrencyCode = statsCurrencyCode
 
-        topEarners_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        topEarners_recycler.adapter = TopEarnersAdapter(
+        topPerformers_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        topPerformers_recycler.adapter = TopPerformersAdapter(
             context,
             formatCurrencyForDisplay,
             statsCurrencyCode,
             listener
         )
-        topEarners_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+        topPerformers_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
         // and only processes the first click event. More details on this issue can be found here:
         // https://github.com/woocommerce/woocommerce-android/issues/2074
-        topEarners_recycler.isMotionEventSplittingEnabled = false
+        topPerformers_recycler.isMotionEventSplittingEnabled = false
     }
 
     fun removeListener() {
@@ -74,16 +74,16 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     /**
-     * Load top earners stats when tab is selected in [MyStoreStatsView]
+     * Load top performers stats when tab is selected in [MyStoreStatsView]
      */
-    fun loadTopEarnerStats(granularity: StatsGranularity) {
+    fun loadTopPerformerStats(granularity: StatsGranularity) {
         // Track range change
         AnalyticsTracker.track(
             Stat.DASHBOARD_TOP_PERFORMERS_DATE,
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
         )
 
-        topEarners_recycler.adapter = TopEarnersAdapter(
+        topPerformers_recycler.adapter = TopPerformersAdapter(
             context,
             formatCurrencyForDisplay,
             statsCurrencyCode,
@@ -91,33 +91,33 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         )
         showEmptyView(false)
         showErrorView(false)
-        listener?.onRequestLoadTopEarnerStats(granularity)
+        listener?.onRequestLoadTopPerformersStats(granularity)
     }
 
     fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(dashboard_top_earners_container, R.layout.skeleton_dashboard_top_earners, delayed = true)
+            skeletonView.show(dashboard_top_performers_container, R.layout.skeleton_dashboard_top_performers, delayed = true)
         } else {
             skeletonView.hide()
         }
     }
 
     private fun showEmptyView(show: Boolean) {
-        topEarners_emptyView.isVisible = show
+        topPerformers_emptyView.isVisible = show
     }
 
     fun updateView(topPerformers: List<WCTopPerformerProductModel>) {
-        (topEarners_recycler.adapter as TopEarnersAdapter).setTopPerformers(topPerformers)
+        (topPerformers_recycler.adapter as TopPerformersAdapter).setTopPerformers(topPerformers)
         showEmptyView(topPerformers.isEmpty())
     }
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        topEarners_error.isVisible = show
-        topEarners_recycler.isVisible = !show
+        topPerformers_error.isVisible = show
+        topPerformers_recycler.isVisible = !show
     }
 
-    class TopEarnersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class TopPerformersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var productNameText: TextView = view.text_ProductName
         var productOrdersText: TextView = view.text_ProductOrders
         var totalSpendText: TextView = view.text_TotalSpend
@@ -125,42 +125,42 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         var divider: View = view.divider
     }
 
-    class TopEarnersAdapter(
+    class TopPerformersAdapter(
         context: Context,
         val formatCurrencyForDisplay: FormatCurrencyRounded,
         val statsCurrencyCode: String,
         val listener: MyStoreStatsListener?
-    ) : RecyclerView.Adapter<TopEarnersViewHolder>() {
+    ) : RecyclerView.Adapter<TopPerformersViewHolder>() {
         private val orderString: String
         private val imageSize: Int
-        private val topEarnerList: ArrayList<WCTopPerformerProductModel> = ArrayList()
+        private val topPerformersList: ArrayList<WCTopPerformerProductModel> = ArrayList()
 
         init {
             setHasStableIds(true)
-            orderString = context.getString(R.string.dashboard_top_earners_total_orders)
+            orderString = context.getString(R.string.dashboard_top_performers_total_orders)
             imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         }
 
         fun setTopPerformers(newList: List<WCTopPerformerProductModel>) {
-            topEarnerList.clear()
-            topEarnerList.addAll(newList)
+            topPerformersList.clear()
+            topPerformersList.addAll(newList)
             notifyDataSetChanged()
         }
 
-        override fun getItemCount() = topEarnerList.size
+        override fun getItemCount() = topPerformersList.size
 
         override fun getItemId(position: Int): Long {
-            return topEarnerList[position].id.toLong()
+            return topPerformersList[position].id.toLong()
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopEarnersViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopPerformersViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.top_earner_list_item, parent, false)
-            return TopEarnersViewHolder(view)
+                .inflate(R.layout.top_performers_list_item, parent, false)
+            return TopPerformersViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: TopEarnersViewHolder, position: Int) {
-            val topPerformer = topEarnerList[position]
+        override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
+            val topPerformer = topPerformersList[position]
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topPerformer.quantity))
             val total = formatCurrencyForDisplay(topPerformer.total, statsCurrencyCode)
 

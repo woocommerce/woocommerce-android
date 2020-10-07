@@ -31,6 +31,6 @@ interface MyStoreContract {
         fun showEmptyView(show: Boolean)
 
         fun showChartSkeleton(show: Boolean)
-        fun showTopEarnersSkeleton(show: Boolean)
+        fun showTopPerformersSkeleton(show: Boolean)
     }
 }

@@ -960,11 +960,11 @@ Language: ar
     <string name="dashboard_fulfill_order_title_single">لديك طلب واحد لإتمامه</string>
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
-    <string name="dashboard_top_earners_empty">لا يوجد أي نشاط في هذه الفترة</string>
-    <string name="dashboard_top_earners_total_orders">إجمالي الطلبات: %s</string>
-    <string name="dashboard_top_earners_total_spend">إجمالي الإنفاق</string>
-    <string name="dashboard_top_earners_description">احصل على رؤى دقيقة حول كيفية أداء المنتجات في متجرك</string>
-    <string name="dashboard_top_earners_title">أهم المؤدِّين</string>
+    <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>
+    <string name="dashboard_top_performers_total_orders">إجمالي الطلبات: %s</string>
+    <string name="dashboard_top_performers_total_spend">إجمالي الإنفاق</string>
+    <string name="dashboard_top_performers_description">احصل على رؤى دقيقة حول كيفية أداء المنتجات في متجرك</string>
+    <string name="dashboard_top_performers_title">أهم المؤدِّين</string>
     <string name="dashboard_stats_updated_date_time">تم التحديث في %s</string>
     <string name="dashboard_stats_updated_one_day">تم التحديث قبل يوم واحد</string>
     <string name="dashboard_stats_updated_hours">تم التحديث قبل %d من الساعات</string>

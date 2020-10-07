@@ -140,7 +140,7 @@ class MyStoreFragment : TopLevelFragment(),
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         )
-        my_store_top_earners.initView(
+        my_store_top_performers.initView(
             listener = this,
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
@@ -152,7 +152,7 @@ class MyStoreFragment : TopLevelFragment(),
                 tabStatsPosition = tab.position
                 my_store_date_bar?.clearDateRangeValues()
                 my_store_stats?.loadDashboardStats(activeGranularity)
-                my_store_top_earners?.loadTopEarnerStats(activeGranularity)
+                my_store_top_performers?.loadTopPerformerStats(activeGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -205,7 +205,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onDestroyView() {
         my_store_stats.removeListener()
-        my_store_top_earners.removeListener()
+        my_store_top_performers.removeListener()
         presenter.dropView()
         super.onDestroyView()
     }
@@ -239,15 +239,15 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_top_earners.showErrorView(false)
-            my_store_top_earners.updateView(topPerformers)
+            my_store_top_performers.showErrorView(false)
+            my_store_top_performers.updateView(topPerformers)
         }
     }
 
     override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_top_earners.updateView(emptyList())
-            my_store_top_earners.showErrorView(true)
+            my_store_top_performers.updateView(emptyList())
+            my_store_top_performers.showErrorView(true)
             showErrorSnack()
         }
     }
@@ -320,8 +320,8 @@ class MyStoreFragment : TopLevelFragment(),
         my_store_stats.showSkeleton(show)
     }
 
-    override fun showTopEarnersSkeleton(show: Boolean) {
-        my_store_top_earners.showSkeleton(show)
+    override fun showTopPerformersSkeleton(show: Boolean) {
+        my_store_top_performers.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
@@ -329,8 +329,8 @@ class MyStoreFragment : TopLevelFragment(),
         presenter.loadStats(period)
     }
 
-    override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
-        my_store_top_earners.showErrorView(false)
+    override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
+        my_store_top_performers.showErrorView(false)
         presenter.coroutineScope.launch {
             presenter.loadTopPerformersStats(period)
         }
@@ -426,7 +426,7 @@ class MyStoreFragment : TopLevelFragment(),
         tabLayout.visibility = dashboardVisibility
         my_store_date_bar.visibility = dashboardVisibility
         my_store_stats.visibility = dashboardVisibility
-        my_store_top_earners.visibility = dashboardVisibility
+        my_store_top_performers.visibility = dashboardVisibility
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {

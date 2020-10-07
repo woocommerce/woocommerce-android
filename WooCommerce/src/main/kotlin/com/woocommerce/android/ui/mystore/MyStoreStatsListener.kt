@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 interface MyStoreStatsListener {
     fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel)
     fun onRequestLoadStats(period: StatsGranularity)
-    fun onRequestLoadTopEarnerStats(period: StatsGranularity)
+    fun onRequestLoadTopPerformersStats(period: StatsGranularity)
     fun onChartValueSelected(dateString: String, period: StatsGranularity) {}
     fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {}
 }

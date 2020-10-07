@@ -960,11 +960,11 @@ Language: fr
     <string name="dashboard_fulfill_order_title_single">Vous avez 1 commande à exécuter</string>
     <string name="dashboard_action_view_orders">Voir les commandes</string>
     <string name="dashboard_action_view_order">Voir la commande</string>
-    <string name="dashboard_top_earners_empty">Aucune activité sur cette période</string>
-    <string name="dashboard_top_earners_total_orders">Commandes totales : %s</string>
-    <string name="dashboard_top_earners_total_spend">Dépense totale</string>
-    <string name="dashboard_top_earners_description">Obtenez des informations sur les performances des produits de votre boutique</string>
-    <string name="dashboard_top_earners_title">Produits les plus performants</string>
+    <string name="dashboard_top_performers_empty">Aucune activité sur cette période</string>
+    <string name="dashboard_top_performers_total_orders">Commandes totales : %s</string>
+    <string name="dashboard_top_performers_total_spend">Dépense totale</string>
+    <string name="dashboard_top_performers_description">Obtenez des informations sur les performances des produits de votre boutique</string>
+    <string name="dashboard_top_performers_title">Produits les plus performants</string>
     <string name="dashboard_stats_updated_date_time">Mises à jour le %s</string>
     <string name="dashboard_stats_updated_one_day">Mises à jour il y a un an</string>
     <string name="dashboard_stats_updated_hours">Mises à jour il y a %d heures</string>

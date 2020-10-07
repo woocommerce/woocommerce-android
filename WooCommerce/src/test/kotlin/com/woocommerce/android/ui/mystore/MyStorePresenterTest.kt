@@ -190,7 +190,7 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Requests top earners stats data correctly - forced`() {
+    fun `Requests top performers stats data correctly - forced`() {
         runBlocking {
             whenever(
                 wcLeaderboardsStore.fetchProductLeaderboards(
@@ -308,7 +308,7 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Show and hide top earners skeleton correctly`() {
+    fun `Show and hide top performers skeleton correctly`() {
         runBlocking {
             whenever(
                 wcLeaderboardsStore.fetchProductLeaderboards(
@@ -320,8 +320,8 @@ class MyStorePresenterTest {
                 .thenReturn(WooResult(emptyList()))
             presenter.takeView(myStoreView)
             presenter.loadTopPerformersStats(StatsGranularity.DAYS, forced = true)
-            verify(myStoreView, times(1)).showTopEarnersSkeleton(true)
-            verify(myStoreView, times(1)).showTopEarnersSkeleton(false)
+            verify(myStoreView, times(1)).showTopPerformersSkeleton(true)
+            verify(myStoreView, times(1)).showTopPerformersSkeleton(false)
         }
     }
 }

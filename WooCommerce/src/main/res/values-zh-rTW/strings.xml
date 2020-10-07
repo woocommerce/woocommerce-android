@@ -960,11 +960,11 @@ Language: zh_TW
     <string name="dashboard_fulfill_order_title_single">你有 1 筆訂單尚未履行</string>
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
-    <string name="dashboard_top_earners_empty">此期間沒有任何活動</string>
-    <string name="dashboard_top_earners_total_orders">訂單總數：%s</string>
-    <string name="dashboard_top_earners_total_spend">消費總額</string>
-    <string name="dashboard_top_earners_description">深入瞭解產品在商店上的成效</string>
-    <string name="dashboard_top_earners_title">成效最佳者</string>
+    <string name="dashboard_top_performers_empty">此期間沒有任何活動</string>
+    <string name="dashboard_top_performers_total_orders">訂單總數：%s</string>
+    <string name="dashboard_top_performers_total_spend">消費總額</string>
+    <string name="dashboard_top_performers_description">深入瞭解產品在商店上的成效</string>
+    <string name="dashboard_top_performers_title">成效最佳者</string>
     <string name="dashboard_stats_updated_date_time">更新日期：%s</string>
     <string name="dashboard_stats_updated_one_day">1 天前已更新</string>
     <string name="dashboard_stats_updated_hours">%d 小時前已更新</string>

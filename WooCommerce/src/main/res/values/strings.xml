@@ -181,11 +181,11 @@
     <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
-    <string name="dashboard_top_earners_title">Top performers</string>
-    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_earners_total_spend">Total spend</string>
-    <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_empty">No activity this period</string>
+    <string name="dashboard_top_performers_title">Top performers</string>
+    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
+    <string name="dashboard_top_performers_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>

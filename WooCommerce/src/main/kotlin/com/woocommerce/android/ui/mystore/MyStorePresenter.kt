@@ -48,7 +48,7 @@ class MyStorePresenter @Inject constructor(
 ) : Presenter {
     companion object {
         private val TAG = MyStorePresenter::class.java
-        private const val NUM_TOP_EARNERS = 3
+        private const val NUM_TOP_PERFORMERS = 3
         private val statsForceRefresh = BooleanArray(StatsGranularity.values().size)
         private val topPerformersForceRefresh = BooleanArray(StatsGranularity.values().size)
 
@@ -115,7 +115,7 @@ class MyStorePresenter @Inject constructor(
         if (forceRefresh) {
             topPerformersForceRefresh[granularity.ordinal] = false
             withContext(Dispatchers.Main) {
-                myStoreView?.showTopEarnersSkeleton(true)
+                myStoreView?.showTopPerformersSkeleton(true)
             }
         }
 
@@ -147,7 +147,7 @@ class MyStorePresenter @Inject constructor(
         granularity: StatsGranularity
     ) {
         withContext(Dispatchers.Main) {
-            myStoreView?.showTopEarnersSkeleton(false)
+            myStoreView?.showTopPerformersSkeleton(false)
             result.model?.let {
                 onWCTopPerformersChanged(it, granularity)
             } ?: myStoreView?.showTopPerformersError(granularity)
@@ -164,7 +164,7 @@ class MyStorePresenter @Inject constructor(
         wcLeaderboardsStore.fetchProductLeaderboards(
             site = selectedSite.get(),
             unit = granularity,
-            quantity = NUM_TOP_EARNERS
+            quantity = NUM_TOP_PERFORMERS
         )
 
     private fun requestStoredProductLeaderboards(granularity: StatsGranularity) =

@@ -58,9 +58,9 @@
                     android:layout_marginBottom="@dimen/minor_100"
                     android:visibility="gone"/>
 
-                <!-- Top earner stats -->
+                <!-- Top performer stats -->
                 <com.woocommerce.android.ui.mystore.MyStoreTopPerformersView
-                    android:id="@+id/my_store_top_earners"
+                    android:id="@+id/my_store_top_performers"
                     style="@style/Woo.Card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
