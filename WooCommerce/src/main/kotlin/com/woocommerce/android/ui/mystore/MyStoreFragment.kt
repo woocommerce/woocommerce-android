@@ -275,10 +275,6 @@ class MyStoreFragment : TopLevelFragment(),
         errorSnackbar?.show()
     }
 
-    override fun updateStatsAvailabilityError() {
-        (activity as? MainActivity)?.updateStatsView(false)
-    }
-
     override fun getFragmentTitle(): String {
         selectedSite.getIfExists()?.let { site ->
             if (!site.displayName.isNullOrBlank()) {

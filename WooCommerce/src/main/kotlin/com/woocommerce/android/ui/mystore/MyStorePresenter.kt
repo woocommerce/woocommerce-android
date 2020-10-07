@@ -193,14 +193,7 @@ class MyStorePresenter @Inject constructor(
                 myStoreView?.showChartSkeleton(false)
                 if (event.isError) {
                     WooLog.e(T.MY_STORE, "$TAG - Error fetching stats: ${event.error.message}")
-                    // display a different error snackbar if the error type is not "plugin not active", since
-                    // this error is already being handled by the activity class
-                    if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                        AppPrefs.setV4StatsSupported(false)
-                        myStoreView?.updateStatsAvailabilityError()
-                    } else {
-                        myStoreView?.showStatsError(event.granularity)
-                    }
+                    myStoreView?.showStatsError(event.granularity)
                     return
                 }
 
