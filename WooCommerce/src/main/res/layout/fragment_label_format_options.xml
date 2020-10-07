@@ -16,7 +16,7 @@
             app:flow_horizontalAlign="start"
             app:flow_horizontalGap="@dimen/major_75"
             app:flow_horizontalStyle="spread_inside"
-            app:flow_verticalAlign="center"
+            app:flow_verticalAlign="top"
             app:flow_verticalGap="@dimen/major_100"
             app:flow_wrapMode="chain"
             app:flow_verticalBias="0"
@@ -59,6 +59,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/labelFormatOption_letterTxt"
                 style="@style/Woo.TextView.Subtitle1"
+                android:layout_marginTop="@dimen/major_200"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/shipping_label_paper_size_letter" />
@@ -86,7 +87,6 @@
                 style="@style/Woo.TextView.Subtitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_200"
                 android:text="@string/shipping_label_paper_size_label"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +96,9 @@
                 android:id="@+id/labelFormatOption_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/major_200"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginEnd="@dimen/major_200"
                 android:importantForAccessibility="no"
                 android:src="@drawable/img_label_option_label" />
 
