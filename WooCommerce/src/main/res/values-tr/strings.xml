@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-04 08:54:04+0000
+Translation-Revision-Date: 2020-09-23 11:32:54+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="signup_confirmation_title">Kayıt onayı</string>
+    <string name="reset_your_password">Parolanızı sıfırlayın</string>
+    <string name="enter_your_site_address">Site adresinizi girin</string>
+    <string name="continue_with_wpcom">WordPress.com ile devam et</string>
+    <string name="continue_with_google_terms_of_service_text">Google ile devam ederseniz ve WordPress.com hesabınız yoksa, bir hesap oluşturup %1$shizmet şartlarımızı%2$s kabul etmiş olursunuz.</string>
+    <string name="continue_terms_of_service_text">Devam etmekle, %1$shizmet koşullarını%2$s kabul etmiş olursunuz.</string>
+    <string name="signup_confirmation_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size sihirli bir bağlantı göndereceğiz.</string>
+    <string name="signup_confirmation_message">Bu e-posta adresini, yeni WordPress.com hesabınızı oluşturmak için kullanacağız.</string>
+    <string name="signup_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size sihirli bir bağlantı gönderdik. Bu cihazdaki e-postanızı kontrol edin ve WordPress.com\'dan aldığınız e-postadaki bağlantıya tıklayın.</string>
+    <string name="sign_up_label">Üye ol</string>
+    <string name="login_or">veya</string>
+    <string name="continue_google_button_suffix">Google ile devam et</string>
+    <string name="login_find_your_site_adress">Site adresinizi bulun</string>
+    <string name="login_done">Bitti</string>
+    <string name="magic_link_not_seeing_email_message">E-postayı görmüyor musunuz? İstenmeyen posta klasörünüzü kontrol edin.</string>
+    <string name="login_magic_links_sent_label">E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya tıklayın.</string>
+    <string name="login_magic_links_label">Size anında giriş yapacağınız bir sihirli bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok.</string>
+    <string name="check_email">E-postayı kontrol et</string>
+    <string name="get_started">Başlayın</string>
+    <string name="enter_account_info_for_site">%1$s için hesap bilgilerinizi girin.</string>
+    <string name="enter_email_to_continue_wordpress_com">Giriş yapmak veya bir WordPress.com hesabı oluşturmak için e-posta adresinizi girin.</string>
+    <string name="or_type_your_password">Veya parolanızı girin</string>
+    <string name="create_account">Hesap oluştur</string>
+    <string name="send_link_by_email">Bağlantıyı e-postayla gönder</string>
+    <string name="product_type_variation_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
+    <string name="product_selection_count_single">%d seçilen ürünler</string>
+    <string name="product_selection_count">%d seçilen ürünler</string>
+    <string name="grouped_product_empty">Gruba ürün ekle</string>
+    <string name="grouped_product_add">Ürün ekle</string>
+    <string name="product_visibility_password_protected_hint">Parola girin</string>
     <string name="feedback_completed_back_to_store_button_text">Mağazaya dön</string>
     <string name="feedback_completed_contact_us">Buradan bize ulaşın</string>
     <string name="feedback_completed_description">Bunun bir destek bileti olmadığını ve bireysel geri bildirimleri işleme alamayacağımızı unutmayın.\n\nBiraz yardıma mı ihtiyacınız var? %1$s</string>
@@ -34,6 +64,7 @@ Language: tr
     <string name="product_variation_no_price_set">Fiyat belirtilmemiş</string>
     <string name="product_variation_enabled">Etkin</string>
     <string name="product_pricing_scheduled_sale_price_error">Bir satış planlandıysa satış fiyatını ayarlamalısınız</string>
+    <string name="product_wip_message_m3">Artık gruplanmış, harici ve değişken ürünleri düzenleyebilir, ürün türünü değiştirebilir, kategorileri ve etiketleri güncelleyebilirsiniz.</string>
     <string name="product_reviews_count">\u2022 %d yorum</string>
     <string name="product_review_list_item_title">%1$s bir yorum yaz</string>
     <string name="feedback_request_like_it">Beğendim</string>
@@ -51,7 +82,38 @@ Language: tr
     <string name="shipping_label_refund_message">Bir paketi göndermek için kullanılmamış bir gönderi etiketi için para iadesi talep edebilirsiniz. İşleme alınması en az 14 gün sürer.</string>
     <string name="orderdetail_shipping_label_request_refund">Para iadesi iste</string>
     <string name="orderdetail_shipping_label_item_menu">Geri ödeme gönderim etiketi</string>
+    <string name="product_type_physical">Fiziksel</string>
+    <string name="bottom_sheet_short_description_desc">Ürününüzle ilgili kısa bir alıntı</string>
+    <string name="bottom_sheet_tags_desc">Etiket kullanarak ürünlerinizin bulunmasını kolaylaştırın</string>
+    <string name="bottom_sheet_categories_desc">Ürünlerinizi ilgili gruplara düzenleyin</string>
+    <string name="bottom_sheet_shipping_desc">Ağırlık ve boyutları ekleme</string>
+    <string name="bottom_sheet_add_details_list_header">Diğer ayrıntıları ekleme</string>
+    <string name="product_tag_list_empty_message">Ürünlerinizi etiketler halinde düzenleyin</string>
+    <string name="product_tag_list_empty_title">İlk etiketinizi ekleyin</string>
+    <string name="product_tags">Etiketler</string>
+    <string name="product_tag_empty">Etiket ekle</string>
     <string name="product_variation_disabled">Devre dışı</string>
+    <string name="product_is_virtual">Sanal ürün</string>
+    <string name="product_detail_add_more">Diğer ayrıntıları ekleme</string>
+    <string name="product_detail_product_type_hint">%1$s ürün</string>
+    <string name="product_type_downloadable">indirilebilir</string>
+    <string name="product_type_description">%s ürün</string>
+    <string name="orderdetail_shipping_label_unpackaged_products_header">Geri kalan ürünler</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s etiket iade edildi</string>
+    <string name="orderdetail_shipping_label_tracking_info">Gönderimi takip et</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">Gönderi ayrıntılarını gizle</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">Gönderi ayrıntılarını göster</string>
+    <string name="orderdetail_shipping_label_item_payment_type">Kredi kartı</string>
+    <string name="orderdetail_shipping_label_item_payment">Ödeme yöntemi</string>
+    <string name="orderdetail_shipping_label_item_carrier">Kargo şirketleri ve ücretleri</string>
+    <string name="orderdetail_shipping_label_item_package_info">Paket ayrıntıları</string>
+    <string name="orderdetail_shipping_label_item_shipto">Alıcı</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">Gönderen:</string>
+    <string name="orderdetail_shipping_label_item_header">Paket %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s (%2$s seçenek)</string>
+    <string name="shipping_labels">Gönderim Etiketleri</string>
     <string name="product_add_category_dialog_message">Lütfen bekleyin…</string>
     <string name="product_add_category_dialog_title">Kategori ekleniyor</string>
     <string name="product_category_parent">Üst kategori</string>
@@ -69,6 +131,7 @@ Language: tr
     <string name="settings_privacy_policy_ca">Kaliforniya\'daki kullanıcılar için gizlilik bildirimi</string>
     <string name="keep_changes">Değişiklikleri koru</string>
     <string name="product_sale_date_to">%1$s tarihine kadar</string>
+    <string name="product_wip_message_m2">Ürünler için daha fazla düzenleme işlevi ekledik. Artık görselleri güncelleyebilir, önizlemeleri görebilir ve ürünlerinizi paylaşabilirsiniz.</string>
     <string name="product_wip_title">Yeni düzenleme seçenekleri kullanılabilir</string>
     <string name="product_limited_editing_title">Sınırlı düzenleme mevcut</string>
     <string name="orderdetail_product_multiple">Ürünler</string>
@@ -139,6 +202,7 @@ Language: tr
     <string name="product_short_description_empty">Ürünle ilgili kısa bir özet</string>
     <string name="product_short_description">Kısa açıklama</string>
     <string name="my_store_stats_availability_message">WooCommerce 4.0\'ı veya WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
+    <string name="my_store_stats_reverted_message">Analizlerimiz için iyileştirmeler yaptık. İstatistiklerinizi 1 Eylül 2020\'den sonra da görmeye devam etmek için WooCommerce 4.0 veya daha üst bir sürüme yükseltin veya WooCommerce Yönetici eklentisini yükleyin.</string>
     <string name="my_store_stats_reverted_title">İstatistiklerinizi görmeye devam etmek için yeni sürüme geçin</string>
     <string name="product_pricing_update_sale_price_error">Satış fiyatı normal fiyattan düşük olmalıdır</string>
     <string name="product_schedule_remove_end_date_link_label">Bitiş tarihini kaldır</string>
@@ -192,7 +256,6 @@ Language: tr
     <string name="product_inventory_empty">Envanter ekle</string>
     <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
-    <string name="product_detail_title_hint">Ürün başlığı</string>
     <string name="product_detail_update_product_success">Ürün güncellendi</string>
     <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
     <string name="product_update_dialog_message">Lütfen bekleyin…</string>
@@ -622,17 +685,14 @@ Language: tr
     <string name="login_need_help_finding_email">Bağlandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
-    <string name="login_jetpack_view_instructions">Talimatları görüntüle</string>
-    <string name="login_jetpack_required_msg">WooCommerce uygulamasını kullanmak için sitenize Jetpack eklentisini kurmanız gerekir</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_try_another_account">Farklı bir hesap deneyin</string>
     <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
-    <string name="login">Oturum aç</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>
     <string name="no_site_error">Bu adresteki site bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress kullanılmalıdır.</string>
     <string name="support_help_center">Yardım Merkezi</string>
+    <string name="product_type_virtual">Sanal</string>
     <string name="product_type_grouped">Gruplanmış</string>
     <string name="product_type_variable">Değişken</string>
     <string name="product_backorders_notify">İzin ver fakat müşteriyi bilgilendir</string>
@@ -818,7 +878,6 @@ Language: tr
     <string name="signup_with_email_button">E-posta ile üye ol</string>
     <string name="signup_terms_of_service_text">Kaydolmakla %1$sHizmet Koşulları%2$s\'nı kabul etmiş olursunuz.</string>
     <string name="signup_magic_link_progress">E-posta gönderiliyor</string>
-    <string name="signup_magic_link_message">Size bir sihirli kayıt bağlantısı gönderdik! E-postanızı bu cihazda kontrol edin ve kayıt işleminiz tamamlamak için e-postadaki bağlantıya dokunun.</string>
     <string name="signup_magic_link_error_button_positive">Tekrar dene</string>
     <string name="signup_magic_link_error_button_negative">Kapat</string>
     <string name="signup_magic_link_error">E-posta gönderirken bir sorunla karşılaştık. Şimdi yeniden deneyebilir veya kapatıp daha sonra tekrar deneyebilirsiniz.</string>
@@ -850,14 +909,11 @@ Language: tr
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">WordPress.com\'a zaten oturum açılmış</string>
     <string name="login_continue">Devam et</string>
-    <string name="connect_site">Site bağla</string>
     <string name="connect_more">Başka siteye bağlan</string>
     <string name="enter_wpcom_password_google">Bu Google hesabıyla devam etmek için lütfen eşleşen WordPress.com parolasını sağlayın. Bu yalnızca bir kez sorulacak.</string>
     <string name="enter_wpcom_password">WordPress.com parolanızı girin.</string>
     <string name="magic_link_unavailable_error_message">Şu an uygun değil. Lütfen parolanızı girin</string>
     <string name="login_magic_link_email_requesting">Oturum açma e-postası istemek</string>
-    <string name="login_magic_links_sent_label">Sihirli bağlantınız yolda! E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya dokunun.</string>
-    <string name="login_magic_links_label">Size anında giriş yapacağınız bir sihirli bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok. Artık tek tek yazmak yok.</string>
     <string name="password_incorrect">Bu parola yanlış gibi görünüyor. Lütfen bilgilerinizi iki kez kontrol edin ve tekrar deneyin.</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz. Site adresinizi kullanarak oturum açmak için aşağıdaki bağlantıyı deneyin.</string>
     <string name="requesting_otp">SMS ile bir doğrulama kodu istemek.</string>
@@ -933,6 +989,7 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>
@@ -974,7 +1031,6 @@ Language: tr
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
     <string name="login_connected_store">Bağlı mağaza</string>
-    <string name="login_pick_store">Mağaza seçin</string>
     <string name="login_configure_link">%sYapılandırma talimatlarını%s okuyun.</string>
     <string name="login_prologue_banner">Siparişleri yönetin, satışları takip edin, gerçek zamanlı uyarılarla mağaza etkinliğini izleyin.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>

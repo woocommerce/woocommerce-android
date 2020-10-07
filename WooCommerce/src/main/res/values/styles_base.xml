@@ -383,6 +383,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
 
+    <style name="Woo.Button.TextButton">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
+    </style>
+
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.Secondary">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
@@ -401,6 +405,17 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
+    </style>
+
+    <!--  Circular button filled with color  -->
+    <style name="Woo.Button.Colored.Circle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerSize">50%</item>
+        <item name="android:insetTop">@dimen/minor_00</item>
+        <item name="android:insetBottom">@dimen/minor_00</item>
+        <item name="android:insetLeft">@dimen/minor_00</item>
+        <item name="android:insetRight">@dimen/minor_00</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="backgroundTint">@color/color_primary</item>
     </style>
 
     <style name="Woo.Button.Colored.White">

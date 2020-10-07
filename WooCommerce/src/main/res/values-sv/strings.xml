@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-08 13:23:32+0000
+Translation-Revision-Date: 2020-09-30 09:54:54+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="signup_confirmation_title">Bekräftelse av registrering</string>
+    <string name="reset_your_password">Återställ ditt lösenord</string>
+    <string name="enter_your_site_address">Ange din webbplatsadress</string>
+    <string name="continue_with_wpcom">Fortsätt med WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">Om du fortsätter med Google och inte redan har ett WordPress.com-konto, skapar du ett konto och samtycker till våra %1$sanvändarvillkor%2$s.</string>
+    <string name="continue_terms_of_service_text">Genom att gå vidare accepterar du våra %1$sanvändarvillkor%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">Vi kommer att skicka e-post med en magisk länk som låter dig skapa ett nytt WordPress.com-konto.</string>
+    <string name="signup_confirmation_message">Vi kommer att använda den här e-postadressen för att skapa ditt nya WordPress.com-konto.</string>
+    <string name="signup_magic_link_message">Vi har skickat en magisk länk som låter dig skapa ditt nya konto hos WordPress.com. Öppna e-posten på din enhet och tryck på länken i meddelandet du fått från WordPress.com.</string>
+    <string name="sign_up_label">Registrera</string>
+    <string name="login_or">eller</string>
+    <string name="continue_site_credentials">Fortsätt med butiksautentiseringsuppgifter</string>
+    <string name="continue_google_button_suffix">Fortsätt med Google</string>
+    <string name="login_find_your_connected_email">Hitta din anslutna e-postadress</string>
+    <string name="login_find_your_site_adress">Hitta din webbplatsadress</string>
+    <string name="login_done">Klart</string>
+    <string name="magic_link_not_seeing_email_message">Hittar du inte meddelandet? Kolla i mappen för skräppost eller reklam.</string>
+    <string name="login_magic_links_sent_label">Öppna e-posten på din enhet och tryck på länken i meddelandet du fått från WordPress.com.</string>
+    <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord.</string>
+    <string name="check_email">Kolla din e-post</string>
+    <string name="get_started">Kom igång</string>
+    <string name="enter_account_info_for_site">Ange din kontoinformation för %1$s.</string>
+    <string name="enter_email_to_continue_wordpress_com">Ange din e-postadress för att logga in eller skapa ett WordPress.com-konto.</string>
+    <string name="or_type_your_password">Eller skriv ditt lösenord</string>
+    <string name="create_account">Skapa konto</string>
+    <string name="send_link_by_email">Skicka länk via e-post</string>
+    <string name="feedback_product_give_feedback_button_text">Ge feedback</string>
+    <string name="product_detail_publish_product_success">Produkt publicerad</string>
+    <string name="product_detail_publish_product_error">Fel vid publicering av produkt</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Publicerar produkt</string>
+    <string name="product_add_tool_bar_menu_button_done">PUBLICERA</string>
+    <string name="product_add_tool_bar_title">Ny produkt</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">En produkt med variationer som färg eller storlek</string>
+    <string name="product_add_type_simple_desc">En unik artikel att sälja</string>
+    <string name="product_add_type_external">Extern produkt</string>
+    <string name="product_add_type_grouped">Grupperad produkt</string>
+    <string name="product_add_type_variable">Variabel produkt</string>
+    <string name="product_add_type_simple">Enkel produkt</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Endast ett foto kan visas per produktvariant</string>
+    <string name="product_replace_photo">Byt ut foto</string>
+    <string name="product_add_photo">Lägg till foto</string>
+    <string name="variation_detail_image_add">Lägg till bild för variant</string>
+    <string name="login_jetpack_view_instructions">Lär dig hur man installerar och ansluter Jetpack</string>
+    <string name="login_jetpack_required_text">För att använda den här appen för %1$s behöver du ha anslutit Jetpack-tillägget till din butik.</string>
+    <string name="login_try_another_account">Logga in med ett annat konto</string>
+    <string name="login_pick_store">Välj butik att ansluta</string>
+    <string name="login_store_address">Ange din butiks adress</string>
+    <string name="login_wpcom">Fortsätt med WordPress.com</string>
     <string name="product_type_variation_desc">En produkt med variationer som färg eller storlek</string>
     <string name="product_selection_count_single">%d produkt vald</string>
     <string name="product_selection_count">%d produkter valda</string>
@@ -235,7 +287,7 @@ Language: sv_SE
     <string name="product_inventory_empty">Lägg till lager</string>
     <string name="orderlist_loading">Kollar upp din beställning…</string>
     <string name="product_detail_editable_text_hint">Ange text</string>
-    <string name="product_detail_title_hint">Produktrubrik</string>
+    <string name="product_detail_title_hint">Ange produktrubrik</string>
     <string name="product_detail_update_product_success">Produkt uppdaterad</string>
     <string name="product_detail_update_product_error">Det gick inte att uppdatera produkten</string>
     <string name="product_update_dialog_message">Vänta …</string>
@@ -665,12 +717,8 @@ Language: sv_SE
     <string name="login_need_help_finding_email">Behöver du hjälp med att hitta den anslutna e-postadressen?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
-    <string name="login_jetpack_view_instructions">Visa anvisningar</string>
-    <string name="login_jetpack_required_msg">För att använda appen WooCommerce måste du ställa in tillägget Jetpack på dni webbplats</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_try_another_account">Prova med ett annat konto</string>
     <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
-    <string name="login">Logga in</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
@@ -862,7 +910,6 @@ Language: sv_SE
     <string name="signup_with_email_button">Registrering med e-postadress</string>
     <string name="signup_terms_of_service_text">Genom att registrera dig accepterar du våra %1$sAnvändarvillkor%2$s.</string>
     <string name="signup_magic_link_progress">Skickar e-post</string>
-    <string name="signup_magic_link_message">Vi har skickat dig en magisk länk för registrering! Kolla din e-post på denna telefon och knacka på länken i e-posten för att bekräfta registreringen.</string>
     <string name="signup_magic_link_error_button_positive">Försök igen</string>
     <string name="signup_magic_link_error_button_negative">Stäng</string>
     <string name="signup_magic_link_error">Det gick inte att sända e-postmeddelandet. Du kan försöka igen nu eller stänga och göra ett nytt försök senare.</string>
@@ -894,14 +941,12 @@ Language: sv_SE
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Redan inloggad på WordPress.com</string>
     <string name="login_continue">Fortsätt</string>
-    <string name="connect_site">Anslut webbplats</string>
+    <string name="connect_site">Anslut en webbplats</string>
     <string name="connect_more">Anslut ytterligare webbplats</string>
     <string name="enter_wpcom_password_google">Ange motsvarande lösenord för WordPress.com för att fortsätta med detta Google-konto. Denna fråga får du endast en gång.</string>
     <string name="enter_wpcom_password">Skriv in ditt lösenord för WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
-    <string name="login_magic_links_sent_label">Din magiska länk är på väg! Kolla e-posten på den här enheten och tryck på länken i det e-postmeddelande som du får från WordPress.com</string>
-    <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord. Slut på pekfingervalsandet!</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
     <string name="email_not_registered_wpcom">Hmm, vi kan inte hitta något konto på WordPress.com som är kopplat till denna e-postadress. Prova länken nedan för att logga in med din webbsideadress.</string>
     <string name="requesting_otp">Begär en verifieringskod via SMS.</string>
@@ -1019,7 +1064,6 @@ Language: sv_SE
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
     <string name="login_connected_store">Ansluten butik</string>
-    <string name="login_pick_store">Välj butik</string>
     <string name="login_configure_link">Läs %skonfigurationsinstruktionerna%s.</string>
     <string name="login_prologue_banner">Hantera ordrar, spåra försäljning och övervaka butiksaktivitet med varningar i realtid.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>

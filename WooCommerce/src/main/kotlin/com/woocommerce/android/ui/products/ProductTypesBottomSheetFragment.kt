@@ -88,10 +88,12 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
+                    event.neutralBtnAction,
                     event.titleId,
                     event.messageId,
                     event.positiveButtonId,
-                    event.negativeButtonId
+                    event.negativeButtonId,
+                    event.neutralButtonId
                 )
 
                 is ExitWithResult<*> -> {

@@ -1,11 +1,13 @@
 package com.woocommerce.android.viewmodel
 
 import android.content.DialogInterface.OnClickListener
+import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -77,6 +79,33 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             }
         }
 
+        data class ShowUndoSnackbar(
+            val message: String,
+            val args: Array<String> = arrayOf(),
+            val undoAction: View.OnClickListener,
+            val dismissAction: Snackbar.Callback
+        ) : Event() {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is ShowUndoSnackbar) return false
+
+                if (message != other.message) return false
+                if (!args.contentEquals(other.args)) return false
+                if (undoAction != other.undoAction) return false
+                if (dismissAction != other.dismissAction) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = message.hashCode()
+                result = 31 * result + args.contentHashCode()
+                result = 31 * result + undoAction.hashCode()
+                result = 31 * result + dismissAction.hashCode()
+                return result
+            }
+        }
+
         object Exit : Event()
 
         data class ExitWithResult<out T>(val data: T) : Event()
@@ -84,10 +113,12 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         data class ShowDiscardDialog(
             val positiveBtnAction: OnClickListener? = null,
             val negativeBtnAction: OnClickListener? = null,
+            val neutralBtnAction: OnClickListener? = null,
             @StringRes val messageId: Int? = null,
             @StringRes val titleId: Int? = null,
             @StringRes val positiveButtonId: Int? = null,
-            @StringRes val negativeButtonId: Int? = null
+            @StringRes val negativeButtonId: Int? = null,
+            @StringRes val neutralButtonId: Int? = null
         ) : Event() {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -97,8 +128,10 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 if (messageId != other.messageId) return false
                 if (positiveButtonId != other.positiveButtonId) return false
                 if (negativeButtonId != other.negativeButtonId) return false
+                if (neutralButtonId != other.neutralButtonId) return false
                 if (positiveBtnAction != other.positiveBtnAction) return false
                 if (negativeBtnAction != other.negativeBtnAction) return false
+                if (neutralBtnAction != other.neutralBtnAction) return false
 
                 return true
             }

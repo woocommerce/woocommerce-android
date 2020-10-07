@@ -160,7 +160,8 @@ class UnifiedLoginTracker
         NO_WOO_STORES("no_woo_stores"),
         SITE_LIST("site_list"),
         JETPACK_NOT_CONNECTED("jetpack_not_connected"),
-        NOT_WOO_STORE("not_woo_store");
+        NOT_WOO_STORE("not_woo_store"),
+        NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found");
 
         companion object {
             private val valueMap = Step.values().associateBy(Step::value)

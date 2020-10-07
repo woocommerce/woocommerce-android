@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class ShippingLabelRefundViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    private val repository: ShippingLabelRefundRepository,
+    private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {

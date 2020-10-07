@@ -19,28 +19,29 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -438,5 +439,50 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
             assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
         }
+    }
+
+    @Test
+    fun `Displays the trash confirmation dialog correctly`() {
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        var trashDialogShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDiscardDialog && it.messageId == R.string.product_confirm_trash) {
+                trashDialogShown = true
+            }
+        }
+
+        assertThat(trashDialogShown).isTrue()
+    }
+
+    @Test
+    fun `Do not enable trashing a product when in add product flow`() {
+        viewModel.start()
+        doReturn(true).whenever(viewModel).isAddFlow
+        assertThat(viewModel.isTrashEnabled).isFalse()
+    }
+
+    @Test
+    fun `Display offline message and don't show trash confirmation dialog when not connected`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var isTrashDialogShown = false
+        viewModel.productDetailViewStateData.observeForever { old, new ->
+            new.isConfirmingTrash.takeIfNotEqualTo(false) {
+                isTrashDialogShown = true
+            }
+        }
+
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(isTrashDialogShown).isFalse()
     }
 }

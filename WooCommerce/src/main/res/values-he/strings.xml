@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-16 14:54:03+0000
+Translation-Revision-Date: 2020-09-30 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="signup_confirmation_title">אישור הרשמה</string>
+    <string name="reset_your_password">לאפס את הסיסמה שלך</string>
+    <string name="enter_your_site_address">להזין את כתובת האתר שלך</string>
+    <string name="continue_with_wpcom">להמשיך עם WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">אם בחרת להמשיך עם Google או ועדיין אין לך חשבון ב-WordPress.com, חשבון ייווצר עבורך ויש הסכמה מצידך ⁦%1$s⁩לתנאי השירות⁦%2$s⁩ שלנו.</string>
+    <string name="continue_terms_of_service_text">המשך הפעולה מהווה את הסכמתך ⁦%1$s⁩לתנאי השימוש⁦%2$s⁩ שלנו.</string>
+    <string name="signup_confirmation_magic_link_message">ברגעים אלה נשלח אליך אימייל עם קישור ישיר כדי ליצור את החשבון החדש שלך ב-WordPress.com.</string>
+    <string name="signup_confirmation_message">אנחנו נשתמש בכתובת האימייל הזאת כדי ליצור את החשבון החדש שלך ב-WordPress.com.</string>
+    <string name="signup_magic_link_message">שלחנו אליך אימייל עם קישור ישיר כדי ליצור את החשבון החדש שלך ב-WordPress.com. עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
+    <string name="sign_up_label">הרשמה</string>
+    <string name="login_or">או</string>
+    <string name="continue_site_credentials">להמשיך עם פרטי הכניסה של החנות</string>
+    <string name="continue_google_button_suffix">להמשיך עם Google</string>
+    <string name="login_find_your_connected_email">למצוא את כתובת האימייל המחוברת שלך</string>
+    <string name="login_find_your_site_adress">למצוא את הכתובת של האתר שלך</string>
+    <string name="login_done">בוצע</string>
+    <string name="magic_link_not_seeing_email_message">לא רואה את האימייל? כדאי לבדוק בתיבת הספאם או דואר הזבל.</string>
+    <string name="login_magic_links_sent_label">עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
+    <string name="login_magic_links_label">נשלח לך קישור מיוחד להתחברות מיידית, ללא צורך בסיסמה.</string>
+    <string name="check_email">יש לבדוק את האימייל</string>
+    <string name="get_started">מתחילים כאן</string>
+    <string name="enter_account_info_for_site">להזין את פרטי החשבון שלך ב-⁦%1$s⁩.</string>
+    <string name="enter_email_to_continue_wordpress_com">יש להזין את כתובת האימייל שלך כדי להתחבר או ליצור חשבון ב-WordPress.com.</string>
+    <string name="or_type_your_password">או להקליד את הסיסמה שלך</string>
+    <string name="create_account">ליצור חשבון</string>
+    <string name="send_link_by_email">לשלוח את הקישור באימייל</string>
+    <string name="feedback_product_give_feedback_button_text">להעניק משוב</string>
+    <string name="product_detail_publish_product_success">המוצר פורסם</string>
+    <string name="product_detail_publish_product_error">שגיאה בפרסום המוצר</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">מפרסם את המוצר שלך…</string>
+    <string name="product_add_tool_bar_menu_button_done">פרסום</string>
+    <string name="product_add_tool_bar_title">מוצר חדש</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">מוצר עם סוגים כגון צבע או מידה</string>
+    <string name="product_add_type_simple_desc">פריט ייחודי למכירה</string>
+    <string name="product_add_type_external">מוצר חיצוני</string>
+    <string name="product_add_type_grouped">קבוצת מוצרים</string>
+    <string name="product_add_type_variable">מוצר עם וריאציות</string>
+    <string name="product_add_type_simple">מוצר רגיל</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">ניתן להציג רק תמונה אחת לכל סוג מוצר</string>
+    <string name="product_replace_photo">להחליף את התמונה</string>
+    <string name="product_add_photo">להוסיף תמונה</string>
+    <string name="variation_detail_image_add">להוסיף תמונה לסוג</string>
+    <string name="login_jetpack_view_instructions">למידע על ביצוע ההתקנה והחיבור של Jetpack</string>
+    <string name="login_jetpack_required_text">כדי להשתמש באפליקציה זו עבור ⁦%1$s⁩ עליך לחבר את התוסף של Jetpack לחנות שלך.</string>
+    <string name="login_try_another_account">להתחברות באמצעות חשבון אחר</string>
+    <string name="login_pick_store">יש לבחור חנות שאליה ברצונך להתחבר</string>
+    <string name="login_store_address">יש להזין את כתובת החנות</string>
+    <string name="login_wpcom">להמשיך עם WordPress.com</string>
     <string name="product_type_variation_desc">מוצר עם סוגים כגון צבע או מידה</string>
     <string name="product_selection_count_single">%d המוצר נבחר</string>
     <string name="product_selection_count">%d מוצרים נבחרו</string>
@@ -58,8 +110,38 @@ Language: he_IL
     <string name="shipping_label_refund_message">אפשר לבקש החזר כספי עבור תווית משלוח שלא נעשה בה שימוש כדי לשלוח חבילה. תהליך העיבוד יימשך לפחות 14 ימים.</string>
     <string name="orderdetail_shipping_label_request_refund">בקשה להחזר כספי</string>
     <string name="orderdetail_shipping_label_item_menu">לבצע החזר כספי על תווית המשלוח</string>
+    <string name="product_type_physical">פיזי</string>
+    <string name="bottom_sheet_short_description_desc">תקציר אודות המוצר שלך</string>
+    <string name="bottom_sheet_tags_desc">תגיות יכולות לעזור לאנשים למצוא את המוצרים שלך</string>
+    <string name="bottom_sheet_categories_desc">לארגן את המוצרים שלך בקבוצות קשורות</string>
+    <string name="bottom_sheet_shipping_desc">להוסיף משקל וממדים</string>
+    <string name="bottom_sheet_add_details_list_header">להוסיף עוד פרטים</string>
+    <string name="product_tag_list_empty_message">לארגן את המוצרים שלך לפי תגיות</string>
+    <string name="product_tag_list_empty_title">להוסיף את התגית הראשונה שלך</string>
+    <string name="product_tags">תגיות</string>
+    <string name="product_tag_empty">הוספת תגית</string>
     <string name="product_variation_disabled">הושבת</string>
+    <string name="product_is_virtual">מוצרים וירטואליים</string>
+    <string name="product_detail_add_more">להוסיף עוד פרטים</string>
+    <string name="product_detail_product_type_hint">⁦%1$s⁩ מוצר</string>
+    <string name="product_type_downloadable">להורדה</string>
+    <string name="product_type_description">%s מוצר</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">מוצרים שנותרו</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">⁦%1$s⁩ תוויות שעבורן ניתן החזר כספי</string>
+    <string name="orderdetail_shipping_label_tracking_info">מעקב אחר משלוח</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">להסתיר את פרטי המשלוח</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">להציג את פרטי המשלוח</string>
+    <string name="orderdetail_shipping_label_item_payment_type">כרטיס אשראי</string>
+    <string name="orderdetail_shipping_label_item_payment">אמצעי תשלום</string>
+    <string name="orderdetail_shipping_label_item_carrier">ספקים ותעריפים למשלוח</string>
+    <string name="orderdetail_shipping_label_item_package_info">פרטי החבילה</string>
+    <string name="orderdetail_shipping_label_item_shipto">לשלוח אל</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">לשלוח מאת</string>
+    <string name="orderdetail_shipping_label_item_header">חבילה %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
+    <string name="product_variation_options">%1$s (⁦%2$s⁩ אפשרויות)</string>
+    <string name="shipping_labels">תוויות משלוח</string>
     <string name="product_add_category_dialog_message">נא להמתין…</string>
     <string name="product_add_category_dialog_title">מוסיף קטגוריות</string>
     <string name="product_category_parent">קטגוריית אב</string>
@@ -148,6 +230,7 @@ Language: he_IL
     <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
     <string name="product_short_description">תיאור קצר</string>
     <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות עם WooCommerce 4.0 או בחנויות שבהן הותקן התוסף WooCommerce Admin</string>
+    <string name="my_store_stats_reverted_message">פרסמנו שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 בספטמבר 2020.</string>
     <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
     <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
@@ -203,7 +286,7 @@ Language: he_IL
     <string name="product_inventory_empty">להוסיף מלאי</string>
     <string name="orderlist_loading">מחפש את ההזמנות שלך…</string>
     <string name="product_detail_editable_text_hint">להזין טקסט</string>
-    <string name="product_detail_title_hint">כותרת מוצר</string>
+    <string name="product_detail_title_hint">להזין את שם המוצר</string>
     <string name="product_detail_update_product_success">המוצר עודכן</string>
     <string name="product_detail_update_product_error">שגיאה בעדכון המוצר</string>
     <string name="product_update_dialog_message">נא להמתין…</string>
@@ -633,17 +716,14 @@ Language: he_IL
     <string name="login_need_help_finding_email">נדרשת לך עזרה עם האימייל להתחברות?</string>
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>
     <string name="login_jetpack_what_is">מה זה Jetpack?</string>
-    <string name="login_jetpack_view_instructions">לעיון בהוראות</string>
-    <string name="login_jetpack_required_msg">כדי להשתמש באפליקציה של Woocommerce עליך להגדיר את התוסף של Jetpack באתר שלך</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
-    <string name="login_try_another_account">יש לנסות חשבון אחר</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
-    <string name="login">התחברות</string>
     <string name="keep_editing">המשך עריכה</string>
     <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>
     <string name="error_user_username_instead_of_email">יש להיכנס באמצעות שם המשתמש ב-WordPress.com במקום כתובת המייל.</string>
     <string name="no_site_error">כתובת האתר שהזנת אינה עבור אתר ב-WordPress. כדי שנוכל להתחבר לאתר, האתר חייב להשתמש בפלטפורמה של WordPress.</string>
     <string name="support_help_center">מרכז העזרה</string>
+    <string name="product_type_virtual">וירטואלי</string>
     <string name="product_type_grouped">בקבוצה</string>
     <string name="product_type_variable">משתנה</string>
     <string name="product_backorders_notify">להרשות אך להודיע ללקוח</string>
@@ -829,7 +909,6 @@ Language: he_IL
     <string name="signup_with_email_button">הרשמה באמצעות אימייל</string>
     <string name="signup_terms_of_service_text">ביצוע ההרשמה מהווה את הסכמתך %1$sלתנאי השימוש%2$s שלנו.</string>
     <string name="signup_magic_link_progress">שולח אימייל</string>
-    <string name="signup_magic_link_message">שלחנו אליך קישור ישיר להרשמה! עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת כדי להשלים את ההרשמה.</string>
     <string name="signup_magic_link_error_button_positive">יש לנסות שנית</string>
     <string name="signup_magic_link_error_button_negative">סגור</string>
     <string name="signup_magic_link_error">אירעה תקלה בשליחת האימייל. אפשר לנסות שוב עכשיו או לסגור ולנסות שוב מאוחר יותר.</string>
@@ -861,14 +940,12 @@ Language: he_IL
     <string name="login_username_at">‎@‎%s‎</string>
     <string name="login_already_logged_in_wpcom">כבר בוצע חיבור ל-WordPress.com</string>
     <string name="login_continue">המשך</string>
-    <string name="connect_site">חיבור האתר</string>
+    <string name="connect_site">לחבר את האתר</string>
     <string name="connect_more">חיבור של אתר אחר</string>
     <string name="enter_wpcom_password_google">כדי להמשיך עם חשבון Google, יש לספק סיסמת WordPress.com תואמת. נבקש את הנתונים האלו פעם אחת בלבד.</string>
     <string name="enter_wpcom_password">הזן את הסיסמה שלך ל-WordPress.com.</string>
     <string name="magic_link_unavailable_error_message">לא זמין כרגע. יש להזין סיסמה</string>
     <string name="login_magic_link_email_requesting">שולח בקשה לאימייל להתחברות</string>
-    <string name="login_magic_links_sent_label">הקישור המיוחד שלך בדרך! עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
-    <string name="login_magic_links_label">נשלח לך קישור מיוחד להתחברות מיידית, ללא צורך בסיסמה. לא צריך לחפש או לנחש!</string>
     <string name="password_incorrect">נראה שהסיסמה הזו שגויה. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו. מומלץ לנסות את הקישור למטה כדי להתחבר באמצעות כתובת האתר שלך.</string>
     <string name="requesting_otp">שולח קוד אימות באמצעות SMS.</string>
@@ -944,6 +1021,7 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>
@@ -985,7 +1063,6 @@ Language: he_IL
     <string name="login_nostores_content_description">אין חנויות WooCommerce</string>
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>
     <string name="login_connected_store">חנות מחוברת</string>
-    <string name="login_pick_store">בחירת חנות</string>
     <string name="login_configure_link">קריאת %sהוראות ההגדרה%s.</string>
     <string name="login_prologue_banner">ניהול הזמנות, מעקב אחר מכירות ואחר פעילות החנות באמצעות התראות בזמן אמת.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>

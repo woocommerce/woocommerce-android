@@ -1,3 +1,0 @@
-5.0:
-Die Abstürze wurden behoben, die bei der Auswahl eines Produktbildes sowie beim Wechsel zwischen hellen und dunklen Themes auf älteren Android-Geräten auftraten.
-
