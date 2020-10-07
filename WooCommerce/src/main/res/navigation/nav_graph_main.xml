@@ -30,8 +30,10 @@
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
         app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
