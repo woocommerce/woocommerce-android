@@ -31,14 +31,11 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
-        IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
-        SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
-        IS_V4_STATS_UI_ENABLED,
         IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
@@ -162,30 +159,12 @@ object AppPrefs {
     }
 
     /**
-     * Method to check if the v4 stats UI is supported.
-     */
-
-    fun isV4StatsSupported() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
-
-    fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
-
-    /**
      * Flag to check products features are enabled
      */
     fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
 
     fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
         setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
-
-    /**
-     * Flag to check if the v4 stats API is no longer supported for a site AND if the user has already dismissed the
-     * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
-     */
-    fun shouldDisplayV4StatsRevertedBanner() =
-        getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
-
-    fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
-        setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
