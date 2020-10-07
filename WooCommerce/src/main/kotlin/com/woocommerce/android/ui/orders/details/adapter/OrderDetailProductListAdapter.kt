@@ -4,18 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
+import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.products.ProductHelper
 import java.math.BigDecimal
 
 class OrderDetailProductListAdapter(
     private val orderItems: List<Order.Item>,
     private val productImageMap: ProductImageMap,
-    private val formatCurrencyForDisplay: (BigDecimal) -> String
+    private val formatCurrencyForDisplay: (BigDecimal) -> String,
+    private val productItemListener: OrderProductActionListener
 ) : RecyclerView.Adapter<OrderDetailProductListAdapter.ViewHolder>() {
     class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
@@ -32,8 +32,7 @@ class OrderDetailProductListAdapter(
         val productImage = productImageMap.get(productId)
         holder.view.initView(orderItems[position], productImage, false, formatCurrencyForDisplay)
         holder.view.setOnClickListener {
-            AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
-            // TODO: add click listener
+            productItemListener.openOrderProductDetail(productId)
         }
     }
 

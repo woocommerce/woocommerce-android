@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 
 @Parcelize
 data class OrderShipmentTracking(
+    val id: Int = 0,
     val localSiteId: Int = 0,
     val localOrderId: Int = 0,
     val remoteTrackingId: String = "",
@@ -16,6 +17,7 @@ data class OrderShipmentTracking(
     val isCustomProvider: Boolean = false
 ) : Parcelable {
     fun toDataModel() = WCOrderShipmentTrackingModel().also { orderShipmentTrackingModel ->
+        orderShipmentTrackingModel.id = this.id
         orderShipmentTrackingModel.localOrderId = this.localOrderId
         orderShipmentTrackingModel.localSiteId = this.localSiteId
         orderShipmentTrackingModel.remoteTrackingId = this.remoteTrackingId
@@ -27,6 +29,7 @@ data class OrderShipmentTracking(
 
 fun WCOrderShipmentTrackingModel.toAppModel(): OrderShipmentTracking {
     return OrderShipmentTracking(
+        id,
         localSiteId,
         localOrderId,
         remoteTrackingId,

@@ -10,11 +10,11 @@ import java.util.Locale
  * Method to convert date string from yyyy-MM-dd format to yyyy-MM format
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToYearMonth(): String {
+fun String.formatDateToYearMonth(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToYYYYmm()
+        date.formatToYYYYmm(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -24,11 +24,11 @@ fun String.formatDateToYearMonth(): String {
  * Method to convert date string from yyyy-MM-dd format to yyyy format
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToYear(): String {
+fun String.formatDateToYear(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToYYYY()
+        date.formatToYYYY(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -39,11 +39,11 @@ fun String.formatDateToYear(): String {
  * i.e. 2019W08W08 is formatted to 2019-W32
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToWeeksInYear(): String {
+fun String.formatDateToWeeksInYear(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("W")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToYYYYWmm()
+        date.formatToYYYYWmm(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy'W'MM'W'dd: $this")
     }
@@ -54,11 +54,11 @@ fun String.formatDateToWeeksInYear(): String {
  * i.e. 2018-08-08 07 is formatted to Wednesday, Aug 08›7am
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToFriendlyDayHour(): String {
+fun String.formatDateToFriendlyDayHour(locale: Locale = Locale.getDefault()): String {
     return try {
-        val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", Locale.getDefault())
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
         val date = originalFormat.parse(this)
-        date.formatToEEEEMMMddhha()
+        date.formatToEEEEMMMddhha(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd HH: $this")
     }
@@ -69,10 +69,10 @@ fun String.formatDateToFriendlyDayHour(): String {
  * i.e. 2019-08-08 is formatted to 2019›August
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToFriendlyLongMonthYear(): String {
+fun String.formatDateToFriendlyLongMonthYear(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, _) = this.split("-")
-        "$year › ${DateFormatSymbols().months[month.toInt() - 1]}"
+        "$year › ${DateFormatSymbols(locale).months[month.toInt() - 1]}"
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -83,11 +83,11 @@ fun String.formatDateToFriendlyLongMonthYear(): String {
  * i.e. 2019-08-08 is formatted to August 08
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatDateToFriendlyLongMonthDate(): String {
+fun String.formatDateToFriendlyLongMonthDate(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToMMMMdd()
+        date.formatToMMMMdd(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -98,11 +98,11 @@ fun String.formatDateToFriendlyLongMonthDate(): String {
  * i.e. 2019-08-08 is formatted to 8
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatToDateOnly(): String {
+fun String.formatToDateOnly(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToDD()
+        date.formatToDD(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -113,11 +113,11 @@ fun String.formatToDateOnly(): String {
  * i.e. 2019-08-08 is formatted to Aug 8
  */
 @Throws(IllegalArgumentException::class)
-fun String.formatToMonthDateOnly(): String {
+fun String.formatToMonthDateOnly(locale: Locale = Locale.getDefault()): String {
     return try {
         val (year, month, day) = this.split("-")
         val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToMMMdd()
+        date.formatToMMMdd(locale)
     } catch (e: Exception) {
         throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
     }
@@ -128,10 +128,10 @@ fun String.formatToMonthDateOnly(): String {
  * i.e. 2018-08-08T08:12:03 is formatted to Aug 08
  */
 @Throws(IllegalArgumentException::class)
-fun String?.formatDateToISO8601Format(): Date? {
+fun String?.formatDateToISO8601Format(locale: Locale = Locale.getDefault()): Date? {
     return try {
         if (!this.isNullOrEmpty()) {
-            val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale)
             return originalFormat.parse(this)
         }
         null
@@ -145,10 +145,10 @@ fun String?.formatDateToISO8601Format(): Date? {
  * i.e. 2018-08-08T08:12:03 is formatted to Aug 08
  */
 @Throws(IllegalArgumentException::class)
-fun String?.formatDateToYYYYMMDDFormat(): Date? {
+fun String?.formatDateToYYYYMMDDFormat(locale: Locale = Locale.getDefault()): Date? {
     return try {
         if (!this.isNullOrEmpty()) {
-            val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val originalFormat = SimpleDateFormat("yyyy-MM-dd", locale)
             return originalFormat.parse(this)
         }
         null

@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-17 08:54:03+0000
+Translation-Revision-Date: 2020-10-01 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="signup_confirmation_title">註冊確認</string>
+    <string name="reset_your_password">重設密碼</string>
+    <string name="enter_your_site_address">請輸入你的網站位址</string>
+    <string name="continue_with_wpcom">繼續使用 WordPress.com</string>
+    <string name="continue_with_google_terms_of_service_text">如果你繼續使用 Google 操作且尚未擁有 WordPress.com 帳號，即表示你正在建立帳號，並同意我們的%1$s服務條款%2$s。</string>
+    <string name="continue_terms_of_service_text">繼續操作即代表你同意我們的%1$s服務條款%2$s。</string>
+    <string name="signup_confirmation_magic_link_message">我們會以電子郵件傳送連結給你，使用此連結即可建立新的 WordPress.com 帳號。</string>
+    <string name="signup_confirmation_message">我們會使用這個電子郵件地址，為你建立全新的 WordPress.com 帳號。</string>
+    <string name="signup_magic_link_message">我們已透過電子郵件傳送連結給你，使用此連結即可建立新的 WordPress.com 帳號。 請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
+    <string name="sign_up_label">註冊</string>
+    <string name="login_or">或</string>
+    <string name="continue_site_credentials">使用商店憑證繼續</string>
+    <string name="continue_google_button_suffix">繼續使用 Google</string>
+    <string name="login_find_your_connected_email">尋找你連結的電子郵件</string>
+    <string name="login_find_your_site_adress">尋找你的網站位址</string>
+    <string name="login_done">完成</string>
+    <string name="magic_link_not_seeing_email_message">沒看到電子郵件？ 請檢查你的「垃圾郵件」資料夾。</string>
+    <string name="login_magic_links_sent_label">請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
+    <string name="login_magic_links_label">我們會以電子郵件傳送一個連結給你，讓你馬上就能登入，無須輸入密碼。</string>
+    <string name="check_email">檢查電子郵件</string>
+    <string name="get_started">開始使用</string>
+    <string name="enter_account_info_for_site">輸入你的 %1$s 帳號資訊。</string>
+    <string name="enter_email_to_continue_wordpress_com">請輸入你的電子郵件地址以登入或建立 WordPress.com 帳號。</string>
+    <string name="or_type_your_password">或輸入你的密碼</string>
+    <string name="create_account">建立帳號</string>
+    <string name="send_link_by_email">以電子郵件傳送連結</string>
+    <string name="feedback_product_give_feedback_button_text">提供意見回饋</string>
+    <string name="product_detail_publish_product_success">已上架商品</string>
+    <string name="product_detail_publish_product_error">上架商品時發生錯誤</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">正在上架商品</string>
+    <string name="product_add_tool_bar_menu_button_done">上架</string>
+    <string name="product_add_tool_bar_title">新商品</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">具有多種版本 (顏色或尺寸) 的商品</string>
+    <string name="product_add_type_simple_desc">獨特的銷售商品</string>
+    <string name="product_add_type_external">外部商品</string>
+    <string name="product_add_type_grouped">組合商品</string>
+    <string name="product_add_type_variable">變化商品</string>
+    <string name="product_add_type_simple">簡單商品</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">每個商品子項只能顯示一張相片</string>
+    <string name="product_replace_photo">替換相片</string>
+    <string name="product_add_photo">新增相片</string>
+    <string name="variation_detail_image_add">新增子項圖片</string>
+    <string name="login_jetpack_view_instructions">瞭解如何安裝及連結 Jetpack</string>
+    <string name="login_jetpack_required_text">若要將此應用程式用於 %1$s，你需要將 Jetpack 外掛程式與你的商店連結。</string>
+    <string name="login_try_another_account">使用其他帳號登入</string>
+    <string name="login_pick_store">選取要連結的商店</string>
+    <string name="login_store_address">請輸入商店地址</string>
+    <string name="login_wpcom">繼續使用 WordPress.com</string>
     <string name="product_type_variation_desc">設有變化版本 (顏色或尺寸) 的商品</string>
     <string name="product_selection_count_single">已選取　%d 件商品</string>
     <string name="product_selection_count">已選取　%d 件商品</string>
@@ -58,8 +110,38 @@ Language: zh_TW
     <string name="shipping_label_refund_message">你可以針對尚未用於運送包裹的郵寄標籤要求退款。 退款需至少 14 天處理時間。</string>
     <string name="orderdetail_shipping_label_request_refund">要求退款</string>
     <string name="orderdetail_shipping_label_item_menu">退還郵寄標籤的款項</string>
+    <string name="product_type_physical">實體</string>
+    <string name="bottom_sheet_short_description_desc">關於產品的簡短摘錄</string>
+    <string name="bottom_sheet_tags_desc">透過標籤輕鬆找到你的產品</string>
+    <string name="bottom_sheet_categories_desc">將你的產品整理至相關群組</string>
+    <string name="bottom_sheet_shipping_desc">新增重量和尺寸</string>
+    <string name="bottom_sheet_add_details_list_header">新增更多詳細資訊</string>
+    <string name="product_tag_list_empty_message">依標籤整理你的產品</string>
+    <string name="product_tag_list_empty_title">新增你的第一個標籤</string>
+    <string name="product_tags">標籤</string>
+    <string name="product_tag_empty">新增標籤</string>
     <string name="product_variation_disabled">已停用</string>
+    <string name="product_is_virtual">虛擬商品</string>
+    <string name="product_detail_add_more">新增更多詳細資訊</string>
+    <string name="product_detail_product_type_hint">%1$s 件商品</string>
+    <string name="product_type_downloadable">可下載</string>
+    <string name="product_type_description">%s 件商品</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">剩餘商品</string>
+    <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s 個標籤已退款</string>
+    <string name="orderdetail_shipping_label_tracking_info">追蹤貨件</string>
+    <string name="orderdetail_shipping_label_item_hide_shipping">隱藏貨件詳細資訊</string>
+    <string name="orderdetail_shipping_label_item_show_shipping">顯示貨件詳細資訊</string>
+    <string name="orderdetail_shipping_label_item_payment_type">信用卡</string>
+    <string name="orderdetail_shipping_label_item_payment">付款方式</string>
+    <string name="orderdetail_shipping_label_item_carrier">貨運業者與費率</string>
+    <string name="orderdetail_shipping_label_item_package_info">包裹詳細資訊</string>
+    <string name="orderdetail_shipping_label_item_shipto">送貨地址</string>
+    <string name="orderdetail_shipping_label_item_shipfrom">出貨地址</string>
+    <string name="orderdetail_shipping_label_item_header">包裹 %d</string>
+    <string name="orderdetail_product_lineitem_sku_value">貨號：%1$s</string>
+    <string name="product_variation_options">%1$s (%2$s 個選項)</string>
+    <string name="shipping_labels">運送標籤</string>
     <string name="product_add_category_dialog_message">請稍候…</string>
     <string name="product_add_category_dialog_title">新增類別中</string>
     <string name="product_category_parent">上層類別</string>
@@ -148,6 +230,7 @@ Language: zh_TW
     <string name="product_short_description_empty">關於產品的簡短摘要</string>
     <string name="product_short_description">簡短說明</string>
     <string name="my_store_stats_availability_message">我們正在推出統計資料改善功能，適用於使用 WooCommerce 4.0 或安裝 WooCommerce Admin 外掛程式的商店</string>
+    <string name="my_store_stats_reverted_message">我們已推出分析功能的改善項目。 請升級至 WooCommerce 4.0 以上版本或安裝 WooCommerce Admin 外掛程式，確保你可於 2020 年 9 月 1 日後繼續查看統計資料。</string>
     <string name="my_store_stats_reverted_title">升級以繼續查看統計資料</string>
     <string name="product_pricing_update_sale_price_error">優惠價格必須低於一般價格</string>
     <string name="product_schedule_remove_end_date_link_label">移除結束日期</string>
@@ -203,7 +286,7 @@ Language: zh_TW
     <string name="product_inventory_empty">新增庫存</string>
     <string name="orderlist_loading">查詢你的訂單…</string>
     <string name="product_detail_editable_text_hint">輸入文字</string>
-    <string name="product_detail_title_hint">商品標題</string>
+    <string name="product_detail_title_hint">請輸入商品標題</string>
     <string name="product_detail_update_product_success">商品已更新</string>
     <string name="product_detail_update_product_error">更新商品時發生錯誤</string>
     <string name="product_update_dialog_message">請稍候…</string>
@@ -633,17 +716,14 @@ Language: zh_TW
     <string name="login_need_help_finding_email">需要協助找出連結的電子郵件嗎？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
-    <string name="login_jetpack_view_instructions">查看說明</string>
-    <string name="login_jetpack_required_msg">若要使用 WooCommerce 應用程式，你需要在你的網站上設定 Jetpack 外掛程式</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_try_another_account">嘗試其他帳號</string>
     <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
-    <string name="login">登入</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
     <string name="no_site_error">此地址的網站不是 WordPress 網站。若需要我們連接網站，網站必須使用 WordPress。</string>
     <string name="support_help_center">說明中心</string>
+    <string name="product_type_virtual">虛擬</string>
     <string name="product_type_grouped">組合</string>
     <string name="product_type_variable">款式</string>
     <string name="product_backorders_notify">允許，但通知顧客</string>
@@ -829,7 +909,6 @@ Language: zh_TW
     <string name="signup_with_email_button">透過電子郵件註冊</string>
     <string name="signup_terms_of_service_text">註冊即代表你同意我們的%1$s服務條款%2$s。</string>
     <string name="signup_magic_link_progress">正在傳送電子郵件</string>
-    <string name="signup_magic_link_message">我們已將神奇註冊連結寄給你！用此裝置查看電子郵件，點選電子郵件中的連結就能完成註冊。</string>
     <string name="signup_magic_link_error_button_positive">重試</string>
     <string name="signup_magic_link_error_button_negative">關閉</string>
     <string name="signup_magic_link_error">傳送電子郵件時發生錯誤。你可以現在重試，或先行關閉並稍後再試。</string>
@@ -867,8 +946,6 @@ Language: zh_TW
     <string name="enter_wpcom_password">輸入你的 WordPress.com 密碼。</string>
     <string name="magic_link_unavailable_error_message">目前無法使用。請輸入你的密碼</string>
     <string name="login_magic_link_email_requesting">要求登入的電子郵件</string>
-    <string name="login_magic_links_sent_label">神奇連結已傳送！請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
-    <string name="login_magic_links_label">我們會寄給你一個神奇的連結，讓你馬上就能登入，無須輸入密碼。不用再敲著兩隻手指打字了！</string>
     <string name="password_incorrect">看來你輸入的密碼不正確。請重新確認你的資訊，然後再試一次。</string>
     <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。請試著點擊下方連結，並使用你的網站位址登入。</string>
     <string name="requesting_otp">透過 SMS 要求驗證碼。</string>
@@ -944,6 +1021,7 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
+    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>
@@ -985,7 +1063,6 @@ Language: zh_TW
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>
     <string name="login_connected_store">連結的商店</string>
-    <string name="login_pick_store">挑選商店</string>
     <string name="login_configure_link">閱讀%s設定說明%s。</string>
     <string name="login_prologue_banner">透過即時警示管理訂單、追蹤銷售狀況，並監控商店活動。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>

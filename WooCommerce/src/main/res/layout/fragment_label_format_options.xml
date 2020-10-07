@@ -1,78 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/labelFormatOption_legalTxt"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginTop="@dimen/major_200"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/shipping_label_paper_size_legal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/labelFormatOption_legal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginTop="@dimen/major_100"
-        android:importantForAccessibility="no"
-        android:src="@drawable/img_label_option_legal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelFormatOption_legalTxt" />
+        <androidx.constraintlayout.helper.widget.Flow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:constraint_referenced_ids="labelFormatOption_legalView,labelFormatOption_letterView,labelFormatOption_labelView"
+            app:flow_horizontalAlign="start"
+            app:flow_horizontalGap="@dimen/major_75"
+            app:flow_horizontalStyle="spread_inside"
+            app:flow_verticalAlign="top"
+            app:flow_verticalGap="@dimen/major_100"
+            app:flow_wrapMode="chain"
+            app:flow_verticalBias="0"
+            app:flow_horizontalBias="0"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/labelFormatOption_letterTxt"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_200"
-        android:layout_marginEnd="@dimen/major_300"
-        android:text="@string/shipping_label_paper_size_letter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/labelFormatOption_legalView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/labelFormatOption_letter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_200"
-        android:importantForAccessibility="no"
-        android:src="@drawable/img_label_option_letter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelFormatOption_letterTxt" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/labelFormatOption_legalTxt"
+                style="@style/Woo.TextView.Subtitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_200"
+                android:text="@string/shipping_label_paper_size_legal" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/labelFormatOption_labelTxt"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginTop="@dimen/major_300"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/shipping_label_paper_size_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelFormatOption_letter" />
+            <ImageView
+                android:id="@+id/labelFormatOption_legal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:importantForAccessibility="no"
+                android:src="@drawable/img_label_option_legal" />
+        </LinearLayout>
 
-    <ImageView
-        android:id="@+id/labelFormatOption_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_200"
-        android:layout_marginStart="@dimen/major_100"
-        android:importantForAccessibility="no"
-        android:src="@drawable/img_label_option_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelFormatOption_labelTxt" />
+        <LinearLayout
+            android:id="@+id/labelFormatOption_letterView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/labelFormatOption_letterTxt"
+                style="@style/Woo.TextView.Subtitle1"
+                android:layout_marginTop="@dimen/major_200"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping_label_paper_size_letter" />
+
+            <ImageView
+                android:id="@+id/labelFormatOption_letter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_200"
+                android:importantForAccessibility="no"
+                android:src="@drawable/img_label_option_letter" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/labelFormatOption_labelView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/labelFormatOption_labelTxt"
+                style="@style/Woo.TextView.Subtitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_200"
+                android:text="@string/shipping_label_paper_size_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelFormatOption_letter" />
+
+            <ImageView
+                android:id="@+id/labelFormatOption_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginEnd="@dimen/major_200"
+                android:importantForAccessibility="no"
+                android:src="@drawable/img_label_option_label" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

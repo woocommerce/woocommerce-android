@@ -785,9 +785,12 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    override fun showProductDetail(remoteProductId: Long) {
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId,
+            isTrashEnabled = enableTrash
+        )
         navController.navigateSafely(action)
     }
 

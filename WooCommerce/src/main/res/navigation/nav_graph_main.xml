@@ -115,7 +115,7 @@
             app:argType="string" />
         <argument
             android:name="orderStatusList"
-            app:argType="string[]" />
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
     </dialog>
     <fragment
         android:id="@+id/addOrderNoteFragment"
@@ -193,6 +193,10 @@
             app:argType="long" />
         <argument
             android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
     </action>

@@ -48,7 +48,7 @@ class OrderDetailShipmentTrackingListAdapter(
             with(itemView.tracking_type) { text = shipmentTracking.trackingProvider }
             with(itemView.tracking_number) { text = shipmentTracking.trackingNumber }
             with(itemView.tracking_dateShipped) {
-                text = DateUtils.getLocalizedLongDateString(context, shipmentTracking.dateShipped)
+                text = DateUtils().getLocalizedLongDateString(context, shipmentTracking.dateShipped)
             }
             with(itemView.tracking_btnTrack) {
                 isVisible = true

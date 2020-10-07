@@ -43,7 +43,7 @@ class OrderDetailShipmentTrackingItemView @JvmOverloads constructor(
         tracking_number.text = item.trackingNumber
         tracking_dateShipped.text = context.getString(
                 R.string.order_shipment_tracking_shipped_date,
-                DateUtils.getLocalizedLongDateString(context, item.dateShipped))
+                DateUtils().getLocalizedLongDateString(context, item.dateShipped))
 
         tracking_copyNumber.setOnClickListener {
             copyTrackingNumber(item)

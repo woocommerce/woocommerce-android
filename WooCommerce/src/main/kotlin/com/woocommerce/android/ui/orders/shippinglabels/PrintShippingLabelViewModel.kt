@@ -77,10 +77,20 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         shippingLabelPreview: String
     ) {
         launch(dispatchers.io) {
-            val tempFile = FileUtils.createTempPdfFile(storageDir)
-            FileUtils.writePdfToTempFile(tempFile, shippingLabelPreview)?.let {
-                withContext(dispatchers.main) { viewState = viewState.copy(tempFile = it) }
+            val tempFile = FileUtils.createTempFile(storageDir)
+            if (tempFile != null) {
+                FileUtils.writeToTempFile(tempFile, shippingLabelPreview)?.let {
+                    withContext(dispatchers.main) { viewState = viewState.copy(tempFile = it) }
+                } ?: handlePreviewError()
+            } else {
+                handlePreviewError()
             }
+        }
+    }
+
+    private suspend fun handlePreviewError() {
+        withContext(dispatchers.main) {
+            triggerEvent(ShowSnackbar(string.shipping_label_preview_error))
         }
     }
 

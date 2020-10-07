@@ -10,8 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -26,10 +28,13 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.NavigationResult
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
+import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -42,7 +47,7 @@ import kotlinx.android.synthetic.main.fragment_order_detail.*
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseFragment() {
+class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductActionListener {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: OrderDetailViewModel by viewModels { viewModelFactory }
 
@@ -52,6 +57,7 @@ class OrderDetailFragment : BaseFragment() {
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val skeletonView = SkeletonView()
+    private var undoSnackbar: Snackbar? = null
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -68,6 +74,11 @@ class OrderDetailFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        undoSnackbar?.dismiss()
+        super.onStop()
+    }
+
     override fun getFragmentTitle() = viewModel.toolbarTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,6 +93,17 @@ class OrderDetailFragment : BaseFragment() {
             scrollUpChild = scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+    }
+
+    override fun onNavigationResult(requestCode: Int, result: Bundle) {
+        if (requestCode == RequestCodes.ORDER_REFUND) {
+            viewModel.onOrderItemRefunded()
+        }
+    }
+
+    override fun openOrderProductDetail(remoteProductId: Long) {
+        AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
@@ -220,7 +242,8 @@ class OrderDetailFragment : BaseFragment() {
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency)
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    productClickListener = this@OrderDetailFragment
                 )
             }
         }.otherwise { orderDetail_productList.hide() }
@@ -250,7 +273,8 @@ class OrderDetailFragment : BaseFragment() {
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
-                    listener = object : OnShippingLabelClickListener {
+                    productClickListener = this@OrderDetailFragment,
+                    shippingLabelClickListener = object : OnShippingLabelClickListener {
                         override fun onRefundRequested(shippingLabel: ShippingLabel) {
                             viewModel.onRefundShippingLabelClick(shippingLabel.id)
                         }
@@ -269,7 +293,7 @@ class OrderDetailFragment : BaseFragment() {
         actionListener: View.OnClickListener,
         dismissCallback: Snackbar.Callback
     ) {
-        uiMessageResolver.getUndoSnack(
+        undoSnackbar = uiMessageResolver.getUndoSnack(
             message = message,
             actionListener = actionListener
         ).also {

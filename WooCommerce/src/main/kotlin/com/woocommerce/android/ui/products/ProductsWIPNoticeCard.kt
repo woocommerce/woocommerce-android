@@ -10,9 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_M3_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M2
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
-import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.WooAnimUtils
 import kotlinx.android.synthetic.main.products_wip_notice.view.*
 
@@ -26,9 +24,7 @@ class ProductsWIPNoticeCard @JvmOverloads constructor(
     }
 
     val wipFeatureType
-        get() =
-            if (PRODUCT_RELEASE_M3.isEnabled()) PRODUCTS_M3
-            else PRODUCTS_M2
+        get() = PRODUCTS_M3
 
     private var isExpanded: Boolean
         set(value) {

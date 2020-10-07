@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.ui.products.ProductStatus.TRASH
 import kotlinx.android.synthetic.main.fragment_product_status.*
 
 /**
@@ -47,6 +48,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
         btnPublishedPrivately.setOnClickListener(this)
         btnDraft.setOnClickListener(this)
         btnPending.setOnClickListener(this)
+        btnTrashed.setOnClickListener(this)
 
         selectedStatus?.let { status ->
             getButtonForStatus(status)?.isChecked = true
@@ -74,6 +76,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             btnPublishedPrivately.isChecked = it == btnPublishedPrivately
             btnDraft.isChecked = it == btnDraft
             btnPending.isChecked = it == btnPending
+            btnTrashed.isChecked = it == btnTrashed
             selectedStatus = getStatusForButtonId(it.id)
 
             changesMade()
@@ -103,6 +106,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             DRAFT -> btnDraft
             PENDING -> btnPending
             PRIVATE -> btnPublishedPrivately
+            TRASH -> btnTrashed
             else -> null
         }
     }
@@ -113,6 +117,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             R.id.btnDraft -> DRAFT.toString()
             R.id.btnPending -> PENDING.toString()
             R.id.btnPrivate -> PRIVATE.toString()
+            R.id.btnTrashed -> TRASH.toString()
             else -> null
         }
     }
