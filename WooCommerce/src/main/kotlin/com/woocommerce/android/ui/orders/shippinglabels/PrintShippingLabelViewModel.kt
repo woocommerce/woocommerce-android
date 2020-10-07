@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.NetworkStatus
@@ -51,6 +53,7 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
 
     fun onPrintShippingLabelClicked() {
         if (networkStatus.isConnected()) {
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PRINT_REQUESTED)
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val requestResult = repository.printShippingLabel(
@@ -83,6 +86,10 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
                 handlePreviewError()
             }
         }
+    }
+
+    fun onPreviewLabelCompleted() {
+        viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
     }
 
     private suspend fun handlePreviewError() {

@@ -172,6 +172,17 @@ object OrderTestUtils {
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
             generateOrderStatusOptions().map { it.statusKey to it }.toMap()
 
+    fun generateShippingLabel(localSiteId: Int = 1, remoteOrderId: Long, shippingLabelId: Long): ShippingLabel {
+        return WCShippingLabelModel().apply {
+            this.localSiteId = localSiteId
+            localOrderId = remoteOrderId
+            remoteShippingLabelId = shippingLabelId
+            packageName = "Package"
+            serviceName = "Service"
+            dateCreated = Date().time.toString()
+        }.toAppModel()
+    }
+
     fun generateShippingLabels(totalCount: Int = 5, orderIdentifier: OrderIdentifier): List<ShippingLabel> {
         val result = ArrayList<ShippingLabel>()
         for (i in totalCount downTo 1) {

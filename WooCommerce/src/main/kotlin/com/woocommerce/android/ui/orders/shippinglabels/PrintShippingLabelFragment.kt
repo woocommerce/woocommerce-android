@@ -65,9 +65,9 @@ class PrintShippingLabelFragment : BaseFragment() {
             }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.previewShippingLabel?.takeIfNotEqualTo(old?.previewShippingLabel) {
-                openShippingLabelPreview(it)
+                writeShippingLabelToFile(it)
             }
-            new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openPreview(it) }
+            new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -110,13 +110,13 @@ class PrintShippingLabelFragment : BaseFragment() {
         uiMessageResolver.showSnack(messageId)
     }
 
-    private fun openShippingLabelPreview(base: String) {
+    private fun writeShippingLabelToFile(base: String) {
         requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.let {
             viewModel.writeShippingLabelToFile(it, base)
         } ?: displayError(R.string.shipping_label_preview_error)
     }
 
-    private fun openPreview(file: File) {
+    private fun openShippingLabelPreview(file: File) {
         val context = requireContext()
         val pdfUri = FileProvider.getUriForFile(
             context, "${context.packageName}.provider", file
@@ -127,5 +127,7 @@ class PrintShippingLabelFragment : BaseFragment() {
         sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(sendIntent)
+
+        viewModel.onPreviewLabelCompleted()
     }
 }
