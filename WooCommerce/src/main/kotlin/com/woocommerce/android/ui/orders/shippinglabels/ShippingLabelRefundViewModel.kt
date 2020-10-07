@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
@@ -46,15 +48,14 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
 
     fun onRefundShippingLabelButtonClicked() {
         if (networkStatus.isConnected()) {
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_REFUND_REQUESTED)
             triggerEvent(ShowSnackbar(string.shipping_label_refund_progress_message))
 
             refundJob = launch {
                 val result = repository.refundShippingLabel(arguments.orderId, arguments.shippingLabelId)
                 if (result.isError) {
-                    // TODO: add tracking event to track the failure when refunding shipping label
                     triggerEvent(ShowSnackbar(string.order_refunds_amount_refund_error))
                 } else {
-                    // TODO: add tracking event to track the success when refunding shipping label
                     triggerEvent(ShowSnackbar(string.shipping_label_refund_success))
                     triggerEvent(Exit)
                 }
