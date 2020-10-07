@@ -88,6 +88,10 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
+    fun onPreviewLabelCompleted() {
+        viewState = viewState.copy(tempFile = null, previewShippingLabel = null)
+    }
+
     private suspend fun handlePreviewError() {
         withContext(dispatchers.main) {
             triggerEvent(ShowSnackbar(string.shipping_label_preview_error))
