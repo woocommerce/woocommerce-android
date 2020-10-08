@@ -158,6 +158,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
+    <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
     <!--
         Dashboard View
     -->
@@ -214,6 +215,7 @@
     -->
     <string name="customer_information">Customer information</string>
     <string name="customer_full_name">%1$s %2$s</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
     <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
     <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
@@ -242,6 +244,7 @@
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
+    <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
@@ -278,7 +281,8 @@
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
-    <string name="order_begin_fulfillment">Begin fulfillment</string>
+    <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
+    <string name="order_begin_fulfillment">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
@@ -299,7 +303,7 @@
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
     <!--
-        Refunds
+        Shipping label Refunds
     -->
     <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take a least 14 days to process.</string>
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
@@ -307,6 +311,33 @@
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
     <string name="shipping_label_refund_success">Refund was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
+
+    <!--
+        Print shipping labels
+    -->
+    <string name="shipping_label_print_error_message">If there was a printing error when you purchased the label, you can print it again.</string>
+    <string name="shipping_label_print_disclaimer">If you already used the label in a package, printing and using it again is a violation of our terms of services.</string>
+    <string name="shipping_label_paper_size">Paper size</string>
+    <string name="shipping_label_paper_size_options_title">Choose paper size</string>
+    <string name="shipping_label_print_button">Print shipping label</string>
+    <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
+    <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_preview_error">Error previewing shipping label</string>
+    <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
+    <string name="shipping_label_paper_size_label">Label (4 x 6 in)</string>
+    <string name="print_shipping_label_info_title">Print with your phone</string>
+    <string name="print_shipping_label_format_options_title">Label format options</string>
+    <string name="print_shipping_label_info_step_count_1" translatable="false">1</string>
+    <string name="print_shipping_label_info_step_count_2" translatable="false">2</string>
+    <string name="print_shipping_label_info_step_count_3" translatable="false">3</string>
+    <string name="print_shipping_label_info_step_count_4" translatable="false">4</string>
+    <string name="print_shipping_label_info_step_count_5" translatable="false">5</string>
+    <string name="print_shipping_label_info_step_1">Make sure your printer and your phone are connected to the <b>same wifi networks</b></string>
+    <string name="print_shipping_label_info_step_2">After selecting <b>\"Print shipping label\"</b>, you may have to select and add a printer if you haven\'t printed from this device before.</string>
+    <string name="print_shipping_label_info_step_3">You can select your phone\'s <b>default print service</b> or install your <b>printer\'s brand app</b> (this should appear as a recommended option)</string>
+    <string name="print_shipping_label_info_step_4">You might have to <b>configure wifi printing directly on the printer itself.</b> Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
+    <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can <b>save your label as PDF</b> and send it by email to print it from another device.</string>
 
     <!--
         Refunds
@@ -561,6 +592,11 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_trash">Trash product</string>
+    <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
+    <string name="product_trash_yes">Move to trash</string>
+    <string name="product_trash_undo_snackbar_message">Product moved to trash</string>
+    <string name="product_trash_error">Error trashing product</string>
     <string name="product_status">Status</string>
     <string name="product_visibility">Visibility</string>
     <string name="product_visibility_public">Public</string>
@@ -618,6 +654,7 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
+    <string name="product_detail_save_as_draft">Save as draft</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -661,6 +698,7 @@
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
+
 
     <!--
         Empty list messages
@@ -790,7 +828,7 @@
 
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
+
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
 
 
@@ -807,10 +845,10 @@
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-    <string name="login_site_address">Store address</string>
+
     <string name="login_site_address_help">Need help finding your site address?</string>
-    <string name="login_site_address_help_title">What\'s my store address?</string>
-    <string name="login_site_address_help_content">Your store address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+
+
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -930,6 +968,7 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
+    <string name="product_status_trashed">Trashed</string>
 
     <!-- Product type -->
     <string name="product_type_simple">Simple</string>
@@ -965,9 +1004,12 @@
     <string name="product_add_tool_bar_title">New Product</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
     <string name="product_publish_dialog_title">Publishing product</string>
+    <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
+    <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
+    <string name="product_detail_publish_product_draft_success">Product draft saved</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
@@ -1303,7 +1345,7 @@
     <string name="connect_more">Connect another site</string>
     <string name="connect_site">Connect a site</string>
     <string name="login_done">Done</string>
-    <string name="login_find_your_site_adress">Find your store address</string>
+
     <string name="login_find_your_connected_email">Find your connected email</string>
     <string name="continue_google_button_suffix">Continue with Google</string>
     <string name="continue_site_credentials">Continue with store credentials</string>
@@ -1318,6 +1360,12 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
+    <string name="login_site_address">Site address</string>
+    <string name="login_site_address_help_title">What\'s my site address?</string>
+    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    <string name="login_find_your_site_adress">Find your site address</string>
+
     <string name="product_downloadable_files_value_multiple">%1$d files</string>
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_add">Add file</string>

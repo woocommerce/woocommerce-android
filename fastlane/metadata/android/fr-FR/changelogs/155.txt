@@ -1,0 +1,4 @@
+5.1 :
+- Connexion : nous avons implémenté un nouveau flux de connexion avec de nouvelles conceptions d’écran.
+- Commandes : l’écran État de la commande affiche désormais le nombre réel de commandes plutôt que « max 99 ».
+

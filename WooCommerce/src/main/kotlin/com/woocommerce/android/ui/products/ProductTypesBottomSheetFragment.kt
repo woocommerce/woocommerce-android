@@ -85,13 +85,15 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     dismiss()
                 }
                 is ShowDialog -> WooDialog.showDialog(
-                    activity = requireActivity(),
-                    titleId = event.titleId,
-                    messageId = event.messageId,
-                    positiveButtonId = event.positiveButtonId,
-                    posBtnAction = event.positiveBtnAction,
-                    negativeButtonId = event.negativeButtonId,
-                    negBtnAction = event.negativeBtnAction
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    event.titleId,
+                    event.messageId,
+                    event.positiveButtonId,
+                    event.negativeButtonId,
+                    event.neutralButtonId
                 )
 
                 is ExitWithResult<*> -> {

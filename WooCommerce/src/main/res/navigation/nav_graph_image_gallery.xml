@@ -34,8 +34,8 @@
         tools:layout="@layout/fragment_image_viewer">
         <argument
             android:name="isDeletingAllowed"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:argType="boolean" />
         <argument
             android:name="mediaId"
             app:argType="long" />
@@ -53,13 +53,17 @@
     <action
         android:id="@+id/action_global_productImageViewerFragment"
         app:destination="@id/productImageViewerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_global_wpMediaFragment"
         app:destination="@id/wpMediaPickerFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
 </navigation>

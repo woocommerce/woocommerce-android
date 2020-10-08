@@ -17,12 +17,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -41,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -77,6 +80,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    private var trashProductUndoSnack: Snackbar? = null
+    private var pendingTrashProductId: Long? = null
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
@@ -136,10 +142,16 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        trashProductUndoSnack?.dismiss()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
+        setupResultHandlers()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -147,6 +159,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         if (hidden) {
             disableSearchListeners()
+            trashProductUndoSnack?.dismiss()
         } else {
             enableSearchListeners()
         }
@@ -156,7 +169,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         showOptionsMenu(true)
 
         if (!viewModel.isSearching()) {
-            viewModel.reloadProductsFromDb()
+            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
 
@@ -315,9 +328,53 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
+                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT, R.id.rootFragment) { bundle ->
+            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
+                // User chose to trash from product detail, but we do the actual trashing here
+                // so we can show a snackbar enabling the user to undo the trashing.
+                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
+                trashProduct(remoteProductId)
+            }
+        }
+    }
+
+    private fun trashProduct(remoteProductId: Long) {
+        var trashProductCancelled = false
+        pendingTrashProductId = remoteProductId
+
+        // reload the product list without this product
+        viewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+
+        val actionListener = View.OnClickListener {
+            trashProductCancelled = true
+        }
+
+        val callback = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                pendingTrashProductId = null
+                if (trashProductCancelled) {
+                    viewModel.reloadProductsFromDb()
+                } else {
+                    viewModel.trashProduct(remoteProductId)
+                }
+            }
+        }
+
+        trashProductUndoSnack = uiMessageResolver.getUndoSnack(
+            R.string.product_trash_undo_snackbar_message,
+            actionListener = actionListener)
+            .also {
+                it.addCallback(callback)
+                it.show()
+            }
     }
 
     override fun getFragmentTitle() = getString(R.string.products)
@@ -391,10 +448,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
                     showButton()
                     addProductButton.setOnClickListener {
-                        when (viewModel.isShowProductTypeBottomSheet()) {
-                            true -> showProductTypesBottomSheet()
-                            else -> showAddProduct()
-                        }
+                        viewModel.onAddProductButtonClicked()
                     }
                 } else {
                     hideButton()
@@ -409,16 +463,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     private fun showProductDetails(remoteProductId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
 
-    private fun showProductTypesBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
-
-    private fun showAddProduct() {
-        disableSearchListeners()
-        showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showAddProduct()
-    }
+    private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()

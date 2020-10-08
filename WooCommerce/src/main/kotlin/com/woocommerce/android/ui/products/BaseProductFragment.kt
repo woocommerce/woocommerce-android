@@ -55,7 +55,17 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
-                is ShowDialog -> event.showDialog()
+                is ShowDialog -> WooDialog.showDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
+                )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
@@ -101,6 +111,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
      * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
     protected fun changesMade() {
+        requireActivity().invalidateOptionsMenu()
         showUpdateMenuItem(hasChanges())
     }
 }

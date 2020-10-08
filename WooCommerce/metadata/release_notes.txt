@@ -1,3 +1,6 @@
-- Login: We implemented a new login flow with new screen designs.
-- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
+Enhancements to the editing capabilities for all product types:
 
+Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
+
+Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
+ 

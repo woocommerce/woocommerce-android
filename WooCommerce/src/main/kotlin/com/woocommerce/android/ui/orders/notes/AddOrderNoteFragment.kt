@@ -14,6 +14,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -31,6 +33,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         private const val FIELD_NOTE_TEXT = "note_text"
         private const val FIELD_IS_CUSTOMER_NOTE = "is_customer_note"
         private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
+        const val KEY_ADD_NOTE_RESULT = "key_add_note_result"
     }
 
     @Inject lateinit var presenter: Presenter
@@ -128,11 +131,12 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
                 val noteText = getNoteText()
                 if (noteText.isNotEmpty()) {
-                    val isCustomerNote = addNote_switch.isChecked
-                    if (presenter.pushOrderNote(orderId, noteText, isCustomerNote)) {
-                        shouldShowDiscardDialog = false
-                        activity?.onBackPressed()
-                    }
+                    val orderNote = OrderNote(
+                        isCustomerNote = addNote_switch.isChecked,
+                        note = noteText
+                    )
+                    shouldShowDiscardDialog = false
+                    navigateBackWithResult(KEY_ADD_NOTE_RESULT, orderNote)
                 }
                 true
             }

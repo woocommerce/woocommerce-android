@@ -35,6 +35,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -446,5 +447,50 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
             assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
         }
+    }
+
+    @Test
+    fun `Displays the trash confirmation dialog correctly`() {
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        var trashDialogShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDialog && it.messageId == R.string.product_confirm_trash) {
+                trashDialogShown = true
+            }
+        }
+
+        assertThat(trashDialogShown).isTrue()
+    }
+
+    @Test
+    fun `Do not enable trashing a product when in add product flow`() {
+        viewModel.start()
+        doReturn(true).whenever(viewModel).isAddFlow
+        assertThat(viewModel.isTrashEnabled).isFalse()
+    }
+
+    @Test
+    fun `Display offline message and don't show trash confirmation dialog when not connected`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        var isTrashDialogShown = false
+        viewModel.productDetailViewStateData.observeForever { old, new ->
+            new.isConfirmingTrash.takeIfNotEqualTo(false) {
+                isTrashDialogShown = true
+            }
+        }
+
+        viewModel.start()
+        viewModel.onTrashButtonClicked()
+
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(isTrashDialogShown).isFalse()
     }
 }

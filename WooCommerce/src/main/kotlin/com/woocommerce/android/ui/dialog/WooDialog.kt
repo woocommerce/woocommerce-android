@@ -18,12 +18,14 @@ object WooDialog {
 
     fun showDialog(
         activity: Activity,
+        posBtnAction: (OnClickListener)? = null,
+        negBtnAction: (OnClickListener)? = null,
+        neutBtAction: (OnClickListener)? = null,
         @StringRes titleId: Int? = null,
-        @StringRes messageId: Int,
-        @StringRes positiveButtonId: Int,
-        posBtnAction: OnClickListener,
+        @StringRes messageId: Int? = null,
+        @StringRes positiveButtonId: Int? = null,
         @StringRes negativeButtonId: Int? = null,
-        negBtnAction: OnClickListener? = null
+        @StringRes neutralButtonId: Int? = null
     ) {
         dialogRef?.get()?.let {
             // Dialog is already present
@@ -42,6 +44,11 @@ object WooDialog {
                 .setCancelable(true)
                 .setPositiveButton(positiveButtonTextId, posBtnAction)
                 .setOnDismissListener { onCleared() }
+
+        neutBtAction?.let {
+            val neutralButtonTextId = neutralButtonId ?: string.product_detail_save_as_draft
+            builder.setNeutralButton(neutralButtonTextId, it)
+        }
 
         negativeButtonId?.let { builder.setNegativeButton(it, negBtnAction) }
 
