@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.order_list_header.view.*
 
 class ReviewListAdapter(
     private val context: Context,
-    private val clickListener: OnReviewClickListener
+    private val clickListener: OnReviewClickListener?
 ) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
@@ -367,8 +367,10 @@ class ReviewListAdapter(
                 itemHolder.divider.visibility = View.INVISIBLE
             }
 
-            itemHolder.itemView.setOnClickListener {
-                clickListener.onReviewClick(review)
+            clickListener?.let { listener ->
+                itemHolder.itemView.setOnClickListener {
+                    listener.onReviewClick(review)
+                }
             }
         }
 
