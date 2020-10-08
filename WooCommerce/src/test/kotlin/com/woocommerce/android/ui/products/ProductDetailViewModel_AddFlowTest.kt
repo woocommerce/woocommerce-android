@@ -32,7 +32,7 @@ import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -331,7 +331,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
-            if (it is ShowDiscardDialog && it.neutralBtnAction != null) {
+            if (it is ShowDialog && it.neutralBtnAction != null) {
                 saveAsDraftShown = true
             }
         }
@@ -349,7 +349,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
-            if (it is ShowDiscardDialog && it.neutralBtnAction != null) {
+            if (it is ShowDialog && it.neutralBtnAction != null) {
                 saveAsDraftShown = true
             }
         }
