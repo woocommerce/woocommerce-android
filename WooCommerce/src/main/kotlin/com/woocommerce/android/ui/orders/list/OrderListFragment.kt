@@ -659,7 +659,6 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
-        orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
         order_list_view_root.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -681,7 +680,6 @@ class OrderListFragment : TopLevelFragment(),
         hideEmptyView()
 
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
-        orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()

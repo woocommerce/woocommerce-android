@@ -462,11 +462,12 @@ class MainActivity : AppUpgradeActivity(),
                 AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
-            R.id.menu_support -> {
+            // TODO move Help & Support to settings
+            /*R.id.menu_support -> {
                 showHelpAndSupport()
                 AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
                 true
-            }
+            }*/
             else -> super.onOptionsItemSelected(item)
         }
     }
