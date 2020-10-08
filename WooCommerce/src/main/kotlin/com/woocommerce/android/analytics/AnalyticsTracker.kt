@@ -225,7 +225,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
-        MAIN_MENU_CONTACT_SUPPORT_TAPPED,
         MAIN_TAB_DASHBOARD_SELECTED,
         MAIN_TAB_DASHBOARD_RESELECTED,
         MAIN_TAB_ORDERS_SELECTED,
@@ -251,6 +250,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
         SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED,
         SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
+        SETTINGS_CONTACT_SUPPORT_TAPPED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
         PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED,
         PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED,

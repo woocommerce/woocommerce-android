@@ -19,6 +19,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
@@ -31,6 +32,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -117,17 +120,22 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
+        option_help_and_support.setOnClickListener {
+            AnalyticsTracker.track(Stat.SETTINGS_CONTACT_SUPPORT_TAPPED)
+            startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
+        }
+
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             container_notifs_old.visibility = View.GONE
-            option_notifications.visibility = View.VISIBLE
+            container_notifs_new.visibility = View.VISIBLE
             option_notifications.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
                 showDeviceAppNotificationSettings()
             }
         } else {
             container_notifs_old.visibility = View.VISIBLE
-            option_notifications.visibility = View.GONE
+            container_notifs_new.visibility = View.GONE
 
             option_notifs_orders.isChecked = AppPrefs.isOrderNotificationsEnabled()
             option_notifs_orders.setOnCheckedChangeListener { _, isChecked ->
