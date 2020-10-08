@@ -114,7 +114,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         data class ShowDialog(
             @StringRes val titleId: Int? = null,
             @StringRes val messageId: Int? = null,
-            @StringRes val positiveButtonId: Int,
+            @StringRes val positiveButtonId: Int? = null,
             @StringRes val negativeButtonId: Int? = null,
             @StringRes val neutralButtonId: Int? = null,
             val positiveBtnAction: OnClickListener? = null,
