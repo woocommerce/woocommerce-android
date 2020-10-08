@@ -75,8 +75,10 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
 
     private fun setupResultHandlers(viewModel: AddProductDownloadViewModel) {
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            // viewModel.launchFileUpload(it)
+        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) { images ->
+            images.forEach {
+                viewModel.launchFileUpload(Uri.parse(it.source))
+            }
         }
     }
 
