@@ -25,11 +25,13 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * This puts a limit on the number of observers for a particular key-result pair to 1.
  */
 fun <T> Fragment.handleResult(key: String, handler: (T) -> Unit) {
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key)?.observe(
-        this.viewLifecycleOwner,
-        Observer {
-            findNavController().currentBackStackEntry?.savedStateHandle?.remove<T>(key)
-            handler(it)
-        }
-    )
+    findNavController().currentBackStackEntry?.savedStateHandle?.let { saveState ->
+        saveState.getLiveData<T>(key).observe(
+            this.viewLifecycleOwner,
+            Observer {
+                saveState.remove<T>(key)
+                handler(it)
+            }
+        )
+    }
 }
