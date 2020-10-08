@@ -554,7 +554,7 @@ class ProductDetailCardBuilder(
     }
 
     // show product variations only if product type is variable and if there are variations for the product
-    private fun Product.variations(): ProductProperty? {
+    private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.attributes) {
@@ -573,7 +573,16 @@ class ProductDetailCardBuilder(
                 )
             }
         } else {
-            null
+            ComplexProperty(
+                R.string.product_variations,
+                resources.getString(R.string.product_detail_no_variations),
+                R.drawable.ic_gridicons_types
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductVariations(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                )
+            }
         }
     }
 
