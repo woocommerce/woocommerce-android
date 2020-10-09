@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -156,5 +157,6 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         object : ItemDetailsLookup.ItemDetails<Long>() {
             override fun getPosition() = adapterPosition
             override fun getSelectionKey() = itemId
+            override fun inSelectionHotspot(e: MotionEvent) = true
         }
 }
