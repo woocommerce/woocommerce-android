@@ -10,9 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
