@@ -20,16 +20,20 @@
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/rootFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
         app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
@@ -58,38 +62,52 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
             app:destination="@id/addOrderNoteFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderFulfillmentFragment"
             app:destination="@id/orderFulfillmentFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderProductListFragment"
             app:destination="@id/orderProductListFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderShipmentTrackingFragment"
             app:destination="@id/addOrderShipmentTrackingFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
             app:destination="@id/shippingLabelRefundFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printShippingLabelFragment"
             app:destination="@id/printShippingLabelFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_issue_refund"
             app:destination="@id/nav_graph_refunds"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="orderId"
                 android:defaultValue="0L"
@@ -98,8 +116,10 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_refundDetailFragment"
             app:destination="@id/refundDetailFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
@@ -149,8 +169,10 @@
         <action
             android:id="@+id/action_orderFulfillmentFragment_to_addOrderShipmentTrackingFragment"
             app:destination="@id/addOrderShipmentTrackingFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/orderProductListFragment"
@@ -182,11 +204,12 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
+    <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out">
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -221,8 +244,8 @@
     <action
         android:id="@+id/action_global_orderDetailFragment"
         app:destination="@id/orderDetailFragment"
-        app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -244,8 +267,6 @@
         android:id="@+id/action_global_reviewDetailFragment"
         app:destination="@id/reviewDetailFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_products" />
@@ -294,17 +315,21 @@
             android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
             app:destination="@id/printShippingLabelInfoFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_labelFormatOptionsFragment"
             app:destination="@id/shippingLabelFormatOptionsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"/>
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <dialog
         android:id="@+id/shippingLabelPaperSizeSelectorDialog"
@@ -315,10 +340,10 @@
     </dialog>
     <fragment
         android:id="@+id/printShippingLabelInfoFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelInfoFragment"/>
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelInfoFragment" />
     <fragment
         android:id="@+id/shippingLabelFormatOptionsFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.LabelFormatOptionsFragment"/>
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.LabelFormatOptionsFragment" />
 
     <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <action
