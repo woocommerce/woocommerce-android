@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.fragment_reviews_list.*
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import javax.inject.Inject
 
-class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickListener {
+class ProductReviewsFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -56,7 +56,7 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
-        reviewsAdapter = ReviewListAdapter(activity, this)
+        reviewsAdapter = ReviewListAdapter(activity, null)
 
         reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
