@@ -101,7 +101,7 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.START)
     }
 
-    override fun trackPasswordFormViewed() {
+    override fun trackPasswordFormViewed(isSocialChallenge: Boolean) {
         AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_PASSWORD_FORM_VIEWED)
         unifiedLoginTracker.track(Flow.LOGIN_PASSWORD, Step.START)
     }
