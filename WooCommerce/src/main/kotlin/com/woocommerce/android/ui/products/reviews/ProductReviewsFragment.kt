@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -27,7 +28,7 @@ import kotlinx.android.synthetic.main.fragment_reviews_list.*
 import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import javax.inject.Inject
 
-class ProductReviewsFragment : BaseFragment() {
+class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -56,7 +57,7 @@ class ProductReviewsFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
-        reviewsAdapter = ReviewListAdapter(activity, null)
+        reviewsAdapter = ReviewListAdapter(activity, this)
 
         reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -137,5 +138,13 @@ class ProductReviewsFragment : BaseFragment() {
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+    }
+
+    override fun onReviewClick(review: ProductReview) {
+        (activity as? MainNavigationRouter)?.showReviewDetail(
+            review.remoteId,
+            launchedFromNotification = false,
+            enableModeration = false
+        )
     }
 }

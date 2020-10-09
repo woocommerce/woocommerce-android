@@ -262,6 +262,9 @@
         <argument
             android:name="launchedFromNotification"
             app:argType="boolean" />
+        <argument
+            android:name="enableModeration"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
