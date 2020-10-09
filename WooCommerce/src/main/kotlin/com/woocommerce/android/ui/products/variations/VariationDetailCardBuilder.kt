@@ -190,10 +190,6 @@ class VariationDetailCardBuilder(
                 mapOf(
                     Pair(resources.getString(string.product_weight), weightWithUnits),
                     Pair(resources.getString(string.product_dimensions), sizeWithUnits),
-                    Pair(
-                        resources.getString(string.product_shipping_class),
-                        viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
-                    )
                 )
             } else {
                 mapOf(Pair("", resources.getString(string.product_shipping_empty)))
