@@ -121,7 +121,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
-                        Pair("", resources.getString(R.string.product_stock_status_instock))
+                        Pair(
+                            resources.getString(R.string.product_stock_status),
+                            resources.getString(R.string.product_stock_status_instock)
+                        )
                     ),
                     R.drawable.ic_gridicons_list_checkmark,
                     true
