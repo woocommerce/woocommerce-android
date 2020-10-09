@@ -138,7 +138,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 ),
                 RatingBar(
                     R.string.product_reviews,
-                    resources.getString(R.string.product_reviews_count, product.ratingCount),
+                    resources.getString(R.string.product_ratings_count, product.ratingCount),
                     product.averageRating,
                     R.drawable.ic_reviews
                 ),

@@ -476,10 +476,14 @@ class ProductDetailCardBuilder(
 
     private fun Product.productReviews(): ProductProperty? {
         return if (this.reviewsAllowed) {
-            val ratingCount = this.ratingCount
+            val value = when (this.ratingCount) {
+                0 -> resources.getString(R.string.product_ratings_count_zero)
+                1 -> resources.getString(R.string.product_ratings_count_one)
+                else -> resources.getString(R.string.product_ratings_count, this.ratingCount)
+            }
             RatingBar(
                 R.string.product_reviews,
-                resources.getString(R.string.product_reviews_count, ratingCount),
+                value,
                 this.averageRating,
                 R.drawable.ic_reviews
             ) {
