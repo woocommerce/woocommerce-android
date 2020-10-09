@@ -322,7 +322,8 @@ class ProductDetailCardBuilder(
 
         if (productType == SIMPLE || productType == VARIABLE) {
             if (this.isStockManaged) {
-                inventory[resources.getString(R.string.product_stock_quantity)] = FormatUtils.formatInt(this.stockQuantity)
+                inventory[resources.getString(R.string.product_stock_quantity)] =
+                    FormatUtils.formatInt(this.stockQuantity)
                 inventory[resources.getString(R.string.product_backorders)] =
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
             } else if (productType == SIMPLE) {
