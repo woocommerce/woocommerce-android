@@ -807,11 +807,12 @@ class MainActivity : AppUpgradeActivity(),
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
-
-        val navPos = REVIEWS.position
-        bottom_nav.active(navPos)
+        // make sure the review tab is active if the user came here from a notification
+        if (launchedFromNotification) {
+            showBottomNav()
+            bottomNavView.currentPosition = REVIEWS
+            bottom_nav.active(REVIEWS.position)
+        }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
             remoteReviewId,
