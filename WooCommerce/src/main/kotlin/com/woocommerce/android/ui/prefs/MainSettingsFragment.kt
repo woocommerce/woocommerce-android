@@ -121,7 +121,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         }
 
         option_help_and_support.setOnClickListener {
-            AnalyticsTracker.track(Stat.SETTINGS_CONTACT_SUPPORT_TAPPED)
+            AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
         }
 

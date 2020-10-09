@@ -1,6 +1,7 @@
 
 5.3
 -----
+* Application settings have been moved to a gear icon on the Dashboard
  
 5.2
 -----
