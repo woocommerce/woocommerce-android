@@ -775,7 +775,11 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), launchedFromNotification = true)
+                PRODUCT_REVIEW -> showReviewDetail(
+                    note.getCommentId(),
+                    launchedFromNotification = true,
+                    enableModeration = true
+                )
                 else -> { /* do nothing */
                 }
             }
@@ -800,8 +804,8 @@ class MainActivity : AppUpgradeActivity(),
     override fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
-        tempStatus: String?,
-        enableModeration: Boolean
+        enableModeration: Boolean,
+        tempStatus: String?
     ) {
         showBottomNav()
         bottomNavView.currentPosition = REVIEWS
