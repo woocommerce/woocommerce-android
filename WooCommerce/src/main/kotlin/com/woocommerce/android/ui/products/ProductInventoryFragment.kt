@@ -10,7 +10,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -64,8 +66,12 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 doneButton?.isEnabled = isEnabled
             }
-            new.isIndividualSaleSwitchVisible?.takeIfNotEqualTo(old?.isIndividualSaleSwitchVisible) { isVisible ->
-                soldIndividually_switch.isVisible = isVisible
+            new.isStockManagementVisible?.takeIfNotEqualTo(old?.isStockManagementVisible) { isVisible ->
+                stockManagementPanel.isVisible = isVisible
+                soldIndividually_switch.isVisible = isVisible && new.isIndividualSaleSwitchVisible == true
+            }
+            new.isStockStatusVisible?.takeIfNotEqualTo(old?.isStockStatusVisible) { isVisible ->
+                edit_product_stock_status.isVisible = isVisible
             }
             new.inventoryData.backorderStatus?.takeIfNotEqualTo(old?.inventoryData?.backorderStatus) {
                 edit_product_backorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
@@ -74,7 +80,17 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 edit_product_stock_status.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
             }
             new.inventoryData.isStockManaged?.takeIfNotEqualTo(old?.inventoryData?.isStockManaged) { isStockManaged ->
-                enableManageStockStatus(isStockManaged)
+                new.isStockManagementVisible?.let { isVisible ->
+                    if (isVisible) {
+                        enableManageStockStatus(
+                            isStockManaged,
+                            new.isStockStatusVisible ?: edit_product_stock_status.isVisible
+                        )
+                    } else {
+                        manageStock_switch.isVisible = false
+                        edit_product_stock_status.isVisible = false
+                    }
+                }
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
                 if (product_sku.getText() != it) {
@@ -127,7 +143,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
 
         with(manageStock_switch) {
             setOnCheckedChangeListener { _, isChecked ->
-                enableManageStockStatus(isChecked)
+                enableManageStockStatus(isChecked, edit_product_stock_status.isVisible)
                 viewModel.onDataChanged(isStockManaged = isChecked)
             }
         }
@@ -171,13 +187,16 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
         }
     }
 
-    private fun enableManageStockStatus(isStockManaged: Boolean) {
+    private fun enableManageStockStatus(isStockManaged: Boolean, isStockStatusVisible: Boolean) {
         manageStock_switch.isChecked = isStockManaged
-        edit_product_stock_status.isVisible = !isStockManaged
         if (isStockManaged) {
+            edit_product_stock_status.collapse()
             manageStock_morePanel.expand()
         } else {
             manageStock_morePanel.collapse()
+            if (isStockStatusVisible) {
+                edit_product_stock_status.expand()
+            }
         }
     }
 
