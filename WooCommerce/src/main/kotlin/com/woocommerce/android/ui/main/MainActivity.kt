@@ -219,6 +219,12 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        // settings icon only appears on the dashboard
+        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == DASHBOARD
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -462,11 +468,6 @@ class MainActivity : AppUpgradeActivity(),
                 AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
-            R.id.menu_support -> {
-                showHelpAndSupport()
-                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -523,10 +524,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun showSettingsScreen() {
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
-    }
-
-    override fun showHelpAndSupport() {
-        startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
     }
 
     override fun updateSelectedSite() {

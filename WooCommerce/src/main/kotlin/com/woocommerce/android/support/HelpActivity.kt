@@ -157,7 +157,7 @@ class HelpActivity : AppCompatActivity() {
 
     enum class Origin(private val stringValue: String) {
         UNKNOWN("origin:unknown"),
-        MAIN_ACTIVITY("origin:main-activity"),
+        SETTINGS("origin:settings"),
         FEEDBACK_SURVEY("origin:feedback_survey"),
         ZENDESK_NOTIFICATION("origin:zendesk-notification"),
         LOGIN_EMAIL("origin:login-email"),
