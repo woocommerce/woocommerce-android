@@ -129,12 +129,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     ),
                     R.drawable.ic_gridicons_money
                 ),
-                ComplexProperty(
-                    R.string.product_type,
-                    resources.getString(R.string.product_detail_product_type_hint),
-                    R.drawable.ic_gridicons_product,
-                    true
-                ),
                 RatingBar(
                     R.string.product_reviews,
                     resources.getString(R.string.product_reviews_count, product.ratingCount),
@@ -180,6 +174,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.string.product_short_description,
                     product.shortDescription,
                     R.drawable.ic_gridicons_align_left
+                ),
+                ComplexProperty(
+                    R.string.product_type,
+                    resources.getString(R.string.product_detail_product_type_hint),
+                    R.drawable.ic_gridicons_product,
+                    true
                 )
             )
         )
