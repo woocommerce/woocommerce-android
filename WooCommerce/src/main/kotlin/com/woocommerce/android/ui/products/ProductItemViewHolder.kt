@@ -68,6 +68,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             }
             firstImage.isNullOrEmpty() -> {
                 size = imageSize / 2
+                itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 itemView.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
