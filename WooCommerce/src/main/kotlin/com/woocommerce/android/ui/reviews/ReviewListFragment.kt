@@ -292,6 +292,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         (activity as? MainNavigationRouter)?.showReviewDetail(
                 review.remoteId,
                 launchedFromNotification = false,
+                enableModeration = true,
                 tempStatus = pendingModerationNewStatus
         )
     }

@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -25,7 +24,7 @@ import kotlinx.android.synthetic.main.order_list_header.view.*
 
 class ReviewListAdapter(
     private val context: Context,
-    private val clickListener: OnReviewClickListener?
+    private val clickListener: OnReviewClickListener
 ) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
@@ -367,10 +366,8 @@ class ReviewListAdapter(
                 itemHolder.divider.visibility = View.INVISIBLE
             }
 
-            clickListener?.let { listener ->
-                itemHolder.itemView.setOnClickListener {
-                    listener.onReviewClick(review)
-                }
+            itemHolder.itemView.setOnClickListener {
+                clickListener.onReviewClick(review)
             }
         }
 
