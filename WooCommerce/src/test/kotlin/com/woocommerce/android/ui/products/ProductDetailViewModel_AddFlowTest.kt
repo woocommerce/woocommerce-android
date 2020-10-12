@@ -112,12 +112,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_money,
                     showTitle = false
                 ),
-                ComplexProperty(
-                    R.string.product_type,
-                    resources.getString(R.string.product_detail_product_type_hint),
-                    R.drawable.ic_gridicons_product,
-                    true
-                ),
                 PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
@@ -127,6 +121,12 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                         )
                     ),
                     R.drawable.ic_gridicons_list_checkmark,
+                    true
+                ),
+                ComplexProperty(
+                    R.string.product_type,
+                    resources.getString(R.string.product_detail_product_type_hint),
+                    R.drawable.ic_gridicons_product,
                     true
                 )
             )
