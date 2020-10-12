@@ -2,6 +2,7 @@
 5.3
 -----
 * Application settings have been moved to a gear icon on the Dashboard
+* Product detail screen now includes the number of ratings for that product
  
 5.2
 -----
