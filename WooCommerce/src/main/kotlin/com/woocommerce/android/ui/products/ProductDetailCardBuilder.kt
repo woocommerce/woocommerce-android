@@ -89,13 +89,13 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productType(),
                 product.productReviews(),
                 product.inventory(SIMPLE),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -105,12 +105,12 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.groupedProducts(),
-                product.productType(),
                 product.productReviews(),
                 product.inventory(GROUPED),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -120,13 +120,13 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productType(),
                 product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -135,14 +135,14 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.productType(),
-                product.productReviews(),
                 product.variations(),
+                product.productReviews(),
                 product.inventory(VARIABLE),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
