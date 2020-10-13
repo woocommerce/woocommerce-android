@@ -145,6 +145,10 @@
         <argument
             android:name="sku"
             app:argType="string" />
+        <argument
+            android:name="productType"
+            app:argType="com.woocommerce.android.ui.products.ProductType"
+            android:defaultValue="SIMPLE" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"

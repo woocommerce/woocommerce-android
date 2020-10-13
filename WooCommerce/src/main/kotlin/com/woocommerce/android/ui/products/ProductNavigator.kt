@@ -105,7 +105,8 @@ class ProductNavigator @Inject constructor() {
                         .actionProductDetailFragmentToProductInventoryFragment(
                             RequestCodes.PRODUCT_DETAIL_INVENTORY,
                             target.inventoryData,
-                            target.sku
+                            target.sku,
+                            target.productType
                         )
                 fragment.findNavController().navigateSafely(action)
             }
