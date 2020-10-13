@@ -33,7 +33,7 @@ data class Product(
     val description: String,
     val shortDescription: String,
     val slug: String,
-    val type: ProductType,
+    val type: String,
     val status: ProductStatus?,
     val catalogVisibility: ProductCatalogVisibility?,
     val isFeatured: Boolean,
@@ -150,6 +150,7 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
+    val productType = ProductType.fromString(type)
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -288,7 +289,7 @@ data class Product(
 
     @StringRes
     fun getProductTypeFormattedForDisplay(): Int {
-        return when (this.type) {
+        return when (this.productType) {
             ProductType.SIMPLE -> {
                 if (this.isVirtual) R.string.product_type_virtual
                 else R.string.product_type_physical
@@ -379,7 +380,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.menuOrder = menuOrder
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
-        it.type = type.value
+        it.type = type
         it.groupedProductIds = groupedProductIds.joinToString(
             separator = ",",
             prefix = "[",
@@ -394,7 +395,7 @@ fun WCProductModel.toAppModel(): Product {
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,
-        type = ProductType.fromString(this.type),
+        type = this.type,
         status = ProductStatus.fromString(this.status),
         catalogVisibility = ProductCatalogVisibility.fromString(this.catalogVisibility),
         isFeatured = this.featured,

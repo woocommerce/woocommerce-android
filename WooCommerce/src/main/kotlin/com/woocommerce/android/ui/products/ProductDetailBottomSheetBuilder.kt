@@ -35,7 +35,7 @@ class ProductDetailBottomSheetBuilder(
     )
 
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
-        return when (product.type) {
+        return when (product.productType) {
             SIMPLE -> {
                 listOfNotNull(
                     product.getShipping(),

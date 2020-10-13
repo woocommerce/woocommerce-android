@@ -550,7 +550,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null,
+        type: String? = null,
         groupedProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->

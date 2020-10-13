@@ -124,7 +124,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductType>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it)
+            viewModel.updateProductDraft(type = it.value)
             changesMade()
         }
         handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
@@ -234,7 +234,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productDetail_addMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
-                ViewProductDetailBottomSheet(product.type)
+                ViewProductDetailBottomSheet(product.productType)
             )
         }
 

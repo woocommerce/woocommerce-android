@@ -39,7 +39,7 @@ object ProductHelper {
             name = "",
             description = "",
             shortDescription = "",
-            type = type,
+            type = type.value,
             status = PUBLISH,
             catalogVisibility = VISIBLE,
             isFeatured = false,

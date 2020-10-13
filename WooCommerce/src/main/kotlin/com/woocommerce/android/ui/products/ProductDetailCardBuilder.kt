@@ -52,7 +52,7 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters
 ) {
-    private fun isSimple(product: Product) = product.type == SIMPLE
+    private fun isSimple(product: Product) = product.productType == SIMPLE
 
     private lateinit var originalSku: String
 
@@ -62,7 +62,7 @@ class ProductDetailCardBuilder(
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
-        when (product.type) {
+        when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
@@ -399,7 +399,7 @@ class ProductDetailCardBuilder(
 
     // enable editing external product link
     private fun Product.externalLink(): ProductProperty? {
-        return if (this.type == EXTERNAL) {
+        return if (this.productType == EXTERNAL) {
             val hasExternalLink = this.externalUrl.isNotEmpty()
             val externalGroup = if (hasExternalLink) {
                 mapOf(Pair("", this.externalUrl))

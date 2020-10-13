@@ -117,7 +117,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val stock = when (product.stockStatus) {
             InStock -> {
-                if (product.type == VARIABLE) {
+                if (product.productType == VARIABLE) {
                     if (product.numVariations > 0) {
                         context.getString(
                             R.string.product_stock_status_instock_with_variations,
