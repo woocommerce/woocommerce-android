@@ -219,6 +219,12 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        // settings icon only appears on the dashboard
+        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == DASHBOARD
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -463,11 +469,6 @@ class MainActivity : AppUpgradeActivity(),
                 AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
-            R.id.menu_support -> {
-                showHelpAndSupport()
-                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -524,10 +525,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun showSettingsScreen() {
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
-    }
-
-    override fun showHelpAndSupport() {
-        startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
     }
 
     override fun updateSelectedSite() {
@@ -779,7 +776,11 @@ class MainActivity : AppUpgradeActivity(),
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
+                PRODUCT_REVIEW -> showReviewDetail(
+                    note.getCommentId(),
+                    launchedFromNotification = true,
+                    enableModeration = true
+                )
                 else -> { /* do nothing */
                 }
             }
@@ -801,17 +802,24 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
-        showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
-
-        val navPos = REVIEWS.position
-        bottom_nav.active(navPos)
+    override fun showReviewDetail(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        tempStatus: String?
+    ) {
+        // make sure the review tab is active if the user came here from a notification
+        if (launchedFromNotification) {
+            showBottomNav()
+            bottomNavView.currentPosition = REVIEWS
+            bottom_nav.active(REVIEWS.position)
+        }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
             remoteReviewId,
             tempStatus,
-            launchedFromNotification
+            launchedFromNotification,
+            enableModeration
         )
         navController.navigateSafely(action)
     }

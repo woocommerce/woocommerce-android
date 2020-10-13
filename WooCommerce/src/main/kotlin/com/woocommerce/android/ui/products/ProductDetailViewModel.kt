@@ -410,7 +410,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
-            viewState.productDraft?.isSameProduct(product) == false
+            viewState.productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
         } ?: false
     }
 

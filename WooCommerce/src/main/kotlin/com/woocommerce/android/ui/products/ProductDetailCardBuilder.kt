@@ -500,10 +500,14 @@ class ProductDetailCardBuilder(
 
     private fun Product.productReviews(): ProductProperty? {
         return if (this.reviewsAllowed) {
-            val ratingCount = this.ratingCount
+            val value = when (this.ratingCount) {
+                0 -> resources.getString(R.string.product_ratings_count_zero)
+                1 -> resources.getString(R.string.product_ratings_count_one)
+                else -> resources.getString(R.string.product_ratings_count, this.ratingCount)
+            }
             RatingBar(
                 R.string.product_reviews,
-                resources.getString(R.string.product_reviews_count, ratingCount),
+                value,
                 this.averageRating,
                 R.drawable.ic_reviews
             ) {
@@ -578,7 +582,7 @@ class ProductDetailCardBuilder(
     }
 
     // show product variations only if product type is variable and if there are variations for the product
-    private fun Product.variations(): ProductProperty? {
+    private fun Product.variations(): ProductProperty {
         return if (this.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.attributes) {
@@ -597,7 +601,16 @@ class ProductDetailCardBuilder(
                 )
             }
         } else {
-            null
+            ComplexProperty(
+                R.string.product_variations,
+                resources.getString(R.string.product_detail_no_variations),
+                R.drawable.ic_gridicons_types
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductVariations(this.remoteId),
+                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                )
+            }
         }
     }
 

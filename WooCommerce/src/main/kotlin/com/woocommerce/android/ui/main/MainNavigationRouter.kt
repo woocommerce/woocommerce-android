@@ -13,7 +13,12 @@ interface MainNavigationRouter {
         markComplete: Boolean = false
     )
     fun showAddProduct()
-    fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String? = null)
+    fun showReviewDetail(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        tempStatus: String? = null
+    )
     fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)
     fun showFeedbackSurvey()
     fun showProductAddBottomSheet()

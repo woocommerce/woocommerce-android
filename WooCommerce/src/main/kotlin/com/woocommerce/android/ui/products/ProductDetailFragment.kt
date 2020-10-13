@@ -84,7 +84,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onDestroyView() {
-        // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
     }
@@ -92,6 +91,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
     }
 
     override fun onStop() {
@@ -398,6 +402,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }
