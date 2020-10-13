@@ -9,8 +9,8 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -63,10 +64,10 @@ class ProductDetailCardBuilder(
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         when (product.productType) {
-            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
+            else -> cards.addIfNotEmpty(getSimpleProductCard(product))
         }
 
         cards.addIfNotEmpty(getPurchaseDetailsCard(product))
@@ -459,7 +460,17 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.productType(): ProductProperty {
-        val productType = resources.getString(this.getProductTypeFormattedForDisplay())
+        val productType = when (this.productType) {
+            SIMPLE -> {
+                if (this.isVirtual) resources.getString(R.string.product_type_virtual)
+                else resources.getString(R.string.product_type_physical)
+            }
+            VARIABLE -> resources.getString(R.string.product_type_variable)
+            GROUPED -> resources.getString(R.string.product_type_grouped)
+            EXTERNAL -> resources.getString(R.string.product_type_external)
+            OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
+        }
+
         val onClickHandler = {
             viewModel.onEditProductCardClicked(
                 ViewProductTypes(false),

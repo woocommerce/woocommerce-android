@@ -150,7 +150,8 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
-    val productType = ProductType.fromString(type)
+    val productType: ProductType
+        get() = ProductType.fromString(type)
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -285,19 +286,6 @@ data class Product(
                 groupedProductIds = updatedProduct.groupedProductIds
             )
         } ?: this.copy()
-    }
-
-    @StringRes
-    fun getProductTypeFormattedForDisplay(): Int {
-        return when (this.productType) {
-            ProductType.SIMPLE -> {
-                if (this.isVirtual) R.string.product_type_virtual
-                else R.string.product_type_physical
-            }
-            ProductType.VARIABLE -> R.string.product_type_variable
-            ProductType.GROUPED -> R.string.product_type_grouped
-            ProductType.EXTERNAL -> R.string.product_type_external
-        }
     }
 }
 
