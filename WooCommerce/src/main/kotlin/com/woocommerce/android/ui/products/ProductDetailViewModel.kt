@@ -745,7 +745,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchProduct(1) // remoteProductId
+            val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
