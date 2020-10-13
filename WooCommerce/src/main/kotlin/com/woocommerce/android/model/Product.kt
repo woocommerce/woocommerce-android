@@ -1,10 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
@@ -150,8 +148,7 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
-    val productType: ProductType
-        get() = ProductType.fromString(type)
+    val productType get() = ProductType.fromString(type)
 
     /**
      * Verifies if there are any changes made to the external link settings

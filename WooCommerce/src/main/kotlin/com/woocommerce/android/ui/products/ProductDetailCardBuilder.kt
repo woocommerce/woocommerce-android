@@ -64,10 +64,11 @@ class ProductDetailCardBuilder(
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         when (product.productType) {
+            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            else -> cards.addIfNotEmpty(getSimpleProductCard(product))
+            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         cards.addIfNotEmpty(getPurchaseDetailsCard(product))
@@ -140,6 +141,23 @@ class ProductDetailCardBuilder(
                 product.productReviews(),
                 product.inventory(VARIABLE),
                 product.shipping(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    /**
+     * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
+     * of properties since we can't be sure pricing, shipping, etc., are applicable
+     */
+    private fun getOtherProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.productReviews(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),

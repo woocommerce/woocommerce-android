@@ -69,7 +69,11 @@ class ProductDetailBottomSheetBuilder(
                 )
             }
             OTHER -> {
-                emptyList()
+                listOfNotNull(
+                    product.getCategories(),
+                    product.getTags(),
+                    product.getShortDescription()
+                )
             }
         }
     }
