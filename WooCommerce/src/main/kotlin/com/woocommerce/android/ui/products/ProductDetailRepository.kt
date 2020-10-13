@@ -40,6 +40,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
@@ -68,6 +69,8 @@ class ProductDetailRepository @Inject constructor(
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
 
+    var lastFetchProductErrorType: ProductErrorType? = null
+
     init {
         dispatcher.register(this)
     }
@@ -77,6 +80,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
+        lastFetchProductErrorType = null
         try {
             this.remoteProductId = remoteProductId
             continuationFetchProduct?.cancel()
@@ -263,6 +267,7 @@ class ProductDetailRepository @Inject constructor(
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
             if (continuationFetchProduct?.isActive == true) {
                 if (event.isError) {
+                    lastFetchProductErrorType = event.error.type
                     continuationFetchProduct?.resume(false)
                 } else {
                     AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)

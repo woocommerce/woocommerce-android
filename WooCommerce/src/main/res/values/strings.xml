@@ -471,6 +471,7 @@
     <string name="product_image_content_description">Product image</string>
     <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Product no longer exists</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>

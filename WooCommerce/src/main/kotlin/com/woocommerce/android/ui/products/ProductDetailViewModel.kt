@@ -81,6 +81,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Date
 
@@ -744,11 +745,15 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchProduct(remoteProductId)
+            val fetchedProduct = productRepository.fetchProduct(1) // remoteProductId
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_invalid_id_error))
+                } else {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                }
                 triggerEvent(Exit)
             }
         } else {
