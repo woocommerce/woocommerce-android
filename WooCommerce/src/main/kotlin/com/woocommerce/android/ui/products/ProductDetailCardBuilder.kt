@@ -89,13 +89,13 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productType(),
                 product.productReviews(),
-                product.inventory(),
+                product.inventory(SIMPLE),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -105,12 +105,12 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.groupedProducts(),
-                product.productType(),
                 product.productReviews(),
-                product.inventory(),
+                product.inventory(GROUPED),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -120,13 +120,13 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productType(),
                 product.productReviews(),
                 product.externalLink(),
-                product.inventory(),
+                product.inventory(EXTERNAL),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -135,14 +135,14 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.productType(),
-                product.productReviews(),
                 product.variations(),
-                product.inventory(),
+                product.productReviews(),
+                product.inventory(VARIABLE),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
-                product.shortDescription()
+                product.shortDescription(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -313,32 +313,32 @@ class ProductDetailCardBuilder(
 
     // show stock properties as a group if stock management is enabled and if the product type is [SIMPLE],
     // otherwise show sku separately
-    private fun Product.inventory(): ProductProperty {
-        val inventoryGroup = when {
-            ProductType.isGroupedOrExternalProduct(this.type) ->
-                mapOf(
-                    Pair(resources.getString(R.string.product_sku), this.sku)
-                )
-            this.isStockManaged -> mapOf(
-                Pair(resources.getString(R.string.product_backorders),
-                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)),
-                Pair(resources.getString(R.string.product_stock_quantity),
-                    FormatUtils.formatInt(this.stockQuantity)),
-                Pair(resources.getString(R.string.product_sku), this.sku)
-            )
-            this.sku.isNotEmpty() -> mapOf(
-                Pair(resources.getString(R.string.product_sku), this.sku),
-                Pair(resources.getString(R.string.product_stock_status),
-                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
-            )
-            else -> mapOf(
-                Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
-            )
+    private fun Product.inventory(productType: ProductType): ProductProperty {
+        val inventory = mutableMapOf<String, String>()
+
+        if (this.sku.isNotEmpty()) {
+            inventory[resources.getString(R.string.product_sku)] = this.sku
+        }
+
+        if (productType == SIMPLE || productType == VARIABLE) {
+            if (this.isStockManaged) {
+                inventory[resources.getString(R.string.product_stock_quantity)] =
+                    FormatUtils.formatInt(this.stockQuantity)
+                inventory[resources.getString(R.string.product_backorders)] =
+                    ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
+            } else if (productType == SIMPLE) {
+                inventory[resources.getString(R.string.product_stock_status)] =
+                    ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
+            }
+        }
+
+        if (inventory.isEmpty()) {
+            inventory[""] = resources.getString(R.string.product_inventory_empty)
         }
 
         return PropertyGroup(
             R.string.product_inventory,
-            inventoryGroup,
+            inventory,
             R.drawable.ic_gridicons_list_checkmark,
             true
         ) {
@@ -352,7 +352,8 @@ class ProductDetailCardBuilder(
                         backorderStatus = this.backorderStatus,
                         isSoldIndividually = this.isSoldIndividually
                     ),
-                    originalSku
+                    originalSku,
+                    productType
                 ),
                 PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
             )

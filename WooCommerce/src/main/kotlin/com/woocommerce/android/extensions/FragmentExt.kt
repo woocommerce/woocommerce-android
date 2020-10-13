@@ -3,7 +3,6 @@ package com.woocommerce.android.extensions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be
@@ -13,12 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
  *
- * Note: The value is stored along with a boolean value (true), which signifies that the data is fresh and has not been
- * observed yet. AtomicBoolean type is used to store the boolean so that the value can be updated once once the data is
- * handled/observed.
  */
 fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
-    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, Pair(result, AtomicBoolean(true)))
+    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
     findNavController().navigateUp()
 }
 
@@ -42,13 +38,13 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
         findNavController().currentBackStackEntry
     }
 
-    entry?.savedStateHandle?.getLiveData<Pair<T, AtomicBoolean>>(key)?.observe(
-        this.viewLifecycleOwner,
-        Observer {
-            val isFresh = it.second.getAndSet(false)
-            if (isFresh) {
-                handler(it.first)
+    findNavController().currentBackStackEntry?.savedStateHandle?.let { saveState ->
+        saveState.getLiveData<T>(key).observe(
+            this.viewLifecycleOwner,
+            Observer {
+                saveState.remove<T>(key)
+                handler(it)
             }
-        }
-    )
+        )
+    }
 }
