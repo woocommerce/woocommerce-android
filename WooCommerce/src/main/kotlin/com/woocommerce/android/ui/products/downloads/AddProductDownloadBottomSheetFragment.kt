@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.downloads
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -24,6 +25,8 @@ import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -76,8 +79,19 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
 
     private fun setupResultHandlers(viewModel: AddProductDownloadViewModel) {
         handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) { images ->
-            images.forEach {
-                viewModel.launchFileUpload(Uri.parse(it.source))
+            images.forEach { viewModel.launchFileUpload(Uri.parse(it.source)) }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                CHOOSE_FILE_REQUEST_CODE -> {
+                    intent?.data
+                        ?.let { viewModel.launchFileUpload(it) }
+                        ?: WooLog.w(T.MEDIA, "File picker return an null data")
+                }
             }
         }
     }
