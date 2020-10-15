@@ -199,8 +199,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun startAddNewProduct() {
         val preferredSavedType = prefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
-        val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
-        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
+        val defaultProduct = ProductHelper.getDefaultNewProduct(productType = defaultProductType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(productType = defaultProductType))
         updateProductState(defaultProduct)
     }
 
@@ -551,7 +551,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null,
+        type: String? = null,
         groupedProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->

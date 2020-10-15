@@ -12,6 +12,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -79,7 +81,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     private val prefs: AppPrefs = mock {
-        on(it.getSelectedProductType()).then { "" }
+        on(it.getSelectedProductType()).then { "simple" }
     }
 
     private val productUtils = ProductUtils()
@@ -113,14 +115,14 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     showTitle = false
                 ),
                 PropertyGroup(
-                    R.string.product_inventory,
+                    string.product_inventory,
                     mapOf(
                         Pair(
-                            resources.getString(R.string.product_stock_status),
-                            resources.getString(R.string.product_stock_status_instock)
+                            resources.getString(string.product_stock_status),
+                            resources.getString(string.product_stock_status_instock)
                         )
                     ),
-                    R.drawable.ic_gridicons_list_checkmark,
+                    drawable.ic_gridicons_list_checkmark,
                     true
                 ),
                 ComplexProperty(
