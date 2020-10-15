@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PROD
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.products.ProductHelper
+import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductListAdapter(
@@ -20,7 +21,10 @@ class OrderDetailProductListAdapter(
 ) : RecyclerView.Adapter<OrderDetailProductListAdapter.ViewHolder>() {
     class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
+    private var imageSize: Int = 0
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        imageSize = parent.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         val view: OrderDetailProductItemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.order_detail_product_list_item, parent, false)
             as OrderDetailProductItemView
@@ -30,7 +34,7 @@ class OrderDetailProductListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = orderItems[position]
         val productId = ProductHelper.productOrVariationId(item.productId, item.variationId)
-        val productImage = productImageMap.get(productId)
+        val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(productId), imageSize, imageSize)
         holder.view.initView(orderItems[position], productImage, isExpanded, formatCurrencyForDisplay)
         holder.view.setOnClickListener {
             AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
