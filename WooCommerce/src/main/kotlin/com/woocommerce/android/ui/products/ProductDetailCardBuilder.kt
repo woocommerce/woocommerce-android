@@ -477,8 +477,8 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.productType(): ProductProperty {
-        val productType = when (this.productType) {
+    private fun Product.productTypeDisplayName(): String {
+        return when (productType) {
             SIMPLE -> {
                 if (this.isVirtual) resources.getString(R.string.product_type_virtual)
                 else resources.getString(R.string.product_type_physical)
@@ -488,7 +488,9 @@ class ProductDetailCardBuilder(
             EXTERNAL -> resources.getString(R.string.product_type_external)
             OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
         }
+    }
 
+    private fun Product.productType(): ProductProperty {
         val onClickHandler = {
             viewModel.onEditProductCardClicked(
                 ViewProductTypes(false),
@@ -498,9 +500,9 @@ class ProductDetailCardBuilder(
 
         return ComplexProperty(
             R.string.product_type,
-            resources.getString(R.string.product_detail_product_type_hint, productType),
+            resources.getString(R.string.product_detail_product_type_hint, productTypeDisplayName()),
             R.drawable.ic_gridicons_product,
-            onClick = if (remoteId != 0L) onClickHandler else null
+            onClick = if (remoteId != 0L && productType != OTHER) onClickHandler else null
         )
     }
 
