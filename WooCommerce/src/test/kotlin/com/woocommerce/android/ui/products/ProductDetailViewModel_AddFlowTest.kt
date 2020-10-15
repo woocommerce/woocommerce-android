@@ -12,6 +12,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -21,6 +23,7 @@ import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -78,7 +81,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     private val prefs: AppPrefs = mock {
-        on(it.getSelectedProductType()).then { "" }
+        on(it.getSelectedProductType()).then { "simple" }
     }
 
     private val productUtils = ProductUtils()
@@ -105,25 +108,23 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                // TODO ideally we want to include price & inventory to test simple products but this causes
-                // the "Displays the product detail properties correctly" test to fail
-                /*PropertyGroup(
+                PropertyGroup(
                     R.string.product_price,
                     defaultPricingGroup,
                     R.drawable.ic_gridicons_money,
                     showTitle = false
                 ),
                 PropertyGroup(
-                    R.string.product_inventory,
+                    string.product_inventory,
                     mapOf(
                         Pair(
-                            resources.getString(R.string.product_stock_status),
-                            resources.getString(R.string.product_stock_status_instock)
+                            resources.getString(string.product_stock_status),
+                            resources.getString(string.product_stock_status_instock)
                         )
                     ),
-                    R.drawable.ic_gridicons_list_checkmark,
+                    drawable.ic_gridicons_list_checkmark,
                     true
-                ),*/
+                ),
                 ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
