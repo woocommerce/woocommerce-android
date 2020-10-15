@@ -3,6 +3,7 @@
 -----
 * Application settings have been moved to a gear icon on the Dashboard
 * Product detail screen now includes the number of ratings for that product
+* Fixed slowness in order screens
  
 5.2
 -----
