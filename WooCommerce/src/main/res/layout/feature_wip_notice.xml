@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:textOff="@string/product_wip_title"
-            tools:textOn="@string/product_wip_title" />
+            tools:textOn="@string/product_adding_wip_title" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/feature_wip_morePanel"
@@ -46,7 +46,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/product_wip_message_m2" />
+                tools:text="@string/product_wip_message_m4" />
 
             <!-- PRIMARY button -->
             <com.google.android.material.button.MaterialButton
