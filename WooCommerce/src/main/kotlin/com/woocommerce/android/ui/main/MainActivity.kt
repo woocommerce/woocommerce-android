@@ -219,7 +219,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         // settings icon only appears on the dashboard
-        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == DASHBOARD
+        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == MY_STORE
         return super.onPrepareOptionsMenu(menu)
     }
 
