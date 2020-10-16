@@ -13,9 +13,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
@@ -173,5 +176,55 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.trashProduct(any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_trash_error))
+    }
+
+    @Test
+    fun `Test Filters button tap`() {
+        createViewModel()
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onFiltersButtonTapped()
+
+        assertThat(events.count { it is ShowProductFilterScreen }).isEqualTo(1)
+    }
+
+    @Test
+    fun `Test Filters button tap when filters already enabled`() {
+        createViewModel()
+
+        val stockStatus = "instock"
+        val status = "simple"
+        val type = "draft"
+        viewModel.onFiltersChanged(stockStatus, status, type)
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onFiltersButtonTapped()
+
+        val event = events.first() as ShowProductFilterScreen
+        assertThat(event.productStatusFilter).isEqualTo(status)
+        assertThat(event.productTypeFilter).isEqualTo(type)
+        assertThat(event.stockStatusFilter).isEqualTo(stockStatus)
+    }
+
+    @Test
+    fun `Test Sorting button tap`() {
+        createViewModel()
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onSortButtonTapped()
+
+        assertThat(events.count { it is ShowProductSortingBottomSheet }).isEqualTo(1)
     }
 }
