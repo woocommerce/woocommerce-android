@@ -22,7 +22,7 @@ typealias LogListener = (T, LogLevel, String) -> Unit
 object WooLog {
     // T for Tag
     enum class T {
-        MY_STORE,
+        DASHBOARD,
         ORDERS,
         PRODUCTS,
         NOTIFS,

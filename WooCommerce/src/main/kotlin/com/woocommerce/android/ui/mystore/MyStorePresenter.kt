@@ -10,7 +10,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreContract.Presenter
 import com.woocommerce.android.ui.mystore.MyStoreContract.View
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -190,7 +190,7 @@ class MyStorePresenter @Inject constructor(
             FETCH_REVENUE_STATS -> {
                 myStoreView?.showChartSkeleton(false)
                 if (event.isError) {
-                    WooLog.e(T.MY_STORE, "$TAG - Error fetching stats: ${event.error.message}")
+                    WooLog.e(DASHBOARD, "$TAG - Error fetching stats: ${event.error.message}")
                     myStoreView?.showStatsError(event.granularity)
                     return
                 }
@@ -215,7 +215,7 @@ class MyStorePresenter @Inject constructor(
         when (event.causeOfChange) {
             FETCH_NEW_VISITOR_STATS -> {
                 if (event.isError) {
-                    WooLog.e(T.MY_STORE, "$TAG - Error fetching visitor stats: ${event.error.message}")
+                    WooLog.e(DASHBOARD, "$TAG - Error fetching visitor stats: ${event.error.message}")
                     myStoreView?.showVisitorStatsError(event.granularity)
                     return
                 }
@@ -253,7 +253,7 @@ class MyStorePresenter @Inject constructor(
             FETCH_HAS_ORDERS -> {
                 if (event.isError) {
                     WooLog.e(
-                        T.MY_STORE,
+                        DASHBOARD,
                         "$TAG - Error fetching whether orders exist: ${event.error.message}"
                     )
                 } else {
