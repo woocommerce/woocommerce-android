@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
@@ -134,9 +137,16 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
-        return withContext(Dispatchers.IO) {
+        val result = withContext(Dispatchers.IO) {
             shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
-        }.model?.map { it.toAppModel() } ?: emptyList()
+        }
+
+        val action = if (result.isError) {
+            VALUE_API_FAILED
+        } else VALUE_API_SUCCESS
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+
+        return result.model?.map { it.toAppModel() } ?: emptyList()
     }
 
     suspend fun updateOrderStatus(

@@ -217,6 +217,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_DELETE_FAILED,
         ORDER_TRACKING_PROVIDERS_LOADED,
 
+        // -- Shipping Labels
+        SHIPPING_LABEL_API_REQUEST,
+        SHIPMENT_TRACKING_MENU_ACTION,
+        SHIPPING_LABEL_PRINT_REQUESTED,
+        SHIPPING_LABEL_REFUND_REQUESTED,
+
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,
@@ -594,6 +600,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SORT_DATE_ASC = "date,ascending"
         const val VALUE_SORT_DATE_DESC = "date,descending"
 
+        const val VALUE_API_SUCCESS = "success"
+        const val VALUE_API_FAILED = "failed"
+        const val VALUE_SHIPMENT_TRACK = "track"
+        const val VALUE_SHIPMENT_COPY = "copy"
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"

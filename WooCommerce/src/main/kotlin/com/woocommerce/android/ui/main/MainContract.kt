@@ -24,7 +24,6 @@ interface MainContract {
         fun showSitePickerScreen()
         fun updateSelectedSite()
         fun showSettingsScreen()
-        fun showHelpAndSupport()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()

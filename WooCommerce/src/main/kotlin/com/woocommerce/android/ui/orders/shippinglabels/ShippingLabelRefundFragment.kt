@@ -51,7 +51,6 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        viewModel.start()
     }
 
     private fun setupObservers(viewModel: ShippingLabelRefundViewModel) {

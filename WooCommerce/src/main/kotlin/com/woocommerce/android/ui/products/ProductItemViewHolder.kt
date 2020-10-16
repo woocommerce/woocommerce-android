@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -67,6 +68,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
             }
             firstImage.isNullOrEmpty() -> {
                 size = imageSize / 2
+                itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 itemView.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
@@ -115,7 +117,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
 
         val stock = when (product.stockStatus) {
             InStock -> {
-                if (product.type == VARIABLE) {
+                if (product.productType == VARIABLE) {
                     if (product.numVariations > 0) {
                         context.getString(
                             R.string.product_stock_status_instock_with_variations,
@@ -156,5 +158,6 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         object : ItemDetailsLookup.ItemDetails<Long>() {
             override fun getPosition() = adapterPosition
             override fun getSelectionKey() = itemId
+            override fun inSelectionHotspot(e: MotionEvent) = true
         }
 }

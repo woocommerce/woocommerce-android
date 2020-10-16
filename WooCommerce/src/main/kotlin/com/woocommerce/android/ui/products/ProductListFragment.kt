@@ -413,7 +413,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && feedbackState == UNANSWERED) {
+        if (show && feedbackState != DISMISSED) {
             val wipCardMessageId = R.string.product_wip_message_m3
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
