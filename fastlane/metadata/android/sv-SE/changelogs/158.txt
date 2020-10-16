@@ -1,0 +1,7 @@
+5.2:
+Förbättringar av redigeringsfunktionerna för alla produkttyper:
+
+Ytterligare fält har lagts till för kärnprodukter (etiketter, kategorier, produkttyp, aktivera/inaktivera recensioner och synlighet). Det går nu även att redigera variabla produkter.
+
+Grundläggande fält har lagts till för icke-kärnprodukter (bilder, namn, beskrivning, skrivskyddat pris, skrivskyddat lager, etiketter, kategorier, korta beskrivningar och produktinställningar).
+

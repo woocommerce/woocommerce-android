@@ -1,4 +1,0 @@
-5.1:
-- Accesso: abbiamo implementato un nuovo flusso di accesso con nuovi design della schermata.
-- Ordini: la schermata dello stato dell'ordine mostra ora il conteggio degli ordini attuali invece di "max 99".
-
