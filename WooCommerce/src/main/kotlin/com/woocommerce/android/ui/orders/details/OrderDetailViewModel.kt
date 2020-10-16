@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLab
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -414,17 +413,13 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadOrderShippingLabels() {
         order?.let { order ->
-            if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
-                orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
-                    .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
+            orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
+                .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
 
-                launch {
-                    _shippingLabels.value = orderDetailRepository
-                        .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
-                        .loadProducts(order.items)
-                }
-            } else {
-                _shippingLabels.value = emptyList()
+            launch {
+                _shippingLabels.value = orderDetailRepository
+                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                    .loadProducts(order.items)
             }
         }
 

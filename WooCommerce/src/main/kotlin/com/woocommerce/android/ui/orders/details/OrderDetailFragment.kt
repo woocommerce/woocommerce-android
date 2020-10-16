@@ -8,17 +8,28 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M1
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -28,13 +39,14 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
-import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -48,6 +60,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductActionListener {
+    companion object {
+        val TAG: String = OrderDetailFragment::class.java.simpleName
+    }
+
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: OrderDetailViewModel by viewModels { viewModelFactory }
 
@@ -58,6 +74,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -269,6 +288,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             val order = requireNotNull(viewModel.order)
             with(orderDetail_shippingLabelList) {
                 show()
+                displayShippingLabelsWIPCard(true)
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
@@ -285,7 +305,50 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                     }
                 )
             }
-        }.otherwise { orderDetail_shippingLabelList.hide() }
+        }.otherwise {
+            orderDetail_shippingLabelList.hide()
+            displayShippingLabelsWIPCard(false)
+        }
+    }
+
+    private fun displayShippingLabelsWIPCard(show: Boolean) {
+        if (show && feedbackState != DISMISSED) {
+            orderDetail_shippingLabelsWipCard.isVisible = true
+            val wipCardMessageId = R.string.orderdetail_shipping_label_wip_message
+            orderDetail_shippingLabelsWipCard.initView(
+                getString(R.string.orderdetail_shipping_label_wip_title),
+                getString(wipCardMessageId),
+                onGiveFeedbackClick = ::onGiveFeedbackClicked,
+                onDismissClick = ::onDismissProductWIPNoticeCardClicked
+            )
+        } else orderDetail_shippingLabelsWipCard.isVisible = false
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+        ))
+        registerFeedbackSetting(GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.SHIPPING_LABELS)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissProductWIPNoticeCardClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+        ))
+        registerFeedbackSetting(DISMISSED)
+        displayShippingLabelsWIPCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeedbackState) {
+        FeatureFeedbackSettings(SHIPPING_LABELS_M1.name, state)
+            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
     private fun displayUndoSnackbar(

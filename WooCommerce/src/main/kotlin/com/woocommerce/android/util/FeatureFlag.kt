@@ -9,11 +9,9 @@ import com.woocommerce.android.BuildConfig
 enum class FeatureFlag {
     PRODUCT_RELEASE_M4,
     PRODUCT_RELEASE_M5,
-    SHIPPING_LABELS_M1,
     DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
-            SHIPPING_LABELS_M1 -> BuildConfig.DEBUG || isTesting()
             PRODUCT_RELEASE_M4 -> BuildConfig.DEBUG || isTesting()
             PRODUCT_RELEASE_M5 -> BuildConfig.DEBUG || isTesting()
             DB_DOWNGRADE -> {
