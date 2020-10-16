@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -56,6 +57,9 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
@@ -91,10 +95,12 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         undoSnackbar?.dismiss()
+        EventBus.getDefault().unregister(this)
         super.onStop()
     }
 
@@ -363,5 +369,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             it.addCallback(dismissCallback)
             it.show()
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductImageChanged(event: OnProductImageChanged) {
+        orderDetail_productList.notifyProductChanged(event.remoteProductId)
     }
 }

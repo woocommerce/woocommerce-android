@@ -22,6 +22,7 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -368,14 +369,17 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
+    class OnProductImageChanged(val remoteProductId: Long)
+
     /**
-     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image
+     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
+     * Here we fire an event that tells the fragment to update that product in the order product list.
      */
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductChanged(event: OnProductChanged) {
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            // TODO orderDetail_productList.notifyProductChanged(event.remoteProductId)
+            EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
         }
     }
 }
