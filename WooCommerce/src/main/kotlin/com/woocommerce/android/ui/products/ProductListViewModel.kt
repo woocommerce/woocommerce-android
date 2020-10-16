@@ -144,6 +144,7 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
         triggerEvent(ShowAddProductBottomSheet)
     }
 
