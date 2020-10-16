@@ -97,7 +97,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 )
 
                 is ExitWithResult<*> -> {
-                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                    (event.data as? ProductType)?.let {
                         navigateWithSelectedResult(type = it)
                     }
                 }
@@ -121,7 +121,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         }
     }
 
-    private fun navigateWithSelectedResult(type: ProductTypesBottomSheetUiItem) {
+    private fun navigateWithSelectedResult(type: ProductType) {
         when (navArgs.isAddProduct) {
             true -> dismiss()
             else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, type)

@@ -18,7 +18,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
     data class ViewProductVariations(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductInventory(val inventoryData: InventoryData, val sku: String) : ProductNavigationTarget()
+    data class ViewProductInventory(
+        val inventoryData: InventoryData,
+        val sku: String,
+        val productType: ProductType
+    ) : ProductNavigationTarget()
     data class ViewProductPricing(val pricingData: PricingData) : ProductNavigationTarget()
     data class ViewProductShipping(val shippingData: ShippingData) : ProductNavigationTarget()
     data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()

@@ -31,7 +31,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.empty_stats_view
 import kotlinx.android.synthetic.main.fragment_dashboard.empty_view
 import kotlinx.android.synthetic.main.fragment_dashboard.scroll_view
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
-import kotlinx.android.synthetic.main.fragment_my_store.*
 import org.wordpress.android.fluxc.model.WCTopEarnerModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
@@ -337,7 +336,7 @@ class DashboardFragment : TopLevelFragment(), DashboardContract.View, DashboardS
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
             // Hide the card and set last feedback date to now
-            store_feedback_request_card.visibility = View.GONE
+            dashboard_feedback_request_card.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
 
             // Request a ReviewInfo object from the Google Reviews API. If this fails

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
@@ -43,7 +44,7 @@ class WCProductPropertyView @JvmOverloads constructor(
 
         if (propertyIcon != null) {
             propertyGroupIcon?.isVisible = true
-            propertyGroupIcon?.setImageDrawable(context.getDrawable(propertyIcon))
+            propertyGroupIcon?.setImageDrawable(ContextCompat.getDrawable(context, propertyIcon))
         } else {
             propertyGroupIcon?.isVisible = false
         }

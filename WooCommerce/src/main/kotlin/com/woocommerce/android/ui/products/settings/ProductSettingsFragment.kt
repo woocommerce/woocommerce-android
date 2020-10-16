@@ -67,7 +67,7 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
-        val isSimple = viewModel.getProduct().productDraft?.type == ProductType.SIMPLE
+        val isSimple = viewModel.getProduct().productDraft?.productType == ProductType.SIMPLE
         if (isSimple) {
             productIsVirtual.visibility = View.VISIBLE
             productIsVirtual.setOnCheckedChangeListener { _, isChecked ->

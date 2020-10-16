@@ -87,6 +87,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
 import java.util.Date
@@ -210,8 +211,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun startAddNewProduct() {
         val preferredSavedType = prefs.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
-        val defaultProduct = ProductHelper.getDefaultNewProduct(type = defaultProductType)
-        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(type = defaultProductType))
+        val defaultProduct = ProductHelper.getDefaultNewProduct(productType = defaultProductType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(productType = defaultProductType))
         updateProductState(defaultProduct)
     }
 
@@ -671,7 +672,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         menuOrder: Int? = null,
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
-        type: ProductType? = null,
+        type: String? = null,
         groupedProductIds: List<Long>? = null,
         downloads: List<ProductFile>? = null,
         downloadLimit: Int? = null,
@@ -878,7 +879,11 @@ class ProductDetailViewModel @AssistedInject constructor(
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_invalid_id_error))
+                } else {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                }
                 triggerEvent(Exit)
             }
         } else {
