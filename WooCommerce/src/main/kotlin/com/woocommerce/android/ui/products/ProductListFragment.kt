@@ -491,7 +491,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 
-    private fun onGiveFeedbackClicked(view: View) {
+    private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
@@ -503,7 +503,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             .apply { findNavController().navigateSafely(this) }
     }
 
-    private fun onDismissProductWIPNoticeCardClicked(view: View) {
+    private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,

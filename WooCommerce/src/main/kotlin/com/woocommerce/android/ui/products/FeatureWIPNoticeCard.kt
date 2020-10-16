@@ -31,8 +31,8 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
     fun initView(
         title: String,
         message: String,
-        onGiveFeedbackClick: (View) -> Unit = {},
-        onDismissClick: (View) -> Unit = {}
+        onGiveFeedbackClick: () -> Unit = {},
+        onDismissClick: () -> Unit = {}
     ) {
         feature_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
             isExpanded = isChecked
@@ -44,7 +44,7 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
         feature_wip_viewMore.text = title
         feature_wip_message.text = message
 
-        btn_give_feedback.setOnClickListener { onGiveFeedbackClick(it) }
-        btn_dismiss.setOnClickListener { onDismissClick(it) }
+        btn_give_feedback.setOnClickListener { onGiveFeedbackClick() }
+        btn_dismiss.setOnClickListener { onDismissClick() }
     }
 }
