@@ -739,7 +739,7 @@
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_product_adding_teaser_title">Creating products</string>
-    <string name="settings_enable_product_adding_teaser_message">Test out the new product creation (simple, grouped and external products) as we get ready to launch</string>
+    <string name="settings_enable_product_adding_teaser_message">Test out the new product creation as we get ready to launch</string>
     <string name="settings_enable_product_teaser_title">Product editing</string>
     <string name="settings_enable_product_teaser_message">Test out the new product editing functionality as we get ready to launch</string>
     <string name="settings_send_stats_detail">Share information with our analytics tool about your use of services while logged in to your WordPress account</string>
