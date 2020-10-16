@@ -52,6 +52,8 @@ Language: ja_JP
     <string name="product_replace_photo">写真を置換</string>
     <string name="product_add_photo">写真を追加</string>
     <string name="variation_detail_image_add">バリエーション画像を追加</string>
+    <string name="login_jetpack_view_instructions">﻿Jetpack のインストールと連携の方法を調べる</string>
+    <string name="login_jetpack_required_text">﻿%1$sにこのアプリを使用するには、Jetpack プラグインをストアと連携する必要があります。</string>
     <string name="login_try_another_account">別のアカウントでログイン</string>
     <string name="login_pick_store">連携するストアを選択</string>
     <string name="login_store_address">ストアの住所を入力</string>

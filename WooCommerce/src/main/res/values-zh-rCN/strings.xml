@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-24 15:27:43+0000
+Translation-Revision-Date: 2020-10-02 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
@@ -15,8 +15,11 @@ Language: zh_CN
     <string name="signup_confirmation_magic_link_message">我们将通过电子邮件向您发送一个免密登录链接，供您创建新的 WordPress.com 帐户。</string>
     <string name="signup_confirmation_message">我们将使用此电子邮件地址为您创建新 WordPress.com 帐户。</string>
     <string name="signup_magic_link_message">我们已经通过电子邮件向您发送了一个免密登录链接，供您创建新的 WordPress.com 帐户。 请在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
+    <string name="sign_up_label">注册</string>
     <string name="login_or">或</string>
+    <string name="continue_site_credentials">继续使用商店凭据</string>
     <string name="continue_google_button_suffix">继续使用 Google</string>
+    <string name="login_find_your_connected_email">查找您连接的电子邮件</string>
     <string name="login_find_your_site_adress">寻找您的站点地址</string>
     <string name="login_done">完成</string>
     <string name="magic_link_not_seeing_email_message">没有看到电子邮件？ 请检查您的垃圾邮件文件夹。</string>
@@ -29,6 +32,32 @@ Language: zh_CN
     <string name="or_type_your_password">或者输入您的密码</string>
     <string name="create_account">创建帐户</string>
     <string name="send_link_by_email">通过电子邮件发送链接</string>
+    <string name="feedback_product_give_feedback_button_text">提供反馈</string>
+    <string name="product_detail_publish_product_success">产品已发布</string>
+    <string name="product_detail_publish_product_error">发布产品时出错</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">正在发布产品</string>
+    <string name="product_add_tool_bar_menu_button_done">发布</string>
+    <string name="product_add_tool_bar_title">新产品</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">包含颜色或尺寸等参数的变体</string>
+    <string name="product_add_type_simple_desc">要销售的独特商品</string>
+    <string name="product_add_type_external">外部产品</string>
+    <string name="product_add_type_grouped">分组产品</string>
+    <string name="product_add_type_variable">可变产品</string>
+    <string name="product_add_type_simple">单个产品</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">每个产品变体只能显示一张照片</string>
+    <string name="product_replace_photo">替换照片</string>
+    <string name="product_add_photo">添加照片</string>
+    <string name="variation_detail_image_add">添加变体图片</string>
+    <string name="login_jetpack_view_instructions">了解如何安装和连接 Jetpack</string>
+    <string name="login_jetpack_required_text">要对 %1$s 使用该应用，您需要在商店连接 Jetpack 插件。</string>
+    <string name="login_try_another_account">使用其他帐户登录</string>
+    <string name="login_pick_store">选择要连接的商店</string>
+    <string name="login_store_address">输入您的商店地址</string>
+    <string name="login_wpcom">继续使用 WordPress.com</string>
     <string name="product_type_variation_desc">包含颜色或尺寸等参数的变体</string>
     <string name="product_selection_count_single">%d 个产品已选择</string>
     <string name="product_selection_count">%d 个产品已选择</string>
@@ -257,6 +286,7 @@ Language: zh_CN
     <string name="product_inventory_empty">添加库存</string>
     <string name="orderlist_loading">正在查找您的订单…</string>
     <string name="product_detail_editable_text_hint">输入文本</string>
+    <string name="product_detail_title_hint">输入产品标题</string>
     <string name="product_detail_update_product_success">产品已更新</string>
     <string name="product_detail_update_product_error">更新产品时出错</string>
     <string name="product_update_dialog_message">请稍候…</string>
@@ -910,6 +940,7 @@ Language: zh_CN
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">已经登录 WordPress.com</string>
     <string name="login_continue">继续</string>
+    <string name="connect_site">连接站点</string>
     <string name="connect_more">连接其他站点</string>
     <string name="enter_wpcom_password_google">要继续使用此 Google 帐户，请提供匹配的 WordPress.com 密码。此要求仅会出现一次。</string>
     <string name="enter_wpcom_password">输入您的 WordPress.com 密码。</string>
