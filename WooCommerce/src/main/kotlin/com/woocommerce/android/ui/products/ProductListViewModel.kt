@@ -15,6 +15,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -120,11 +122,21 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
+    fun onFiltersButtonTapped() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        triggerEvent(
+            ShowProductFilterScreen(
+                productFilterOptions[ProductFilterOption.STOCK_STATUS],
+                productFilterOptions[ProductFilterOption.TYPE],
+                productFilterOptions[ProductFilterOption.STATUS]
+            )
+        )
+    }
 
-    fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
-
-    fun getFilterByProductType() = productFilterOptions[ProductFilterOption.TYPE]
+    fun onSortButtonTapped() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        triggerEvent(ShowProductSortingBottomSheet)
+    }
 
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
@@ -359,6 +371,12 @@ class ProductListViewModel @AssistedInject constructor(
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
         object ShowAddProductBottomSheet : ProductListEvent()
+        object ShowProductSortingBottomSheet : Event()
+        data class ShowProductFilterScreen(
+            val stockStatusFilter: String?,
+            val productTypeFilter: String?,
+            val productStatusFilter: String?
+        ) : Event()
     }
 
     @AssistedInject.Factory
