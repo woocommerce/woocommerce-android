@@ -24,6 +24,15 @@
                 android:orientation="vertical"
                 tools:ignore="UselessParent">
 
+                <!-- Shipping Labels work in progress notice card -->
+                <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
+                    android:id="@+id/orderDetail_shippingLabelsWipCard"
+                    style="@style/Woo.Card.Expandable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
                 <!-- Order Status -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
                     android:id="@+id/orderDetail_orderStatus"
@@ -40,7 +49,7 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
-                <!-- Product List -->
+                <!-- Shipping Labels List -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
                     android:id="@+id/orderDetail_shippingLabelList"
                     android:layout_width="match_parent"
