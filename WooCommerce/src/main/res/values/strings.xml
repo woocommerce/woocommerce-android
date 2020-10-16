@@ -282,6 +282,8 @@
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
     <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
+    <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
+    <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
     <string name="order_begin_fulfillment">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
@@ -471,6 +473,7 @@
     <string name="product_image_content_description">Product image</string>
     <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Product not found</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>

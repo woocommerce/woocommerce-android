@@ -15,6 +15,7 @@ object ProductTestUtils {
             localSiteId = 1
             remoteProductId = productId
             status = "publish"
+            type = "simple"
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
