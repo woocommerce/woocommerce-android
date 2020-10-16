@@ -46,6 +46,8 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -331,6 +333,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is ShowProductFilterScreen -> showProductFilterScreen(
+                    event.stockStatusFilter,
+                    event.productTypeFilter,
+                    event.productStatusFilter
+                )
+                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 else -> event.isHandled = false
             }
         })
@@ -474,21 +482,23 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         viewModel.onLoadMoreRequested()
     }
 
-    override fun onFilterOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+    private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductFilters(
-            viewModel.getFilterByStockStatus(),
-            viewModel.getFilterByProductType(),
-            viewModel.getFilterByProductStatus()
-        )
+        (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
+    }
+
+    override fun onFilterOptionSelected() {
+        viewModel.onFiltersButtonTapped()
+    }
+
+    private fun showProductSortingBottomSheet() {
+        val bottomSheet = ProductSortingFragment()
+        bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 
     override fun onSortOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
-        val bottomSheet = ProductSortingFragment()
-        bottomSheet.show(childFragmentManager, bottomSheet.tag)
+        viewModel.onSortButtonTapped()
     }
 
     private fun onGiveFeedbackClicked() {
