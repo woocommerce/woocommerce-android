@@ -584,7 +584,8 @@ class ProductDetailCardBuilder(
         return ComplexProperty(
             R.string.linked_products,
             "$upsellDesc\n$crossSellDesc",
-            R.drawable.ic_widgets
+            R.drawable.ic_gridicons_reblog,
+            maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
                 ViewLinkedProducts(
