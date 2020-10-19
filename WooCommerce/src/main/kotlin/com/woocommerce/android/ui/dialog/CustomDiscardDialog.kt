@@ -20,10 +20,12 @@ object CustomDiscardDialog {
         activity: Activity,
         posBtnAction: (OnClickListener)? = null,
         negBtnAction: (OnClickListener)? = null,
+        neutBtAction: (OnClickListener)? = null,
         @StringRes titleId: Int? = null,
         @StringRes messageId: Int? = null,
         @StringRes positiveButtonId: Int? = null,
-        @StringRes negativeButtonId: Int? = null
+        @StringRes negativeButtonId: Int? = null,
+        @StringRes neutralButtonId: Int? = null
     ) {
         dialogRef?.get()?.let {
             // Dialog is already present
@@ -43,6 +45,11 @@ object CustomDiscardDialog {
                 .setPositiveButton(positiveButtonTextId, posBtnAction)
                 .setNegativeButton(negativeButtonTextId, negBtnAction)
                 .setOnDismissListener { onCleared() }
+
+        neutBtAction?.let {
+            val neutralButtonTextId = neutralButtonId ?: string.product_detail_save_as_draft
+            builder.setNeutralButton(neutralButtonTextId, it)
+        }
 
         titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
 

@@ -33,6 +33,7 @@ class ProductShippingViewModel @AssistedInject constructor(
         savedState,
         ViewState(
             shippingData = navArgs.shippingData,
+            isDoneButtonVisible = false,
             isShippingClassSectionVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_SHIPPING
         )
     )

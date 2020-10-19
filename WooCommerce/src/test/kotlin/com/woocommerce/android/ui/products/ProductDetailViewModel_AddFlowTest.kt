@@ -16,6 +16,8 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -29,6 +31,7 @@ import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -109,18 +112,21 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_money,
                     showTitle = false
                 ),
+                PropertyGroup(
+                    R.string.product_inventory,
+                    mapOf(
+                        Pair(
+                            resources.getString(R.string.product_stock_status),
+                            resources.getString(R.string.product_stock_status_instock)
+                        )
+                    ),
+                    R.drawable.ic_gridicons_list_checkmark,
+                    true
+                ),
                 ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
-                    true
-                ),
-                PropertyGroup(
-                    R.string.product_inventory,
-                    mapOf(
-                        Pair("", resources.getString(R.string.product_stock_status_instock))
-                    ),
-                    R.drawable.ic_gridicons_list_checkmark,
                     true
                 )
             )
@@ -310,4 +316,45 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             assertThat(productData?.isProductUpdated).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
         }
+
+    @Test
+    fun `Save as draft shown in discard dialog when changes made in add flow`() {
+        doReturn(true).whenever(viewModel).isAddFlow
+
+        viewModel.start()
+
+        // change the status to draft so we can verify that isDraftProduct works - this will also
+        // force the viewModel to consider the product as changed, so when we click the back button
+        // below it will show the discard dialog
+        viewModel.updateProductDraft(productStatus = DRAFT)
+        assertThat(viewModel.isDraftProduct()).isTrue()
+
+        var saveAsDraftShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDiscardDialog && it.neutralBtnAction != null) {
+                saveAsDraftShown = true
+            }
+        }
+
+        viewModel.onBackButtonClicked(ExitProductDetail())
+        assertThat(saveAsDraftShown).isTrue()
+    }
+
+    @Test
+    fun `Save as draft not shown in discard dialog when not in add flow`() {
+        doReturn(false).whenever(viewModel).isAddFlow
+
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = DRAFT)
+
+        var saveAsDraftShown = false
+        viewModel.event.observeForever {
+            if (it is ShowDiscardDialog && it.neutralBtnAction != null) {
+                saveAsDraftShown = true
+            }
+        }
+
+        viewModel.onBackButtonClicked(ExitProductDetail())
+        assertThat(saveAsDraftShown).isFalse()
+    }
 }

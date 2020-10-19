@@ -40,7 +40,7 @@ androidExtensions {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '30.0.0'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "5.1"
+            versionName "5.2"
         }
-        versionCode 155
+        versionCode 158
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -154,12 +154,11 @@ dependencies {
 
     implementation 'com.automattic:tracks:1.2.1'
 
-    implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
+    implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-
-    implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:woocommerce:$fluxCVersion") {
+    implementation("$gradle.ext.fluxCBinaryPath:woocommerce:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }

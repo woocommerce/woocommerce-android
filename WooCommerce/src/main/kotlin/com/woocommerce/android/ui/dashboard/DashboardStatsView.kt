@@ -393,9 +393,9 @@ class DashboardStatsView @JvmOverloads constructor(
      */
     private fun getFormattedDateValue(date: String): String {
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(date)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(date)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(date)
+            StatsGranularity.DAYS -> DateUtils().getShortMonthDayString(date)
+            StatsGranularity.WEEKS -> DateUtils().getShortMonthDayStringForWeek(date)
+            StatsGranularity.MONTHS -> DateUtils().getShortMonthYearString(date)
             StatsGranularity.YEARS -> date
         }
     }
@@ -508,9 +508,9 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun getStartDateValue(): String {
         val dateString = chartRevenueStats.keys.first()
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-            StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
+            StatsGranularity.DAYS -> DateUtils().getShortMonthDayString(dateString)
+            StatsGranularity.WEEKS -> DateUtils().getShortMonthDayStringForWeek(dateString)
+            StatsGranularity.MONTHS -> DateUtils().getShortMonthYearString(dateString)
             StatsGranularity.YEARS -> dateString
         }
     }
@@ -518,10 +518,10 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun getEndDateValue(): String {
         val dateString = chartRevenueStats.keys.last()
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+            StatsGranularity.DAYS -> DateUtils().getShortMonthDayString(dateString)
             StatsGranularity.WEEKS ->
-                SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-            StatsGranularity.MONTHS -> DateUtils.getShortMonthYearString(dateString)
+                SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils().friendlyMonthDayFormat)
+            StatsGranularity.MONTHS -> DateUtils().getShortMonthYearString(dateString)
             StatsGranularity.YEARS -> dateString
         }
     }
@@ -610,9 +610,9 @@ class DashboardStatsView @JvmOverloads constructor(
         fun getStartValue(): String {
             val dateString = chartRevenueStats.keys.first()
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
-                StatsGranularity.WEEKS -> DateUtils.getShortMonthDayStringForWeek(dateString)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.DAYS -> DateUtils().getShortMonthDayString(dateString)
+                StatsGranularity.WEEKS -> DateUtils().getShortMonthDayStringForWeek(dateString)
+                StatsGranularity.MONTHS -> DateUtils().getShortMonthString(dateString)
                 StatsGranularity.YEARS -> dateString
             }
         }
@@ -620,10 +620,10 @@ class DashboardStatsView @JvmOverloads constructor(
         fun getEndValue(): String {
             val dateString = chartRevenueStats.keys.last()
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortMonthDayString(dateString)
+                StatsGranularity.DAYS -> DateUtils().getShortMonthDayString(dateString)
                 StatsGranularity.WEEKS ->
-                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils.friendlyMonthDayFormat)
-                StatsGranularity.MONTHS -> DateUtils.getShortMonthString(dateString)
+                    SiteUtils.getCurrentDateTimeForSite(selectedSite.get(), DateUtils().friendlyMonthDayFormat)
+                StatsGranularity.MONTHS -> DateUtils().getShortMonthString(dateString)
                 StatsGranularity.YEARS -> dateString
             }
         }

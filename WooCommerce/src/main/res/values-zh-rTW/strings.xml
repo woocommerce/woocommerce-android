@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-01 08:54:04+0000
+Translation-Revision-Date: 2020-10-16 11:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">已儲存商品草稿</string>
+    <string name="product_detail_publish_product_draft_error">儲存商品草稿時發生錯誤</string>
+    <string name="product_publish_draft_dialog_title">正在儲存草稿</string>
+    <string name="product_status_trashed">已移至垃圾桶</string>
+    <string name="product_detail_save_as_draft">儲存為草稿</string>
+    <string name="login_no_wpcom_account_found">%1$s 似乎與 WordPress.com 帳號無關聯。</string>
     <string name="signup_confirmation_title">註冊確認</string>
     <string name="reset_your_password">重設密碼</string>
     <string name="enter_your_site_address">請輸入你的網站位址</string>

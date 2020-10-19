@@ -158,6 +158,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
+    <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
     <!--
         Dashboard View
     -->
@@ -618,6 +619,7 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
+    <string name="product_detail_save_as_draft">Save as draft</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -790,7 +792,7 @@
     
     
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
+    
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
     
     
@@ -807,10 +809,10 @@
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-    <string name="login_site_address">Store address</string>
+    
     <string name="login_site_address_help">Need help finding your site address?</string>
-    <string name="login_site_address_help_title">What\'s my store address?</string>
-    <string name="login_site_address_help_content">Your store address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    
+    
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -930,6 +932,7 @@
     <string name="product_status_private">Private</string>
     <string name="product_status_pending">Pending review</string>
     <string name="product_status_draft">Draft</string>
+    <string name="product_status_trashed">Trashed</string>
 
     <!-- Product type -->
     <string name="product_type_simple">Simple</string>
@@ -965,9 +968,12 @@
     <string name="product_add_tool_bar_title">New Product</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
     <string name="product_publish_dialog_title">Publishing product</string>
+    <string name="product_publish_draft_dialog_title">Saving draft</string>
     <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
+    <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
+    <string name="product_detail_publish_product_draft_success">Product draft saved</string>
 
     <!-- In-App Feedback -->
     <string name="feedback_request_title">Enjoying the WooCommerce app?</string>
@@ -1303,7 +1309,7 @@
     <string name="connect_more">Connect another site</string>
     <string name="connect_site">Connect a site</string>
     <string name="login_done">Done</string>
-    <string name="login_find_your_site_adress">Find your store address</string>
+    
     <string name="login_find_your_connected_email">Find your connected email</string>
     <string name="continue_google_button_suffix">Continue with Google</string>
     <string name="continue_site_credentials">Continue with store credentials</string>
@@ -1318,4 +1324,9 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
+    <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address. Try the link below to log in using your site address.</string>
+    <string name="login_site_address">Site address</string>
+    <string name="login_site_address_help_title">What\'s my site address?</string>
+    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    <string name="login_find_your_site_adress">Find your site address</string>
 </resources>

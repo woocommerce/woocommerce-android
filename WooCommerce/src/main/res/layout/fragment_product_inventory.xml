@@ -105,6 +105,13 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="manageStock_morePanel,edit_product_stock_status" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/stockManagementPanel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="manageStock_barrier,manageStock_morePanel,manageStock_switch,edit_product_stock_status,manageStock_switch,soldIndividually_switch" />
+
             <!-- Product Sold Individually switch -->
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/soldIndividually_switch"

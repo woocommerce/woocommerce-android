@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-01 10:55:05+0000
+Translation-Revision-Date: 2020-10-16 11:54:05+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Черновик товара сохранен</string>
+    <string name="product_detail_publish_product_draft_error">Ошибка сохранения черновика товара</string>
+    <string name="product_publish_draft_dialog_title">Сохранение черновика</string>
+    <string name="product_status_trashed">Удалено</string>
+    <string name="product_detail_save_as_draft">Сохранить как черновик</string>
+    <string name="login_no_wpcom_account_found">Кажется, %1$s не связан с учетной записью WordPress.com.</string>
     <string name="signup_confirmation_title">Подтверждение регистрации</string>
     <string name="reset_your_password">Сбросить пароль</string>
     <string name="enter_your_site_address">Введите адрес вашего сайта</string>
@@ -723,7 +729,7 @@ Language: ru
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="support_help_center">Help Center</string>
-    <string name="product_type_virtual">Virtual</string>
+    <string name="product_type_virtual">Виртуальный</string>
     <string name="product_type_grouped">Сборный</string>
     <string name="product_type_variable">С вариантами</string>
     <string name="product_backorders_notify">Allow, but notify customer</string>

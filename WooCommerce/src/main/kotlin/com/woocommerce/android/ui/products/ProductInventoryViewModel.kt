@@ -9,6 +9,9 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -30,12 +33,16 @@ class ProductInventoryViewModel @AssistedInject constructor(
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
+    private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             inventoryData = navArgs.inventoryData,
-            isIndividualSaleSwitchVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
+            isDoneButtonVisible = false,
+            isIndividualSaleSwitchVisible = isProduct,
+            isStockManagementVisible = !isProduct || navArgs.productType != EXTERNAL && navArgs.productType != GROUPED,
+            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE
         )
     )
     private var viewState by viewStateData
@@ -62,9 +69,9 @@ class ProductInventoryViewModel @AssistedInject constructor(
             if (sku == originalSku) {
                 clearSkuError()
             } else {
-                viewState = viewState.copy(explicitlyHideDoneButton = true)
+                viewState = viewState.copy(isDoneButtonDisabled = true)
 
-                if (!productRepository.isProductSkuAvailableLocally(sku)) {
+                if (!productRepository.isSkuAvailableLocally(sku)) {
                     showSkuError()
                 } else {
                     clearSkuError()
@@ -85,7 +92,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
                             showSkuError()
                         }
 
-                        viewState = viewState.copy(explicitlyHideDoneButton = false)
+                        viewState = viewState.copy(isDoneButtonDisabled = false)
                     }
                 }
             }
@@ -153,10 +160,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
-        val explicitlyHideDoneButton: Boolean = false
+        val isStockStatusVisible: Boolean? = null,
+        val isStockManagementVisible: Boolean? = null,
+        val isDoneButtonDisabled: Boolean = false
     ) : Parcelable {
         val isDoneButtonEnabled: Boolean
-            get() = !explicitlyHideDoneButton && (skuErrorMessage == 0 || skuErrorMessage == null)
+            get() = !isDoneButtonDisabled && (skuErrorMessage == 0 || skuErrorMessage == null)
     }
 
     @Parcelize

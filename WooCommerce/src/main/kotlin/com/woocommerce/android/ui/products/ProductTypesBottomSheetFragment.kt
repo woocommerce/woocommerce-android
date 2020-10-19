@@ -88,14 +88,16 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
+                    event.neutralBtnAction,
                     event.titleId,
                     event.messageId,
                     event.positiveButtonId,
-                    event.negativeButtonId
+                    event.negativeButtonId,
+                    event.neutralButtonId
                 )
 
                 is ExitWithResult<*> -> {
-                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                    (event.data as? ProductType)?.let {
                         navigateWithSelectedResult(type = it)
                     }
                 }
@@ -119,7 +121,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         }
     }
 
-    private fun navigateWithSelectedResult(type: ProductTypesBottomSheetUiItem) {
+    private fun navigateWithSelectedResult(type: ProductType) {
         when (navArgs.isAddProduct) {
             true -> dismiss()
             else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, type)

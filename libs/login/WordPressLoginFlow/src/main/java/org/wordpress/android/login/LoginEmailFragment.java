@@ -83,7 +83,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     private static final String ARG_HIDE_TOS = "ARG_HIDE_TOS";
 
     public static final String TAG = "login_email_fragment_tag";
-    public static final String TAG_ALT_LAYOUT = "login_email_fragment_alternate_layout_tag";
+    public static final String TAG_SITE_CREDS_LAYOUT = "login_email_fragment_site_creds_layout_tag";
     public static final int MAX_EMAIL_LENGTH = 100;
 
     private ArrayList<Integer> mOldSitesIDs = new ArrayList<>();
@@ -683,7 +683,18 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
             case EMAIL:
                 if (event.isAvailable) {
                     ActivityUtils.hideKeyboardForced(mEmailInput);
-                    if (mIsSignupFromLoginEnabled) {
+
+                    // Will be true if in the Woo app and currently in the WPcom login
+                    // flow. We need to check this to know if we should display the
+                    // 'No WPcom account found' error screen.
+                    boolean isWooWPcomLoginFlow = false;
+                    if (mLoginListener != null
+                        && mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE
+                        && !mOptionalSiteCredsLayout) {
+                        isWooWPcomLoginFlow = true;
+                    }
+
+                    if (mIsSignupFromLoginEnabled || isWooWPcomLoginFlow) {
                         if (mLoginListener != null) {
                             mLoginListener.gotUnregisteredEmail(event.value);
                         }

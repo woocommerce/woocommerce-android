@@ -1,0 +1,7 @@
+5.2:
+Mejoras en las funciones de edición para todos los tipos de productos:
+
+Se han añadido campos adicionales a los productos principales (etiquetas, categorías, tipo de producto, visibilidad y activación y desactivación de valoraciones). Ahora también se pueden editar los productos variables.
+
+Se han añadido campos básicos para los productos que no son principales (imágenes, nombre, descripción, precio de solo lectura, inventario de solo lectura, etiquetas, categorías, descripciones cortas y ajustes del producto).
+

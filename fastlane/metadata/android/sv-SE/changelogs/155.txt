@@ -1,4 +1,0 @@
-5.1:
-- Inloggning: Vi har implementerat ett nytt inloggningsflöde med nya skärmdesigner.
-- Ordrar: På skärmen Orderstatus visas nu det faktiska orderantalet istället för "max 99".
-
