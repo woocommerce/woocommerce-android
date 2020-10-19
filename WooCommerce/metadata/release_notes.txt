@@ -1,6 +1,5 @@
-Enhancements to the editing capabilities for all product types:
-
-Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
-
-Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
+* Application settings have been moved to a gear icon on the Dashboard
+* Product detail screen now includes the number of ratings for that product
+* Fixed slowness in order screens
+* Order detail screen now includes option to print and refund shipping labels
  
