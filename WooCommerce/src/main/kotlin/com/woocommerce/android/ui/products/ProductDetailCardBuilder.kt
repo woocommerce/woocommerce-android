@@ -568,16 +568,24 @@ class ProductDetailCardBuilder(
             return null
         }
 
-        val properties = mutableMapOf<String, String>().also {
-            it.put(this.upsellProductIds.size.toString(), resources.getString(R.string.upsell_products))
-            it.put(this.crossSellProductIds.size.toString(), resources.getString(R.string.cross_sell_products))
-        }
+        val upsellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.upsellProductIds.size,
+            default = R.string.upsell_products_count,
+            one = R.string.upsell_products_single
+        )
+        val crossSellDesc = StringUtils.getQuantityString(
+            resourceProvider = resources,
+            quantity = this.crossSellProductIds.size,
+            default = R.string.cross_sell_products_count,
+            one = R.string.cross_sell_products_single
+        )
 
-        val group = PropertyGroup(
-            R.string.product_detail_linked_products,
-            properties,
+        return ComplexProperty(
+            R.string.linked_products,
+            "$upsellDesc\n$crossSellDesc",
             R.drawable.ic_gridicons_reblog,
-            propertyFormat = R.string.product_linked_product_fmt
+            maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
                 ViewLinkedProducts(
@@ -588,8 +596,6 @@ class ProductDetailCardBuilder(
                 Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }
-
-        return group
     }
 
     private fun Product.title(): ProductProperty {
