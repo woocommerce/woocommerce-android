@@ -26,7 +26,8 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_SHIPPING(string.product_shipping, string.bottom_sheet_shipping_desc),
         PRODUCT_CATEGORIES(string.product_categories, string.bottom_sheet_categories_desc),
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
-        SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc)
+        SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
+        LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -135,5 +136,9 @@ class ProductDetailBottomSheetBuilder(
         } else {
             null
         }
+    }
+
+    private fun Product.getLinkedProducts() : ProductDetailBottomSheetUiItem? {
+
     }
 }

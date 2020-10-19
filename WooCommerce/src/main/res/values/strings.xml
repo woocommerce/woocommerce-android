@@ -663,6 +663,7 @@
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
+    <string name="product_detail_linked_products">Linked products</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -671,6 +672,7 @@
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+    <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 
     <!--
         Variations
