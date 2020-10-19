@@ -1,4 +1,0 @@
-5.1:
-- Login: implementamos um novo fluxo de login com novos designs de tela.
-- Pedidos: agora a tela Status do pedido exibe a contagem real do pedido em vez de "máx. 99".
-

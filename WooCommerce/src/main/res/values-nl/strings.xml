@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-24 15:27:36+0000
+Translation-Revision-Date: 2020-10-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
@@ -17,7 +17,9 @@ Language: nl
     <string name="signup_magic_link_message">We hebben je een magische link gestuurd om je nieuwe WordPress.com account aan te maken. Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
     <string name="sign_up_label">Abonneren</string>
     <string name="login_or">of</string>
+    <string name="continue_site_credentials">Doorgaan met winkel-inloggegevens</string>
     <string name="continue_google_button_suffix">Doorgaan met Google</string>
+    <string name="login_find_your_connected_email">Vind je gekoppelde e-mail</string>
     <string name="login_find_your_site_adress">Vind het adres van je site</string>
     <string name="login_done">Klaar</string>
     <string name="magic_link_not_seeing_email_message">Zie je de e-mail niet? Controleer je spam-map of ongewenste e-mail.</string>
@@ -30,6 +32,32 @@ Language: nl
     <string name="or_type_your_password">Of typ je wachtwoord</string>
     <string name="create_account">Account aanmaken</string>
     <string name="send_link_by_email">Link per e-mail verzenden</string>
+    <string name="feedback_product_give_feedback_button_text">Geef feedback</string>
+    <string name="product_detail_publish_product_success">Product gepubliceerd</string>
+    <string name="product_detail_publish_product_error">Fout bij publiceren van product</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Product wordt gepubliceerd</string>
+    <string name="product_add_tool_bar_menu_button_done">PUBLICEREN</string>
+    <string name="product_add_tool_bar_title">Nieuw product</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">Een product met variaties zoals kleur of maat</string>
+    <string name="product_add_type_simple_desc">Een uniek artikel om te verkopen</string>
+    <string name="product_add_type_external">Extern product</string>
+    <string name="product_add_type_grouped">Gegroepeerd product</string>
+    <string name="product_add_type_variable">Variabel product</string>
+    <string name="product_add_type_simple">Simpel product</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Er kan slechts één foto worden weergegeven per productvariatie</string>
+    <string name="product_replace_photo">Foto vervangen</string>
+    <string name="product_add_photo">Foto toevoegen</string>
+    <string name="variation_detail_image_add">Voeg een variatie-afbeelding toe</string>
+    <string name="login_jetpack_view_instructions">Bekijk hoe je Jetpack installeert en koppelt</string>
+    <string name="login_jetpack_required_text">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin gekoppeld zijn aan je winkel.</string>
+    <string name="login_try_another_account">Log in met een ander account</string>
+    <string name="login_pick_store">Selecteer een winkel om mee te verbinden</string>
+    <string name="login_store_address">Voer het adres van je winkel in</string>
+    <string name="login_wpcom">Doorgaan met WordPress.com</string>
     <string name="product_type_variation_desc">Een product met variaties zoals kleur of maat</string>
     <string name="product_selection_count_single">%d product geselecteerd</string>
     <string name="product_selection_count">%d producten geselecteerd</string>
@@ -258,6 +286,7 @@ Language: nl
     <string name="product_inventory_empty">Voorraad toevoegen</string>
     <string name="orderlist_loading">Je bestellingen worden opgezocht …</string>
     <string name="product_detail_editable_text_hint">Voer tekst in</string>
+    <string name="product_detail_title_hint">Voer producttitel</string>
     <string name="product_detail_update_product_success">Product bijgewerkt</string>
     <string name="product_detail_update_product_error">Bijwerken product mislukt</string>
     <string name="product_update_dialog_message">Een moment geduld…</string>
@@ -911,6 +940,7 @@ Language: nl
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Al ingelogd op WordPress.com</string>
     <string name="login_continue">Doorgaan</string>
+    <string name="connect_site">Verbind een site</string>
     <string name="connect_more">Andere site koppelen</string>
     <string name="enter_wpcom_password_google">Om door te gaan met dit Google-account moet je eerst het wachtwoord van WordPress.com opgeven. Je hoeft dit slechts één keer in te vullen.</string>
     <string name="enter_wpcom_password">Voer je WordPress.com wachtwoord in.</string>

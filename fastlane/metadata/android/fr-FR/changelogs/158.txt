@@ -1,0 +1,7 @@
+5.2 :
+Options de modification améliorées pour tous les types de produit :
+
+Ajout de champs supplémentaires aux produits essentiels (étiquettes, catégories, type de produit, activer/désactiver les avis et visibilité). Les produits variables peuvent désormais être modifiés.
+
+Des champs de base ont été ajoutés pour les produits non essentiels (images, nom, description, prix en lecture seule, inventaire en lecture seule, étiquettes, catégories, courtes descriptions et paramètres de produit).
+

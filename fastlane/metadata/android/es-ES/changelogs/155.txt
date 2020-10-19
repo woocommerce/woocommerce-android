@@ -1,4 +1,0 @@
-5.1:
-- Acceso: Hemos implementado un nuevo flujo de acceso con diseños de pantalla renovados.
-- Pedidos: Ahora, la pantalla del estado del pedido muestra el recuento real de pedidos en lugar de “99 máximo”.
-
