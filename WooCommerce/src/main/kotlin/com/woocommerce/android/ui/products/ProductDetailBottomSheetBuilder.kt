@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -43,7 +44,8 @@ class ProductDetailBottomSheetBuilder(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             EXTERNAL -> {
@@ -51,14 +53,16 @@ class ProductDetailBottomSheetBuilder(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             GROUPED -> {
                 listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             VARIABLE -> {
@@ -66,7 +70,8 @@ class ProductDetailBottomSheetBuilder(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             OTHER -> {
@@ -138,7 +143,19 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun Product.getLinkedProducts() : ProductDetailBottomSheetUiItem? {
-
+    private fun Product.getLinkedProducts(): ProductDetailBottomSheetUiItem? {
+        return if (!hasLinkedProducts()) {
+            ProductDetailBottomSheetUiItem(
+                ProductDetailBottomSheetType.LINKED_PRODUCTS,
+                ViewLinkedProducts(
+                    remoteId,
+                    crossSellIds = crossSellProductIds.joinToString(","),
+                    upsellIds = upsellProductIds.joinToString(",")
+                ),
+                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
+            )
+        } else {
+            null
+        }
     }
 }

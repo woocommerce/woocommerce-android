@@ -84,7 +84,9 @@ object ProductHelper {
             menuOrder = 0,
             categories = listOf(),
             tags = listOf(),
-            groupedProductIds = listOf()
+            groupedProductIds = listOf(),
+            crossSellProductIds = listOf(),
+            upsellProductIds = listOf()
         )
     }
 }
