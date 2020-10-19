@@ -147,6 +147,7 @@ class ProductDetailBottomSheetBuilder(
         return if (!hasLinkedProducts()) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.LINKED_PRODUCTS,
+                // TODO implement ViewLinkedProducts
                 ViewLinkedProducts(
                     remoteId,
                     crossSellIds = crossSellProductIds.joinToString(","),
