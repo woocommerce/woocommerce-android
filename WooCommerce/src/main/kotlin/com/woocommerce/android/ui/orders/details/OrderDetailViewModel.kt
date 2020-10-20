@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -42,6 +43,9 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -92,6 +96,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     init {
@@ -99,6 +104,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     final fun start() {
+        EventBus.getDefault().register(this)
         orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
             updateOrderState(orderInDb)
             loadOrderNotes()
@@ -432,6 +438,12 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductImageChanged(event: OnProductImageChanged) {
+        orderDetailViewState = orderDetailViewState.copy(refreshedProductId = event.remoteProductId)
+    }
+
     @Parcelize
     data class OrderDetailViewState(
         val order: Order? = null,
@@ -440,7 +452,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isOrderDetailSkeletonShown: Boolean? = null,
         val isOrderNotesSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isShipmentTrackingAvailable: Boolean? = null
+        val isShipmentTrackingAvailable: Boolean? = null,
+        val refreshedProductId: Long? = null
     ) : Parcelable
 
     @AssistedInject.Factory
