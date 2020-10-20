@@ -37,7 +37,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_desc"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.TextView.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
@@ -98,7 +98,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cross_sells_count"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.TextView.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
