@@ -264,6 +264,15 @@
             android:defaultValue="0L"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/linkedProductsFragment"
+        android:name="com.woocommerce.android.ui.products.LinkedProductsFragment"
+        tools:layout="@layout/fragment_linked_products">
+        <argument
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
@@ -335,6 +344,13 @@
     <action
         android:id="@+id/action_global_productSelectionListFragment"
         app:destination="@id/productSelectionListFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_productDetailFragment_to_linkedProductsFragment"
+        app:destination="@id/linkedProductsFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
