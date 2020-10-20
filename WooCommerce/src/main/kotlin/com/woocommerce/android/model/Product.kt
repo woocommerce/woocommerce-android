@@ -165,6 +165,16 @@ data class Product(
     }
 
     /**
+     * Verifies if there are any changes to upsells or cross-sells
+     */
+    fun hasLinkedProductChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            upsellProductIds != it.upsellProductIds ||
+                crossSellProductIds != it.crossSellProductIds
+        } ?: false
+    }
+
+    /**
      * Verifies if there are any changes made to the product settings
      */
     fun hasSettingsChanges(updatedProduct: Product?): Boolean {

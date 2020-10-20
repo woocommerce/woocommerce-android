@@ -668,6 +668,11 @@
     <string name="cross_sell_products_single">%d cross-sell product</string>
     <string name="upsell_products_count">%d upsell products</string>
     <string name="upsell_products_single">%d upsell product</string>
+    <string name="upsells_label">Upsells</string>
+    <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
+    <string name="add_products_button">Add products</string>
     <!--
         Product Add more details Bottom sheet
     -->
