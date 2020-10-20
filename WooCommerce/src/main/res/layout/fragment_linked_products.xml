@@ -38,10 +38,11 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_desc"
                 style="@style/Woo.TextView.Body1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
                 android:text="@string/upsells_desc"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/upsells_icon"
                 app:layout_constraintTop_toBottomOf="@+id/upsells_label" />
 
@@ -89,10 +90,11 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cross_sells_desc"
                 style="@style/Woo.TextView.Body1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
                 android:text="@string/cross_sells_desc"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/cross_sells_icon"
                 app:layout_constraintTop_toBottomOf="@+id/cross_sells_label" />
 
