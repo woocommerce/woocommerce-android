@@ -37,7 +37,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_desc"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
@@ -48,7 +48,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_count"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
@@ -59,10 +59,11 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/add_upsell_products"
                 style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
                 android:text="@string/add_products_button"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/upsells_label"
                 app:layout_constraintTop_toBottomOf="@+id/upsells_count" />
 
@@ -89,7 +90,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cross_sells_desc"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
@@ -100,7 +101,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cross_sells_count"
-                style="@style/Woo.TextView.Body1"
+                style="@style/Woo.TextView.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
@@ -111,10 +112,11 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/add_cross_sell_products"
                 style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
                 android:text="@string/add_products_button"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/cross_sells_label"
                 app:layout_constraintTop_toBottomOf="@+id/cross_sells_count" />
         </androidx.constraintlayout.widget.ConstraintLayout>
