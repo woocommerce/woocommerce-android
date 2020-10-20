@@ -664,7 +664,6 @@
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
-    <string name="linked_products">Linked products</string>
     <string name="cross_sell_products_count">%d cross-sell products</string>
     <string name="cross_sell_products_single">%d cross-sell product</string>
     <string name="upsell_products_count">%d upsell products</string>
