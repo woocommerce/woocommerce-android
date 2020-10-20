@@ -414,15 +414,21 @@ class OrderDetailViewModel @AssistedInject constructor(
     private fun loadOrderShippingLabels() {
         order?.let { order ->
             orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
-                .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
+                .whenNotNullNorEmpty {
+                    _shippingLabels.value = it.loadProducts(order.items)
+                    hideShipmentTrackingAndProductsCard()
+                }
 
             launch {
                 _shippingLabels.value = orderDetailRepository
                     .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
                     .loadProducts(order.items)
+                hideShipmentTrackingAndProductsCard()
             }
         }
+    }
 
+    private fun hideShipmentTrackingAndProductsCard() {
         // hide the shipment tracking section and the product list section if
         // shipping labels are available for the order
         _shippingLabels.value?.whenNotNullNorEmpty {
