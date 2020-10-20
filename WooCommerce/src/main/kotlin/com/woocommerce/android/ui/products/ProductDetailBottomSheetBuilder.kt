@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -144,7 +145,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getLinkedProducts(): ProductDetailBottomSheetUiItem? {
-        return if (!hasLinkedProducts()) {
+        return if (!hasLinkedProducts() && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.LINKED_PRODUCTS,
                 // TODO implement ViewLinkedProducts
