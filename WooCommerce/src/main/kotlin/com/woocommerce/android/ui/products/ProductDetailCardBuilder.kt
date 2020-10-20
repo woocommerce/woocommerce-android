@@ -544,8 +544,8 @@ class ProductDetailCardBuilder(
             StringUtils.getQuantityString(
                 resourceProvider = resources,
                 quantity = groupedProductsSize,
-                default = R.string.grouped_products_count,
-                one = R.string.grouped_products_single
+                default = R.string.products_count,
+                one = R.string.products_single
             )
         } else {
             resources.getString(R.string.grouped_product_empty)
@@ -589,11 +589,7 @@ class ProductDetailCardBuilder(
             maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
-                ViewLinkedProducts(
-                    this.remoteId,
-                    this.crossSellProductIds.joinToString(","),
-                    this.upsellProductIds.joinToString(",")
-                ),
+                ViewLinkedProducts(this.remoteId),
                 Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }

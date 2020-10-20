@@ -11,14 +11,15 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.util.StringUtils
+import kotlinx.android.synthetic.main.fragment_linked_products.*
+import org.wordpress.android.util.ActivityUtils
 
-class LinkedProductsFragment : BaseProductFragment(), BackPressListener {
-    private var doneMenuItem: MenuItem? = null
-
+class LinkedProductsFragment : BaseProductFragment() {
     override fun getFragmentTitle() = getString(R.string.product_detail_linked_products)
 
     override fun onCreateView(
@@ -38,14 +39,13 @@ class LinkedProductsFragment : BaseProductFragment(), BackPressListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem?.isVisible = viewModel.hasLinkedProductChanges()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
+                ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
                 true
             }
@@ -61,18 +61,43 @@ class LinkedProductsFragment : BaseProductFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    messageId = event.messageId,
-                    negativeButtonId = event.negativeButtonId
-                )
                 is ExitLinkedProducts -> findNavController().navigateUp()
-                is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         })
+        updateProductView(viewModel.getProduct())
+    }
+
+    private fun updateProductView(productData: ProductDetailViewState) {
+        if (!isAdded) return
+
+        val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
+        if (numUpsells > 0) {
+            val upsellDesc = StringUtils.getQuantityString(
+                resourceProvider = viewModel.getResources(),
+                quantity = numUpsells,
+                default = R.string.products_count,
+                one = R.string.products_single
+            )
+            upsells_count.text = upsellDesc
+            upsells_count.show()
+        } else {
+            upsells_count.hide()
+        }
+
+        val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
+        if (numCrossSells > 0) {
+            val crossSellDesc = StringUtils.getQuantityString(
+                resourceProvider = viewModel.getResources(),
+                quantity = numCrossSells,
+                default = R.string.products_count,
+                one = R.string.products_single
+            )
+            cross_sells_count.text = crossSellDesc
+            upsells_count.show()
+        } else {
+            cross_sells_count.hide()
+        }
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
