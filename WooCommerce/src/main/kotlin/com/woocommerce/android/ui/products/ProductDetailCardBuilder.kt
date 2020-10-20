@@ -583,7 +583,7 @@ class ProductDetailCardBuilder(
         )
 
         return ComplexProperty(
-            R.string.linked_products,
+            R.string.product_detail_linked_products,
             "$upsellDesc<br>$crossSellDesc",
             R.drawable.ic_gridicons_reblog,
             maxLines = 2
