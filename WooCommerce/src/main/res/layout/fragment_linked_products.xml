@@ -20,6 +20,7 @@
                 android:id="@+id/upsells_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/major_100"
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -47,7 +48,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_count"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.TextView.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
@@ -73,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
                 android:importantForAccessibility="no"
+                android:paddingEnd="@dimen/major_100"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/add_upsell_products"
                 app:srcCompat="@drawable/ic_gridicons_sync" />
@@ -89,7 +91,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cross_sells_desc"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.TextView.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
