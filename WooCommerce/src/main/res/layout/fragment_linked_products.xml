@@ -8,7 +8,7 @@
     <com.google.android.material.card.MaterialCardView
         style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -20,7 +20,6 @@
                 android:id="@+id/upsells_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/major_100"
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +51,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
-                android:text="@string/upsells_desc"
                 app:layout_constraintStart_toEndOf="@id/upsells_icon"
                 app:layout_constraintTop_toBottomOf="@+id/upsells_desc"
                 tools:text="2 upsells" />
@@ -74,7 +72,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
                 android:importantForAccessibility="no"
-                android:paddingEnd="@dimen/major_100"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/add_upsell_products"
                 app:srcCompat="@drawable/ic_gridicons_sync" />
@@ -95,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
-                android:text="@string/upsells_desc"
+                android:text="@string/cross_sells_desc"
                 app:layout_constraintStart_toEndOf="@id/cross_sells_icon"
                 app:layout_constraintTop_toBottomOf="@+id/cross_sells_label" />
 
@@ -105,7 +102,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
-                android:text="@string/upsells_desc"
                 app:layout_constraintStart_toEndOf="@id/cross_sells_icon"
                 app:layout_constraintTop_toBottomOf="@+id/cross_sells_desc"
                 tools:text="2 cross-sells" />
