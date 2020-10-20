@@ -26,4 +26,5 @@ object AppUrls {
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
+    const val CROWDSIGNAL_PLATFORM_TAG = "woo-mobile-platform=android"
 }
