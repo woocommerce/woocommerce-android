@@ -327,7 +327,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
         ))
         registerFeedbackSetting(GIVEN)
@@ -339,7 +339,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
         ))
         registerFeedbackSetting(DISMISSED)
