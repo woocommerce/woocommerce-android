@@ -420,22 +420,24 @@ class OrderDetailViewModel @AssistedInject constructor(
                 }
 
             launch {
-                _shippingLabels.value = orderDetailRepository
+                orderDetailRepository
                     .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
                     .loadProducts(order.items)
-                hideShipmentTrackingAndProductsCard()
+                    .whenNotNullNorEmpty {
+                        _shippingLabels.value = it
+
+                        // hide the shipment tracking section and the product list section if
+                        // shipping labels are available for the order
+                        hideShipmentTrackingAndProductsCard()
+                    }
             }
         }
     }
 
     private fun hideShipmentTrackingAndProductsCard() {
-        // hide the shipment tracking section and the product list section if
-        // shipping labels are available for the order
-        _shippingLabels.value?.whenNotNullNorEmpty {
-            _productList.value = emptyList()
-            _shipmentTrackings.value = emptyList()
-            orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-        }
+        _productList.value = emptyList()
+        _shipmentTrackings.value = emptyList()
+        orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
     }
 
     @Parcelize
