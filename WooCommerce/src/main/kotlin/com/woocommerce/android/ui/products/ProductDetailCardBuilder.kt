@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCH
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -564,7 +565,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.linkedProducts(): ProductProperty? {
-        if (!hasLinkedProducts()) {
+        if (!hasLinkedProducts() || !FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
             return null
         }
 
@@ -583,7 +584,7 @@ class ProductDetailCardBuilder(
 
         return ComplexProperty(
             R.string.linked_products,
-            "$upsellDesc\n$crossSellDesc",
+            "$upsellDesc<br>$crossSellDesc",
             R.drawable.ic_gridicons_reblog,
             maxLines = 2
         ) {
