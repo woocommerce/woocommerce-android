@@ -67,7 +67,7 @@
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_sku"
-        tools:text="$30.00 ($15.00 x 2)" />
+        tools:text="Red, Medium • $15.00 x 2" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_lblTax"

@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
@@ -47,10 +48,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         }
 
         val productPrice = formatCurrencyForDisplay(item.price)
+        val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u25CF " } ?: StringUtils.EMPTY
 
         productInfo_attributes.text = context.getString(
-            R.string.orderdetail_product_lineitem_total_qty_and_price,
-            orderTotal, item.quantity.toString(), productPrice
+            R.string.orderdetail_product_lineitem_attributes,
+            attributes, item.quantity.toString(), productPrice
         )
 
         if (expanded) {
