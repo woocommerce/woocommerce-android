@@ -673,6 +673,7 @@
     <string name="cross_sells_label">Cross-sells</string>
     <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
     <string name="add_products_button">Add products</string>
+    <string name="edit_products_button">Edit products</string>
     <!--
         Product Add more details Bottom sheet
     -->

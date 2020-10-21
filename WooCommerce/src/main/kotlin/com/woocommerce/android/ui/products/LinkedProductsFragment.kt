@@ -13,7 +13,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
 import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_linked_products.*
@@ -65,10 +64,10 @@ class LinkedProductsFragment : BaseProductFragment() {
                 else -> event.isHandled = false
             }
         })
-        updateProductView(viewModel.getProduct())
+        updateProductView()
     }
 
-    private fun updateProductView(productData: ProductDetailViewState) {
+    private fun updateProductView() {
         if (!isAdded) return
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
@@ -81,10 +80,10 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             upsells_count.text = upsellDesc
             upsells_count.show()
-            add_upsell_products.hide()
+            add_upsell_products.text = getString(R.string.edit_products_button)
         } else {
             upsells_count.hide()
-            add_upsell_products.show()
+            add_upsell_products.text = getString(R.string.add_products_button)
         }
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
@@ -97,10 +96,10 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             cross_sells_count.text = crossSellDesc
             upsells_count.show()
-            add_cross_sell_products.hide()
+            add_cross_sell_products.text = getString(R.string.edit_products_button)
         } else {
             cross_sells_count.hide()
-            add_cross_sell_products.show()
+            add_cross_sell_products.text = getString(R.string.add_products_button)
         }
     }
 
