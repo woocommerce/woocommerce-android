@@ -12,7 +12,10 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
+import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
 import com.woocommerce.android.util.StringUtils
@@ -71,6 +74,9 @@ class LinkedProductsFragment : BaseProductFragment() {
     private fun updateProductView(productData: ProductDetailViewState) {
         if (!isAdded) return
 
+        val upsellListener = View.OnClickListener {
+            showGroupedProductFragment(UPSELLS)
+        }
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
         if (numUpsells > 0) {
             val upsellDesc = StringUtils.getQuantityString(
@@ -81,12 +87,17 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             upsells_count.text = upsellDesc
             upsells_count.show()
+            upsells_count.setOnClickListener(upsellListener)
             add_upsell_products.hide()
         } else {
             upsells_count.hide()
             add_upsell_products.show()
+            add_upsell_products.setOnClickListener(upsellListener)
         }
 
+        val crossSellListener = View.OnClickListener {
+            showGroupedProductFragment(CROSS_SELLS)
+        }
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
             val crossSellDesc = StringUtils.getQuantityString(
@@ -97,12 +108,28 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             cross_sells_count.text = crossSellDesc
             upsells_count.show()
+            upsells_count.setOnClickListener(crossSellListener)
             add_cross_sell_products.hide()
         } else {
             cross_sells_count.hide()
             add_cross_sell_products.show()
+            add_cross_sell_products.setOnClickListener(crossSellListener)
         }
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
+
+    private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
+        val productIds = when (groupedProductType) {
+            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
+            else -> viewModel.getProduct().productDraft?.crossSellProductIds
+        }
+
+        val action = GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
+            viewModel.getRemoteProductId(),
+            productIds?.joinToString(",") ?: "",
+            groupedProductType.ordinal
+        )
+        findNavController().navigateSafely(action)
+    }
 }

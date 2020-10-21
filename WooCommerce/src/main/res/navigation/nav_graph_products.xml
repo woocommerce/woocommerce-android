@@ -256,7 +256,7 @@
             app:argType="string" />
         <argument
             android:name="groupedProductType"
-            app:argType="Int"
+            app:argType="integer"
             android:defaultValue="0"/>
     </fragment>
     <fragment
