@@ -254,6 +254,10 @@
             android:name="groupedProductIds"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="groupedProductType"
+            app:argType="Int"
+            android:defaultValue="0"/>
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"

@@ -48,7 +48,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private var doneMenuItem: MenuItem? = null
 
-    override fun getFragmentTitle() = getString(R.string.grouped_products)
+    override fun getFragmentTitle() = resources.getString(viewModel.getGroupedProductListType().titleId)
 
     override fun onCreateView(
         inflater: LayoutInflater,
