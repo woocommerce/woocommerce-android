@@ -75,6 +75,7 @@ class LinkedProductsFragment : BaseProductFragment() {
             changesMade()
             updateProductView()
         }
+
         handleResult<List<Long>>(GroupedProductListFragment.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
             viewModel.updateProductDraft(crossSellProductIds = it)
             changesMade()
@@ -95,17 +96,11 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             upsells_count.text = upsellDesc
             upsells_count.show()
-            add_upsell_products.hide()
+            add_upsell_products.text = getString(R.string.edit_products_button)
         } else {
             upsells_count.hide()
-            add_upsell_products.show()
+            add_upsell_products.text = getString(R.string.add_products_button)
         }
-
-        val upsellListener = View.OnClickListener {
-            showGroupedProductFragment(UPSELLS)
-        }
-        upsells_count.setOnClickListener(upsellListener)
-        add_upsell_products.setOnClickListener(upsellListener)
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
@@ -117,17 +112,19 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             cross_sells_count.text = crossSellDesc
             upsells_count.show()
-            add_cross_sell_products.hide()
+            add_cross_sell_products.text = getString(R.string.edit_products_button)
         } else {
             cross_sells_count.hide()
-            add_cross_sell_products.show()
+            add_cross_sell_products.text = getString(R.string.add_products_button)
         }
 
-        val crossSellListener = View.OnClickListener {
+        add_upsell_products.setOnClickListener {
+            showGroupedProductFragment(UPSELLS)
+        }
+
+        add_cross_sell_products.setOnClickListener {
             showGroupedProductFragment(CROSS_SELLS)
         }
-        add_cross_sell_products.setOnClickListener(crossSellListener)
-        cross_sells_count.setOnClickListener(crossSellListener)
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
