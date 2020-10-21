@@ -47,7 +47,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(viewModel::onGroupedProductDeleted)
+        GroupedProductListAdapter(viewModel::onProductDeleted)
     }
 
     private var doneMenuItem: MenuItem? = null
@@ -154,7 +154,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private fun setupResultHandlers() {
         handleResult<List<Long>>(ProductSelectionListFragment.KEY_SELECTED_PRODUCT_IDS_RESULT) {
-            viewModel.onGroupedProductsAdded(it)
+            viewModel.onProductsAdded(it)
         }
     }
 

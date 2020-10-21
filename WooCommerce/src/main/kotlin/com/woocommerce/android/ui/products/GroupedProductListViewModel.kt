@@ -34,8 +34,8 @@ class GroupedProductListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
-    private val originalGroupedProductIds =
-        navArgs.groupedProductIds
+    private val originalProductIds =
+        navArgs.productIds
             .takeIf { it.isNotEmpty() }
             ?.split(",")
             ?.mapNotNull { it.toLongOrNull() }
@@ -45,14 +45,14 @@ class GroupedProductListViewModel @AssistedInject constructor(
     val productList: LiveData<List<Product>> = _productList
 
     final val productListViewStateData =
-        LiveDataDelegate(savedState, GroupedProductListViewState(originalGroupedProductIds))
+        LiveDataDelegate(savedState, GroupedProductListViewState(originalProductIds))
     private var productListViewState by productListViewStateData
 
-    private val selectedGroupedProductIds
-        get() = productListViewState.selectedGroupedProductIds
+    private val selectedProductIds
+        get() = productListViewState.selectedProductIds
 
     val hasChanges: Boolean
-        get() = selectedGroupedProductIds != originalGroupedProductIds
+        get() = selectedProductIds != originalProductIds
 
     override fun onCleared() {
         super.onCleared()
@@ -61,7 +61,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     init {
         if (_productList.value == null) {
-            loadGroupedProducts()
+            loadProducts()
         }
     }
 
@@ -73,27 +73,29 @@ class GroupedProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun onGroupedProductsAdded(selectedProductIds: List<Long>) {
+    fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products
-        val uniqueSelectedProductIds = selectedProductIds.minus(selectedGroupedProductIds)
+        val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
+        // TODO handle linked products
         productListViewState = productListViewState.copy(
-            selectedGroupedProductIds = selectedGroupedProductIds + uniqueSelectedProductIds
+            selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED)
-        updateGroupedProductList()
+        updateProductList()
     }
 
-    fun onGroupedProductDeleted(product: Product) {
+    fun onProductDeleted(product: Product) {
+        // TODO handle linked products
         productListViewState = productListViewState.copy(
-            selectedGroupedProductIds = selectedGroupedProductIds - product.remoteId
+            selectedProductIds = selectedProductIds - product.remoteId
         )
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED)
-        updateGroupedProductList()
+        updateProductList()
     }
 
-    private fun updateGroupedProductList() {
-        _productList.value = if (selectedGroupedProductIds.isNotEmpty()) {
-            groupedProductListRepository.getGroupedProductList(selectedGroupedProductIds)
+    private fun updateProductList() {
+        _productList.value = if (selectedProductIds.isNotEmpty()) {
+            groupedProductListRepository.getProductList(selectedProductIds)
         } else emptyList()
         productListViewState = productListViewState.copy(isDoneButtonVisible = hasChanges)
     }
@@ -107,7 +109,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED, mapOf(
             AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges
         ))
-        triggerEvent(ExitWithResult(selectedGroupedProductIds))
+        triggerEvent(ExitWithResult(selectedProductIds))
     }
 
     fun onBackButtonClicked(): Boolean {
@@ -124,13 +126,13 @@ class GroupedProductListViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadGroupedProducts(loadMore: Boolean = false) {
-        if (selectedGroupedProductIds.isEmpty()) {
+    private fun loadProducts(loadMore: Boolean = false) {
+        if (selectedProductIds.isEmpty()) {
             _productList.value = emptyList()
             productListViewState = productListViewState.copy(isSkeletonShown = false)
         } else {
-            val productsInDb = groupedProductListRepository.getGroupedProductList(
-                selectedGroupedProductIds
+            val productsInDb = groupedProductListRepository.getProductList(
+                selectedProductIds
             )
             if (productsInDb.isNotEmpty()) {
                 _productList.value = productsInDb
@@ -139,16 +141,16 @@ class GroupedProductListViewModel @AssistedInject constructor(
                 productListViewState = productListViewState.copy(isSkeletonShown = true)
             }
 
-            launch { fetchGroupedProducts(selectedGroupedProductIds, loadMore = loadMore) }
+            launch { fetchProducts(selectedProductIds, loadMore = loadMore) }
         }
     }
 
-    private suspend fun fetchGroupedProducts(
+    private suspend fun fetchProducts(
         groupedProductIds: List<Long>,
         loadMore: Boolean
     ) {
         if (networkStatus.isConnected()) {
-            _productList.value = groupedProductListRepository.fetchGroupedProductList(
+            _productList.value = groupedProductListRepository.fetchProductList(
                 groupedProductIds, loadMore
             )
         } else {
@@ -164,7 +166,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class GroupedProductListViewState(
-        val selectedGroupedProductIds: List<Long>,
+        val selectedProductIds: List<Long>,
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isDoneButtonVisible: Boolean? = null

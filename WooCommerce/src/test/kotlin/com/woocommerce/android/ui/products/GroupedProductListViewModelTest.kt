@@ -36,7 +36,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
             null,
             GroupedProductListFragmentArgs(
                 remoteProductId = PRODUCT_REMOTE_ID,
-                groupedProductIds = GROUPED_PRODUCT_IDS
+                productIds = GROUPED_PRODUCT_IDS
             )
         )
     )
@@ -68,7 +68,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the grouped product list view correctly`() = test {
-        doReturn(productList).whenever(productRepository).fetchGroupedProductList(groupedProductIds)
+        doReturn(productList).whenever(productRepository).fetchProductList(groupedProductIds)
 
         createViewModel()
 
@@ -94,9 +94,9 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         var productData: GroupedProductListViewState? = null
         viewModel.productListViewStateData.observeForever { _, new -> productData = new }
 
-        viewModel.onGroupedProductDeleted(productList.last())
+        viewModel.onProductDeleted(productList.last())
 
-        assertThat(groupedProductIds.size - 1).isEqualTo(productData?.selectedGroupedProductIds?.size)
+        assertThat(groupedProductIds.size - 1).isEqualTo(productData?.selectedProductIds?.size)
         assertThat(viewModel.hasChanges).isEqualTo(true)
         assertThat(isDoneButtonDisplayed).containsExactly(true)
     }
@@ -115,9 +115,9 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         viewModel.productListViewStateData.observeForever { _, new -> productData = new }
 
         val listAdded = listOf<Long>(6, 7, 8)
-        viewModel.onGroupedProductsAdded(listAdded)
+        viewModel.onProductsAdded(listAdded)
 
-        assertThat(groupedProductIds.size + listAdded.size).isEqualTo(productData?.selectedGroupedProductIds?.size)
+        assertThat(groupedProductIds.size + listAdded.size).isEqualTo(productData?.selectedProductIds?.size)
         assertThat(viewModel.hasChanges).isEqualTo(true)
         assertThat(isDoneButtonDisplayed).containsExactly(true)
     }
@@ -132,12 +132,12 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         var event: Event? = null
         viewModel.event.observeForever { new -> event = new }
 
-        viewModel.onGroupedProductDeleted(productList.last())
+        viewModel.onProductDeleted(productList.last())
         viewModel.onDoneButtonClicked()
 
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
         assertThat(((event as ExitWithResult<*>).data as List<*>).size).isEqualTo(
-            productData?.selectedGroupedProductIds?.size
+            productData?.selectedProductIds?.size
         )
     }
 }

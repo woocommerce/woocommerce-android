@@ -251,7 +251,7 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="groupedProductIds"
+            android:name="productIds"
             android:defaultValue='""'
             app:argType="string" />
         <argument
