@@ -81,8 +81,10 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             upsells_count.text = upsellDesc
             upsells_count.show()
+            add_upsell_products.hide()
         } else {
             upsells_count.hide()
+            add_upsell_products.show()
         }
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
@@ -95,8 +97,10 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             cross_sells_count.text = crossSellDesc
             upsells_count.show()
+            add_cross_sell_products.hide()
         } else {
             cross_sells_count.hide()
+            add_cross_sell_products.show()
         }
     }
 
