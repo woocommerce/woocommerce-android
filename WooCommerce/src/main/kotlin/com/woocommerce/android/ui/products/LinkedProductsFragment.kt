@@ -11,12 +11,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
 import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
 import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_linked_products.*
@@ -59,6 +59,7 @@ class LinkedProductsFragment : BaseProductFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        updateProductView()
     }
 
     private fun setupObservers() {
@@ -68,10 +69,20 @@ class LinkedProductsFragment : BaseProductFragment() {
                 else -> event.isHandled = false
             }
         })
-        updateProductView(viewModel.getProduct())
+
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_UPSELL_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(upsellProductIds = it)
+            changesMade()
+            updateProductView()
+        }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(crossSellProductIds = it)
+            changesMade()
+            updateProductView()
+        }
     }
 
-    private fun updateProductView(productData: ProductDetailViewState) {
+    private fun updateProductView() {
         if (!isAdded) return
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
@@ -106,7 +117,6 @@ class LinkedProductsFragment : BaseProductFragment() {
             )
             cross_sells_count.text = crossSellDesc
             upsells_count.show()
-
             add_cross_sell_products.hide()
         } else {
             cross_sells_count.hide()
@@ -117,7 +127,7 @@ class LinkedProductsFragment : BaseProductFragment() {
             showGroupedProductFragment(CROSS_SELLS)
         }
         add_cross_sell_products.setOnClickListener(crossSellListener)
-        upsells_count.setOnClickListener(crossSellListener)
+        cross_sells_count.setOnClickListener(crossSellListener)
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
