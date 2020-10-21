@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -34,8 +34,8 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_quantity"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_quantity"
+        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_total"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="Candle" />
 
@@ -45,13 +45,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_quantity"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="T3124"
         tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_quantity"
+        android:id="@+id/productInfo_total"
         style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_quantity"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_sku"
         tools:text="$30.00 ($15.00 x 2)" />
@@ -88,10 +88,10 @@
         android:layout_marginStart="@dimen/minor_50"
         android:layout_marginEnd="@dimen/minor_50"
         app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_quantity"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_totalPaid"
         tools:text="$0.75"
         tools:visibility="visible" />
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

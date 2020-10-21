@@ -33,7 +33,9 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val numberFormatter = NumberFormat.getNumberInstance().apply {
             maximumFractionDigits = 2
         }
-        productInfo_quantity.text = numberFormatter.format(item.quantity)
+
+        val orderTotal = formatCurrencyForDisplay(item.total)
+        productInfo_total.text = orderTotal
 
         // Modify views for expanded or collapsed mode
         productInfo_totalTax.isVisible = expanded
@@ -49,7 +51,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             productInfo_sku.text = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
         }
 
-        val orderTotal = formatCurrencyForDisplay(item.total)
         val productPrice = formatCurrencyForDisplay(item.price)
 
         productInfo_totalPaid.text = context.getString(
