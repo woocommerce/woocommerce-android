@@ -72,6 +72,8 @@ data class Product(
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
     val groupedProductIds: List<Long>,
+    val crossSellProductIds: List<Long>,
+    val upsellProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -136,7 +138,9 @@ data class Product(
             images.areSameImagesAs(product.images) &&
             isSameCategories(product.categories) &&
             isSameTags(product.tags) &&
-            groupedProductIds == product.groupedProductIds
+            groupedProductIds == product.groupedProductIds &&
+            crossSellProductIds == product.crossSellProductIds &&
+            upsellProductIds == product.upsellProductIds
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -197,6 +201,8 @@ data class Product(
             !isSameTags(it.tags)
         } ?: false
     }
+
+    fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -280,7 +286,9 @@ data class Product(
                 categories = updatedProduct.categories,
                 tags = updatedProduct.tags,
                 type = updatedProduct.type,
-                groupedProductIds = updatedProduct.groupedProductIds
+                groupedProductIds = updatedProduct.groupedProductIds,
+                crossSellProductIds = updatedProduct.crossSellProductIds,
+                upsellProductIds = updatedProduct.upsellProductIds
             )
         } ?: this.copy()
     }
@@ -371,6 +379,16 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             prefix = "[",
             postfix = "]"
         )
+        it.crossSellIds = crossSellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
+        it.upsellIds = upsellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
     }
 }
 
@@ -453,7 +471,9 @@ fun WCProductModel.toAppModel(): Product {
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIdList()
+        groupedProductIds = this.getGroupedProductIdList(),
+        crossSellProductIds = this.getCrossSellProductIdList(),
+        upsellProductIds = this.getUpsellProductIdList()
     )
 }
 
