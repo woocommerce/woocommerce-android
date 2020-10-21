@@ -60,7 +60,7 @@
         tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_totalPaid"
+        android:id="@+id/productInfo_attributes"
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_product_lineitem_tax"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_totalPaid"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
         tools:text="Tax:"
         tools:visibility="visible" />
 
@@ -91,7 +91,7 @@
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_totalPaid"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
         tools:text="$0.75"
         tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

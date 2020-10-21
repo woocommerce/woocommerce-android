@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Order
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(
     ctx: Context,
@@ -29,10 +28,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         productInfo_name.text = item.name
-
-        val numberFormatter = NumberFormat.getNumberInstance().apply {
-            maximumFractionDigits = 2
-        }
 
         val orderTotal = formatCurrencyForDisplay(item.total)
         productInfo_total.text = orderTotal
@@ -53,7 +48,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
         val productPrice = formatCurrencyForDisplay(item.price)
 
-        productInfo_totalPaid.text = context.getString(
+        productInfo_attributes.text = context.getString(
             R.string.orderdetail_product_lineitem_total_qty_and_price,
             orderTotal, item.quantity.toString(), productPrice
         )
