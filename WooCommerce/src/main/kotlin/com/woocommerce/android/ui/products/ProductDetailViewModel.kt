@@ -574,7 +574,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
         type: String? = null,
-        groupedProductIds: List<Long>? = null
+        groupedProductIds: List<Long>? = null,
+        upsellProductIds: List<Long>? = null,
+        crossSellProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -614,6 +616,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     tags = tags ?: product.tags,
                     type = type ?: product.type,
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt

@@ -131,6 +131,14 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_UPSELL_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(upsellProductIds = it)
+            changesMade()
+        }
+        handleResult<List<Long>>(GroupedProductListFragment.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
+            viewModel.updateProductDraft(crossSellProductIds = it)
+            changesMade()
+        }
         handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 regularPrice = it.regularPrice,
