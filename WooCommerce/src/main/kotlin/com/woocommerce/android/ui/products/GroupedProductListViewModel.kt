@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.products
 
 import android.content.DialogInterface
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -15,9 +13,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListType.GROUPED
-import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -46,12 +41,6 @@ class GroupedProductListViewModel @AssistedInject constructor(
             ?.mapNotNull { it.toLongOrNull() }
             .orEmpty()
 
-    enum class GroupedProductListType(@StringRes val titleId: Int) {
-        GROUPED(R.string.grouped_products),
-        UPSELLS(R.string.upsells_label),
-        CROSS_SELLS(R.string.cross_sells_label);
-    }
-
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
 
@@ -78,9 +67,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun getGroupedProductListType(): GroupedProductListType {
         return when(navArgs.groupedProductType) {
-            UPSELLS.ordinal -> UPSELLS
-            CROSS_SELLS.ordinal -> CROSS_SELLS
-            else -> GROUPED
+            GroupedProductListType.UPSELLS.ordinal -> GroupedProductListType.UPSELLS
+            GroupedProductListType.CROSS_SELLS.ordinal -> GroupedProductListType.CROSS_SELLS
+            else -> GroupedProductListType.GROUPED
         }
     }
 
