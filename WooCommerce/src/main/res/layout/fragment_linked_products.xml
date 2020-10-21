@@ -23,6 +23,7 @@
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:paddingEnd="@dimen/major_100"
                 app:srcCompat="@drawable/ic_gridicons_arrow_up" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -73,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
+                android:paddingEnd="@dimen/major_100"
                 android:importantForAccessibility="no"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/add_upsell_products"
