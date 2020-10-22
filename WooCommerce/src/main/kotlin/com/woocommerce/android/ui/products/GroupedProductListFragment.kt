@@ -145,7 +145,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     }
 
     private fun getKeyForGroupedProductListType(): String {
-        return when(viewModel.getGroupedProductListType()) {
+        return when (viewModel.getGroupedProductListType()) {
             UPSELLS -> KEY_UPSELL_PRODUCT_IDS_RESULT
             CROSS_SELLS -> KEY_CROSS_SELL_PRODUCT_IDS_RESULT
             else -> KEY_GROUPED_PRODUCT_IDS_RESULT
