@@ -171,6 +171,24 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val order = order.copy(items = emptyList())
+            doReturn(order).whenever(repository).getOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+
+            viewModel.start()
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+        }
+
+    @Test
     fun `Do not display product list when all products are refunded`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
