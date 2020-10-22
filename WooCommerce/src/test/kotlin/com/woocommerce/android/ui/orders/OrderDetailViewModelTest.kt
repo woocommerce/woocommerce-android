@@ -183,7 +183,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
-
             viewModel.start()
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
         }
