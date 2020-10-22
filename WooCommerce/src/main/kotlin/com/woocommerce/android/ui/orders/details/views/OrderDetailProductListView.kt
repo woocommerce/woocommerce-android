@@ -67,8 +67,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     fun notifyProductChanged(remoteProductId: Long) {
-        with(productList_products.adapter as OrderDetailProductListAdapter) {
-            this.notifyProductChanged(remoteProductId)
+        with(productList_products.adapter as? OrderDetailProductListAdapter) {
+            this?.notifyProductChanged(remoteProductId)
         }
     }
 
