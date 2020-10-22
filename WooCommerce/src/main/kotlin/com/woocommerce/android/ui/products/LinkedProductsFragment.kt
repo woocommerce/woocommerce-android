@@ -111,7 +111,7 @@ class LinkedProductsFragment : BaseProductFragment() {
                 one = R.string.products_single
             )
             cross_sells_count.text = crossSellDesc
-            upsells_count.show()
+            cross_sells_count.show()
             add_cross_sell_products.text = getString(R.string.edit_products_button)
         } else {
             cross_sells_count.hide()
