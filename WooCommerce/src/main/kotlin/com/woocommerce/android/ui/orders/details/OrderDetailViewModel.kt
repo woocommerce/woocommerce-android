@@ -122,8 +122,10 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun hasVirtualProductsOnly(): Boolean {
         return orderDetailViewState.order?.items?.let { lineItems ->
-            val remoteProductIds = lineItems.map { it.productId }
-            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+            if (lineItems.isNotEmpty()) {
+                val remoteProductIds = lineItems.map { it.productId }
+                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+            } else false
         } ?: false
     }
 
@@ -420,22 +422,30 @@ class OrderDetailViewModel @AssistedInject constructor(
     private fun loadOrderShippingLabels() {
         order?.let { order ->
             orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
-                .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
+                .whenNotNullNorEmpty {
+                    _shippingLabels.value = it.loadProducts(order.items)
+                    hideShipmentTrackingAndProductsCard()
+                }
 
             launch {
-                _shippingLabels.value = orderDetailRepository
+                orderDetailRepository
                     .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
                     .loadProducts(order.items)
+                    .whenNotNullNorEmpty {
+                        _shippingLabels.value = it
+
+                        // hide the shipment tracking section and the product list section if
+                        // shipping labels are available for the order
+                        hideShipmentTrackingAndProductsCard()
+                    }
             }
         }
+    }
 
-        // hide the shipment tracking section and the product list section if
-        // shipping labels are available for the order
-        _shippingLabels.value?.whenNotNullNorEmpty {
-            _productList.value = emptyList()
-            _shipmentTrackings.value = emptyList()
-            orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-        }
+    private fun hideShipmentTrackingAndProductsCard() {
+        _productList.value = emptyList()
+        _shipmentTrackings.value = emptyList()
+        orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
     }
 
     @SuppressWarnings("unused")
