@@ -72,13 +72,7 @@ class LinkedProductsFragment : BaseProductFragment() {
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
         if (numUpsells > 0) {
-            val upsellDesc = StringUtils.getQuantityString(
-                resourceProvider = viewModel.getResources(),
-                quantity = numUpsells,
-                default = R.string.products_count,
-                one = R.string.products_single
-            )
-            upsells_count.text = upsellDesc
+            upsells_count.text = resources.getQuantityString(R.plurals.product_count, numUpsells, numUpsells)
             upsells_count.show()
             add_upsell_products.text = getString(R.string.edit_products_button)
         } else {
@@ -88,13 +82,7 @@ class LinkedProductsFragment : BaseProductFragment() {
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
-            val crossSellDesc = StringUtils.getQuantityString(
-                resourceProvider = viewModel.getResources(),
-                quantity = numCrossSells,
-                default = R.string.products_count,
-                one = R.string.products_single
-            )
-            cross_sells_count.text = crossSellDesc
+            cross_sells_count.text = resources.getQuantityString(R.plurals.product_count, numCrossSells, numCrossSells)
             upsells_count.show()
             add_cross_sell_products.text = getString(R.string.edit_products_button)
         } else {

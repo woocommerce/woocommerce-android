@@ -301,8 +301,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         } ?: false
     }
 
-    fun getResources() = resources
-
     /**
      * Called when the DONE menu button is clicked in all of the product sub detail screen
      */
