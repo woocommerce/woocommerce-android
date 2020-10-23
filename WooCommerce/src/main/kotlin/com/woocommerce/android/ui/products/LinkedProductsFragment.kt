@@ -11,14 +11,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_linked_products.*
 import org.wordpress.android.util.ActivityUtils
 
@@ -59,7 +54,6 @@ class LinkedProductsFragment : BaseProductFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-        updateProductView()
     }
 
     private fun setupObservers() {
@@ -69,18 +63,7 @@ class LinkedProductsFragment : BaseProductFragment() {
                 else -> event.isHandled = false
             }
         })
-
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_UPSELL_PRODUCT_IDS_RESULT) {
-            viewModel.updateProductDraft(upsellProductIds = it)
-            changesMade()
-            updateProductView()
-        }
-
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
-            viewModel.updateProductDraft(crossSellProductIds = it)
-            changesMade()
-            updateProductView()
-        }
+        updateProductView()
     }
 
     private fun updateProductView() {
@@ -88,13 +71,7 @@ class LinkedProductsFragment : BaseProductFragment() {
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
         if (numUpsells > 0) {
-            val upsellDesc = StringUtils.getQuantityString(
-                resourceProvider = viewModel.getResources(),
-                quantity = numUpsells,
-                default = R.string.products_count,
-                one = R.string.products_single
-            )
-            upsells_count.text = upsellDesc
+            upsells_count.text = resources.getQuantityString(R.plurals.product_count, numUpsells, numUpsells)
             upsells_count.show()
             add_upsell_products.text = getString(R.string.edit_products_button)
         } else {
@@ -104,42 +81,14 @@ class LinkedProductsFragment : BaseProductFragment() {
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
-            val crossSellDesc = StringUtils.getQuantityString(
-                resourceProvider = viewModel.getResources(),
-                quantity = numCrossSells,
-                default = R.string.products_count,
-                one = R.string.products_single
-            )
-            cross_sells_count.text = crossSellDesc
-            cross_sells_count.show()
+            cross_sells_count.text = resources.getQuantityString(R.plurals.product_count, numCrossSells, numCrossSells)
+            upsells_count.show()
             add_cross_sell_products.text = getString(R.string.edit_products_button)
         } else {
             cross_sells_count.hide()
             add_cross_sell_products.text = getString(R.string.add_products_button)
         }
-
-        add_upsell_products.setOnClickListener {
-            showGroupedProductFragment(UPSELLS)
-        }
-
-        add_cross_sell_products.setOnClickListener {
-            showGroupedProductFragment(CROSS_SELLS)
-        }
     }
 
     override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
-
-    private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
-        val productIds = when (groupedProductType) {
-            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
-            else -> viewModel.getProduct().productDraft?.crossSellProductIds
-        }
-
-        val action = GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
-            viewModel.getRemoteProductId(),
-            productIds?.joinToString(",") ?: "",
-            groupedProductType.ordinal
-        )
-        findNavController().navigateSafely(action)
-    }
 }
