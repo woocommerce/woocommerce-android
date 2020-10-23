@@ -14,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.fragment_linked_products.*
 import org.wordpress.android.util.ActivityUtils
 
