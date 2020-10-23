@@ -11,9 +11,11 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
         get() = "$untaggedUrl?$platformTag$milestoneTag"
 
     private val milestoneTag
-        get() = milestone?.let {
-            "&milestone=$it"
-        } ?: ""
+            get() = when(this) {
+                PRODUCT -> "&product_milestone=$milestone"
+                SHIPPING_LABELS -> "&shipping_label_milestone=$milestone"
+                else -> ""
+            }
 
     private val platformTag = "woo-mobile-platform=android"
 }
