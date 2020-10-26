@@ -255,7 +255,7 @@
             android:defaultValue='""'
             app:argType="string" />
         <argument
-            android:name="groupedProductType"
+            android:name="groupedProductListType"
             app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
     </fragment>
     <fragment
@@ -267,7 +267,7 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="groupedProductType"
+            android:name="groupedProductListType"
             app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
     </fragment>
     <fragment

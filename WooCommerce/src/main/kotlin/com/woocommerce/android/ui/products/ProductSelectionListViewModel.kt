@@ -122,7 +122,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         productIds.add(navArgs.remoteProductId)
 
         productRepository.getProduct(navArgs.remoteProductId)?.let { product ->
-            when (navArgs.groupedProductType) {
+            when (navArgs.groupedProductListType) {
                 GROUPED -> productIds.addAll(product.getGroupedProductIdList())
                 UPSELLS -> productIds.addAll(product.getUpsellProductIdList())
                 CROSS_SELLS -> productIds.addAll(product.getCrossSellProductIdList())
