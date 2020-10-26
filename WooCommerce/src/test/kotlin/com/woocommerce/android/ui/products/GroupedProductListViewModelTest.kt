@@ -36,7 +36,8 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
             null,
             GroupedProductListFragmentArgs(
                 remoteProductId = PRODUCT_REMOTE_ID,
-                productIds = GROUPED_PRODUCT_IDS
+                productIds = GROUPED_PRODUCT_IDS,
+                groupedProductListType = GroupedProductListType.GROUPED
             )
         )
     )
