@@ -67,8 +67,8 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun getGroupedProductListType(): GroupedProductListType {
         return when (navArgs.groupedProductType) {
-            GroupedProductListType.UPSELLS.ordinal -> GroupedProductListType.UPSELLS
-            GroupedProductListType.CROSS_SELLS.ordinal -> GroupedProductListType.CROSS_SELLS
+            GroupedProductListType.UPSELLS -> GroupedProductListType.UPSELLS
+            GroupedProductListType.CROSS_SELLS -> GroupedProductListType.CROSS_SELLS
             else -> GroupedProductListType.GROUPED
         }
     }
@@ -102,7 +102,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onAddProductButtonClicked() {
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED)
-        triggerEvent(ViewProductSelectionList(navArgs.remoteProductId))
+        triggerEvent(ViewProductSelectionList(navArgs.remoteProductId, navArgs.groupedProductType))
     }
 
     fun onDoneButtonClicked() {

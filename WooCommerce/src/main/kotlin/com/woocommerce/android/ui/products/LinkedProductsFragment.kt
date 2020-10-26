@@ -125,7 +125,7 @@ class LinkedProductsFragment : BaseProductFragment() {
         val action = GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
             viewModel.getRemoteProductId(),
             productIds?.joinToString(",") ?: "",
-            groupedProductType.ordinal
+            groupedProductType
         )
         findNavController().navigateSafely(action)
     }
