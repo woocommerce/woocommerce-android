@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/major_100">
+
+        <!-- Upsells -->
+        <ImageView
+            android:id="@+id/upsells_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:paddingEnd="@dimen/major_100"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_gridicons_arrow_up" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/upsells_label"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="@string/upsells_label"
+            app:layout_constraintStart_toEndOf="@+id/upsells_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/upsells_desc"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:text="@string/upsells_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/upsells_icon"
+            app:layout_constraintTop_toBottomOf="@+id/upsells_label" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/upsells_count"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            app:layout_constraintStart_toEndOf="@id/upsells_icon"
+            app:layout_constraintTop_toBottomOf="@+id/upsells_desc"
+            tools:text="2 upsells" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_upsell_products"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/add_products_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/upsells_label"
+            app:layout_constraintTop_toBottomOf="@+id/upsells_count" />
+
+        <!-- Cross-sells -->
+        <ImageView
+            android:id="@+id/cross_sells_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:importantForAccessibility="no"
+            android:paddingEnd="@dimen/major_100"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_upsell_products"
+            app:srcCompat="@drawable/ic_gridicons_sync" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cross_sells_label"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="@string/cross_sells_label"
+            app:layout_constraintStart_toEndOf="@+id/cross_sells_icon"
+            app:layout_constraintTop_toTopOf="@+id/cross_sells_icon" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cross_sells_desc"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:text="@string/cross_sells_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cross_sells_icon"
+            app:layout_constraintTop_toBottomOf="@+id/cross_sells_label" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cross_sells_count"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            app:layout_constraintStart_toEndOf="@id/cross_sells_icon"
+            app:layout_constraintTop_toBottomOf="@+id/cross_sells_desc"
+            tools:text="2 cross-sells" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_cross_sell_products"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/add_products_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/cross_sells_label"
+            app:layout_constraintTop_toBottomOf="@+id/cross_sells_count" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
+

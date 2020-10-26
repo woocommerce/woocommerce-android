@@ -541,12 +541,7 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getQuantityString(
-                resourceProvider = resources,
-                quantity = groupedProductsSize,
-                default = R.string.grouped_products_count,
-                one = R.string.grouped_products_single
-            )
+            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
         } else {
             resources.getString(R.string.grouped_product_empty)
         }
@@ -569,17 +564,15 @@ class ProductDetailCardBuilder(
             return null
         }
 
-        val upsellDesc = StringUtils.getQuantityString(
-            resourceProvider = resources,
-            quantity = this.upsellProductIds.size,
-            default = R.string.upsell_products_count,
-            one = R.string.upsell_products_single
+        val upsellDesc = StringUtils.getPluralString(
+            resources,
+            this.upsellProductIds.size,
+            R.plurals.upsell_product_count
         )
-        val crossSellDesc = StringUtils.getQuantityString(
-            resourceProvider = resources,
-            quantity = this.crossSellProductIds.size,
-            default = R.string.cross_sell_products_count,
-            one = R.string.cross_sell_products_single
+        val crossSellDesc = StringUtils.getPluralString(
+            resources,
+            this.crossSellProductIds.size,
+            R.plurals.cross_sell_product_count
         )
 
         return ComplexProperty(
@@ -589,11 +582,7 @@ class ProductDetailCardBuilder(
             maxLines = 2
         ) {
             viewModel.onEditProductCardClicked(
-                ViewLinkedProducts(
-                    this.remoteId,
-                    this.crossSellProductIds.joinToString(","),
-                    this.upsellProductIds.joinToString(",")
-                ),
+                ViewLinkedProducts(this.remoteId),
                 Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }

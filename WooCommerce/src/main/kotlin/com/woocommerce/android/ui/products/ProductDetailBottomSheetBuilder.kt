@@ -148,12 +148,7 @@ class ProductDetailBottomSheetBuilder(
         return if (!hasLinkedProducts() && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.LINKED_PRODUCTS,
-                // TODO implement ViewLinkedProducts
-                ViewLinkedProducts(
-                    remoteId,
-                    crossSellIds = crossSellProductIds.joinToString(","),
-                    upsellIds = upsellProductIds.joinToString(",")
-                ),
+                ViewLinkedProducts(remoteId),
                 Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         } else {
