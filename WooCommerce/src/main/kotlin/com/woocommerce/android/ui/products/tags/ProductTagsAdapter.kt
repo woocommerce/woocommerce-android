@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -19,6 +20,8 @@ class ProductTagsAdapter(
     private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
     private val productTags = ArrayList<ProductTag>()
+    private val filteredTags = ArrayList<ProductTag>()
+    private var currentFilter: String = ""
 
     init {
         setHasStableIds(true)
@@ -29,9 +32,13 @@ class ProductTagsAdapter(
         fun onProductTagRemoved(productTag: ProductTag)
     }
 
-    override fun getItemId(position: Int) = productTags[position].remoteTagId
+    override fun getItemId(position: Int): Long {
+        return if (hasFilter()) filteredTags[position].remoteTagId else productTags[position].remoteTagId
+    }
 
-    override fun getItemCount() = productTags.size
+    override fun getItemCount(): Int {
+        return if (hasFilter()) filteredTags.size else productTags.size
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
@@ -41,10 +48,18 @@ class ProductTagsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        val productTag = productTags[position]
+        val productTag = if (hasFilter()) filteredTags[position] else productTags[position]
 
         holder.apply {
-            txtTagName.text = productTag.name
+            if (hasFilter() && productTag.name.contains(currentFilter, ignoreCase = true)) {
+                val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
+                val sb = StringBuilder(productTag.name)
+                sb.insert(start, "<b>")
+                sb.insert(start + currentFilter.length + 3, "</b>")
+                txtTagName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+            } else {
+                txtTagName.text = productTag.name
+            }
             itemView.setOnClickListener { clickListener.onProductTagAdded(productTag) }
         }
 
@@ -54,6 +69,9 @@ class ProductTagsAdapter(
     }
 
     fun setProductTags(productsTags: List<ProductTag>) {
+        currentFilter = ""
+        filteredTags.clear()
+
         if (this.productTags.isEmpty()) {
             this.productTags.addAll(productsTags)
             notifyDataSetChanged()
@@ -64,6 +82,25 @@ class ProductTagsAdapter(
             this.productTags.addAll(productsTags)
             diffResult.dispatchUpdatesTo(this)
         }
+    }
+
+    private fun hasFilter() = currentFilter.isNotEmpty()
+
+    fun setFilter(filter: String) {
+        currentFilter = filter
+        filteredTags.clear()
+
+        if (currentFilter.isEmpty()) {
+            filteredTags.addAll(productTags)
+        } else {
+            for (tag in productTags) {
+                if (tag.name.contains(currentFilter, ignoreCase = true)) {
+                    filteredTags.add(tag)
+                }
+            }
+        }
+
+        notifyDataSetChanged()
     }
 
     class ProductTagViewHolder(view: View) : RecyclerView.ViewHolder(view) {
