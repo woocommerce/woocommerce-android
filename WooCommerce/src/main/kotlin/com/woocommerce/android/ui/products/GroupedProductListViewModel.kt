@@ -65,13 +65,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun getGroupedProductListType(): GroupedProductListType {
-        return when (navArgs.groupedProductListType) {
-            GroupedProductListType.UPSELLS -> GroupedProductListType.UPSELLS
-            GroupedProductListType.CROSS_SELLS -> GroupedProductListType.CROSS_SELLS
-            GroupedProductListType.GROUPED -> GroupedProductListType.GROUPED
-        }
-    }
+    fun getGroupedProductListType() = navArgs.groupedProductListType
 
     fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products
