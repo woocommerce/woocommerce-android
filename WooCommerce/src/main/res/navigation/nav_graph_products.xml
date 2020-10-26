@@ -255,9 +255,8 @@
             android:defaultValue='""'
             app:argType="string" />
         <argument
-            android:name="groupedProductType"
-            app:argType="integer"
-            android:defaultValue="0"/>
+            android:name="groupedProductListType"
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"

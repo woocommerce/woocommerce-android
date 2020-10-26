@@ -66,10 +66,10 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun getGroupedProductListType(): GroupedProductListType {
-        return when (navArgs.groupedProductType) {
-            GroupedProductListType.UPSELLS.ordinal -> GroupedProductListType.UPSELLS
-            GroupedProductListType.CROSS_SELLS.ordinal -> GroupedProductListType.CROSS_SELLS
-            else -> GroupedProductListType.GROUPED
+        return when (navArgs.groupedProductListType) {
+            GroupedProductListType.UPSELLS -> GroupedProductListType.UPSELLS
+            GroupedProductListType.CROSS_SELLS -> GroupedProductListType.CROSS_SELLS
+            GroupedProductListType.GROUPED -> GroupedProductListType.GROUPED
         }
     }
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
@@ -220,7 +221,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds)
+                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds, GROUPED)
                 fragment.findNavController().navigateSafely(action)
             }
 
