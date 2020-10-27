@@ -1212,6 +1212,25 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun setProductTagFilter(filter: String) {
+        val filteredTags = ArrayList<ProductTag>()
+        viewState.productDraft?.tags?.let { tags ->
+            if (filter.isEmpty()) {
+                filteredTags.addAll(tags)
+            } else {
+                for (tag in tags) {
+                    if (tag.name.contains(filter, ignoreCase = true)) {
+                        filteredTags.add(tag)
+                    }
+                }
+            }
+        }
+        productTagsViewState = productTagsViewState.copy(
+            currentFilter = filter
+        )
+        _productTags.value = filteredTags
+    }
+
     /**
      * Refreshes the list of tags by calling the [loadProductTags] method
      * which eventually checks, if there is anything new to fetch from the server
@@ -1377,7 +1396,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null
+        val isProgressDialogShown: Boolean? = null,
+        val currentFilter: String = ""
     ) : Parcelable
 
     @AssistedInject.Factory

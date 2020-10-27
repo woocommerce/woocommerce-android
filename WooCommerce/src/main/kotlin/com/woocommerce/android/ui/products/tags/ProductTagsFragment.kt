@@ -108,7 +108,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         }
 
         addProductTagView.setOnEditorTextChangedListener {
-            productTagsAdapter.setFilter(it.toString())
+            viewModel.setProductTagFilter(it.toString())
         }
     }
 
@@ -129,6 +129,9 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
                 }
+            }
+            new.currentFilter.takeIfNotEqualTo(old?.currentFilter) {
+                productTagsAdapter.setFilter(new.currentFilter)
             }
         }
 

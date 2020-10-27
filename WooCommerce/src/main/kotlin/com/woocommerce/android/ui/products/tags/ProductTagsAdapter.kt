@@ -20,7 +20,6 @@ class ProductTagsAdapter(
     private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
     private val productTags = ArrayList<ProductTag>()
-    private val filteredTags = ArrayList<ProductTag>()
     private var currentFilter: String = ""
 
     init {
@@ -32,13 +31,9 @@ class ProductTagsAdapter(
         fun onProductTagRemoved(productTag: ProductTag)
     }
 
-    override fun getItemId(position: Int): Long {
-        return if (hasFilter()) filteredTags[position].remoteTagId else productTags[position].remoteTagId
-    }
+    override fun getItemId(position: Int) = productTags[position].remoteTagId
 
-    override fun getItemCount(): Int {
-        return if (hasFilter()) filteredTags.size else productTags.size
-    }
+    override fun getItemCount() = productTags.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
@@ -48,9 +43,10 @@ class ProductTagsAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        val productTag = if (hasFilter()) filteredTags[position] else productTags[position]
+        val productTag = productTags[position]
 
         holder.apply {
+            // if there's a filter, highlight it in the tag name
             if (hasFilter() && productTag.name.contains(currentFilter, ignoreCase = true)) {
                 val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
                 val sb = StringBuilder(productTag.name)
@@ -69,9 +65,6 @@ class ProductTagsAdapter(
     }
 
     fun setProductTags(productsTags: List<ProductTag>) {
-        currentFilter = ""
-        filteredTags.clear()
-
         if (this.productTags.isEmpty()) {
             this.productTags.addAll(productsTags)
             notifyDataSetChanged()
@@ -88,18 +81,6 @@ class ProductTagsAdapter(
 
     fun setFilter(filter: String) {
         currentFilter = filter
-        filteredTags.clear()
-
-        if (currentFilter.isEmpty()) {
-            filteredTags.addAll(productTags)
-        } else {
-            for (tag in productTags) {
-                if (tag.name.contains(currentFilter, ignoreCase = true)) {
-                    filteredTags.add(tag)
-                }
-            }
-        }
-
         notifyDataSetChanged()
     }
 
