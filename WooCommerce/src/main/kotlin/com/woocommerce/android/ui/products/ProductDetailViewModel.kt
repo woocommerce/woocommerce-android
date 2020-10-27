@@ -1227,6 +1227,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
         _productTags.value = filterProductTagList(filter, productTags)
+
+        // fetch from the backend in case not all tags have been fetched yet
+        if (filter.isNotEmpty()) {
+            launch {
+                fetchProductTags(searchQuery = filter)
+            }
+        }
     }
 
     /**
@@ -1285,7 +1292,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 isSkeletonShown = showSkeleton,
                 isEmptyViewVisible = false
             )
-            fetchProductTags(loadMore = loadMore)
+            fetchProductTags(loadMore = loadMore, searchQuery = productTagsViewState.currentFilter)
         }
     }
 
@@ -1303,13 +1310,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * @param loadMore Whether this is another page or the first one
      */
-    private suspend fun fetchProductTags(loadMore: Boolean = false) {
+    private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
             _productTags.value = filterProductTagList(
                 productTagsViewState.currentFilter,
                 productTagsRepository.fetchProductTags(
                     loadMore = loadMore,
-                    searchQuery = productTagsViewState.currentFilter
+                    searchQuery = searchQuery
                 )
             )
 
