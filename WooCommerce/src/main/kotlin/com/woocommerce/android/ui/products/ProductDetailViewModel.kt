@@ -1206,12 +1206,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
-    fun fetchProductTags() {
-        if (_productTags.value == null) {
-            loadProductTags()
-        }
-    }
-
     /**
      * Called when user types into product tag screen so we can provide "live" filtering
      */
@@ -1249,7 +1243,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * @param loadMore Whether to load more tags after the ones loaded
      */
-    private fun loadProductTags(loadMore: Boolean = false) {
+    fun loadProductTags(loadMore: Boolean = false) {
         if (productTagsViewState.isLoading == true) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading product tags")
             return
@@ -1271,7 +1265,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                     showSkeleton = true
                 } else {
                     _productTags.value = productTagsInDb
-                    showSkeleton = productTagsViewState.isRefreshing == false
+                    showSkeleton =  productTagsViewState.isRefreshing == true
                 }
             }
             productTagsViewState = productTagsViewState.copy(

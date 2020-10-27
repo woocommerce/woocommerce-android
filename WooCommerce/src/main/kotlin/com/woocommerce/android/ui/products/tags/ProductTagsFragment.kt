@@ -76,7 +76,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        viewModel.fetchProductTags()
+        viewModel.loadProductTags()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
