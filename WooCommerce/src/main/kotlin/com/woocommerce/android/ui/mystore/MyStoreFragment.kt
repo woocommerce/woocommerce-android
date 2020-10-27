@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -290,7 +291,9 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == true) {
+        if (errorSnackbar?.isShownOrQueued == true
+            || !NetworkUtils.isNetworkAvailable(context)
+        ) {
             return
         }
         errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
