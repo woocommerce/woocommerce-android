@@ -69,13 +69,13 @@ class LinkedProductsFragment : BaseProductFragment() {
             }
         })
 
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_UPSELL_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(GroupedProductListViewModel.KEY_UPSELL_PRODUCT_IDS_RESULT) {
             viewModel.updateProductDraft(upsellProductIds = it)
             changesMade()
             updateProductView()
         }
 
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(GroupedProductListViewModel.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
             viewModel.updateProductDraft(crossSellProductIds = it)
             changesMade()
             updateProductView()
