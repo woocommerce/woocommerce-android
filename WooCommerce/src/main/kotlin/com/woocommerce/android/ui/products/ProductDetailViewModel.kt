@@ -1213,18 +1213,19 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun setProductTagFilter(filter: String) {
+        val productTags = productTagsRepository.getProductTags()
         val filteredTags = ArrayList<ProductTag>()
-        viewState.productDraft?.tags?.let { tags ->
-            if (filter.isEmpty()) {
-                filteredTags.addAll(tags)
-            } else {
-                for (tag in tags) {
-                    if (tag.name.contains(filter, ignoreCase = true)) {
-                        filteredTags.add(tag)
-                    }
+
+        if (filter.isEmpty()) {
+            filteredTags.addAll(productTags)
+        } else {
+            for (tag in productTags) {
+                if (tag.name.contains(filter, ignoreCase = true)) {
+                    filteredTags.add(tag)
                 }
             }
         }
+
         productTagsViewState = productTagsViewState.copy(
             currentFilter = filter
         )
