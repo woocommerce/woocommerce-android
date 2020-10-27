@@ -1,5 +1,6 @@
 5.4
 -----
+* You can now add and edit linked products
  
 
 5.3
