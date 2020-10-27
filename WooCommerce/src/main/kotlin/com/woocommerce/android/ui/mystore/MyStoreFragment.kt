@@ -291,8 +291,8 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == true
-            || !NetworkUtils.isNetworkAvailable(context)
+        if (errorSnackbar?.isShownOrQueued == true ||
+            !NetworkUtils.isNetworkAvailable(context)
         ) {
             return
         }

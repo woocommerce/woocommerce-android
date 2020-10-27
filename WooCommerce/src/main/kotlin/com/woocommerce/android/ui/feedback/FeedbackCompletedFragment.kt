@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -17,8 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SURVEY_SCREEN
 import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.HelpActivity.Origin.FEEDBACK_SURVEY
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -75,6 +72,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
             SURVEY_SCREEN, mapOf(
             KEY_FEEDBACK_CONTEXT to feedbackContext,
             KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_COMPLETED
-        ))
+        )
+        )
     }
 }
