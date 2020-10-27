@@ -31,6 +31,7 @@ object AppPrefs {
     private enum class DeletablePrefKey : PrefKey {
         SUPPORT_EMAIL,
         SUPPORT_NAME,
+        IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
@@ -157,6 +158,14 @@ object AppPrefs {
     fun removeSupportName() {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
+
+    /**
+     * Method to check if the v4 stats UI is supported.
+     */
+
+    fun isV4StatsSupported() = getBoolean(DeletablePrefKey.IS_USING_V4_API, false)
+
+    fun setV4StatsSupported(isUsingV4Api: Boolean) = setBoolean(DeletablePrefKey.IS_USING_V4_API, isUsingV4Api)
 
     /**
      * Flag to check products features are enabled
