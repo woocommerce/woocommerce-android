@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -131,6 +132,11 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                 }
             }
             new.currentFilter.takeIfNotEqualTo(old?.currentFilter) {
+                if (new.currentFilter.isEmpty()) {
+                    productTagsRecycler.itemAnimator = DefaultItemAnimator()
+                } else {
+                    productTagsRecycler.itemAnimator = null
+                }
                 productTagsAdapter.setFilter(new.currentFilter)
             }
         }

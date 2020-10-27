@@ -47,7 +47,7 @@ class ProductTagsAdapter(
 
         holder.apply {
             // if there's a filter, highlight it in the tag name
-            if (hasFilter() && productTag.name.contains(currentFilter, ignoreCase = true)) {
+            if (hasFilter()) {
                 val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
                 val sb = StringBuilder(productTag.name)
                 sb.insert(start, "<b>")
