@@ -21,8 +21,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
@@ -33,12 +31,6 @@ import kotlinx.android.synthetic.main.fragment_grouped_product_list.*
 import javax.inject.Inject
 
 class GroupedProductListFragment : BaseFragment(), BackPressListener {
-    companion object {
-        const val KEY_GROUPED_PRODUCT_IDS_RESULT = "key_grouped_product_ids_result"
-        const val KEY_UPSELL_PRODUCT_IDS_RESULT = "key_upsell_product_ids_result"
-        const val KEY_CROSS_SELL_PRODUCT_IDS_RESULT = "key_cross_sell_product_ids_result"
-    }
-
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -132,7 +124,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
                 )
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(getKeyForGroupedProductListType(), event.data as List<*>)
+                    navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -142,14 +134,6 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             productListAdapter.setProductList(it)
         })
-    }
-
-    private fun getKeyForGroupedProductListType(): String {
-        return when (viewModel.getGroupedProductListType()) {
-            UPSELLS -> KEY_UPSELL_PRODUCT_IDS_RESULT
-            CROSS_SELLS -> KEY_CROSS_SELL_PRODUCT_IDS_RESULT
-            else -> KEY_GROUPED_PRODUCT_IDS_RESULT
-        }
     }
 
     private fun setupResultHandlers() {
