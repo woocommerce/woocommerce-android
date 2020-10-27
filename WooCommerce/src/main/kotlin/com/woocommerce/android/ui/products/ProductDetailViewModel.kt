@@ -1227,6 +1227,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Called when user exits the product tag fragment to clear the stored filter (otherwise it
+     * will be retained when the user returns to the tag fragment)
+     */
+    fun clearProductTagFilter() {
+        productTagsViewState = productTagsViewState.copy(currentFilter = "")
+    }
+
+    /**
      * Refreshes the list of tags by calling the [loadProductTags] method
      * which eventually checks, if there is anything new to fetch from the server
      *
@@ -1296,7 +1304,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             _productTags.value = filterProductTagList(
                 productTagsViewState.currentFilter,
-                productTagsRepository.fetchProductTags(loadMore = loadMore)
+                productTagsRepository.fetchProductTags(
+                    loadMore = loadMore,
+                    searchQuery = productTagsViewState.currentFilter
+                )
             )
 
             productTagsViewState = productTagsViewState.copy(

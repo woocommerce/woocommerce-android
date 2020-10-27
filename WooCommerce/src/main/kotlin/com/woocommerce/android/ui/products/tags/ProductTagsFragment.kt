@@ -151,7 +151,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductTags -> findNavController().navigateUp()
+                is ExitProductTags -> {
+                    viewModel.clearProductTagFilter()
+                    findNavController().navigateUp()
+                }
                 else -> event.isHandled = false
             }
         })

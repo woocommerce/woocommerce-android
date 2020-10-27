@@ -50,7 +50,7 @@ class ProductTagsRepository @Inject constructor(
      * Submits a fetch request to get a list of products tags for the current site
      * and returns the full list of product tags from the database
      */
-    suspend fun fetchProductTags(loadMore: Boolean = false): List<ProductTag> {
+    suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null): List<ProductTag> {
         try {
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
@@ -58,7 +58,8 @@ class ProductTagsRepository @Inject constructor(
                 val payload = FetchProductTagsPayload(
                     selectedSite.get(),
                     pageSize = PRODUCT_TAGS_PAGE_SIZE,
-                    offset = offset
+                    offset = offset,
+                    searchQuery = searchQuery
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductTagsAction(payload))
             }
