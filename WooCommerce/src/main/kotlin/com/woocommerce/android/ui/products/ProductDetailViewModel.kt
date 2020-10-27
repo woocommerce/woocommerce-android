@@ -1230,6 +1230,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             currentFilter = filter
         )
         _productTags.value = filteredTags
+
+        WooLog.d(WooLog.T.PRODUCTS, "Set tag filter to $filter, ${filteredTags.size} matches")
     }
 
     /**

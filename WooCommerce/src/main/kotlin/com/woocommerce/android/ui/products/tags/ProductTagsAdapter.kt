@@ -77,10 +77,11 @@ class ProductTagsAdapter(
         }
     }
 
-    private fun hasFilter() = currentFilter.isNotEmpty()
+    fun hasFilter() = currentFilter.isNotEmpty()
 
     fun setFilter(filter: String) {
         currentFilter = filter
+        notifyDataSetChanged()
     }
 
     class ProductTagViewHolder(view: View) : RecyclerView.ViewHolder(view) {
