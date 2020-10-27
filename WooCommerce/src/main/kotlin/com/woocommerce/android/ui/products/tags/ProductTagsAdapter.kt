@@ -84,6 +84,10 @@ class ProductTagsAdapter(
 
     fun hasFilter() = currentFilter.isNotEmpty()
 
+    /**
+     * Sets the filter used to highlight matches in the tag list - note that the actual filtering is done
+     * in the view model
+     */
     fun setFilter(filter: String) {
         currentFilter = filter
         notifyDataSetChanged()

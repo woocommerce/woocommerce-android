@@ -1207,23 +1207,23 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Returns a list of product tags with the passed filter applied
+     */
+    private fun filterProductTagList(filter: String, productTags: List<ProductTag>): List<ProductTag> {
+        return if (filter.isEmpty()) {
+            productTags
+        } else {
+            productTags.filter { it.name.contains(filter, ignoreCase = true) }
+        }
+    }
+
+    /**
      * Called when user types into product tag screen so we can provide "live" filtering
      */
-    fun filterProductTags(filter: String) {
+    fun setProductTagsFilter(filter: String) {
+        productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
-        val filteredTags = ArrayList<ProductTag>()
-
-        if (filter.isEmpty()) {
-            filteredTags.addAll(productTags)
-        } else {
-            for (tag in productTags) {
-                if (tag.name.contains(filter, ignoreCase = true)) {
-                    filteredTags.add(tag)
-                }
-            }
-        }
-
-        _productTags.value = filteredTags
+        _productTags.value = filterProductTagList(filter, productTags)
     }
 
     /**
@@ -1264,8 +1264,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 if (productTagsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _productTags.value = productTagsInDb
-                    showSkeleton =  productTagsViewState.isRefreshing == true
+                    _productTags.value = filterProductTagList(productTagsViewState.currentFilter, productTagsInDb)
+                    showSkeleton = false
                 }
             }
             productTagsViewState = productTagsViewState.copy(
@@ -1294,7 +1294,10 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun fetchProductTags(loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
-            _productTags.value = productTagsRepository.fetchProductTags(loadMore = loadMore)
+            _productTags.value = filterProductTagList(
+                productTagsViewState.currentFilter,
+                productTagsRepository.fetchProductTags(loadMore = loadMore)
+            )
 
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
@@ -1391,7 +1394,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null
+        val isProgressDialogShown: Boolean? = null,
+        val currentFilter: String = ""
     ) : Parcelable
 
     @AssistedInject.Factory
