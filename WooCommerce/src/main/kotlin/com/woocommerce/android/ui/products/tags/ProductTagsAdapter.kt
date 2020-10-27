@@ -47,8 +47,8 @@ class ProductTagsAdapter(
 
         holder.apply {
             if (hasFilter()) {
-                // if there's a filter, highlight it in the tag name - note that there the tag name should
-                // always match the filter, but we make sure the match is found (start > -1) as a precaution
+                // if there's a filter, highlight it in the tag name - note that the tag name should always
+                // match the filter, but we make sure the match is found (start > -1) as a precaution
                 val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
                 if (start > -1) {
                     val sb = StringBuilder(productTag.name)

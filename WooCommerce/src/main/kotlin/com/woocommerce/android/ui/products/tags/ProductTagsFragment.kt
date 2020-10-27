@@ -52,14 +52,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         return inflater.inflate(R.layout.fragment_product_tags, container, false)
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        val filter = addProductTagView.getEnteredTag()
-        if (filter.isNotEmpty()) {
-            viewModel.setProductTagsFilter(filter)
-        }
-    }
-
     override fun getFragmentTitle() = getString(R.string.product_tags)
 
     override fun onResume() {
@@ -69,7 +61,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     override fun onDestroyView() {
         skeletonView.hide()
-        viewModel.clearProductTagFilter()
         super.onDestroyView()
     }
 
@@ -180,6 +171,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductTags -> {
+                    viewModel.clearProductTagFilter()
                     findNavController().navigateUp()
                 }
                 else -> event.isHandled = false

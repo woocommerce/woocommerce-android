@@ -511,6 +511,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             ))
             return false
         } else {
+            if (event is ExitProductTags) {
+                clearProductTagFilter()
+            }
             return true
         }
     }
