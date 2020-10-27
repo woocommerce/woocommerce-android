@@ -106,6 +106,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
             updateSelectedTags()
             true
         }
+
+        addProductTagView.setOnEditorTextChangedListener {
+            productTagsAdapter.setFilter(it.toString())
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

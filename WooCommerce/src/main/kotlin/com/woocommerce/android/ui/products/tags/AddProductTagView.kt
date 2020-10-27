@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.tags
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
 import com.google.android.material.card.MaterialCardView
@@ -37,6 +38,10 @@ class AddProductTagView @JvmOverloads constructor(
 
     fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
         addTagsEditText.setOnEditorActionListener(cb)
+    }
+
+    fun setOnEditorTextChangedListener(cb: (text: Editable?) -> Unit) {
+        addTagsEditText.setOnTextChangedListener(cb)
     }
 
     private fun addTag(
