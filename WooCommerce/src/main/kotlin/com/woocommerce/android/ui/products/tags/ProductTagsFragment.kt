@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.tags
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -31,10 +33,15 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_tags.*
 
 class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProductTagClickListener {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 500L
+    }
+
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
+    private val searchHandler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,8 +116,20 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         }
 
         addProductTagView.setOnEditorTextChangedListener {
-            viewModel.setProductTagsFilter(it.toString())
+            setProductTagsFilterDelayed(it.toString())
         }
+    }
+
+    /**
+     * Submit the search after a brief delay unless the query has changed - this is used to
+     * perform a search while the user is typing
+     */
+    private fun setProductTagsFilterDelayed(query: String) {
+        searchHandler.postDelayed({
+            if (query == addProductTagView.getEnteredTag()) {
+                viewModel.setProductTagsFilter(query)
+            }
+        }, SEARCH_TYPING_DELAY_MS)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
