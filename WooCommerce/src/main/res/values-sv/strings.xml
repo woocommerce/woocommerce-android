@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-30 09:54:54+0000
+Translation-Revision-Date: 2020-10-14 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Produktutkast sparat</string>
+    <string name="product_detail_publish_product_draft_error">Det gick inte att spara produktutkastet</string>
+    <string name="product_publish_draft_dialog_title">Sparar utkast</string>
+    <string name="product_status_trashed">I papperskorgen</string>
+    <string name="product_detail_save_as_draft">Spara som utkast</string>
+    <string name="login_no_wpcom_account_found">Det verkar som att %1$s inte har associerats med något WordPress.com-konto.</string>
     <string name="signup_confirmation_title">Bekräftelse av registrering</string>
     <string name="reset_your_password">Återställ ditt lösenord</string>
     <string name="enter_your_site_address">Ange din webbplatsadress</string>

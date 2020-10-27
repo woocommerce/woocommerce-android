@@ -24,10 +24,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -44,6 +46,8 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -329,6 +333,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is ShowProductFilterScreen -> showProductFilterScreen(
+                    event.stockStatusFilter,
+                    event.productTypeFilter,
+                    event.productStatusFilter
+                )
+                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 else -> event.isHandled = false
             }
         })
@@ -414,10 +424,10 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
-            val wipCardMessageId = R.string.product_wip_message_m3
+            val wipCardMessageId = R.string.product_wip_message_m4
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
-                getString(R.string.product_wip_title),
+                getString(R.string.product_adding_wip_title),
                 getString(wipCardMessageId),
                 onGiveFeedbackClick = ::onGiveFeedbackClicked,
                 onDismissClick = ::onDismissProductWIPNoticeCardClicked
@@ -472,37 +482,49 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         viewModel.onLoadMoreRequested()
     }
 
-    override fun onFilterOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+    private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductFilters(
-            viewModel.getFilterByStockStatus(),
-            viewModel.getFilterByProductType(),
-            viewModel.getFilterByProductStatus()
-        )
+        (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
     }
 
-    override fun onSortOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+    override fun onFilterOptionSelected() {
+        viewModel.onFiltersButtonTapped()
+    }
+
+    private fun showProductSortingBottomSheet() {
         val bottomSheet = ProductSortingFragment()
         bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 
-    private fun onGiveFeedbackClicked(view: View) {
+    override fun onSortOptionSelected() {
+        viewModel.onSortButtonTapped()
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+        ))
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
             .apply { findNavController().navigateSafely(this) }
     }
 
-    private fun onDismissProductWIPNoticeCardClicked(view: View) {
+    private fun onDismissProductWIPNoticeCardClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+        ))
         registerFeedbackSetting(DISMISSED)
         showProductWIPNoticeCard(false)
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(products_wip_card.wipFeatureType.name, state)
+        FeatureFeedbackSettings(PRODUCTS_M3.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }

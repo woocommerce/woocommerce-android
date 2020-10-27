@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-23 11:32:54+0000
+Translation-Revision-Date: 2020-10-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
@@ -17,7 +17,9 @@ Language: tr
     <string name="signup_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size sihirli bir bağlantı gönderdik. Bu cihazdaki e-postanızı kontrol edin ve WordPress.com\'dan aldığınız e-postadaki bağlantıya tıklayın.</string>
     <string name="sign_up_label">Üye ol</string>
     <string name="login_or">veya</string>
+    <string name="continue_site_credentials">Mağaza kimlik bilgileriyle devam edin </string>
     <string name="continue_google_button_suffix">Google ile devam et</string>
+    <string name="login_find_your_connected_email">Bağlı e-postanızı bulun</string>
     <string name="login_find_your_site_adress">Site adresinizi bulun</string>
     <string name="login_done">Bitti</string>
     <string name="magic_link_not_seeing_email_message">E-postayı görmüyor musunuz? İstenmeyen posta klasörünüzü kontrol edin.</string>
@@ -30,6 +32,32 @@ Language: tr
     <string name="or_type_your_password">Veya parolanızı girin</string>
     <string name="create_account">Hesap oluştur</string>
     <string name="send_link_by_email">Bağlantıyı e-postayla gönder</string>
+    <string name="feedback_product_give_feedback_button_text">Geri Bildirim Ver</string>
+    <string name="product_detail_publish_product_success">Ürün yayınlandı</string>
+    <string name="product_detail_publish_product_error">Ürün yayınlanırken hata oluştu</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Ürün yayınlanıyor</string>
+    <string name="product_add_tool_bar_menu_button_done">YAYINLA</string>
+    <string name="product_add_tool_bar_title">Yeni Ürün</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
+    <string name="product_add_type_simple_desc">Satılacak benzersiz bir ürün</string>
+    <string name="product_add_type_external">Harici ürün</string>
+    <string name="product_add_type_grouped">Gruplandırılmış ürün</string>
+    <string name="product_add_type_variable">Varyasyonlu ürün</string>
+    <string name="product_add_type_simple">Basit ürün</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Her ürün çeşidi için yalnızca bir fotoğraf görüntülenebilir</string>
+    <string name="product_replace_photo">Fotoğrafı değiştir</string>
+    <string name="product_add_photo">Fotoğraf ekle</string>
+    <string name="variation_detail_image_add">Varyasyon resmi ekle</string>
+    <string name="login_jetpack_view_instructions">Jetpack\'i nasıl kuracağınızı ve bağlayacağınızı öğrenin</string>
+    <string name="login_jetpack_required_text">Bu uygulamayı %1$s için kullanabilmek Jetpack eklentisinin mağazanıza bağlanmasını gerekir.</string>
+    <string name="login_try_another_account">Başka bir hesapla giriş yap</string>
+    <string name="login_pick_store">Bağlanmak için mağaza seçin</string>
+    <string name="login_store_address">Mağaza adresinizi girin</string>
+    <string name="login_wpcom">WordPress.com ile devam et</string>
     <string name="product_type_variation_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
     <string name="product_selection_count_single">%d seçilen ürünler</string>
     <string name="product_selection_count">%d seçilen ürünler</string>
@@ -256,6 +284,7 @@ Language: tr
     <string name="product_inventory_empty">Envanter ekle</string>
     <string name="orderlist_loading">Siparişleriniz aranıyor…</string>
     <string name="product_detail_editable_text_hint">Metin girin</string>
+    <string name="product_detail_title_hint">Ürün Başlığını Gir</string>
     <string name="product_detail_update_product_success">Ürün güncellendi</string>
     <string name="product_detail_update_product_error">Ürün güncellenirken hata oluştu</string>
     <string name="product_update_dialog_message">Lütfen bekleyin…</string>
@@ -909,6 +938,7 @@ Language: tr
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">WordPress.com\'a zaten oturum açılmış</string>
     <string name="login_continue">Devam et</string>
+    <string name="connect_site">Bir site bağla</string>
     <string name="connect_more">Başka siteye bağlan</string>
     <string name="enter_wpcom_password_google">Bu Google hesabıyla devam etmek için lütfen eşleşen WordPress.com parolasını sağlayın. Bu yalnızca bir kez sorulacak.</string>
     <string name="enter_wpcom_password">WordPress.com parolanızı girin.</string>

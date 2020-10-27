@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <!-- Products work in progress notice card -->
-        <com.woocommerce.android.ui.products.ProductsWIPNoticeCard
+        <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
             android:id="@+id/products_wip_card"
             style="@style/Woo.Card.Expandable"
             android:layout_width="match_parent"

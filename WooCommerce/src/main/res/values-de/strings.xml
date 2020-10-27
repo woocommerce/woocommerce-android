@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-24 15:28:06+0000
+Translation-Revision-Date: 2020-10-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
@@ -17,7 +17,9 @@ Language: de
     <string name="signup_magic_link_message">Wir haben dir einen magischen Link per E-Mail gesendet, mit dem du dein neues WordPress.com-Konto erstellen kannst. Überprüfe deine E-Mails auf diesem Gerät und tippe in der E-Mail, die du von WordPress.com erhalten hast, auf den Link.</string>
     <string name="sign_up_label">Registrieren</string>
     <string name="login_or">oder</string>
+    <string name="continue_site_credentials">Mit Stpre-Anmeldedaten fortfahren</string>
     <string name="continue_google_button_suffix">Weiter mit Google</string>
+    <string name="login_find_your_connected_email">Verbundene E-Mail-Adresse suchen</string>
     <string name="login_find_your_site_adress">Meine Website-Adresse finden</string>
     <string name="login_done">Fertig</string>
     <string name="magic_link_not_seeing_email_message">Keine E-Mail in deinem Posteingang? Sieh in deinen Spam- oder Junk-Mail-Ordner nach.</string>
@@ -30,6 +32,32 @@ Language: de
     <string name="or_type_your_password">Oder gib dein Passwort ein</string>
     <string name="create_account">Konto erstellen</string>
     <string name="send_link_by_email">Link per E-Mail senden</string>
+    <string name="feedback_product_give_feedback_button_text">Feedback geben</string>
+    <string name="product_detail_publish_product_success">Produkt veröffentlicht</string>
+    <string name="product_detail_publish_product_error">Fehler beim Veröffentlichen des Produkts</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">Produkt wird veröffentlicht</string>
+    <string name="product_add_tool_bar_menu_button_done">VERÖFFENTLICHEN</string>
+    <string name="product_add_tool_bar_title">Neues Produkt</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
+    <string name="product_add_type_simple_desc">Ein einzelner Artikel zum Verkaufen</string>
+    <string name="product_add_type_external">Externes Produkt</string>
+    <string name="product_add_type_grouped">Gruppiertes Produkt</string>
+    <string name="product_add_type_variable">Variables Produkt</string>
+    <string name="product_add_type_simple">Einfaches Produkt</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">Für eine Produktvariante kann immer nur ein Foto angezeigt werden</string>
+    <string name="product_replace_photo">Foto ersetzen</string>
+    <string name="product_add_photo">Foto hinzufügen</string>
+    <string name="variation_detail_image_add">Bild für Variante hinzufügen</string>
+    <string name="login_jetpack_view_instructions">Installieren und Verbinden von Jetpack</string>
+    <string name="login_jetpack_required_text">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin in deinem Store verbunden sein.</string>
+    <string name="login_try_another_account">Mit einem anderen Konto anmelden</string>
+    <string name="login_pick_store">Store zum Verbinden auswählen</string>
+    <string name="login_store_address">Store -Adresse eingeben</string>
+    <string name="login_wpcom">Weiter mit WordPress.com</string>
     <string name="product_type_variation_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
     <string name="product_selection_count_single">%d Produkt ausgewählt</string>
     <string name="product_selection_count">%d Produkte ausgewählt</string>
@@ -258,6 +286,7 @@ Language: de
     <string name="product_inventory_empty">Inventar hinzufügen</string>
     <string name="orderlist_loading">Deine Bestellungen werden abgerufen …</string>
     <string name="product_detail_editable_text_hint">Text eingeben</string>
+    <string name="product_detail_title_hint">Produkttitel eingeben</string>
     <string name="product_detail_update_product_success">Produkt aktualisiert</string>
     <string name="product_detail_update_product_error">Fehler beim Aktualisieren des Produkts</string>
     <string name="product_update_dialog_message">Bitte warten …</string>
@@ -911,6 +940,7 @@ Language: de
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">Bereits bei WordPress.com angemeldet</string>
     <string name="login_continue">Weiter</string>
+    <string name="connect_site">Website verbinden</string>
     <string name="connect_more">Andere Website verbinden</string>
     <string name="enter_wpcom_password_google">Bitte melde dich mit dem WordPress.com-Passwort an, um mit diesem Google-Konto fortzufahren. Es wird nur einmal benötigt.</string>
     <string name="enter_wpcom_password">Gib dein WordPress.com-Passwort ein.</string>

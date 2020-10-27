@@ -1,60 +1,81 @@
 <es-ES>
-5.1:
-- Acceso: Hemos implementado un nuevo flujo de acceso con diseños de pantalla renovados.
-- Pedidos: Ahora, la pantalla del estado del pedido muestra el recuento real de pedidos en lugar de “99 máximo”.
+5.2:
+Mejoras en las funciones de edición para todos los tipos de productos:
+
+Se han añadido campos adicionales a los productos principales (etiquetas, categorías, tipo de producto, visibilidad y activación y desactivación de valoraciones). Ahora también se pueden editar los productos variables.
+
+Se han añadido campos básicos para los productos que no son principales (imágenes, nombre, descripción, precio de solo lectura, inventario de solo lectura, etiquetas, categorías, descripciones cortas y ajustes del producto).
 
 </es-ES>
 <fr-FR>
-5.1 :
-- Connexion : nous avons implémenté un nouveau flux de connexion avec de nouvelles conceptions d’écran.
-- Commandes : l’écran État de la commande affiche désormais le nombre réel de commandes plutôt que « max 99 ».
+5.2 :
+Options de modification améliorées pour tous les types de produit :
+
+Ajout de champs supplémentaires aux produits essentiels (étiquettes, catégories, type de produit, activer/désactiver les avis et visibilité). Les produits variables peuvent désormais être modifiés.
+
+Des champs de base ont été ajoutés pour les produits non essentiels (images, nom, description, prix en lecture seule, inventaire en lecture seule, étiquettes, catégories, courtes descriptions et paramètres de produit).
 
 </fr-FR>
 <iw-IL>
-5.1:
-- התחברות: הטמענו תהליך התחברות חדש ועיצבנו מחדש את המסכים.
-- הזמנות: המסך 'מצב ההזמנה' כעת מציג את מספר ההזמנות בפועל במקום 'עד 99'.
+5.2:
+שיפורים ביכולות העריכה בכל סוגי המוצרים:
+
+הוספנו שדות במוצרי ליבה (תגיות, קטגוריות, סוגי מוצרים, הפעלה/השבתה של ביקורות ונראות). ניתן לערוך גם מוצרים עם סוגים.
+
+הוספנו שדות בסיסיים למוצרים שאינם מוצרי ליבה (תמונות, שם, תיאור, מחיר לקריאה בלבד, מלאי לקריאה בלבד, תגיות, קטגוריות, תיאורים קצרים והגדרות מוצר).
 
 </iw-IL>
-<it-IT>
-5.1:
-- Accesso: abbiamo implementato un nuovo flusso di accesso con nuovi design della schermata.
-- Ordini: la schermata dello stato dell'ordine mostra ora il conteggio degli ordini attuali invece di "max 99".
+<ko-KR>
+5.2:
+모든 제품 유형에 대한 편집 기능 개선:
 
-</it-IT>
-<ja-JP>
-5.1:
-- ﻿ログイン : 画面のデザインを一新して新しいログインのフローを実装しました。
-- 注文 : 注文ステータスの画面で、「最大99」の代わりに実際の注文数が表示されるようになりました。
+핵심 제품에 추가 필드(태그, 카테고리, 제품 유형, 리뷰 사용/사용 안 함 및 가시성)가 추가되었습니다. 옵션 제품도 이제 편집할 수 있습니다.
 
-</ja-JP>
+비 핵심 제품(이미지, 이름, 설명, 읽기 전용 가격, 읽기 전용 인벤토리, 태그, 카테고리, 간단한 설명 및 제품 설정)에 기본 필드가 추가되었습니다.
+
+</ko-KR>
 <pt-BR>
-5.1:
-- Login: implementamos um novo fluxo de login com novos designs de tela.
-- Pedidos: agora a tela Status do pedido exibe a contagem real do pedido em vez de "máx. 99".
+5.2:
+Melhorias nos recursos de edição para todos os produtos:
+
+Adicionados campos adicionais aos produtos principais (tags, categorias, tipo de produto, ativar/desativar avaliações e visibilidade). Produtos variáveis agora também podem ser editados.
+
+Adicionados campos básicos aos produtos secundários (imagens, nome, descrição, preço somente leitura, inventário somente leitura, tags, categorias, breves descrições e configurações do produto).
 
 </pt-BR>
 <ru-RU>
-5.1:
-— Вход: теперь используется новая процедура входа в систему с новым дизайном страниц.
-— Заказы: на экране статуса заказа теперь отображается реальное количество заказов, а не "макс. 99".
+5.2:
+Улучшены возможности редактирования всех типов товаров:
+
+в основные товары добавлены дополнительные поля (теги, категории, тип товара, включить/отключить отзывы и видимость). Товары с вариантами также можно редактировать.
+
+В товары, не относящиеся к основным, добавлены базовые поля (изображения, имя, описание, цена в режиме «только для чтения», количество товара в режиме «только для чтения», теги, категории, краткие описания и настройки товара).
 
 </ru-RU>
 <sv-SE>
-5.1:
-- Inloggning: Vi har implementerat ett nytt inloggningsflöde med nya skärmdesigner.
-- Ordrar: På skärmen Orderstatus visas nu det faktiska orderantalet istället för "max 99".
+5.2:
+Förbättringar av redigeringsfunktionerna för alla produkttyper:
+
+Ytterligare fält har lagts till för kärnprodukter (etiketter, kategorier, produkttyp, aktivera/inaktivera recensioner och synlighet). Det går nu även att redigera variabla produkter.
+
+Grundläggande fält har lagts till för icke-kärnprodukter (bilder, namn, beskrivning, skrivskyddat pris, skrivskyddat lager, etiketter, kategorier, korta beskrivningar och produktinställningar).
 
 </sv-SE>
 <zh-TW>
-5.1：
-- 登入：我們推出了使用新畫面設計的全新登入流程。
-- 訂單：訂單狀態畫面現在會顯示實際訂單數，而不是「上限為 99」。
+5.2：
+增強所有商品類型的編輯功能：
+
+為核心商品新增其他欄位 (標籤、類別、商品類型、啟用/停用評論和可見度)。 你現在也可以編輯子類商品。
+
+我們為非核心商品新增了基本欄位 (圖片、名稱、說明、唯讀價格、唯讀庫存、標籤、類別、簡短說明和商品設定)。
 
 </zh-TW>
 <en-US>
-5.1:
-- Login: We implemented a new login flow with new screen designs.
-- Orders: The Order Status screen now displays the actual order count instead of “max 99.”
+5.2:
+Enhancements to the editing capabilities for all product types:
 
+Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
+
+Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
+ 
 </en-US>

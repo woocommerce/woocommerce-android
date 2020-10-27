@@ -267,6 +267,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED,
         PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED,
         PRODUCT_LIST_SORTING_OPTION_SELECTED,
+        PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
+        ADD_PRODUCT_PRODUCT_TYPE_SELECTED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
@@ -294,6 +296,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
+        ADD_PRODUCT_PUBLISH_TAPPED,
+        ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED,
+        ADD_PRODUCT_SUCCESS,
+        ADD_PRODUCT_FAILED,
 
         // -- Product Categories
         PRODUCT_CATEGORIES_LOADED,
@@ -625,6 +631,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+        const val VALUE_SHIPPING_LABELS_M3_FEEDBACK = "shipping_labels_m3"
 
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"

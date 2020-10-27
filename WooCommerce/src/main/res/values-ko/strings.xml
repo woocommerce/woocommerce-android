@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-24 15:25:49+0000
+Translation-Revision-Date: 2020-10-06 08:54:17+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
@@ -17,7 +17,9 @@ Language: ko_KR
     <string name="signup_magic_link_message">워드프레스닷컴 신규 계정 생성용 링크를 이메일로 발송했습니다. 워드프레스닷컴에서 발송한 이메일을 본 기기에서 확인하고 링크를 클릭하세요.</string>
     <string name="sign_up_label">가입</string>
     <string name="login_or">또는</string>
+    <string name="continue_site_credentials">스토어 자격 증명으로 계속</string>
     <string name="continue_google_button_suffix">Google로 계속하기</string>
+    <string name="login_find_your_connected_email">연결된 이메일 찾기</string>
     <string name="login_find_your_site_adress">사이트 주소 찾기</string>
     <string name="login_done">완료</string>
     <string name="magic_link_not_seeing_email_message">이메일을 받지 못하셨나요? 스팸메일함이나 정크메일함을 확인하세요.</string>
@@ -30,6 +32,32 @@ Language: ko_KR
     <string name="or_type_your_password">아니요. 비밀번호를 입력하겠습니다.</string>
     <string name="create_account">계정 만들기</string>
     <string name="send_link_by_email">이메일로 링크 보내기</string>
+    <string name="feedback_product_give_feedback_button_text">피드백 보내기</string>
+    <string name="product_detail_publish_product_success">제품 공개됨</string>
+    <string name="product_detail_publish_product_error">제품을 공개하는 중 오류 발생</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">제품 공개 중</string>
+    <string name="product_add_tool_bar_menu_button_done">공개</string>
+    <string name="product_add_tool_bar_title">새 제품</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">색상이나 크기와 같은 선택사항이 있는 제품</string>
+    <string name="product_add_type_simple_desc">유니크한 아이템</string>
+    <string name="product_add_type_external">외부 상품</string>
+    <string name="product_add_type_grouped">그룹 상품</string>
+    <string name="product_add_type_variable">옵션 상품</string>
+    <string name="product_add_type_simple">단순 상품</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">제품 변형당 하나의 사진만 표시할 수 있습니다.</string>
+    <string name="product_replace_photo">사진 바꾸기</string>
+    <string name="product_add_photo">사진 추가</string>
+    <string name="variation_detail_image_add">변형 이미지 설정</string>
+    <string name="login_jetpack_view_instructions">젯팩 설치 및 연결 방법 알아보기</string>
+    <string name="login_jetpack_required_text">%1$s에 이 앱을 사용하려면 젯팩 플러그인을 스토어에 연결해야 합니다.</string>
+    <string name="login_try_another_account">다른 계정으로 로그인</string>
+    <string name="login_pick_store">연결할 스토어 선택</string>
+    <string name="login_store_address">스토어 주소 입력</string>
+    <string name="login_wpcom">워드프레스닷컴으로 계속하기</string>
     <string name="product_type_variation_desc">색상이나 크기와 같은 선택사항이 있는 제품</string>
     <string name="product_selection_count_single">%d 제품 선택됨</string>
     <string name="product_selection_count">%d 제품 선택됨</string>
@@ -258,6 +286,7 @@ Language: ko_KR
     <string name="product_inventory_empty">재고 추가</string>
     <string name="orderlist_loading">주문 검색 중…</string>
     <string name="product_detail_editable_text_hint">텍스트 입력</string>
+    <string name="product_detail_title_hint">제품 제목 입력</string>
     <string name="product_detail_update_product_success">제품 업데이트됨</string>
     <string name="product_detail_update_product_error">제품을 업데이트하는 중 오류 발생</string>
     <string name="product_update_dialog_message">기다려주세요…</string>
@@ -911,6 +940,7 @@ Language: ko_KR
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">워드프레스닷컴에 이미 로그인되어 있습니다.</string>
     <string name="login_continue">계속</string>
+    <string name="connect_site">사이트 연결</string>
     <string name="connect_more">다른 사이트 연결</string>
     <string name="enter_wpcom_password_google">이 Google 계정으로 진행하려면 일치하는 워드프레스닷컴 비밀번호를 제공하세요. 이 메시지는 한 번만 표시됩니다.</string>
     <string name="enter_wpcom_password">워드프레스닷컴 비밀번호를 입력합니다.</string>

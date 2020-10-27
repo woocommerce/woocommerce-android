@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-30 15:54:04+0000
+Translation-Revision-Date: 2020-10-15 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">הטיוטה של המוצר נשמרה</string>
+    <string name="product_detail_publish_product_draft_error">שגיאה בשמירה של טיוטת המוצר</string>
+    <string name="product_publish_draft_dialog_title">שומר טיוטה</string>
+    <string name="product_status_trashed">הועבר לפח</string>
+    <string name="product_detail_save_as_draft">לשמור כטיוטה</string>
+    <string name="login_no_wpcom_account_found">נראה ש-⁦%1$s⁩ לא משויך עם חשבון ב-WordPress.com.</string>
     <string name="signup_confirmation_title">אישור הרשמה</string>
     <string name="reset_your_password">לאפס את הסיסמה שלך</string>
     <string name="enter_your_site_address">להזין את כתובת האתר שלך</string>
