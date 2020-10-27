@@ -109,7 +109,14 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         }
 
         addProductTagView.setOnEditorTextChangedListener {
-            viewModel.setProductTagFilter(it.toString())
+            val filter = it.toString()
+            if (filter.isEmpty()) {
+                productTagsRecycler.itemAnimator = DefaultItemAnimator()
+            } else {
+                productTagsRecycler.itemAnimator = null
+            }
+            productTagsAdapter.setFilter(filter)
+            viewModel.filterProductTags(filter)
         }
     }
 
@@ -130,14 +137,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
                 }
-            }
-            new.currentFilter.takeIfNotEqualTo(old?.currentFilter) {
-                if (new.currentFilter.isEmpty()) {
-                    productTagsRecycler.itemAnimator = DefaultItemAnimator()
-                } else {
-                    productTagsRecycler.itemAnimator = null
-                }
-                productTagsAdapter.setFilter(new.currentFilter)
             }
         }
 

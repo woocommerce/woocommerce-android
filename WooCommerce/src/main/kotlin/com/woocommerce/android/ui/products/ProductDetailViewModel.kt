@@ -1212,7 +1212,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun setProductTagFilter(filter: String) {
+    /**
+     * Called when user types into product tag screen so we can provide "live" filtering
+     */
+    fun filterProductTags(filter: String) {
         val productTags = productTagsRepository.getProductTags()
         val filteredTags = ArrayList<ProductTag>()
 
@@ -1226,12 +1229,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
 
-        productTagsViewState = productTagsViewState.copy(
-            currentFilter = filter
-        )
         _productTags.value = filteredTags
-
-        WooLog.d(WooLog.T.PRODUCTS, "Set tag filter to $filter, ${filteredTags.size} matches")
     }
 
     /**
@@ -1399,8 +1397,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null,
-        val currentFilter: String = ""
+        val isProgressDialogShown: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

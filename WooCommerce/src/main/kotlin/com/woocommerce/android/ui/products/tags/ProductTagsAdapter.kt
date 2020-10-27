@@ -46,13 +46,18 @@ class ProductTagsAdapter(
         val productTag = productTags[position]
 
         holder.apply {
-            // if there's a filter, highlight it in the tag name
             if (hasFilter()) {
+                // if there's a filter, highlight it in the tag name - note that there the tag name should
+                // always match the filter, but we make sure the match is found (start > -1) as a precaution
                 val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
-                val sb = StringBuilder(productTag.name)
-                sb.insert(start, "<b>")
-                sb.insert(start + currentFilter.length + 3, "</b>")
-                txtTagName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                if (start > -1) {
+                    val sb = StringBuilder(productTag.name)
+                    sb.insert(start, "<b>")
+                    sb.insert(start + currentFilter.length + 3, "</b>")
+                    txtTagName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                } else {
+                    txtTagName.text = productTag.name
+                }
             } else {
                 txtTagName.text = productTag.name
             }
