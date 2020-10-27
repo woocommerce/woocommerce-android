@@ -251,9 +251,12 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="groupedProductIds"
+            android:name="productIds"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="groupedProductListType"
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"
