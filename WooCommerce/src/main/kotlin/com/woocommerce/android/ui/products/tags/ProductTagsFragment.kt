@@ -52,6 +52,14 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         return inflater.inflate(R.layout.fragment_product_tags, container, false)
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        val filter = addProductTagView.getEnteredTag()
+        if (filter.isNotEmpty()) {
+            viewModel.setProductTagsFilter(filter)
+        }
+    }
+
     override fun getFragmentTitle() = getString(R.string.product_tags)
 
     override fun onResume() {
@@ -61,6 +69,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
     override fun onDestroyView() {
         skeletonView.hide()
+        viewModel.clearProductTagFilter()
         super.onDestroyView()
     }
 
@@ -124,10 +133,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
      * Submit the search after a brief delay unless the query has changed - this is used to
      * perform a search while the user is typing
      */
-    private fun setProductTagsFilterDelayed(query: String) {
+    private fun setProductTagsFilterDelayed(filter: String) {
         searchHandler.postDelayed({
-            if (query == addProductTagView.getEnteredTag()) {
-                viewModel.setProductTagsFilter(query)
+            if (filter == addProductTagView.getEnteredTag()) {
+                viewModel.setProductTagsFilter(filter)
             }
         }, SEARCH_TYPING_DELAY_MS)
     }
@@ -171,7 +180,6 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductTags -> {
-                    viewModel.clearProductTagFilter()
                     findNavController().navigateUp()
                 }
                 else -> event.isHandled = false
