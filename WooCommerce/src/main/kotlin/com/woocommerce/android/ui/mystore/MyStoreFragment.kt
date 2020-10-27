@@ -16,15 +16,20 @@ import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.containsInstanceOf
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
@@ -94,12 +99,12 @@ class MyStoreFragment : TopLevelFragment(),
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
-            dashboard_refresh_layout.setOnRefreshListener {
+            my_store_refresh_layout.setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     MyStorePresenter.resetForceRefresh()
-                    dashboard_refresh_layout.isRefreshing = false
+                    my_store_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
             }
         }
@@ -147,6 +152,14 @@ class MyStoreFragment : TopLevelFragment(),
             statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
         )
 
+        val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
+        getString(R.string.my_store_stats_availability_description, contactUsText)
+            .configureStringClick(
+                clickableContent = contactUsText,
+                clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) },
+                textField = my_store_stats_availability_message
+            )
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
@@ -182,6 +195,9 @@ class MyStoreFragment : TopLevelFragment(),
                 refreshMyStoreStats(forced = false)
             }
             addTabLayoutToAppBar(tabLayout)
+            showChartSkeleton(true)
+            my_store_refresh_layout.visibility = View.VISIBLE
+            stats_error_scroll_view.visibility = View.GONE
         } else {
             isStatsRefreshed = false
             removeTabLayoutFromAppBar(tabLayout)
@@ -237,6 +253,12 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
+    override fun updateStatsAvailabilityError() {
+        my_store_refresh_layout.visibility = View.GONE
+        WooAnimUtils.fadeIn(stats_error_scroll_view)
+        removeTabLayoutFromAppBar(tabLayout)
+    }
+
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             my_store_top_performers.showErrorView(false)
@@ -287,7 +309,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun scrollToTop() {
-        scroll_view.smoothScrollTo(0, 0)
+        stats_scroll_view.smoothScrollTo(0, 0)
     }
 
     override fun refreshFragmentState() {
