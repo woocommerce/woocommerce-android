@@ -291,13 +291,10 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == true ||
-            !NetworkUtils.isNetworkAvailable(context)
-        ) {
-            return
+        if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
+            errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
+            errorSnackbar?.show()
         }
-        errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
-        errorSnackbar?.show()
     }
 
     override fun getFragmentTitle(): String {
