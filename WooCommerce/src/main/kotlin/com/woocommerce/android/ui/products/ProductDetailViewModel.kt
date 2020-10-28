@@ -1216,13 +1216,26 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Sets the product tag list to the passed list with the current filter applied and already added tags removed
      * Returns a list of product tags with the passed filter applied
      */
-    private fun filterProductTagList(filter: String?, productTags: List<ProductTag>): List<ProductTag> {
-        return if (filter.isNullOrBlank()) {
-            productTags
+    private fun filterProductTagList(productTags: List<ProductTag>) {
+        val addedTags = ArrayList<ProductTag>().also {
+            it.addAll(_addedProductTags.getList())
+            viewState.productDraft?.tags?.let { draftTags ->
+                it.addAll(draftTags)
+            }
+        }
+
+        _productTags.value = if (productTagsViewState.currentFilter.isEmpty()) {
+            productTags.filter { !addedTags.contains(it) }
         } else {
-            productTags.filter { it.name.contains(filter, ignoreCase = true) }
+            productTags.filter {
+                it.name.contains(
+                    productTagsViewState.currentFilter,
+                    ignoreCase = true
+                ) && !addedTags.contains(it)
+            }
         }
     }
 
@@ -1232,7 +1245,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
-        _productTags.value = filterProductTagList(filter, productTags)
+        filterProductTagList(productTags)
 
         // fetch from the backend when a filter exists in case not all tags have been fetched yet
         if (filter.isNotEmpty()) {
@@ -1288,7 +1301,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 if (productTagsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _productTags.value = filterProductTagList(productTagsViewState.currentFilter, productTagsInDb)
+                    filterProductTagList(productTagsInDb)
                     showSkeleton = false
                 }
             }
@@ -1323,7 +1336,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 loadMore = loadMore,
                 searchQuery = searchQuery
             )
-            _productTags.value = filterProductTagList(searchQuery, products)
+            filterProductTagList(products)
 
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
