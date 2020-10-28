@@ -410,7 +410,7 @@ Language: sv_SE
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
-    <string name="order_begin_fulfillment">Börja uppfylla kraven</string>
+    <string name="order_mark_complete">Börja uppfylla kraven</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>

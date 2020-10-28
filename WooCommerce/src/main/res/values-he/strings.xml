@@ -409,7 +409,7 @@ Language: he_IL
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
-    <string name="order_begin_fulfillment">להתחיל את ההשלמה</string>
+    <string name="order_mark_complete">להתחיל את ההשלמה</string>
     <string name="orderdetail_net">נטו</string>
     <string name="orderdetail_payment_paid_by_customer">שולם על ידי הלקוח</string>
     <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>

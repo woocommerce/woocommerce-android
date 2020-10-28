@@ -403,7 +403,7 @@ Language: ko_KR
     <string name="orderdetail_refund_detail">%2$s을(를) 통한 %1$s</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
-    <string name="order_begin_fulfillment">처리 시작</string>
+    <string name="order_mark_complete">처리 시작</string>
     <string name="orderdetail_net">최종 금액</string>
     <string name="orderdetail_payment_paid_by_customer">고객 결제</string>
     <string name="orderdetail_payment_summary_onhold">%s을(를) 통한 결제 대기 중</string>

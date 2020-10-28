@@ -203,7 +203,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         orderDetail_orderStatus.updateStatus(orderStatus) {
             viewModel.onEditOrderStatusSelected()
         }
-        orderDetail_productList.showOrderFulfillOption(orderStatus.statusKey == CoreOrderStatus.PROCESSING.value) {
+        orderDetail_productList.showMarkOrderCompleteButton(orderStatus.statusKey == CoreOrderStatus.PROCESSING.value) {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
             viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
         }

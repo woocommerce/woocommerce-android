@@ -409,7 +409,7 @@ Language: ru
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
-    <string name="order_begin_fulfillment">Начать выполнение</string>
+    <string name="order_mark_complete">Начать выполнение</string>
     <string name="orderdetail_net">Итог</string>
     <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>

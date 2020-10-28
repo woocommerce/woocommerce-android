@@ -403,7 +403,7 @@ Language: nl
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
-    <string name="order_begin_fulfillment">Begin met leveren</string>
+    <string name="order_mark_complete">Begin met leveren</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>

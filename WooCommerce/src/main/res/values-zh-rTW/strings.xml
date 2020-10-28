@@ -409,7 +409,7 @@ Language: zh_TW
     <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>
-    <string name="order_begin_fulfillment">開始履行</string>
+    <string name="order_mark_complete">開始履行</string>
     <string name="orderdetail_net">淨額</string>
     <string name="orderdetail_payment_paid_by_customer">顧客付款</string>
     <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>

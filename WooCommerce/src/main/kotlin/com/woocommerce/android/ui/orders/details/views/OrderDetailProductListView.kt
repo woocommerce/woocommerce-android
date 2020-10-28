@@ -70,11 +70,11 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
     fun showMarkOrderCompleteButton(
         show: Boolean,
-        onOrderFulfillTapped: () -> Unit
+        onMarkOrderCompleteButtonTapped: () -> Unit
     ) {
         if (show) {
             productList_btnMarkOrderComplete.show()
-            productList_btnMarkOrderComplete.setOnClickListener { onOrderFulfillTapped() }
+            productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
         } else {
             productList_btnMarkOrderComplete.hide()
             productList_btnMarkOrderComplete.setOnClickListener(null)

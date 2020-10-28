@@ -409,7 +409,7 @@ Language: fr
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
     <string name="beta_features">Fonctionnalités bêta</string>
-    <string name="order_begin_fulfillment">Commencer l\'exécution</string>
+    <string name="order_mark_complete">Commencer l\'exécution</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Payée par le client</string>
     <string name="orderdetail_payment_summary_onhold">Paiement en attente via %s</string>

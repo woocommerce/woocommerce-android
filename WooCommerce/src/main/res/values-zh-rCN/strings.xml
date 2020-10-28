@@ -403,7 +403,7 @@ Language: zh_CN
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
-    <string name="order_begin_fulfillment">开始履行</string>
+    <string name="order_mark_complete">开始履行</string>
     <string name="orderdetail_net">净额</string>
     <string name="orderdetail_payment_paid_by_customer">客户支付</string>
     <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>

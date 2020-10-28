@@ -403,7 +403,7 @@ Language: ar
     <string name="orderdetail_refund_detail">%1$s عبر %2$s</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
-    <string name="order_begin_fulfillment">بدء التنفيذ</string>
+    <string name="order_mark_complete">بدء التنفيذ</string>
     <string name="orderdetail_net">صافٍ</string>
     <string name="orderdetail_payment_paid_by_customer">يدفعه العميل</string>
     <string name="orderdetail_payment_summary_onhold">انتظار الدفع بواسطة %s</string>

@@ -401,7 +401,7 @@ Language: ja_JP
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
-    <string name="order_begin_fulfillment">フルフィルメントを開始</string>
+    <string name="order_mark_complete">フルフィルメントを開始</string>
     <string name="orderdetail_net">純額</string>
     <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>

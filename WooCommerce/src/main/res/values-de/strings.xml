@@ -403,7 +403,7 @@ Language: de
     <string name="orderdetail_refund_detail">%1$s per %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
-    <string name="order_begin_fulfillment">Auftragsabwicklung starten</string>
+    <string name="order_mark_complete">Auftragsabwicklung starten</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Vom Kunden bezahlt</string>
     <string name="orderdetail_payment_summary_onhold">Warten auf Zahlung per %s</string>

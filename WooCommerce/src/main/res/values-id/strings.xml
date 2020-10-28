@@ -403,7 +403,7 @@ Language: id
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
-    <string name="order_begin_fulfillment">Mulai pemenuhan</string>
+    <string name="order_mark_complete">Mulai pemenuhan</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>

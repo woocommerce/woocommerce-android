@@ -409,7 +409,7 @@ Language: pt_BR
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Estatísticas aprimoradas</string>
     <string name="beta_features">Funcionalidades Beta</string>
-    <string name="order_begin_fulfillment">Iniciar conclusão</string>
+    <string name="order_mark_complete">Iniciar conclusão</string>
     <string name="orderdetail_net">Valor líquido</string>
     <string name="orderdetail_payment_paid_by_customer">Pago pelo cliente</string>
     <string name="orderdetail_payment_summary_onhold">Aguardando pagamento via %s</string>

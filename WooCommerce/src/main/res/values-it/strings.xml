@@ -403,7 +403,7 @@ Language: it
     <string name="orderdetail_refund_detail">%1$s tramite %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
     <string name="beta_features">Funzionalità beta</string>
-    <string name="order_begin_fulfillment">Inizia evasione</string>
+    <string name="order_mark_complete">Inizia evasione</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagato dal cliente</string>
     <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
