@@ -321,6 +321,10 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onCreateShippingLabelButtonTapped() {
+        AnalyticsTracker.track(Stat.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+    }
+
     fun onMarkOrderCompleteButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
         onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
@@ -446,6 +450,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isOrderNotesSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isShipmentTrackingAvailable: Boolean? = null,
+        val isCreateShippingLabelButtonVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null

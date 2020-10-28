@@ -130,6 +130,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
                 showMarkOrderCompleteButton(it)
             }
+            new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
+                showShippingLabelButton(it)
+            }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
@@ -208,6 +211,10 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showMarkOrderCompleteButton(isVisible: Boolean) {
         orderDetail_productList.showMarkOrderCompleteButton(isVisible, viewModel::onMarkOrderCompleteButtonTapped)
+    }
+
+    private fun showShippingLabelButton(isVisible: Boolean) {
+        orderDetail_productList.showCreateShippingLabelButton(isVisible, viewModel::onCreateShippingLabelButtonTapped)
     }
 
     private fun showSkeleton(show: Boolean) {

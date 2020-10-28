@@ -76,4 +76,12 @@ class OrderDetailProductListView @JvmOverloads constructor(
         productList_btnMarkOrderComplete.isVisible = isVisible
         productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
     }
+
+    fun showCreateShippingLabelButton(
+        isVisible: Boolean,
+        onCreateShippingLabelButtonTapped: () -> Unit
+    ) {
+        productList_btnCreateShippingLabel.isVisible = isVisible
+        productList_btnCreateShippingLabel.setOnClickListener { onCreateShippingLabelButtonTapped() }
+    }
 }
