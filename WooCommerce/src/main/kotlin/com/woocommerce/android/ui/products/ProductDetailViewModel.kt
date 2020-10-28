@@ -1184,6 +1184,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // a list of newly added tags
             _addedProductTags.addNewItem(ProductTag(name = tagName))
             updateTagsMenuAction()
+            loadProductTags()
         }
     }
 
@@ -1193,6 +1194,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
+        loadProductTags()
     }
 
     /**
@@ -1206,6 +1208,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
+        loadProductTags()
     }
 
     private fun updateTagsMenuAction() {
