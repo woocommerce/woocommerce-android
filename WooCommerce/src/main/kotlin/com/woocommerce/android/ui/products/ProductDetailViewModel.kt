@@ -1315,6 +1315,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * check the database.
      *
      * @param loadMore Whether this is another page or the first one
+     * @param searchQuery optional search query to fetch only matching tags
      */
     private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
