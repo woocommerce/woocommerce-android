@@ -37,8 +37,6 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
         DATABASE_DOWNGRADED,
-        SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER,
-        IS_V4_STATS_UI_ENABLED,
         IS_PRODUCTS_FEATURE_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
@@ -176,16 +174,6 @@ object AppPrefs {
 
     fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
         setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
-
-    /**
-     * Flag to check if the v4 stats API is no longer supported for a site AND if the user has already dismissed the
-     * [com.woocommerce.android.ui.mystore.MyStoreStatsRevertedNoticeCard]
-     */
-    fun shouldDisplayV4StatsRevertedBanner() =
-        getBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, true)
-
-    fun setShouldDisplayV4StatsRevertedBanner(shouldDisplayV4StatsRevertedBanner: Boolean) =
-        setBoolean(DeletablePrefKey.SHOULD_DISPLAY_V4_STATS_REVERTED_BANNER, shouldDisplayV4StatsRevertedBanner)
 
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds

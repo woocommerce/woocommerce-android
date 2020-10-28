@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.fragment_product_tags.*
 
 class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProductTagClickListener {
     companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
+        private const val SEARCH_TYPING_DELAY_MS = 250L
     }
 
     private lateinit var productTagsAdapter: ProductTagsAdapter

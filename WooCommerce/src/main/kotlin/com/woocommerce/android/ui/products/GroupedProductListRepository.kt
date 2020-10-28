@@ -44,11 +44,11 @@ class GroupedProductListRepository @Inject constructor(
     }
 
     /**
-     * Submits a fetch request to get a page of products for the [groupedProductIds] and returns the full
+     * Submits a fetch request to get a page of products for the [productIds] and returns the full
      * list of products from the database
      */
-    suspend fun fetchGroupedProductList(
-        groupedProductIds: List<Long>,
+    suspend fun fetchProductList(
+        productIds: List<Long>,
         loadMore: Boolean = false
     ): List<Product> {
         try {
@@ -59,7 +59,7 @@ class GroupedProductListRepository @Inject constructor(
                     selectedSite.get(),
                     PRODUCT_PAGE_SIZE,
                     offset,
-                    remoteProductIds = groupedProductIds
+                    remoteProductIds = productIds
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -67,17 +67,17 @@ class GroupedProductListRepository @Inject constructor(
             WooLog.d(T.PRODUCTS, "CancellationException while fetching grouped products")
         }
 
-        return getGroupedProductList(groupedProductIds)
+        return getProductList(productIds)
     }
 
     /**
-     * Returns all products for the [groupedProductIds] that are in the database
+     * Returns all products for the [productIds] that are in the database
      */
-    fun getGroupedProductList(groupedProductIds: List<Long>): List<Product> {
+    fun getProductList(productIds: List<Long>): List<Product> {
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByRemoteIds(
                 selectedSite.get(),
-                remoteProductIds = groupedProductIds
+                remoteProductIds = productIds
             )
             wcProducts.map { it.toAppModel() }
         } else {

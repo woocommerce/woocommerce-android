@@ -293,6 +293,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
+    fun hasLinkedProductChanges() = viewState.storedProduct?.hasLinkedProductChanges(viewState.productDraft) ?: false
+
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
             viewState.productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
@@ -573,7 +575,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
         type: String? = null,
-        groupedProductIds: List<Long>? = null
+        groupedProductIds: List<Long>? = null,
+        upsellProductIds: List<Long>? = null,
+        crossSellProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -613,6 +617,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     tags = tags ?: product.tags,
                     type = type ?: product.type,
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -1179,7 +1185,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             _addedProductTags.addNewItem(ProductTag(name = tagName))
             updateTagsMenuAction()
         }
-        loadProductTags()
     }
 
     /**
@@ -1188,7 +1193,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
-        loadProductTags()
     }
 
     /**
@@ -1202,7 +1206,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
-        loadProductTags()
     }
 
     private fun updateTagsMenuAction() {
@@ -1213,25 +1216,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Sets the product tag list to the passed list with the current filter applied and already added tags removed
+     * Returns a list of product tags with the passed filter applied
      */
-    private fun filterProductTagList(productTags: List<ProductTag>) {
-        val addedTags = ArrayList<ProductTag>().also {
-            it.addAll(_addedProductTags.getList())
-            viewState.productDraft?.tags?.let { draftTags ->
-                it.addAll(draftTags)
-            }
-        }
-
-        _productTags.value = if (productTagsViewState.currentFilter.isEmpty()) {
-            productTags.filter { !addedTags.contains(it) }
+    private fun filterProductTagList(filter: String?, productTags: List<ProductTag>): List<ProductTag> {
+        return if (filter.isNullOrBlank()) {
+            productTags
         } else {
-            productTags.filter {
-                it.name.contains(
-                    productTagsViewState.currentFilter,
-                    ignoreCase = true
-                ) && !addedTags.contains(it)
-            }
+            productTags.filter { it.name.contains(filter, ignoreCase = true) }
         }
     }
 
@@ -1241,7 +1232,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
-        filterProductTagList(productTags)
+        _productTags.value = filterProductTagList(filter, productTags)
 
         // fetch from the backend when a filter exists in case not all tags have been fetched yet
         if (filter.isNotEmpty()) {
@@ -1297,7 +1288,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 if (productTagsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    filterProductTagList(productTagsInDb)
+                    _productTags.value = filterProductTagList(productTagsViewState.currentFilter, productTagsInDb)
                     showSkeleton = false
                 }
             }
@@ -1324,20 +1315,22 @@ class ProductDetailViewModel @AssistedInject constructor(
      * check the database.
      *
      * @param loadMore Whether this is another page or the first one
+     * @param searchQuery optional search query to fetch only matching tags
      */
     private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
-            filterProductTagList(
-                productTagsRepository.fetchProductTags(
-                    loadMore = loadMore,
-                    searchQuery = searchQuery
-                )
+            val products = productTagsRepository.fetchProductTags(
+                loadMore = loadMore,
+                searchQuery = searchQuery
             )
+            _productTags.value = filterProductTagList(searchQuery, products)
 
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true && addedProductTags.isEmpty()
+                isEmptyViewVisible = products.isEmpty() &&
+                    _addedProductTags.isEmpty() &&
+                    searchQuery.isNullOrEmpty()
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -1364,6 +1357,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitLinkedProducts(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
