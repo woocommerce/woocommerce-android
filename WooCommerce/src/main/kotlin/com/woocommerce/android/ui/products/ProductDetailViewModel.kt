@@ -293,6 +293,8 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
+    fun hasLinkedProductChanges() = viewState.storedProduct?.hasLinkedProductChanges(viewState.productDraft) ?: false
+
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
             viewState.productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
@@ -573,7 +575,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         categories: List<ProductCategory>? = null,
         tags: List<ProductTag>? = null,
         type: String? = null,
-        groupedProductIds: List<Long>? = null
+        groupedProductIds: List<Long>? = null,
+        upsellProductIds: List<Long>? = null,
+        crossSellProductIds: List<Long>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -613,6 +617,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     tags = tags ?: product.tags,
                     type = type ?: product.type,
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -1350,6 +1356,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitLinkedProducts(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()

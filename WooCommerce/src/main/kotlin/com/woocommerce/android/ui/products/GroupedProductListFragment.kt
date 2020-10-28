@@ -31,10 +31,6 @@ import kotlinx.android.synthetic.main.fragment_grouped_product_list.*
 import javax.inject.Inject
 
 class GroupedProductListFragment : BaseFragment(), BackPressListener {
-    companion object {
-        const val KEY_GROUPED_PRODUCT_IDS_RESULT = "key_grouped_product_ids_result"
-    }
-
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -43,12 +39,12 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(viewModel::onGroupedProductDeleted)
+        GroupedProductListAdapter(viewModel::onProductDeleted)
     }
 
     private var doneMenuItem: MenuItem? = null
 
-    override fun getFragmentTitle() = getString(R.string.grouped_products)
+    override fun getFragmentTitle() = resources.getString(viewModel.getGroupedProductListType().titleId)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -128,7 +124,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
                 )
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_GROUPED_PRODUCT_IDS_RESULT, event.data as List<*>)
+                    navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -142,7 +138,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private fun setupResultHandlers() {
         handleResult<List<Long>>(ProductSelectionListFragment.KEY_SELECTED_PRODUCT_IDS_RESULT) {
-            viewModel.onGroupedProductsAdded(it)
+            viewModel.onProductsAdded(it)
         }
     }
 

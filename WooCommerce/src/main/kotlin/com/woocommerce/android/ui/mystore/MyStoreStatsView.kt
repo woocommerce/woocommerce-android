@@ -31,7 +31,6 @@ import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
@@ -62,7 +61,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private var listener: DashboardStatsListener? = null
+    private var listener: MyStoreStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -99,7 +98,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
-        listener: DashboardStatsListener,
+        listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded
     ) {

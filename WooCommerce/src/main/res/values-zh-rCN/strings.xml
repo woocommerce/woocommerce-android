@@ -1038,11 +1038,11 @@ Language: zh_CN
     <string name="dashboard_fulfill_order_title_single">您有 1 个订单待处理</string>
     <string name="dashboard_action_view_orders">查看订单</string>
     <string name="dashboard_action_view_order">查看订单</string>
-    <string name="dashboard_top_earners_empty">这段时间内没有任何活动</string>
-    <string name="dashboard_top_earners_total_orders">订单总数：%s</string>
-    <string name="dashboard_top_earners_total_spend">总花费</string>
-    <string name="dashboard_top_earners_description">深入了解商店中产品的销售情况</string>
-    <string name="dashboard_top_earners_title">热销产品</string>
+    <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
+    <string name="dashboard_top_performers_total_orders">订单总数：%s</string>
+    <string name="dashboard_top_performers_total_spend">总花费</string>
+    <string name="dashboard_top_performers_description">深入了解商店中产品的销售情况</string>
+    <string name="dashboard_top_performers_title">热销产品</string>
     <string name="dashboard_stats_updated_date_time">更新时间：%s</string>
     <string name="dashboard_stats_updated_one_day">更新时间：1 天前</string>
     <string name="dashboard_stats_updated_hours">更新时间：%d 小时前</string>
