@@ -1179,7 +1179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             _addedProductTags.addNewItem(ProductTag(name = tagName))
             updateTagsMenuAction()
         }
-        filterExistingProductTagList()
+        loadProductTags()
     }
 
     /**
@@ -1188,7 +1188,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
-        filterExistingProductTagList()
+        loadProductTags()
     }
 
     /**
@@ -1202,7 +1202,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
-        filterExistingProductTagList()
+        loadProductTags()
     }
 
     private fun updateTagsMenuAction() {
@@ -1210,16 +1210,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
                 !_addedProductTags.isEmpty()
         )
-    }
-
-    /**
-     * Applies the filter to the existing product tag list, used after the tags have been edited to
-     * ensure the displayed lists reflects the change
-     */
-    private fun filterExistingProductTagList() {
-        _productTags.value?.let {
-            filterProductTagList(it)
-        }
     }
 
     /**
@@ -1233,10 +1223,15 @@ class ProductDetailViewModel @AssistedInject constructor(
             }
         }
 
-        _productTags.value  = if (productTagsViewState.currentFilter.isEmpty()) {
+        _productTags.value = if (productTagsViewState.currentFilter.isEmpty()) {
             productTags.filter { !addedTags.contains(it) }
         } else {
-            productTags.filter { it.name.contains(productTagsViewState.currentFilter, ignoreCase = true) && !addedTags.contains(it) }
+            productTags.filter {
+                it.name.contains(
+                    productTagsViewState.currentFilter,
+                    ignoreCase = true
+                ) && !addedTags.contains(it)
+            }
         }
     }
 
