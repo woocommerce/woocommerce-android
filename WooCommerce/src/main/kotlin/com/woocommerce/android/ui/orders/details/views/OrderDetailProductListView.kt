@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,15 +70,10 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     fun showMarkOrderCompleteButton(
-        show: Boolean,
+        isVisible: Boolean,
         onMarkOrderCompleteButtonTapped: () -> Unit
     ) {
-        if (show) {
-            productList_btnMarkOrderComplete.show()
-            productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
-        } else {
-            productList_btnMarkOrderComplete.hide()
-            productList_btnMarkOrderComplete.setOnClickListener(null)
-        }
+        productList_btnMarkOrderComplete.isVisible = isVisible
+        productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
     }
 }

@@ -321,6 +321,11 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onMarkOrderCompleteButtonTapped() {
+        AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+        onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
+    }
+
     private suspend fun fetchOrder(showSkeleton: Boolean) {
         if (networkStatus.isConnected()) {
             orderDetailViewState = orderDetailViewState.copy(
@@ -440,8 +445,11 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isOrderDetailSkeletonShown: Boolean? = null,
         val isOrderNotesSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isShipmentTrackingAvailable: Boolean? = null
-    ) : Parcelable
+        val isShipmentTrackingAvailable: Boolean? = null,
+    ) : Parcelable {
+        val isMarkOrderCompleteButtonVisible: Boolean?
+            get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<OrderDetailViewModel>

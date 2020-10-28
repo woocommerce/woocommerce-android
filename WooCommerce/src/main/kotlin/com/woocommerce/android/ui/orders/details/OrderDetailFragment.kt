@@ -15,7 +15,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.extensions.handleResult
@@ -56,7 +55,6 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_order_detail.*
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductActionListener {
@@ -129,6 +127,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         viewModel.orderDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
+            new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
+                showMarkOrderCompleteButton(it)
+            }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
@@ -203,10 +204,10 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         orderDetail_orderStatus.updateStatus(orderStatus) {
             viewModel.onEditOrderStatusSelected()
         }
-        orderDetail_productList.showMarkOrderCompleteButton(orderStatus.statusKey == CoreOrderStatus.PROCESSING.value) {
-            AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
-            viewModel.onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
-        }
+    }
+
+    private fun showMarkOrderCompleteButton(isVisible: Boolean) {
+        orderDetail_productList.showMarkOrderCompleteButton(isVisible, viewModel::onMarkOrderCompleteButtonTapped)
     }
 
     private fun showSkeleton(show: Boolean) {
