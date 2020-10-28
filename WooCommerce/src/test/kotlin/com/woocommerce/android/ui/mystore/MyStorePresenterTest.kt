@@ -84,7 +84,6 @@ class MyStorePresenterTest {
         actionCaptor = argumentCaptor()
         Dispatchers.setMain(Dispatchers.Unconfined)
 
-
         val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
         val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
         mock<Context> {
