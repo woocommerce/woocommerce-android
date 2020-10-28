@@ -39,7 +39,8 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             null,
             ProductSelectionListFragmentArgs(
-                remoteProductId = PRODUCT_REMOTE_ID
+                remoteProductId = PRODUCT_REMOTE_ID,
+                groupedProductListType = GroupedProductListType.GROUPED
             )
         )
     )
