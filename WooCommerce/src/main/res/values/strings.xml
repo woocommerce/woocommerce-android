@@ -655,14 +655,33 @@
     <string name="product_add_tag_error">Error occurred when adding tags</string>
     <string name="product_type_edit">Change product type</string>
     <string name="grouped_products">Grouped products</string>
-    <string name="grouped_products_count">%d products</string>
-    <string name="grouped_products_single">%d product</string>
     <string name="grouped_product_btn_delete">Delete the grouped product</string>
     <string name="grouped_product_add">Add product</string>
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
+    <string name="product_detail_linked_products">Linked products</string>
+    <string name="upsells_label">Upsells</string>
+    <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
+    <string name="add_products_button">Add products</string>
+    <string name="edit_products_button">Edit products</string>
+
+    <plurals name="product_count">
+        <item quantity="one">%d product</item>
+        <item quantity="other">%d products</item>
+    </plurals>
+    <plurals name="cross_sell_product_count">
+        <item quantity="one">%d cross-sell product</item>
+        <item quantity="other">%d cross-sell products</item>
+    </plurals>
+    <plurals name="upsell_product_count">
+        <item quantity="one">%d upsell product</item>
+        <item quantity="other">%d upsell products</item>
+    </plurals>
+
     <!--
         Product Add more details Bottom sheet
     -->
@@ -671,6 +690,7 @@
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+    <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 
     <!--
         Variations
