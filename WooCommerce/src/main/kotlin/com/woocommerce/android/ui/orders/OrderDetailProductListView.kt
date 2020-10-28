@@ -8,6 +8,8 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -95,21 +97,13 @@ class OrderDetailProductListView @JvmOverloads constructor(
     fun updateView(orderModel: WCOrderModel, orderListener: OrderActionListener? = null) {
         orderListener?.let {
             if (orderModel.status == CoreOrderStatus.PROCESSING.value) {
-                productList_btnFulfill.visibility = View.VISIBLE
-                productList_btnDetails.visibility = View.GONE
-                productList_btnDetails.setOnClickListener(null)
-                productList_btnFulfill.setOnClickListener {
+                productList_btnMarkOrderComplete.show()
+                productList_btnMarkOrderComplete.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
                     orderListener.openOrderFulfillment(orderModel)
                 }
             } else {
-                productList_btnFulfill.visibility = View.GONE
-                productList_btnDetails.visibility = View.VISIBLE
-                productList_btnDetails.setOnClickListener {
-                    AnalyticsTracker.track(Stat.ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED)
-                    orderListener.openOrderProductList(orderModel)
-                }
-                productList_btnFulfill.setOnClickListener(null)
+                productList_btnMarkOrderComplete.hide()
             }
         } ?: hideButtons()
     }
@@ -122,9 +116,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     private fun hideButtons() {
-        productList_btnFulfill.setOnClickListener(null)
-        productList_btnDetails.setOnClickListener(null)
-        productList_btnFulfill.visibility = View.GONE
-        productList_btnDetails.visibility = View.GONE
+        productList_btnMarkOrderComplete.hide()
+        productList_btnCreateShippingLabel.hide()
     }
 }

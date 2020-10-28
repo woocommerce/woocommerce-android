@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
+            android:layout_marginBottom="@dimen/major_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productList_lblProduct"
@@ -31,34 +32,34 @@
             tools:listitem="@layout/order_detail_product_list_item"
             tools:targetApi="lollipop" />
 
-        <!-- Button: Details -->
+        <!-- Button: Mark order complete -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/productList_btnDetails"
-            style="@style/Woo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginEnd="@dimen/minor_50"
-            android:text="@string/details"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productList_products"
-            tools:visibility="visible" />
-
-        <!-- Button: Fulfill Order-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/productList_btnFulfill"
+            android:id="@+id/productList_btnCreateShippingLabel"
             style="@style/Woo.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/order_begin_fulfillment"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/productList_btnDetails"
+            android:text="@string/orderdetail_shipping_label_create_shipping_label"
+            app:layout_constraintBottom_toTopOf="@id/productList_btnMarkOrderComplete"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productList_products"
+            app:layout_constraintTop_toBottomOf="@+id/productList_products" />
+
+        <!-- Button: Mark order complete -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/productList_btnMarkOrderComplete"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:text="@string/order_mark_complete"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productList_btnCreateShippingLabel"
             tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
