@@ -69,6 +69,12 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
     }
 
+    fun notifyProductChanged(remoteProductId: Long) {
+        with(productList_products.adapter as? OrderDetailProductListAdapter) {
+            this?.notifyProductChanged(remoteProductId)
+        }
+    }
+
     fun showMarkOrderCompleteButton(
         isVisible: Boolean,
         onMarkOrderCompleteButtonTapped: () -> Unit

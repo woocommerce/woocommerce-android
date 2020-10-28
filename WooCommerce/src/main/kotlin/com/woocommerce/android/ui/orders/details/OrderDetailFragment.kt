@@ -144,6 +144,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 orderRefreshLayout.isRefreshing = it
             }
+            new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
@@ -226,6 +227,10 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showOrderNotesSkeleton(show: Boolean) {
         orderDetail_noteList.showSkeleton(show)
+    }
+
+    private fun refreshProduct(remoteProductId: Long) {
+        orderDetail_productList.notifyProductChanged(remoteProductId)
     }
 
     private fun showOrderNotes(orderNotes: List<OrderNote>) {

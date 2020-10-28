@@ -1,6 +1,10 @@
 default_platform(:android)
 fastlane_require 'dotenv'
 
+unless FastlaneCore::Helper.bundler?
+  UI.user_error!('Please run fastlane via `bundle exec`')
+end
+
 platform :android do
 ########################################################################
 # Environment
@@ -81,8 +85,7 @@ update_strings_path = "./fastlane/resources/values/"
   #####################################################################################
   desc "Creates a new release branch from the current develop"
   lane :complete_code_freeze do | options |
-    # TODO: We should probably add a precheck like we do on iOS to make sure 
-    # we're on the right branch and the repo is clean.
+    android_completecodefreeze_prechecks(options)
     android_tag_build()
   end
   
