@@ -12,7 +12,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
 
     private val milestoneTag
         get() = when (this) {
-            PRODUCT -> "&product_milestone=$milestone"
+            PRODUCT -> "&product-milestone=$milestone"
             SHIPPING_LABELS -> "&shipping_label_milestone=$milestone"
             else -> ""
         }

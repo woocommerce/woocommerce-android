@@ -16,12 +16,12 @@ class SurveyTypeTest {
 
     @Test
     fun `Product SurveyType url should include a milestone tag`() {
-        assertThat(PRODUCT.url.contains(Regex("milestone=\\d(?!\\S)"))).isTrue()
+        assertThat(PRODUCT.url.contains(Regex("product-milestone=\\d(?!\\S)"))).isTrue()
     }
 
     @Test
     fun `ShippingLabels SurveyType url should include a milestone tag`() {
-        assertThat(SHIPPING_LABELS.url.contains(Regex("milestone=\\d(?!\\S)"))).isTrue()
+        assertThat(SHIPPING_LABELS.url.contains(Regex("shipping_label_milestone=\\d(?!\\S)"))).isTrue()
     }
 
     @Test
