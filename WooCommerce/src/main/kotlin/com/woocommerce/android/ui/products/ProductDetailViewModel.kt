@@ -1179,6 +1179,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             _addedProductTags.addNewItem(ProductTag(name = tagName))
             updateTagsMenuAction()
         }
+        filterExistingProductTagList()
     }
 
     /**
@@ -1187,6 +1188,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
+        filterExistingProductTagList()
     }
 
     /**
@@ -1200,6 +1202,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
+        filterExistingProductTagList()
     }
 
     private fun updateTagsMenuAction() {
@@ -1210,25 +1213,31 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Returns a list of product tags with the current filter applied and with the already added tags removed
+     * Applies the filter to the existing product tag list, used after the tags have been edited to
+     * ensure the displayed lists reflects the change
      */
-    private fun filterProductTagList(productTags: List<ProductTag>): List<ProductTag> {
-        // first apply the current filter
-        val filter = productTagsViewState.currentFilter
-        val filteredTags = if (filter.isEmpty()) {
-            productTags
-        } else {
-            productTags.filter { it.name.contains(filter, ignoreCase = true) }
+    private fun filterExistingProductTagList() {
+        _productTags.value?.let {
+            filterProductTagList(it)
         }
+    }
 
-        // then return the filtered tags with the already added tags removed
+    /**
+     * Sets the product tag list to the passed list with the current filter applied and already added tags removed
+     */
+    private fun filterProductTagList(productTags: List<ProductTag>) {
         val addedTags = ArrayList<ProductTag>().also {
             it.addAll(_addedProductTags.getList())
             viewState.productDraft?.tags?.let { draftTags ->
                 it.addAll(draftTags)
             }
         }
-        return filteredTags.filter { !addedTags.contains(it) }
+
+        _productTags.value  = if (productTagsViewState.currentFilter.isEmpty()) {
+            productTags.filter { !addedTags.contains(it) }
+        } else {
+            productTags.filter { it.name.contains(productTagsViewState.currentFilter, ignoreCase = true) && !addedTags.contains(it) }
+        }
     }
 
     /**
@@ -1237,7 +1246,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
-        _productTags.value = filterProductTagList(productTags)
+        filterProductTagList(productTags)
 
         // fetch from the backend when a filter exists in case not all tags have been fetched yet
         if (filter.isNotEmpty()) {
@@ -1293,7 +1302,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 if (productTagsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _productTags.value = filterProductTagList(productTagsInDb)
+                    filterProductTagList(productTagsInDb)
                     showSkeleton = false
                 }
             }
@@ -1323,7 +1332,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
-            _productTags.value = filterProductTagList(
+            filterProductTagList(
                 productTagsRepository.fetchProductTags(
                     loadMore = loadMore,
                     searchQuery = searchQuery
