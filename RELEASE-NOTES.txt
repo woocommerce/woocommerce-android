@@ -1,6 +1,6 @@
 5.4
 -----
- 
+* [*] Fixed a rare crash happening when adding new product category and selecting product filter options. [https://github.com/woocommerce/woocommerce-android/pull/3098]
 
 5.3
 -----
