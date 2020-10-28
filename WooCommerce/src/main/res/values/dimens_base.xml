@@ -107,5 +107,5 @@ so that's the baseline as defined in `major_100`.
     <dimen name="min_tap_target">48dp</dimen>
     <dimen name="appbar_elevation">4dp</dimen>
     <dimen name="alert_dialog_max_width">300dp</dimen>
-    <dimen name="top_earner_min_height">224dp</dimen>
+    <dimen name="top_performer_min_height">224dp</dimen>
 </resources>

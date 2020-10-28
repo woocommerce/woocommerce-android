@@ -11,21 +11,26 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.containsInstanceOf
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_my_store.*
 import kotlinx.android.synthetic.main.fragment_my_store.view.*
@@ -34,6 +39,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -95,12 +101,12 @@ class MyStoreFragment : TopLevelFragment(),
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_store, container, false)
         with(view) {
-            dashboard_refresh_layout.setOnRefreshListener {
+            my_store_refresh_layout.setOnRefreshListener {
                     // Track the user gesture
                     AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
                     MyStorePresenter.resetForceRefresh()
-                    dashboard_refresh_layout.isRefreshing = false
+                    my_store_refresh_layout.isRefreshing = false
                     refreshMyStoreStats(forced = true)
             }
         }
@@ -141,19 +147,27 @@ class MyStoreFragment : TopLevelFragment(),
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         )
-        my_store_top_earners.initView(
+        my_store_top_performers.initView(
             listener = this,
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
             statsCurrencyCode = presenter.getStatsCurrency().orEmpty()
         )
 
+        val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
+        getString(R.string.my_store_stats_availability_description, contactUsText)
+            .configureStringClick(
+                clickableContent = contactUsText,
+                clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) },
+                textField = my_store_stats_availability_message
+            )
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
                 my_store_date_bar?.clearDateRangeValues()
                 my_store_stats?.loadDashboardStats(activeGranularity)
-                my_store_top_earners?.loadTopEarnerStats(activeGranularity)
+                my_store_top_performers?.loadTopPerformerStats(activeGranularity)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -183,6 +197,9 @@ class MyStoreFragment : TopLevelFragment(),
                 refreshMyStoreStats(forced = false)
             }
             addTabLayoutToAppBar(tabLayout)
+            showChartSkeleton(true)
+            my_store_refresh_layout.visibility = View.VISIBLE
+            stats_error_scroll_view.visibility = View.GONE
         } else {
             isStatsRefreshed = false
             removeTabLayoutFromAppBar(tabLayout)
@@ -206,7 +223,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     override fun onDestroyView() {
         my_store_stats.removeListener()
-        my_store_top_earners.removeListener()
+        my_store_top_performers.removeListener()
         presenter.dropView()
         super.onDestroyView()
     }
@@ -222,6 +239,7 @@ class MyStoreFragment : TopLevelFragment(),
         revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
     ) {
+        addTabLayoutToAppBar(tabLayout)
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (activeGranularity == granularity) {
             my_store_stats.showErrorView(false)
@@ -238,17 +256,23 @@ class MyStoreFragment : TopLevelFragment(),
         }
     }
 
+    override fun updateStatsAvailabilityError() {
+        my_store_refresh_layout.visibility = View.GONE
+        WooAnimUtils.fadeIn(stats_error_scroll_view)
+        removeTabLayoutFromAppBar(tabLayout)
+    }
+
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_top_earners.showErrorView(false)
-            my_store_top_earners.updateView(topPerformers)
+            my_store_top_performers.showErrorView(false)
+            my_store_top_performers.updateView(topPerformers)
         }
     }
 
     override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            my_store_top_earners.updateView(emptyList())
-            my_store_top_earners.showErrorView(true)
+            my_store_top_performers.updateView(emptyList())
+            my_store_top_performers.showErrorView(true)
             showErrorSnack()
         }
     }
@@ -269,15 +293,10 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == true) {
-            return
+        if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
+            errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
+            errorSnackbar?.show()
         }
-        errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
-        errorSnackbar?.show()
-    }
-
-    override fun updateStatsAvailabilityError() {
-        (activity as? MainActivity)?.updateStatsView(false)
     }
 
     override fun getFragmentTitle(): String {
@@ -292,7 +311,7 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun scrollToTop() {
-        scroll_view.smoothScrollTo(0, 0)
+        stats_scroll_view.smoothScrollTo(0, 0)
     }
 
     override fun refreshFragmentState() {
@@ -325,8 +344,8 @@ class MyStoreFragment : TopLevelFragment(),
         my_store_stats.showSkeleton(show)
     }
 
-    override fun showTopEarnersSkeleton(show: Boolean) {
-        my_store_top_earners.showSkeleton(show)
+    override fun showTopPerformersSkeleton(show: Boolean) {
+        my_store_top_performers.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
@@ -334,8 +353,8 @@ class MyStoreFragment : TopLevelFragment(),
         presenter.loadStats(period)
     }
 
-    override fun onRequestLoadTopEarnerStats(period: StatsGranularity) {
-        my_store_top_earners.showErrorView(false)
+    override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
+        my_store_top_performers.showErrorView(false)
         presenter.coroutineScope.launch {
             presenter.loadTopPerformersStats(period)
         }
@@ -431,12 +450,13 @@ class MyStoreFragment : TopLevelFragment(),
         tabLayout.visibility = dashboardVisibility
         my_store_date_bar.visibility = dashboardVisibility
         my_store_stats.visibility = dashboardVisibility
-        my_store_top_earners.visibility = dashboardVisibility
+        my_store_top_performers.visibility = dashboardVisibility
     }
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         appBarLayout
             ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.takeIf { AppPrefs.isV4StatsSupported() }
             ?.addView(
                 tabLayout,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)

@@ -160,7 +160,7 @@
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
     <!--
-        Dashboard View
+        My Store View
     -->
     <string name="dashboard_stats_granularity_days">Days</string>
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
@@ -182,11 +182,11 @@
     <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
-    <string name="dashboard_top_earners_title">Top performers</string>
-    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_earners_total_spend">Total spend</string>
-    <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_empty">No activity this period</string>
+    <string name="dashboard_top_performers_title">Top performers</string>
+    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
+    <string name="dashboard_top_performers_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -196,8 +196,9 @@
 
     <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
     <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after September 1, 2020.</string>
-    <string name="my_store_stats_availability_title">Try our improved stats</string>
-    <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
+    <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
+    <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
+    <string name="my_store_stats_availability_contact_us">Contact us</string>
     <!--
         Order List View
     -->
