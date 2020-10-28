@@ -1321,7 +1321,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true &&
+                isEmptyViewVisible = products.isEmpty() &&
                     _addedProductTags.isEmpty() &&
                     searchQuery.isNullOrEmpty()
             )
