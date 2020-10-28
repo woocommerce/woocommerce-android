@@ -1,6 +1,4 @@
-Enhancements to the editing capabilities for all product types:
+* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
+* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.
+* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.
 
-Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
-
-Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
- 

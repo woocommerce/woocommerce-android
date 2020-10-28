@@ -33,8 +33,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository.OnProductImageChanged
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -43,6 +43,9 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -93,6 +96,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         orderDetailRepository.onCleanup()
+        EventBus.getDefault().unregister(this)
     }
 
     init {
@@ -100,6 +104,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     final fun start() {
+        EventBus.getDefault().register(this)
         orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
             updateOrderState(orderInDb)
             loadOrderNotes()
@@ -117,8 +122,10 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun hasVirtualProductsOnly(): Boolean {
         return orderDetailViewState.order?.items?.let { lineItems ->
-            val remoteProductIds = lineItems.map { it.productId }
-            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+            if (lineItems.isNotEmpty()) {
+                val remoteProductIds = lineItems.map { it.productId }
+                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+            } else false
         } ?: false
     }
 
@@ -414,27 +421,37 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadOrderShippingLabels() {
         order?.let { order ->
-            if (FeatureFlag.SHIPPING_LABELS_M1.isEnabled()) {
-                orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
-                    .whenNotNullNorEmpty { _shippingLabels.value = it.loadProducts(order.items) }
-
-                launch {
-                    _shippingLabels.value = orderDetailRepository
-                        .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
-                        .loadProducts(order.items)
+            orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
+                .whenNotNullNorEmpty {
+                    _shippingLabels.value = it.loadProducts(order.items)
+                    hideShipmentTrackingAndProductsCard()
                 }
-            } else {
-                _shippingLabels.value = emptyList()
+
+            launch {
+                orderDetailRepository
+                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                    .loadProducts(order.items)
+                    .whenNotNullNorEmpty {
+                        _shippingLabels.value = it
+
+                        // hide the shipment tracking section and the product list section if
+                        // shipping labels are available for the order
+                        hideShipmentTrackingAndProductsCard()
+                    }
             }
         }
+    }
 
-        // hide the shipment tracking section and the product list section if
-        // shipping labels are available for the order
-        _shippingLabels.value?.whenNotNullNorEmpty {
-            _productList.value = emptyList()
-            _shipmentTrackings.value = emptyList()
-            orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-        }
+    private fun hideShipmentTrackingAndProductsCard() {
+        _productList.value = emptyList()
+        _shipmentTrackings.value = emptyList()
+        orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductImageChanged(event: OnProductImageChanged) {
+        orderDetailViewState = orderDetailViewState.copy(refreshedProductId = event.remoteProductId)
     }
 
     @Parcelize
@@ -445,7 +462,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isOrderDetailSkeletonShown: Boolean? = null,
         val isOrderNotesSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isShipmentTrackingAvailable: Boolean? = null
+        val isShipmentTrackingAvailable: Boolean? = null,
+        val refreshedProductId: Long? = null
     ) : Parcelable
 
     @AssistedInject.Factory

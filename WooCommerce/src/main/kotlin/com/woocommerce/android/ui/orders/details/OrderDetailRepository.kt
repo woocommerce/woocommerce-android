@@ -22,10 +22,12 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
+import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -42,6 +44,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCOrderStore.PostOrderNotePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderStatusPayload
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
@@ -363,6 +366,20 @@ class OrderDetailRepository @Inject constructor(
                 continuationDeleteShipmentTracking = null
             }
             else -> { }
+        }
+    }
+
+    class OnProductImageChanged(val remoteProductId: Long)
+
+    /**
+     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
+     * Here we fire an event that tells the fragment to update that product in the order product list.
+     */
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onProductChanged(event: OnProductChanged) {
+        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
+            EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
         }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-09-24 15:28:14+0000
+Translation-Revision-Date: 2020-10-02 13:54:17+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -17,7 +17,9 @@ Language: ar
     <string name="signup_magic_link_message">لقد أرسلنا إليك رسالة على بريدك الإلكتروني تحتوي على رابط سحري لإنشاء حسابك على ووردبريس.كوم. تحقّق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط في رسالة البريد الإلكتروني التي استلمتها من ووردبريس.كوم.</string>
     <string name="sign_up_label">التسجيل</string>
     <string name="login_or">أو</string>
+    <string name="continue_site_credentials">الاستمرار في تخزين بيانات الاعتماد</string>
     <string name="continue_google_button_suffix">المتابعة باستخدام Google</string>
+    <string name="login_find_your_connected_email">العثور على بريدك الإلكتروني المتصل</string>
     <string name="login_find_your_site_adress">اعثر على عنوان موقعك</string>
     <string name="login_done">تمّ</string>
     <string name="magic_link_not_seeing_email_message">لم تشاهد البريد الإلكتروني؟ تحقّق من مجلد البريد المزعج أو البريد العشوائي.</string>
@@ -30,6 +32,32 @@ Language: ar
     <string name="or_type_your_password">أو اكتب كلمة المرور الخاصة بك</string>
     <string name="create_account">إنشاء حساب</string>
     <string name="send_link_by_email">إرسال الرابط عبر البريد الإلكتروني</string>
+    <string name="feedback_product_give_feedback_button_text">تقديم ملاحظات</string>
+    <string name="product_detail_publish_product_success">تم نشر منتج</string>
+    <string name="product_detail_publish_product_error">حدث خطأ في أثناء نشر المنتج</string>
+    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_title">نشر المنتج</string>
+    <string name="product_add_tool_bar_menu_button_done">نشر</string>
+    <string name="product_add_tool_bar_title">منتج جديد</string>
+    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
+    <string name="product_add_type_variable_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
+    <string name="product_add_type_simple_desc">عنصر فريد للبيع</string>
+    <string name="product_add_type_external">منتج خارجي</string>
+    <string name="product_add_type_grouped">منتج مجمع</string>
+    <string name="product_add_type_variable">منتج متعدد الأنواع</string>
+    <string name="product_add_type_simple">منتج بسيط</string>
+    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
+    <string name="product_images_image_limit_warning">لا يمكن عرض سوى صورة واحدة فقط لكل تباين من تباينات المنتج</string>
+    <string name="product_replace_photo">استبدال صورة</string>
+    <string name="product_add_photo">إضافة صورة</string>
+    <string name="variation_detail_image_add">إضافة صورة التباين</string>
+    <string name="login_jetpack_view_instructions">معرفة كيفية تثبيت Jetpack وربطه</string>
+    <string name="login_jetpack_required_text">لاستخدام هذا التطبيق مقابل ⁦%1$s⁩، ستحتاج إلى وجود إضافة Jetpack متصلة على متجرك.</string>
+    <string name="login_try_another_account">تسجيل الدخول باستخدام حساب آخر</string>
+    <string name="login_pick_store">تحديد متجر للاتصال به</string>
+    <string name="login_store_address">إدخال عنوان متجرك</string>
+    <string name="login_wpcom">المتابعة باستخدام وردبرس.كوم</string>
     <string name="product_type_variation_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
     <string name="product_selection_count_single">%d تم تحديد المنتج</string>
     <string name="product_selection_count">%d تم تحديد المنتجات</string>
@@ -258,6 +286,7 @@ Language: ar
     <string name="product_inventory_empty">إضافة المخزون</string>
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
     <string name="product_detail_editable_text_hint">إدخال نص</string>
+    <string name="product_detail_title_hint">إدخال عنوان الموقع</string>
     <string name="product_detail_update_product_success">تم تحديث المنتج</string>
     <string name="product_detail_update_product_error">خطأ في أثناء تحرير المنتج</string>
     <string name="product_update_dialog_message">يُرجى الانتظار…</string>
@@ -911,6 +940,7 @@ Language: ar
     <string name="login_username_at">\@%s</string>
     <string name="login_already_logged_in_wpcom">تم التسجيل بالفعل في موقع وردبرس.كوم</string>
     <string name="login_continue">المتابعة</string>
+    <string name="connect_site">الاتصال بموقع</string>
     <string name="connect_more">الاتصال بموقع آخر</string>
     <string name="enter_wpcom_password_google">للمتابعة باستخدام حساب Google هذا، يرجى إدخال كلمة مرور متطابقة في وردبرس.كوم. ستتم المطالبة بها لمرة واحدة.</string>
     <string name="enter_wpcom_password">أدخل كلمة مرور وردبرس.كوم.</string>

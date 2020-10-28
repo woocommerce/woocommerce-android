@@ -13,6 +13,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
@@ -91,6 +95,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
 import java.util.Date
+import java.util.Locale
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
@@ -457,7 +462,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Called when the "Save as draft" button is clicked in Product detail screen
      */
     fun onSaveAsDraftButtonClicked() {
-        // TODO analytics
         updateProductDraft(productStatus = DRAFT)
         startPublishProduct()
     }
@@ -472,14 +476,28 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private fun startPublishProduct(exitWhenDone: Boolean = false) {
         viewState.productDraft?.let {
+            trackPublishing(it)
+
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val isSuccess = addProduct(it)
-                if (isSuccess && exitWhenDone) {
-                    triggerEvent(ExitProduct)
+                if (isSuccess) {
+                    AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+
+                    if (exitWhenDone) {
+                        triggerEvent(ExitProduct)
+                    }
+                } else {
+                    AnalyticsTracker.track(ADD_PRODUCT_FAILED)
                 }
             }
         }
+    }
+
+    private fun trackPublishing(it: Product) {
+        val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
+        val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
+        AnalyticsTracker.track(statId, properties)
     }
 
     /**
