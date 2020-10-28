@@ -1,10 +1,11 @@
 5.4
 -----
- 
+* You can now add and edit linked products
+* Fixed a rare crash happening when adding new product category and selecting product filter options. [https://github.com/woocommerce/woocommerce-android/pull/3098]
 
 5.3
 -----
-* In Settings > Beta features, a Products switch is now available for turning Products M4 features on and off (default off). Products M4 features: add a simple/grouped/external/variable product with actions to publish or save as draft.
+* In Settings > Beta features, a Products switch is now available for turning Products M4 features on and off (default off). Products M4 features: add a simple/grouped/external product with actions to publish or save as draft.
 * Application settings have been moved to a gear icon on the Dashboard
 * You can now view product review details directly from product detail screen
 * Product detail screen now includes the number of ratings for that product

@@ -211,6 +211,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                     trackingNumber = trackingNumText,
                     dateShipped = getDateShippedText(),
                     trackingProvider = providerText,
+                    isCustomProvider = isCustomProvider,
                     trackingLink = if (isCustomProvider) { customProviderTrackingUrl } else ""
                 )
 

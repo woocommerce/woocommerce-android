@@ -3,17 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/top_earner_min_height"
+    android:minHeight="@dimen/top_performer_min_height"
     android:orientation="vertical">
 
-    <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
+    <include layout="@layout/skeleton_dashboard_top_performer_list_item"/>
 
     <View style="@style/Woo.Divider.TitleAligned"/>
 
-    <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
+    <include layout="@layout/skeleton_dashboard_top_performer_list_item"/>
 
     <View style="@style/Woo.Divider.TitleAligned"/>
 
-    <include layout="@layout/skeleton_dashboard_top_earner_list_item"/>
+    <include layout="@layout/skeleton_dashboard_top_performer_list_item"/>
 
 </LinearLayout>

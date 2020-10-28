@@ -19,7 +19,7 @@ import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.main.BottomNavigationPosition.DASHBOARD
+import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import org.wordpress.android.util.DisplayUtils
 import kotlin.math.min
 
@@ -58,7 +58,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
 
         // Default to the dashboard position
-        active(DASHBOARD.position)
+        active(MY_STORE.position)
     }
 
     /**
@@ -195,7 +195,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     /**
-     * Replaces the fragment in [DASHBOARD] based on whether the revenue stats is available
+     * Replaces the fragment in [MY_STORE] based on whether the revenue stats is available
      */
     fun replaceStatsFragment() {
         val fragment = fragmentManager.findFragment(currentPosition)

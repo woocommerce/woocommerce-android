@@ -140,6 +140,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 orderRefreshLayout.isRefreshing = it
             }
+            new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner, Observer {
@@ -218,6 +219,10 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showOrderNotesSkeleton(show: Boolean) {
         orderDetail_noteList.showSkeleton(show)
+    }
+
+    private fun refreshProduct(remoteProductId: Long) {
+        orderDetail_productList.notifyProductChanged(remoteProductId)
     }
 
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
@@ -327,7 +332,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
         ))
         registerFeedbackSetting(GIVEN)
@@ -339,7 +344,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
         ))
         registerFeedbackSetting(DISMISSED)

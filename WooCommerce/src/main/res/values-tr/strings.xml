@@ -1036,11 +1036,11 @@ Language: tr
     <string name="dashboard_fulfill_order_title_single">1 sipariş yerine getirilmeyi bekliyor</string>
     <string name="dashboard_action_view_orders">Siparişleri Görüntüle</string>
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
-    <string name="dashboard_top_earners_empty">Bu dönemde hiç etkinlik yok</string>
-    <string name="dashboard_top_earners_total_orders">Toplam sipariş: %s</string>
-    <string name="dashboard_top_earners_total_spend">Toplam harcama</string>
-    <string name="dashboard_top_earners_description">Ürünlerin mağazanızdaki performansına dair içgörüler edinin</string>
-    <string name="dashboard_top_earners_title">En yüksek performans gösterenler</string>
+    <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
+    <string name="dashboard_top_performers_total_orders">Toplam sipariş: %s</string>
+    <string name="dashboard_top_performers_total_spend">Toplam harcama</string>
+    <string name="dashboard_top_performers_description">Ürünlerin mağazanızdaki performansına dair içgörüler edinin</string>
+    <string name="dashboard_top_performers_title">En yüksek performans gösterenler</string>
     <string name="dashboard_stats_updated_date_time">%s tarihinde güncellendi</string>
     <string name="dashboard_stats_updated_one_day">1 gün önce güncellendi</string>
     <string name="dashboard_stats_updated_hours">%d saat önce güncellendi</string>

@@ -1044,11 +1044,11 @@ Language: es
     <string name="dashboard_fulfill_order_title_single">Tienes 1 pedido por realizar</string>
     <string name="dashboard_action_view_orders">Ver pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
-    <string name="dashboard_top_earners_empty">Sin actividad durante este periodo</string>
-    <string name="dashboard_top_earners_total_orders">Total de pedidos: %s</string>
-    <string name="dashboard_top_earners_total_spend">Gasto total</string>
-    <string name="dashboard_top_earners_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
-    <string name="dashboard_top_earners_title">Mejor rendimiento</string>
+    <string name="dashboard_top_performers_empty">Sin actividad durante este periodo</string>
+    <string name="dashboard_top_performers_total_orders">Total de pedidos: %s</string>
+    <string name="dashboard_top_performers_total_spend">Gasto total</string>
+    <string name="dashboard_top_performers_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
+    <string name="dashboard_top_performers_title">Mejor rendimiento</string>
     <string name="dashboard_stats_updated_date_time">Se ha actualizado el %s</string>
     <string name="dashboard_stats_updated_one_day">Se ha actualizado hace 1 día.</string>
     <string name="dashboard_stats_updated_hours">Se ha actualizado hace %d horas</string>
