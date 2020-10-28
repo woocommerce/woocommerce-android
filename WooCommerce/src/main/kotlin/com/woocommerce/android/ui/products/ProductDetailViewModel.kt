@@ -1337,7 +1337,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+                isEmptyViewVisible = _productTags.value?.isEmpty() == true && addedProductTags.isEmpty()
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
