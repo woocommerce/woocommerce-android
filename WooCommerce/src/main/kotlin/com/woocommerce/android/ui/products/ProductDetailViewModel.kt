@@ -1221,14 +1221,14 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when user types into product tag screen so we can provide "live" filtering
+     * Called when user types into product tag screen so we can provide live filtering
      */
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
         val productTags = productTagsRepository.getProductTags()
         _productTags.value = filterProductTagList(filter, productTags)
 
-        // fetch from the backend in case not all tags have been fetched yet
+        // fetch from the backend when a filter exists in case not all tags have been fetched yet
         if (filter.isNotEmpty()) {
             launch {
                 fetchProductTags(searchQuery = filter)
