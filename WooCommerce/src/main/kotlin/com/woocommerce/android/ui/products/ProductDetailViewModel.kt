@@ -1212,8 +1212,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Returns a list of product tags with the passed filter applied
      */
-    private fun filterProductTagList(filter: String, productTags: List<ProductTag>): List<ProductTag> {
-        return if (filter.isEmpty()) {
+    private fun filterProductTagList(filter: String?, productTags: List<ProductTag>): List<ProductTag> {
+        return if (filter.isNullOrBlank()) {
             productTags
         } else {
             productTags.filter { it.name.contains(filter, ignoreCase = true) }
@@ -1312,13 +1312,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
-            _productTags.value = filterProductTagList(
-                productTagsViewState.currentFilter,
-                productTagsRepository.fetchProductTags(
-                    loadMore = loadMore,
-                    searchQuery = searchQuery
-                )
+            val products = productTagsRepository.fetchProductTags(
+                loadMore = loadMore,
+                searchQuery = searchQuery
             )
+            _productTags.value = filterProductTagList(searchQuery, products)
 
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
