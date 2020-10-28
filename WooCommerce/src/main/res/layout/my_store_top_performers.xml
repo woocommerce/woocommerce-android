@@ -8,17 +8,17 @@
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/topEarners_title"
+        android:id="@+id/topPerformers_title"
         style="@style/Woo.Card.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dashboard_top_earners_title"/>
+        android:text="@string/dashboard_top_performers_title"/>
 
     <com.google.android.material.textview.MaterialTextView
         style="@style/Woo.Card.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/dashboard_top_earners_description"/>
+        android:text="@string/dashboard_top_performers_description"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -36,26 +36,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/dashboard_top_earners_total_spend"/>
+            android:text="@string/dashboard_top_performers_total_spend"/>
     </FrameLayout>
 
     <View
         style="@style/Woo.Divider"/>
 
     <RelativeLayout
-        android:id="@+id/dashboard_top_earners_container"
+        android:id="@+id/dashboard_top_performers_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/topEarners_recycler"
+            android:id="@+id/topPerformers_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="@dimen/top_earner_min_height"
-            tools:listitem="@layout/top_earner_list_item"/>
+            android:minHeight="@dimen/top_performer_min_height"
+            tools:listitem="@layout/top_performers_list_item"/>
 
         <ImageView
-            android:id="@+id/topEarners_error"
+            android:id="@+id/topPerformers_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -65,12 +65,12 @@
             tools:visibility="visible"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/topEarners_emptyView"
+            android:id="@+id/topPerformers_emptyView"
             style="@style/Woo.Card.StatusMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/dashboard_top_earners_empty"
+            android:text="@string/dashboard_top_performers_empty"
             android:visibility="gone"
             tools:visibility="visible"/>
     </RelativeLayout>

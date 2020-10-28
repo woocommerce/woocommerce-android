@@ -1036,11 +1036,11 @@ Language: ja_JP
     <string name="dashboard_fulfill_order_title_single">履行する注文が1件あります</string>
     <string name="dashboard_action_view_orders">注文を表示</string>
     <string name="dashboard_action_view_order">注文を表示</string>
-    <string name="dashboard_top_earners_empty">この期間のアクティビティはありません</string>
-    <string name="dashboard_top_earners_total_orders">注文合計:%s</string>
-    <string name="dashboard_top_earners_total_spend">支払い合計額</string>
-    <string name="dashboard_top_earners_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>
-    <string name="dashboard_top_earners_title">成績優秀者</string>
+    <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
+    <string name="dashboard_top_performers_total_orders">注文合計:%s</string>
+    <string name="dashboard_top_performers_total_spend">支払い合計額</string>
+    <string name="dashboard_top_performers_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>
+    <string name="dashboard_top_performers_title">成績優秀者</string>
     <string name="dashboard_stats_updated_date_time">%sに更新</string>
     <string name="dashboard_stats_updated_one_day">1日前に更新</string>
     <string name="dashboard_stats_updated_hours">%d時間前に更新</string>

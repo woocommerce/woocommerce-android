@@ -159,6 +159,7 @@ class HelpActivity : AppCompatActivity() {
         UNKNOWN("origin:unknown"),
         SETTINGS("origin:settings"),
         FEEDBACK_SURVEY("origin:feedback_survey"),
+        MY_STORE("origin:my_store"),
         ZENDESK_NOTIFICATION("origin:zendesk-notification"),
         LOGIN_EMAIL("origin:login-email"),
         LOGIN_MAGIC_LINK("origin:login-magic-link"),
