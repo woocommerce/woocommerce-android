@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -172,7 +173,7 @@ fun WCOrderModel.toAppModel(): Order {
                         Item(
                                 it.id!!,
                                 it.productId!!,
-                                it.name?.fastStripHtml() ?: "",
+                                it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
                                 it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
                                 it.quantity?.toInt() ?: 0,
