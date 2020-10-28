@@ -11,6 +11,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.R
@@ -238,6 +239,7 @@ class MyStoreFragment : TopLevelFragment(),
         revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
     ) {
+        addTabLayoutToAppBar(tabLayout)
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (activeGranularity == granularity) {
             my_store_stats.showErrorView(false)
@@ -454,6 +456,7 @@ class MyStoreFragment : TopLevelFragment(),
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
         appBarLayout
             ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.takeIf { AppPrefs.isV4StatsSupported() }
             ?.addView(
                 tabLayout,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)

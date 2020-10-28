@@ -210,6 +210,7 @@ class MyStorePresenter @Inject constructor(
                     mapOf(AnalyticsTracker.KEY_RANGE to event.granularity.name.toLowerCase())
                 )
 
+                AppPrefs.setV4StatsSupported(true)
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
                     selectedSite.get(), event.granularity, event.startDate!!, event.endDate!!
                 )
