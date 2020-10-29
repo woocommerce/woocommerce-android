@@ -43,14 +43,13 @@ object WooDialog {
                 .setMessage(message)
                 .setCancelable(true)
                 .setPositiveButton(positiveButtonTextId, posBtnAction)
+                .setNegativeButton(negativeButtonTextId, negBtnAction)
                 .setOnDismissListener { onCleared() }
 
         neutBtAction?.let {
             val neutralButtonTextId = neutralButtonId ?: string.product_detail_save_as_draft
             builder.setNeutralButton(neutralButtonTextId, it)
         }
-
-        negativeButtonId?.let { builder.setNegativeButton(it, negBtnAction) }
 
         titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
 
