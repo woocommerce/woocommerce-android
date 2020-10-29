@@ -9,9 +9,11 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -47,6 +49,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -57,7 +60,8 @@ class OrderDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
@@ -274,6 +278,20 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId).map { it.toAppModel() }
+
+    fun getWooServicesPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        return WooPlugin(info != null, info?.active ?: false)
+    }
+
+    fun getStoreCountryCode(): String? {
+        return wooCommerceStore.getStoreCountryCode(selectedSite.get())
+    }
+
+    fun getOrderProducts(order: Order): List<Product> {
+        return productStore.getProductsByRemoteIds(selectedSite.get(), order.items.map { it.productId })
+            .map { it.toAppModel() }
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
