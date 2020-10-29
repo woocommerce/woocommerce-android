@@ -9,11 +9,8 @@ import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
-import javax.inject.Inject
 
 class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMMERCE) {
-    @Inject lateinit var prefs: AppPrefs
-
     /**
      * Detect when the database is downgraded in debug and beta builds so we can recreate all the tables.
      * The initial purpose of this was to avoid the hassle of devs switching branches and having to clear
@@ -36,8 +33,10 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
                 toast.show()
             }
 
-            // the main activity uses this to determine when it needs to load the site list
-            prefs.setDatabaseDowngraded(true)
+            // the main activity uses this pref to determine when it needs to load the site list - note that
+            // we must first initialize AppPrefs because at this point it will be null
+            AppPrefs.init(context)
+            AppPrefs.setDatabaseDowngraded(true)
             helper?.let { reset(it) }
         } else {
             super.onDowngrade(db, helper, oldVersion, newVersion)
@@ -58,7 +57,7 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             )
             toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
             toast.show()
-            prefs.setDatabaseDowngraded(true)
+            AppPrefs.setDatabaseDowngraded(true)
             reset()
         }
     }
