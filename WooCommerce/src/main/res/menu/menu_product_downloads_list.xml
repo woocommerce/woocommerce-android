@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/menu_done"
-        android:title="@string/update"
+        android:title="@string/done"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction" />
 
