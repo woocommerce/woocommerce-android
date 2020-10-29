@@ -386,12 +386,13 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private fun checkShippingLabelRequirements(order: Order) {
-        val storeIsInTheUSofA = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
+        val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
         val plugin = orderDetailRepository.getWooServicesPluginInfo()
         val orderHasPhysicalProducts = orderDetailRepository.getOrderProducts(order).any { !it.isVirtual }
+        val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
         orderDetailViewState = orderDetailViewState.copy(
-            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive &&
-                storeIsInTheUSofA && orderHasPhysicalProducts
+            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInUs &&
+                shippingAddressIsInUs && orderHasPhysicalProducts
         )
     }
 
