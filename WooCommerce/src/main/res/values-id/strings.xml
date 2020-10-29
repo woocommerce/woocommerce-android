@@ -1038,11 +1038,11 @@ Language: id
     <string name="dashboard_fulfill_order_title_single">Anda memiliki 1 pesanan untuk dipenuhi</string>
     <string name="dashboard_action_view_orders">Lihat Pesanan</string>
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
-    <string name="dashboard_top_earners_empty">Tidak ada aktivitas dalam periode ini</string>
-    <string name="dashboard_top_earners_total_orders">Total pesanan: %s</string>
-    <string name="dashboard_top_earners_total_spend">Total pengeluaran</string>
-    <string name="dashboard_top_earners_description">Dapatkan informasi mengenai performa produk di toko Anda</string>
-    <string name="dashboard_top_earners_title">Produk dengan performa tertinggi</string>
+    <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>
+    <string name="dashboard_top_performers_total_orders">Total pesanan: %s</string>
+    <string name="dashboard_top_performers_total_spend">Total pengeluaran</string>
+    <string name="dashboard_top_performers_description">Dapatkan informasi mengenai performa produk di toko Anda</string>
+    <string name="dashboard_top_performers_title">Produk dengan performa tertinggi</string>
     <string name="dashboard_stats_updated_date_time">Diperbarui pada %s</string>
     <string name="dashboard_stats_updated_one_day">Diperbarui 1 hari lalu</string>
     <string name="dashboard_stats_updated_hours">Diperbarui %d jam lalu</string>

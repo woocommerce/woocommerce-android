@@ -1045,11 +1045,11 @@ Language: sv_SE
     <string name="dashboard_fulfill_order_title_single">Du har 1 order att fullfölja</string>
     <string name="dashboard_action_view_orders">Visa ordrar</string>
     <string name="dashboard_action_view_order">Visa order</string>
-    <string name="dashboard_top_earners_empty">Ingen aktivitet denna period</string>
-    <string name="dashboard_top_earners_total_orders">Totalt antal ordrar: %s</string>
-    <string name="dashboard_top_earners_total_spend">Spenderat totalt</string>
-    <string name="dashboard_top_earners_description">Få insikt i hur produkter presterar i din butik</string>
-    <string name="dashboard_top_earners_title">Toppresterande</string>
+    <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
+    <string name="dashboard_top_performers_total_orders">Totalt antal ordrar: %s</string>
+    <string name="dashboard_top_performers_total_spend">Spenderat totalt</string>
+    <string name="dashboard_top_performers_description">Få insikt i hur produkter presterar i din butik</string>
+    <string name="dashboard_top_performers_title">Toppresterande</string>
     <string name="dashboard_stats_updated_date_time">Uppdaterad den %s</string>
     <string name="dashboard_stats_updated_one_day">Uppdaterad för 1 dag sedan</string>
     <string name="dashboard_stats_updated_hours">Uppdaterad  för %d timmar sedan</string>

@@ -1044,11 +1044,11 @@ Language: ru
     <string name="dashboard_fulfill_order_title_single">У вас есть 1 невыполненный заказ</string>
     <string name="dashboard_action_view_orders">Просмотреть заказы</string>
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
-    <string name="dashboard_top_earners_empty">Активность за этот период отсутствует</string>
-    <string name="dashboard_top_earners_total_orders">Всего заказов: %s</string>
-    <string name="dashboard_top_earners_total_spend">Общий объём выручки</string>
-    <string name="dashboard_top_earners_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>
-    <string name="dashboard_top_earners_title">Самые продаваемые</string>
+    <string name="dashboard_top_performers_empty">Активность за этот период отсутствует</string>
+    <string name="dashboard_top_performers_total_orders">Всего заказов: %s</string>
+    <string name="dashboard_top_performers_total_spend">Общий объём выручки</string>
+    <string name="dashboard_top_performers_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>
+    <string name="dashboard_top_performers_title">Самые продаваемые</string>
     <string name="dashboard_stats_updated_date_time">Обновлено %s</string>
     <string name="dashboard_stats_updated_one_day">Обновлено 1 день назад</string>
     <string name="dashboard_stats_updated_hours">Обновлено %d ч. назад</string>

@@ -1038,11 +1038,11 @@ Language: nl
     <string name="dashboard_fulfill_order_title_single">Je moet nog 1 bestelling voltooien</string>
     <string name="dashboard_action_view_orders">Bestellingen weergeven</string>
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
-    <string name="dashboard_top_earners_empty">Geen activiteiten deze periode</string>
-    <string name="dashboard_top_earners_total_orders">Totaalaantal bestellingen: %s</string>
-    <string name="dashboard_top_earners_total_spend">Totaal uitgegeven</string>
-    <string name="dashboard_top_earners_description">Krijg inzicht in hoe goed producten op je site presteren</string>
-    <string name="dashboard_top_earners_title">Toppresteerders</string>
+    <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
+    <string name="dashboard_top_performers_total_orders">Totaalaantal bestellingen: %s</string>
+    <string name="dashboard_top_performers_total_spend">Totaal uitgegeven</string>
+    <string name="dashboard_top_performers_description">Krijg inzicht in hoe goed producten op je site presteren</string>
+    <string name="dashboard_top_performers_title">Toppresteerders</string>
     <string name="dashboard_stats_updated_date_time">Bijgewerkt op %s</string>
     <string name="dashboard_stats_updated_one_day">1 dag geleden bijgewerkt</string>
     <string name="dashboard_stats_updated_hours">%d uur geleden bijgewerkt</string>

@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import android.content.SharedPreferences
-import android.text.TextUtils
 
 object PreferenceUtils {
     fun getInt(preferences: SharedPreferences, key: String, default: Int = 0): Int {
@@ -17,16 +16,16 @@ object PreferenceUtils {
     }
 
     fun setInt(preferences: SharedPreferences, key: String, value: Int) {
-        setString(preferences, key, Integer.toString(value))
+        setString(preferences, key, value.toString())
     }
 
     fun getString(preferences: SharedPreferences, key: String, defaultValue: String = ""): String? {
         return preferences.getString(key, defaultValue)
     }
 
-    fun setString(preferences: SharedPreferences, key: String, value: String) {
+    fun setString(preferences: SharedPreferences, key: String, value: String?) {
         val editor = preferences.edit()
-        if (TextUtils.isEmpty(value)) {
+        if (value.isNullOrEmpty()) {
             editor.remove(key)
         } else {
             editor.putString(key, value)

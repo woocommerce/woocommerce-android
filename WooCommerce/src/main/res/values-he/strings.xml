@@ -1044,11 +1044,11 @@ Language: he_IL
     <string name="dashboard_fulfill_order_title_single">יש לך הזמנה אחת להשלמה</string>
     <string name="dashboard_action_view_orders">הצגת הזמנות</string>
     <string name="dashboard_action_view_order">הצגת הזמנה</string>
-    <string name="dashboard_top_earners_empty">אין פעילות בפרק זמן זה</string>
-    <string name="dashboard_top_earners_total_orders">סה\"כ הזמנות: %s</string>
-    <string name="dashboard_top_earners_total_spend">הוצאה כוללת</string>
-    <string name="dashboard_top_earners_description">קבלת תובנות על ביצועי המוצרים בחנות שלך</string>
-    <string name="dashboard_top_earners_title">הביצועים הטובים ביותר</string>
+    <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>
+    <string name="dashboard_top_performers_total_orders">סה\"כ הזמנות: %s</string>
+    <string name="dashboard_top_performers_total_spend">הוצאה כוללת</string>
+    <string name="dashboard_top_performers_description">קבלת תובנות על ביצועי המוצרים בחנות שלך</string>
+    <string name="dashboard_top_performers_title">הביצועים הטובים ביותר</string>
     <string name="dashboard_stats_updated_date_time">עודכן ב-%s</string>
     <string name="dashboard_stats_updated_one_day">עודכן לפני יום</string>
     <string name="dashboard_stats_updated_hours">עודכן לפני %d שעות</string>

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.graphics.Canvas
@@ -100,6 +100,11 @@ class DashboardStatsBarChart(context: Context, attrs: AttributeSet) : BarChart(
     }
 
     private fun setRadius(radius: Float) {
-        renderer = RoundedBarChartRenderer(this, animator, viewPortHandler, radius)
+        renderer = RoundedBarChartRenderer(
+            this,
+            animator,
+            viewPortHandler,
+            radius
+        )
     }
 }

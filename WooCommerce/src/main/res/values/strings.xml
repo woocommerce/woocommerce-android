@@ -160,7 +160,7 @@
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
     <!--
-        Dashboard View
+        My Store View
     -->
     <string name="dashboard_stats_granularity_days">Days</string>
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
@@ -182,11 +182,11 @@
     <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
-    <string name="dashboard_top_earners_title">Top performers</string>
-    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_earners_total_spend">Total spend</string>
-    <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_empty">No activity this period</string>
+    <string name="dashboard_top_performers_title">Top performers</string>
+    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
+    <string name="dashboard_top_performers_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -196,8 +196,9 @@
 
     <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
     <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after September 1, 2020.</string>
-    <string name="my_store_stats_availability_title">Try our improved stats</string>
-    <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
+    <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
+    <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
+    <string name="my_store_stats_availability_contact_us">Contact us</string>
     <!--
         Order List View
     -->
@@ -656,14 +657,33 @@
     <string name="product_add_tag_error">Error occurred when adding tags</string>
     <string name="product_type_edit">Change product type</string>
     <string name="grouped_products">Grouped products</string>
-    <string name="grouped_products_count">%d products</string>
-    <string name="grouped_products_single">%d product</string>
     <string name="grouped_product_btn_delete">Delete the grouped product</string>
     <string name="grouped_product_add">Add product</string>
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
+    <string name="product_detail_linked_products">Linked products</string>
+    <string name="upsells_label">Upsells</string>
+    <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
+    <string name="add_products_button">Add products</string>
+    <string name="edit_products_button">Edit products</string>
+
+    <plurals name="product_count">
+        <item quantity="one">%d product</item>
+        <item quantity="other">%d products</item>
+    </plurals>
+    <plurals name="cross_sell_product_count">
+        <item quantity="one">%d cross-sell product</item>
+        <item quantity="other">%d cross-sell products</item>
+    </plurals>
+    <plurals name="upsell_product_count">
+        <item quantity="one">%d upsell product</item>
+        <item quantity="other">%d upsell products</item>
+    </plurals>
+
     <!--
         Product Add more details Bottom sheet
     -->
@@ -672,6 +692,7 @@
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+    <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 
     <!--
         Variations
@@ -1377,7 +1398,7 @@
     <string name="login_site_address_help_title">What\'s my site address?</string>
     <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_find_your_site_adress">Find your site address</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>
     <string name="login_get_link_by_email">Get a login link by email</string>
