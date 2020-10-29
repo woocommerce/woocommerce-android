@@ -390,8 +390,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val plugin = orderDetailRepository.getWooServicesPluginInfo()
         val orderHasPhysicalProducts = orderDetailRepository.getOrderProducts(order).any { !it.isVirtual }
         orderDetailViewState = orderDetailViewState.copy(
-            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInTheUSofA
-                && orderHasPhysicalProducts
+            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive &&
+                storeIsInTheUSofA && orderHasPhysicalProducts
         )
     }
 
