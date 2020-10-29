@@ -102,7 +102,7 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
 
     private fun ProductDownloadDetailsViewState.validateInput(): ProductDownloadDetailsViewState {
         // The backend only accepts the protocols http and https, so if the url doesn't start with http, we add it
-        // this way, if the url had a different protocl, the validation will fail
+        // this way, if the url had a different protocol, the validation will fail
         val url = if (fileDraft.url.startsWith("http")) fileDraft.url else "http://${fileDraft.url}"
         val name = fileDraft.name
         if (url.isEmpty() || !PatternsCompat.WEB_URL.matcher(url).matches()) {
