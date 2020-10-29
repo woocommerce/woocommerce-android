@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
@@ -30,6 +31,7 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_CATEGORIES(string.product_categories, string.bottom_sheet_categories_desc),
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
+        LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
         PRODUCT_DOWNLOADS(R.string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
     }
 
@@ -47,6 +49,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
+                    product.getLinkedProducts(),
                     product.getDownloadableFiles()
                 )
             }
@@ -55,14 +58,16 @@ class ProductDetailBottomSheetBuilder(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             GROUPED -> {
                 listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             VARIABLE -> {
@@ -70,7 +75,8 @@ class ProductDetailBottomSheetBuilder(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             OTHER -> {
@@ -136,6 +142,18 @@ class ProductDetailBottomSheetBuilder(
                     resources.getString(string.product_short_description)
                 ),
                 Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun Product.getLinkedProducts(): ProductDetailBottomSheetUiItem? {
+        return if (!hasLinkedProducts() && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
+            ProductDetailBottomSheetUiItem(
+                ProductDetailBottomSheetType.LINKED_PRODUCTS,
+                ViewLinkedProducts(remoteId),
+                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         } else {
             null

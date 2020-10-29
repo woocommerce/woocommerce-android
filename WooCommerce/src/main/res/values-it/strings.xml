@@ -1038,11 +1038,11 @@ Language: it
     <string name="dashboard_fulfill_order_title_single">Hai un ordine da evadere</string>
     <string name="dashboard_action_view_orders">Visualizza ordini</string>
     <string name="dashboard_action_view_order">Visualizza ordine</string>
-    <string name="dashboard_top_earners_empty">Nessuna attività per questo periodo</string>
-    <string name="dashboard_top_earners_total_orders">Ordini totali: %s</string>
-    <string name="dashboard_top_earners_total_spend">Spesa totale</string>
-    <string name="dashboard_top_earners_description">Ottieni informazioni su come i prodotti vengono tracciati nel negozio</string>
-    <string name="dashboard_top_earners_title">I migliori esecutori</string>
+    <string name="dashboard_top_performers_empty">Nessuna attività per questo periodo</string>
+    <string name="dashboard_top_performers_total_orders">Ordini totali: %s</string>
+    <string name="dashboard_top_performers_total_spend">Spesa totale</string>
+    <string name="dashboard_top_performers_description">Ottieni informazioni su come i prodotti vengono tracciati nel negozio</string>
+    <string name="dashboard_top_performers_title">I migliori esecutori</string>
     <string name="dashboard_stats_updated_date_time">Aggiornate al giorno %s</string>
     <string name="dashboard_stats_updated_one_day">Aggiornate un giorno fa</string>
     <string name="dashboard_stats_updated_hours">Aggiornate %d ore fa</string>

@@ -73,6 +73,8 @@ data class Product(
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
     val groupedProductIds: List<Long>,
+    val crossSellProductIds: List<Long>,
+    val upsellProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -138,6 +140,8 @@ data class Product(
             isSameCategories(product.categories) &&
             isSameTags(product.tags) &&
             groupedProductIds == product.groupedProductIds &&
+            crossSellProductIds == product.crossSellProductIds &&
+            upsellProductIds == product.upsellProductIds &&
             downloads == product.downloads &&
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
@@ -162,6 +166,16 @@ data class Product(
         return updatedProduct?.let {
             externalUrl != it.externalUrl ||
                 buttonText != it.buttonText
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes to upsells or cross-sells
+     */
+    fun hasLinkedProductChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            upsellProductIds != it.upsellProductIds ||
+                crossSellProductIds != it.crossSellProductIds
         } ?: false
     }
 
@@ -209,6 +223,8 @@ data class Product(
             downloads != it.downloads
         } ?: false
     }
+
+    fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -293,6 +309,8 @@ data class Product(
                 tags = updatedProduct.tags,
                 type = updatedProduct.type,
                 groupedProductIds = updatedProduct.groupedProductIds,
+                crossSellProductIds = updatedProduct.crossSellProductIds,
+                upsellProductIds = updatedProduct.upsellProductIds,
                 isDownloadable = updatedProduct.isDownloadable,
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
@@ -394,6 +412,16 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
             prefix = "[",
             postfix = "]"
         )
+        it.crossSellIds = crossSellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
+        it.upsellIds = upsellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
         it.downloads = downloadsToJson()
         it.downloadLimit = downloadLimit
         it.downloadExpiry = downloadExpiry
@@ -486,7 +514,9 @@ fun WCProductModel.toAppModel(): Product {
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIdList()
+        groupedProductIds = this.getGroupedProductIdList(),
+        crossSellProductIds = this.getCrossSellProductIdList(),
+        upsellProductIds = this.getUpsellProductIdList()
     )
 }
 

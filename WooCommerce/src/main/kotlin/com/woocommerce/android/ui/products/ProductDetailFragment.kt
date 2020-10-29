@@ -130,7 +130,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(type = it.value)
             changesMade()
         }
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(GroupedProductListViewModel.KEY_GROUPED_PRODUCT_IDS_RESULT) {
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }

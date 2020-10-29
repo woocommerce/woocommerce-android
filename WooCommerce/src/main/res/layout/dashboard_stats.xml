@@ -41,7 +41,7 @@
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginTop="@dimen/major_75">
 
-            <com.woocommerce.android.ui.dashboard.DashboardStatsBarChart
+            <com.woocommerce.android.ui.mystore.DashboardStatsBarChart
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

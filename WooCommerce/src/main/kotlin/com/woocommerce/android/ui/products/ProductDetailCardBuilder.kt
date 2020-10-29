@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
@@ -99,6 +100,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType(),
                 product.downloads()
             ).filterNotEmpty()
@@ -115,6 +117,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -131,6 +134,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -147,6 +151,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -164,6 +169,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -556,12 +562,7 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getQuantityString(
-                resourceProvider = resources,
-                quantity = groupedProductsSize,
-                default = R.string.grouped_products_count,
-                one = R.string.grouped_products_single
-            )
+            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
         } else {
             resources.getString(R.string.grouped_product_empty)
         }
@@ -575,6 +576,35 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewGroupedProducts(this.remoteId, this.groupedProductIds.joinToString(",")),
                 Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
+            )
+        }
+    }
+
+    private fun Product.linkedProducts(): ProductProperty? {
+        if (!hasLinkedProducts() || !FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
+            return null
+        }
+
+        val upsellDesc = StringUtils.getPluralString(
+            resources,
+            this.upsellProductIds.size,
+            R.plurals.upsell_product_count
+        )
+        val crossSellDesc = StringUtils.getPluralString(
+            resources,
+            this.crossSellProductIds.size,
+            R.plurals.cross_sell_product_count
+        )
+
+        return ComplexProperty(
+            R.string.product_detail_linked_products,
+            "$upsellDesc<br>$crossSellDesc",
+            R.drawable.ic_gridicons_reblog,
+            maxLines = 2
+        ) {
+            viewModel.onEditProductCardClicked(
+                ViewLinkedProducts(this.remoteId),
+                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }
     }

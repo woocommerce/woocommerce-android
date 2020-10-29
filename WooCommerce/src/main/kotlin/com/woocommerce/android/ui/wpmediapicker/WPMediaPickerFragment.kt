@@ -136,7 +136,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      * If any images are selected set the title to the selection count, otherwise use default title
      */
     override fun getFragmentTitle(): String {
-        val count = wpMediaGallery.getSelectedCount()
+        val count = wpMediaGallery?.getSelectedCount()
         return if (count == 0) {
             getString(R.string.wpmedia_picker_title)
         } else {

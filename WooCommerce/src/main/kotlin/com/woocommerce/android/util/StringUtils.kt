@@ -6,6 +6,7 @@ import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.text.Html
 import android.util.Patterns
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -75,6 +76,14 @@ object StringUtils {
             1 -> resourceProvider.getString(one ?: default, quantity)
             else -> resourceProvider.getString(default, quantity)
         }
+    }
+
+    fun getPluralString(
+        resourceProvider: ResourceProvider,
+        quantity: Int,
+        @PluralsRes pluralId: Int
+    ): String {
+        return resourceProvider.getPluralString(pluralId, quantity)
     }
 
     /**
