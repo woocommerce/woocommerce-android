@@ -1408,7 +1408,7 @@
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_add">Add file</string>
     <string name="product_downloadable_files_url">File URL</string>
-    <string name="product_downloadable_files_url_info">This is the url of the file which customers will get accessed to. URLs entered should already be encoded.</string>
+    <string name="product_downloadable_files_url_info">This is the URL of the file which customers will get access to. URLs entered should already be encoded.</string>
     <string name="product_downloadable_files_name">File Name</string>
     <string name="product_downloadable_files_name_info">This is the name of the file shown to the customer</string>
     <string name="product_downloadable_files_limit_info">Enter the number of time file can be downloaded or leave blank for unlimited downloads</string>
