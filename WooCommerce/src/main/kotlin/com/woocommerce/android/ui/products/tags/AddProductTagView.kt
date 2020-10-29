@@ -58,8 +58,7 @@ class AddProductTagView @JvmOverloads constructor(
 
     private fun addTag(
         tag: ProductTag,
-        listener: OnProductTagClickListener,
-        animate: Boolean = false
+        listener: OnProductTagClickListener
     ) {
         val selectedChipIds = selectedTagsGroup.getSelectedChipIds()
         if (!selectedChipIds.contains(tag.name)) {
@@ -69,19 +68,12 @@ class AddProductTagView @JvmOverloads constructor(
                 isCloseIconVisible = true
                 isCheckable = false
                 isClickable = false
+                visibility = View.INVISIBLE
                 setOnCloseIconClickListener { listener.onProductTagRemoved(tag) }
             }
-            if (animate) {
-                val anim = WooAnimUtils.getScaleInAnim(chip)
-                anim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        selectedTagsGroup.removeView(chip)
-                    }
-                })
-                anim.start()
-            } else {
-                selectedTagsGroup.addView(chip)
-            }
+
+            selectedTagsGroup.addView(chip)
+            WooAnimUtils.scaleIn(chip)
         }
     }
 

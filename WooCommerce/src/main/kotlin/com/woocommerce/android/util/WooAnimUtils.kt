@@ -61,24 +61,18 @@ object WooAnimUtils {
     }
 
     fun scaleIn(target: View, animDuration: Duration = DEFAULT_DURATION) {
-        with(getScaleInAnim(target, animDuration)) {
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    target.visibility = android.view.View.GONE
-                }
-            })
-            start()
-        }
-    }
-
-    fun getScaleInAnim(target: View, animDuration: Duration = DEFAULT_DURATION): ObjectAnimator {
         val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0f, 1f)
         val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f, 1f)
 
         with(ObjectAnimator.ofPropertyValuesHolder(target, scaleX, scaleY)) {
             duration = animDuration.toMillis(target.context)
             interpolator = AccelerateDecelerateInterpolator()
-            return this
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {
+                    target.visibility = View.VISIBLE
+                }
+            })
+            start()
         }
     }
 
