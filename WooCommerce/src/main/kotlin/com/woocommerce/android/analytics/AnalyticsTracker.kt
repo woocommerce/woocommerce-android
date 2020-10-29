@@ -288,6 +288,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED,
         PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED,
         PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED,
+        PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED,
         PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
@@ -631,7 +632,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
-        const val VALUE_SHIPPING_LABELS_M3_FEEDBACK = "shipping_labels_m3"
+        const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
 
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"

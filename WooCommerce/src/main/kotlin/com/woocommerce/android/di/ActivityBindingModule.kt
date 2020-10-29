@@ -3,7 +3,6 @@ package com.woocommerce.android.di
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.aztec.AztecModule
-import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
 import com.woocommerce.android.ui.login.WooLoginFragmentModule
@@ -31,7 +30,6 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
             modules = [
             MainModule::class,
-            DashboardModule::class,
             MyStoreModule::class,
             OrdersModule::class,
             RefundsModule::class,

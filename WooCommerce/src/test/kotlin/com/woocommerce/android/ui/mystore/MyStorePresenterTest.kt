@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
@@ -11,6 +13,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -74,11 +77,20 @@ class MyStorePresenterTest {
                 networkStatus
             )
         )
+
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()
         actionCaptor = argumentCaptor()
         Dispatchers.setMain(Dispatchers.Unconfined)
+
+        val editor = mock<SharedPreferences.Editor> { whenever(it.putBoolean(any(), any())).thenReturn(mock()) }
+        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
+        mock<Context> {
+            whenever(it.applicationContext).thenReturn(it)
+            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
+            AppPrefs.init(it)
+        }
     }
 
     @Test
@@ -190,7 +202,7 @@ class MyStorePresenterTest {
     }
 
     @Test
-    fun `Requests top earners stats data correctly - forced`() {
+    fun `Requests top performers stats data correctly - forced`() {
         runBlocking {
             whenever(
                 wcLeaderboardsStore.fetchProductLeaderboards(
@@ -302,13 +314,14 @@ class MyStorePresenterTest {
         val onChanged = OnWCRevenueStatsChanged(
             1, granularity = StatsGranularity.DAYS, startDate = "2019-07-30", endDate = "2019-07-30"
         )
+
         onChanged.causeOfChange = FETCH_REVENUE_STATS
         presenter.onWCRevenueStatsChanged(onChanged)
         verify(myStoreView, times(1)).showChartSkeleton(false)
     }
 
     @Test
-    fun `Show and hide top earners skeleton correctly`() {
+    fun `Show and hide top performers skeleton correctly`() {
         runBlocking {
             whenever(
                 wcLeaderboardsStore.fetchProductLeaderboards(
@@ -320,8 +333,8 @@ class MyStorePresenterTest {
                 .thenReturn(WooResult(emptyList()))
             presenter.takeView(myStoreView)
             presenter.loadTopPerformersStats(StatsGranularity.DAYS, forced = true)
-            verify(myStoreView, times(1)).showTopEarnersSkeleton(true)
-            verify(myStoreView, times(1)).showTopEarnersSkeleton(false)
+            verify(myStoreView, times(1)).showTopPerformersSkeleton(true)
+            verify(myStoreView, times(1)).showTopPerformersSkeleton(false)
         }
     }
 }

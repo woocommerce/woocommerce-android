@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.mystore
 
 import android.graphics.Canvas
 import android.graphics.Path

@@ -25,13 +25,14 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterList
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import kotlinx.android.synthetic.main.fragment_product_filter_option_list.*
+import dagger.Lazy
 import javax.inject.Inject
 
 class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionClickListener {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
-    ) { viewModelFactory }
+    ) { viewModelFactory.get() }
 
     private val arguments: ProductFilterOptionListFragmentArgs by navArgs()
 

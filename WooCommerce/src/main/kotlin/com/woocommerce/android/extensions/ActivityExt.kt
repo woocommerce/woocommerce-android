@@ -5,6 +5,8 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import kotlin.properties.Delegates
@@ -41,3 +43,15 @@ fun MainActivity.navigateBackWithResult(requestCode: Int, result: Bundle, @IdRes
     childFragmentManager?.addOnBackStackChangedListener(backStackListener)
     findNavController(navHostId).popBackStack(dest, false)
 }
+
+/**
+ * Used for starting the HelpActivity in a wrapped way whenever a troubleshooting URL click happens
+ */
+fun FragmentActivity.startHelpActivity(origin: Origin) =
+    startActivity(
+        HelpActivity.createIntent(
+            this,
+            origin,
+            null
+        )
+    )

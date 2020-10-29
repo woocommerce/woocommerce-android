@@ -30,6 +30,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_add_product_category.*
 import org.wordpress.android.util.ActivityUtils
+import dagger.Lazy
 import javax.inject.Inject
 
 class AddProductCategoryFragment : BaseFragment(), BackPressListener {
@@ -42,10 +43,10 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
     private val viewModel: AddProductCategoryViewModel
-        by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory }
+        by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory.get() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
