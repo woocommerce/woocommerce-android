@@ -45,6 +45,7 @@ import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -71,6 +72,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: OrderFetcher = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
 
     @Before
     fun setup() = test {
@@ -99,7 +101,8 @@ class OrderListViewModelTest : BaseUnitTest() {
                 dispatcher = dispatcher,
                 selectedSite = selectedSite,
                 fetcher = orderFetcher,
-                resourceProvider = resourceProvider
+                resourceProvider = resourceProvider,
+                wooCommerceStore = wooCommerceStore
         )
     }
 
