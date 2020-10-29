@@ -41,6 +41,7 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:text="@string/orderdetail_shipping_label_create_shipping_label"
+            app:layout_goneMarginBottom="@dimen/major_100"
             app:layout_constraintBottom_toTopOf="@id/productList_btnMarkOrderComplete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
