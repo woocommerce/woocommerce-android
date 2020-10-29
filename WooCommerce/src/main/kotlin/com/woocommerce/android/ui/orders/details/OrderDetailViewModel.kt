@@ -59,6 +59,10 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val US_COUNTRY_CODE = "US"
+    }
+
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
@@ -106,6 +110,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     final fun start() {
         EventBus.getDefault().register(this)
         orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
+            checkShippingLabelRequirements(orderInDb)
             updateOrderState(orderInDb)
             loadOrderNotes()
             loadOrderRefunds()
@@ -345,6 +350,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
+                checkShippingLabelRequirements(fetchedOrder)
                 updateOrderState(fetchedOrder)
                 loadOrderNotes()
                 loadOrderRefunds()
@@ -377,6 +383,16 @@ class OrderDetailViewModel @AssistedInject constructor(
             )
         )
         loadOrderProducts()
+    }
+
+    private fun checkShippingLabelRequirements(order: Order) {
+        val storeIsInTheUSofA = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
+        val plugin = orderDetailRepository.getWooServicesPluginInfo()
+        val orderHasPhysicalProducts = orderDetailRepository.getOrderProducts(order).any { !it.isVirtual }
+        orderDetailViewState = orderDetailViewState.copy(
+            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInTheUSofA
+                && orderHasPhysicalProducts
+        )
     }
 
     private fun loadOrderNotes() {
