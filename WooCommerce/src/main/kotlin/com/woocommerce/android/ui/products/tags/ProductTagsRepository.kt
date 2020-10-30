@@ -7,7 +7,9 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toProductTag
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -32,7 +34,7 @@ class ProductTagsRepository @Inject constructor(
         private const val PRODUCT_TAGS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_TAGS_PAGE_SIZE
     }
 
-    private var loadContinuation: Continuation<Boolean>? = null
+    private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var addProductTagsContinuation: Continuation<Boolean>? = null
     private var offset = 0
 
@@ -50,15 +52,17 @@ class ProductTagsRepository @Inject constructor(
      * Submits a fetch request to get a list of products tags for the current site
      * and returns the full list of product tags from the database
      */
-    suspend fun fetchProductTags(loadMore: Boolean = false): List<ProductTag> {
+    suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null): List<ProductTag> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            loadContinuation?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = FetchProductTagsPayload(
                     selectedSite.get(),
                     pageSize = PRODUCT_TAGS_PAGE_SIZE,
-                    offset = offset
+                    offset = offset,
+                    searchQuery = searchQuery
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductTagsAction(payload))
             }

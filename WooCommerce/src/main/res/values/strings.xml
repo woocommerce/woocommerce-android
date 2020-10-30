@@ -229,7 +229,7 @@
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
@@ -1397,7 +1397,7 @@
     <string name="login_site_address_help_title">What\'s my store address?</string>
     <string name="login_site_address_help_content">Your store address appears in the bar at the top of the screen when you visit your store in Chrome.</string>
     <string name="login_find_your_site_adress">Find your store address</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>
     <string name="login_get_link_by_email">Get a login link by email</string>
