@@ -56,11 +56,30 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
+            app:layout_goneMarginBottom="@dimen/major_100"
             android:text="@string/order_mark_complete"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/productList_shippingLabelsNotice"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productList_btnCreateShippingLabel"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productList_shippingLabelsNotice"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:drawableStart="@drawable/ic_info_outline_24dp"
+            android:drawablePadding="@dimen/major_100"
+            android:text="@string/orderdetail_shipping_label_notice"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/productList_btnMarkOrderComplete" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

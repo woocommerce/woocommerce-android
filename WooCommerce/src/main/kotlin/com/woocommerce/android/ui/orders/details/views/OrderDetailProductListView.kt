@@ -87,5 +87,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     ) {
         productList_btnCreateShippingLabel.isVisible = isVisible
         productList_btnCreateShippingLabel.setOnClickListener { onCreateShippingLabelButtonTapped() }
+
+        productList_shippingLabelsNotice.isVisible = isVisible
     }
 }
