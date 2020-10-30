@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 13:54:04+0000
+Translation-Revision-Date: 2020-10-16 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Productconcept opgeslagen</string>
+    <string name="product_detail_publish_product_draft_error">Fout bij het opslaan van productconcept</string>
+    <string name="product_publish_draft_dialog_title">Concept wordt opgeslagen</string>
+    <string name="product_status_trashed">Naar prullenbak verplaatst</string>
+    <string name="product_detail_save_as_draft">Opslaan als concept</string>
+    <string name="login_no_wpcom_account_found">Het lijkt erop dat %1$s niet is gekoppeld aan een WordPress.com-account.</string>
     <string name="signup_confirmation_title">Inschrijfbevestiging</string>
     <string name="reset_your_password">Stel je wachtwoord opnieuw in</string>
     <string name="enter_your_site_address">Voer je site adres in</string>
     <string name="continue_with_wpcom">Ga verder met WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Als je doorgaat met Google en nog geen WordPress.com account hebt, maakt je een account aan en gaat je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
     <string name="continue_terms_of_service_text">Als je doorgaat, ga je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
-    <string name="signup_confirmation_magic_link_message">We sturen je een magische link per e-mail om je nieuwe WordPress.com account aan te maken.</string>
     <string name="signup_confirmation_message">We gebruiken dit e-mailadres om je nieuwe WordPress.com account aan te maken.</string>
-    <string name="signup_magic_link_message">We hebben je een magische link gestuurd om je nieuwe WordPress.com account aan te maken. Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
     <string name="sign_up_label">Abonneren</string>
     <string name="login_or">of</string>
     <string name="continue_site_credentials">Doorgaan met winkel-inloggegevens</string>
@@ -24,7 +28,6 @@ Language: nl
     <string name="login_done">Klaar</string>
     <string name="magic_link_not_seeing_email_message">Zie je de e-mail niet? Controleer je spam-map of ongewenste e-mail.</string>
     <string name="login_magic_links_sent_label">Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com hebt ontvangen.</string>
-    <string name="login_magic_links_label">We sturen je een e-mail met een magische link waarmee je direct kan inloggen, geen wachtwoord nodig.</string>
     <string name="check_email">E-mail controleren</string>
     <string name="get_started">Aan de slag</string>
     <string name="enter_account_info_for_site">Voer je accountgegevens in voor %1$s.</string>
@@ -93,7 +96,6 @@ Language: nl
     <string name="product_variation_enabled">Geactiveerd</string>
     <string name="product_pricing_scheduled_sale_price_error">Je moet de verkoopprijs instellen als een verkoop gepland staat</string>
     <string name="product_wip_message_m3">Je kan nu gegroepeerde, externe en variabele producten bewerken, het producttype wijzigen en categorieën en tags bijwerken.</string>
-    <string name="product_reviews_count">\u2022 %d beoordelingen</string>
     <string name="product_review_list_item_title">%1$s heeft een beoordeling geplaatst</string>
     <string name="feedback_request_like_it">Ik vind het leuk</string>
     <string name="feedback_request_make_better">Kan beter</string>
@@ -295,7 +297,6 @@ Language: nl
     <string name="product_description">Beschrijving</string>
     <string name="product_edit_description">Beschrijving bewerken</string>
     <string name="product_description_hint">Begin met schrijven …</string>
-    <string name="product_variant_list_empty">Opties toevoegen vanaf web zoals grootte en kleur. Deze zullen als opties worden getoond op de productpagina van je site</string>
     <string name="discard_message">Wil je de wijzigingen ongedaan maken?</string>
     <string name="update">Bijwerken</string>
     <string name="done">Klaar</string>
@@ -403,7 +404,6 @@ Language: nl
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
-    <string name="order_begin_fulfillment">Begin met leveren</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
@@ -947,7 +947,6 @@ Language: nl
     <string name="magic_link_unavailable_error_message">Momenteel niet beschikbaar. Voer je wachtwoord in</string>
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
-    <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres. Probeer de link hieronder om in te loggen met je site-adres.</string>
     <string name="requesting_otp">Verificatiecode via sms aanvragen.</string>
     <string name="login_text_otp_another">Stuur me via SMS een andere code.</string>
     <string name="login_text_otp">Sms de code in plaats daarvan naar me.</string>
