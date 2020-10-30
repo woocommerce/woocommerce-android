@@ -20,6 +20,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -78,7 +79,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isOrderNotesSkeletonShown = false,
         isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
-        isShipmentTrackingAvailable = true
+        isShipmentTrackingAvailable = true,
+        isCreateShippingLabelButtonVisible = false
     )
 
     @Before
@@ -86,6 +88,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(MutableLiveData(OrderDetailViewState()))
             .whenever(savedState).getLiveData<OrderDetailViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+
+        doReturn(WooPlugin(true, true)).whenever(repository).getWooServicesPluginInfo()
 
         viewModel = spy(OrderDetailViewModel(
             savedState,
