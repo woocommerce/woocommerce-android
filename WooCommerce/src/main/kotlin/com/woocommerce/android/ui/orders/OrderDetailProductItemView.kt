@@ -8,10 +8,10 @@ import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.synthetic.main.order_detail_product_item.view.*
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.text.NumberFormat
 
 class OrderDetailProductItemView @JvmOverloads constructor(
     ctx: Context,
@@ -30,10 +30,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     ) {
         productInfo_name.text = item.name
 
-        val numberFormatter = NumberFormat.getNumberInstance().apply {
-            maximumFractionDigits = 2
-        }
-        productInfo_quantity.text = numberFormatter.format(item.quantity)
+        val orderTotal = formatCurrencyForDisplay(item.total)
+        productInfo_total.text = orderTotal
 
         // Modify views for expanded or collapsed mode
         productInfo_totalTax.isVisible = expanded
@@ -49,12 +47,12 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             productInfo_sku.text = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
         }
 
-        val orderTotal = formatCurrencyForDisplay(item.total)
         val productPrice = formatCurrencyForDisplay(item.price)
+        val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u25CF " } ?: StringUtils.EMPTY
 
-        productInfo_totalPaid.text = context.getString(
-            R.string.orderdetail_product_lineitem_total_qty_and_price,
-            orderTotal, item.quantity.toString(), productPrice
+        productInfo_attributes.text = context.getString(
+            R.string.orderdetail_product_lineitem_attributes,
+            attributes, item.quantity.toString(), productPrice
         )
 
         if (expanded) {
