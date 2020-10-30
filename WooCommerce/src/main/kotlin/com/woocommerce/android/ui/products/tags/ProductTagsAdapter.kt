@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -19,6 +20,7 @@ class ProductTagsAdapter(
     private val clickListener: OnProductTagClickListener
 ) : RecyclerView.Adapter<ProductTagViewHolder>() {
     private val productTags = ArrayList<ProductTag>()
+    private var currentFilter: String = ""
 
     init {
         setHasStableIds(true)
@@ -44,7 +46,21 @@ class ProductTagsAdapter(
         val productTag = productTags[position]
 
         holder.apply {
-            txtTagName.text = productTag.name
+            if (hasFilter()) {
+                // if there's a filter, highlight it in the tag name - note that the tag name should always
+                // match the filter, but we make sure the match is found (start > -1) as a precaution
+                val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
+                if (start > -1) {
+                    val sb = StringBuilder(productTag.name)
+                    sb.insert(start, "<b>")
+                    sb.insert(start + currentFilter.length + 3, "</b>")
+                    txtTagName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                } else {
+                    txtTagName.text = productTag.name
+                }
+            } else {
+                txtTagName.text = productTag.name
+            }
             itemView.setOnClickListener { clickListener.onProductTagAdded(productTag) }
         }
 
@@ -64,6 +80,17 @@ class ProductTagsAdapter(
             this.productTags.addAll(productsTags)
             diffResult.dispatchUpdatesTo(this)
         }
+    }
+
+    fun hasFilter() = currentFilter.isNotEmpty()
+
+    /**
+     * Sets the filter used to highlight matches in the tag list - note that the actual filtering is done
+     * in the view model
+     */
+    fun setFilter(filter: String) {
+        currentFilter = filter
+        notifyDataSetChanged()
     }
 
     class ProductTagViewHolder(view: View) : RecyclerView.ViewHolder(view) {
