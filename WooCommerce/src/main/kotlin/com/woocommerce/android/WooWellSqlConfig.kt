@@ -33,7 +33,9 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
                 toast.show()
             }
 
-            // the main activity uses this to determine when it needs to load the site list
+            // the main activity uses this pref to determine when it needs to load the site list - note that
+            // we must first initialize AppPrefs because at this point it will be null
+            AppPrefs.init(context)
             AppPrefs.setDatabaseDowngraded(true)
             helper?.let { reset(it) }
         } else {
