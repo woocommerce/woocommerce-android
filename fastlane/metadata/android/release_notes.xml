@@ -1,3 +1,10 @@
+<fr-FR>
+5.3 :
+* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
+* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
+* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
+
+</fr-FR>
 <iw-IL>
 5.3:
 * מוצרים: ב'הגדרות' ← 'אפשרויות ביתא', המתג 'מוצרים' זמין כעת. אפשר גם להוסיף מוצר פשוט, מוצר בקבוצה, מוצר חיצוני או מוצר עם סוגים, ולפרסם או לשמור אותם כטיוטה.
@@ -12,6 +19,27 @@
 * Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
 
 </it-IT>
+<ko-KR>
+5.3:
+* 제품: 설정 → 베타 기능에서 이제 제품을 전환할 수 있습니다. 단순하고, 그룹화되고, 변형 가능하거나 외부 제품을 추가하여 공개하거나 임시글로 저장할 수도 있습니다.
+* 주문 상세 정보: WooCommerce 배송 및 세금 확장 기능을 통해 기존 배송 레이블을 인쇄하고 환불을 요청할 수 있습니다.
+* 기타 개선 사항: 주문 화면 속도 개선 등 다른 사항도 개선되었습니다.
+
+</ko-KR>
+<sv-SE>
+5.3:
+* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
+* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
+* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
+
+</sv-SE>
+<zh-CN>
+5.3：
+* 产品：在“设置”→“测试版功能”中，现在提供了一个“产品”开关。 您也可以添加简单的分组或外部产品，然后发布产品或将其另存为草稿。
+* 订单详情：您可以使用 WooCommerce Shipping & Tax 扩展程序打印现有配送标签和申请退款。
+* 其他改进：我们还修复了一些其他问题，例如提升了订单屏幕的加载速度。
+
+</zh-CN>
 <en-US>
 5.3:
 * Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
