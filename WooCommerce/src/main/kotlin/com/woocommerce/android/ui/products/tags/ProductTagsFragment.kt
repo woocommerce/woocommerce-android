@@ -142,10 +142,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                 showUpdateMenuItem(it)
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                if (isEmptyViewVisible) {
+                if (isEmptyViewVisible && !empty_view.isVisible) {
                     WooAnimUtils.fadeIn(empty_view)
                     empty_view.show(EmptyViewType.PRODUCT_TAG_LIST)
-                } else {
+                } else if (!isEmptyViewVisible && empty_view.isVisible) {
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
                 }
