@@ -9,7 +9,7 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
-ENV["validate_translations"]="buildVanillaRelease"
+ENV["validate_translations"]="lintVanillaRelease"
 
 SUPPORTED_LOCALES = [
   { glotpress: "ar", google_play: "ar",  promo_config: {}},
