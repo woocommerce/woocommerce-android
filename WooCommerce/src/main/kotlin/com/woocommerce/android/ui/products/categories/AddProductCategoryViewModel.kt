@@ -82,14 +82,15 @@ class AddProductCategoryViewModel @AssistedInject constructor(
         addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = true)
         launch {
             if (networkStatus.isConnected()) {
-                val requestResult = productCategoriesRepository.addProductCategory(categoryName, parentId)
+                val categoryNameTrimmed = categoryName.trim()
+                val requestResult = productCategoriesRepository.addProductCategory(categoryNameTrimmed, parentId)
                 // hide progress dialog
                 addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
                 when (requestResult) {
                     RequestResult.SUCCESS -> {
                         triggerEvent(ShowSnackbar(string.add_product_category_success))
                         val addedCategory = productCategoriesRepository
-                            .getProductCategoryByNameAndParentId(categoryName, parentId)
+                            .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
                         triggerEvent(ExitWithResult(addedCategory))
                     }
                     RequestResult.API_ERROR -> {

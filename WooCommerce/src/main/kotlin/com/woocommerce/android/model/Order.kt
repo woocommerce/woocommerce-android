@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
+import com.woocommerce.android.util.StringUtils
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderModel
@@ -77,7 +78,8 @@ data class Order(
         val subtotal: BigDecimal,
         val totalTax: BigDecimal,
         val total: BigDecimal,
-        val variationId: Long
+        val variationId: Long,
+        val attributesList: String
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -171,14 +173,15 @@ fun WCOrderModel.toAppModel(): Order {
                         Item(
                                 it.id!!,
                                 it.productId!!,
-                                it.name?.fastStripHtml() ?: "",
+                                it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
                                 it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
                                 it.quantity?.toInt() ?: 0,
                                 it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                                it.variationId ?: 0
+                                it.variationId ?: 0,
+                                it.getAttributesAsString()
                         )
                     }
     )
