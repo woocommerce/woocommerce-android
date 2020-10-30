@@ -413,6 +413,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         launch {
             if (networkStatus.isConnected()) {
                 _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+                loadOrderProducts()
             }
         }
 
