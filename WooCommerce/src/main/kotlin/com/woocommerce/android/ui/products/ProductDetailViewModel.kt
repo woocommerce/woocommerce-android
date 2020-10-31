@@ -635,6 +635,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             ))
             return false
         } else {
+            if (event is ExitProductTags) {
+                clearProductTagFilter()
+            }
             return true
         }
     }
@@ -1312,6 +1315,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             // a list of newly added tags
             _addedProductTags.addNewItem(ProductTag(name = tagName))
             updateTagsMenuAction()
+            loadProductTags()
         }
     }
 
@@ -1321,6 +1325,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
         updateTagsMenuAction()
+        loadProductTags()
     }
 
     /**
@@ -1334,6 +1339,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
         updateTagsMenuAction()
+        loadProductTags()
     }
 
     private fun updateTagsMenuAction() {
@@ -1343,10 +1349,52 @@ class ProductDetailViewModel @AssistedInject constructor(
         )
     }
 
-    fun fetchProductTags() {
-        if (_productTags.value == null) {
-            loadProductTags()
+    /**
+     * Sets the product tag list to the passed list with the current filter applied and already added tags removed
+     * Returns a list of product tags with the passed filter applied
+     */
+    private fun filterProductTagList(productTags: List<ProductTag>) {
+        val addedTags = ArrayList<ProductTag>().also {
+            it.addAll(_addedProductTags.getList())
+            viewState.productDraft?.tags?.let { draftTags ->
+                it.addAll(draftTags)
+            }
         }
+
+        _productTags.value = if (productTagsViewState.currentFilter.isEmpty()) {
+            productTags.filter { !addedTags.contains(it) }
+        } else {
+            productTags.filter {
+                it.name.contains(
+                    productTagsViewState.currentFilter,
+                    ignoreCase = true
+                ) && !addedTags.contains(it)
+            }
+        }
+    }
+
+    /**
+     * Called when user types into product tag screen so we can provide live filtering
+     */
+    fun setProductTagsFilter(filter: String) {
+        productTagsViewState = productTagsViewState.copy(currentFilter = filter)
+        val productTags = productTagsRepository.getProductTags()
+        filterProductTagList(productTags)
+
+        // fetch from the backend when a filter exists in case not all tags have been fetched yet
+        if (filter.isNotEmpty()) {
+            launch {
+                fetchProductTags(searchQuery = filter)
+            }
+        }
+    }
+
+    /**
+     * Called when user exits the product tag fragment to clear the stored filter (otherwise it
+     * will be retained when the user returns to the tag fragment)
+     */
+    fun clearProductTagFilter() {
+        productTagsViewState = productTagsViewState.copy(currentFilter = "")
     }
 
     /**
@@ -1366,7 +1414,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * @param loadMore Whether to load more tags after the ones loaded
      */
-    private fun loadProductTags(loadMore: Boolean = false) {
+    fun loadProductTags(loadMore: Boolean = false) {
         if (productTagsViewState.isLoading == true) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading product tags")
             return
@@ -1387,8 +1435,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 if (productTagsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _productTags.value = productTagsInDb
-                    showSkeleton = productTagsViewState.isRefreshing == false
+                    filterProductTagList(productTagsInDb)
+                    showSkeleton = false
                 }
             }
             productTagsViewState = productTagsViewState.copy(
@@ -1397,7 +1445,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 isSkeletonShown = showSkeleton,
                 isEmptyViewVisible = false
             )
-            fetchProductTags(loadMore = loadMore)
+            fetchProductTags(loadMore = loadMore, searchQuery = productTagsViewState.currentFilter)
         }
     }
 
@@ -1414,15 +1462,22 @@ class ProductDetailViewModel @AssistedInject constructor(
      * check the database.
      *
      * @param loadMore Whether this is another page or the first one
+     * @param searchQuery optional search query to fetch only matching tags
      */
-    private suspend fun fetchProductTags(loadMore: Boolean = false) {
+    private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
         if (networkStatus.isConnected()) {
-            _productTags.value = productTagsRepository.fetchProductTags(loadMore = loadMore)
+            val products = productTagsRepository.fetchProductTags(
+                loadMore = loadMore,
+                searchQuery = searchQuery
+            )
+            filterProductTagList(products)
 
             productTagsViewState = productTagsViewState.copy(
                 isLoading = true,
                 canLoadMore = productTagsRepository.canLoadMoreProductTags,
-                isEmptyViewVisible = _productTags.value?.isEmpty() == true
+                isEmptyViewVisible = products.isEmpty() &&
+                    _addedProductTags.isEmpty() &&
+                    searchQuery.isNullOrEmpty()
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -1519,7 +1574,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val shouldDisplayDoneMenuButton: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null
+        val isProgressDialogShown: Boolean? = null,
+        val currentFilter: String = ""
     ) : Parcelable
 
     @Parcelize
