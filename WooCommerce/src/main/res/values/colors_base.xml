@@ -55,7 +55,7 @@
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/woo_white</color>
+    <color name="color_icon_menu">@color/color_secondary</color>
 
     <!--
         Toolbar icons for login menus
