@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/major_100">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_200"
+            android:importantForAccessibility="no"
+            android:src="@drawable/img_print_with_phone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printShippingLabelInfo_stepCount1"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_count_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printShippingLabelInfo_step1"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printShippingLabelInfo_stepCount1"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printShippingLabelInfo_stepCount2"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_count_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step1"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printShippingLabelInfo_step2"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printShippingLabelInfo_stepCount1"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printShippingLabelInfo_stepCount3"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_count_3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step2"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printShippingLabelInfo_step3"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printShippingLabelInfo_stepCount3"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printShippingLabelInfo_stepCount4"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_count_4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step3"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printShippingLabelInfo_step4"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printShippingLabelInfo_stepCount4"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step3" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/printShippingLabelInfo_stepCount5"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_count_5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step4"
+            app:shapeAppearanceOverlay="@style/Woo.Button.Colored.Circle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/printShippingLabelInfo_step5"
+            style="@style/Woo.TextView.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_200"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/print_shipping_label_info_step_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/printShippingLabelInfo_stepCount5"
+            app:layout_constraintTop_toBottomOf="@+id/printShippingLabelInfo_step4" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

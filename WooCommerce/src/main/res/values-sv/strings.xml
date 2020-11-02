@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-14 13:54:03+0000
+Translation-Revision-Date: 2020-10-20 12:35:29+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_get_link_by_email">Skaffa en länk för inloggning via e-post</string>
+    <string name="settings_enable_product_adding_teaser_title">Skapar produkter</string>
+    <string name="product_trash_undo_snackbar_message">Produkt flyttad till papperskorg</string>
+    <string name="product_trash_yes">Flytta till papperskorg</string>
+    <string name="product_confirm_trash">Vill du flytta denna produkt till papperskorgen?</string>
+    <string name="product_detail_no_variations">Denna produkt har inga variationer än</string>
+    <string name="product_adding_wip_title">Skapa produkter från appen!</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
+    <string name="print_shipping_label_info_title">Skriv ut med din telefon</string>
+    <string name="shipping_label_paper_size_options_title">Välj pappersstorlek</string>
+    <string name="shipping_label_paper_size">Pappersstorlek</string>
     <string name="product_detail_publish_product_draft_success">Produktutkast sparat</string>
     <string name="product_detail_publish_product_draft_error">Det gick inte att spara produktutkastet</string>
     <string name="product_publish_draft_dialog_title">Sparar utkast</string>
@@ -18,9 +29,9 @@ Language: sv_SE
     <string name="continue_with_wpcom">Fortsätt med WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Om du fortsätter med Google och inte redan har ett WordPress.com-konto, skapar du ett konto och samtycker till våra %1$sanvändarvillkor%2$s.</string>
     <string name="continue_terms_of_service_text">Genom att gå vidare accepterar du våra %1$sanvändarvillkor%2$s.</string>
-    <string name="signup_confirmation_magic_link_message">Vi kommer att skicka e-post med en magisk länk som låter dig skapa ett nytt WordPress.com-konto.</string>
+    <string name="signup_confirmation_magic_link_message">Vi skickar en registreringslänk via e-post för att skapa ditt nya WordPress.com-konto.</string>
     <string name="signup_confirmation_message">Vi kommer att använda den här e-postadressen för att skapa ditt nya WordPress.com-konto.</string>
-    <string name="signup_magic_link_message">Vi har skickat en magisk länk som låter dig skapa ditt nya konto hos WordPress.com. Öppna e-posten på din enhet och tryck på länken i meddelandet du fått från WordPress.com.</string>
+    <string name="signup_magic_link_message">Vi har skickat en e-postlänk till dig för att skapa ditt nya WordPress.com-konto. Kontrollera din e-post på denna enhet och tryck på länken i e-postmeddelandet du fått från WordPress.com.</string>
     <string name="sign_up_label">Registrera</string>
     <string name="login_or">eller</string>
     <string name="continue_site_credentials">Fortsätt med butiksautentiseringsuppgifter</string>
@@ -30,7 +41,7 @@ Language: sv_SE
     <string name="login_done">Klart</string>
     <string name="magic_link_not_seeing_email_message">Hittar du inte meddelandet? Kolla i mappen för skräppost eller reklam.</string>
     <string name="login_magic_links_sent_label">Öppna e-posten på din enhet och tryck på länken i meddelandet du fått från WordPress.com.</string>
-    <string name="login_magic_links_label">Vi skickar en magisk länk som låter dig logga in direkt, utan något lösenord.</string>
+    <string name="login_magic_links_label">Vi skickar dig en länk via e-post som loggar in dig direkt, inget lösenord behövs.</string>
     <string name="check_email">Kolla din e-post</string>
     <string name="get_started">Kom igång</string>
     <string name="enter_account_info_for_site">Ange din kontoinformation för %1$s.</string>
@@ -99,7 +110,6 @@ Language: sv_SE
     <string name="product_variation_enabled">Aktiverad</string>
     <string name="product_pricing_scheduled_sale_price_error">Du måste ange försäljningspriset om en försäljning är schemalagd</string>
     <string name="product_wip_message_m3">Du kan nu redigera grupperade, externa och variabla produkter, ändra produkttyp och uppdatera kategorier och etiketter.</string>
-    <string name="product_reviews_count">\u2022 %d recensioner</string>
     <string name="product_review_list_item_title">%1$s lämnade en recension</string>
     <string name="feedback_request_like_it">Jag gillar den</string>
     <string name="feedback_request_make_better">Kunde vara bättre</string>
@@ -302,7 +312,6 @@ Language: sv_SE
     <string name="product_description">Beskrivning</string>
     <string name="product_edit_description">Redigera beskrivning</string>
     <string name="product_description_hint">Börja skriva…</string>
-    <string name="product_variant_list_empty">Lägg till alternativ som storlek och färg från webben. Dessa kommer att visas som alternativ på produktsidan på din webbplats</string>
     <string name="discard_message">Vill du ignorera dina ändringar?</string>
     <string name="update">Uppdatera</string>
     <string name="done">Klart</string>
@@ -410,7 +419,6 @@ Language: sv_SE
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
-    <string name="order_begin_fulfillment">Börja uppfylla kraven</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
@@ -954,7 +962,6 @@ Language: sv_SE
     <string name="magic_link_unavailable_error_message">Inte tillgänglig för närvarande. Ange ditt lösenord</string>
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
-    <string name="email_not_registered_wpcom">Hmm, vi kan inte hitta något konto på WordPress.com som är kopplat till denna e-postadress. Prova länken nedan för att logga in med din webbsideadress.</string>
     <string name="requesting_otp">Begär en verifieringskod via SMS.</string>
     <string name="login_text_otp_another">Skicka ett nytt SMS med en kod till mig istället.</string>
     <string name="login_text_otp">Skicka mig en kod via SMS istället.</string>

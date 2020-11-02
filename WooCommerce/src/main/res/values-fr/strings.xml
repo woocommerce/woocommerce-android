@@ -18,9 +18,7 @@ Language: fr
     <string name="continue_with_wpcom">Continuer avec WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Si vous continuez avec Google sans disposer au préalable d’un compte WordPress.com, vous créez un compte et acceptez nos %1$sconditions d’utilisation%2$s.</string>
     <string name="continue_terms_of_service_text">En poursuivant, vous acceptez nos %1$sConditions d’utilisation%2$s.</string>
-    <string name="signup_confirmation_magic_link_message">Nous vous enverrons un lien magique par e-mail pour créer votre nouveau compte WordPress.com.</string>
     <string name="signup_confirmation_message">Nous utiliserons cette adresse e-mail pour créer votre nouveau compte WordPress.com.</string>
-    <string name="signup_magic_link_message">Nous vous avons envoyé un lien magique par e-mail pour créer votre nouveau compte WordPress.com. Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l’e-mail que vous avez reçu de WordPress.com.</string>
     <string name="sign_up_label">S’inscrire</string>
     <string name="login_or">ou</string>
     <string name="continue_site_credentials">Continuer avec les identifiants de connexion de la boutique</string>
@@ -30,7 +28,6 @@ Language: fr
     <string name="login_done">Terminé</string>
     <string name="magic_link_not_seeing_email_message">Vous ne voyez pas l’e-mail ? Vérifiez votre dossier de courrier indésirable.</string>
     <string name="login_magic_links_sent_label">Consultez vos e-mails sur cet appareil et appuyez sur le lien dans l’e-mail que vous avez reçu de WordPress.com.</string>
-    <string name="login_magic_links_label">Nous allons vous envoyer par e-mail un lien magique qui vous connectera instantanément, sans mot de passe.</string>
     <string name="check_email">Vérifier les e-mails</string>
     <string name="get_started">Commencer</string>
     <string name="enter_account_info_for_site">Saisissez vos informations de compte pour %1$s.</string>
@@ -99,7 +96,6 @@ Language: fr
     <string name="product_variation_enabled">Activé</string>
     <string name="product_pricing_scheduled_sale_price_error">Vous devez définir le tarif promotionnel si une promotion est programmée</string>
     <string name="product_wip_message_m3">Vous pouvez maintenant modifier des produits groupés, externes et variables, changer de type de produit et mettre à jour les catégories et les étiquettes.</string>
-    <string name="product_reviews_count">\u2022 %d avis</string>
     <string name="product_review_list_item_title">%1$s a laissé un avis</string>
     <string name="feedback_request_like_it">J’aime</string>
     <string name="feedback_request_make_better">Pourrait être mieux</string>
@@ -301,7 +297,6 @@ Language: fr
     <string name="product_description">Description</string>
     <string name="product_edit_description">Modifier la description</string>
     <string name="product_description_hint">Commencez à écrire…</string>
-    <string name="product_variant_list_empty">Ajoutez des options telles que la taille et la couleur depuis le Web. Ces options apparaîtront sur la page de produit de votre site.</string>
     <string name="discard_message">Voulez-vous annuler les modifications ?</string>
     <string name="update">Mettre à jour</string>
     <string name="done">Terminé</string>
@@ -409,7 +404,6 @@ Language: fr
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiques améliorées</string>
     <string name="beta_features">Fonctionnalités bêta</string>
-    <string name="order_begin_fulfillment">Commencer l\'exécution</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Payée par le client</string>
     <string name="orderdetail_payment_summary_onhold">Paiement en attente via %s</string>
@@ -953,7 +947,6 @@ Language: fr
     <string name="magic_link_unavailable_error_message">Actuellement indisponible. Veuillez saisir votre mot de passe</string>
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
-    <string name="email_not_registered_wpcom">Hmm, nous ne trouvons pas de compte WordPress.com associé à cette adresse e-mail. Essayez de vous connecter avec le lien ci-après à l\'aide de votre adresse e-mail.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>
     <string name="login_text_otp_another">Envoyez moi un autre code à la place.</string>
     <string name="login_text_otp">Envoyez-moi un code à la place.</string>

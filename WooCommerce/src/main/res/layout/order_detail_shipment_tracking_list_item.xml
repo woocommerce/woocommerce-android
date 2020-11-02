@@ -1,5 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.ui.orders.OrderDetailShipmentTrackingItemView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/tracking_copyNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginBottom="@dimen/major_75"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/order_shipment_tracking_copy_to_clipboard"
+        android:focusable="true"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tracking_type"
+            style="@style/Woo.Card.Body.High"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="USPS" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tracking_number"
+            style="@style/Woo.Card.Body.Bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="111222 3334 4444Z" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tracking_dateShipped"
+            style="@style/Woo.Card.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Shipped February 27, 2019" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/tracking_btnTrack"
+        style="@style/Woo.ImageButton.More"
+        android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/tracking_btnDelete"
+        style="@style/Woo.ImageButton.Delete"
+        android:contentDescription="@string/orderdetail_delete_tracking"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

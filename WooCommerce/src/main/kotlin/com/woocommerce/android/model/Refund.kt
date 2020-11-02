@@ -7,6 +7,7 @@ import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import java.math.RoundingMode.HALF_UP
 import java.math.BigDecimal
 import java.util.Date
 
@@ -35,6 +36,18 @@ data class Refund(
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
     }
+
+    fun getRefundMethod(
+        paymentMethodTitle: String,
+        isCashPayment: Boolean,
+        defaultValue: String
+    ): String {
+        return when {
+            paymentMethodTitle.isBlank() -> defaultValue
+            automaticGatewayRefund || isCashPayment -> paymentMethodTitle
+            else -> "$defaultValue - $paymentMethodTitle"
+        }
+    }
 }
 
 fun WCRefundModel.toAppModel(): Refund {
@@ -61,4 +74,42 @@ fun WCRefundItem.toAppModel(): Refund.Item {
             sku ?: "",
             price?.roundError() ?: BigDecimal.ZERO
     )
+}
+
+fun List<Refund>.hasNonRefundedProducts(products: List<Order.Item>) =
+    getMaxRefundQuantities(products).values.any { it > 0 }
+
+fun List<Refund>.getNonRefundedProducts(
+    products: List<Order.Item>
+): List<Order.Item> {
+    val leftoverProducts = getMaxRefundQuantities(products).filter { it.value > 0 }
+    return products
+        .filter { leftoverProducts.contains(it.uniqueId) }
+        .map {
+            val newQuantity = leftoverProducts[it.uniqueId]
+            val quantity = it.quantity.toBigDecimal()
+            val totalTax = if (quantity > BigDecimal.ZERO) {
+                it.totalTax.divide(quantity, 2, HALF_UP)
+            } else BigDecimal.ZERO
+
+            it.copy(
+                quantity = newQuantity ?: error("Missing product"),
+                total = it.price.times(newQuantity.toBigDecimal()),
+                totalTax = totalTax
+            )
+        }
+}
+
+/*
+ * Calculates the max quantity for each item by subtracting the number of already-refunded items
+ */
+fun List<Refund>.getMaxRefundQuantities(
+    products: List<Order.Item>
+): Map<Long, Int> {
+    val map = mutableMapOf<Long, Int>()
+    val groupedRefunds = this.flatMap { it.items }.groupBy { it.uniqueId }
+    products.map { item ->
+        map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
+    }
+    return map
 }

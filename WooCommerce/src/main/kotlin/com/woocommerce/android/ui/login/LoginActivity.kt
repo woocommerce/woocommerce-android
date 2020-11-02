@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -228,8 +229,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                "wordpress.com", "wordpress.com", "WordPress.com", "https://s0.wp.com/i/webclip.png", username,
-                password, true)
+                "wordpress.com", "wordpress.com", username, password, true)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -240,7 +240,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     //  -- BEGIN: LoginListener implementation methods
 
-    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean) {
+    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
         if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
             val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email,
                     AuthEmailPayloadScheme.WOOCOMMERCE, false, null, verifyEmail)
@@ -278,8 +278,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         jumpToUsernamePassword(null, null)
     }
 
-    override fun showMagicLinkSentScreen(email: String?) {
-        val loginMagicLinkSentFragment = LoginMagicLinkSentFragment.newInstance(email)
+    override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
+        val loginMagicLinkSentFragment = LoginMagicLinkSentFragment.newInstance(email, allowPassword)
         slideInFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentFragment.TAG)
     }
 
@@ -337,7 +337,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         showMainActivityAndFinish()
     }
 
-    override fun gotWpcomSiteInfo(siteAddress: String?, siteName: String?, siteIconUrl: String?) {
+    override fun gotWpcomSiteInfo(siteAddress: String?) {
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
         siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
@@ -390,7 +390,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                inputSiteAddress, endpointAddress, null, null, null, null, false)
+                inputSiteAddress, endpointAddress, null, null, false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -429,7 +429,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         viewHelpAndSupport(Origin.LOGIN_SOCIAL)
     }
 
-    override fun addGoogleLoginFragment() {
+    override fun addGoogleLoginFragment(isSignupFromLoginEnabled: Boolean) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         val loginGoogleFragment = LoginGoogleFragment().apply {
@@ -597,8 +597,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         inputPassword: String?
     ) {
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-                siteAddress, endpointAddress, null, null, inputUsername, inputPassword,
-                false)
+                siteAddress, endpointAddress, inputUsername, inputPassword, false)
         slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
@@ -632,6 +631,10 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         photoUrl: String?,
         service: String?
     ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
         TODO("Not yet implemented")
     }
 }

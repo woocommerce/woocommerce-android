@@ -60,6 +60,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
                     event.positiveBtnAction,
                     event.negativeBtnAction,
                     event.neutralBtnAction,
+                    titleId = event.titleId,
                     messageId = event.messageId,
                     positiveButtonId = event.positiveButtonId,
                     negativeButtonId = event.negativeButtonId,

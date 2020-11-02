@@ -458,7 +458,7 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    override fun openOrderDetail(remoteOrderId: Long, orderStatus: String) {
+    override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
             Stat.ORDER_OPEN, mapOf(
@@ -467,7 +467,7 @@ class OrderListFragment : TopLevelFragment(),
         )
 
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, remoteOrderId)
+        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
     }
 
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
@@ -659,7 +659,6 @@ class OrderListFragment : TopLevelFragment(),
 
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
-        orderListMenu?.findItem(R.id.menu_support)?.isVisible = true
         order_list_view_root.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -681,7 +680,6 @@ class OrderListFragment : TopLevelFragment(),
         hideEmptyView()
 
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
-        orderListMenu?.findItem(R.id.menu_support)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()

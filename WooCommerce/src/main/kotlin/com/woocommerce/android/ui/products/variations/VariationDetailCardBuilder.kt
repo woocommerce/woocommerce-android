@@ -189,11 +189,7 @@ class VariationDetailCardBuilder(
             val shippingGroup = if (hasShippingInfo) {
                 mapOf(
                     Pair(resources.getString(string.product_weight), weightWithUnits),
-                    Pair(resources.getString(string.product_dimensions), sizeWithUnits),
-                    Pair(
-                        resources.getString(string.product_shipping_class),
-                        viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
-                    )
+                    Pair(resources.getString(string.product_dimensions), sizeWithUnits)
                 )
             } else {
                 mapOf(Pair("", resources.getString(string.product_shipping_empty)))

@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -137,5 +138,13 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+    }
+
+    override fun onReviewClick(review: ProductReview) {
+        (activity as? MainNavigationRouter)?.showReviewDetail(
+            review.remoteId,
+            launchedFromNotification = false,
+            enableModeration = false
+        )
     }
 }

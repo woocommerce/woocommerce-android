@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.MyStoreFragment
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
-import com.woocommerce.android.ui.orders.OrderDetailFragmentDirections
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
@@ -219,6 +219,12 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        // settings icon only appears on the dashboard
+        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == DASHBOARD
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -380,7 +386,9 @@ class MainActivity : AppUpgradeActivity(),
                 R.id.productSettingsFragment,
                 R.id.addProductCategoryFragment,
                 R.id.parentCategoryListFragment,
-                R.id.productSelectionListFragment -> {
+                R.id.productSelectionListFragment,
+                R.id.printShippingLabelInfoFragment,
+                R.id.shippingLabelFormatOptionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {
@@ -460,11 +468,6 @@ class MainActivity : AppUpgradeActivity(),
                 AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
                 true
             }
-            R.id.menu_support -> {
-                showHelpAndSupport()
-                AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -521,10 +524,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun showSettingsScreen() {
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
-    }
-
-    override fun showHelpAndSupport() {
-        startActivity(HelpActivity.createIntent(this, Origin.MAIN_ACTIVITY, null))
     }
 
     override fun updateSelectedSite() {
@@ -772,20 +771,27 @@ class MainActivity : AppUpgradeActivity(),
                 NEW_ORDER -> {
                     selectedSite.getIfExists()?.let { site ->
                         note.getRemoteOrderId()?.let { orderId ->
-                            showOrderDetail(site.id, orderId, note.remoteNoteId)
+                            showOrderDetail(site.id, remoteOrderId = orderId, remoteNoteId = note.remoteNoteId)
                         }
                     }
                 }
-                PRODUCT_REVIEW -> showReviewDetail(note.getCommentId(), true)
+                PRODUCT_REVIEW -> showReviewDetail(
+                    note.getCommentId(),
+                    launchedFromNotification = true,
+                    enableModeration = true
+                )
                 else -> { /* do nothing */
                 }
             }
         }
     }
 
-    override fun showProductDetail(remoteProductId: Long) {
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(remoteProductId)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            remoteProductId,
+            isTrashEnabled = enableTrash
+        )
         navController.navigateSafely(action)
     }
 
@@ -795,17 +801,24 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showReviewDetail(remoteReviewId: Long, launchedFromNotification: Boolean, tempStatus: String?) {
-        showBottomNav()
-        bottomNavView.currentPosition = REVIEWS
-
-        val navPos = REVIEWS.position
-        bottom_nav.active(navPos)
+    override fun showReviewDetail(
+        remoteReviewId: Long,
+        launchedFromNotification: Boolean,
+        enableModeration: Boolean,
+        tempStatus: String?
+    ) {
+        // make sure the review tab is active if the user came here from a notification
+        if (launchedFromNotification) {
+            showBottomNav()
+            bottomNavView.currentPosition = REVIEWS
+            bottom_nav.active(REVIEWS.position)
+        }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
             remoteReviewId,
             tempStatus,
-            launchedFromNotification
+            launchedFromNotification,
+            enableModeration
         )
         navController.navigateSafely(action)
     }
@@ -822,7 +835,13 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
-    override fun showOrderDetail(localSiteId: Int, remoteOrderId: Long, remoteNoteId: Long, markComplete: Boolean) {
+    override fun showOrderDetail(
+        localSiteId: Int,
+        localOrderId: Int,
+        remoteOrderId: Long,
+        remoteNoteId: Long,
+        markComplete: Boolean
+    ) {
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS
             val navPos = ORDERS.position
@@ -840,7 +859,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        val orderId = OrderIdentifier(localSiteId, remoteOrderId)
+        val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
         val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigateSafely(action)
     }

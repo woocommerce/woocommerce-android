@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -20,11 +23,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -38,6 +43,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
@@ -47,6 +53,10 @@ import org.wordpress.android.util.ActivityUtils
 class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
+
+        const val KEY_PRODUCT_DETAIL_RESULT = "product_detail_result"
+        const val KEY_PRODUCT_DETAIL_DID_TRASH = "product_detail_did_trash"
+        const val KEY_REMOTE_PRODUCT_ID = "remote_product_id"
     }
 
     private var productName = ""
@@ -71,7 +81,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onDestroyView() {
-        // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
     }
@@ -79,6 +88,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        CustomDiscardDialog.onCleared()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +124,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductType>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it)
+            viewModel.updateProductDraft(type = it.value)
             changesMade()
         }
         handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
@@ -180,6 +199,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is RefreshMenu -> activity?.invalidateOptionsMenu()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_PRODUCT_DETAIL_RESULT, Bundle().also {
+                        it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
+                        it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
+                    })
+                }
                 else -> event.isHandled = false
             }
         })
@@ -209,7 +234,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         productDetail_addMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
-                ViewProductDetailBottomSheet(product.type)
+                ViewProductDetailBottomSheet(product.productType)
             )
         }
 
@@ -242,6 +267,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         // visibility of these menu items depends on whether we're in the add product flow
         menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
         menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
+        menu.findItem(R.id.menu_product_settings).isVisible = true
+
+        // change the font color of the trash menu item to red, and only show it if it should be enabled
+        with(menu.findItem(R.id.menu_trash_product)) {
+            val title = SpannableString(this.title)
+            title.setSpan(ForegroundColorSpan(Color.RED), 0, title.length, 0)
+            this.setTitle(title)
+            this.isVisible = viewModel.isTrashEnabled
+        }
+
         menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
             viewModel.hasChanges() &&
             FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
@@ -279,6 +314,12 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
                 viewModel.onSettingsButtonClicked()
                 true
             }
+
+            R.id.menu_trash_product -> {
+                viewModel.onTrashButtonClicked()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -343,6 +384,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }

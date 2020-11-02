@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
-import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
-import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
@@ -21,13 +19,11 @@ abstract class ShippingLabelRefundModule {
         fun provideDefaultArgs(fragment: ShippingLabelRefundFragment): Bundle? {
             return fragment.arguments
         }
-
-        @JvmStatic
-        @Provides
-        fun provideSavedStateRegistryOwner(fragment: ShippingLabelRefundFragment): SavedStateRegistryOwner {
-            return fragment.findNavController().getBackStackEntry(R.id.nav_graph_shipping_labels)
-        }
     }
+
+    @Binds
+    abstract fun bindSavedStateRegistryOwner(fragment: ShippingLabelRefundFragment): SavedStateRegistryOwner
+
     @Binds
     @IntoMap
     @ViewModelKey(ShippingLabelRefundViewModel::class)

@@ -125,7 +125,7 @@ jobs:
           command: |
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
             eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-            brew install openjdk
+            brew install openjdk@11
             brew install bundletool
             echo "export PATH='/home/linuxbrew/.linuxbrew/Cellar/bundletool/1.2.0/bin:$PATH'" >> $BASH_ENV
             rm WooCommerce/release.jks

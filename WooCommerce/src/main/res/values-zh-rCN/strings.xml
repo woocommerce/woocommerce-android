@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 14:54:04+0000
+Translation-Revision-Date: 2020-10-16 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">产品草稿已保存</string>
+    <string name="product_detail_publish_product_draft_error">保存产品草稿时出错</string>
+    <string name="product_publish_draft_dialog_title">正在保存草稿</string>
+    <string name="product_status_trashed">已放进回收站</string>
+    <string name="product_detail_save_as_draft">保存为草稿</string>
+    <string name="login_no_wpcom_account_found">%1$s 似乎未与 WordPress.com 帐户关联。</string>
     <string name="signup_confirmation_title">注册确认</string>
     <string name="reset_your_password">重置密码</string>
     <string name="enter_your_site_address">输入您的站点地址</string>
     <string name="continue_with_wpcom">继续使用 WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">如果您继续使用 Google，并且还没有 WordPress.com 帐户，则需要创建一个帐户，并同意我们的%1$s服务条款%2$s。</string>
     <string name="continue_terms_of_service_text">继续即表示您同意我们的%1$s服务条款%2$s。</string>
-    <string name="signup_confirmation_magic_link_message">我们将通过电子邮件向您发送一个免密登录链接，供您创建新的 WordPress.com 帐户。</string>
     <string name="signup_confirmation_message">我们将使用此电子邮件地址为您创建新 WordPress.com 帐户。</string>
-    <string name="signup_magic_link_message">我们已经通过电子邮件向您发送了一个免密登录链接，供您创建新的 WordPress.com 帐户。 请在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
     <string name="sign_up_label">注册</string>
     <string name="login_or">或</string>
     <string name="continue_site_credentials">继续使用商店凭据</string>
@@ -24,7 +28,6 @@ Language: zh_CN
     <string name="login_done">完成</string>
     <string name="magic_link_not_seeing_email_message">没有看到电子邮件？ 请检查您的垃圾邮件文件夹。</string>
     <string name="login_magic_links_sent_label">在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
-    <string name="login_magic_links_label">我们将通过电子邮件向您发送一个神奇链接，利用它您无需密码即可立即登录。</string>
     <string name="check_email">查收电子邮件</string>
     <string name="get_started">开始</string>
     <string name="enter_account_info_for_site">输入您的 %1$s 帐户信息。</string>
@@ -93,7 +96,6 @@ Language: zh_CN
     <string name="product_variation_enabled">已启用</string>
     <string name="product_pricing_scheduled_sale_price_error">如果预发布了销售，您必须设置销售价格</string>
     <string name="product_wip_message_m3">现在，您可以编辑分组、外部及可变产品，更改产品类型以及更新类别和标签。</string>
-    <string name="product_reviews_count">\u2022 %d 评论</string>
     <string name="product_review_list_item_title">%1$s 发表了评论</string>
     <string name="feedback_request_like_it">我喜欢</string>
     <string name="feedback_request_make_better">可以更好</string>
@@ -295,7 +297,6 @@ Language: zh_CN
     <string name="product_description">描述</string>
     <string name="product_edit_description">编辑描述</string>
     <string name="product_description_hint">开始撰写…</string>
-    <string name="product_variant_list_empty">通过 Web 添加大小和颜色等选项。这些选项将在站点的产品页面上显示</string>
     <string name="discard_message">要放弃您所做的更改吗？</string>
     <string name="update">更新</string>
     <string name="done">完成</string>
@@ -403,7 +404,6 @@ Language: zh_CN
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
-    <string name="order_begin_fulfillment">开始履行</string>
     <string name="orderdetail_net">净额</string>
     <string name="orderdetail_payment_paid_by_customer">客户支付</string>
     <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>
@@ -947,7 +947,6 @@ Language: zh_CN
     <string name="magic_link_unavailable_error_message">目前不可用。请输入密码</string>
     <string name="login_magic_link_email_requesting">正在请求登录电子邮件</string>
     <string name="password_incorrect">密码似乎不对。请仔细检查您的信息，然后再试一次。</string>
-    <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。请尝试使用您的站点地址通过以下链接登录。</string>
     <string name="requesting_otp">正在请求短信验证码。</string>
     <string name="login_text_otp_another">再发一条短信验证码。</string>
     <string name="login_text_otp">通过短信向我发送验证码。</string>

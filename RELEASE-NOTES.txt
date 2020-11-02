@@ -1,5 +1,15 @@
+5.4
+-----
+ 
+
 5.3
 -----
+* In Settings > Beta features, a Products switch is now available for turning Products M4 features on and off (default off). Products M4 features: add a simple/grouped/external product with actions to publish or save as draft.
+* Application settings have been moved to a gear icon on the Dashboard
+* You can now view product review details directly from product detail screen
+* Product detail screen now includes the number of ratings for that product
+* Fixed slowness in order screens
+* Order detail screen now includes option to print and refund shipping labels if you have the WooCommerce Shipping & Tax extension
  
 5.2
 -----
