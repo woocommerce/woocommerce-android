@@ -13,7 +13,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         Toolbar Style
     -->
-    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="android:background">@color/color_surface</item>
+        <item name="titleTextColor">@color/color_on_surface</item>
+    </style>
 
     <!--
         AppBarLayout Style
@@ -39,12 +42,14 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">
         <item name="tabMode">fixed</item>
         <item name="tabTextAppearance">?attr/textAppearanceButton</item>
-        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
-        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimary</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="android:elevation">@dimen/plane_00</item>
+        <item name="android:background">@color/color_surface</item>
+        <item name="tabTextColor">@color/color_on_surface</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">
