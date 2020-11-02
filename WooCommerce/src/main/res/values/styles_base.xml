@@ -18,6 +18,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="titleTextColor">@color/color_on_surface</item>
         <item name="elevation">0dp</item>
     </style>
+    <style name="Woo.Widget.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="tint">?attr/colorSecondary</item>
+    </style>
 
     <!--
         AppBarLayout Style

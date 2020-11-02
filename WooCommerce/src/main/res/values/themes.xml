@@ -85,6 +85,7 @@
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
         <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
+        <item name="actionOverflowButtonStyle">@style/Woo.Widget.ActionMode.OverflowButtonStyle</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

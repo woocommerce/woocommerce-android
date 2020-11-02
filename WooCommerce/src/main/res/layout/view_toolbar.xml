@@ -5,6 +5,5 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:elevation="@dimen/plane_00"
-    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
     tools:showIn="@layout/activity_app_settings"
-    tools:menu="@menu/menu_action_bar"/>
+    tools:menu="@menu/menu_product_detail_fragment"/>
