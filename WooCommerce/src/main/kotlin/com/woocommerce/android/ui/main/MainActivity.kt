@@ -62,6 +62,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -431,6 +432,11 @@ class MainActivity : AppUpgradeActivity(),
             } else {
                 it.onChildFragmentOpened()
             }
+        }
+
+        // always collapse the AppBar when entering a child fragment
+        if (isAtRoot) {
+            app_bar_layout.setExpanded(false, false)
         }
 
         previousDestinationId = destination.id

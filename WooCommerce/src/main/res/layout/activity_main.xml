@@ -25,10 +25,10 @@
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="112dp"
+                style="@style/Woo.CollapsedToolbarLayout"
+                android:layout_height="@dimen/expanded_toolbar_height"
                 android:background="@color/color_elevation_overlay_01"
                 app:contentScrim="@color/color_elevation_overlay_01"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:titleEnabled="true">
 
                 <include
