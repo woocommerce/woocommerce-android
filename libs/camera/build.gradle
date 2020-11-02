@@ -1,0 +1,63 @@
+apply plugin: 'com.android.dynamic-feature'
+apply plugin: 'kotlin-android'
+
+repositories {
+    google()
+    jcenter()
+    maven { url "https://jitpack.io" }
+    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
+    maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.wordpress.android.barcode"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    flavorDimensions "buildType"
+
+    productFlavors {
+        vanilla { // Release version
+            dimension "buildType"
+        }
+
+        wasabi { // Development only version, can be installed along release versions
+            dimension "buildType"
+        }
+
+        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+            dimension "buildType"
+        }
+    }
+
+    buildTypes {
+        release {
+            // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
+            // but we don't obfuscate the bytecode.
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            pseudoLocalesEnabled true
+        }
+    }
+}
+
+dependencies {
+    implementation project(path: ':WooCommerce')
+}

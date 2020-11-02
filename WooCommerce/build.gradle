@@ -117,6 +117,7 @@ android {
     testOptions {
         animationsDisabled = true
     }
+    dynamicFeatures = [':libs:camera']
 }
 
 dependencies {

@@ -1,3 +1,4 @@
+include ':libs:camera'
 include ':WooCommerce'
 include ':libs:login:WordPressLoginFlow'
 
