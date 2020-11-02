@@ -15,7 +15,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="android:background">@color/color_surface</item>
-        <item name="titleTextColor">@color/color_on_surface</item>
         <item name="titleTextAppearance">@style/Woo.ToolBar.Title</item>
         <item name="elevation">0dp</item>
     </style>
@@ -25,6 +24,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ToolBar.Title" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="fontFamily">serif</item>
         <item name="android:textStyle">bold</item>
+        <item name="titleTextColor">@color/color_on_surface</item>
     </style>
 
     <!--
@@ -32,7 +32,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
         <item name="android:elevation">@dimen/plane_04</item>
-        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="liftOnScroll">true</item>
     </style>
 
     <!--
