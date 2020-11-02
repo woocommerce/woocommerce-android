@@ -16,10 +16,15 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="android:background">@color/color_surface</item>
         <item name="titleTextColor">@color/color_on_surface</item>
+        <item name="titleTextAppearance">@style/Woo.ToolBar.Title</item>
         <item name="elevation">0dp</item>
     </style>
-    <style name="Woo.Widget.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+    <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">?attr/colorSecondary</item>
+    </style>
+    <style name="Woo.ToolBar.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">serif</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!--
