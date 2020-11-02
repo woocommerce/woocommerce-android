@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 13:54:04+0000
+Translation-Revision-Date: 2020-10-16 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Ürün taslağı kaydedildi</string>
+    <string name="product_detail_publish_product_draft_error">Ürün taslağı kaydedilirken hata oluştu</string>
+    <string name="product_publish_draft_dialog_title">Taslak kaydediliyor</string>
+    <string name="product_status_trashed">Çöpe taşındı</string>
+    <string name="product_detail_save_as_draft">Taslak olarak kaydet</string>
+    <string name="login_no_wpcom_account_found">Görünüşe göre %1$s bir WordPress.com hesabıyla ilişkili değil.</string>
     <string name="signup_confirmation_title">Kayıt onayı</string>
     <string name="reset_your_password">Parolanızı sıfırlayın</string>
     <string name="enter_your_site_address">Site adresinizi girin</string>
     <string name="continue_with_wpcom">WordPress.com ile devam et</string>
     <string name="continue_with_google_terms_of_service_text">Google ile devam ederseniz ve WordPress.com hesabınız yoksa, bir hesap oluşturup %1$shizmet şartlarımızı%2$s kabul etmiş olursunuz.</string>
     <string name="continue_terms_of_service_text">Devam etmekle, %1$shizmet koşullarını%2$s kabul etmiş olursunuz.</string>
-    <string name="signup_confirmation_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size sihirli bir bağlantı göndereceğiz.</string>
     <string name="signup_confirmation_message">Bu e-posta adresini, yeni WordPress.com hesabınızı oluşturmak için kullanacağız.</string>
-    <string name="signup_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size sihirli bir bağlantı gönderdik. Bu cihazdaki e-postanızı kontrol edin ve WordPress.com\'dan aldığınız e-postadaki bağlantıya tıklayın.</string>
     <string name="sign_up_label">Üye ol</string>
     <string name="login_or">veya</string>
     <string name="continue_site_credentials">Mağaza kimlik bilgileriyle devam edin </string>
@@ -24,7 +28,6 @@ Language: tr
     <string name="login_done">Bitti</string>
     <string name="magic_link_not_seeing_email_message">E-postayı görmüyor musunuz? İstenmeyen posta klasörünüzü kontrol edin.</string>
     <string name="login_magic_links_sent_label">E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya tıklayın.</string>
-    <string name="login_magic_links_label">Size anında giriş yapacağınız bir sihirli bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok.</string>
     <string name="check_email">E-postayı kontrol et</string>
     <string name="get_started">Başlayın</string>
     <string name="enter_account_info_for_site">%1$s için hesap bilgilerinizi girin.</string>
@@ -93,7 +96,6 @@ Language: tr
     <string name="product_variation_enabled">Etkin</string>
     <string name="product_pricing_scheduled_sale_price_error">Bir satış planlandıysa satış fiyatını ayarlamalısınız</string>
     <string name="product_wip_message_m3">Artık gruplanmış, harici ve değişken ürünleri düzenleyebilir, ürün türünü değiştirebilir, kategorileri ve etiketleri güncelleyebilirsiniz.</string>
-    <string name="product_reviews_count">\u2022 %d yorum</string>
     <string name="product_review_list_item_title">%1$s bir yorum yaz</string>
     <string name="feedback_request_like_it">Beğendim</string>
     <string name="feedback_request_make_better">Daha iyi olabilirdi</string>
@@ -293,7 +295,6 @@ Language: tr
     <string name="product_description">Tanım</string>
     <string name="product_edit_description">Tanımı düzenle</string>
     <string name="product_description_hint">Yazmaya başlayın…</string>
-    <string name="product_variant_list_empty">Web’den boyut ve renk gibi seçenekler ekleyin. Sitenizin ürün sayfasında seçenekler olarak gözükür</string>
     <string name="discard_message">Değişikliklerinizi iptal etmek mi istiyorsunuz?</string>
     <string name="update">Güncelle</string>
     <string name="done">Bitti</string>
@@ -401,7 +402,6 @@ Language: tr
     <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
-    <string name="order_begin_fulfillment">Yerine getirmeye başla</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Müşteri tarafından ödenen</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
@@ -945,7 +945,6 @@ Language: tr
     <string name="magic_link_unavailable_error_message">Şu an uygun değil. Lütfen parolanızı girin</string>
     <string name="login_magic_link_email_requesting">Oturum açma e-postası istemek</string>
     <string name="password_incorrect">Bu parola yanlış gibi görünüyor. Lütfen bilgilerinizi iki kez kontrol edin ve tekrar deneyin.</string>
-    <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz. Site adresinizi kullanarak oturum açmak için aşağıdaki bağlantıyı deneyin.</string>
     <string name="requesting_otp">SMS ile bir doğrulama kodu istemek.</string>
     <string name="login_text_otp_another">Bana SMS ile başka bir kod gönder.</string>
     <string name="login_text_otp">Bunun yerine bana SMS ile bir kod gönder.</string>

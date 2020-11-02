@@ -18,9 +18,7 @@ Language: zh_TW
     <string name="continue_with_wpcom">繼續使用 WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">如果你繼續使用 Google 操作且尚未擁有 WordPress.com 帳號，即表示你正在建立帳號，並同意我們的%1$s服務條款%2$s。</string>
     <string name="continue_terms_of_service_text">繼續操作即代表你同意我們的%1$s服務條款%2$s。</string>
-    <string name="signup_confirmation_magic_link_message">我們會以電子郵件傳送連結給你，使用此連結即可建立新的 WordPress.com 帳號。</string>
     <string name="signup_confirmation_message">我們會使用這個電子郵件地址，為你建立全新的 WordPress.com 帳號。</string>
-    <string name="signup_magic_link_message">我們已透過電子郵件傳送連結給你，使用此連結即可建立新的 WordPress.com 帳號。 請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
     <string name="sign_up_label">註冊</string>
     <string name="login_or">或</string>
     <string name="continue_site_credentials">使用商店憑證繼續</string>
@@ -30,7 +28,6 @@ Language: zh_TW
     <string name="login_done">完成</string>
     <string name="magic_link_not_seeing_email_message">沒看到電子郵件？ 請檢查你的「垃圾郵件」資料夾。</string>
     <string name="login_magic_links_sent_label">請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
-    <string name="login_magic_links_label">我們會以電子郵件傳送一個連結給你，讓你馬上就能登入，無須輸入密碼。</string>
     <string name="check_email">檢查電子郵件</string>
     <string name="get_started">開始使用</string>
     <string name="enter_account_info_for_site">輸入你的 %1$s 帳號資訊。</string>
@@ -99,7 +96,6 @@ Language: zh_TW
     <string name="product_variation_enabled">已啟用</string>
     <string name="product_pricing_scheduled_sale_price_error">若已排定銷售，則必須設定銷售價格</string>
     <string name="product_wip_message_m3">你現在可以編輯組合、外部和變化商品、變更商品類型，以及更新類別和標籤。</string>
-    <string name="product_reviews_count">\u2022 %d 則評論</string>
     <string name="product_review_list_item_title">%1$s 留下一則評論</string>
     <string name="feedback_request_like_it">喜歡</string>
     <string name="feedback_request_make_better">還有改善空間</string>
@@ -301,7 +297,6 @@ Language: zh_TW
     <string name="product_description">說明</string>
     <string name="product_edit_description">編輯說明</string>
     <string name="product_description_hint">開始撰寫內容…</string>
-    <string name="product_variant_list_empty">從網路新增尺寸和顏色等選項。這些選項會顯示在網站的商品頁面上</string>
     <string name="discard_message">是否要捨棄所做的變更？</string>
     <string name="update">更新</string>
     <string name="done">完成</string>
@@ -409,7 +404,6 @@ Language: zh_TW
     <string name="orderdetail_refund_detail">%1$s，付款方式：%2$s</string>
     <string name="settings_enable_v4_stats_title">改善的統計資料</string>
     <string name="beta_features">Beta 功能</string>
-    <string name="order_begin_fulfillment">開始履行</string>
     <string name="orderdetail_net">淨額</string>
     <string name="orderdetail_payment_paid_by_customer">顧客付款</string>
     <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
@@ -953,7 +947,6 @@ Language: zh_TW
     <string name="magic_link_unavailable_error_message">目前無法使用。請輸入你的密碼</string>
     <string name="login_magic_link_email_requesting">要求登入的電子郵件</string>
     <string name="password_incorrect">看來你輸入的密碼不正確。請重新確認你的資訊，然後再試一次。</string>
-    <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。請試著點擊下方連結，並使用你的網站位址登入。</string>
     <string name="requesting_otp">透過 SMS 要求驗證碼。</string>
     <string name="login_text_otp_another">請使用簡訊傳送另一個驗證碼給我。</string>
     <string name="login_text_otp">請改用簡訊傳送驗證碼給我。</string>

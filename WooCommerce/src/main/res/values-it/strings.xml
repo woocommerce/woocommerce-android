@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-01 12:54:04+0000
+Translation-Revision-Date: 2020-10-19 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Bozza prodotto salvata</string>
+    <string name="product_detail_publish_product_draft_error">Errore durante il salvataggio della bozza del prodotto</string>
+    <string name="product_publish_draft_dialog_title">Salvataggio bozza</string>
+    <string name="product_status_trashed">Spostata nel cestino</string>
+    <string name="product_detail_save_as_draft">Salva come bozza</string>
+    <string name="login_no_wpcom_account_found">Sembra che %1$s non sia associato a un account WordPress.com.</string>
     <string name="signup_confirmation_title">Conferma dell\'iscrizione</string>
     <string name="reset_your_password">Reimposta la password</string>
     <string name="enter_your_site_address">Inserisci l\'indirizzo del tuo sito</string>
     <string name="continue_with_wpcom">Continua con WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Se continui con Google e non hai già un account WordPress.com, creerai un nuovo account, accettando i nostri %1$sTermini di servizio%2$s.</string>
     <string name="continue_terms_of_service_text">Continuando, accetti i nostri %1$sTermini di servizio%2$s.</string>
-    <string name="signup_confirmation_magic_link_message">Riceverai una e-mail con un link per creare un nuovo account WordPress.com.</string>
     <string name="signup_confirmation_message">Useremo un indirizzo e-mail per creare un nuovo account WordPress.com.</string>
-    <string name="signup_magic_link_message">Ti abbiamo inviato una e-mail con un link per creare un nuovo account WordPress.com. Controlla la tua casella di posta su questo dispositivo e segui il link contenuto nell\'e-mail ricevuta da WordPress.com.</string>
     <string name="sign_up_label">Registrati</string>
     <string name="login_or">o</string>
     <string name="continue_site_credentials">Continua con le credenziali del negozio</string>
@@ -24,7 +28,6 @@ Language: it
     <string name="login_done">Fatto</string>
     <string name="magic_link_not_seeing_email_message">Non trovi l\'e-mail? Controlla la cartella dello spam o della posta indesiderata.</string>
     <string name="login_magic_links_sent_label">Controlla la tua casella di posta su questo dispositivo e segui il link contenuto nell\'e-mail ricevuta da WordPress.com.</string>
-    <string name="login_magic_links_label">Riceverai una e-mail con un link per l\'accesso immediato.</string>
     <string name="check_email">Controlla l\'e-mail</string>
     <string name="get_started">Primi passi</string>
     <string name="enter_account_info_for_site">Inserisci le informazioni dell’account per %1$s.</string>
@@ -93,7 +96,6 @@ Language: it
     <string name="product_variation_enabled">Abilitata</string>
     <string name="product_pricing_scheduled_sale_price_error">Devi impostare il prezzo di vendita se è pianificata una vendita</string>
     <string name="product_wip_message_m3">Ora puoi modificare i prodotti variabili, esterni e raggruppati, puoi cambiare il tipo di prodotto e aggiornare categorie e tag.</string>
-    <string name="product_reviews_count">\u2022 %d recensioni</string>
     <string name="product_review_list_item_title">%1$s ha lasciato una recensione</string>
     <string name="feedback_request_like_it">Mi piace</string>
     <string name="feedback_request_make_better">Potrebbe essere migliore</string>
@@ -295,7 +297,6 @@ Language: it
     <string name="product_description">Descrizione</string>
     <string name="product_edit_description">Modifica descrizione</string>
     <string name="product_description_hint">Inizia a scrivere…</string>
-    <string name="product_variant_list_empty">Aggiungi opzioni come dimensione e colore dal web. Queste verranno visualizzate come opzioni sulla pagina del prodotto del tuo sito</string>
     <string name="discard_message">Desideri eliminare queste modifiche?</string>
     <string name="update">Aggiorna</string>
     <string name="done">Fatto</string>
@@ -403,7 +404,6 @@ Language: it
     <string name="orderdetail_refund_detail">%1$s tramite %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
     <string name="beta_features">Funzionalità beta</string>
-    <string name="order_begin_fulfillment">Inizia evasione</string>
     <string name="orderdetail_net">Netto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagato dal cliente</string>
     <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
@@ -947,7 +947,6 @@ Language: it
     <string name="magic_link_unavailable_error_message">Attualmente non disponibile. Inserisci la tua password</string>
     <string name="login_magic_link_email_requesting">Richiesta e-mail di accesso</string>
     <string name="password_incorrect">Sembra che la password non sia corretta. Verifica attentamente le informazioni e riprova.</string>
-    <string name="email_not_registered_wpcom">Hmm, non siamo in grado di trovare un account WordPress.com connesso a questo indirizzo e-mail. Prova ad accedere con il seguente link usando l’indirizzo del tuo sito.</string>
     <string name="requesting_otp">Richiesta codice di verifica tramite SMS.</string>
     <string name="login_text_otp_another">Inviami invece un messaggio con un altro codice.</string>
     <string name="login_text_otp">Inviami un codice.</string>

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 08:54:04+0000
+Translation-Revision-Date: 2020-10-16 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">商品の下書きを保存しました</string>
+    <string name="product_detail_publish_product_draft_error">商品の下書きの保存中にエラーが発生しました</string>
+    <string name="product_publish_draft_dialog_title">下書きを保存しています</string>
+    <string name="product_status_trashed">ゴミ箱移動済み</string>
+    <string name="product_detail_save_as_draft">下書きとして保存</string>
+    <string name="login_no_wpcom_account_found">%1$s は WordPress.com アカウントと関連付けられていないようです。</string>
     <string name="signup_confirmation_title">登録の確認</string>
     <string name="reset_your_password">パスワードをリセット</string>
     <string name="enter_your_site_address">サイトアドレスを入力</string>
     <string name="continue_with_wpcom">WordPress.com で続ける</string>
     <string name="continue_with_google_terms_of_service_text">Google を引き続き使用し、WordPress.com アカウントをまだお持ちでない場合は、アカウントを作成して WordPress.com の%1$s利用規約%2$sに同意します。</string>
     <string name="continue_terms_of_service_text">継続することで、%1$s利用規約%2$sに合意したことになります。</string>
-    <string name="signup_confirmation_magic_link_message">新しい WordPress.com アカウントを作成するためのマジックリンクをメールでお送りします。</string>
     <string name="signup_confirmation_message">このメールアドレスは新しい WordPress.com アカウントの作成に使用します。</string>
-    <string name="signup_magic_link_message">新しい WordPress.com アカウントを作成するためのマジックリンクをメールでお送りしました。 このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
     <string name="sign_up_label">登録</string>
     <string name="login_or">または</string>
     <string name="continue_site_credentials">ストアのログイン情報で続ける</string>
@@ -24,7 +28,6 @@ Language: ja_JP
     <string name="login_done">終了</string>
     <string name="magic_link_not_seeing_email_message">メールが表示されない場合は、 スパムメールや迷惑メールのフォルダーを確認してください。</string>
     <string name="login_magic_links_sent_label">このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
-    <string name="login_magic_links_label">パスワードなしですぐにログインできるマジックリンクのメールをお送りします。</string>
     <string name="check_email">メールを確認</string>
     <string name="get_started">今すぐ始める</string>
     <string name="enter_account_info_for_site">%1$s のアカウント情報を入力してください。</string>
@@ -91,7 +94,6 @@ Language: ja_JP
     <string name="product_variation_enabled">有効</string>
     <string name="product_pricing_scheduled_sale_price_error">セールを予定している場合はセール価格を設定する必要があります</string>
     <string name="product_wip_message_m3">セット販売商品・外部商品・バリエーションの編集と、商品タイプの変更、カテゴリーおよびタグの更新ができるようになりました。</string>
-    <string name="product_reviews_count">\u2022 %d件のレビュー</string>
     <string name="product_review_list_item_title">%1$s レビューを書きました</string>
     <string name="feedback_request_like_it">気に入りました</string>
     <string name="feedback_request_make_better">改善が必要</string>
@@ -293,7 +295,6 @@ Language: ja_JP
     <string name="product_description">説明</string>
     <string name="product_edit_description">説明を編集</string>
     <string name="product_description_hint">執筆を開始…</string>
-    <string name="product_variant_list_empty">Web からサイズや色などのオプションを追加します。サイトの製品ページにオプションとして表示されます</string>
     <string name="discard_message">変更を破棄しますか ?</string>
     <string name="update">更新</string>
     <string name="done">終了</string>
@@ -401,7 +402,6 @@ Language: ja_JP
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
-    <string name="order_begin_fulfillment">フルフィルメントを開始</string>
     <string name="orderdetail_net">純額</string>
     <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
@@ -945,7 +945,6 @@ Language: ja_JP
     <string name="magic_link_unavailable_error_message">現在ご利用いただけません。パスワードを入力してください</string>
     <string name="login_magic_link_email_requesting">ログインメールのリクエスト</string>
     <string name="password_incorrect">このパスワードは間違っているようです。入力した情報をもう一度確認してから、やり直してください。</string>
-    <string name="email_not_registered_wpcom">このメールアドレスに連携されている WordPress.com アカウントが見つかりません。以下のリンクから、サイトアドレスを使用してログインしてください。</string>
     <string name="requesting_otp">SMS 経由で認証コードをリクエスト。</string>
     <string name="login_text_otp_another">代わりに別のコードを送信する。</string>
     <string name="login_text_otp">代わりに SMS でコードを送信する。</string>
