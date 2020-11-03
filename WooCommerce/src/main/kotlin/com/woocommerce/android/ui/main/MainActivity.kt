@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -118,6 +119,7 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
+    private var isToolbarExpanded = true
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -193,6 +195,12 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            if (isAtNavigationRoot()) {
+                isToolbarExpanded = (verticalOffset == 0)
+            }
+        })
     }
 
     override fun hideProgressDialog() {
@@ -434,10 +442,10 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        // always collapse the AppBar when entering a child fragment
-        if (isAtRoot) {
-
-        } else {
+        // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+        if (isAtRoot && isToolbarExpanded) {
+            app_bar_layout.setExpanded(true, false)
+        } else if (!isAtRoot) {
             app_bar_layout.setExpanded(false, false)
         }
 
