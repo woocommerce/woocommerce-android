@@ -15,28 +15,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="android:background">@color/color_surface</item>
-        <item name="titleTextAppearance">@style/Woo.ToolBar.Title</item>
-        <item name="elevation">0dp</item>
-    </style>
-    <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="tint">?attr/colorSecondary</item>
-    </style>
-    <style name="Woo.ToolBar.Title" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="fontFamily">serif</item>
-        <item name="titleTextColor">@color/alert_red</item>
-    </style>
-    <style name="Woo.ToolBar.Title.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="fontFamily">serif</item>
-        <item name="android:textStyle">bold</item>
+        <item name="titleTextColor">@color/color_on_surface</item>
+        <item name="android:elevation">0dp</item>
     </style>
     <style name="Woo.TextAppearance.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">@dimen/expanded_toolbar_height</item>
     </style>
     <style name="Woo.TextAppearance.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
     </style>
@@ -50,12 +38,15 @@ theme across the entire app. Overridden versions should be added to the styles.x
         </item>
         <item name="expandedTitleMarginStart">16dp</item>
     </style>
+    <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="tint">@color/color_secondary</item>
+    </style>
 
     <!--
         AppBarLayout Style
     -->
-    <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
-        <item name="android:elevation">@dimen/plane_04</item>
+    <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="android:elevation">0dp</item>
         <item name="android:fitsSystemWindows">true</item>
         <item name="liftOnScroll">true</item>
     </style>

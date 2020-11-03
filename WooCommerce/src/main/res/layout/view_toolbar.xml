@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:elevation="@dimen/plane_00"
     app:layout_collapseMode="pin"
     tools:menu="@menu/menu_product_detail_fragment"
     tools:showIn="@layout/activity_app_settings"
