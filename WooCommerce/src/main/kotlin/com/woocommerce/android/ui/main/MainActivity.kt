@@ -436,6 +436,8 @@ class MainActivity : AppUpgradeActivity(),
 
         // always collapse the AppBar when entering a child fragment
         if (isAtRoot) {
+
+        } else {
             app_bar_layout.setExpanded(false, false)
         }
 
