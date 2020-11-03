@@ -457,6 +457,10 @@ class MainActivity : AppUpgradeActivity(),
         collapsing_toolbar.title = title
     }
 
+    fun expandToolbar(expand: Boolean) {
+        app_bar_layout.setExpanded(expand, true)
+    }
+
     /**
      * Returns a Boolean value in order to set the behaviour from a root navigation type in terms of:
      * .container visibility

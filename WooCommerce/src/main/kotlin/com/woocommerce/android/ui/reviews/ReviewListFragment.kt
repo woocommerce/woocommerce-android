@@ -424,4 +424,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     override fun onReviewClick(review: ProductReview) {
         openReviewDetail(review)
     }
+
+    override fun isScrolledToTop() = reviewsList.scrollY == 0
 }

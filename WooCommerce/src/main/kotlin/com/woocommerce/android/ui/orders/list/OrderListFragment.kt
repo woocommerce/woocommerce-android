@@ -572,6 +572,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(false)
         isSearching = true
         checkOrientation()
+        expandMainToolbar(false)
         return true
     }
 
@@ -586,6 +587,7 @@ class OrderListFragment : TopLevelFragment(),
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
+        restoreMainToolbar()
         return true
     }
 
@@ -773,4 +775,6 @@ class OrderListFragment : TopLevelFragment(),
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
+
+    override fun isScrolledToTop() = order_list_view.scrollY == 0
 }

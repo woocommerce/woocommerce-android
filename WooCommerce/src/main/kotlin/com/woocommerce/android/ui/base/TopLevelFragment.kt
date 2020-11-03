@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.base
 
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 
 /**
@@ -20,4 +21,26 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
                 false
             }
         }
+
+    abstract fun isScrolledToTop(): Boolean
+
+    /**
+     * Called when the fragment shows a search view so the toolbar size is shrunk
+     * to a non-expanded size
+     */
+    fun expandMainToolbar(expand: Boolean) {
+        (activity as? MainActivity)?.let {
+            it.expandToolbar(expand)
+        }
+    }
+
+    /**
+     * Called when the fragment hides a search view so the toolbar can be re-expanded
+     * if scrolled to the top
+     */
+    fun restoreMainToolbar() {
+        if (isScrolledToTop()) {
+            expandMainToolbar(true)
+        }
+    }
 }
