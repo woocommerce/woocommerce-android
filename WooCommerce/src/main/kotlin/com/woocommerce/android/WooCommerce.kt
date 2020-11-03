@@ -6,10 +6,14 @@ import android.net.ConnectivityManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
+import android.util.Log
 import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.play.core.splitcompat.SplitCompat
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import com.google.android.play.core.splitinstall.SplitInstallRequest
 import com.idescout.sql.SqlScoutServer
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -99,6 +103,12 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             }
             return true
         }
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+
+        SplitCompat.install(this)
     }
 
     override fun onCreate() {
@@ -281,6 +291,20 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
                     mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
             )
         }
+    }
+
+    fun installBarcodeCameraModule() {
+        val splitInstallManager = SplitInstallManagerFactory.create(applicationContext)
+        val request = SplitInstallRequest.newBuilder()
+            .addModule("barcode")
+            .build()
+
+        splitInstallManager.startInstall(request)
+            .addOnSuccessListener {
+                Log.d("WooCommerceApp", it.toString())
+            }
+            .addOnFailureListener {
+                Log.e("WooCommerceApp", it.toString())}
     }
 
     @Suppress("unused")
