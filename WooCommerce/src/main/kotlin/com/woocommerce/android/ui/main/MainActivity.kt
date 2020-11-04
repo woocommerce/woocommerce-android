@@ -63,7 +63,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -646,6 +645,10 @@ class MainActivity : AppUpgradeActivity(),
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
             NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
+        }
+
+        getActiveTopLevelFragment()?.let {
+            expandToolbar(it.isScrolledToTop())
         }
     }
 

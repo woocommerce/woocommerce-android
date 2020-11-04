@@ -777,5 +777,5 @@ class OrderListFragment : TopLevelFragment(),
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
 
-    override fun isScrolledToTop() = order_list_view.scrollY == 0
+    override fun isScrolledToTop() = order_list_view.getCurrentPosition() == 0
 }

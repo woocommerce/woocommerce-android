@@ -530,5 +530,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
-    override fun isScrolledToTop() = productsRecycler.scrollY == 0
+    override fun isScrolledToTop() =
+        (productsRecycler.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
 }
