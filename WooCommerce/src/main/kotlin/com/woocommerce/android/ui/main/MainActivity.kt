@@ -445,7 +445,7 @@ class MainActivity : AppUpgradeActivity(),
         if (isAtRoot && isToolbarExpanded) {
             app_bar_layout.setExpanded(true, true)
         } else if (!isAtRoot) {
-            app_bar_layout.setExpanded(false, true)
+            app_bar_layout.setExpanded(false, false)
         }
 
         previousDestinationId = destination.id
