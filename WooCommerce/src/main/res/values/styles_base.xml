@@ -30,6 +30,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
     <style name="Woo.CollapsedToolbarLayout">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="maxLines">2</item>
         <item name="collapsedTitleTextAppearance">
             @style/Woo.TextAppearance.CollapsingToolbar.Collapsed
         </item>
