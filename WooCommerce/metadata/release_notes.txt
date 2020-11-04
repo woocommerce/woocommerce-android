@@ -1,3 +1,2 @@
-* Add and edit linked products when Product creation is enabled in beta features.
 * Product variation information fully displays in order details.
 * Fixed a rare crash when adding a new product category and selecting product filter options.
