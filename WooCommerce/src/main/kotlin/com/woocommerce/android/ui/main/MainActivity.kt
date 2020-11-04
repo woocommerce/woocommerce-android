@@ -444,9 +444,9 @@ class MainActivity : AppUpgradeActivity(),
 
         // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
         if (isAtRoot && isToolbarExpanded) {
-            app_bar_layout.setExpanded(true, false)
+            app_bar_layout.setExpanded(true, true)
         } else if (!isAtRoot) {
-            app_bar_layout.setExpanded(false, false)
+            app_bar_layout.setExpanded(false, true)
         }
 
         previousDestinationId = destination.id
