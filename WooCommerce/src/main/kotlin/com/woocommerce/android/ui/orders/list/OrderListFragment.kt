@@ -139,6 +139,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
