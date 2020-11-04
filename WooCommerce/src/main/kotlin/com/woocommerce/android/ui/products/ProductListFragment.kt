@@ -281,7 +281,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
-        expandMainToolbar(false)
+        expandMainToolbar(false, animate = true)
         return true
     }
 

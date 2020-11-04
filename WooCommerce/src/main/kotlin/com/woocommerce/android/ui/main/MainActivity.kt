@@ -456,8 +456,8 @@ class MainActivity : AppUpgradeActivity(),
         collapsing_toolbar.title = title
     }
 
-    fun expandToolbar(expand: Boolean) {
-        app_bar_layout.setExpanded(expand, true)
+    fun expandToolbar(expand: Boolean, animate: Boolean) {
+        app_bar_layout.setExpanded(expand, animate)
     }
 
     /**
@@ -648,7 +648,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         getActiveTopLevelFragment()?.let {
-            expandToolbar(it.isScrolledToTop())
+            expandToolbar(it.isScrolledToTop(), animate = false)
         }
     }
 

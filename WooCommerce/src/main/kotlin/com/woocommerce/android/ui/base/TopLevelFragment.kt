@@ -28,10 +28,8 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
      * Called when the fragment shows a search view so the toolbar size is shrunk
      * to a non-expanded size
      */
-    fun expandMainToolbar(expand: Boolean) {
-        (activity as? MainActivity)?.let {
-            it.expandToolbar(expand)
-        }
+    fun expandMainToolbar(expand: Boolean, animate: Boolean) {
+        (activity as? MainActivity)?.expandToolbar(expand, animate)
     }
 
     /**
@@ -40,7 +38,7 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
      */
     fun restoreMainToolbar() {
         if (isScrolledToTop()) {
-            expandMainToolbar(true)
+            expandMainToolbar(true, true)
         }
     }
 }

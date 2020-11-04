@@ -573,7 +573,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(false)
         isSearching = true
         checkOrientation()
-        expandMainToolbar(false)
+        expandMainToolbar(false, animate = true)
         return true
     }
 
