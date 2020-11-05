@@ -165,7 +165,7 @@ class ProductListRepository @Inject constructor(
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null
     ): List<Product> {
-        // TODO: a FluxC fix needs to be made so we don't have to pass null here
+        // we need to pass null because FluxC crashes when an empty list is passed
         val excludedIds = if (excludedProductIds?.isNotEmpty() == true) {
             excludedProductIds
         } else {
