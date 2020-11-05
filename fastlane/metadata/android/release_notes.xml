@@ -1,81 +1,49 @@
-<es-ES>
-5.2:
-Mejoras en las funciones de edición para todos los tipos de productos:
-
-Se han añadido campos adicionales a los productos principales (etiquetas, categorías, tipo de producto, visibilidad y activación y desactivación de valoraciones). Ahora también se pueden editar los productos variables.
-
-Se han añadido campos básicos para los productos que no son principales (imágenes, nombre, descripción, precio de solo lectura, inventario de solo lectura, etiquetas, categorías, descripciones cortas y ajustes del producto).
-
-</es-ES>
 <fr-FR>
-5.2 :
-Options de modification améliorées pour tous les types de produit :
-
-Ajout de champs supplémentaires aux produits essentiels (étiquettes, catégories, type de produit, activer/désactiver les avis et visibilité). Les produits variables peuvent désormais être modifiés.
-
-Des champs de base ont été ajoutés pour les produits non essentiels (images, nom, description, prix en lecture seule, inventaire en lecture seule, étiquettes, catégories, courtes descriptions et paramètres de produit).
+5.3 :
+* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
+* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
+* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
 
 </fr-FR>
 <iw-IL>
-5.2:
-שיפורים ביכולות העריכה בכל סוגי המוצרים:
-
-הוספנו שדות במוצרי ליבה (תגיות, קטגוריות, סוגי מוצרים, הפעלה/השבתה של ביקורות ונראות). ניתן לערוך גם מוצרים עם סוגים.
-
-הוספנו שדות בסיסיים למוצרים שאינם מוצרי ליבה (תמונות, שם, תיאור, מחיר לקריאה בלבד, מלאי לקריאה בלבד, תגיות, קטגוריות, תיאורים קצרים והגדרות מוצר).
+5.3:
+* מוצרים: ב'הגדרות' ← 'אפשרויות ביתא', המתג 'מוצרים' זמין כעת. אפשר גם להוסיף מוצר פשוט, מוצר בקבוצה, מוצר חיצוני או מוצר עם סוגים, ולפרסם או לשמור אותם כטיוטה.
+* פרטי הזמנה: ההרחבה WooCommerce Shipping & Tax מאפשרת לך להדפיס ולבקש החזרים עבור תוויות משלוח קיימות.
+* שיפורים שונים: ביצענו תיקונים אחרים, כגון שיפור המהירות במסכי ההזמנה.
 
 </iw-IL>
+<it-IT>
+5.3:
+* Prodotti: in Impostazioni → Funzionalità beta, è ora disponibile un interruttore Prodotti. Puoi anche aggiungere un prodotto semplice, raggruppato, esterno o variabile e pubblicarlo o salvarlo come una bozza.
+* Dettaglio dell'ordine: con l'estensione WooCommerce Shipping & Tax, puoi stampare e richiedere rimborsi per etichette di spedizione esistenti.
+* Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
+
+</it-IT>
 <ko-KR>
-5.2:
-모든 제품 유형에 대한 편집 기능 개선:
-
-핵심 제품에 추가 필드(태그, 카테고리, 제품 유형, 리뷰 사용/사용 안 함 및 가시성)가 추가되었습니다. 옵션 제품도 이제 편집할 수 있습니다.
-
-비 핵심 제품(이미지, 이름, 설명, 읽기 전용 가격, 읽기 전용 인벤토리, 태그, 카테고리, 간단한 설명 및 제품 설정)에 기본 필드가 추가되었습니다.
+5.3:
+* 제품: 설정 → 베타 기능에서 이제 제품을 전환할 수 있습니다. 단순하고, 그룹화되고, 변형 가능하거나 외부 제품을 추가하여 공개하거나 임시글로 저장할 수도 있습니다.
+* 주문 상세 정보: WooCommerce 배송 및 세금 확장 기능을 통해 기존 배송 레이블을 인쇄하고 환불을 요청할 수 있습니다.
+* 기타 개선 사항: 주문 화면 속도 개선 등 다른 사항도 개선되었습니다.
 
 </ko-KR>
-<pt-BR>
-5.2:
-Melhorias nos recursos de edição para todos os produtos:
-
-Adicionados campos adicionais aos produtos principais (tags, categorias, tipo de produto, ativar/desativar avaliações e visibilidade). Produtos variáveis agora também podem ser editados.
-
-Adicionados campos básicos aos produtos secundários (imagens, nome, descrição, preço somente leitura, inventário somente leitura, tags, categorias, breves descrições e configurações do produto).
-
-</pt-BR>
-<ru-RU>
-5.2:
-Улучшены возможности редактирования всех типов товаров:
-
-в основные товары добавлены дополнительные поля (теги, категории, тип товара, включить/отключить отзывы и видимость). Товары с вариантами также можно редактировать.
-
-В товары, не относящиеся к основным, добавлены базовые поля (изображения, имя, описание, цена в режиме «только для чтения», количество товара в режиме «только для чтения», теги, категории, краткие описания и настройки товара).
-
-</ru-RU>
 <sv-SE>
-5.2:
-Förbättringar av redigeringsfunktionerna för alla produkttyper:
-
-Ytterligare fält har lagts till för kärnprodukter (etiketter, kategorier, produkttyp, aktivera/inaktivera recensioner och synlighet). Det går nu även att redigera variabla produkter.
-
-Grundläggande fält har lagts till för icke-kärnprodukter (bilder, namn, beskrivning, skrivskyddat pris, skrivskyddat lager, etiketter, kategorier, korta beskrivningar och produktinställningar).
+5.3:
+* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
+* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
+* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
 
 </sv-SE>
-<zh-TW>
-5.2：
-增強所有商品類型的編輯功能：
+<zh-CN>
+5.3：
+* 产品：在“设置”→“测试版功能”中，现在提供了一个“产品”开关。 您也可以添加简单的分组或外部产品，然后发布产品或将其另存为草稿。
+* 订单详情：您可以使用 WooCommerce Shipping & Tax 扩展程序打印现有配送标签和申请退款。
+* 其他改进：我们还修复了一些其他问题，例如提升了订单屏幕的加载速度。
 
-為核心商品新增其他欄位 (標籤、類別、商品類型、啟用/停用評論和可見度)。 你現在也可以編輯子類商品。
-
-我們為非核心商品新增了基本欄位 (圖片、名稱、說明、唯讀價格、唯讀庫存、標籤、類別、簡短說明和商品設定)。
-
-</zh-TW>
+</zh-CN>
 <en-US>
-5.2:
-Enhancements to the editing capabilities for all product types:
+5.3:
+* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
+* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.
+* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.
 
-Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
-
-Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
- 
 </en-US>

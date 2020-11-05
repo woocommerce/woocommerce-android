@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 14:54:04+0000
+Translation-Revision-Date: 2020-10-16 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_detail_publish_product_draft_success">Draf produk disimpan</string>
+    <string name="product_detail_publish_product_draft_error">Kesalahan saat menyimpan draf produk</string>
+    <string name="product_publish_draft_dialog_title">Menyimpan draf</string>
+    <string name="product_status_trashed">Dibuang</string>
+    <string name="product_detail_save_as_draft">Simpan sebagai draf</string>
+    <string name="login_no_wpcom_account_found">Sepertinya %1$s tidak terhubung dengan akun WordPress.com.</string>
     <string name="signup_confirmation_title">Konfirmasi pendaftaran</string>
     <string name="reset_your_password">Reset kata sandi</string>
     <string name="enter_your_site_address">Masukkan alamat situs Anda</string>
     <string name="continue_with_wpcom">Lanjutkan dengan WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Jika Anda melanjutkan dengan Google dan belum memiliki akun WordPress.com, Anda akan membuat akun dan menyetujui  %1$sKetentuan Layanan%2$s kami.</string>
     <string name="continue_terms_of_service_text">Dengan melanjutkan, Anda menyetujui %1$sKetentuan Layanan%2$s kami.</string>
-    <string name="signup_confirmation_magic_link_message">Kami akan mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru.</string>
     <string name="signup_confirmation_message">Kami akan menggunakan alamat email ini untuk membuat akun WordPress.com baru Anda.</string>
-    <string name="signup_magic_link_message">Kami telah mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru. Periksa email Anda pada perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com.</string>
     <string name="sign_up_label">Mendaftar</string>
     <string name="login_or">atau</string>
     <string name="continue_site_credentials">Lanjutkan dengan kredensial toko</string>
@@ -24,7 +28,6 @@ Language: id
     <string name="login_done">Selesai</string>
     <string name="magic_link_not_seeing_email_message">Tidak menerima email? Periksa folder Spam atau Junk.</string>
     <string name="login_magic_links_sent_label">Periksa email Anda di perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com</string>
-    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan yang dapat Anda gunakan untuk login langsung, tanpa kata sandi.</string>
     <string name="check_email">Periksa email</string>
     <string name="get_started">Mulai</string>
     <string name="enter_account_info_for_site">Masukkan informasi akun Anda untuk %1$s.</string>
@@ -93,7 +96,6 @@ Language: id
     <string name="product_variation_enabled">Diaktifkan</string>
     <string name="product_pricing_scheduled_sale_price_error">Anda harus menentukan harga obral jika ada obral yang dijadwalkan</string>
     <string name="product_wip_message_m3">Anda kini dapat menyunting produk yang dikelompokkan, eksternal, dan variabel; mengubah jenis produk; serta memperbarui kategori dan tag.</string>
-    <string name="product_reviews_count">\u2022 %d ulasan</string>
     <string name="product_review_list_item_title">%1$s berikan ulasan</string>
     <string name="feedback_request_like_it">Saya suka</string>
     <string name="feedback_request_make_better">Perlu ditingkatkan</string>
@@ -295,7 +297,6 @@ Language: id
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
     <string name="product_description_hint">Mulai menulis…</string>
-    <string name="product_variant_list_empty">Tambahkan opsi seperti ukuran dan warna dari web. Ini akan muncul sebagai opsi di halaman produk situs Anda</string>
     <string name="discard_message">Ingin membuang perubahan?</string>
     <string name="update">Perbarui</string>
     <string name="done">Selesai</string>
@@ -403,7 +404,6 @@ Language: id
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
-    <string name="order_begin_fulfillment">Mulai pemenuhan</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
@@ -947,7 +947,6 @@ Language: id
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
-    <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>
     <string name="requesting_otp">Meminta kode verifikasi melalui SMS.</string>
     <string name="login_text_otp_another">Kirimi saya kode baru.</string>
     <string name="login_text_otp">Kirimi saya kode saja.</string>

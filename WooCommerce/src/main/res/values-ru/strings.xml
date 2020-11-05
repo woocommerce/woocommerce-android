@@ -18,9 +18,7 @@ Language: ru
     <string name="continue_with_wpcom">Продолжить с WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Если вы продолжите работу с учетной записью Google, не имея учётной записи WordPress.com, вы создадите учётную запись и примете наши %1$sУсловия обслуживания%2$s.</string>
     <string name="continue_terms_of_service_text">Продолжив, вы соглашаетесь с нашими %1$sПравилами пользования%2$s.</string>
-    <string name="signup_confirmation_magic_link_message">Мы пришлём вам волшебную ссылку для создания учётной записи WordPress.com.</string>
     <string name="signup_confirmation_message">Этот адрес эл.почты будет использован при создании вашей новой учётной записи WordPress.com.</string>
-    <string name="signup_magic_link_message">Мы отослали вам волшебную ссылку для создания учётной записи WordPress.com. Проверьте почту на вашем устройстве и нажмите на ссылку, полученную с WordPress.com.</string>
     <string name="sign_up_label">Зарегистрироваться</string>
     <string name="login_or">или</string>
     <string name="continue_site_credentials">Продолжить с учетными данными магазина</string>
@@ -30,7 +28,6 @@ Language: ru
     <string name="login_done">Готово</string>
     <string name="magic_link_not_seeing_email_message">Не нашли письмо? Загляните в папку со спамом.</string>
     <string name="login_magic_links_sent_label">Проверьте почту на этом устройстве и нажмите ссылку в письме от WordPress.com</string>
-    <string name="login_magic_links_label">Мы пришлём вам волшебную ссылку для входа, которая позволит вам сразу войти без пароля.</string>
     <string name="check_email">Проверка почты</string>
     <string name="get_started">Начать </string>
     <string name="enter_account_info_for_site">Введите данные вашей учётной записи для %1$s.</string>
@@ -99,7 +96,6 @@ Language: ru
     <string name="product_variation_enabled">Включить</string>
     <string name="product_pricing_scheduled_sale_price_error">Если продажа запланирована, необходимо установить цену.</string>
     <string name="product_wip_message_m3">Теперь вы можете редактировать сгруппированные, внешние и вариативные товары, менять тип товаров, а также обновлять категории и теги.</string>
-    <string name="product_reviews_count">\u2022 %d отзывов</string>
     <string name="product_review_list_item_title">%1$s оставил (-а) отзыв</string>
     <string name="feedback_request_like_it">Мне нравится</string>
     <string name="feedback_request_make_better">Есть над чем работать</string>
@@ -301,7 +297,6 @@ Language: ru
     <string name="product_description">Описание</string>
     <string name="product_edit_description">Редактировать описание</string>
     <string name="product_description_hint">Начните писать…</string>
-    <string name="product_variant_list_empty">Добавьте варианты из Интернета, например размер и цвет. Эти варианты будут показаны на странице продукта на вашем сайте</string>
     <string name="discard_message">Отменить изменения?</string>
     <string name="update">Обновить</string>
     <string name="done">Готово</string>
@@ -409,7 +404,6 @@ Language: ru
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
-    <string name="order_begin_fulfillment">Начать выполнение</string>
     <string name="orderdetail_net">Итог</string>
     <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
@@ -953,7 +947,6 @@ Language: ru
     <string name="magic_link_unavailable_error_message">В настоящий момент ссылка недоступна. Введите пароль</string>
     <string name="login_magic_link_email_requesting">Выполняется запрос электронного письма со ссылкой для входа</string>
     <string name="password_incorrect">Похоже, пароль введён неправильно. Проверьте правильность введенных данных и повторите попытку.</string>
-    <string name="email_not_registered_wpcom">Хм, мы не можем найти учетную запись WordPress.com по указанному email адресу. Попробуйте войти по ссылке ниже указав адрес сайта.</string>
     <string name="requesting_otp">Выполняется запрос на получение проверочного кода в SMS-сообщении.</string>
     <string name="login_text_otp_another">Пришлите мне другой код.</string>
     <string name="login_text_otp">Пришлите мне сообщение с кодом.</string>

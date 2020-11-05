@@ -1,8 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+5.5
+-----
+ 
 5.4
 -----
-* You can now add and edit linked products
 * Selected product variation information now fully displayed in order details
 * Fixed a rare crash happening when adding new product category and selecting product filter options. [https://github.com/woocommerce/woocommerce-android/pull/3098]
 

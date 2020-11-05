@@ -1,7 +1,0 @@
-5.2:
-Melhorias nos recursos de edição para todos os produtos:
-
-Adicionados campos adicionais aos produtos principais (tags, categorias, tipo de produto, ativar/desativar avaliações e visibilidade). Produtos variáveis agora também podem ser editados.
-
-Adicionados campos básicos aos produtos secundários (imagens, nome, descrição, preço somente leitura, inventário somente leitura, tags, categorias, breves descrições e configurações do produto).
-
