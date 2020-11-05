@@ -165,12 +165,18 @@ class ProductListRepository @Inject constructor(
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null
     ): List<Product> {
+        // TODO: a FluxC fix needs to be made so we don't have to pass null here
+        val excludedIds = if (excludedProductIds?.isNotEmpty() == true) {
+            excludedProductIds
+        } else {
+            null
+        }
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
                     sortType = productSortingChoice,
-                    excludedProductIds = excludedProductIds
+                    excludedProductIds = excludedIds
             )
             wcProducts.map { it.toAppModel() }
         } else {

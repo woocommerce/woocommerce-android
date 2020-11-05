@@ -64,6 +64,13 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
+    private val excludedProductIds =
+        navArgs.excludedProductIds
+            .takeIf { it.isNotEmpty() }
+            ?.split(",")
+            ?.mapNotNull { it.toLongOrNull() }
+            .orEmpty()
+
     init {
         if (_productList.value == null) {
             loadProducts()
@@ -117,24 +124,6 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Returns a list of product IDs to hide from the selection list
-     */
-    private fun getExcludedProductIds(): List<Long> {
-        val productIds = ArrayList<Long>()
-        productIds.add(navArgs.remoteProductId)
-
-        productRepository.getProduct(navArgs.remoteProductId)?.let { product ->
-            when (navArgs.groupedProductListType) {
-                GROUPED -> productIds.addAll(product.getGroupedProductIdList())
-                UPSELLS -> productIds.addAll(product.getUpsellProductIdList())
-                CROSS_SELLS -> productIds.addAll(product.getCrossSellProductIdList())
-            }
-        }
-
-        return productIds
-    }
-
     private final fun loadProducts(loadMore: Boolean = false) {
         if (isLoading) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
@@ -171,7 +160,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
                 } else {
                     // if this is the initial load, first get the products from the db and show them immediately
                     val productsInDb = productRepository.getProductList(
-                        excludedProductIds = getExcludedProductIds()
+                        excludedProductIds = excludedProductIds
                     )
                     if (productsInDb.isEmpty()) {
                         showSkeleton = true
@@ -213,13 +202,14 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(
-                    loadMore, excludedProductIds = getExcludedProductIds()
+                    loadMore,
+                    excludedProductIds = excludedProductIds
                 )
             } else {
                 productRepository.searchProductList(
                     searchQuery,
                     loadMore,
-                    getExcludedProductIds()
+                    excludedProductIds
                 )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {

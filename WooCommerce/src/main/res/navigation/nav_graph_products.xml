@@ -269,6 +269,10 @@
         <argument
             android:name="groupedProductListType"
             app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
+        <argument
+            android:name="excludedProductIds"
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/linkedProductsFragment"

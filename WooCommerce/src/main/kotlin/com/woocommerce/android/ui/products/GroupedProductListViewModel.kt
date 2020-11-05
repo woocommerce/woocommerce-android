@@ -99,7 +99,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
 
     fun onAddProductButtonClicked() {
         AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED)
-        triggerEvent(ViewProductSelectionList(navArgs.remoteProductId, navArgs.groupedProductListType))
+        triggerEvent(ViewProductSelectionList(
+            navArgs.remoteProductId,
+            navArgs.groupedProductListType,
+            excludedProductIds = selectedProductIds)
+        )
     }
 
     fun onDoneButtonClicked() {
