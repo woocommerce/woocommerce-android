@@ -10,9 +10,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
