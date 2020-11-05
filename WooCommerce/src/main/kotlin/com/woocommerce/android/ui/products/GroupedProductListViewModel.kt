@@ -13,9 +13,6 @@ import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -35,12 +32,6 @@ class GroupedProductListViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val groupedProductListRepository: GroupedProductListRepository
 ) : ScopedViewModel(savedState, dispatchers) {
-    companion object {
-        const val KEY_GROUPED_PRODUCT_IDS_RESULT = "key_grouped_product_ids_result"
-        const val KEY_UPSELL_PRODUCT_IDS_RESULT = "key_upsell_product_ids_result"
-        const val KEY_CROSS_SELL_PRODUCT_IDS_RESULT = "key_cross_sell_product_ids_result"
-    }
-
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
     private val originalProductIds =
@@ -60,6 +51,9 @@ class GroupedProductListViewModel @AssistedInject constructor(
     private val selectedProductIds
         get() = productListViewState.selectedProductIds
 
+    val groupedProductListType
+        get() = navArgs.groupedProductListType
+
     val hasChanges: Boolean
         get() = selectedProductIds != originalProductIds
 
@@ -74,15 +68,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun getGroupedProductListType() = navArgs.groupedProductListType
-
-    fun getKeyForGroupedProductListType(): String {
-        return when (getGroupedProductListType()) {
-            UPSELLS -> KEY_UPSELL_PRODUCT_IDS_RESULT
-            CROSS_SELLS -> KEY_CROSS_SELL_PRODUCT_IDS_RESULT
-            GROUPED -> KEY_GROUPED_PRODUCT_IDS_RESULT
-        }
-    }
+    fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
 
     fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products

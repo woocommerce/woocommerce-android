@@ -41,10 +41,6 @@ class ProductSelectionListFragment : BaseFragment(),
     OnActionModeEventListener,
     OnQueryTextListener,
     OnActionExpandListener {
-    companion object {
-        const val KEY_SELECTED_PRODUCT_IDS_RESULT = "key_selected_product_ids_result"
-    }
-
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -213,7 +209,9 @@ class ProductSelectionListFragment : BaseFragment(),
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_SELECTED_PRODUCT_IDS_RESULT, event.data as? List<*>)
+                    val key = viewModel.groupedProductListType.resultKey
+                    val productIds = (event.data as? List<Long>) ?: emptyList()
+                    navigateBackWithResult(key, productIds)
                 }
                 else -> event.isHandled = false
             }

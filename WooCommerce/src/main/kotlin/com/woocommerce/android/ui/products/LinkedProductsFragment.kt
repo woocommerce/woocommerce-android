@@ -69,13 +69,13 @@ class LinkedProductsFragment : BaseProductFragment() {
             }
         })
 
-        handleResult<List<Long>>(GroupedProductListViewModel.KEY_UPSELL_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(UPSELLS.resultKey) {
             viewModel.updateProductDraft(upsellProductIds = it)
             changesMade()
             updateProductView()
         }
 
-        handleResult<List<Long>>(GroupedProductListViewModel.KEY_CROSS_SELL_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(CROSS_SELLS.resultKey) {
             viewModel.updateProductDraft(crossSellProductIds = it)
             changesMade()
             updateProductView()
@@ -130,7 +130,7 @@ class LinkedProductsFragment : BaseProductFragment() {
         } else {
             GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
                 viewModel.getRemoteProductId(),
-                productIds?.joinToString(",") ?: "",
+                productIds.joinToString(","),
                 groupedProductType
             )
         }
