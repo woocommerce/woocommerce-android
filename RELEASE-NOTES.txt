@@ -2,6 +2,7 @@
 
 5.5
 -----
+* Updated the app to a new, cleaner design
  
 5.4
 -----
