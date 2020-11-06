@@ -13,10 +13,9 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         Toolbar Styles
     -->
-    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
-        <item name="android:background">@color/color_surface</item>
-        <item name="titleTextColor">@color/color_on_surface</item>
+    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="android:elevation">0dp</item>
+        <item name="titleTextStyle">@style/Woo.TextAppearance.CollapsingToolbar.Collapsed</item>
     </style>
     <style name="Woo.TextAppearance.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
@@ -29,7 +28,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
     </style>
-    <style name="Woo.CollapsedToolbarLayout">
+    <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="collapsedTitleTextAppearance">
             @style/Woo.TextAppearance.CollapsingToolbar.Collapsed
