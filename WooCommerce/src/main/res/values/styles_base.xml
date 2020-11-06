@@ -21,7 +21,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.TextAppearance.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">bold</item>
-        <item name="maxLines">2</item>
+        <item name="android:maxLines">2</item>
         <item name="android:layout_height">@dimen/expanded_toolbar_height</item>
     </style>
     <style name="Woo.TextAppearance.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
