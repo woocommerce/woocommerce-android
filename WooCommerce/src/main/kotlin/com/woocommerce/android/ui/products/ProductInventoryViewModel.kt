@@ -6,16 +6,14 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DynamicFeature
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,7 +25,8 @@ import kotlinx.coroutines.launch
 class ProductInventoryViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val productRepository: ProductDetailRepository
+    private val productRepository: ProductDetailRepository,
+    private val dynamicFeature: DynamicFeature
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -121,12 +120,14 @@ class ProductInventoryViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(
-            Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
-        )
-
-        triggerEvent(ExitWithResult(inventoryData))
+        dynamicFeature.installModule("barcode")
+//
+//        AnalyticsTracker.track(
+//            Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
+//            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+//        )
+//
+//        triggerEvent(ExitWithResult(inventoryData))
     }
 
     fun onExit() {
