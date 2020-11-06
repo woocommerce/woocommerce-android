@@ -14,7 +14,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
         Toolbar Styles
     -->
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
-        <item name="android:elevation">0dp</item>
         <item name="titleTextStyle">@style/Woo.TextAppearance.CollapsingToolbar.Collapsed</item>
     </style>
     <style name="Woo.TextAppearance.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
@@ -38,6 +37,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         </item>
         <item name="expandedTitleMarginStart">16dp</item>
         <item name="expandedTitleMarginEnd">16dp</item>
+        <item name="android:paddingEnd">4dp</item>
     </style>
     <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">@color/color_secondary</item>
