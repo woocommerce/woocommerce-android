@@ -41,6 +41,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
     <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">@color/color_secondary</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 
     <!--
