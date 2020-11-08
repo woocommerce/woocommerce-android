@@ -14,54 +14,6 @@
   </androidx.preference.PreferenceCategory>
 
   <androidx.preference.PreferenceCategory
-      android:title="@string/pref_category_object_detection">
-
-    <androidx.preference.SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:key="@string/pref_key_object_detector_enable_multiple_objects"
-        android:persistent="true"
-        android:title="@string/pref_title_object_detector_enable_multiple_objects"/>
-
-    <androidx.preference.SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:key="@string/pref_key_object_detector_enable_classification"
-        android:persistent="true"
-        android:title="@string/pref_title_object_detector_enable_classification"/>
-
-  </androidx.preference.PreferenceCategory>
-
-  <androidx.preference.PreferenceCategory
-      android:title="@string/pref_category_product_search">
-
-    <androidx.preference.SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:key="@string/pref_key_enable_auto_search"
-        android:persistent="true"
-        android:title="@string/pref_title_enable_auto_search"/>
-
-    <androidx.preference.SeekBarPreference
-        android:defaultValue="500"
-        android:key="@string/pref_key_confirmation_time_in_manual_search"
-        android:max="1000"
-        android:persistent="true"
-        android:summary="@string/pref_summary_confirmation_time_in_manual_search"
-        android:title="@string/pref_title_confirmation_time_in_manual_search"
-        app:min="100"
-        app:showSeekBarValue="true"/>
-
-    <androidx.preference.SeekBarPreference
-        android:defaultValue="1500"
-        android:key="@string/pref_key_confirmation_time_in_auto_search"
-        android:max="2000"
-        android:persistent="true"
-        android:summary="@string/pref_summary_confirmation_time_in_auto_search"
-        android:title="@string/pref_title_confirmation_time_in_auto_search"
-        app:min="500"
-        app:showSeekBarValue="true"/>
-
-  </androidx.preference.PreferenceCategory>
-
-  <androidx.preference.PreferenceCategory
       android:title="@string/pref_category_barcode_detection">
 
     <androidx.preference.SeekBarPreference
