@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewBarcodeScanner
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
@@ -239,6 +240,11 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductAdd -> {
                 val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+                fragment.findNavController().navigate(action)
+            }
+
+            is ViewBarcodeScanner -> {
+                val action = ProductInventoryFragmentDirections.actionProductInventoryFragmentToNavGraphBarcodeScanner()
                 fragment.findNavController().navigate(action)
             }
 

@@ -15,15 +15,19 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewBarcodeScanner
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
+import javax.inject.Inject
 
 class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
     BackPressListener, ProductItemSelectorDialogListener {
+    @Inject lateinit var navigator: ProductNavigator
+
     private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
@@ -116,6 +120,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                         event.negativeBtnAction,
                         messageId = event.messageId
                     )
+                    is ProductNavigationTarget -> navigator.navigate(this, event)
                     else -> event.isHandled = false
                 }
             })

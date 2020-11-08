@@ -64,4 +64,5 @@ sealed class ProductNavigationTarget : Event() {
         val remoteId: Long,
         val groupedProductType: GroupedProductListType
     ) : ProductNavigationTarget()
+    object ViewBarcodeScanner : ProductNavigationTarget()
 }

@@ -149,6 +149,9 @@
             android:name="productType"
             app:argType="com.woocommerce.android.ui.products.ProductType"
             android:defaultValue="SIMPLE" />
+        <action
+            android:id="@+id/action_productInventoryFragment_to_nav_graph_barcode_scanner"
+            app:destination="@id/nav_graph_barcode_scanner" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -405,4 +408,9 @@
     </fragment>
     <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
+    <include-dynamic
+        android:id="@+id/nav_graph_barcode_scanner"
+        app:moduleName="barcode"
+        app:graphResName="nav_graph_barcode_scanner"
+        app:graphPackage="com.woocommerce.android.barcode" />
 </navigation>
