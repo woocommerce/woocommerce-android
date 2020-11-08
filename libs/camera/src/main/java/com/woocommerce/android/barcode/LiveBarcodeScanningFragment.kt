@@ -18,7 +18,6 @@ package com.woocommerce.android.barcode
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
-import android.content.Intent
 import android.hardware.Camera
 import android.os.Bundle
 import android.util.Log
@@ -38,7 +37,6 @@ import com.woocommerce.android.barcode.camera.CameraSourcePreview
 import com.woocommerce.android.barcode.detection.BarcodeField
 import com.woocommerce.android.barcode.detection.BarcodeProcessor
 import com.woocommerce.android.barcode.detection.BarcodeResultFragment
-import com.woocommerce.android.barcode.settings.SettingsActivity
 import kotlinx.android.synthetic.main.camera_preview_overlay.*
 import kotlinx.android.synthetic.main.fragment_live_barcode.*
 import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.*
@@ -126,7 +124,6 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
             }
             R.id.settings_button -> {
                 settingsButton.isEnabled = false
-                startActivity(Intent(requireActivity(), SettingsActivity::class.java))
             }
         }
     }
