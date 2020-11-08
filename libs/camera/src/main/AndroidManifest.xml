@@ -3,16 +3,6 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.woocommerce.android.barcode"
     split="barcode">
-
-    <application>
-        <activity
-            android:name="com.woocommerce.android.barcode.LiveBarcodeScanningActivity"
-            android:exported="false"
-            android:screenOrientation="portrait">
-        </activity>
-
-    </application>
-
     <dist:module
         dist:instant="false"
         dist:title="@string/title_camera">
