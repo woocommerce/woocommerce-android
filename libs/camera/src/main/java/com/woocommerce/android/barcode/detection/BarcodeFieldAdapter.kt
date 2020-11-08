@@ -28,7 +28,6 @@ import com.woocommerce.android.barcode.R
 internal class BarcodeFieldAdapter(private val barcodeFieldList: List<BarcodeField>) :
     RecyclerView.Adapter<BarcodeFieldViewHolder>() {
     internal class BarcodeFieldViewHolder private constructor(view: View) : RecyclerView.ViewHolder(view) {
-
         private val labelView: TextView = view.findViewById(R.id.barcode_field_label)
         private val valueView: TextView = view.findViewById(R.id.barcode_field_value)
 
