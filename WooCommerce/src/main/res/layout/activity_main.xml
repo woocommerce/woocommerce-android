@@ -42,7 +42,7 @@
             <!-- container for child fragments in the nav graph -->
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment_main"
-                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:name="androidx.navigation.fragment.DynamicNavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
