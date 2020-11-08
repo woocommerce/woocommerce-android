@@ -128,7 +128,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
-    implementation 'com.google.firebase:firebase-messaging:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.0.0'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
 
     // Support library
