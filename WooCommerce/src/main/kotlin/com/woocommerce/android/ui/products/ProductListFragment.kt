@@ -27,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.isScrolledToTop
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -130,7 +129,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                 }
             }
 
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {}
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) { }
         })
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
@@ -552,5 +551,5 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
-    override fun isScrolledToTop() = productsRecycler.isScrolledToTop()
+    override fun isScrolledToTop() = productsRecycler.computeVerticalScrollOffset() == 0
 }
