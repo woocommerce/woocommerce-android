@@ -55,6 +55,9 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private val isSearching
         get() = productSelectionListViewState.isSearchActive == true
 
+    val groupedProductListType
+        get() = navArgs.groupedProductListType
+
     val searchQuery
     get() = productSelectionListViewState.searchQuery
 

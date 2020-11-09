@@ -43,7 +43,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private var doneMenuItem: MenuItem? = null
 
-    override fun getFragmentTitle() = resources.getString(viewModel.getGroupedProductListType().titleId)
+    override fun getFragmentTitle() = resources.getString(viewModel.groupedProductListType.titleId)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -130,7 +130,13 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     }
 
     private fun setupResultHandlers() {
-        handleResult<List<Long>>(ProductSelectionListFragment.KEY_SELECTED_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(GroupedProductListType.UPSELLS.resultKey) {
+            viewModel.onProductsAdded(it)
+        }
+        handleResult<List<Long>>(GroupedProductListType.CROSS_SELLS.resultKey) {
+            viewModel.onProductsAdded(it)
+        }
+        handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.onProductsAdded(it)
         }
     }
