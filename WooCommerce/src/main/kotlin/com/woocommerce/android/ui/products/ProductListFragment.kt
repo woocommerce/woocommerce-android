@@ -18,6 +18,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -27,7 +29,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
@@ -114,11 +118,15 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         productsRecycler.adapter = productAdapter
 
         productsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                products_sort_filter_card.visibility = if (isScrolledToTop()) View.VISIBLE else View.GONE
-            }
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) { }
 
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) { }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == SCROLL_STATE_IDLE && isScrolledToTop()) {
+                    products_sort_filter_card.show()
+                } else {
+                    products_sort_filter_card.hide()
+                }
+            }
         })
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
