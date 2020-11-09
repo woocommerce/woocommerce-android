@@ -20,6 +20,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.isScrolledToTop
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
@@ -426,6 +427,5 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         openReviewDetail(review)
     }
 
-    override fun isScrolledToTop() =
-        (reviewsList.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
+    override fun isScrolledToTop() = reviewsList.isScrolledToTop()
 }

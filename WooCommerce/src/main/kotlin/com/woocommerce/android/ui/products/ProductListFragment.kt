@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -26,6 +27,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isScrolledToTop
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -50,6 +52,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -110,6 +113,25 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
+
+        var isScalingIn = false
+        var isScalingOut = false
+        productsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val isVisible = products_sort_filter_card.visibility == View.VISIBLE
+                if (isScrolledToTop() && !isVisible && !isScalingIn) {
+                    isScalingIn = true
+                    isScalingOut = false
+                    WooAnimUtils.scaleIn(products_sort_filter_card)
+                } else if (!isScrolledToTop() && isVisible && !isScalingOut) {
+                    isScalingOut = true
+                    isScalingIn = false
+                    WooAnimUtils.scaleOut(products_sort_filter_card)
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {}
+        })
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
         // and only processes the first click event. More details on this issue can be found here:
@@ -530,6 +552,5 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
-    override fun isScrolledToTop() =
-        (productsRecycler.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
+    override fun isScrolledToTop() = productsRecycler.isScrolledToTop()
 }
