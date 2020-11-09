@@ -18,7 +18,6 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
-import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -179,12 +178,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
             new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
-                if (variationName.isEmpty()) {
-                    variationName = product?.attributes?.joinToString(
-                        separator = " - ",
-                        transform = { "Any ${it.name}" }
-                    ) ?: ""
-                }
+                variationName = new.variation.getName(product)
             }
             new.uploadingImageUri?.takeIfNotEqualTo(old?.uploadingImageUri) {
                 if (it.value != null) {
@@ -227,11 +221,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        val optionName = variation.optionName.fastStripHtml()
-        if (optionName.isNotBlank()) {
-            variationName = variation.optionName.fastStripHtml()
-        }
-
         if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
             imageGallery.hide()
             addImageContainer.show()

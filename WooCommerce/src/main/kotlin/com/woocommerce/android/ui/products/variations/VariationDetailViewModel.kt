@@ -20,6 +20,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -167,7 +168,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
         stockQuantity: Int? = null,
-        optionName: String? = null,
+        options: List<Option>? = null,
         isPurchasable: Boolean? = null,
         isVirtual: Boolean? = null,
         isDownloadable: Boolean? = null,
@@ -194,7 +195,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             backorderStatus = backorderStatus ?: viewState.variation.backorderStatus,
             stockQuantity = stockQuantity ?: viewState.variation.stockQuantity,
-            optionName = optionName ?: viewState.variation.optionName,
+            options = options ?: viewState.variation.options,
             isPurchasable = isPurchasable ?: viewState.variation.isPurchasable,
             isVirtual = isVirtual ?: viewState.variation.isVirtual,
             isDownloadable = isDownloadable ?: viewState.variation.isDownloadable,

@@ -57,11 +57,7 @@ class VariationListAdapter(
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
         val variation = variationList[position]
 
-        holder.txtVariationOptionName.text = if (variation.optionName.isBlank()) {
-            parentProduct?.attributes?.joinToString(separator = " - ", transform = { "Any ${it.name}" }) ?: ""
-        } else {
-            variation.optionName
-        }
+        holder.txtVariationOptionName.text = variation.getName(parentProduct)
 
         val stockStatus = variation.getStockStatusText()
         val bullet = context.getString(R.string.product_bullet)
