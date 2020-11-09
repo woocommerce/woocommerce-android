@@ -113,20 +113,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
-        var isScalingIn = false
-        var isScalingOut = false
         productsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val isVisible = products_sort_filter_card.visibility == View.VISIBLE
-                if (isScrolledToTop() && !isVisible && !isScalingIn) {
-                    isScalingIn = true
-                    isScalingOut = false
-                    WooAnimUtils.scaleIn(products_sort_filter_card)
-                } else if (!isScrolledToTop() && isVisible && !isScalingOut) {
-                    isScalingOut = true
-                    isScalingIn = false
-                    WooAnimUtils.scaleOut(products_sort_filter_card)
-                }
+                products_sort_filter_card.visibility = if (isScrolledToTop()) View.VISIBLE else View.GONE
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) { }
