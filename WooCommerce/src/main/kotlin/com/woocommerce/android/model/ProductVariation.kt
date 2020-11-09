@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
@@ -17,7 +18,6 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -36,7 +36,7 @@ data class ProductVariation(
     val stockStatus: ProductStockStatus,
     val backorderStatus: ProductBackorderStatus,
     val stockQuantity: Int,
-    val optionName: String,
+    val options: List<Option>,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,
     val isVirtual: Boolean,
@@ -74,7 +74,7 @@ data class ProductVariation(
                 stockQuantity == variation.stockQuantity &&
                 stockStatus == variation.stockStatus &&
                 backorderStatus == variation.backorderStatus &&
-                optionName.fastStripHtml() == variation.optionName.fastStripHtml() &&
+                options == variation.options &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&
@@ -139,6 +139,19 @@ data class ProductVariation(
             it.height = if (height == 0f) "" else height.formatToString()
         }
     }
+
+    fun getName(parentProduct: Product? = null): String {
+        return parentProduct?.attributes?.joinToString(" - ") { attribute ->
+            val option = options.firstOrNull { it.attributeName == attribute.name }
+            option?.optionChoice ?: "Any ${attribute.name}"
+        } ?: options.joinToString(" - ") { o -> o.optionChoice }
+    }
+
+    @Parcelize
+    data class Option(
+        val attributeName: String,
+        val optionChoice: String
+    ) : Parcelable
 }
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
@@ -162,7 +175,9 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         ProductStockStatus.fromString(this.stockStatus),
         ProductBackorderStatus.fromString(this.backorders),
         this.stockQuantity,
-        getAttributeOptionName(this.getProductVariantOptions()),
+        this.getProductVariantOptions()
+            .filter { it.option != null && it.option != null }
+            .map { Option(it.name!!, it.option!!) },
         isPurchasable = this.purchasable,
         isDownloadable = this.downloadable,
         isVirtual = this.virtual,
@@ -176,21 +191,4 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         height = this.height.toFloatOrNull() ?: 0f,
         weight = this.weight.toFloatOrNull() ?: 0f
     )
-}
-
-/**
- * Given a list of [ProductVariantOption]
- * returns the product variation combination name in the format {option1} - {option2}
- */
-private fun getAttributeOptionName(variationOptions: List<ProductVariantOption>): String {
-    var optionName = ""
-    for (variationOption in variationOptions) {
-        if (!variationOption.option.isNullOrEmpty()) {
-            if (optionName.isNotEmpty()) {
-                optionName += " - "
-            }
-            optionName += "${variationOption.option}"
-        }
-    }
-    return optionName
 }
