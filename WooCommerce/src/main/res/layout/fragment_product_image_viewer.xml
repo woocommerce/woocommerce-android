@@ -14,7 +14,7 @@
     <FrameLayout
         android:id="@+id/fakeToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/toolbar_height"
         android:background="@color/black_translucent_40"
         android:orientation="horizontal">
 
