@@ -18,8 +18,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -55,7 +55,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -117,11 +116,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
+        // we want to hide the filter/sort card when the user scrolls
         productsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) { }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if (newState == SCROLL_STATE_IDLE && isScrolledToTop()) {
+                val position = productsRecycler.computeVerticalScrollOffset()
+                if ((newState == SCROLL_STATE_IDLE || newState == SCROLL_STATE_SETTLING) && isScrolledToTop()) {
                     products_sort_filter_card.show()
                 } else {
                     products_sort_filter_card.hide()
