@@ -378,10 +378,13 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
+        val toolbarElevation: Float
         if (isTopLevelNavigation) {
             showUpIcon = false
             showCrossIcon = false
+            toolbarElevation = 0f
         } else {
+            toolbarElevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
@@ -406,6 +409,10 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         }
+
+        toolbar.elevation = toolbarElevation
+        app_bar_layout.elevation = toolbarElevation
+
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
             @DrawableRes val icon = if (showCrossIcon) {
