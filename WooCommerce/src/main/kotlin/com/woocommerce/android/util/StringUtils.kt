@@ -54,8 +54,11 @@ object StringUtils {
      * Formats the string for the given [quantity], using the given params.
      * We need this because our translation platform doesn't support Android plurals.
      *
+     * This variant uses a [ResourceProvider]
+     *
      * If a string resource is not provided for [zero] or [one] the [default] resource will be used.
      *
+     * @param [resourceProvider] The string resources provider
      * @param [quantity] The number used to pick the correct string
      * @param [default] The desired string identifier to get when [quantity] is not (0 or 1)
      * @param [zero] Optional. The desired string identifier to use when [quantity] is exactly 0.

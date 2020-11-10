@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -68,5 +70,17 @@ abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
 
     override fun androidInjector(): AndroidInjector<Any> {
         return androidInjector
+    }
+
+    protected fun ShowDialog.showDialog() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = this.titleId,
+            messageId = this.messageId,
+            positiveButtonId = this.positiveButtonId,
+            posBtnAction = this.positiveBtnAction,
+            negativeButtonId = this.negativeButtonId,
+            negBtnAction = this.negativeBtnAction
+        )
     }
 }

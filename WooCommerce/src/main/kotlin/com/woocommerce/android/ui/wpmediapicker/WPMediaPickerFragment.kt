@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
@@ -22,7 +23,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView.WPMediaGalleryListener
@@ -44,6 +45,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     private val viewModel: WPMediaPickerViewModel by viewModels { viewModelFactory }
     private val isMultiSelectAllowed: Boolean
         get() = viewModel.viewStateLiveData.liveData.value?.isMultiSelectionAllowed ?: true
+
+    private val navArgs by navArgs<WPMediaPickerFragmentArgs>()
 
     private var doneOrUpdateMenuItem: MenuItem? = null
     private var isConfirmingDiscard = false
@@ -69,6 +72,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        wpMediaGallery.isMultiSelectionAllowed = navArgs.allowMultiple
         initializeViewModel()
 
         if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
@@ -83,7 +87,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -189,12 +193,15 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                     findNavController().navigateUp()
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })
