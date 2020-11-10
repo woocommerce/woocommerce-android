@@ -1,5 +1,5 @@
 #!/bin/bash
-# Stops accidental commits to master and develop. Pulled from: https://gist.github.com/stefansundin/9059706
+# Stops accidental commits to trunk and develop. Pulled from: https://gist.github.com/stefansundin/9059706
 # Install:
 # cd path/to/git/repo
 # curl -fL -o .git/hooks/pre-commit https://gist.githubusercontent.com/stefansundin/9059706/raw/pre-commit
