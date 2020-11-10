@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -65,4 +66,12 @@ sealed class ProductNavigationTarget : Event() {
         val groupedProductType: GroupedProductListType,
         val excludedProductIds: List<Long>
     ) : ProductNavigationTarget()
+    object ViewProductDownloads : ProductNavigationTarget()
+    object ViewProductDownloadsSettings : ProductNavigationTarget()
+    data class ViewProductDownloadDetails(
+        val isEditing: Boolean,
+        val file: ProductFile
+    ) :
+        ProductNavigationTarget()
+    object AddProductDownloadableFile : ProductNavigationTarget()
 }

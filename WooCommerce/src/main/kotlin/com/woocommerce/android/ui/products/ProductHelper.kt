@@ -69,7 +69,6 @@ object ProductHelper {
             shippingClass = "",
             shippingClassId = 0L,
             isDownloadable = false,
-            fileCount = 0,
             downloadLimit = 0,
             downloadExpiry = 0,
             purchaseNote = "",
@@ -86,7 +85,8 @@ object ProductHelper {
             tags = listOf(),
             groupedProductIds = listOf(),
             crossSellProductIds = listOf(),
-            upsellProductIds = listOf()
+            upsellProductIds = listOf(),
+            downloads = listOf()
         )
     }
 }

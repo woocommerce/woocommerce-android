@@ -83,7 +83,6 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
         edit_text.doAfterTextChanged {
-            clearError()
             cb(it)
         }
     }

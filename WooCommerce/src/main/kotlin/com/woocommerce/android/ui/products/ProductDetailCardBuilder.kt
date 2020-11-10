@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -100,7 +101,8 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
-                product.productType()
+                product.productType(),
+                product.downloads()
             ).filterNotEmpty()
         )
     }
@@ -203,7 +205,7 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                product.downloads(),
+                if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) null else product.downloadsLegacy(),
                 product.purchaseNote()
             ).filterNotEmpty()
         )
@@ -222,6 +224,25 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.downloads(): ProductProperty? {
+        if (!this.isDownloadable || this.downloads.isEmpty()) return null
+        return ComplexProperty(
+            title = R.string.product_downloadable_files,
+            value = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = this.downloads.size,
+                default = R.string.product_downloadable_files_value_multiple,
+                one = R.string.product_downloadable_files_value_single
+            ),
+            icon = R.drawable.ic_gridicons_cloud,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDownloads
+                )
+            }
+        )
+    }
+
+    private fun Product.downloadsLegacy(): ProductProperty? {
         return if (this.isDownloadable) {
             val limit = if (this.downloadLimit > 0) String.format(
                 resources.getString(R.string.product_download_limit_count),
@@ -233,7 +254,7 @@ class ProductDetailCardBuilder(
             ) else ""
 
             val downloadGroup = mapOf(
-                Pair(resources.getString(R.string.product_downloadable_files), this.fileCount.toString()),
+                Pair(resources.getString(R.string.product_downloadable_files), this.downloads.size.toString()),
                 Pair(resources.getString(R.string.product_download_limit), limit),
                 Pair(resources.getString(R.string.product_download_expiry), expiry)
             )
