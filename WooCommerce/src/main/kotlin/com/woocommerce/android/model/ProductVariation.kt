@@ -176,7 +176,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         ProductBackorderStatus.fromString(this.backorders),
         this.stockQuantity,
         this.getProductVariantOptions()
-            .filter { it.option != null && it.option != null }
+            .filter { it.name != null && it.option != null }
             .map { Option(it.name!!, it.option!!) },
         isPurchasable = this.purchasable,
         isDownloadable = this.downloadable,
