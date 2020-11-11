@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -17,7 +18,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
     data class ViewProductVariations(val remoteId: Long) : ProductNavigationTarget()
-    data class ViewProductInventory(val inventoryData: InventoryData, val sku: String) : ProductNavigationTarget()
+    data class ViewProductInventory(
+        val inventoryData: InventoryData,
+        val sku: String,
+        val productType: ProductType
+    ) : ProductNavigationTarget()
     data class ViewProductPricing(val pricingData: PricingData) : ProductNavigationTarget()
     data class ViewProductShipping(val shippingData: ShippingData) : ProductNavigationTarget()
     data class ViewProductExternalLink(val remoteId: Long) : ProductNavigationTarget()
@@ -55,5 +60,18 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
     object ViewProductAdd : ProductNavigationTarget()
     data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: String) : ProductNavigationTarget()
-    data class ViewProductSelectionList(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewLinkedProducts(val remoteId: Long) : ProductNavigationTarget()
+    data class ViewProductSelectionList(
+        val remoteId: Long,
+        val groupedProductType: GroupedProductListType,
+        val excludedProductIds: List<Long>
+    ) : ProductNavigationTarget()
+    object ViewProductDownloads : ProductNavigationTarget()
+    object ViewProductDownloadsSettings : ProductNavigationTarget()
+    data class ViewProductDownloadDetails(
+        val isEditing: Boolean,
+        val file: ProductFile
+    ) :
+        ProductNavigationTarget()
+    object AddProductDownloadableFile : ProductNavigationTarget()
 }

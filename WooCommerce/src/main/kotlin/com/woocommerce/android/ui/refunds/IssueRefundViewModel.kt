@@ -31,6 +31,7 @@ import com.woocommerce.android.util.max
 import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
 import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
@@ -133,7 +134,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
-        maxQuantities = order.getMaxRefundQuantities(refunds)
+        maxQuantities = refunds.getMaxRefundQuantities(order.items)
         gateway = loadPaymentGateway()
 
         initRefundByAmountState()

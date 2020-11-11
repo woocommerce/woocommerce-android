@@ -15,6 +15,7 @@ object ProductTestUtils {
             localSiteId = 1
             remoteProductId = productId
             status = "publish"
+            type = "simple"
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
@@ -23,7 +24,14 @@ object ProductTestUtils {
             name = "product 1"
             description = "product 1 description"
             images = "[]"
-            downloads = "[]"
+            downloadable = true
+            downloads = """[
+                                {
+                                    "id": 1,
+                                    "name": "test",
+                                    "file": "https://testurl"
+                                }
+                            ]"""
             weight = "10"
             length = "1"
             width = "2"

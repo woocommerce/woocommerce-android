@@ -14,6 +14,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -39,6 +40,7 @@ class ProductListRepository @Inject constructor(
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
+    private var trashContinuation: CancellableContinuation<Boolean>? = null
     private var offset = 0
 
     private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
@@ -136,18 +138,40 @@ class ProductListRepository @Inject constructor(
     }
 
     /**
+     * Dispatches a request to trash a specific product
+     */
+    suspend fun trashProduct(remoteProductId: Long): Boolean {
+        return try {
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                trashContinuation = it
+
+                val payload = WCProductStore.DeleteProductPayload(
+                    selectedSite.get(),
+                    remoteProductId,
+                    forceDelete = false
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newDeleteProductAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while trashing product")
+            false
+        }
+    }
+
+    /**
      * Returns all products for the current site that are in the database
      */
     fun getProductList(
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null
     ): List<Product> {
+        val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
                     sortType = productSortingChoice,
-                    excludedProductIds = excludedProductIds
+                    excludedProductIds = excludedIds
             )
             wcProducts.map { it.toAppModel() }
         } else {
@@ -155,6 +179,11 @@ class ProductListRepository @Inject constructor(
             emptyList()
         }
     }
+
+    /**
+     * Returns a single product
+     */
+    fun getProduct(remoteProductId: Long) = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -174,6 +203,13 @@ class ProductListRepository @Inject constructor(
                 loadContinuation?.resume(true)
             }
             loadContinuation = null
+        } else if (event.causeOfChange == DELETED_PRODUCT && trashContinuation != null) {
+            if (event.isError) {
+                trashContinuation?.resume(false)
+            } else {
+                trashContinuation?.resume(true)
+            }
+            trashContinuation = null
         }
     }
 

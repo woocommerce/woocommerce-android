@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/product_add_downloadable_title"
+        style="@style/Woo.Card.Header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/product_downloadable_add_bottomsheet_header"
+        android:textColor="@color/color_on_surface_medium" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/add_downloadable_from_device"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginTop="@dimen/major_75"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_image"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/product_downloadable_files_add_from_device" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/add_downloadable_from_wpmedia_library"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_wordpress"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/product_downloadable_files_add_from_wpmedia_library" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/add_downloadable_manually"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:layout_marginBottom="@dimen/major_75"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_gridicons_link"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/product_downloadable_files_add_manually" />
+</LinearLayout>

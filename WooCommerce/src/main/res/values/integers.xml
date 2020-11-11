@@ -11,4 +11,6 @@
     <integer name="maxlength_product_shipping_properties">8</integer>
 
     <integer name="maxlength_order_refund_summary_reason">255</integer>
+
+    <integer name="activity_transition_duration">300</integer>
 </resources>

@@ -1,5 +1,25 @@
+*** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+5.5
+-----
+ 
+5.4
+-----
+* Selected product variation information now fully displayed in order details
+* Fixed a rare crash happening when adding new product category and selecting product filter options. [https://github.com/woocommerce/woocommerce-android/pull/3098]
+
+5.3
+-----
+* In Settings > Beta features, a Products switch is now available for turning Products M4 features on and off (default off). Products M4 features: add a simple/grouped/external product with actions to publish or save as draft.
+* Application settings have been moved to a gear icon on the Dashboard
+* You can now view product review details directly from product detail screen
+* Product detail screen now includes the number of ratings for that product
+* Fixed slowness in order screens
+* Order detail screen now includes option to print and refund shipping labels if you have the WooCommerce Shipping & Tax extension
+ 
 5.2
 -----
+* Product editing is now out of beta and is available for all users
  
 5.1
 -----

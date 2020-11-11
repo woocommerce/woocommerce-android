@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.woocommerce.android.ui.products.AddProductElementView
+        android:id="@+id/addProductDownloadsView"
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:buttonText="@string/product_downloadable_files_add" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productDownloadsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="?attr/colorSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addProductDownloadsView"
+        tools:itemCount="25"
+        tools:listitem="@layout/product_downloads_list_item"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

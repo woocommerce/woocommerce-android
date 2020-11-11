@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -84,18 +84,20 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 is Exit -> {
                     dismiss()
                 }
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                is ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
+                    event.neutralBtnAction,
                     event.titleId,
                     event.messageId,
                     event.positiveButtonId,
-                    event.negativeButtonId
+                    event.negativeButtonId,
+                    event.neutralButtonId
                 )
 
                 is ExitWithResult<*> -> {
-                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                    (event.data as? ProductType)?.let {
                         navigateWithSelectedResult(type = it)
                     }
                 }
@@ -119,7 +121,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
         }
     }
 
-    private fun navigateWithSelectedResult(type: ProductTypesBottomSheetUiItem) {
+    private fun navigateWithSelectedResult(type: ProductType) {
         when (navArgs.isAddProduct) {
             true -> dismiss()
             else -> navigateBackWithResult(KEY_PRODUCT_TYPE_RESULT, type)

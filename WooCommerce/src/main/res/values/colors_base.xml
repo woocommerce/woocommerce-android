@@ -58,6 +58,11 @@
     <color name="color_icon_menu">@color/woo_white</color>
 
     <!--
+        Toolbar icons for login menus
+    -->
+    <color name="color_icon_menu_login">@color/color_on_surface_high_selector</color>
+
+    <!--
         Custom widget tint
     -->
     <color name="ratings_bar_progress_tint">@color/color_on_surface_high</color>

@@ -135,6 +135,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
+            overridePendingTransition(R.anim.activity_slide_in_from_right, R.anim.activity_slide_out_to_left)
+
             toolbar.visibility = View.VISIBLE
             setSupportActionBar(toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -239,6 +241,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         setResult(Activity.RESULT_CANCELED)
         AnalyticsTracker.trackBackPressed(this)
         finish()
+        if (!calledFromLogin) {
+            overridePendingTransition(R.anim.activity_slide_in_from_left, R.anim.activity_slide_out_to_right)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

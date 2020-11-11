@@ -16,36 +16,52 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isTrashEnabled"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productExternalLinkFragment"
             app:destination="@id/productExternalLinkFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productReviewsFragment"
             app:destination="@id/productReviewsFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/nav_graph_product_type_bottom_sheet"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="isAddProduct"
                 android:defaultValue="false"
@@ -53,7 +69,11 @@
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_nav_graph_image_gallery"
-            app:destination="@id/nav_graph_image_gallery">
+            app:destination="@id/nav_graph_image_gallery"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="remoteId"
                 android:defaultValue="0L"
@@ -72,6 +92,11 @@
                 android:name="requestCode"
                 app:argType="integer" />
         </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productDownloadsFragment"
+            app:destination="@id/productDownloadsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -85,8 +110,10 @@
         <action
             android:id="@+id/action_variationListFragment_to_variationDetailFragment"
             app:destination="@id/variationDetailFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -123,6 +150,10 @@
         <argument
             android:name="sku"
             app:argType="string" />
+        <argument
+            android:name="productType"
+            app:argType="com.woocommerce.android.ui.products.ProductType"
+            android:defaultValue="SIMPLE" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -130,7 +161,11 @@
         tools:layout="@layout/fragment_product_shipping">
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
-            app:destination="@id/productShippingClassFragment" />
+            app:destination="@id/productShippingClassFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
         <argument
             android:name="requestCode"
             app:argType="integer" />
@@ -159,6 +194,17 @@
             app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
     </fragment>
     <fragment
+        android:id="@+id/productDownloadsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsFragment"
+        tools:layout="@layout/fragment_product_downloads_list">
+        <action
+            android:id="@+id/action_productDownloadsFragment_to_productDownloadsSettingsFragment"
+            app:destination="@id/productDownloadsSettingsFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@anim/activity_fade_out" />
+    </fragment>
+
+    <fragment
         android:id="@+id/productExternalLinkFragment"
         android:name="com.woocommerce.android.ui.products.ProductExternalLinkFragment"
         android:label="ProductExternalLinkFragment"
@@ -166,6 +212,15 @@
         <argument
             android:name="remoteMediaId"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/wpMediaPickerFragment"
+        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
+        android:label="WPMediaPickerFragment"
+        tools:layout="@layout/fragment_wpmedia_picker">
+        <argument
+            android:name="allowMultiple"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/wpMediaViewerFragment"
@@ -221,9 +276,12 @@
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="groupedProductIds"
+            android:name="productIds"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="groupedProductListType"
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"
@@ -233,6 +291,22 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="groupedProductListType"
+            app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
+        <argument
+            android:name="excludedProductIds"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/linkedProductsFragment"
+        android:name="com.woocommerce.android.ui.products.LinkedProductsFragment"
+        tools:layout="@layout/fragment_linked_products">
+        <argument
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
@@ -240,22 +314,41 @@
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
-        app:destination="@id/nav_graph_product_settings" />
+        app:destination="@id/nav_graph_product_settings"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
-        app:destination="@id/nav_graph_add_product_category" />
+        app:destination="@id/nav_graph_add_product_category"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
 
     <action
         android:id="@+id/action_global_aztecEditorFragment"
         app:destination="@id/aztecEditorFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+
+    <action
+        android:id="@+id/action_global_wpMediaFragment"
+        app:destination="@id/wpMediaPickerFragment"
         app:enterAnim="@anim/activity_scale_in"
         app:popExitAnim="@anim/activity_scale_out" />
 
     <action
         android:id="@+id/action_global_wpMediaViewerFragment"
         app:destination="@id/wpMediaViewerFragment"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productDetailBottomSheetFragment"
         app:destination="@id/productDetailBottomSheetFragment"
@@ -264,28 +357,52 @@
     <action
         android:id="@+id/action_global_productShippingFragment"
         app:destination="@id/productShippingFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productCategoriesFragment"
         app:destination="@id/productCategoriesFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productTagsFragment"
         app:destination="@id/productTagsFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_groupedProductListFragment"
         app:destination="@id/groupedProductListFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <action
         android:id="@+id/action_global_productSelectionListFragment"
         app:destination="@id/productSelectionListFragment"
-        app:enterAnim="@anim/activity_scale_in"
-        app:popExitAnim="@anim/activity_scale_out" />
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_productDetailFragment_to_linkedProductsFragment"
+        app:destination="@id/linkedProductsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_global_addProductDownloadBottomSheetFragment"
+        app:destination="@id/addProductDownloadBottomSheetFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
@@ -304,7 +421,11 @@
             app:destination="@id/productShippingFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_nav_graph_image_gallery"
-            app:destination="@id/nav_graph_image_gallery">
+            app:destination="@id/nav_graph_image_gallery"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
             <argument
                 android:name="remoteId"
                 android:defaultValue="0L"
@@ -324,6 +445,33 @@
                 app:argType="integer" />
         </action>
     </fragment>
-    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet"/>
+    <fragment
+        android:id="@+id/productDownloadDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsFragment"
+        android:label="ProductDownloadDetailsFragment">
+        <argument
+            android:name="isEditing"
+            app:argType="boolean" />
+        <argument
+            android:name="productFile"
+            app:argType="com.woocommerce.android.model.ProductFile" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDownloadsSettingsFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.ProductDownloadsSettingsFragment"
+        android:label="ProductDownloadsSettingsFragment" />
+    <dialog
+        android:id="@+id/addProductDownloadBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment"
+        android:label="AddProductDownloadBottomSheetFragment"
+        tools:layout="@layout/dialog_product_add_downloadable_file" />
+    <action
+        android:id="@+id/action_global_productDownloadDetailsFragment"
+        app:destination="@id/productDownloadDetailsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>

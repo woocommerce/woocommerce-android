@@ -21,12 +21,11 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.android.synthetic.main.fragment_product_pricing.*
@@ -112,12 +111,7 @@ class ProductPricingFragment
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    messageId = event.messageId
-                )
+                is ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         })
@@ -159,7 +153,7 @@ class ProductPricingFragment
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(scheduleSale_startDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.localDateToGmt(
+                    val selectedDate = DateUtils().localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, true
                     )
 
@@ -173,7 +167,7 @@ class ProductPricingFragment
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(scheduleSale_endDate, OnDateSetListener {
                     _, selectedYear, selectedMonth, dayOfMonth ->
-                    val selectedDate = DateUtils.localDateToGmt(
+                    val selectedDate = DateUtils().localDateToGmt(
                             selectedYear, selectedMonth, dayOfMonth, gmtOffset, false
                     )
 
@@ -281,9 +275,9 @@ class ProductPricingFragment
         dateSetListener: OnDateSetListener
     ): DatePickerDialog {
         val dateString = if (spinnerEditText.getText().isNotBlank())
-            DateUtils.formatToYYYYmmDD(spinnerEditText.getText())
+            DateUtils().formatToYYYYmmDD(spinnerEditText.getText())
         else
-            DateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
+            DateUtils().formatToYYYYmmDD(Date().formatToMMMddYYYY())
         val (year, month, day) = dateString.split("-")
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
@@ -300,7 +294,7 @@ class ProductPricingFragment
      * If given [date] is null, current date is used
      */
     private fun formatSaleDateForDisplay(date: Date?, gmtOffset: Float): String {
-        val currentDate = DateUtils.offsetGmtDate(Date(), gmtOffset)
+        val currentDate = DateUtils().offsetGmtDate(Date(), gmtOffset)
         val dateOnSaleFrom = date?.offsetGmtDate(gmtOffset) ?: currentDate
         return dateOnSaleFrom.formatToMMMddYYYY()
     }

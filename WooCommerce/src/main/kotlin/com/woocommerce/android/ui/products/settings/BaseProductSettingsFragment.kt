@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import org.wordpress.android.util.ActivityUtils
 
@@ -73,7 +73,7 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
         activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
@@ -87,12 +87,15 @@ abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                     findNavController().navigateUp()
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })

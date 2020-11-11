@@ -36,7 +36,6 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     }
 
     private val navArgs: ProductSelectionListFragmentArgs by savedState.navArgs()
-    private val excludedProductIds = listOf(navArgs.remoteProductId)
 
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
@@ -53,11 +52,21 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private val isSearching
         get() = productSelectionListViewState.isSearchActive == true
 
+    val groupedProductListType
+        get() = navArgs.groupedProductListType
+
     val searchQuery
     get() = productSelectionListViewState.searchQuery
 
     private var loadJob: Job? = null
     private var searchJob: Job? = null
+
+    private val excludedProductIds =
+        navArgs.excludedProductIds
+            .takeIf { it.isNotEmpty() }
+            ?.split(",")
+            ?.mapNotNull { it.toLongOrNull() }
+            .orEmpty()
 
     init {
         if (_productList.value == null) {
@@ -190,10 +199,15 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
                 _productList.value = productRepository.fetchProductList(
-                    loadMore, excludedProductIds = excludedProductIds
+                    loadMore,
+                    excludedProductIds = excludedProductIds
                 )
             } else {
-                productRepository.searchProductList(searchQuery, loadMore, excludedProductIds)?.let { fetchedProducts ->
+                productRepository.searchProductList(
+                    searchQuery,
+                    loadMore,
+                    excludedProductIds
+                )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {
                         if (loadMore) {

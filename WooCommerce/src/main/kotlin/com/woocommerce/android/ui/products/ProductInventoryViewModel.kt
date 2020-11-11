@@ -9,11 +9,14 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductType.EXTERNAL
+import com.woocommerce.android.ui.products.ProductType.GROUPED
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -30,13 +33,16 @@ class ProductInventoryViewModel @AssistedInject constructor(
         private const val SEARCH_TYPING_DELAY_MS = 500L
     }
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
+    private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
             inventoryData = navArgs.inventoryData,
             isDoneButtonVisible = false,
-            isIndividualSaleSwitchVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
+            isIndividualSaleSwitchVisible = isProduct,
+            isStockManagementVisible = !isProduct || navArgs.productType != EXTERNAL && navArgs.productType != GROUPED,
+            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE
         )
     )
     private var viewState by viewStateData
@@ -125,7 +131,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
 
     fun onExit() {
         if (hasChanges) {
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)
                 }
@@ -154,6 +160,8 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
+        val isStockStatusVisible: Boolean? = null,
+        val isStockManagementVisible: Boolean? = null,
         val isDoneButtonDisabled: Boolean = false
     ) : Parcelable {
         val isDoneButtonEnabled: Boolean

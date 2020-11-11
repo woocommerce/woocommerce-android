@@ -18,31 +18,42 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.TestDispatcher
 import com.woocommerce.android.viewmodel.test
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
+@InternalCoroutinesApi
 class ProductInventoryViewModelTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
 
     private val takenSku = "taken"
 
     private val initialData = InventoryData(
-        "SKU123", false, false, InStock, 10, No
+        "SKU123",
+        isStockManaged = false,
+        isSoldIndividually = false,
+        stockStatus = InStock,
+        stockQuantity = 10,
+        backorderStatus = No
     )
 
     private val expectedData = InventoryData(
-        "SKU321", true, true, OutOfStock, 0, Yes
+        "SKU321",
+        isStockManaged = true,
+        isSoldIndividually = true,
+        stockStatus = OutOfStock,
+        stockQuantity = 0,
+        backorderStatus = Yes
     )
 
     private val coroutineDispatchers = CoroutineDispatchers(
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined,
-        Dispatchers.Unconfined
+        TestDispatcher,
+        TestDispatcher,
+        TestDispatcher
     )
 
     private lateinit var viewModel: ProductInventoryViewModel
@@ -119,7 +130,6 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         assertThat(actual?.inventoryData?.sku).isEqualTo(expectedData.sku)
         assertThat(actual?.isDoneButtonVisible).isTrue()
 
-        delay(600)
         assertThat(actual?.isDoneButtonVisible).isTrue()
         assertThat(actual?.isDoneButtonDisabled).isFalse()
         assertThat(actual?.skuErrorMessage).isEqualTo(0)
@@ -137,7 +147,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         viewModel.onExit()
 
         assertThat(events.singleOrNull { it is Exit }).isNotNull
-        assertThat(events.any { it is ShowDiscardDialog }).isFalse()
+        assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is ExitWithResult<*> }).isFalse()
     }
 
@@ -152,7 +162,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
         viewModel.onExit()
 
-        assertThat(events.singleOrNull { it is ShowDiscardDialog }).isNotNull
+        assertThat(events.singleOrNull { it is ShowDialog }).isNotNull
         assertThat(events.any { it is ExitWithResult<*> }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
     }
@@ -175,7 +185,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
         viewModel.onDoneButtonClicked()
 
-        assertThat(events.any { it is ShowDiscardDialog }).isFalse()
+        assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
 
         @Suppress("UNCHECKED_CAST")

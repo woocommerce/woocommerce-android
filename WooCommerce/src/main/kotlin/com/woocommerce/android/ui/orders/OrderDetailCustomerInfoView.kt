@@ -15,10 +15,12 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 import org.wordpress.android.fluxc.model.WCOrderModel
 
+// TODO: soon to be removed
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -38,7 +40,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val billingAddressFull = getBillingInformation(order)
         val isShippingInfoEmpty = !isShippingAvailable(order)
         val isBillingInfoEmpty = billingAddressFull.trim().isEmpty() &&
-                order.billingEmail.isEmpty() && order.billingPhone.isEmpty()
+            order.billingEmail.isEmpty() && order.billingPhone.isEmpty()
 
         if (order.customerNote.isEmpty()) {
             customerInfo_customerNoteSection.hide()
@@ -83,10 +85,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             if (order.billingEmail.isNotEmpty()) {
                 customerInfo_emailAddr.text = order.billingEmail
                 customerInfo_emailAddr.visibility = View.VISIBLE
-                customerInfo_emailBtn.visibility - View.VISIBLE
+                customerInfo_emailBtn.visibility = View.VISIBLE
                 customerInfo_emailBtn.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
-                    OrderCustomerHelper.createEmail(context, order, order.billingEmail)
+                    OrderCustomerHelper.createEmail(context, order.toAppModel(), order.billingEmail)
                     AppRatingDialog.incrementInteractions()
                 }
             } else {
@@ -112,7 +114,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     }
 
     fun isShippingAvailable(order: WCOrderModel) =
-            AddressUtils.getEnvelopeAddress(order.getShippingAddress()).isNotEmpty()
+        order.toAppModel().shippingAddress.getEnvelopeAddress().isNotEmpty()
 
     fun initShippingSection(order: WCOrderModel, hide: Boolean) {
         if (hide) {
@@ -124,7 +126,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             } else {
                 val shippingName = context
                     .getString(R.string.customer_full_name, order.shippingFirstName, order.shippingLastName)
-                val shippingAddress = AddressUtils.getEnvelopeAddress(order.getShippingAddress())
+                val shippingAddress = order.toAppModel().shippingAddress.getEnvelopeAddress()
                 val shippingCountry = AddressUtils.getCountryLabelByCountryCode(order.shippingCountry)
                 val shippingAddressFull = getFullAddress(shippingName, shippingAddress, shippingCountry)
                 customerInfo_shippingAddr.text = shippingAddressFull
@@ -142,8 +144,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun getBillingInformation(order: WCOrderModel): String {
         val billingName = context
-                .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
-        val billingAddress = AddressUtils.getEnvelopeAddress(order.getBillingAddress())
+            .getString(R.string.customer_full_name, order.billingFirstName, order.billingLastName)
+        val billingAddress = order.toAppModel().billingAddress.getEnvelopeAddress()
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(order.billingCountry)
         return getFullAddress(billingName, billingAddress, billingCountry)
     }
@@ -161,14 +163,14 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
-            OrderCustomerHelper.dialPhone(context, order, order.billingPhone)
+            OrderCustomerHelper.dialPhone(context, order.toAppModel(), order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }
 
         popup.menu.findItem(R.id.menu_message)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_SMS_TAPPED)
-            OrderCustomerHelper.sendSms(context, order, order.billingPhone)
+            OrderCustomerHelper.sendSms(context, order.toAppModel(), order.billingPhone)
             AppRatingDialog.incrementInteractions()
             true
         }

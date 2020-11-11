@@ -10,10 +10,10 @@ import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
@@ -55,11 +55,16 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                is ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
-                    messageId = event.messageId
+                    event.neutralBtnAction,
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
                 )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
@@ -87,7 +92,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -106,6 +111,7 @@ abstract class BaseProductFragment : BaseFragment(), BackPressListener {
      * Descendants should call this when edits are made so we can show/hide the done/publish button
      */
     protected fun changesMade() {
+        requireActivity().invalidateOptionsMenu()
         showUpdateMenuItem(hasChanges())
     }
 }

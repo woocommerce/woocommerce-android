@@ -1,10 +1,8 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatDateToISO8601Format
@@ -21,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -33,7 +32,7 @@ data class Product(
     val description: String,
     val shortDescription: String,
     val slug: String,
-    val type: ProductType,
+    val type: String,
     val status: ProductStatus?,
     val catalogVisibility: ProductCatalogVisibility?,
     val isFeatured: Boolean,
@@ -58,7 +57,7 @@ data class Product(
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
-    val fileCount: Int,
+    val downloads: List<ProductFile>,
     val downloadLimit: Int,
     val downloadExpiry: Int,
     val purchaseNote: String,
@@ -74,6 +73,8 @@ data class Product(
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
     val groupedProductIds: List<Long>,
+    val crossSellProductIds: List<Long>,
+    val upsellProductIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -138,7 +139,13 @@ data class Product(
             images.areSameImagesAs(product.images) &&
             isSameCategories(product.categories) &&
             isSameTags(product.tags) &&
-            groupedProductIds == product.groupedProductIds
+            groupedProductIds == product.groupedProductIds &&
+            crossSellProductIds == product.crossSellProductIds &&
+            upsellProductIds == product.upsellProductIds &&
+            downloads == product.downloads &&
+            downloadLimit == product.downloadLimit &&
+            downloadExpiry == product.downloadExpiry &&
+            isDownloadable == product.isDownloadable
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -150,6 +157,7 @@ data class Product(
                 length > 0 || width > 0 || height > 0 ||
                 shippingClass.isNotEmpty()
         }
+    val productType get() = ProductType.fromString(type)
 
     /**
      * Verifies if there are any changes made to the external link settings
@@ -158,6 +166,16 @@ data class Product(
         return updatedProduct?.let {
             externalUrl != it.externalUrl ||
                 buttonText != it.buttonText
+        } ?: false
+    }
+
+    /**
+     * Verifies if there are any changes to upsells or cross-sells
+     */
+    fun hasLinkedProductChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            upsellProductIds != it.upsellProductIds ||
+                crossSellProductIds != it.crossSellProductIds
         } ?: false
     }
 
@@ -173,7 +191,8 @@ data class Product(
                 reviewsAllowed != it.reviewsAllowed ||
                 purchaseNote != it.purchaseNote ||
                 menuOrder != it.menuOrder ||
-                isVirtual != it.isVirtual
+                isVirtual != it.isVirtual ||
+                isDownloadable != it.isDownloadable
         } ?: false
     }
 
@@ -198,6 +217,14 @@ data class Product(
             !isSameTags(it.tags)
         } ?: false
     }
+
+    fun hasDownloadChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            downloads != it.downloads
+        } ?: false
+    }
+
+    fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -281,22 +308,15 @@ data class Product(
                 categories = updatedProduct.categories,
                 tags = updatedProduct.tags,
                 type = updatedProduct.type,
-                groupedProductIds = updatedProduct.groupedProductIds
+                groupedProductIds = updatedProduct.groupedProductIds,
+                crossSellProductIds = updatedProduct.crossSellProductIds,
+                upsellProductIds = updatedProduct.upsellProductIds,
+                isDownloadable = updatedProduct.isDownloadable,
+                downloads = updatedProduct.downloads,
+                downloadLimit = updatedProduct.downloadLimit,
+                downloadExpiry = updatedProduct.downloadExpiry
             )
         } ?: this.copy()
-    }
-
-    @StringRes
-    fun getProductTypeFormattedForDisplay(): Int {
-        return when (this.type) {
-            ProductType.SIMPLE -> {
-                if (this.isVirtual) R.string.product_type_virtual
-                else R.string.product_type_physical
-            }
-            ProductType.VARIABLE -> R.string.product_type_variable
-            ProductType.GROUPED -> R.string.product_type_grouped
-            ProductType.EXTERNAL -> R.string.product_type_external
-        }
     }
 }
 
@@ -334,6 +354,13 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
                 json.addProperty("slug", tag.slug)
             })
         }
+        return jsonArray.toString()
+    }
+
+    fun downloadsToJson(): String {
+        val jsonArray = JsonArray()
+        downloads.map { WCProductFileModel(it.id, it.name, it.url) }
+            .forEach { jsonArray.add(it.toJson()) }
         return jsonArray.toString()
     }
 
@@ -379,12 +406,26 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.menuOrder = menuOrder
         it.categories = categoriesToJson()
         it.tags = tagsToJson()
-        it.type = type.value
+        it.type = type
         it.groupedProductIds = groupedProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
         )
+        it.crossSellIds = crossSellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
+        it.upsellIds = upsellProductIds.joinToString(
+            separator = ",",
+            prefix = "[",
+            postfix = "]"
+        )
+        it.downloads = downloadsToJson()
+        it.downloadLimit = downloadLimit
+        it.downloadExpiry = downloadExpiry
+        it.downloadable = isDownloadable
     }
 }
 
@@ -394,7 +435,7 @@ fun WCProductModel.toAppModel(): Product {
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,
-        type = ProductType.fromString(this.type),
+        type = this.type,
         status = ProductStatus.fromString(this.status),
         catalogVisibility = ProductCatalogVisibility.fromString(this.catalogVisibility),
         isFeatured = this.featured,
@@ -426,7 +467,13 @@ fun WCProductModel.toAppModel(): Product {
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
         isDownloadable = this.downloadable,
-        fileCount = this.getDownloadableFiles().size,
+        downloads = this.getDownloadableFiles().map {
+            ProductFile(
+                id = it.id,
+                name = it.name,
+                url = it.url
+            )
+        },
         downloadLimit = this.downloadLimit,
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
@@ -467,7 +514,9 @@ fun WCProductModel.toAppModel(): Product {
                 it.slug
             )
         },
-        groupedProductIds = this.getGroupedProductIdList()
+        groupedProductIds = this.getGroupedProductIdList(),
+        crossSellProductIds = this.getCrossSellProductIdList(),
+        upsellProductIds = this.getUpsellProductIdList()
     )
 }
 

@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag.PRODUCT_RELEASE_M3
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.FormatUtils
@@ -90,7 +89,7 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.title(): ProductProperty {
         return Editable(
             string.product_detail_title_hint,
-            parentProduct?.name ?: optionName,
+            parentProduct?.name ?: getName(parentProduct),
             isReadOnly = true
         )
     }
@@ -103,7 +102,11 @@ class VariationDetailCardBuilder(
             variationDescription
         }
 
-        val onClick = {
+        return ComplexProperty(
+            string.product_description,
+            description,
+            showTitle = variationDescription.isNotEmpty()
+        ) {
             viewModel.onEditVariationCardClicked(
                 ViewDescriptionEditor(
                     variationDescription, resources.getString(string.product_description)
@@ -111,13 +114,6 @@ class VariationDetailCardBuilder(
                 Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
             )
         }
-
-        return ComplexProperty(
-            string.product_description,
-            description,
-            showTitle = variationDescription.isNotEmpty(),
-            onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
-        )
     }
 
     private fun ProductVariation.visibility(): ProductProperty {
@@ -131,12 +127,8 @@ class VariationDetailCardBuilder(
             visibilityIcon = drawable.ic_gridicons_not_visible
         }
 
-        return if (PRODUCT_RELEASE_M3.isEnabled()) {
-            Switch(visibility, isVisible, visibilityIcon) {
-                viewModel.onVariationVisibilitySwitchChanged(it)
-            }
-        } else {
-            Switch(visibility, isVisible, visibilityIcon)
+        return Switch(visibility, isVisible, visibilityIcon) {
+            viewModel.onVariationVisibilitySwitchChanged(it)
         }
     }
 
@@ -150,7 +142,7 @@ class VariationDetailCardBuilder(
 
     // If we have pricing info, show price & sales price as a group,
     // otherwise provide option to add pricing info for the variation
-    private fun ProductVariation.price(): ProductProperty? {
+    private fun ProductVariation.price(): ProductProperty {
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
@@ -162,34 +154,28 @@ class VariationDetailCardBuilder(
             saleEndDateGmt
         )
 
-        return if (regularPrice.isSet() || PRODUCT_RELEASE_M3.isEnabled()) {
-            val onClick = {
-                viewModel.onEditVariationCardClicked(
-                    ViewPricing(
-                        PricingData(
-                            isSaleScheduled = isSaleScheduled,
-                            saleStartDate = saleStartDateGmt,
-                            saleEndDate = saleEndDateGmt,
-                            regularPrice = regularPrice,
-                            salePrice = salePrice
-                        )
-                    ),
-                    PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
-                )
-            }
+        val isWarningVisible = regularPrice.isNotSet() && this.isVisible
 
-            val isWarningVisible = regularPrice.isNotSet() && this.isVisible
-            PropertyGroup(
-                string.product_price,
-                pricingGroup,
-                drawable.ic_gridicons_money,
-                showTitle = regularPrice.isSet(),
-                isHighlighted = isWarningVisible,
-                isDividerVisible = !isWarningVisible,
-                onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
+        return PropertyGroup(
+            string.product_price,
+            pricingGroup,
+            drawable.ic_gridicons_money,
+            showTitle = regularPrice.isSet(),
+            isHighlighted = isWarningVisible,
+            isDividerVisible = !isWarningVisible
+        ) {
+            viewModel.onEditVariationCardClicked(
+                ViewPricing(
+                    PricingData(
+                        isSaleScheduled = isSaleScheduled,
+                        saleStartDate = saleStartDateGmt,
+                        saleEndDate = saleEndDateGmt,
+                        regularPrice = regularPrice,
+                        salePrice = salePrice
+                    )
+                ),
+                PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
             )
-        } else {
-            null
         }
     }
 
@@ -203,17 +189,18 @@ class VariationDetailCardBuilder(
             val shippingGroup = if (hasShippingInfo) {
                 mapOf(
                     Pair(resources.getString(string.product_weight), weightWithUnits),
-                    Pair(resources.getString(string.product_dimensions), sizeWithUnits),
-                    Pair(
-                        resources.getString(string.product_shipping_class),
-                        viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
-                    )
+                    Pair(resources.getString(string.product_dimensions), sizeWithUnits)
                 )
             } else {
                 mapOf(Pair("", resources.getString(string.product_shipping_empty)))
             }
 
-            val onClick = {
+            PropertyGroup(
+                string.product_shipping,
+                shippingGroup,
+                drawable.ic_gridicons_shipping,
+                hasShippingInfo
+            ) {
                 viewModel.onEditVariationCardClicked(
                     ViewShipping(
                         ShippingData(
@@ -228,14 +215,6 @@ class VariationDetailCardBuilder(
                     PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
                 )
             }
-
-            PropertyGroup(
-                string.product_shipping,
-                shippingGroup,
-                drawable.ic_gridicons_shipping,
-                hasShippingInfo,
-                onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
-            )
         } else {
             null
         }
@@ -266,7 +245,11 @@ class VariationDetailCardBuilder(
             )
         }
 
-        val onClick = {
+        return PropertyGroup(
+            R.string.product_inventory,
+            inventoryGroup,
+            R.drawable.ic_gridicons_list_checkmark,
+            true) {
             viewModel.onEditVariationCardClicked(
                 ViewInventory(
                     InventoryData(
@@ -281,13 +264,5 @@ class VariationDetailCardBuilder(
                 PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
             )
         }
-
-        return PropertyGroup(
-            R.string.product_inventory,
-            inventoryGroup,
-            R.drawable.ic_gridicons_list_checkmark,
-            true,
-            onClick = if (PRODUCT_RELEASE_M3.isEnabled()) onClick else null
-        )
     }
 }

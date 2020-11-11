@@ -20,16 +20,16 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_add_product_category.*
 import org.wordpress.android.util.ActivityUtils
+import dagger.Lazy
 import javax.inject.Inject
 
 class AddProductCategoryFragment : BaseFragment(), BackPressListener {
@@ -42,10 +42,10 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
     private val viewModel: AddProductCategoryViewModel
-        by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory }
+        by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory.get() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -128,12 +128,7 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
-                    requireActivity(),
-                    event.positiveBtnAction,
-                    event.negativeBtnAction,
-                    messageId = event.messageId
-                )
+                is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> {
                     val bundle = Bundle()
                     bundle.putParcelable(ARG_ADDED_CATEGORY, event.data as Parcelable)

@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
@@ -19,18 +21,22 @@ import kotlinx.coroutines.launch
 
 class ShippingLabelRefundViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    private val repository: ShippingLabelRefundRepository,
+    private val repository: ShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState, dispatchers) {
     private var refundJob: Job? = null
-    final val isRefundInProgress: Boolean
+    val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
-    final val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
+    val shippingLabelRefundViewStateData = LiveDataDelegate(savedState, ShippingLabelRefundViewState())
     private var shippingLabelRefundViewState by shippingLabelRefundViewStateData
+
+    init {
+        start()
+    }
 
     fun start() {
         shippingLabelRefundViewState = shippingLabelRefundViewState.copy(
@@ -42,15 +48,14 @@ class ShippingLabelRefundViewModel @AssistedInject constructor(
 
     fun onRefundShippingLabelButtonClicked() {
         if (networkStatus.isConnected()) {
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_REFUND_REQUESTED)
             triggerEvent(ShowSnackbar(string.shipping_label_refund_progress_message))
 
             refundJob = launch {
                 val result = repository.refundShippingLabel(arguments.orderId, arguments.shippingLabelId)
                 if (result.isError) {
-                    // TODO: add tracking event to track the failure when refunding shipping label
                     triggerEvent(ShowSnackbar(string.order_refunds_amount_refund_error))
                 } else {
-                    // TODO: add tracking event to track the success when refunding shipping label
                     triggerEvent(ShowSnackbar(string.shipping_label_refund_success))
                     triggerEvent(Exit)
                 }

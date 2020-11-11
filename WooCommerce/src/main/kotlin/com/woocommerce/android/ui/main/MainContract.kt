@@ -24,7 +24,6 @@ interface MainContract {
         fun showSitePickerScreen()
         fun updateSelectedSite()
         fun showSettingsScreen()
-        fun showHelpAndSupport()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()
@@ -35,8 +34,6 @@ interface MainContract {
         fun showOrderBadge(count: Int)
         fun updateOrderBadge(hideCountUntilComplete: Boolean)
         fun fetchRevenueStatsAvailability(site: SiteModel)
-        fun updateStatsView(isAvailable: Boolean)
-        fun replaceStatsFragment()
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
     }

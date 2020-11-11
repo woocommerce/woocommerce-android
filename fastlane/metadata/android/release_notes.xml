@@ -1,80 +1,49 @@
-<ar>
-5.0:
-أصلحنا الأعطال التي حدثت عند اختيار صورة المنتج، وعند التبديل بين القوالب الفاتحة والداكنة على الأجهزة التي تعمل بإصدارات قديمة من نظام التشغيل Android.
-
-</ar>
-<de-DE>
-5.0:
-Die Abstürze wurden behoben, die bei der Auswahl eines Produktbildes sowie beim Wechsel zwischen hellen und dunklen Themes auf älteren Android-Geräten auftraten.
-
-</de-DE>
-<es-ES>
-5.0:
-Hemos corregido los errores que se producían al elegir la imagen de un producto, y al cambiar entre el tema claro y oscuro en las versiones más antiguas de Android.
-
-</es-ES>
 <fr-FR>
-5.0 :
-nous avons résolu les incidents qui se présentaient lors du choix d'une image de produit et lors du basculement entre les thèmes clair et sombre sur d'anciennes versions d'Android.
+5.3 :
+* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
+* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
+* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
 
 </fr-FR>
 <iw-IL>
-5.0:
-תיקנו את הקריסות שהתרחשו כאשר בוחרים תמונת מוצר וכאשר מחליפים בין ערכת עיצוב בהירה לכהה בגרסאות ישנות יותר של Android.
+5.3:
+* מוצרים: ב'הגדרות' ← 'אפשרויות ביתא', המתג 'מוצרים' זמין כעת. אפשר גם להוסיף מוצר פשוט, מוצר בקבוצה, מוצר חיצוני או מוצר עם סוגים, ולפרסם או לשמור אותם כטיוטה.
+* פרטי הזמנה: ההרחבה WooCommerce Shipping & Tax מאפשרת לך להדפיס ולבקש החזרים עבור תוויות משלוח קיימות.
+* שיפורים שונים: ביצענו תיקונים אחרים, כגון שיפור המהירות במסכי ההזמנה.
 
 </iw-IL>
-<id>
-5.0:
-Kami telah memperbaiki crash yang terjadi saat memilih gambar produk dan saat beralih antara tema terang dan gelap pada versi Android yang lebih lama.
-
-</id>
 <it-IT>
-5.0:
-Abbiamo corretto arresti anomali che avvenivano quando si sceglieva un'immagine del prodotto e si passava tra temi chiari e scuri su vecchi dispositivi Android.
+5.3:
+* Prodotti: in Impostazioni → Funzionalità beta, è ora disponibile un interruttore Prodotti. Puoi anche aggiungere un prodotto semplice, raggruppato, esterno o variabile e pubblicarlo o salvarlo come una bozza.
+* Dettaglio dell'ordine: con l'estensione WooCommerce Shipping & Tax, puoi stampare e richiedere rimborsi per etichette di spedizione esistenti.
+* Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
 
 </it-IT>
-<ja-JP>
-5.0:
- 商品画像を選択するときと、Android の古いバージョンでライトとダークのテーマを切り替えるときに発生していたクラッシュを修正しました。
-
-</ja-JP>
 <ko-KR>
-5.0:
-제품 이미지를 선택할 때와 Android 구버전에서 라이트 테마와 다크 테마를 전환할 때 발생하던 비정상 종료 문제를 해결했습니다.
+5.3:
+* 제품: 설정 → 베타 기능에서 이제 제품을 전환할 수 있습니다. 단순하고, 그룹화되고, 변형 가능하거나 외부 제품을 추가하여 공개하거나 임시글로 저장할 수도 있습니다.
+* 주문 상세 정보: WooCommerce 배송 및 세금 확장 기능을 통해 기존 배송 레이블을 인쇄하고 환불을 요청할 수 있습니다.
+* 기타 개선 사항: 주문 화면 속도 개선 등 다른 사항도 개선되었습니다.
 
 </ko-KR>
-<nl-NL>
-5.0:
-We hebben crashes opgelost die zich voordeden wanneer een productafbeelding werd gekozen, en wanneer tussen lichte en donkere thema's werd overgeschakeld op oudere Androids.
-
-</nl-NL>
-<pt-BR>
-5.0:
-Corrigimos as falhas que ocorriam ao escolher uma imagem de produto e ao alternar entre os temas claro e escuro em versões mais antigas do Android.
-
-</pt-BR>
-<ru-RU>
-5.0:
-Устранены сбои, происходящие при выборе изображения товара и при переключении со светлой темы на темную в старых версиях Android.
-
-</ru-RU>
 <sv-SE>
-5.0:
-Vi har åtgärdat de krascher som inträffade vid val av produktbild samt vid byte mellan ljusa och mörka teman på äldre Android-telefoner.
+5.3:
+* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
+* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
+* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
 
 </sv-SE>
 <zh-CN>
-5.0：
-我们修复了在选择产品图片以及在较旧的 Android 上切换浅色和深色主题时出现的崩溃问题。
+5.3：
+* 产品：在“设置”→“测试版功能”中，现在提供了一个“产品”开关。 您也可以添加简单的分组或外部产品，然后发布产品或将其另存为草稿。
+* 订单详情：您可以使用 WooCommerce Shipping & Tax 扩展程序打印现有配送标签和申请退款。
+* 其他改进：我们还修复了一些其他问题，例如提升了订单屏幕的加载速度。
 
 </zh-CN>
-<zh-TW>
-5.0：
-我們已修復選擇商品圖片及使用較舊 Android 版本切換淺色及深色佈景主題時，會造成當機的問題。
-
-</zh-TW>
 <en-US>
-5.0:
-We have fixed the crashes that were occurring when choosing a product image, and when switching between light and dark themes on older Androids.
- 
+5.3:
+* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
+* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.
+* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.
+
 </en-US>
