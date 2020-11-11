@@ -24,6 +24,8 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
 
     abstract fun isScrolledToTop(): Boolean
 
+    abstract fun hasTabLayout(): Boolean
+
     /**
      * Called when the fragment shows a search view so the toolbar size is shrunk
      * to a non-expanded size

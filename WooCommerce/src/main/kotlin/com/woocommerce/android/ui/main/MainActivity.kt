@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
 import android.graphics.PorterDuff.Mode.SRC_IN
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
@@ -16,7 +14,6 @@ import android.view.WindowManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -203,6 +200,8 @@ class MainActivity : AppUpgradeActivity(),
             checkForAppUpdates()
         }
 
+        setToolbarElevationForActiveTopLevelFragment()
+
         app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             if (isAtNavigationRoot()) {
                 isToolbarExpanded = (verticalOffset == 0)
@@ -365,6 +364,19 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     /**
+     * On top level fragments that place tab layouts in the AppBar we add elevation so
+     * there's a divider between the tabs and the content
+     */
+    private fun setToolbarElevationForActiveTopLevelFragment() {
+        val hasTabLayout = getActiveTopLevelFragment()?.hasTabLayout() ?: true
+        app_bar_layout.elevation = if (hasTabLayout) {
+            resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+        } else {
+            0f
+        }
+    }
+
+    /**
      * The current fragment in the nav controller has changed
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
@@ -386,13 +398,12 @@ class MainActivity : AppUpgradeActivity(),
 
         val showUpIcon: Boolean
         val showCrossIcon: Boolean
-        val toolbarElevation: Float
         if (isTopLevelNavigation) {
             showUpIcon = false
             showCrossIcon = false
-            toolbarElevation = 0f
+            setToolbarElevationForActiveTopLevelFragment()
         } else {
-            toolbarElevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
@@ -418,9 +429,6 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         }
-
-        toolbar.elevation = toolbarElevation
-        app_bar_layout.elevation = toolbarElevation
 
         supportActionBar?.let { actionBar ->
             actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
@@ -669,6 +677,7 @@ class MainActivity : AppUpgradeActivity(),
         getActiveTopLevelFragment()?.let {
             expandToolbar(it.isScrolledToTop(), animate = false)
         }
+        setToolbarElevationForActiveTopLevelFragment()
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {

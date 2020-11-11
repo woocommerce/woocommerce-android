@@ -427,4 +427,6 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     }
 
     override fun isScrolledToTop() = reviewsList.computeVerticalScrollOffset() == 0
+
+    override fun hasTabLayout() = false
 }
