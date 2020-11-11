@@ -250,10 +250,6 @@ class MainActivity : AppUpgradeActivity(),
         checkConnection()
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
@@ -460,7 +456,7 @@ class MainActivity : AppUpgradeActivity(),
             app_bar_layout.setExpanded(false, false)
             // we want the back arrow to be black (or white in dark mode), which is usually controlled by setting
             // colorControlNormal, but doing that would change all menu icons as well
-            toolbar.getNavigationIcon()?.setColorFilter(backArrowColorFilter)
+            toolbar.navigationIcon?.colorFilter = backArrowColorFilter
         }
 
         previousDestinationId = destination.id
@@ -939,10 +935,13 @@ class MainActivity : AppUpgradeActivity(),
 
     /**
      * These two are called from app_bar_layout when the dashboard and order list fragments add/remove the tabLayout,
-     * enabling us to set the elevation when added so there's a shadow under it
+     * enabling us to set the elevation when added so there's a shadow under it. Note that we delay adding the
+     * elevation because setting it immediately after the tabLayout is added has no effect.
      */
     override fun onChildViewAdded(parent: View?, child: View?) {
-        app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+        parent?.postDelayed({
+            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+        }, 100L)
     }
 
     override fun onChildViewRemoved(parent: View?, child: View?) {
