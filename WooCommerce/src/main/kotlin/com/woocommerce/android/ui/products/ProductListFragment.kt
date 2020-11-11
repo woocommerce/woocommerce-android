@@ -531,6 +531,4 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     override fun isScrolledToTop() = productsRecycler.computeVerticalScrollOffset() == 0
-
-    override fun hasTabLayout() = false
 }

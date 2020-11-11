@@ -778,6 +778,4 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun isScrolledToTop() = order_list_view.getCurrentPosition() == 0
-
-    override fun hasTabLayout() = true
 }

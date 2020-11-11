@@ -470,6 +470,4 @@ class MyStoreFragment : TopLevelFragment(),
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE
 
     override fun isScrolledToTop() = stats_scroll_view.scrollY == 0
-
-    override fun hasTabLayout() = true
 }

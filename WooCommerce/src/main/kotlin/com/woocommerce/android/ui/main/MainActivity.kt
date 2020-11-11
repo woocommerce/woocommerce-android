@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -80,7 +81,8 @@ class MainActivity : AppUpgradeActivity(),
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
     NavController.OnDestinationChangedListener,
-    WCPromoDialog.PromoDialogListener {
+    WCPromoDialog.PromoDialogListener,
+    ViewGroup.OnHierarchyChangeListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -200,13 +202,13 @@ class MainActivity : AppUpgradeActivity(),
             checkForAppUpdates()
         }
 
-        setToolbarElevationForActiveTopLevelFragment()
-
         app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             if (isAtNavigationRoot()) {
                 isToolbarExpanded = (verticalOffset == 0)
             }
         })
+
+        app_bar_layout.setOnHierarchyChangeListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -364,19 +366,6 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     /**
-     * On top level fragments that place tab layouts in the AppBar we add elevation so
-     * there's a divider between the tabs and the content
-     */
-    private fun setToolbarElevationForActiveTopLevelFragment() {
-        val hasTabLayout = getActiveTopLevelFragment()?.hasTabLayout() ?: true
-        app_bar_layout.elevation = if (hasTabLayout) {
-            resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-        } else {
-            0f
-        }
-    }
-
-    /**
      * The current fragment in the nav controller has changed
      */
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
@@ -401,7 +390,6 @@ class MainActivity : AppUpgradeActivity(),
         if (isTopLevelNavigation) {
             showUpIcon = false
             showCrossIcon = false
-            setToolbarElevationForActiveTopLevelFragment()
         } else {
             app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showUpIcon = true
@@ -677,7 +665,6 @@ class MainActivity : AppUpgradeActivity(),
         getActiveTopLevelFragment()?.let {
             expandToolbar(it.isScrolledToTop(), animate = false)
         }
-        setToolbarElevationForActiveTopLevelFragment()
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -948,5 +935,17 @@ class MainActivity : AppUpgradeActivity(),
             actionListener = actionListener
         )
             .show()
+    }
+
+    /**
+     * These two are called from app_bar_layout when the dashboard and order list fragments add/remove the tabLayout,
+     * enabling us to set the elevation when added so there's a shadow under it
+     */
+    override fun onChildViewAdded(parent: View?, child: View?) {
+        app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+    }
+
+    override fun onChildViewRemoved(parent: View?, child: View?) {
+        app_bar_layout.elevation = 0f
     }
 }
