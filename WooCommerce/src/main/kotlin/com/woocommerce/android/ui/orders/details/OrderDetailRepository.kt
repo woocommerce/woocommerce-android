@@ -288,11 +288,6 @@ class OrderDetailRepository @Inject constructor(
         return wooCommerceStore.getStoreCountryCode(selectedSite.get())
     }
 
-    fun getOrderProducts(order: Order): List<Product> {
-        return productStore.getProductsByRemoteIds(selectedSite.get(), order.items.map { it.productId })
-            .map { it.toAppModel() }
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
