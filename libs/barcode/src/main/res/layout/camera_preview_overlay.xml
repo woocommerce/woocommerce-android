@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <com.woocommerce.android.barcode.camera.GraphicOverlay
-      android:id="@+id/camera_preview_graphic_overlay"
+      android:id="@+id/graphicOverlay"
       android:layout_width="match_parent"
       android:layout_height="match_parent"/>
 
@@ -14,7 +14,7 @@
       android:background="@color/transparent">
 
     <com.google.android.material.chip.Chip
-        android:id="@+id/bottom_prompt_chip"
+        android:id="@+id/promptChip"
         style="@style/Widget.MaterialComponents.Chip.Entry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -28,12 +28,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.chip.Chip
-import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
 import com.woocommerce.android.barcode.camera.CameraSource
-import com.woocommerce.android.barcode.camera.CameraSourcePreview
 import com.woocommerce.android.barcode.detection.BarcodeField
 import com.woocommerce.android.barcode.detection.BarcodeProcessor
 import com.woocommerce.android.barcode.detection.BarcodeResultFragment
@@ -46,11 +43,6 @@ import java.util.ArrayList
 /** Demonstrates the barcode scanning workflow using camera preview.  */
 class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
     private var cameraSource: CameraSource? = null
-    private var graphicOverlay: GraphicOverlay = camera_preview_graphic_overlay
-    private var preview: CameraSourcePreview = camera_preview
-    private var settingsButton: View = settings_button
-    private var flashButton: View = flash_button
-    private var promptChip: Chip = bottom_prompt_chip
     private var promptChipAnimator: AnimatorSet? = null
     private var workflowModel: WorkflowModel? = null
     private var currentWorkflowState: WorkflowState? = null
@@ -70,7 +62,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
             setTarget(promptChip)
         }
 
-        close_button.setOnClickListener(this)
+        closeButton.setOnClickListener(this)
 
         flashButton.apply {
             setOnClickListener(this@LiveBarcodeScanningFragment)
@@ -110,8 +102,8 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.close_button -> requireActivity().onBackPressed()
-            R.id.flash_button -> {
+            R.id.closeButton -> requireActivity().onBackPressed()
+            R.id.flashButton -> {
                 flashButton.let {
                     if (it.isSelected) {
                         it.isSelected = false
@@ -122,7 +114,7 @@ class LiveBarcodeScanningFragment : Fragment(), OnClickListener {
                     }
                 }
             }
-            R.id.settings_button -> {
+            R.id.settingsButton -> {
                 settingsButton.isEnabled = false
             }
         }

@@ -7,7 +7,7 @@
     android:keepScreenOn="true">
 
   <com.woocommerce.android.barcode.camera.CameraSourcePreview
-      android:id="@+id/camera_preview"
+      android:id="@+id/preview"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 

@@ -121,7 +121,7 @@ android {
     testOptions {
         animationsDisabled = true
     }
-    dynamicFeatures = [':libs:camera']
+    dynamicFeatures = [':libs:barcode']
 }
 
 dependencies {
