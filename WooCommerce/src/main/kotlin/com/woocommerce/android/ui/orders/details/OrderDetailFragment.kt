@@ -215,7 +215,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun showShippingLabelButton(isVisible: Boolean) {
-        orderDetail_productList.showCreateShippingLabelButton(isVisible, viewModel::onCreateShippingLabelButtonTapped)
+        orderDetail_productList.showCreateShippingLabelButton(
+            isVisible,
+            viewModel::onCreateShippingLabelButtonTapped,
+            viewModel::onShippingLabelNoticeTapped
+        )
     }
 
     private fun showSkeleton(show: Boolean) {

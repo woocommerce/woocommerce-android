@@ -334,6 +334,10 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onShippingLabelNoticeTapped() {
+
+    }
+
     fun onCreateShippingLabelButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
     }
