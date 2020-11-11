@@ -29,7 +29,6 @@
                 app:titleEnabled="true">
 
                 <include
-                    android:id="@+id/toolbar"
                     layout="@layout/view_toolbar" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>

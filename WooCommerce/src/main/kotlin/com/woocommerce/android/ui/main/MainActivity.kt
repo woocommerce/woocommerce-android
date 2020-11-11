@@ -4,6 +4,10 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuff.Mode.SRC_IN
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +17,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -63,6 +68,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -123,6 +129,10 @@ class MainActivity : AppUpgradeActivity(),
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
+    private val backArrowColorFilter by lazy {
+        PorterDuffColorFilter(ContextCompat.getColor(this, R.color.color_back_arrow), SRC_IN)
+    }
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
@@ -148,9 +158,7 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-
-        // Set the toolbar
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(toolbar)
 
         presenter.takeView(this)
 
@@ -454,6 +462,9 @@ class MainActivity : AppUpgradeActivity(),
             app_bar_layout.setExpanded(true, true)
         } else if (!isAtRoot) {
             app_bar_layout.setExpanded(false, false)
+            // we want the back arrow to be black (or white in dark mode), which is usually controlled by setting
+            // colorControlNormal, but doing that would change all menu icons as well
+            toolbar.getNavigationIcon()?.setColorFilter(backArrowColorFilter)
         }
 
         previousDestinationId = destination.id
