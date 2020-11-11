@@ -13,8 +13,7 @@
         android:layout_height="wrap_content">
 
         <include
-            layout="@layout/view_toolbar"
-            android:id="@+id/toolbar"/>
+            layout="@layout/view_toolbar"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
