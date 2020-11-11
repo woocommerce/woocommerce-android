@@ -47,6 +47,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
         <item name="android:fitsSystemWindows">true</item>
+        <item name="elevation">0dp</item>
         <item name="liftOnScroll">true</item>
     </style>
 
