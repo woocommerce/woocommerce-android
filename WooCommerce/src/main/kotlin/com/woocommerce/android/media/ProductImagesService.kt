@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.collection.LongSparseArray
 import androidx.core.app.JobIntentService
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_UPLOAD_FAILED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
@@ -214,6 +216,11 @@ class ProductImagesService : JobIntentService() {
                         T.MEDIA,
                         "productImagesService > error uploading media: ${event.error.type}, ${event.error.message}"
                 )
+                AnalyticsTracker.track(
+                    PRODUCT_IMAGE_UPLOAD_FAILED, mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                    AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
                 handleFailure()
             }
             event.canceled -> {
