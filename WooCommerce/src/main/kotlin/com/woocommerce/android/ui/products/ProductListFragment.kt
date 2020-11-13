@@ -455,13 +455,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         fun hideButton() = run { addProductButton.isVisible = false }
         when (show) {
             true -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
-                    showButton()
-                    addProductButton.setOnClickListener {
-                        viewModel.onAddProductButtonClicked()
-                    }
-                } else {
-                    hideButton()
+                showButton()
+                addProductButton.setOnClickListener {
+                    viewModel.onAddProductButtonClicked()
                 }
             }
             else -> hideButton()

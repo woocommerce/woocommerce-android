@@ -298,9 +298,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
-            viewModel.hasChanges() &&
-            FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
+        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow && viewModel.hasChanges()
 
         doneOrUpdateMenuItem?.let {
             it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
