@@ -1,0 +1,3 @@
+5.4:
+* La información del pedido muestra toda la información de variación del producto.
+* Se ha corregido un error raro que se producía al añadir una nueva categoría de producto y seleccionar opciones de filtros de productos.
