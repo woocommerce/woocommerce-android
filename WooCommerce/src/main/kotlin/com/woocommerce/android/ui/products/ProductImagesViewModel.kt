@@ -25,7 +25,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -152,8 +152,9 @@ class ProductImagesViewModel @AssistedInject constructor(
     fun onExit() {
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
-                triggerEvent(ShowDiscardDialog(
+                triggerEvent(ShowDialog(
                     messageId = string.discard_images_message,
+                    positiveButtonId = string.discard,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
                         triggerEvent(ExitWithResult(originalImages))
@@ -161,7 +162,9 @@ class ProductImagesViewModel @AssistedInject constructor(
                 ))
             }
             hasChanges -> {
-                triggerEvent(ShowDiscardDialog(
+                triggerEvent(ShowDialog(
+                    messageId = string.discard_images_message,
+                    positiveButtonId = string.discard,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         triggerEvent(ExitWithResult(originalImages))
                     }

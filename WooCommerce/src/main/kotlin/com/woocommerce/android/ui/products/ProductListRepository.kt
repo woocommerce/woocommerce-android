@@ -165,12 +165,13 @@ class ProductListRepository @Inject constructor(
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null
     ): List<Product> {
+        val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
                     sortType = productSortingChoice,
-                    excludedProductIds = excludedProductIds
+                    excludedProductIds = excludedIds
             )
             wcProducts.map { it.toAppModel() }
         } else {

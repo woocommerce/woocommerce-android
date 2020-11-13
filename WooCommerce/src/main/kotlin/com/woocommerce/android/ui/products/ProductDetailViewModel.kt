@@ -30,12 +30,14 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -45,12 +47,16 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
@@ -74,7 +80,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -87,6 +93,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
+import java.util.Collections
 import java.util.Date
 import java.util.Locale
 
@@ -101,6 +108,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val resources: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
+    private val mediaFilesRepository: MediaFilesRepository,
     private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
@@ -135,6 +143,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     // view state for the product tags screen
     final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
+
+    // view state for the product downloads screen
+    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
     val productCategories: LiveData<List<ProductCategory>> = _productCategories
@@ -229,7 +241,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onTrashButtonClicked() {
         if (checkConnection() && !viewState.isConfirmingTrash) {
             triggerEvent(
-                ShowDiscardDialog(
+                ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
@@ -291,9 +303,119 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onProductDownloadClicked(file: ProductFile) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                true,
+                file
+            )
+        )
+    }
+
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads.map { file ->
+                if (file.id == updatedFile.id) updatedFile else file
+            }
+            updateProductDraft(
+                downloads = updatedDownloads
+            )
+        }
+    }
+
+    fun addDownloadableFileToDraft(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads + file
+            updateProductDraft(
+                downloads = updatedDownloads,
+                // Make sure to mark the file as downloadable
+                isDownloadable = true
+            )
+        }
+    }
+
+    fun swapDownloadableFiles(from: Int, to: Int) {
+        viewState.productDraft?.let {
+            val mutableDownloadsList = it.downloads.toMutableList()
+            Collections.swap(mutableDownloadsList, from, to)
+            updateProductDraft(downloads = mutableDownloadsList)
+        }
+    }
+
+    fun deleteDownloadableFile(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads - file
+            updateProductDraft(downloads = updatedDownloads)
+            // If the downloads list is empty now, go directly to the product details screen
+            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
+        }
+    }
+
+    fun onDownloadExpiryChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadExpiry = value
+            )
+        }
+    }
+
+    fun onDownloadLimitChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadLimit = value
+            )
+        }
+    }
+
+    fun onDownloadsSettingsClicked() {
+        discardEditChanges()
+        triggerEvent(ViewProductDownloadsSettings)
+    }
+
+    fun onAddDownloadableFileClicked() {
+        triggerEvent(AddProductDownloadableFile)
+    }
+
+    fun uploadDownloadableFile(uri: Uri) {
+        launch {
+            viewState = viewState.copy(isUploadingDownloadableFile = true)
+            productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
+            try {
+                val url = mediaFilesRepository.uploadFile(uri)
+                showAddProductDownload(url)
+            } catch (e: Exception) {
+                triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
+            } finally {
+                viewState = viewState.copy(isUploadingDownloadableFile = false)
+                productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+            }
+        }
+    }
+
+    fun showAddProductDownload(url: String) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                isEditing = false,
+                file = ProductFile(id = null, url = url, name = "")
+            )
+        )
+    }
+
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
     fun hasLinkedProductChanges() = viewState.storedProduct?.hasLinkedProductChanges(viewState.productDraft) ?: false
+
+    fun hasDownloadsChanges(): Boolean {
+        return viewState.storedProduct?.hasDownloadChanges(viewState.productDraft) ?: false
+    }
+
+    fun hasDownloadsSettingsChanges(): Boolean {
+        return viewState.storedProduct?.let {
+            it.downloadLimit != viewState.productDraft?.downloadLimit ||
+                it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
+                it.isDownloadable != viewState.productDraft?.isDownloadable
+        } ?: false
+    }
 
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
@@ -496,7 +618,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 null
             }
 
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog(
                     positiveBtnAction = positiveAction,
                     neutralBtnAction = neutralAction
             ))
@@ -504,7 +626,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else if (event is ExitProductDetail && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
@@ -577,7 +699,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         type: String? = null,
         groupedProductIds: List<Long>? = null,
         upsellProductIds: List<Long>? = null,
-        crossSellProductIds: List<Long>? = null
+        crossSellProductIds: List<Long>? = null,
+        downloads: List<ProductFile>? = null,
+        downloadLimit: Int? = null,
+        downloadExpiry: Int? = null,
+        isDownloadable: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -626,7 +752,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                     saleStartDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt,
+                    downloads = downloads ?: product.downloads,
+                    downloadLimit = downloadLimit ?: product.downloadLimit,
+                    downloadExpiry = downloadExpiry ?: product.downloadExpiry,
+                    isDownloadable = isDownloadable ?: product.isDownloadable
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -639,6 +769,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
         productTagsRepository.onCleanup()
+        mediaFilesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
@@ -1374,6 +1505,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitLinkedProducts(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
+            ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
@@ -1411,7 +1545,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         val storedPassword: String? = null,
         val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
-        val isConfirmingTrash: Boolean = false
+        val isConfirmingTrash: Boolean = false,
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
@@ -1441,6 +1576,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val shouldDisplayDoneMenuButton: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val currentFilter: String = ""
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductDownloadsViewState(
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

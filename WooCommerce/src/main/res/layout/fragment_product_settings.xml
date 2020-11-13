@@ -49,6 +49,16 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/major_100"
                 android:text="@string/product_is_virtual" />
+
+            <View android:id="@+id/productIsDownloadableDivider" style="@style/Woo.Divider.TitleAligned" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/productIsDownloadable"
+                style="@style/Widget.Woo.Settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_is_downloadable" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
@@ -62,8 +72,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/major_100"
-                android:textColor="@color/color_on_surface_disabled"
-                android:text="@string/more_options" />
+                android:text="@string/more_options"
+                android:textColor="@color/color_on_surface_disabled" />
 
             <View style="@style/Woo.Divider.TitleAligned" />
 

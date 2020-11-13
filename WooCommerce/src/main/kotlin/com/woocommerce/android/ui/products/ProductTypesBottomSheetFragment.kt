@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -84,7 +84,7 @@ class ProductTypesBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidI
                 is Exit -> {
                     dismiss()
                 }
-                is ShowDiscardDialog -> CustomDiscardDialog.showDiscardDialog(
+                is ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
