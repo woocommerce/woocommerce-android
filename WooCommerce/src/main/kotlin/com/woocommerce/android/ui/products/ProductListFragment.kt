@@ -424,10 +424,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
-            val (wipCardTitleId, wipCardMessageId) = if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled(requireContext()))
-                R.string.product_adding_wip_title to R.string.product_wip_message_m4
-            else
-                R.string.product_wip_title to R.string.product_wip_message_m3
+            val wipCardTitleId = R.string.product_adding_wip_title
+            val wipCardMessageId = R.string.product_wip_message_m4
 
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
