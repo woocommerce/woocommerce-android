@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewBarcodeScanner
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -120,7 +121,8 @@ class ProductInventoryViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
-        dynamicFeature.installModule("barcode")
+//        dynamicFeature.installModule("barcode")
+        triggerEvent(ViewBarcodeScanner)
 //
 //        AnalyticsTracker.track(
 //            Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
