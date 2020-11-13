@@ -40,7 +40,7 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(activity)
+        val builder = MaterialAlertDialogBuilder(requireActivity())
         val view = View.inflate(activity, R.layout.number_picker_dialog, null)
         headerText = view.findViewById(R.id.number_picker_header)
         numberPicker = view.findViewById(R.id.number_picker)

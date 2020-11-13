@@ -86,6 +86,13 @@
         <attr name="android:enabled"/>
     </declare-styleable>
 
+    <declare-styleable name="ShippingLabelItemView">
+        <attr name="shippingLabelItemIcon" format="reference"/>
+        <attr name="shippingLabelItemTitle" format="string"/>
+        <attr name="shippingLabelItemValue" format="string"/>
+        <attr name="showTrackShipmentButton" format="boolean"/>
+    </declare-styleable>
+
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
         <attr name="aevButton" format="string"/>
@@ -99,7 +106,12 @@
 
     <declare-styleable name="WCElevatedLinearLayout">
         <!-- Optional: resource id of dimension -->
-        <attr name="wcElevation" format="reference"/>
+        <attr name="android:elevation"/>
+    </declare-styleable>
+
+    <declare-styleable name="WCElevatedConstraintLayout">
+        <!-- Optional: resource id of dimension -->
+        <attr name="android:elevation"/>
     </declare-styleable>
 
     <!--
@@ -141,4 +153,8 @@
         allow for overriding defStyleRes for some stupid reason.
     -->
     <attr name="wcToggleOutlinedButtonStyle" format="reference"/>
+
+    <declare-styleable name="AddProductElementView">
+        <attr name="buttonText" format="string"/>
+    </declare-styleable>
 </resources>

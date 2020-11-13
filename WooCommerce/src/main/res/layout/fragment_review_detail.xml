@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:fillViewport="true"
     tools:context="com.woocommerce.android.ui.reviews.ReviewDetailFragment">
 
@@ -56,7 +56,7 @@
                     android:layout_height="@dimen/image_minor_50"
                     android:layout_marginEnd="@dimen/minor_100"
                     android:contentDescription="@string/wc_view_the_product_external"
-                    android:tint="@color/color_secondary"
+                    app:tint="@color/color_secondary"
                     app:srcCompat="@drawable/ic_external" />
             </LinearLayout>
 

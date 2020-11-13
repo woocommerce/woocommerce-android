@@ -3,6 +3,7 @@
     <color name="woo_purple_30">#B17FD4</color>
     <color name="woo_purple_50">#7F54B3</color>
     <color name="woo_purple_60">#674399</color>
+    <color name="woo_purple_60_alpha_33">#33674399</color>
     <color name="woo_purple_80">#3C2861</color>
 
     <color name="woo_pink_10">#ED9BB8</color>
@@ -21,6 +22,7 @@
     <color name="woo_orange_5">#F7DCC6</color>
     <color name="woo_orange_30">#E68B28</color>
     <color name="woo_orange_50">#B26200</color>
+    <color name="woo_orange_70">#351F04</color>
 
     <color name="woo_yellow_30">#DBAE17</color>
     <color name="woo_yellow_50">#907300</color>

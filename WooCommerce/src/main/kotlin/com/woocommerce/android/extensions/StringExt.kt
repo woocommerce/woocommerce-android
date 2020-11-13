@@ -1,5 +1,10 @@
 package com.woocommerce.android.extensions
 
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
+import android.widget.TextView
+import com.woocommerce.android.widgets.WooClickableSpan
 import org.apache.commons.text.StringEscapeUtils
 
 /**
@@ -57,4 +62,35 @@ fun String.fastStripHtml(): String {
 
     // use regex to strip tags, then convert entities in the result
     return htmlString.substring(start)
+}
+
+/**
+ * Makes any text range inside a TextView clickable with a special color and a URL redirection
+ */
+fun String.configureStringClick(
+    clickableContent: String,
+    clickAction: WooClickableSpan,
+    textField: TextView
+) {
+    SpannableString(this)
+        .buildClickableUrlSpan(clickableContent, this, clickAction)
+        .let {
+            textField.apply {
+                setText(it, TextView.BufferType.SPANNABLE)
+                movementMethod = LinkMovementMethod.getInstance()
+            }
+        }
+}
+
+private fun SpannableString.buildClickableUrlSpan(
+    clickableContent: String,
+    fullContent: String,
+    clickAction: WooClickableSpan
+) = apply {
+    setSpan(
+        clickAction,
+        (fullContent.length - clickableContent.length),
+        fullContent.length,
+        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
 }

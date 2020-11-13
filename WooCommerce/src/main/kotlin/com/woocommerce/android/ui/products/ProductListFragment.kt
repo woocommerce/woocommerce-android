@@ -12,17 +12,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCTS_M3
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
+import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
@@ -30,7 +45,11 @@ import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -40,15 +59,18 @@ import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
 class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductSortAndFilterListener,
-        OnLoadMoreListener,
-        OnQueryTextListener,
-        OnActionExpandListener,
-        NavigationResult {
+    OnLoadMoreListener,
+    OnQueryTextListener,
+    OnActionExpandListener,
+    NavigationResult {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
+
+    // TODO this is to help test the click!
+    var count = 0
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -62,6 +84,12 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    private var trashProductUndoSnack: Snackbar? = null
+    private var pendingTrashProductId: Long? = null
+
+    private val feedbackState
+        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,7 +107,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
-        productAdapter = ProductListAdapter(activity, this, this)
+        productAdapter = ProductListAdapter(this, this)
         productsRecycler.layoutManager = LinearLayoutManager(activity)
         productsRecycler.adapter = productAdapter
 
@@ -118,10 +146,16 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        trashProductUndoSnack?.dismiss()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers(viewModel)
+        setupResultHandlers()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -129,6 +163,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
         if (hidden) {
             disableSearchListeners()
+            trashProductUndoSnack?.dismiss()
         } else {
             enableSearchListeners()
         }
@@ -138,7 +173,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         showOptionsMenu(true)
 
         if (!viewModel.isSearching()) {
-            viewModel.reloadProductsFromDb()
+            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
 
@@ -146,9 +181,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         when (requestCode) {
             RequestCodes.PRODUCT_LIST_FILTERS -> {
                 viewModel.onFiltersChanged(
-                        stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
-                        productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
-                        productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
+                    stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
+                    productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
+                    productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
                 )
             }
         }
@@ -265,8 +300,8 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
                     when {
                         new.isSearchActive == true -> {
                             empty_view.show(
-                                    EmptyViewType.SEARCH_RESULTS,
-                                    searchQueryOrFilter = viewModel.getSearchQuery()
+                                EmptyViewType.SEARCH_RESULTS,
+                                searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
                         new.filterCount?.compareTo(0) == 1 -> empty_view.show(EmptyViewType.FILTER_RESULTS)
@@ -284,6 +319,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
                 products_sort_filter_card.setSortingTitle(getString(it))
             }
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
+                showAddProductButton(show = isVisible)
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner, Observer {
@@ -294,9 +332,59 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
+                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is ShowProductFilterScreen -> showProductFilterScreen(
+                    event.stockStatusFilter,
+                    event.productTypeFilter,
+                    event.productStatusFilter
+                )
+                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT, R.id.rootFragment) { bundle ->
+            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
+                // User chose to trash from product detail, but we do the actual trashing here
+                // so we can show a snackbar enabling the user to undo the trashing.
+                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
+                trashProduct(remoteProductId)
+            }
+        }
+    }
+
+    private fun trashProduct(remoteProductId: Long) {
+        var trashProductCancelled = false
+        pendingTrashProductId = remoteProductId
+
+        // reload the product list without this product
+        viewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+
+        val actionListener = View.OnClickListener {
+            trashProductCancelled = true
+        }
+
+        val callback = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                pendingTrashProductId = null
+                if (trashProductCancelled) {
+                    viewModel.reloadProductsFromDb()
+                } else {
+                    viewModel.trashProduct(remoteProductId)
+                }
+            }
+        }
+
+        trashProductUndoSnack = uiMessageResolver.getUndoSnack(
+            R.string.product_trash_undo_snackbar_message,
+            actionListener = actionListener)
+            .also {
+                it.addCallback(callback)
+                it.show()
+            }
     }
 
     override fun getFragmentTitle() = getString(R.string.products)
@@ -321,7 +409,7 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        loadMoreProgress.isVisible = show
     }
 
     private fun showProductList(products: List<Product>) {
@@ -335,11 +423,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show) {
+        if (show && feedbackState != DISMISSED) {
+            val wipCardMessageId = R.string.product_wip_message_m4
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
-                getString(R.string.product_wip_title),
-                getString(R.string.product_wip_message)
+                getString(R.string.product_adding_wip_title),
+                getString(wipCardMessageId),
+                onGiveFeedbackClick = ::onGiveFeedbackClicked,
+                onDismissClick = ::onDismissProductWIPNoticeCardClicked
             )
         } else {
             products_wip_card.visibility = View.GONE
@@ -359,30 +450,81 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         products_sort_filter_card.updateFilterSelection(filterCount)
     }
 
-    override fun onProductClick(remoteProductId: Long) {
+    private fun showAddProductButton(show: Boolean) {
+        fun showButton() = run { addProductButton.isVisible = true }
+        fun hideButton() = run { addProductButton.isVisible = false }
+        when (show) {
+            true -> {
+                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
+                    showButton()
+                    addProductButton.setOnClickListener {
+                        viewModel.onAddProductButtonClicked()
+                    }
+                } else {
+                    hideButton()
+                }
+            }
+            else -> hideButton()
+        }
+    }
+
+    override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
+
+    private fun showProductDetails(remoteProductId: Long) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
+
+    private fun showAddProductBottomSheet() = (activity as? MainNavigationRouter)?.showProductAddBottomSheet()
 
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested()
     }
 
-    override fun onFilterOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+    private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
         disableSearchListeners()
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showProductFilters(
-                viewModel.getFilterByStockStatus(),
-                viewModel.getFilterByProductType(),
-                viewModel.getFilterByProductStatus()
-        )
+        (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
+    }
+
+    override fun onFilterOptionSelected() {
+        viewModel.onFiltersButtonTapped()
+    }
+
+    private fun showProductSortingBottomSheet() {
+        val bottomSheet = ProductSortingFragment()
+        bottomSheet.show(childFragmentManager, bottomSheet.tag)
     }
 
     override fun onSortOptionSelected() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
-        val bottomSheet = ProductSortingFragment()
-        bottomSheet.show(childFragmentManager, bottomSheet.tag)
+        viewModel.onSortButtonTapped()
+    }
+
+    private fun onGiveFeedbackClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+        ))
+        registerFeedbackSetting(GIVEN)
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
+            .apply { findNavController().navigateSafely(this) }
+    }
+
+    private fun onDismissProductWIPNoticeCardClicked() {
+        AnalyticsTracker.track(
+            FEATURE_FEEDBACK_BANNER, mapOf(
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+        ))
+        registerFeedbackSetting(DISMISSED)
+        showProductWIPNoticeCard(false)
+    }
+
+    private fun registerFeedbackSetting(state: FeedbackState) {
+        FeatureFeedbackSettings(PRODUCTS_M3.name, state)
+            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 }

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
@@ -30,7 +31,6 @@ import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.DashboardStatsListener
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FormatCurrencyRounded
@@ -61,7 +61,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private lateinit var activeGranularity: StatsGranularity
-    private var listener: DashboardStatsListener? = null
+    private var listener: MyStoreStatsListener? = null
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -98,7 +98,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
-        listener: DashboardStatsListener,
+        listener: MyStoreStatsListener,
         selectedSite: SelectedSite,
         formatCurrencyForDisplay: FormatCurrencyRounded
     ) {
@@ -305,8 +305,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         isRequestingStats = false
-        dashboard_stats_error.visibility = if (show) View.VISIBLE else View.GONE
-        chart.visibility = if (show) View.GONE else View.VISIBLE
+        dashboard_stats_error.isVisible = show
+        chart.isVisible = !show
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
@@ -341,16 +341,17 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
 
-        val grossRevenue = revenueStatsModel?.getTotal()?.totalSales ?: 0.0
+        val totalModel = revenueStatsModel?.parseTotal()
+        val grossRevenue = totalModel?.totalSales ?: 0.0
         val revenue = formatCurrencyForDisplay(grossRevenue, chartCurrencyCode.orEmpty())
 
-        val orderCount = revenueStatsModel?.getTotal()?.ordersCount ?: 0
+        val orderCount = totalModel?.ordersCount ?: 0
         val orders = orderCount.toString()
 
         fadeInLabelValue(revenue_value, revenue)
         fadeInLabelValue(orders_value, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.getTotal()?.totalSales?.toInt() == 0) {
+        if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
             isRequestingStats = false
             return
@@ -495,10 +496,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
-            StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+            StatsGranularity.DAYS -> DateUtils().getShortHourString(dateString)
             StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
             StatsGranularity.MONTHS -> dateString.formatToMonthDateOnly()
-            StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
+            StatsGranularity.YEARS -> DateUtils().getShortMonthString(dateString)
         }
     }
 
@@ -570,10 +571,10 @@ class MyStoreStatsView @JvmOverloads constructor(
          */
         private fun getLabelValue(dateString: String): String {
             return when (activeGranularity) {
-                StatsGranularity.DAYS -> DateUtils.getShortHourString(dateString)
+                StatsGranularity.DAYS -> DateUtils().getShortHourString(dateString)
                 StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
                 StatsGranularity.MONTHS -> dateString.formatToDateOnly()
-                StatsGranularity.YEARS -> DateUtils.getShortMonthString(dateString)
+                StatsGranularity.YEARS -> DateUtils().getShortMonthString(dateString)
             }
         }
 

@@ -83,8 +83,21 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
         edit_text.doAfterTextChanged {
-            clearError()
             cb(it)
+        }
+    }
+
+    fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
+        edit_text.setOnEditorActionListener { _, action, _ ->
+            if (action == EditorInfo.IME_ACTION_DONE) {
+                val text = edit_text.text.toString()
+                if (text.isNotEmpty()) {
+                    edit_text.setText("")
+                    cb.invoke(text)
+                } else false
+            } else {
+                false
+            }
         }
     }
 
@@ -99,7 +112,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        edit_text.isEnabled = enabled
+        edit_text?.isEnabled = enabled
     }
 
     override fun onSaveInstanceState(): Parcelable? {
@@ -126,7 +139,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         super.dispatchFreezeSelfOnly(container)
     }
 
-    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>?) {
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>) {
         super.dispatchThawSelfOnly(container)
     }
 }

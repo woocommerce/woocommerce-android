@@ -1,11 +1,21 @@
 package com.woocommerce.android.ui.orders
 
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -161,4 +171,125 @@ object OrderTestUtils {
 
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
             generateOrderStatusOptions().map { it.statusKey to it }.toMap()
+
+    fun generateShippingLabel(localSiteId: Int = 1, remoteOrderId: Long, shippingLabelId: Long): ShippingLabel {
+        return WCShippingLabelModel().apply {
+            this.localSiteId = localSiteId
+            localOrderId = remoteOrderId
+            remoteShippingLabelId = shippingLabelId
+            packageName = "Package"
+            serviceName = "Service"
+            dateCreated = Date().time.toString()
+        }.toAppModel()
+    }
+
+    fun generateShippingLabels(totalCount: Int = 5, orderIdentifier: OrderIdentifier): List<ShippingLabel> {
+        val result = ArrayList<ShippingLabel>()
+        for (i in totalCount downTo 1) {
+            result.add(WCShippingLabelModel().apply {
+                localSiteId = orderIdentifier.toIdSet().localSiteId
+                localOrderId = orderIdentifier.toIdSet().id.toLong()
+                remoteShippingLabelId = i.toLong()
+                packageName = "Package$i"
+                serviceName = "Service$i"
+                dateCreated = Date().time.toString()
+            }.toAppModel())
+        }
+        return result
+    }
+
+    fun generateRefunds(totalCount: Int = 5): List<Refund> {
+        val result = ArrayList<Refund>()
+        for (i in totalCount downTo 1) {
+            result.add(Refund(
+                id = i.toLong(),
+                amount = i.toBigDecimal(),
+                dateCreated = Date(),
+                reason = "Test",
+                automaticGatewayRefund = true,
+                items = listOf(
+                    Refund.Item(
+                        productId = 15,
+                        quantity = 1,
+                        id = 1L,
+                        name = "A test",
+                        variationId = 0,
+                        subtotal = BigDecimal.valueOf(10.00),
+                        total = BigDecimal.valueOf(10.00),
+                        totalTax = BigDecimal.ZERO,
+                        price = BigDecimal.valueOf(10.00)
+                    )
+                )
+            ))
+        }
+        return result
+    }
+
+    fun generateTestOrder(orderIdentifier: OrderIdentifier = "1-1-1"): Order {
+        val orderIdSet = orderIdentifier.toIdSet()
+        return WCOrderModel(orderIdSet.id).apply {
+            billingFirstName = "Carissa"
+            billingLastName = "King"
+            currency = "USD"
+            dateCreated = "2018-02-02T16:11:13Z"
+            localSiteId = orderIdSet.localSiteId
+            remoteOrderId = orderIdSet.remoteOrderId
+            number = "55"
+            status = "pending"
+            total = "106.00"
+            lineItems = "[{\n" +
+                "    \"id\":1,\n" +
+                "    \"name\":\"A test\",\n" +
+                "    \"product_id\":15,\n" +
+                "    \"quantity\":1,\n" +
+                "    \"tax_class\":\"\",\n" +
+                "    \"subtotal\":\"10.00\",\n" +
+                "    \"subtotal_tax\":\"0.00\",\n" +
+                "    \"total\":\"10.00\",\n" +
+                "    \"total_tax\":\"0.00\",\n" +
+                "    \"taxes\":[],\n" +
+                "    \"meta_data\":[],\n" +
+                "    \"sku\":null,\n" +
+                "    \"price\":10\n" +
+                "  }]"
+        }.toAppModel()
+    }
+
+    fun generateTestOrderNotes(
+        totalNotes: Int,
+        orderIdentifier: OrderIdentifier = "1-1-1"
+    ): List<OrderNote> {
+        val orderIdSet = orderIdentifier.toIdSet()
+
+        val result = ArrayList<OrderNote>()
+        for (i in totalNotes downTo 1) {
+            result.add(WCOrderNoteModel(totalNotes).apply {
+                isCustomerNote = false
+                dateCreated = "2018-02-02T16:11:13Z"
+                localOrderId = orderIdSet.id
+                localSiteId = orderIdSet.localSiteId
+                note = "This is a test note $i"
+            }.toAppModel())
+        }
+        return result
+    }
+
+    fun generateTestOrderShipmentTrackings(
+        totalCount: Int,
+        orderIdentifier: OrderIdentifier = "1-1-1"
+    ): List<OrderShipmentTracking> {
+        val orderIdSet = orderIdentifier.toIdSet()
+        val result = ArrayList<OrderShipmentTracking>()
+        for (i in totalCount downTo 1) {
+            result.add(WCOrderShipmentTrackingModel(totalCount).apply {
+                trackingProvider = "TNT Express $i"
+                trackingNumber = "$i"
+                dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                trackingLink = "www.somelink$i.com"
+                localOrderId = orderIdSet.id
+                localSiteId = orderIdSet.localSiteId
+            }.toAppModel())
+        }
+        return result
+    }
 }

@@ -16,7 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import kotlinx.android.synthetic.main.fragment_aztec_editor.*
@@ -125,7 +125,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -145,12 +145,15 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     private fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                     navigateBackWithResult(false)
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })
@@ -207,11 +210,12 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
             it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
             it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
         }
-        @IdRes val destinationId = if (navArgs.requestCode == RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE) {
-            R.id.productSettingsFragment
-        } else {
-            R.id.productDetailFragment
+        @IdRes val destinationId = when (navArgs.requestCode) {
+            RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE -> R.id.productSettingsFragment
+            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> R.id.variationDetailFragment
+            else -> R.id.productDetailFragment
         }
+
         requireActivity().navigateBackWithResult(
                 navArgs.requestCode,
                 bundle,

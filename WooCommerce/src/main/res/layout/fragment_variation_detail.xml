@@ -1,0 +1,98 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/productDetail_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:focusableInTouchMode="true"
+    tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false"
+        app:elevation="@dimen/minor_00">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false"
+            android:background="@color/color_elevation_overlay_01"
+            app:contentScrim="@color/color_elevation_overlay_01"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <FrameLayout
+                android:id="@+id/collapsing_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_collapseMode="parallax">
+
+                <com.woocommerce.android.widgets.WCProductImageGalleryView
+                    android:id="@+id/imageGallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/image_major_120"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:layout_marginStart="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/minor_100"
+                    app:isGridView="false"
+                    app:showAddImageIcon="false" />
+
+                <FrameLayout
+                    android:id="@+id/addImageContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/image_major_120"
+                    android:background="?attr/selectableItemBackground"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textAddImage"
+                        style="@style/Woo.TextView.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableTop="@drawable/ic_gridicons_add_image"
+                        android:drawablePadding="@dimen/minor_100"
+                        android:layout_gravity="center"
+                        android:text="@string/variation_detail_image_add" />
+
+                </FrameLayout>
+
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_gravity="bottom" />
+
+            </FrameLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cardsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:descendantFocusability="beforeDescendants"
+                android:overScrollMode="never"
+                android:scrollbars="vertical" />
+
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

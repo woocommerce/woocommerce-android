@@ -58,6 +58,11 @@
     <color name="color_icon_menu">@color/woo_white</color>
 
     <!--
+        Toolbar icons for login menus
+    -->
+    <color name="color_icon_menu_login">@color/color_on_surface_high_selector</color>
+
+    <!--
         Custom widget tint
     -->
     <color name="ratings_bar_progress_tint">@color/color_on_surface_high</color>
@@ -71,6 +76,7 @@
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
+    <color name="splash_background">@color/woo_purple_60</color>
 
     <!--
         Elevation colors
@@ -111,6 +117,11 @@
     -->
     <color name="nav_bar">@color/woo_black_90_alpha_020</color>
 
+    <!--
+        Warning colors
+    -->
+    <color name="warning_foreground_color">@color/woo_orange_30</color>
+    <color name="warning_background_color">@color/woo_orange_5</color>
     <!--
         Products List
     -->

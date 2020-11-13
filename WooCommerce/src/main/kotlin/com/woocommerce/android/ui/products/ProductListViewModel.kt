@@ -5,15 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -30,18 +33,18 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
-@OpenClassOnDebug
 class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -119,15 +122,30 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
-    fun getFilterByStockStatus() = productFilterOptions[ProductFilterOption.STOCK_STATUS]
+    fun onFiltersButtonTapped() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        triggerEvent(
+            ShowProductFilterScreen(
+                productFilterOptions[ProductFilterOption.STOCK_STATUS],
+                productFilterOptions[ProductFilterOption.TYPE],
+                productFilterOptions[ProductFilterOption.STATUS]
+            )
+        )
+    }
 
-    fun getFilterByProductStatus() = productFilterOptions[ProductFilterOption.STATUS]
-
-    fun getFilterByProductType() = productFilterOptions[ProductFilterOption.TYPE]
+    fun onSortButtonTapped() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        triggerEvent(ShowProductSortingBottomSheet)
+    }
 
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
+    }
+
+    fun onAddProductButtonClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+        triggerEvent(ShowAddProductBottomSheet)
     }
 
     fun onSearchOpened() {
@@ -154,8 +172,11 @@ class ProductListViewModel @AssistedInject constructor(
         refreshProducts()
     }
 
-    final fun reloadProductsFromDb() {
-        _productList.value = productRepository.getProductList(productFilterOptions)
+    final fun reloadProductsFromDb(excludeProductId: Long? = null) {
+        val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
+            ArrayList<Long>().also { it.add(id) }
+        }
+        _productList.value = productRepository.getProductList(productFilterOptions, excludedProductIds)
     }
 
     final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
@@ -180,7 +201,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false
+                        displaySortAndFilterCard = false,
+                        isAddProductButtonVisible = false
                 )
                 fetchProductList(viewState.query, loadMore = loadMore)
             }
@@ -207,7 +229,8 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        displaySortAndFilterCard = !showSkeleton
+                        displaySortAndFilterCard = !showSkeleton,
+                        isAddProductButtonVisible = !showSkeleton
                 )
                 fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             }
@@ -239,41 +262,42 @@ class ProductListViewModel @AssistedInject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (networkStatus.isConnected()) {
-            if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
-            } else {
-                productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
-                    // make sure the search query hasn't changed while the fetch was processing
-                    if (searchQuery == productRepository.lastSearchQuery) {
-                        if (loadMore) {
-                            _productList.value = _productList.value.orEmpty() + fetchedProducts
-                        } else {
-                            _productList.value = fetchedProducts
-                        }
+        if (!checkConnection()) {
+            return
+        }
+
+        if (searchQuery.isNullOrEmpty()) {
+            _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
+        } else {
+            productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+                // make sure the search query hasn't changed while the fetch was processing
+                if (searchQuery == productRepository.lastSearchQuery) {
+                    if (loadMore) {
+                        _productList.value = _productList.value.orEmpty() + fetchedProducts
                     } else {
-                        WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
+                        _productList.value = fetchedProducts
                     }
+                } else {
+                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
                 }
             }
-
-            viewState = viewState.copy(
-                    isLoading = true,
-                    canLoadMore = productRepository.canLoadMoreProducts,
-                    isEmptyViewVisible = _productList.value?.isEmpty() == true,
-                    displaySortAndFilterCard = (
-                            productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-                            )
-            )
-        } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
+
+        viewState = viewState.copy(
+            isLoading = true,
+            canLoadMore = productRepository.canLoadMoreProducts,
+            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            displaySortAndFilterCard = (
+                productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+                )
+        )
 
         viewState = viewState.copy(
                 isSkeletonShown = false,
                 isLoading = false,
                 isLoadingMore = false,
-                isRefreshing = false
+                isRefreshing = false,
+                isAddProductButtonVisible = true
         )
 
         if (scrollToTop) {
@@ -287,6 +311,30 @@ class ProductListViewModel @AssistedInject constructor(
             DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
             TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
             TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+        }
+    }
+
+    /**
+     * Returns true if the network is connected, otherwise shows an offline snackbar and returns false
+     */
+    private fun checkConnection(): Boolean {
+        return if (networkStatus.isConnected()) {
+            true
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            false
+        }
+    }
+
+    fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
+
+    fun trashProduct(remoteProductId: Long) {
+        if (checkConnection()) {
+            launch {
+                if (!productRepository.trashProduct(remoteProductId)) {
+                    triggerEvent(ShowSnackbar(R.string.product_trash_error))
+                }
+            }
         }
     }
 
@@ -317,11 +365,19 @@ class ProductListViewModel @AssistedInject constructor(
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
-        val displaySortAndFilterCard: Boolean? = null
+        val displaySortAndFilterCard: Boolean? = null,
+        val isAddProductButtonVisible: Boolean? = null
     ) : Parcelable
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
+        object ShowAddProductBottomSheet : ProductListEvent()
+        object ShowProductSortingBottomSheet : Event()
+        data class ShowProductFilterScreen(
+            val stockStatusFilter: String?,
+            val productTypeFilter: String?,
+            val productStatusFilter: String?
+        ) : Event()
     }
 
     @AssistedInject.Factory

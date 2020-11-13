@@ -3,135 +3,159 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLISH_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.isNumeric
+import com.woocommerce.android.extensions.addNewItem
+import com.woocommerce.android.extensions.clearList
+import com.woocommerce.android.extensions.containsItem
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.getList
+import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.removeItem
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitImages
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitPricing
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitShipping
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageChooser
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImages
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
+import java.util.Collections
 import java.util.Date
+import java.util.Locale
 
 @OpenClassOnDebug
 class ProductDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val selectedSite: SelectedSite,
+    parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val wooCommerceStore: WooCommerceStore,
-    private val productImagesServiceWrapper: ProductImagesServiceWrapper,
     private val resources: ResourceProvider,
-    private val productCategoriesRepository: ProductCategoriesRepository
+    private val productCategoriesRepository: ProductCategoriesRepository,
+    private val productTagsRepository: ProductTagsRepository,
+    private val mediaFilesRepository: MediaFilesRepository,
+    private val prefs: AppPrefs
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
+
+    private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
 
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    final val parameters: Parameters by lazy {
-        val params = savedState.get<Parameters>(KEY_PRODUCT_PARAMETERS) ?: loadParameters()
-        savedState[KEY_PRODUCT_PARAMETERS] = params
-        params
+    private val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
-    private var skuVerificationJob: Job? = null
-
     // view state for the product detail screen
-    final val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
+    val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
         if (old?.productDraft != new.productDraft) {
-            updateCards()
+            new.productDraft?.let {
+                updateCards(it)
+            }
         }
     }
     private var viewState by productDetailViewStateData
 
-    // view state for the product inventory screen
-    final val productInventoryViewStateData = LiveDataDelegate(savedState, ProductInventoryViewState())
-    private var productInventoryViewState by productInventoryViewStateData
-
-    // view state for the product pricing screen
-    final val productPricingViewStateData = LiveDataDelegate(savedState, ProductPricingViewState())
-    private var productPricingViewState by productPricingViewStateData
-
-    // view state for the product images screen
-    final val productImagesViewStateData = LiveDataDelegate(savedState, ProductImagesViewState())
-    private var productImagesViewState by productImagesViewStateData
-
     // view state for the product categories screen
-    final val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
+    val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
+
+    // view state for the product tags screen
+    final val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
+    private var productTagsViewState by productTagsViewStateData
+
+    // view state for the product downloads screen
+    final val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
+    private var productDownloadsViewState by productDownloadsViewStateData
 
     private val _productCategories = MutableLiveData<List<ProductCategory>>()
     val productCategories: LiveData<List<ProductCategory>> = _productCategories
+
+    private val _productTags = MutableLiveData<List<ProductTag>>()
+    val productTags: LiveData<List<ProductTag>> = _productTags
+
+    private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
+    val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -140,61 +164,121 @@ class ProductDetailViewModel @AssistedInject constructor(
         ProductDetailCardBuilder(this, resources, currencyFormatter, parameters)
     }
 
+    private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
+    val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
+
+    private val productDetailBottomSheetBuilder by lazy {
+        ProductDetailBottomSheetBuilder(resources)
+    }
+
+    val isProductPublished: Boolean
+        get() = viewState.productDraft?.status == ProductStatus.PUBLISH
+
+    /**
+     * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
+     * */
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.isAddProduct
+
+    /**
+     * Validates if the view model was started for the **add** flow AND there is an already valid product id
+     * value to check.
+     *
+     * [isAddFlowEntryPoint] can be TRUE/FALSE
+     *
+     * [viewState.productDraft.remoteId]
+     * .can be [NULL] - no product draft available yet
+     * .can be [DEFAULT_ADD_NEW_PRODUCT_ID] - navArgs.remoteProductId is set to default
+     * .can be a valid [ID] - navArgs.remoteProductId was passed with a valid ID
+     * */
+    val isAddFlow: Boolean
+        get() = isAddFlowEntryPoint && viewState.productDraft?.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID
+
+    /**
+     * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
+     * trash menu. Always returns false when we're in the add flow.
+     */
+    val isTrashEnabled: Boolean
+        get() = !isAddFlow && navArgs.isTrashEnabled && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
+
     init {
+        start()
+    }
+
+    fun start() {
         EventBus.getDefault().register(this)
+        when (isAddFlowEntryPoint) {
+            true -> startAddNewProduct()
+            else -> loadRemoteProduct(navArgs.remoteProductId)
+        }
+    }
+
+    private fun startAddNewProduct() {
+        val preferredSavedType = prefs.getSelectedProductType()
+        val defaultProductType = ProductType.fromString(preferredSavedType)
+        val defaultProduct = ProductHelper.getDefaultNewProduct(productType = defaultProductType)
+        viewState = viewState.copy(productDraft = ProductHelper.getDefaultNewProduct(productType = defaultProductType))
+        updateProductState(defaultProduct)
     }
 
     fun getProduct() = viewState
 
-    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: 0L
-
-    fun getTaxClassBySlug(slug: String): TaxClass? {
-        return productPricingViewState.taxClassList?.filter { it.slug == slug }?.getOrNull(0)
-    }
-
-    fun start(remoteProductId: Long) {
-        loadProduct(remoteProductId)
-    }
-
-    fun initialisePricing() {
-        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-        productPricingViewState = productPricingViewState.copy(
-                currency = parameters.currencyCode,
-                decimals = decimals,
-                taxClassList = productRepository.getTaxClassesForSite(),
-                regularPrice = viewState.storedProduct?.regularPrice,
-                salePrice = viewState.storedProduct?.salePrice
-        )
-    }
+    fun getRemoteProductId() = viewState.productDraft?.remoteId ?: DEFAULT_ADD_NEW_PRODUCT_ID
 
     /**
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ShareProduct(it.permalink, it.name))
         }
     }
 
     /**
+     * Called when the Trash menu item is clicked in Product detail screen
+     */
+    fun onTrashButtonClicked() {
+        if (checkConnection() && !viewState.isConfirmingTrash) {
+            triggerEvent(
+                ShowDialog(
+                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(isConfirmingTrash = false)
+                        viewState.productDraft?.let { product ->
+                            triggerEvent(ExitWithResult(product.remoteId))
+                        }
+                    },
+                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        viewState = viewState.copy(isConfirmingTrash = false)
+                    },
+                    messageId = string.product_confirm_trash,
+                    positiveButtonId = string.product_trash_yes,
+                    negativeButtonId = string.cancel
+                )
+            )
+        }
+    }
+
+    /**
      * Called when an existing image is selected in Product detail screen
      */
-    fun onImageGalleryClicked(image: Product.Image) {
+    fun onImageClicked(image: Product.Image) {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImages(it, image))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
      * Called when the add image icon is clicked in Product detail screen
      */
-    fun onAddImageClicked() {
+    fun onAddImageButtonClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
-            triggerEvent(ViewProductImageChooser(it.remoteId))
+            triggerEvent(ViewProductImageGallery(it.remoteId, it.images, true))
         }
+        updateProductBeforeEnteringFragment()
     }
 
     /**
@@ -204,31 +288,12 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: Stat? = null) {
         stat?.let { AnalyticsTracker.track(it) }
         triggerEvent(target)
-    }
-
-    /**
-     * Called when the the Remove end date link is clicked
-     */
-    fun onRemoveEndDateClicked() {
-        productPricingViewState = productPricingViewState.copy(saleEndDate = null)
-        updateProductDraft(saleEndDate = Optional(null))
-    }
-
-    fun hasInventoryChanges() = viewState.storedProduct?.hasInventoryChanges(viewState.productDraft) ?: false
-
-    fun hasPricingChanges() = viewState.storedProduct?.hasPricingChanges(viewState.productDraft) ?: false
-
-    fun hasShippingChanges() = viewState.storedProduct?.hasShippingChanges(viewState.productDraft) ?: false
-
-    fun hasImageChanges(): Boolean {
-        return if (ProductImagesService.isUploadingForProduct(getRemoteProductId())) {
-            true
-        } else {
-            viewState.storedProduct?.hasImageChanges(viewState.productDraft) ?: false
-        }
+        updateProductBeforeEnteringFragment()
     }
 
     fun hasCategoryChanges() = viewState.storedProduct?.hasCategoryChanges(viewState.productDraft) ?: false
+
+    fun hasTagChanges() = viewState.storedProduct?.hasTagChanges(viewState.productDraft) ?: false
 
     fun hasSettingsChanges(): Boolean {
         return if (viewState.storedProduct?.hasSettingsChanges(viewState.productDraft) == true) {
@@ -238,11 +303,123 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun onProductDownloadClicked(file: ProductFile) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                true,
+                file
+            )
+        )
+    }
+
+    fun updateDownloadableFileInDraft(updatedFile: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads.map { file ->
+                if (file.id == updatedFile.id) updatedFile else file
+            }
+            updateProductDraft(
+                downloads = updatedDownloads
+            )
+        }
+    }
+
+    fun addDownloadableFileToDraft(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads + file
+            updateProductDraft(
+                downloads = updatedDownloads,
+                // Make sure to mark the file as downloadable
+                isDownloadable = true
+            )
+        }
+    }
+
+    fun swapDownloadableFiles(from: Int, to: Int) {
+        viewState.productDraft?.let {
+            val mutableDownloadsList = it.downloads.toMutableList()
+            Collections.swap(mutableDownloadsList, from, to)
+            updateProductDraft(downloads = mutableDownloadsList)
+        }
+    }
+
+    fun deleteDownloadableFile(file: ProductFile) {
+        viewState.productDraft?.let {
+            val updatedDownloads = it.downloads - file
+            updateProductDraft(downloads = updatedDownloads)
+            // If the downloads list is empty now, go directly to the product details screen
+            if (updatedDownloads.isEmpty()) triggerEvent(ExitProductDownloads(shouldShowDiscardDialog = false))
+        }
+    }
+
+    fun onDownloadExpiryChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadExpiry = value
+            )
+        }
+    }
+
+    fun onDownloadLimitChanged(value: Int) {
+        viewState.productDraft?.let {
+            updateProductDraft(
+                downloadLimit = value
+            )
+        }
+    }
+
+    fun onDownloadsSettingsClicked() {
+        discardEditChanges()
+        triggerEvent(ViewProductDownloadsSettings)
+    }
+
+    fun onAddDownloadableFileClicked() {
+        triggerEvent(AddProductDownloadableFile)
+    }
+
+    fun uploadDownloadableFile(uri: Uri) {
+        launch {
+            viewState = viewState.copy(isUploadingDownloadableFile = true)
+            productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
+            try {
+                val url = mediaFilesRepository.uploadFile(uri)
+                showAddProductDownload(url)
+            } catch (e: Exception) {
+                triggerEvent(ShowSnackbar(string.product_downloadable_files_upload_failed))
+            } finally {
+                viewState = viewState.copy(isUploadingDownloadableFile = false)
+                productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+            }
+        }
+    }
+
+    fun showAddProductDownload(url: String) {
+        triggerEvent(
+            ViewProductDownloadDetails(
+                isEditing = false,
+                file = ProductFile(id = null, url = url, name = "")
+            )
+        )
+    }
+
     fun hasExternalLinkChanges() = viewState.storedProduct?.hasExternalLinkChanges(viewState.productDraft) ?: false
+
+    fun hasLinkedProductChanges() = viewState.storedProduct?.hasLinkedProductChanges(viewState.productDraft) ?: false
+
+    fun hasDownloadsChanges(): Boolean {
+        return viewState.storedProduct?.hasDownloadChanges(viewState.productDraft) ?: false
+    }
+
+    fun hasDownloadsSettingsChanges(): Boolean {
+        return viewState.storedProduct?.let {
+            it.downloadLimit != viewState.productDraft?.downloadLimit ||
+                it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
+                it.isDownloadable != viewState.productDraft?.isDownloadable
+        } ?: false
+    }
 
     fun hasChanges(): Boolean {
         return viewState.storedProduct?.let { product ->
-            viewState.productDraft?.isSameProduct(product) == false
+            viewState.productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
         } ?: false
     }
 
@@ -253,31 +430,20 @@ class ProductDetailViewModel @AssistedInject constructor(
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
-            is ExitInventory -> {
-                eventName = Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasInventoryChanges()
-            }
-            is ExitPricing -> {
-                eventName = Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasPricingChanges()
-            }
-            is ExitShipping -> {
-                eventName = Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasShippingChanges()
-            }
-            is ExitImages -> {
-                eventName = Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED
-                hasChanges = hasImageChanges()
-            }
             is ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
             is ExitExternalLink -> {
+                eventName = Stat.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
             is ExitProductCategories -> {
                 eventName = Stat.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
+            }
+            is ExitProductTags -> {
+                eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
+                hasChanges = hasTagChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -285,14 +451,56 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the UPDATE menu button is clicked in the product detail screen.
-     * Displays a progress dialog and updates the product
+     * Called when the UPDATE/PUBLISH menu button is clicked in the product detail screen.
+     * Displays a progress dialog and updates/publishes the product
      */
     fun onUpdateButtonClicked() {
+        when (isAddFlow) {
+            true -> startPublishProduct()
+            else -> startUpdateProduct()
+        }
+    }
+
+    /**
+     * Called when the "Save as draft" button is clicked in Product detail screen
+     */
+    fun onSaveAsDraftButtonClicked() {
+        updateProductDraft(productStatus = DRAFT)
+        startPublishProduct()
+    }
+
+    private fun startUpdateProduct() {
+        AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(it) }
         }
+    }
+
+    private fun startPublishProduct(exitWhenDone: Boolean = false) {
+        viewState.productDraft?.let {
+            trackPublishing(it)
+
+            viewState = viewState.copy(isProgressDialogShown = true)
+            launch {
+                val isSuccess = addProduct(it)
+                if (isSuccess) {
+                    AnalyticsTracker.track(ADD_PRODUCT_SUCCESS)
+
+                    if (exitWhenDone) {
+                        triggerEvent(ExitProduct)
+                    }
+                } else {
+                    AnalyticsTracker.track(ADD_PRODUCT_FAILED)
+                }
+            }
+        }
+    }
+
+    private fun trackPublishing(it: Product) {
+        val properties = mapOf("product_type" to it.productType.value.toLowerCase(Locale.ROOT))
+        val statId = if (it.status == DRAFT) ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED else ADD_PRODUCT_PUBLISH_TAPPED
+        AnalyticsTracker.track(statId, properties)
     }
 
     /**
@@ -349,44 +557,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onViewProductOnStoreLinkClicked(url: String) {
+    fun onViewProductOnStoreLinkClicked() {
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
-    }
-
-    fun onAffiliateLinkClicked(url: String) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_AFFILIATE_TAPPED)
-        triggerEvent(LaunchUrlInChromeTab(url))
-    }
-
-    /**
-     * Called when the sale start date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onStartDateChanged(newDate: Date) {
-        // update end date to start date only if current end date < start date
-        val saleEndDate = viewState.productDraft?.saleEndDateGmt
-        if (saleEndDate?.before(newDate) == true) {
-            updateProductDraft(saleEndDate = Optional(newDate))
-            productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
+        viewState.productDraft?.permalink?.let { url ->
+            triggerEvent(LaunchUrlInChromeTab(url))
         }
-        updateProductDraft(saleStartDate = newDate)
-        productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-    }
-
-    /**
-     * Called when the sale end date is selected from the date picker in the pricing screen.
-     * Keeps track of the start and end date value when scheduling a sale.
-     */
-    fun onEndDateChanged(newDate: Date?) {
-        // update start date to end date only if current start date > end date
-        val saleStartDate = viewState.productDraft?.saleStartDateGmt
-        if (newDate != null && saleStartDate?.after(newDate) == true) {
-            updateProductDraft(saleStartDate = newDate)
-            productPricingViewState = productPricingViewState.copy(saleStartDate = newDate)
-        }
-        updateProductDraft(saleEndDate = Optional(newDate))
-        productPricingViewState = productPricingViewState.copy(saleEndDate = newDate)
     }
 
     /**
@@ -406,125 +581,71 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
             viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
         } ?: false
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated || isUploadingImages
-            is ExitImages -> isUploadingImages || hasImageChanges()
+            is ExitProductDetail -> isProductDetailUpdated
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
-            triggerEvent(ShowDiscardDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        // discard changes made to the current screen
-                        discardEditChanges(event)
+            val positiveAction = DialogInterface.OnClickListener { _, _ ->
+                // discard changes made to the current screen
+                discardEditChanges()
 
-                        // If user in Product detail screen, exit product detail,
-                        // otherwise, redirect to Product Detail screen
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
-                    }
+                // if the user is in Product detail screen, exit product detail,
+                // otherwise, redirect to Product Detail screen
+                if (event is ExitProductDetail) {
+                    triggerEvent(ExitProduct)
+                } else {
+                    triggerEvent(event)
+                }
+            }
+
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
+            // button in the discard dialog
+            @StringRes val neutralBtnId: Int?
+            val neutralAction = if (isAddFlow && event is ExitProductDetail) {
+                neutralBtnId = string.product_detail_save_as_draft
+                DialogInterface.OnClickListener { _, _ ->
+                    updateProductDraft(productStatus = DRAFT)
+                    startPublishProduct(exitWhenDone = true)
+                }
+            } else {
+                neutralBtnId = null
+                null
+            }
+
+            triggerEvent(ShowDialog(
+                    positiveBtnAction = positiveAction,
+                    neutralBtnAction = neutralAction
             ))
             return false
-        } else if ((event is ExitProductDetail || event is ExitImages) && isUploadingImages) {
+        } else if (event is ExitProductDetail && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
             // to discard the uploading images
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
                     messageId = string.discard_images_message,
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                         ProductImagesService.cancel()
-                        if (event is ExitProductDetail) {
-                            triggerEvent(ExitProduct)
-                        } else {
-                            triggerEvent(event)
-                        }
+                        triggerEvent(event)
                     }
             ))
             return false
         } else {
+            if (event is ExitProductTags) {
+                clearProductTagFilter()
+            }
             return true
         }
     }
 
-    /**
-     * Called when user modifies the SKU field. Currently checks if the entered sku is available
-     * in the local db. Only if it is not available, the API verification call is initiated.
-     */
-    fun onSkuChanged(sku: String) {
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2 && sku != viewState.storedProduct?.sku) {
-            // reset the error message when the user starts typing again
-            productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = 0)
-
-            // cancel any existing verification search, then start a new one after a brief delay
-            // so we don't actually perform the fetch until the user stops typing
-            skuVerificationJob?.cancel()
-            skuVerificationJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
-
-                // check if sku is available from local cache
-                if (productRepository.geProductExistsBySku(sku)) {
-                    productInventoryViewState = productInventoryViewState.copy(
-                            skuErrorMessage = string.product_inventory_update_sku_error
-                    )
-                } else {
-                    verifyProductExistsBySkuRemotely(sku)
-                }
-            }
-        }
-    }
-
-    /**
-     * Called when user modifies the Stock quantity field in the inventory screen.
-     *
-     * Currently checks if the entered stock quantity [text] is empty or contains '-' symbol.
-     * Symbols are not supported when updating the stock quantity and displays an error
-     * message to the UI if there are any unsupported symbols found in the [text]
-     */
-    fun onStockQuantityChanged(text: String) {
-        val inputText = if (text.isEmpty()) "0" else text
-        productInventoryViewState = if (inputText.isNumeric()) {
-            updateProductDraft(stockQuantity = inputText)
-            productInventoryViewState.copy(stockQuantityErrorMessage = 0)
-        } else {
-            productInventoryViewState.copy(
-                    stockQuantityErrorMessage = string.product_inventory_update_stock_quantity_error
-            )
-        }
-    }
-
-    fun onRegularPriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(regularPrice = inputValue)
-        val salePrice = productPricingViewState.salePrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (salePrice > inputValue) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            updateProductDraft(regularPrice = inputValue)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
-    fun onSalePriceEntered(inputValue: BigDecimal) {
-        productPricingViewState = productPricingViewState.copy(salePrice = inputValue)
-        val regularPrice = productPricingViewState.regularPrice ?: BigDecimal.ZERO
-
-        productPricingViewState = if (inputValue > regularPrice) {
-            productPricingViewState.copy(salePriceErrorMessage = string.product_pricing_update_sale_price_error)
-        } else {
-            updateProductDraft(salePrice = inputValue, isOnSale = true)
-            productPricingViewState.copy(salePriceErrorMessage = 0)
-        }
-    }
-
     fun onProductTitleChanged(title: String) {
-        updateProductDraft(title = title)
+        if (title != viewState.productDraft?.name?.fastStripHtml()) {
+            updateProductDraft(title = title)
+        }
     }
 
     /**
@@ -547,11 +668,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
-        stockQuantity: String? = null,
+        stockQuantity: Int? = null,
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
         isOnSale: Boolean? = null,
+        isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
         saleEndDate: Optional<Date>? = null,
@@ -572,7 +694,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         externalUrl: String? = null,
         buttonText: String? = null,
         menuOrder: Int? = null,
-        categories: List<ProductCategory>? = null
+        categories: List<ProductCategory>? = null,
+        tags: List<ProductTag>? = null,
+        type: String? = null,
+        groupedProductIds: List<Long>? = null,
+        upsellProductIds: List<Long>? = null,
+        crossSellProductIds: List<Long>? = null,
+        downloads: List<ProductFile>? = null,
+        downloadLimit: Int? = null,
+        downloadExpiry: Int? = null,
+        isDownloadable: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -582,15 +713,15 @@ class ProductDetailViewModel @AssistedInject constructor(
                     name = title ?: product.name,
                     sku = sku ?: product.sku,
                     slug = slug ?: product.slug,
-                    manageStock = manageStock ?: product.manageStock,
+                    isStockManaged = manageStock ?: product.isStockManaged,
                     stockStatus = stockStatus ?: product.stockStatus,
-                    soldIndividually = soldIndividually ?: product.soldIndividually,
+                    isSoldIndividually = soldIndividually ?: product.isSoldIndividually,
                     backorderStatus = backorderStatus ?: product.backorderStatus,
-                    stockQuantity = stockQuantity?.toInt() ?: product.stockQuantity,
+                    stockQuantity = stockQuantity ?: product.stockQuantity,
                     images = images ?: product.images,
                     regularPrice = regularPrice ?: product.regularPrice,
                     salePrice = salePrice ?: product.salePrice,
-                    isOnSale = isOnSale ?: product.isOnSale,
+                    isVirtual = isVirtual ?: product.isVirtual,
                     taxStatus = taxStatus ?: product.taxStatus,
                     taxClass = taxClass ?: product.taxClass,
                     length = length ?: product.length,
@@ -609,6 +740,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                     buttonText = buttonText ?: product.buttonText,
                     menuOrder = menuOrder ?: product.menuOrder,
                     categories = categories ?: product.categories,
+                    tags = tags ?: product.tags,
+                    type = type ?: product.type,
+                    groupedProductIds = groupedProductIds ?: product.groupedProductIds,
+                    upsellProductIds = upsellProductIds ?: product.upsellProductIds,
+                    crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
                     saleEndDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
@@ -616,7 +752,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                     saleStartDateGmt = if (isSaleScheduled == true ||
                             (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
                         saleStartDate ?: product.saleStartDateGmt
-                    } else viewState.storedProduct?.saleStartDateGmt
+                    } else viewState.storedProduct?.saleStartDateGmt,
+                    downloads = downloads ?: product.downloads,
+                    downloadLimit = downloadLimit ?: product.downloadLimit,
+                    downloadExpiry = downloadExpiry ?: product.downloadExpiry,
+                    isDownloadable = isDownloadable ?: product.isDownloadable
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -628,37 +768,54 @@ class ProductDetailViewModel @AssistedInject constructor(
         super.onCleared()
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
+        productTagsRepository.onCleanup()
+        mediaFilesRepository.onCleanup()
         EventBus.getDefault().unregister(this)
     }
 
-    private fun updateCards() {
+    private fun updateCards(product: Product) {
+        _productDetailCards.value = cardBuilder.buildPropertyCards(product, viewState.storedProduct?.sku ?: "")
+        fetchBottomSheetList()
+    }
+
+    fun fetchBottomSheetList() {
         viewState.productDraft?.let {
             launch(dispatchers.computation) {
-                val cards = cardBuilder.buildPropertyCards(it)
+                val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
-                    _productDetailCards.value = cards
+                    _productDetailBottomSheetList.value = detailList
+                    viewState = viewState.copy(showBottomSheetButton = detailList.isNotEmpty())
                 }
             }
         }
+    }
+
+    fun onProductDetailBottomSheetItemSelected(uiItem: ProductDetailBottomSheetUiItem) {
+        onEditProductCardClicked(uiItem.clickEvent, uiItem.stat)
     }
 
     /**
      * Called when discard is clicked on any of the product screens to restore the product to
      * the state it was in when the screen was first entered
      */
-    private fun discardEditChanges(event: ProductExitEvent) {
+    private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
-
-        if (event is ExitImages) {
-            ProductImagesService.cancel()
-        }
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
         updateProductEditAction()
     }
 
-    private fun loadProduct(remoteProductId: Long) {
+    fun checkConnection(): Boolean {
+        return if (networkStatus.isConnected()) {
+            true
+        } else {
+            triggerEvent(ShowSnackbar(R.string.offline_error))
+            false
+        }
+    }
+
+    private fun loadRemoteProduct(remoteProductId: Long) {
         // Pre-load current site's tax class list for use in the product pricing screen
         launch(dispatchers.main) {
             productRepository.loadTaxClassesForSite()
@@ -671,8 +828,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 val shouldFetch = remoteProductId != getRemoteProductId()
                 updateProductState(productInDb)
 
-                val cachedVariantCount = productRepository.getCachedVariantCount(remoteProductId)
-                if (shouldFetch || cachedVariantCount != productInDb.numVariations) {
+                val cachedVariationCount = productRepository.getCachedVariationCount(remoteProductId)
+                if (shouldFetch || cachedVariationCount != productInDb.numVariations) {
                     fetchProduct(remoteProductId)
                     fetchProductPassword(remoteProductId)
                 }
@@ -734,40 +891,30 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         viewState = if (viewState.draftPassword == null) {
             viewState.copy(
-                    storedPassword = password,
-                    draftPassword = password
+                storedPassword = password,
+                draftPassword = password
             )
         } else {
             viewState.copy(
-                    storedPassword = password
+                storedPassword = password
             )
         }
     }
 
-    /**
-     * Loads the product dependencies for a site such as dimensions, currency or timezone
-     */
-    private fun loadParameters(): Parameters {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get())?.let { settings ->
-            return@let Pair(settings.weightUnit, settings.dimensionUnit)
-        } ?: Pair(null, null)
-
-        return Parameters(currencyCode, weightUnit, dimensionUnit, gmtOffset)
-    }
-
     private suspend fun fetchProduct(remoteProductId: Long) {
-        if (networkStatus.isConnected()) {
+        if (checkConnection()) {
             val fetchedProduct = productRepository.fetchProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_invalid_id_error))
+                } else {
+                    triggerEvent(ShowSnackbar(string.product_detail_fetch_product_error))
+                }
                 triggerEvent(Exit)
             }
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
@@ -782,21 +929,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private fun updateProductEditAction() {
         viewState.productDraft?.let { draft ->
             val isProductUpdated = viewState.storedProduct?.isSameProduct(draft) == false ||
-                    viewState.isPasswordChanged
+                viewState.isPasswordChanged
             viewState = viewState.copy(isProductUpdated = isProductUpdated)
         }
-    }
-
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
-            return
-        }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
-        }
-        productImagesServiceWrapper.uploadProductMedia(remoteProductId, localUriList)
     }
 
     /**
@@ -804,13 +939,11 @@ class ProductDetailViewModel @AssistedInject constructor(
      * uploading images
      */
     private fun checkImageUploads(remoteProductId: Long) {
-        if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
-            val uris = ProductImagesService.getUploadingImageUrisForProduct(remoteProductId)
-            viewState = viewState.copy(uploadingImageUris = uris)
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = true)
-        } else if (productImagesViewState.isUploadingImages) {
-            viewState = viewState.copy(uploadingImageUris = emptyList())
-            productImagesViewState = productImagesViewState.copy(isUploadingImages = false)
+        viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
+            val uris = ProductImagesService.getUploadingImageUris(remoteProductId)
+            viewState.copy(uploadingImageUris = uris)
+        } else {
+            viewState.copy(uploadingImageUris = emptyList())
         }
     }
 
@@ -819,7 +952,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Otherwise, an offline snackbar is displayed.
      */
     private suspend fun updateProduct(product: Product) {
-        if (networkStatus.isConnected()) {
+        if (checkConnection()) {
             if (productRepository.updateProduct(product)) {
                 if (viewState.isPasswordChanged) {
                     val password = viewState.draftPassword
@@ -837,32 +970,66 @@ class ProductDetailViewModel @AssistedInject constructor(
                     productBeforeEnteringFragment = getProduct().storedProduct,
                     isProductUpdated = false
                 )
-                loadProduct(product.remoteId)
+                loadRemoteProduct(product.remoteId)
             } else {
                 triggerEvent(ShowSnackbar(string.product_detail_update_product_error))
             }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
     }
 
-    private suspend fun verifyProductExistsBySkuRemotely(sku: String) {
-        // if the sku is not available display error
-        val isSkuAvailable = productRepository.verifySkuAvailability(sku)
-        val skuErrorMessage = if (isSkuAvailable == false) {
-            string.product_inventory_update_sku_error
-        } else 0
-        productInventoryViewState = productInventoryViewState.copy(skuErrorMessage = skuErrorMessage)
+    /**
+     * Returns true if the product draft has a status of DRAFT
+     */
+    fun isDraftProduct() = viewState.productDraft?.status?.let { it == DRAFT } ?: false
+
+    /**
+     * Add a new product to the backend only if network is connected.
+     * Otherwise, an offline snackbar is displayed. Returns true only
+     * if product successfully added
+     */
+    private suspend fun addProduct(product: Product): Boolean {
+        var isSuccess = false
+        if (checkConnection()) {
+            @StringRes val successId = if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_success
+            } else {
+                string.product_detail_publish_product_success
+            }
+
+            @StringRes val failId = if (isDraftProduct()) {
+                string.product_detail_publish_product_draft_error
+            } else {
+                string.product_detail_publish_product_error
+            }
+
+            val result = productRepository.addProduct(product)
+            isSuccess = result.first
+            if (isSuccess) {
+                triggerEvent(ShowSnackbar(successId))
+                viewState = viewState.copy(
+                    productDraft = null,
+                    productBeforeEnteringFragment = getProduct().storedProduct,
+                    isProductUpdated = false
+                )
+                val newProductRemoteId = result.second
+                loadRemoteProduct(newProductRemoteId)
+                triggerEvent(RefreshMenu)
+            } else {
+                triggerEvent(ShowSnackbar(failId))
+            }
+        }
+        viewState = viewState.copy(isProgressDialogShown = false)
+        return isSuccess
     }
 
     /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
     fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-            productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-                    ?: viewState.productDraft?.shippingClass ?: ""
+        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
+            ?: viewState.productDraft?.shippingClass ?: ""
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
@@ -875,17 +1042,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
-        val weightWithUnits = updatedDraft.getWeightWithUnits(parameters.weightUnit)
-        val sizeWithUnits = updatedDraft.getSizeWithUnits(parameters.dimensionUnit)
-
         viewState = viewState.copy(
                 productDraft = updatedDraft,
-                storedProduct = productToUpdateFrom,
-                weightWithUnits = weightWithUnits,
-                sizeWithUnits = sizeWithUnits,
-                salePriceWithCurrency = formatCurrency(updatedDraft.salePrice, parameters.currencyCode),
-                regularPriceWithCurrency = formatCurrency(updatedDraft.regularPrice, parameters.currencyCode),
-                gmtOffset = parameters.gmtOffset
+                storedProduct = productToUpdateFrom
         )
 
         if (viewState.productBeforeEnteringFragment == null) {
@@ -912,19 +1071,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun formatCurrency(amount: BigDecimal?, currencyCode: String?): String {
-        return currencyCode?.let {
-            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
-        } ?: amount.toString()
-    }
-
     /**
      * The list of product images has started uploading
      */
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateStartedEvent) {
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(event.id)
     }
 
     /**
@@ -933,13 +1086,16 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
+        var productId = event.id
         if (event.isCancelled) {
             viewState = viewState.copy(uploadingImageUris = emptyList())
         } else {
-            loadProduct(event.remoteProductId)
+            when (isAddFlow) {
+                true -> productId = DEFAULT_ADD_NEW_PRODUCT_ID
+                else -> loadRemoteProduct(event.id)
+            }
         }
-
-        checkImageUploads(event.remoteProductId)
+        checkImageUploads(productId)
     }
 
     /**
@@ -982,20 +1138,22 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Removes a single product image from the product draft
-     */
-    fun removeProductImageFromDraft(remoteMediaId: Long) {
-        viewState.productDraft?.let { product ->
-            val imageList = product.images.filter { it.id != remoteMediaId }
-            updateProductDraft(images = imageList)
-        }
-    }
-
     fun fetchProductCategories() {
         if (_productCategories.value == null) {
             loadProductCategories()
         }
+    }
+
+    fun onAddCategoryButtonClicked() {
+        AnalyticsTracker.track(Stat.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
+        triggerEvent(AddProductCategory)
+    }
+
+    fun onProductCategoryAdded(category: ProductCategory) {
+        val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
+        selectedCategories.add(category)
+        updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
     }
 
     /**
@@ -1071,7 +1229,8 @@ class ProductDetailViewModel @AssistedInject constructor(
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
                 canLoadMore = productCategoriesRepository.canLoadMoreProductCategories,
-                isEmptyViewVisible = _productCategories.value?.isEmpty() == true)
+                isEmptyViewVisible = _productCategories.value?.isEmpty() == true
+            )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
         }
@@ -1102,7 +1261,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         val selectedCategories = product.categories
 
         // Sort all incoming categories by their parent
-        val sortedList = productCategories.sortCategories()
+        val sortedList = productCategories.sortCategories(resources)
 
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->
@@ -1116,6 +1275,222 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
+    fun onProductTagDoneMenuActionClicked() {
+        val tags = _addedProductTags.getList()
+        // check if there are tags entered that do not exist on the site. If so,
+        // call the API to add the tags to the site first
+        if (tags.isNotEmpty()) {
+            productTagsViewState = productTagsViewState.copy(isProgressDialogShown = true)
+            launch {
+                val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
+                // if there are some tags that could not be added, display an error message
+                if (addedTags.size < tags.size) {
+                    triggerEvent(ShowSnackbar(string.product_add_tag_error))
+                }
+
+                // add the newly added tags to the product
+                _addedProductTags.clearList()
+                updateProductDraft(tags = addedTags.addTags(viewState.productDraft))
+
+                // redirect to the product detail screen
+                productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
+                onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            }
+        } else {
+            // There are no newly added tags so redirect to the product detail screen
+            onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+        }
+    }
+
+    /**
+     * Method called when a tag is entered
+     */
+    fun onProductTagAdded(tagName: String) {
+        // verify if the entered tagName exists for the site
+        // It so, the tag should be added to the product directly
+        productTagsRepository.getProductTagByName(tagName)?.let {
+            onProductTagSelected(it)
+        } ?: run {
+            // Since the tag does not exist for the site, add the tag to
+            // a list of newly added tags
+            _addedProductTags.addNewItem(ProductTag(name = tagName))
+            updateTagsMenuAction()
+            loadProductTags()
+        }
+    }
+
+    /**
+     * Method called when a tag is selected from the list of product tags
+     */
+    fun onProductTagSelected(tag: ProductTag) {
+        updateProductDraft(tags = tag.addTag(viewState.productDraft))
+        updateTagsMenuAction()
+        loadProductTags()
+    }
+
+    /**
+     * Method called when a tag is removed from the product
+     */
+    fun onProductTagSelectionRemoved(tag: ProductTag) {
+        // check if the tag is newly added. If so, remove it from the newly added tags
+        if (_addedProductTags.containsItem(tag)) {
+            _addedProductTags.removeItem(tag)
+        } else {
+            updateProductDraft(tags = tag.removeTag(viewState.productDraft))
+        }
+        updateTagsMenuAction()
+        loadProductTags()
+    }
+
+    private fun updateTagsMenuAction() {
+        productTagsViewState = productTagsViewState.copy(
+            shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
+                !_addedProductTags.isEmpty()
+        )
+    }
+
+    /**
+     * Sets the product tag list to the passed list with the current filter applied and already added tags removed
+     * Returns a list of product tags with the passed filter applied
+     */
+    private fun filterProductTagList(productTags: List<ProductTag>) {
+        val addedTags = ArrayList<ProductTag>().also {
+            it.addAll(_addedProductTags.getList())
+            viewState.productDraft?.tags?.let { draftTags ->
+                it.addAll(draftTags)
+            }
+        }
+
+        _productTags.value = if (productTagsViewState.currentFilter.isEmpty()) {
+            productTags.filter { !addedTags.contains(it) }
+        } else {
+            productTags.filter {
+                it.name.contains(
+                    productTagsViewState.currentFilter,
+                    ignoreCase = true
+                ) && !addedTags.contains(it)
+            }
+        }
+    }
+
+    /**
+     * Called when user types into product tag screen so we can provide live filtering
+     */
+    fun setProductTagsFilter(filter: String) {
+        productTagsViewState = productTagsViewState.copy(currentFilter = filter)
+        val productTags = productTagsRepository.getProductTags()
+        filterProductTagList(productTags)
+
+        // fetch from the backend when a filter exists in case not all tags have been fetched yet
+        if (filter.isNotEmpty()) {
+            launch {
+                fetchProductTags(searchQuery = filter)
+            }
+        }
+    }
+
+    /**
+     * Called when user exits the product tag fragment to clear the stored filter (otherwise it
+     * will be retained when the user returns to the tag fragment)
+     */
+    fun clearProductTagFilter() {
+        productTagsViewState = productTagsViewState.copy(currentFilter = "")
+    }
+
+    /**
+     * Refreshes the list of tags by calling the [loadProductTags] method
+     * which eventually checks, if there is anything new to fetch from the server
+     *
+     */
+    fun refreshProductTags() {
+        productTagsViewState = productTagsViewState.copy(isRefreshing = true)
+        loadProductTags()
+    }
+
+    /**
+     * Loads the list of tags from the database or from the server.
+     * This depends on whether tags are stored in the database, and if any new ones are
+     * required to be fetched.
+     *
+     * @param loadMore Whether to load more tags after the ones loaded
+     */
+    fun loadProductTags(loadMore: Boolean = false) {
+        if (productTagsViewState.isLoading == true) {
+            WooLog.d(WooLog.T.PRODUCTS, "already loading product tags")
+            return
+        }
+
+        if (loadMore && !productTagsRepository.canLoadMoreProductTags) {
+            WooLog.d(WooLog.T.PRODUCTS, "can't load more product tags")
+            return
+        }
+
+        launch {
+            val showSkeleton: Boolean
+            if (loadMore) {
+                showSkeleton = false
+            } else {
+                // if this is the initial load, first get the tags from the db and show them immediately
+                val productTagsInDb = productTagsRepository.getProductTags()
+                if (productTagsInDb.isEmpty()) {
+                    showSkeleton = true
+                } else {
+                    filterProductTagList(productTagsInDb)
+                    showSkeleton = false
+                }
+            }
+            productTagsViewState = productTagsViewState.copy(
+                isLoading = true,
+                isLoadingMore = loadMore,
+                isSkeletonShown = showSkeleton,
+                isEmptyViewVisible = false
+            )
+            fetchProductTags(loadMore = loadMore, searchQuery = productTagsViewState.currentFilter)
+        }
+    }
+
+    /**
+     * Triggered when the user scrolls past the point of loaded tags
+     * already displayed on the screen or on record.
+     */
+    fun onLoadMoreTagsRequested() {
+        loadProductTags(loadMore = true)
+    }
+
+    /**
+     * This method is used to fetch the tags from the backend. It does not
+     * check the database.
+     *
+     * @param loadMore Whether this is another page or the first one
+     * @param searchQuery optional search query to fetch only matching tags
+     */
+    private suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null) {
+        if (networkStatus.isConnected()) {
+            val products = productTagsRepository.fetchProductTags(
+                loadMore = loadMore,
+                searchQuery = searchQuery
+            )
+            filterProductTagList(products)
+
+            productTagsViewState = productTagsViewState.copy(
+                isLoading = true,
+                canLoadMore = productTagsRepository.canLoadMoreProductTags,
+                isEmptyViewVisible = products.isEmpty() &&
+                    _addedProductTags.isEmpty() &&
+                    searchQuery.isNullOrEmpty()
+            )
+        } else {
+            triggerEvent(ShowSnackbar(string.offline_error))
+        }
+
+        productTagsViewState = productTagsViewState.copy(
+            isSkeletonShown = false,
+            isLoading = false,
+            isLoadingMore = false,
+            isRefreshing = false
+        )
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -1125,24 +1500,18 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
         class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitInventory(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitPricing(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitShipping(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitImages(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitLinkedProducts(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
+            ProductExitEvent(shouldShowDiscardDialog)
     }
 
     data class LaunchUrlInChromeTab(val url: String) : Event()
-
-    @Parcelize
-    data class Parameters(
-        val currencyCode: String?,
-        val weightUnit: String?,
-        val dimensionUnit: String?,
-        val gmtOffset: Float
-    ) : Parcelable
+    object RefreshMenu : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
@@ -1172,45 +1541,16 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
-        val weightWithUnits: String? = null,
-        val sizeWithUnits: String? = null,
-        val priceWithCurrency: String? = null,
-        val salePriceWithCurrency: String? = null,
-        val regularPriceWithCurrency: String? = null,
         val isProductUpdated: Boolean? = null,
-        val gmtOffset: Float = 0f,
         val storedPassword: String? = null,
-        val draftPassword: String? = null
+        val draftPassword: String? = null,
+        val showBottomSheetButton: Boolean? = null,
+        val isConfirmingTrash: Boolean = false,
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
     }
-
-    @Parcelize
-    data class ProductInventoryViewState(
-        val skuErrorMessage: Int? = null,
-        val stockQuantityErrorMessage: Int? = null
-    ) : Parcelable
-
-    @Parcelize
-    data class ProductPricingViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val taxClassList: List<TaxClass>? = null,
-        val saleStartDate: Date? = null,
-        val saleEndDate: Date? = null,
-        val salePriceErrorMessage: Int? = null,
-        val regularPrice: BigDecimal? = null,
-        val salePrice: BigDecimal? = null
-    ) : Parcelable {
-        val isRemoveMaxDateButtonVisible: Boolean
-            get() = saleEndDate != null
-    }
-
-    @Parcelize
-    data class ProductImagesViewState(
-        val isUploadingImages: Boolean = false
-    ) : Parcelable
 
     @Parcelize
     data class ProductCategoriesViewState(
@@ -1220,6 +1560,27 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
+    ) : Parcelable {
+        val isAddCategoryButtonVisible: Boolean
+            get() = isSkeletonShown == false
+    }
+
+    @Parcelize
+    data class ProductTagsViewState(
+        val isSkeletonShown: Boolean? = null,
+        val isLoading: Boolean? = null,
+        val isLoadingMore: Boolean? = null,
+        val canLoadMore: Boolean? = null,
+        val isRefreshing: Boolean? = null,
+        val isEmptyViewVisible: Boolean? = null,
+        val shouldDisplayDoneMenuButton: Boolean? = null,
+        val isProgressDialogShown: Boolean? = null,
+        val currentFilter: String = ""
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductDownloadsViewState(
+        val isUploadingDownloadableFile: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

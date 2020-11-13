@@ -25,10 +25,16 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.woocommerce.android.viewmodel.TEST_DISPATCHER
+import com.woocommerce.android.viewmodel.TestDispatcher
 import com.woocommerce.android.viewmodel.test
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_ALL_PROCESSED
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -45,17 +51,18 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@UseExperimental(InternalCoroutinesApi::class)
+@InternalCoroutinesApi
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderListRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private val coroutineDispatchers = CoroutineDispatchers(
-            TEST_DISPATCHER,
-            TEST_DISPATCHER,
-            TEST_DISPATCHER
+        TestDispatcher,
+        TestDispatcher,
+        TestDispatcher
     )
     private val savedStateArgs: SavedStateWithArgs = mock()
 
@@ -91,7 +98,9 @@ class OrderListViewModelTest : BaseUnitTest() {
                 networkStatus = networkStatus,
                 dispatcher = dispatcher,
                 selectedSite = selectedSite,
-                fetcher = orderFetcher)
+                fetcher = orderFetcher,
+                resourceProvider = resourceProvider
+        )
     }
 
     /**
@@ -247,7 +256,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There are NO orders in the db for the active store
      */
     @Test
-    fun `Display |No orders yet| empty view when no orders for site for ALL tab`() = test {
+    fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() = test {
         viewModel.isSearching = false
         doReturn(true).whenever(repository).hasCachedOrdersForSite()
 
@@ -261,7 +270,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.ORDER_LIST)
+            assertEquals(emptyView, ORDER_LIST)
         }
     }
 
@@ -279,7 +288,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There are NO orders in the db for the active store
      */
     @Test
-    fun `Display |No orders to process yet| empty view when no orders for site for PROCESSING tab`() = test {
+    fun `Display 'No orders to process yet' empty view when no orders for site for PROCESSING tab`() = test {
         viewModel.isSearching = false
         viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
         doReturn(true).whenever(repository).hasCachedOrdersForSite()
@@ -294,7 +303,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
+            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
         }
     }
 
@@ -311,7 +320,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - There is 1 or more orders in the db for the active store
      */
     @Test
-    fun `Processing Tab displays |All orders processed| empty view if no orders to process`() = test {
+    fun `Processing Tab displays 'All orders processed' empty view if no orders to process`() = test {
         viewModel.isSearching = false
         viewModel.orderStatusFilter = CoreOrderStatus.PROCESSING.value
         doReturn(true).whenever(repository).hasCachedOrdersForSite()
@@ -326,7 +335,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.ORDER_LIST_ALL_PROCESSED)
+            assertEquals(emptyView, ORDER_LIST_ALL_PROCESSED)
         }
     }
 
@@ -356,7 +365,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.NETWORK_ERROR)
+            assertEquals(emptyView, NETWORK_ERROR)
         }
     }
 
@@ -387,7 +396,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.NETWORK_OFFLINE)
+            assertEquals(emptyView, NETWORK_OFFLINE)
         }
     }
 
@@ -415,7 +424,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.SEARCH_RESULTS)
+            assertEquals(emptyView, SEARCH_RESULTS)
         }
     }
 
@@ -441,7 +450,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             // Verify
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
-            assertTrue(emptyView == EmptyViewType.ORDER_LIST_LOADING)
+            assertEquals(emptyView, ORDER_LIST_LOADING)
         }
     }
 

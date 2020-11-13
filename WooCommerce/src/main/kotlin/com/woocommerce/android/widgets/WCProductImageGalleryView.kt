@@ -115,9 +115,22 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
-    fun showProductImages(product: Product, listener: OnGalleryImageClickListener) {
+    fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
         this.listener = listener
-        adapter.showImages(product.images)
+        adapter.showImages(images)
+    }
+
+    fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
+        this.listener = listener
+        adapter.showImages(listOf(images))
+    }
+
+    fun clearImages() {
+        adapter.clearImages()
+    }
+
+    fun clearPlaceholders() {
+        adapter.clearPlaceholders()
     }
 
     /**
@@ -153,6 +166,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
+
+        fun clearImages() {
+            imageList.clear()
+            notifyDataSetChanged()
+        }
 
         fun showImages(images: List<Product.Image>) {
             if (isSameImageList(images)) {

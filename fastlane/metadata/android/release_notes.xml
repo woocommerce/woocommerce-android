@@ -1,102 +1,49 @@
-<ar>
-4.4:
-* <b>جديد</b>: تمت إضافة وظيفة إلى إدارة الصور والمنتجات. يمكنك الانتقال إلى "الإعدادات" ضمن "متجري" لتشغيل ميزات جديدة!
-* <b>تحسينات واجهة المستخدم</b>: تم الرجوع إلى أيقونة تنبيهات ووردبريس لتحسين الرؤية وإصلاح لون النص الموجودة على بطاقات الدعم في الوضع الداكن وإدخال تعديلات طفيفة على شاشات تسجيل الدخول.
-* <b>الإصلاحات</b>: تعرض تفاصيل المنتج حالة المخزون الدقيقة، وتم إغلاق التسرب المحتمل في الذاكرة عند التبديل بين المتاجر.
-</ar>
-<de-DE>
-4.4:
-* <b>Neu</b>: Funktionen zu Bild- und Produktmanagement hinzugefügt. Gehe unter „Mein Shop“ zu „Einstellungen“, um die neuen Funktionen zu aktivieren.
-* <b>Verbesserungen an der Benutzeroberfläche</b>: W-Benachrichtigungssymbol zur besseren Sichtbarkeit wieder hinzugefügt; Textfarbe auf Supporttickets im dunklen Modus korrigiert; kleinere stilistische Verbesserungen an den Anmeldebildschirmen.
-* <b>Behoben</b>: Produktdetails zeigen exakten Lagerstatus an; potenziellen Speicherverlust beim Wechsel zwischen Shops behoben.
-</de-DE>
-<es-ES>
-4.4:
-* <b>Novedad</b>: Hemos añadido una función de gestión de imágenes y de productos. Dirígete a "Ajustes" en "Mi tienda" para activar las nuevas funciones.
-* <b>Mejoras en la interfaz de usuario</b>: * Hemos recuperado el icono de notificación W para ofrecer una mejor visibilidad, hemos corregido el color del texto de las incidencias en modo oscuro y hemos hecho pequeños cambios de estilo en las pantallas de acceso.
-* <b>Correcciones</b>: Los detalles de los productos muestran el estado exacto de las existencias. Hemos detectado una posible fuga de memoria al cambiar de tienda.
-</es-ES>
 <fr-FR>
-4.4 :
-* <b>Nouveau</b> : Ajout de fonctions à la gestion des images et des produits. Accédez aux « Réglages » dans « Ma boutique » pour activer de nouvelles fonctionnalités !
-* <b>Améliorations de l’interface utilisateur</b> : Rétablissement de l’icône de notification W pour une meilleure visibilité, résolution de la couleur de texte sur les tickets de support en mode sombre, légers ajustements du style sur les écrans de connexion.
-* <b>Résolution de bugs</b> : Les détails du produit affichent l’état exact des stocks, colmatage d’une fuite de mémoire potentielle lors du passage entre boutiques.
+5.3 :
+* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
+* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
+* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
+
 </fr-FR>
 <iw-IL>
-4.4:
-* <b>חדש</b>: הוספנו פונקציונליות לניהול של תמונות ומוצרים. ניתן לעבור למקטע 'הגדרות' בלשונית 'החנות שלי' כדי להפעיל את התכונות החדשות!
-* <b>שיפורים בממשק המשתמש</b>: החזרנו את סמל ההודעות W לנראות טובה יותר, תיקנו את צבע הטקסט בכרטיסי תמיכה במצב כהה והוספנו כמה שינויים קטנים למסכי ההתחברות.
-* <b>תיקונים</b>: פרטי המוצר מציגים את מצב המלאי המדויק, תיקנו דליפת זיכרון אפשרית במעבר בין חנויות.
+5.3:
+* מוצרים: ב'הגדרות' ← 'אפשרויות ביתא', המתג 'מוצרים' זמין כעת. אפשר גם להוסיף מוצר פשוט, מוצר בקבוצה, מוצר חיצוני או מוצר עם סוגים, ולפרסם או לשמור אותם כטיוטה.
+* פרטי הזמנה: ההרחבה WooCommerce Shipping & Tax מאפשרת לך להדפיס ולבקש החזרים עבור תוויות משלוח קיימות.
+* שיפורים שונים: ביצענו תיקונים אחרים, כגון שיפור המהירות במסכי ההזמנה.
+
 </iw-IL>
-<id>
-4.4:
-* <b>Baru</b>: Penambahan fungsi pada manajemen gambar dan produk. Buka “Pengaturan” pada “My Store” untuk mengaktifkan fitur baru!
-* <b>Peningkatan UI</b>: Kembalinya ikon pemberitahuan W untuk memberikan visibilitas yang lebih baik, perbaikan warna teks untuk tiket dukungan pada mode gelap, sedikit perubahan gaya pada layar login.
-* <b>Perbaikan</b>: Detail produk menampilkan status stok yang tepat, potensi kebocoran memori ketika berpindah toko berhasil diatasi.
-</id>
 <it-IT>
-4.4:
-*<b>Novità</b>: più funzionalità alla gestione di immagine e prodotto. Vai su "Impostazioni" in "Il mio negozio" per attivare le nuove funzionalità!
-*<b>Miglioramenti a UI</b>: reinserimento dell'icona di notifica W per una migliore visibilità, corretto il colore del testo su ticket di supporto in Dark mode, minori aggiustamenti di stile a schermate di accesso.
-*<b>Correzioni</b>: dettagli prodotto mostrano stato esatto in magazzino, si inseriva una potenziale perdita di memoria quando si passava da un negozio all'altro.
+5.3:
+* Prodotti: in Impostazioni → Funzionalità beta, è ora disponibile un interruttore Prodotti. Puoi anche aggiungere un prodotto semplice, raggruppato, esterno o variabile e pubblicarlo o salvarlo come una bozza.
+* Dettaglio dell'ordine: con l'estensione WooCommerce Shipping & Tax, puoi stampare e richiedere rimborsi per etichette di spedizione esistenti.
+* Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
+
 </it-IT>
-<ja-JP>
-4.4:
-* <b>新機能</b> :画像と商品の管理に機能を追加しました。「自分のストア」の「設定」に移動して、新しい機能を有効にしましょう。
-* <b>UI 改善</b> :読みやすさのために W の通知アイコンが復活、ダークモードのサポートチケットのテキスト色を修正、ログイン画面のスタイルの微調整。
-* <b>修正</b> :商品の説明に正確な在庫状況を表示、ストアを切り替える際の潜在的なメモリリークに対応。
-</ja-JP>
 <ko-KR>
-4.4:
-* <b>새로운 기능</b>: 이미지 및 제품 관리에 기능이 추가되었습니다. 새로운 기능을 설정하려면 “내 스토어”의 “설정”으로 이동하세요!
-* <b>UI 개선 사항</b>: 가시성 향상을 위해 W 알림 아이콘이 다시 추가되었으며, 어둡게 모드의 지원 티켓 텍스트 색상을 수정하였고, 로그인 화면을 약간 조정했습니다.
-* <b>수정 사항</b>: 제품 세부 정보는 정확한 재고 상태를 표시하며 스토어 간 전환 시 잠재적인 메모리 누수를 방지합니다.
+5.3:
+* 제품: 설정 → 베타 기능에서 이제 제품을 전환할 수 있습니다. 단순하고, 그룹화되고, 변형 가능하거나 외부 제품을 추가하여 공개하거나 임시글로 저장할 수도 있습니다.
+* 주문 상세 정보: WooCommerce 배송 및 세금 확장 기능을 통해 기존 배송 레이블을 인쇄하고 환불을 요청할 수 있습니다.
+* 기타 개선 사항: 주문 화면 속도 개선 등 다른 사항도 개선되었습니다.
+
 </ko-KR>
-<nl-NL>
-4.4:
-* <b>Nieuw</b>: Functionaliteit aan beeld- en productbeheer toegevoegd. Ga naar 'Instellingen' in 'Mijn winkel' om deze nieuwe functies in te schakelen!
-* <b>UI-verbeteringen</b>: Het W-meldingspictogram is teruggebracht voor verbeterde zichtbaarheid, een probleem met de tekstkleur op ondersteuningstickets in de nachtmodus is opgelost en er zijn kleine stijlverbeteringen aangebracht aan inlogschermen.
-* <b>Fixes</b>: In de productgegevens wordt de exacte voorraadstatus weergegeven. Potentieel geheugenlek opgelost bij het wisselen tussen winkels.
-</nl-NL>
-<pt-BR>
-4.4:
-* <b>Novidade</b>: Funcionalidade adicionada à gestão de produtos e imagens. Acesse “Configurações” em “Minha loja” para ativar novas funcionalidades.
-* <b>Melhorias de IU</b>: Trouxemos o ícone de notificação W de volta para oferecer uma melhor visibilidade, corrigimos a cor do texto nos tíquetes de suporte no modo escuro e ajustamos o estilo das telas de login.
-* <b>Correções</b>: Os detalhes do produto exibem o status exato do estoque, pois consertamos uma possível evasão de memória ao alternar entre lojas.
-</pt-BR>
-<ru-RU>
-Версия 4.4
-* <b>Новые возможности</b>: Добавлены функции управления изображениями и продуктами. Чтобы включить их, перейдите в раздел "Настройки" на вкладке "Мой магазин".
-* <b>Улучшения пользовательского интерфейса</b>: Мы вернули значок уведомлений W для большей наглядности, изменили цвет текста обращений в службу поддержки в темном режиме и немного улучшили стиль экранов входа.
-* <b>Исправления</b>: В сведениях о продуктах теперь отображается точное количество товарных запасов, устранен потенциальный источник утечки памяти при переходе между магазинами.
-</ru-RU>
 <sv-SE>
-4.4:
-* <b>Nyheter</b>: Fler funktioner för bild- och produkthantering. Gå till ”Inställningar” i “Min butik” för att aktivera nya funktioner!
-* <b>UI-förbättringar</b>: W-aviseringsikonen är tillbaka för bättre synlighet, fixade textfärgen på supportärenden i mörkt läge, små designförbättringar på inloggningsskärmen.
-* <b>Åtgärder</b>: Produktdetaljer visar exakt lagerstatus, stoppade en potentiell minnesläcka vid byte mellan butiker.
+5.3:
+* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
+* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
+* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
+
 </sv-SE>
-<tr-TR>
-4.4:
-* <b>Yeni</b>: Görsel ve ürün yönetimine işlev eklendi. Yeni özellikleri açmak için “Mağazam” sekmesindeki “Ayarlar” bölümüne gidin.
-* <b>Kullanıcı arayüzünde yapılan iyileştirmeler</b>: Daha iyi görünürlük için W bildirimi geri getirildi, karanlık modda destek biletlerinin metin rengi düzeltildi, oturum açma ekranlarında küçük sitl değişiklikleri yapıldı.
-* <b>Düzeltmeler</b>: Ürün ayrıntıları tam stok durumunu gösteriyor, mağazalar arası geçiş yaparken meydana gelen olası bir bellek sızıntısı giderildi.
-</tr-TR>
 <zh-CN>
-4.4：
-* <b>新增功能</b>：增加了图片和产品管理功能。要启用新功能，请转到“我的商店”中的“设置”！
-* <b>UI 改进</b>：恢复了 W 通知图标以提高可见性；修正了深色模式下的支持申请单文本颜色；轻微调整了登录屏幕的风格。
-* <b>修复</b>：产品详细信息现在显示确切的库存状态，并消除了在商店之间切换时可能发生的内存泄漏问题。
+5.3：
+* 产品：在“设置”→“测试版功能”中，现在提供了一个“产品”开关。 您也可以添加简单的分组或外部产品，然后发布产品或将其另存为草稿。
+* 订单详情：您可以使用 WooCommerce Shipping & Tax 扩展程序打印现有配送标签和申请退款。
+* 其他改进：我们还修复了一些其他问题，例如提升了订单屏幕的加载速度。
+
 </zh-CN>
-<zh-TW>
-4.4：
-* <b>新功能</b>：已新增圖片和產品管理相關功能。前往「我的商店」中的「設定」開啟新功能！
-* <b>改善 UI</b>：恢復 W 通知圖示以提升可見度、修復深色模式下支援票證的文字顏色、微調登入畫面的樣式。
-* <b>修正</b>：產品詳細資訊會顯示確切的庫存狀態，修復在商店之間切換時，潛在記憶體的流失問題。
-</zh-TW>
 <en-US>
-4.4:
-* <b>New</b>: Added functionality to image and product management. Head to “Settings” in “My Store” to turn on new features!
-* <b>UI improvements</b>: Brought back the W notification icon for better visibility, fixed the text color on support tickets in dark mode, minor style tweaks to login screens.
-* <b>Fixes</b>: Product details display exact stock status, plugged a potential memory leak when switching between stores.
+5.3:
+* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
+* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.
+* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.
+
 </en-US>

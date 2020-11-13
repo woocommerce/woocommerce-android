@@ -1,38 +1,39 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitInventory
-import com.woocommerce.android.ui.products.ProductInventorySelectorDialog.ProductInventorySelectorDialogListener
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
-import org.wordpress.android.util.ActivityUtils
 
-class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelectorDialogListener {
-    private var productBackOrderSelectorDialog: ProductInventorySelectorDialog? = null
-    private var productStockStatusSelectorDialog: ProductInventorySelectorDialog? = null
+class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
+    BackPressListener, ProductItemSelectorDialogListener {
+    private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_inventory, container, false)
-    }
+    override val isDoneButtonVisible: Boolean
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
+    override val isDoneButtonEnabled: Boolean
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
+    override val lastEvent: Event?
+        get() = viewModel.event.value
+
+    private var productBackOrderSelectorDialog: ProductItemSelectorDialog? = null
+    private var productStockStatusSelectorDialog: ProductItemSelectorDialog? = null
 
     override fun onPause() {
         super.onPause()
@@ -43,165 +44,176 @@ class ProductInventoryFragment : BaseProductFragment(), ProductInventorySelector
         productStockStatusSelectorDialog = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
+        setupViews()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitInventory(shouldShowDiscardDialog = false))
-                true
+    private fun setupObservers(viewModel: ProductInventoryViewModel) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) {
+                displaySkuError(it)
             }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.productInventoryViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) { displaySkuError(it) }
-            new.stockQuantityErrorMessage?.takeIfNotEqualTo(old?.stockQuantityErrorMessage) {
-                displayStockQuantityError(it)
+            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
+                doneButton?.isVisible = isVisible
             }
-        }
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ExitInventory -> findNavController().navigateUp()
-                else -> event.isHandled = false
+            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
+                doneButton?.isEnabled = isEnabled
             }
-        })
-        updateProductView(viewModel.getProduct())
-    }
-
-    private fun updateProductView(productData: ProductDetailViewState) {
-        if (!isAdded) return
-
-        val product = requireNotNull(productData.productDraft)
-        with(product_sku) {
-            setText(product.sku)
-            setOnTextChangedListener {
-                viewModel.updateProductDraft(sku = it.toString())
-                viewModel.onSkuChanged(it.toString())
-                changesMade()
+            new.isStockManagementVisible?.takeIfNotEqualTo(old?.isStockManagementVisible) { isVisible ->
+                stockManagementPanel.isVisible = isVisible
+                soldIndividually_switch.isVisible = isVisible && new.isIndividualSaleSwitchVisible == true
             }
-        }
-
-        val manageStock = product.manageStock
-        enableManageStockStatus(manageStock)
-        with(manageStock_switch) {
-            isChecked = manageStock
-            setOnCheckedChangeListener { _, isChecked ->
-                enableManageStockStatus(isChecked)
-                viewModel.updateProductDraft(manageStock = isChecked)
-                changesMade()
+            new.isStockStatusVisible?.takeIfNotEqualTo(old?.isStockStatusVisible) { isVisible ->
+                edit_product_stock_status.isVisible = isVisible
             }
-        }
-
-        with(product_stock_quantity) {
-            setText(product.stockQuantity.toString())
-            setOnTextChangedListener {
-                viewModel.onStockQuantityChanged(it.toString())
-                changesMade()
+            new.inventoryData.backorderStatus?.takeIfNotEqualTo(old?.inventoryData?.backorderStatus) {
+                edit_product_backorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
             }
-        }
-
-        with(edit_product_backorders) {
-            setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), product.backorderStatus))
-            setClickListener {
-                productBackOrderSelectorDialog = ProductInventorySelectorDialog.newInstance(
-                        this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
-                        getString(R.string.product_backorders), ProductBackorderStatus.toMap(requireContext()),
-                        edit_product_backorders.getText()
-                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            new.inventoryData.stockStatus?.takeIfNotEqualTo(old?.inventoryData?.stockStatus) {
+                edit_product_stock_status.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
             }
-        }
-
-        with(edit_product_stock_status) {
-            setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), product.stockStatus))
-            setClickListener {
-                productStockStatusSelectorDialog = ProductInventorySelectorDialog.newInstance(
-                        this@ProductInventoryFragment, RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
-                        getString(R.string.product_stock_status), ProductStockStatus.toMap(requireContext()),
-                        edit_product_stock_status.getText()
-                ).also { it.show(parentFragmentManager, ProductInventorySelectorDialog.TAG) }
+            new.inventoryData.isStockManaged?.takeIfNotEqualTo(old?.inventoryData?.isStockManaged) { isStockManaged ->
+                new.isStockManagementVisible?.let { isVisible ->
+                    if (isVisible) {
+                        enableManageStockStatus(
+                            isStockManaged,
+                            new.isStockStatusVisible ?: edit_product_stock_status.isVisible
+                        )
+                    } else {
+                        manageStock_switch.isVisible = false
+                        edit_product_stock_status.isVisible = false
+                    }
+                }
             }
-        }
-
-        with(soldIndividually_switch) {
-            isChecked = product.soldIndividually
-            setOnCheckedChangeListener { _, isChecked ->
-                viewModel.updateProductDraft(soldIndividually = isChecked)
-                changesMade()
+            new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
+                if (product_sku.getText() != it) {
+                    product_sku.setText(it)
+                }
             }
-        }
-    }
+            new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
+                val quantity = it.toString()
+                if (product_stock_quantity.getText() != quantity) {
+                    product_stock_quantity.setText(quantity)
+                }
+            }
+            new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
+                soldIndividually_switch.isChecked = it
+            }
 
-    private fun enableManageStockStatus(manageStock: Boolean) {
-        if (manageStock) {
-            edit_product_stock_status.visibility = View.GONE
-            manageStock_morePanel.expand()
-        } else {
-            edit_product_stock_status.visibility = View.VISIBLE
-            manageStock_morePanel.collapse()
+            viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
+                    is Exit -> findNavController().navigateUp()
+                    is ShowDialog -> event.showDialog()
+                    else -> event.isHandled = false
+                }
+            })
         }
     }
 
     private fun displaySkuError(messageId: Int) {
         if (messageId != 0) {
-            product_sku.setError(getString(messageId))
-            enableUpdateMenuItem(false)
+            product_sku.error = getString(messageId)
         } else {
-            product_sku.clearError()
-            enableUpdateMenuItem(true)
+            product_sku.helperText = getString(R.string.product_sku_summary)
         }
     }
 
-    private fun displayStockQuantityError(messageId: Int) {
-        if (messageId != 0) {
-            product_stock_quantity.setError(getString(messageId))
-            enableUpdateMenuItem(false)
-        } else {
-            product_stock_quantity.clearError()
-            enableUpdateMenuItem(true)
+    private fun setupViews() {
+        if (!isAdded) return
+
+        with(product_sku) {
+            setOnTextChangedListener {
+                viewModel.onSkuChanged(it.toString())
+            }
+        }
+
+        with(manageStock_switch) {
+            setOnCheckedChangeListener { _, isChecked ->
+                enableManageStockStatus(isChecked, edit_product_stock_status.isVisible)
+                viewModel.onDataChanged(isStockManaged = isChecked)
+            }
+        }
+
+        with(product_stock_quantity) {
+            setOnTextChangedListener {
+                it.toString().toIntOrNull()?.let { quantity ->
+                    viewModel.onDataChanged(stockQuantity = quantity)
+                }
+            }
+        }
+
+        with(edit_product_backorders) {
+            setClickListener {
+                productBackOrderSelectorDialog = ProductItemSelectorDialog.newInstance(
+                    this@ProductInventoryFragment,
+                    RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
+                    getString(R.string.product_backorders),
+                    ProductBackorderStatus.toMap(requireContext()),
+                    edit_product_backorders.getText()
+                ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
+            }
+        }
+
+        with(edit_product_stock_status) {
+            setClickListener {
+                productStockStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
+                    this@ProductInventoryFragment,
+                    RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
+                    getString(R.string.product_stock_status),
+                    ProductStockStatus.toMap(requireContext()),
+                    edit_product_stock_status.getText()
+                ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
+            }
+        }
+
+        with(soldIndividually_switch) {
+            setOnCheckedChangeListener { _, isChecked ->
+                viewModel.onDataChanged(isSoldIndividually = isChecked)
+            }
         }
     }
 
-    override fun onProductInventoryItemSelected(resultCode: Int, selectedItem: String?) {
+    private fun enableManageStockStatus(isStockManaged: Boolean, isStockStatusVisible: Boolean) {
+        manageStock_switch.isChecked = isStockManaged
+        if (isStockManaged) {
+            edit_product_stock_status.collapse()
+            manageStock_morePanel.expand()
+        } else {
+            manageStock_morePanel.collapse()
+            if (isStockStatusVisible) {
+                edit_product_stock_status.expand()
+            }
+        }
+    }
+
+    override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
         when (resultCode) {
             RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
                 selectedItem?.let {
                     edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
-                    viewModel.updateProductDraft(backorderStatus = ProductBackorderStatus.fromString(it))
-                    changesMade()
+                    viewModel.onDataChanged(backorderStatus = ProductBackorderStatus.fromString(it))
                 }
             }
             RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
                 selectedItem?.let {
                     edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
-                    viewModel.updateProductDraft(stockStatus = ProductStockStatus.fromString(it))
-                    changesMade()
+                    viewModel.onDataChanged(stockStatus = ProductStockStatus.fromString(it))
                 }
             }
         }
     }
 
-    override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitInventory())
+    override fun onDoneButtonClicked() {
+        viewModel.onDoneButtonClicked()
+    }
+
+    override fun onExit() {
+        viewModel.onExit()
     }
 }

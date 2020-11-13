@@ -1,6 +1,10 @@
 default_platform(:android)
 fastlane_require 'dotenv'
 
+unless FastlaneCore::Helper.bundler?
+  UI.user_error!('Please run fastlane via `bundle exec`')
+end
+
 platform :android do
 ########################################################################
 # Environment
@@ -9,7 +13,7 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
-ENV["validate_translations"]="buildVanillaRelease"
+ENV["validate_translations"]="lintVanillaRelease"
 
 SUPPORTED_LOCALES = [
   { glotpress: "ar", google_play: "ar",  promo_config: {}},
@@ -29,6 +33,9 @@ SUPPORTED_LOCALES = [
   { glotpress: "zh-cn", google_play: "zh-CN",  promo_config: {} },
   { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
 ].freeze
+
+main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
+update_strings_path = "./fastlane/resources/values/"
 
 ########################################################################
 # Release Lanes
@@ -51,15 +58,37 @@ SUPPORTED_LOCALES = [
 
     android_bump_version_release()
     new_version = android_get_app_version()
+    extract_release_notes_for_version(version: new_version, 
+      release_notes_file_path:"#{ENV["PROJECT_ROOT_FOLDER"]}RELEASE-NOTES.txt", 
+      extracted_notes_file_path:release_notes_path)
     android_update_release_notes(new_version: new_version)
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
 
     localize_libs()
-    android_tag_build()
+    send_strings_for_translation()
     get_prs_list(repository:GHHELPER_REPO, start_tag:"#{old_version}", report_path:"#{File.expand_path('~')}/wcandroid_prs_list_#{old_version}_#{new_version}.txt")
+    
   end
 
+  #####################################################################################
+  # complete_code_freeze
+  # -----------------------------------------------------------------------------------
+  # This lane executes the last steps planned on code freeze
+  # -----------------------------------------------------------------------------------
+  # Usage:
+  # bundle exec fastlane complete_code_freeze [skip_confirm:<skip confirm>]
+  #
+  # Example:
+  # bundle exec fastlane complete_code_freeze
+  # bundle exec fastlane complete_code_freeze skip_confirm:true
+  #####################################################################################
+  desc "Creates a new release branch from the current develop"
+  lane :complete_code_freeze do | options |
+    android_completecodefreeze_prechecks(options)
+    android_tag_build()
+  end
+  
 #####################################################################################
 # update_appstore_strings
 # -----------------------------------------------------------------------------------
@@ -170,16 +199,17 @@ end
   end
 
   #####################################################################################
-  # build_release
+  # build_and_upload_release
   # -----------------------------------------------------------------------------------
   # This lane builds the final release of the app and uploads it
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_release [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_release [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_release
-  # bundle exec fastlane build_release skip_confirm:true
+  # bundle exec fastlane build_and_upload_release 
+  # bundle exec fastlane build_and_upload_release skip_confirm:true 
+  # bundle exec fastlane build_and_upload_release create_release:true 
   #####################################################################################
   desc "Builds and uploads release for distribution"
   lane :build_and_upload_release do | options |
@@ -209,6 +239,15 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        release_assets:"#{apk_file_path},#{aab_file_path}"
+      )
+    end
   end
 
   #####################################################################################
@@ -218,11 +257,12 @@ end
   # to the beta channel (but does not release it).
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>]
+  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
   # Example:
-  # bundle exec fastlane build_and_upload_beta
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true
+  # bundle exec fastlane build_and_upload_beta 
+  # bundle exec fastlane build_and_upload_beta skip_confirm:true 
+  # bundle exec fastlane build_and_upload_beta create_release:true 
   #####################################################################################
   desc "Builds and uploads a new beta build to Google Play (without releasing it)"
   lane :build_and_upload_beta do | options |
@@ -249,6 +289,16 @@ end
       skip_upload_screenshots: true,
       json_key: './google-upload-credentials.json',
     )
+
+    if (options[:create_release])
+      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version))
+      create_release(repository:GHHELPER_REPO, 
+        version: version["name"], 
+        release_notes_file_path:release_notes_path,
+        prerelease: true,
+        release_assets:"#{apk_file_path}"
+      )
+    end
   end
 
 #####################################################################################
@@ -264,7 +314,6 @@ end
 #####################################################################################
 desc "Merge libraries strings files into the main app one"
 lane :localize_libs do | options |
-  main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
   libraries_strings_path = [
     {library: "Login Library", strings_path: "./libs/login/WordPressLoginFlow/src/main/res/values/strings.xml", exclusions: ["default_web_client_id"]}
   ]
@@ -331,7 +380,7 @@ end
     # Create the file names
     version=options[:version]
     name="wcandroid-#{version["name"]}.aab"
-    apk_name="wcandroid-#{version["name"]}-universal.apk"
+    apk_name=universal_apk_name(version)
     aab_file="WooCommerce-vanilla-release.aab"
     output_dir="WooCommerce/build/outputs/bundle/"
     build_dir="artifacts/"
@@ -347,7 +396,7 @@ end
     end
 
     Dir.chdir("..") do
-      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor]}Release/#{aab_file} #{build_dir}#{name}")
+      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor].downcase}Release/#{aab_file} #{build_dir}#{name}")
       UI.message("Bundle ready: #{name}")
       extract_universal_apk(bundle_path:"#{build_dir}#{name}", apk_path:"#{build_dir}#{apk_name}")
     end
@@ -380,14 +429,21 @@ end
     apk_path=options[:apk_path]
     temp_dir = Dir.mktmpdir()
 
-    command = "source ./tools/gradle-functions.sh"
-    command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
-    --output=\"#{temp_dir}/universal.apks\" \\
-    --mode=universal \\
-    --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
-    --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
-    --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
-    --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
+    command = ""
+    if is_ci 
+      command << "bundletool build-apks --bundle=\"#{bundle_path}\" \\
+      --output=\"#{temp_dir}/universal.apks\" \\
+      --mode=universal"
+    else
+      command = "source ./tools/gradle-functions.sh"
+      command << "&& bundletool build-apks --bundle=\"#{bundle_path}\" \\
+      --output=\"#{temp_dir}/universal.apks\" \\
+      --mode=universal \\
+      --ks=\"$(get_gradle_property gradle.properties storeFile)\" \\
+      --ks-pass=\"pass:$(get_gradle_property gradle.properties storePassword)\" \\
+      --ks-key-alias=\"$(get_gradle_property gradle.properties keyAlias)\" \\
+      --key-pass=\"pass:$(get_gradle_property gradle.properties keyPassword)\""
+    end
     sh(command)
 
     sh("unzip \"#{temp_dir}/universal.apks\" -d \"#{temp_dir}\"")
@@ -395,4 +451,20 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+  private_lane :send_strings_for_translation do | options |
+    sh("cd .. && mkdir -p #{update_strings_path} && cp #{main_strings_path} #{update_strings_path} && git add #{update_strings_path}strings.xml")
+    sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
+    sh("git push origin HEAD")
+  end
+
+  #####################################################################################
+  # Utils
+  #####################################################################################
+  def release_notes_path
+    "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
+  end
+
+  def universal_apk_name(version)
+    "wcandroid-#{ version["name"] }-universal.apk"
+  end
 end

@@ -72,7 +72,7 @@ class ReviewDetailFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val dimen = activity!!.resources.getDimensionPixelSize(R.dimen.image_minor_50)
+        val dimen = requireActivity().resources.getDimensionPixelSize(R.dimen.image_minor_50)
         productIconSize = DisplayUtils.dpToPx(activity, dimen)
     }
 
@@ -206,30 +206,37 @@ class ReviewDetailFragment : BaseFragment() {
     }
 
     private fun configureModerationButtons(status: ProductReviewStatus) {
-        review_approve.setOnCheckedChangeListener(null)
+        val visibility = if (navArgs.enableModeration) View.VISIBLE else View.GONE
+        review_approve.visibility = visibility
+        review_spam.visibility = visibility
+        review_trash.visibility = visibility
 
-        // Use the status override if present,else new status
-        when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
-            APPROVED -> review_approve.isChecked = true
-            HOLD -> review_approve.isChecked = false
-            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
-        }
+        if (navArgs.enableModeration) {
+            review_approve.setOnCheckedChangeListener(null)
 
-        // Configure the moderate button
-        review_approve.setOnCheckedChangeListener(moderateListener)
+            // Use the status override if present,else new status
+            when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
+                APPROVED -> review_approve.isChecked = true
+                HOLD -> review_approve.isChecked = false
+                else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
+            }
 
-        // Configure the spam button
-        review_spam.setOnClickListener {
-            AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+            // Configure the moderate button
+            review_approve.setOnCheckedChangeListener(moderateListener)
 
-            processReviewModeration(SPAM)
-        }
+            // Configure the spam button
+            review_spam.setOnClickListener {
+                AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
-        // Configure the trash button
-        review_trash.setOnClickListener {
-            AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+                processReviewModeration(SPAM)
+            }
 
-            processReviewModeration(TRASH)
+            // Configure the trash button
+            review_trash.setOnClickListener {
+                AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
+
+                processReviewModeration(TRASH)
+            }
         }
     }
 

@@ -11,6 +11,12 @@ import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_DECLINED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_LATER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_RATED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.APP_FEEDBACK_RATE_APP
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
@@ -104,7 +110,12 @@ object AppRatingDialog {
         }
     }
 
-    private fun showRateDialog(context: Context) {
+    fun showRateDialog(
+        context: Context,
+        ratingAccepted: () -> Unit = {},
+        ratingPostponed: () -> Unit = {},
+        ratingDeclined: () -> Unit = {}
+    ) {
         dialogRef?.get()?.let {
             // Dialog is already present
             return
@@ -115,6 +126,8 @@ object AppRatingDialog {
                 .setMessage(R.string.app_rating_message)
                 .setCancelable(true)
                 .setPositiveButton(R.string.app_rating_rate_now) { _, _ ->
+                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_RATED))
+                    ratingAccepted()
                     val appPackage = context.packageName
                     val url: String? = "market://details?id=$appPackage"
                     try {
@@ -132,10 +145,14 @@ object AppRatingDialog {
                     setOptOut(true)
                 }
                 .setNeutralButton(R.string.app_rating_rate_later) { _, _ ->
+                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_LATER))
+                    ratingPostponed()
                     clearSharedPreferences()
                     storeAskLaterDate()
                 }
                 .setNegativeButton(R.string.app_rating_rate_never) { _, _ ->
+                    AnalyticsTracker.track(APP_FEEDBACK_RATE_APP, mapOf(KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_DECLINED))
+                    ratingDeclined()
                     setOptOut(true)
                 }
                 .setOnCancelListener {

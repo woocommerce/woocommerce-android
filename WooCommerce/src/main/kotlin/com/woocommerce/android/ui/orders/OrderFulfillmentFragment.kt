@@ -15,6 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -88,12 +90,12 @@ class OrderFulfillmentFragment : BaseFragment(), OrderFulfillmentContract.View, 
         // Populate the Order Product List Card
         orderFulfill_products.initView(
                 orderModel = order,
+                orderItems = refunds.getNonRefundedProducts(order.toAppModel().items),
                 productImageMap = productImageMap,
                 expanded = true,
                 formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
                 orderListener = null,
-                productListener = this,
-                refunds = refunds
+                productListener = this
         )
 
         // check if product is a virtual product

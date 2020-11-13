@@ -11,6 +11,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import dagger.android.support.AndroidSupportInjection
+import org.wordpress.android.login.LoginAnalyticsListener
+import javax.inject.Inject
 
 class LoginEmailHelpDialogFragment : DialogFragment() {
     companion object {
@@ -22,6 +25,7 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     private var listener: Listener? = null
+    @Inject lateinit var analyticsListener: LoginAnalyticsListener
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -36,13 +40,13 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
                 .setMessage(message)
                 .setNeutralButton(R.string.login_site_address_more_help) { dialog, _ ->
                     AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED)
-
+                    analyticsListener.trackDismissDialog()
                     listener?.onEmailNeedMoreHelpClicked()
                     dialog.dismiss()
                 }
                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
                     AnalyticsTracker.track(Stat.LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED)
-
+                    analyticsListener.trackDismissDialog()
                     dialog.dismiss()
                 }
                 .setCancelable(true)
@@ -50,6 +54,7 @@ class LoginEmailHelpDialogFragment : DialogFragment() {
     }
 
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         if (context is Listener) {

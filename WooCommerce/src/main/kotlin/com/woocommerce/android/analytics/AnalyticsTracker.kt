@@ -109,6 +109,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_SUCCESS(siteless = true),
         LOGIN_MAGIC_LINK_FETCH_SITES_SUCCESS(siteless = true),
+        UNIFIED_LOGIN_STEP(siteless = true),
+        UNIFIED_LOGIN_FAILURE(siteless = true),
+        UNIFIED_LOGIN_INTERACTION(siteless = true),
 
         // -- Site Picker
         SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -214,6 +217,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_DELETE_FAILED,
         ORDER_TRACKING_PROVIDERS_LOADED,
 
+        // -- Shipping Labels
+        SHIPPING_LABEL_API_REQUEST,
+        SHIPMENT_TRACKING_MENU_ACTION,
+        SHIPPING_LABEL_PRINT_REQUESTED,
+        SHIPPING_LABEL_REFUND_REQUESTED,
+
         // -- Top-level navigation
         MAIN_MENU_SETTINGS_TAPPED,
         MAIN_MENU_CONTACT_SUPPORT_TAPPED,
@@ -240,7 +249,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED,
         SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED,
         SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED,
-        SETTINGS_BETA_FEATURES_NEW_STATS_UI_TOGGLED,
         SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED,
         SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
         PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
@@ -259,6 +267,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED,
         PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED,
         PRODUCT_LIST_SORTING_OPTION_SELECTED,
+        PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
+        ADD_PRODUCT_PRODUCT_TYPE_SELECTED,
 
         // -- Product detail
         PRODUCT_DETAIL_LOADED,
@@ -274,18 +284,68 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED,
         PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED,
         PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED,
+        PRODUCT_DETAIL_VIEW_TAGS_TAPPED,
+        PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED,
+        PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED,
+        PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED,
+        PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED,
         PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED,
+        PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_DETAIL_UPDATE_SUCCESS,
         PRODUCT_DETAIL_UPDATE_ERROR,
+        ADD_PRODUCT_PUBLISH_TAPPED,
+        ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED,
+        ADD_PRODUCT_SUCCESS,
+        ADD_PRODUCT_FAILED,
 
         // -- Product Categories
         PRODUCT_CATEGORIES_LOADED,
         PRODUCT_CATEGORIES_LOAD_FAILED,
         PRODUCT_CATEGORIES_PULLED_TO_REFRESH,
+        PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED,
+
+        // -- Add Product Category
+        PARENT_CATEGORIES_LOADED,
+        PARENT_CATEGORIES_LOAD_FAILED,
+        PARENT_CATEGORIES_PULLED_TO_REFRESH,
+        ADD_PRODUCT_CATEGORY_SAVE_TAPPED,
+
+        // -- Product Tags
+        PRODUCT_TAGS_LOADED,
+        PRODUCT_TAGS_LOAD_FAILED,
+        PRODUCT_TAGS_PULLED_TO_REFRESH,
+
+        // -- Product reviews
+        PRODUCT_REVIEWS_LOADED,
+        PRODUCT_REVIEWS_LOAD_FAILED,
+        PRODUCT_REVIEWS_PULLED_TO_REFRESH,
+
+        // -- Grouped products
+        GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
+        GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
+        GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
+        GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED,
+
+        // -- Product external link
+        PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED,
+        EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED,
+
+        // -- Product variation
+        PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED,
+        PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED,
+        PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED,
+        PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED,
+        PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED,
+        PRODUCT_VARIATION_VIEW_VARIATION_VISIBILITY_SWITCH_TAPPED,
+        PRODUCT_VARIATION_IMAGE_TAPPED,
+        PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED,
+        PRODUCT_VARIATION_UPDATE_SUCCESS,
+        PRODUCT_VARIATION_UPDATE_ERROR,
+        PRODUCT_VARIATION_LOADED,
 
         // -- Product settings
         PRODUCT_SETTINGS_DONE_BUTTON_TAPPED,
@@ -299,6 +359,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_SETTINGS_PURCHASE_NOTE_TAPPED,
         PRODUCT_SETTINGS_VISIBILITY_TAPPED,
         PRODUCT_SETTINGS_MENU_ORDER_TAPPED,
+        PRODUCT_SETTINGS_VIRTUAL_TOGGLED,
+        PRODUCT_SETTINGS_REVIEWS_TOGGLED,
 
         // -- Product filters
         PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
@@ -307,7 +369,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Aztec editor
         AZTEC_EDITOR_DONE_BUTTON_TAPPED,
 
-        // -- Product variants
+        // -- Product variations
         PRODUCT_VARIANTS_PULLED_TO_REFRESH,
         PRODUCT_VARIANTS_LOADED,
         PRODUCT_VARIANTS_LOAD_ERROR,
@@ -362,6 +424,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED,
         REVIEW_DETAIL_SPAM_BUTTON_TAPPED,
         REVIEW_DETAIL_TRASH_BUTTON_TAPPED,
+
+        // -- In-App Feedback
+        APP_FEEDBACK_PROMPT,
+        APP_FEEDBACK_RATE_APP,
+        SURVEY_SCREEN,
+        FEATURE_FEEDBACK_BANNER,
 
         // -- Errors
         JETPACK_TUNNEL_TIMEOUT,
@@ -539,10 +607,33 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SORT_DATE_ASC = "date,ascending"
         const val VALUE_SORT_DATE_DESC = "date,descending"
 
+        const val VALUE_API_SUCCESS = "success"
+        const val VALUE_API_FAILED = "failed"
+        const val VALUE_SHIPMENT_TRACK = "track"
+        const val VALUE_SHIPMENT_COPY = "copy"
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_ORDER_FULFILL = "order_fulfill"
+
+        const val KEY_FEEDBACK_ACTION = "action"
+        const val KEY_FEEDBACK_CONTEXT = "context"
+        const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
+        const val VALUE_FEEDBACK_PRODUCT_M3_CONTEXT = "products_m3"
+        const val VALUE_FEEDBACK_SHOWN = "shown"
+        const val VALUE_FEEDBACK_LIKED = "liked"
+        const val VALUE_FEEDBACK_NOT_LIKED = "didnt_like"
+        const val VALUE_FEEDBACK_LATER = "later"
+        const val VALUE_FEEDBACK_DECLINED = "declined"
+        const val VALUE_FEEDBACK_RATED = "rated"
+        const val VALUE_FEEDBACK_COMPLETED = "completed"
+        const val VALUE_FEEDBACK_OPENED = "opened"
+        const val VALUE_FEEDBACK_CANCELED = "canceled"
+        const val VALUE_FEEDBACK_DISMISSED = "dismissed"
+        const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
+        const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
+        const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
+
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
         const val IMAGE_SOURCE_WPMEDIA = "wpmedia"

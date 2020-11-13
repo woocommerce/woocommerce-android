@@ -19,6 +19,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
@@ -31,6 +32,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -56,7 +59,6 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onSiteChanged()
-        fun onV4StatsOptionChanged(enabled: Boolean)
         fun onProductsFeatureOptionChanged(enabled: Boolean)
     }
 
@@ -118,17 +120,22 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
+        option_help_and_support.setOnClickListener {
+            AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
+            startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
+        }
+
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             container_notifs_old.visibility = View.GONE
-            option_notifications.visibility = View.VISIBLE
+            container_notifs_new.visibility = View.VISIBLE
             option_notifications.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
                 showDeviceAppNotificationSettings()
             }
         } else {
             container_notifs_old.visibility = View.VISIBLE
-            option_notifications.visibility = View.GONE
+            container_notifs_new.visibility = View.GONE
 
             option_notifs_orders.isChecked = AppPrefs.isOrderNotificationsEnabled()
             option_notifs_orders.setOnCheckedChangeListener { _, isChecked ->
@@ -156,16 +163,16 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        option_beta_features.optionValue = getString(R.string.settings_enable_v4_stats_title)
+        option_beta_features.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        option_feature_request.setOnClickListener {
+        option_send_feedback.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
-            context?.let { ChromeCustomTabUtils.launchUrl(it, AppUrls.APP_FEATURE_REQUEST) }
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_feedbackSurveyFragment)
         }
 
         option_about.setOnClickListener {
@@ -246,7 +253,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.settings_app_theme_title))
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]

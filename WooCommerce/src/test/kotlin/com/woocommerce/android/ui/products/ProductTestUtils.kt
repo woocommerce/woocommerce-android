@@ -2,7 +2,8 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductVariant
+import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -14,6 +15,8 @@ object ProductTestUtils {
             localSiteId = 1
             remoteProductId = productId
             status = "publish"
+            type = "simple"
+            stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
             regularPrice = "30.00"
@@ -21,14 +24,30 @@ object ProductTestUtils {
             name = "product 1"
             description = "product 1 description"
             images = "[]"
-            downloads = "[]"
+            downloadable = true
+            downloads = """[
+                                {
+                                    "id": 1,
+                                    "name": "test",
+                                    "file": "https://testurl"
+                                }
+                            ]"""
             weight = "10"
             length = "1"
             width = "2"
             height = "3"
             variations = "[]"
             attributes = "[]"
+            categories = ""
+            ratingCount = 4
+            groupedProductIds = "[10,11]"
+            ratingCount = 4
+            shortDescription = "short desc"
         }.toAppModel()
+    }
+
+    fun generateProductWithTagsAndCategories(productId: Long = 1L): Product {
+        return generateProduct(productId).copy(categories = generateProductCategories(), tags = generateTags())
     }
 
     fun generateProductList(): List<Product> {
@@ -42,30 +61,34 @@ object ProductTestUtils {
         }
     }
 
-    private fun generateProductVariant(
+    private fun generateProductVariation(
         productId: Long = 1L,
-        variantId: Long = 1L
-    ): ProductVariant {
+        variationId: Long = 1L
+    ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
-            remoteVariationId = variantId
+            remoteVariationId = variationId
             price = "10.00"
-            imageUrl = ""
+            image = ""
             attributes = ""
         }.toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 
-    fun generateProductVariantList(productId: Long = 1L): List<ProductVariant> {
-        with(ArrayList<ProductVariant>()) {
-            add(generateProductVariant(productId, 1))
-            add(generateProductVariant(productId, 2))
-            add(generateProductVariant(productId, 3))
-            add(generateProductVariant(productId, 4))
-            add(generateProductVariant(productId, 5))
+    fun generateProductVariationList(productId: Long = 1L): List<ProductVariation> {
+        with(ArrayList<ProductVariation>()) {
+            add(generateProductVariation(productId, 1))
+            add(generateProductVariation(productId, 2))
+            add(generateProductVariation(productId, 3))
+            add(generateProductVariation(productId, 4))
+            add(generateProductVariation(productId, 5))
             return this
         }
+    }
+
+    fun generateTags(): List<ProductTag> {
+        return listOf(ProductTag(1, "Tag", "Slug", "Desc"))
     }
 
     fun generateProductCategories(): List<ProductCategory> {

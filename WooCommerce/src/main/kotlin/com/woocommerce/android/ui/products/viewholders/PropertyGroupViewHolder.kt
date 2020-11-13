@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.products.viewholders
 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -12,14 +15,24 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         val context = itemView.context
 
         val propertyView = itemView as WCProductPropertyView
-        propertyView.show(
-            LinearLayout.VERTICAL,
-            context.getString(item.title),
-            getPropertyValue(item.properties),
-            item.icon
-        )
-        propertyView.setMaxLines(Integer.MAX_VALUE)
-        propertyView.showPropertyName(item.showTitle)
+        if (item.properties.size == 1 && !item.showTitle) {
+            propertyView.show(
+                LinearLayout.VERTICAL,
+                getPropertyValue(item.properties, item.propertyFormat),
+                null,
+                true,
+                item.icon
+            )
+        } else {
+            propertyView.show(
+                LinearLayout.VERTICAL,
+                context.getString(item.title),
+                getPropertyValue(item.properties, item.propertyFormat),
+                item.showTitle,
+                item.icon
+            )
+            propertyView.setMaxLines(Integer.MAX_VALUE)
+        }
 
         if (item.onClick != null) {
             item.onClick.let { onClick ->
@@ -30,11 +43,20 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         } else {
             propertyView.removeClickListener()
         }
+
+        if (item.isHighlighted) {
+            itemView.setForegroundColor(ContextCompat.getColor(context, R.color.warning_foreground_color))
+        } else {
+            itemView.resetColors()
+        }
+
+        val divider = propertyView.findViewById<View>(R.id.divider)
+        divider.isVisible = item.isDividerVisible
     }
 
     private fun getPropertyValue(
         properties: Map<String, String>,
-        @StringRes propertyValueFormatterId: Int = R.string.product_property_default_formatter
+        @StringRes propertyValueFormatterId: Int
     ): String {
         var propertyValue = ""
         properties.forEach { property ->

@@ -98,3 +98,5 @@ sentry.properties
 
 # Markdown Extensions
 .markdownlint.json
+
+local-builds.gradle

@@ -7,8 +7,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
 
@@ -31,43 +34,51 @@ class WCProductPropertyView @JvmOverloads constructor(
         orientation: Int,
         caption: String,
         detail: CharSequence?,
-        @DrawableRes propertyIcon: Int? = null
+        showTitle: Boolean,
+        @DrawableRes propertyIcon: Int? = null,
+        isRating: Boolean = false
     ) {
-        ensureViewCreated(orientation)
+        ensureViewCreated(orientation, isRating)
 
         propertyNameText?.text = caption
 
         if (propertyIcon != null) {
-            propertyGroupIcon?.visibility = View.VISIBLE
-            propertyGroupIcon?.setImageDrawable(context.getDrawable(propertyIcon))
+            propertyGroupIcon?.isVisible = true
+            propertyGroupIcon?.setImageDrawable(ContextCompat.getDrawable(context, propertyIcon))
         } else {
-            propertyGroupIcon?.visibility = View.GONE
+            propertyGroupIcon?.isVisible = false
         }
 
         if (detail.isNullOrEmpty()) {
-            propertyValueText?.visibility = View.GONE
+            propertyValueText?.isVisible = false
+        } else if (!showTitle) {
+            propertyValueText?.isVisible = false
+            propertyNameText?.isVisible = true
+            propertyNameText?.text = detail
         } else {
+            propertyValueText?.isVisible = true
             propertyValueText?.text = detail
         }
-    }
-
-    fun showPropertyName(show: Boolean) {
-        propertyNameText?.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     /**
      * Adds a click listener to the property view
      */
     fun setClickListener(onClickListener: ((view: View) -> Unit)? = null) {
-        onClickListener?.let {
+        if (onClickListener != null) {
             propertyGroupImg?.visibility = View.VISIBLE
             view?.setOnClickListener(onClickListener)
             this.isClickable = true
+        } else {
+            removeClickListener()
         }
     }
 
     fun removeClickListener() {
         this.isClickable = false
+        this.background = null
+        view?.setOnClickListener(null)
+        propertyGroupImg?.visibility = View.GONE
     }
 
     fun setMaxLines(maxLines: Int) {
@@ -75,7 +86,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     }
 
     fun setRating(rating: Float) {
-        ensureViewCreated()
+        ensureViewCreated(isRating = true)
 
         try {
             ratingBar?.rating = rating
@@ -85,12 +96,34 @@ class WCProductPropertyView @JvmOverloads constructor(
         }
     }
 
-    private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL) {
+    fun setForegroundColor(@ColorInt color: Int) {
+        propertyValueText?.tag = propertyValueText?.currentTextColor
+        propertyValueText?.setTextColor(color)
+
+        propertyNameText?.tag = propertyNameText?.currentTextColor
+        propertyNameText?.setTextColor(color)
+
+        propertyGroupIcon?.setColorFilter(color)
+        propertyGroupImg?.setColorFilter(color)
+    }
+
+    fun resetColors() {
+        (propertyValueText?.tag as? Int)?.let { propertyValueText?.setTextColor(it) }
+        (propertyNameText?.tag as? Int)?.let { propertyNameText?.setTextColor(it) }
+        propertyGroupIcon?.clearColorFilter()
+        propertyGroupImg?.clearColorFilter()
+    }
+
+    private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL, isRating: Boolean) {
         if (view == null) {
-            view = if (orientation == LinearLayout.VERTICAL) {
-                View.inflate(context, R.layout.product_property_view_vert_layout, this)
+            view = if (isRating) {
+                View.inflate(context, R.layout.rating_property_view_layout, this)
             } else {
-                View.inflate(context, R.layout.product_property_view_horz_layout, this)
+                if (orientation == LinearLayout.VERTICAL) {
+                    View.inflate(context, R.layout.product_property_view_vert_layout, this)
+                } else {
+                    View.inflate(context, R.layout.product_property_view_horz_layout, this)
+                }
             }
             propertyGroupImg = view?.findViewById(R.id.imgProperty)
             propertyGroupIcon = view?.findViewById(R.id.imgPropertyIcon)

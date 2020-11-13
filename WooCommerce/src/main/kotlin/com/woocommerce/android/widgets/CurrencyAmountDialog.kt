@@ -38,7 +38,7 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
     private var minValue: BigDecimal = BigDecimal(Double.MIN_VALUE)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(activity)
+        val builder = MaterialAlertDialogBuilder(requireActivity())
         val view = View.inflate(activity, R.layout.currency_amount_dialog, null)
 
         headerText = view.findViewById(R.id.currencyAmount_header)

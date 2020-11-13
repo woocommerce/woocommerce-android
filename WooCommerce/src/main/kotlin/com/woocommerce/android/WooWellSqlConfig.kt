@@ -33,7 +33,9 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
                 toast.show()
             }
 
-            // the main activity uses this to determine when it needs to load the site list
+            // the main activity uses this pref to determine when it needs to load the site list - note that
+            // we must first initialize AppPrefs because at this point it will be null
+            AppPrefs.init(context)
             AppPrefs.setDatabaseDowngraded(true)
             helper?.let { reset(it) }
         } else {
@@ -59,4 +61,11 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             reset()
         }
     }
+
+    /**
+     * Increase the cursor window size to 5MB for devices running API 28 and above. This should reduce the
+     * number of SQLiteBlobTooBigExceptions. Note that this is only called on API 28 and
+     * above since earlier versions don't allow adjusting the cursor window size.
+     */
+    override fun getCursorWindowSize() = (1024L * 1024L * 5L)
 }

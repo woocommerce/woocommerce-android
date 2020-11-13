@@ -37,3 +37,9 @@ fun isVirtualProduct(
 
 val String.isCashPayment: Boolean
     get() = CASH_PAYMENTS.contains(this)
+
+fun WCOrderModel.getBillingName(defaultValue: String): String {
+    return if (billingFirstName.isEmpty() && billingLastName.isEmpty()) {
+        defaultValue
+    } else "$billingFirstName $billingLastName"
+}

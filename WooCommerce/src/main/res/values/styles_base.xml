@@ -236,6 +236,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
     </style>
 
+    <style name="Woo.TextView.Warning" parent="Woo.TextView.Body2">
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
     <style name="Woo.TextView.Caption">
         <item name="android:textAppearance">?attr/textAppearanceCaption</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
@@ -379,6 +383,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
 
+    <style name="Woo.Button.TextButton">
+        <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
+    </style>
+
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.Secondary">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
@@ -397,6 +405,17 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="backgroundTint">@color/button_colored_bg_selector</item>
+    </style>
+
+    <!--  Circular button filled with color  -->
+    <style name="Woo.Button.Colored.Circle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerSize">50%</item>
+        <item name="android:insetTop">@dimen/minor_00</item>
+        <item name="android:insetBottom">@dimen/minor_00</item>
+        <item name="android:insetLeft">@dimen/minor_00</item>
+        <item name="android:insetRight">@dimen/minor_00</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="backgroundTint">@color/color_primary</item>
     </style>
 
     <style name="Woo.Button.Colored.White">
@@ -423,6 +442,18 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.ImageButton.More">
         <item name="android:src">@drawable/ic_menu_more_vert_compat</item>
     </style>
+
+    <style name="Woo.ImageButton.Close">
+        <item name="android:src">@drawable/ic_gridicons_cross_grey_24dp</item>
+        <item name="android:padding">@dimen/major_85</item>
+    </style>
+
+    <style name="Woo.AddButton">
+        <item name="android:src">@drawable/ic_add</item>
+        <item name="tint">@color/woo_white</item>
+        <item name="backgroundTint">@color/color_secondary</item>
+    </style>
+
 
     <!-- Set at the theme level so no need to set directly on the component -->
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
@@ -475,6 +506,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Divider.TitleAligned">
         <item name="android:layout_marginStart">@dimen/margin_app_title_aligned</item>
+    </style>
+
+    <style name="Woo.Divider.Warning">
+        <item name="android:background">@color/warning_foreground_color</item>
     </style>
 
     <!--

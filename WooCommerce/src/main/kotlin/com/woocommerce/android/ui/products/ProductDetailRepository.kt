@@ -21,8 +21,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
@@ -33,10 +35,12 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCProductStore.OnProductCreated
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductSkuAvailabilityChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductUpdated
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
@@ -60,8 +64,12 @@ class ProductDetailRepository @Inject constructor(
     private var continuationFetchProductShippingClass: CancellableContinuation<Boolean>? = null
     private var continuationVerifySku: CancellableContinuation<Boolean>? = null
 
+    private var continuationAddProduct: Continuation<Pair<Boolean, Long>>? = null
+
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
+
+    var lastFetchProductErrorType: ProductErrorType? = null
 
     init {
         dispatcher.register(this)
@@ -72,6 +80,7 @@ class ProductDetailRepository @Inject constructor(
     }
 
     suspend fun fetchProduct(remoteProductId: Long): Product? {
+        lastFetchProductErrorType = null
         try {
             this.remoteProductId = remoteProductId
             continuationFetchProduct?.cancel()
@@ -128,6 +137,25 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
+     * Fires the request to add a product
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+        return try {
+            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(ACTION_TIMEOUT) {
+                continuationAddProduct = it
+                val model = product.toDataModel(null)
+                val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
+                dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
+            } ?: Pair(false, 0L) // request timed out
+        } catch (e: CancellationException) {
+            WooLog.e(PRODUCTS, "Exception encountered while publishing a product", e)
+            Pair(false, 0L)
+        }
+    }
+
+    /**
      * Fires the request to update the product password
      *
      * @return the result of the action as a [Boolean]
@@ -156,7 +184,7 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun verifySkuAvailability(sku: String): Boolean? {
+    suspend fun isSkuAvailableRemotely(sku: String): Boolean? {
         continuationVerifySku?.cancel()
         return try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -219,9 +247,9 @@ class ProductDetailRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
-    fun geProductExistsBySku(sku: String) = productStore.geProductExistsBySku(selectedSite.get(), sku)
+    fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
-    fun getCachedVariantCount(remoteProductId: Long) =
+    fun getCachedVariationCount(remoteProductId: Long) =
             productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =
@@ -239,6 +267,7 @@ class ProductDetailRepository @Inject constructor(
         if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
             if (continuationFetchProduct?.isActive == true) {
                 if (event.isError) {
+                    lastFetchProductErrorType = event.error.type
                     continuationFetchProduct?.resume(false)
                 } else {
                     AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
@@ -314,6 +343,25 @@ class ProductDetailRepository @Inject constructor(
             } else {
                 continuationFetchProductShippingClass?.resume(true)
             }
+        }
+    }
+
+    /**
+     * A new product has been added
+     */
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onProductCreated(event: OnProductCreated) {
+        if (event.causeOfChange == ADDED_PRODUCT) {
+            if (event.isError) {
+                val pair = Pair(false, 0L)
+                continuationAddProduct?.resume(pair)
+            } else {
+                val pair = Pair(true, event.remoteProductId)
+                continuationAddProduct?.resume(pair)
+            }
+            continuationAddProduct = null
         }
     }
 }

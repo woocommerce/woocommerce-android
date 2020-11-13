@@ -1,2 +1,2 @@
-- Product enhancements: Update product images, product settings, and share product links right from the app.
-- California users can view a new privacy notice.
+* Product variation information fully displays in order details.
+* Fixed a rare crash when adding a new product category and selecting product filter options.

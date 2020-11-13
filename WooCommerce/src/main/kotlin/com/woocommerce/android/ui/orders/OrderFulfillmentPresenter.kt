@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_AD
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_DELETE_SUCCESS
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.isVirtualProduct
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -32,15 +31,16 @@ import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTracking
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderFulfillmentPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
+    private val shippingLabelStore: WCShippingLabelStore,
     private val uiMessageResolver: UIMessageResolver,
     private val networkStatus: NetworkStatus
 ) : OrderFulfillmentContract.Presenter {
@@ -105,19 +105,24 @@ class OrderFulfillmentPresenter @Inject constructor(
     }
 
     override fun fetchShipmentTrackingsFromApi(order: WCOrderModel) {
-        val payload = FetchOrderShipmentTrackingsPayload(selectedSite.get(), order)
+        val payload = FetchOrderShipmentTrackingsPayload(order.id, order.remoteOrderId, selectedSite.get())
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
     }
 
     /**
      * Segregating methods that request data from db for better ui testing
      */
-    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(order)
+    override fun getShipmentTrackingsFromDb(order: WCOrderModel) = orderStore.getShipmentTrackingsForOrder(
+        selectedSite.get(), order.id
+    )
 
     override fun loadShipmentTrackingsFromDb() {
         orderModel?.let { order ->
             val trackings = getShipmentTrackingsFromDb(order)
-            orderView?.showOrderShipmentTrackings(trackings)
+            // display the option to add shipment tracking only if shipping labels are not available
+            if (shippingLabelStore.getShippingLabelsForOrder(selectedSite.get(), order.remoteOrderId).isEmpty()) {
+                orderView?.showOrderShipmentTrackings(trackings)
+            }
         }
     }
 
@@ -163,7 +168,9 @@ class OrderFulfillmentPresenter @Inject constructor(
                     Stat.ORDER_TRACKING_DELETE, mapOf(
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_ORDER_FULFILL
             ))
-            val payload = DeleteOrderShipmentTrackingPayload(selectedSite.get(), order, wcOrderShipmentTrackingModel)
+            val payload = DeleteOrderShipmentTrackingPayload(
+                selectedSite.get(), order.id, order.remoteOrderId, wcOrderShipmentTrackingModel
+            )
             dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
         }
     }

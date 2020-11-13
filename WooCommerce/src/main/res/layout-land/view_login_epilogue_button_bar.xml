@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.WCElevatedLinearLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,8 +9,17 @@
     android:clipToPadding="false"
     android:padding="@dimen/major_100"
     android:orientation="horizontal"
-    app:wcElevation="@dimen/plane_02"
+    android:elevation="@dimen/plane_02"
     tools:showIn="@layout/activity_site_picker">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_primary"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAllCaps="false"
+        android:text="@string/login_try_another_account"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_secondary"
@@ -19,16 +28,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:visibility="gone"
-        android:text="@string/login_view_connected_stores"
-        tools:visibility="visible"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_primary"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="0sp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/minor_00"
-        android:text="@string/login_try_another_account"/>
-</com.woocommerce.android.widgets.WCElevatedLinearLayout>
+        android:text="@string/login_view_connected_stores"
+        android:textAllCaps="false"
+        tools:visibility="visible"/>
+</LinearLayout>

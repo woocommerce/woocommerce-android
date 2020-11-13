@@ -11,6 +11,7 @@
         android:title="@string/orderdetail_track_shipment"/>
 
     <item
+        android:visible="false"
         android:id="@+id/menu_delete_shipment"
         android:title="@string/orderdetail_delete_tracking"/>
 

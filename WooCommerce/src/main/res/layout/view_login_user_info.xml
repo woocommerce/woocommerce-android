@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:gravity="center"
+    android:layout_marginStart="@dimen/major_100"
+    android:layout_marginEnd="@dimen/major_100"
     android:layout_marginTop="@dimen/major_300"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -15,15 +16,15 @@
 
     <ImageView
         android:id="@+id/image_avatar"
-        android:layout_width="@dimen/image_major_64"
-        android:layout_height="@dimen/image_major_64"
+        android:layout_width="@dimen/image_major_72"
+        android:layout_height="@dimen/image_major_72"
         android:layout_marginBottom="@dimen/major_75"
         android:contentDescription="@string/login_avatar_content_description"
         tools:srcCompat="@drawable/img_gravatar_placeholder"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_displayname"
-        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        android:textAppearance="@style/TextAppearance.Woo.Headline5"
         android:textColor="@color/color_on_surface_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_username"
-        style="@style/Woo.TextView.Body2"
+        style="@style/Woo.TextView.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="0dp"

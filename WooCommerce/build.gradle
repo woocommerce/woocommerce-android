@@ -31,6 +31,7 @@ repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://dl.bintray.com/wordpress-mobile/maven" }
+    maven { url "http://dl.bintray.com/terl/lazysodium-maven" }
 }
 
 androidExtensions {
@@ -38,8 +39,8 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.1'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.0'
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -47,12 +48,12 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "4.5-rc-1"
+            versionName "5.4-rc-1"
         }
-        versionCode 135
+        versionCode 162
 
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -78,6 +79,11 @@ android {
 
         wasabi { // Development only version, can be installed along release versions
             applicationId "com.woocommerce.android.dev"
+            dimension "buildType"
+        }
+
+        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+            applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
     }
@@ -126,33 +132,33 @@ dependencies {
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview-selection:1.0.0"
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.appcompat:appcompat:1.1.0"
-    implementation "com.google.android.material:material:1.1.0"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "com.google.android.material:material:1.2.1"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation ("androidx.browser:browser:1.2.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.0"
+    implementation "androidx.preference:preference:1.1.1"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
-    implementation('org.wordpress:utils:1.24') {
+    implementation('org.wordpress:utils:1.26') {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:52d3e23406'
+    implementation 'com.automattic:tracks:1.2.1'
 
-    implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:fluxc:$fluxCVersion") {
+    implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-
-    implementation("com.github.wordpress-mobile.WordPress-FluxC-Android:woocommerce:$fluxCVersion") {
+    implementation("$gradle.ext.fluxCBinaryPath:woocommerce:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
@@ -176,7 +182,7 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.4.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
-    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
@@ -184,8 +190,8 @@ dependencies {
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
-    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
-    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
+    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
+    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
@@ -201,13 +207,20 @@ dependencies {
     releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
 
     // Debug dependencies
-    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
-    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
+    debugImplementation "com.facebook.soloader:soloader:0.9.0"
+    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+        // Force Flipper to use the okhttp version defined in the fluxc module
+        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
+        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
+        exclude group: 'com.squareup.okhttp3'
+    }
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-3'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
@@ -225,8 +238,8 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
-    kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.3.3")
-    androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.3.3")
+    kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
+    androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
@@ -241,7 +254,7 @@ dependencies {
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
-    implementation "androidx.fragment:fragment-ktx:1.2.0"
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation "androidx.activity:activity-ktx:1.1.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0"
 
@@ -312,6 +325,12 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     ]
 }
 
+task printVersionName {
+    doLast {
+        println android.defaultConfig.versionName
+    }
+}
+
 def checkGradlePropertiesFile() {
     def inputFile = file("${rootDir}/gradle.properties")
     if (!inputFile.exists()) {
@@ -329,14 +348,14 @@ static def loadPropertiesFromFile(inputFile) {
 }
 
 // For app signing
-if (["storeFile", "storePassword", "keyAlias", "keyPassword"].count { !project.hasProperty(it) } == 0) {
+if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !project.hasProperty(it) } == 0) {
     android {
         signingConfigs {
             release {
-                storeFile = rootProject.file(project.storeFile)
-                storePassword = project.storePassword
-                keyAlias = project.keyAlias
-                keyPassword = project.keyPassword
+                storeFile = rootProject.file(project.uploadStoreFile)
+                storePassword = project.uploadStorePassword
+                keyAlias = project.uploadKeyAlias
+                keyPassword = project.uploadKeyPassword
             }
         }
     }

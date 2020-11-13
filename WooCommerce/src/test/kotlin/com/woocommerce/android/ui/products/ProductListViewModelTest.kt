@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -9,16 +8,22 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -28,9 +33,13 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateWithArgs = mock()
+    private val prefs: AppPrefs = mock()
 
     private val coroutineDispatchers = CoroutineDispatchers(
-            Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
+        Dispatchers.Unconfined,
+        Dispatchers.Unconfined,
+        Dispatchers.Unconfined
+    )
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 
@@ -47,7 +56,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                         savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus
+                        networkStatus,
+                        prefs
                 )
         )
     }
@@ -77,7 +87,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
-        verify(productRepository, times(1)).getProductList(any())
+        verify(productRepository, times(1)).getProductList(productFilterOptions = emptyMap())
         verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
@@ -85,8 +95,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows and hides product list skeleton correctly`() = test {
-        doReturn(emptyList<Product>()).whenever(productRepository).getProductList(any())
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -103,7 +113,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list load more progress correctly`() = test {
         doReturn(true).whenever(productRepository).canLoadMoreProducts
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(any(), any())
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -114,5 +124,107 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.loadProducts(loadMore = true)
         assertThat(isLoadingMore).containsExactly(false, true, false)
+    }
+
+    @Test
+    fun `Shows and hides add product button correctly when loading list of products`() = test {
+        // when
+        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+
+        createViewModel()
+
+        val isAddProductButtonVisible = ArrayList<Boolean>()
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                isAddProductButtonVisible.add(it)
+            }
+        }
+
+        viewModel.loadProducts()
+
+        // then
+        assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+    }
+
+    @Test
+    fun `Shows offline message when trashing a product without a connection`() {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.trashProduct(any())
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+    }
+
+    @Test
+    fun `Shows error message when trashing a product fails`() {
+        runBlocking {
+            doReturn(false).whenever(productRepository).trashProduct(any())
+        }
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.trashProduct(any())
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_trash_error))
+    }
+
+    @Test
+    fun `Test Filters button tap`() {
+        createViewModel()
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onFiltersButtonTapped()
+
+        assertThat(events.count { it is ShowProductFilterScreen }).isEqualTo(1)
+    }
+
+    @Test
+    fun `Test Filters button tap when filters already enabled`() {
+        createViewModel()
+
+        val stockStatus = "instock"
+        val status = "simple"
+        val type = "draft"
+        viewModel.onFiltersChanged(stockStatus, status, type)
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onFiltersButtonTapped()
+
+        val event = events.first() as ShowProductFilterScreen
+        assertThat(event.productStatusFilter).isEqualTo(status)
+        assertThat(event.productTypeFilter).isEqualTo(type)
+        assertThat(event.stockStatusFilter).isEqualTo(stockStatus)
+    }
+
+    @Test
+    fun `Test Sorting button tap`() {
+        createViewModel()
+
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever {
+            events.add(it)
+        }
+
+        viewModel.onSortButtonTapped()
+
+        assertThat(events.count { it is ShowProductSortingBottomSheet }).isEqualTo(1)
     }
 }

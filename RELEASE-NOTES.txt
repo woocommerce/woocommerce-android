@@ -1,8 +1,61 @@
+*** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+5.5
+-----
+ 
+5.4
+-----
+* Selected product variation information now fully displayed in order details
+* Fixed a rare crash happening when adding new product category and selecting product filter options. [https://github.com/woocommerce/woocommerce-android/pull/3098]
+
+5.3
+-----
+* In Settings > Beta features, a Products switch is now available for turning Products M4 features on and off (default off). Products M4 features: add a simple/grouped/external product with actions to publish or save as draft.
+* Application settings have been moved to a gear icon on the Dashboard
+* You can now view product review details directly from product detail screen
+* Product detail screen now includes the number of ratings for that product
+* Fixed slowness in order screens
+* Order detail screen now includes option to print and refund shipping labels if you have the WooCommerce Shipping & Tax extension
+ 
+5.2
+-----
+* Product editing is now out of beta and is available for all users
+ 
+5.1
+-----
+* Implemented new login flow complete with new screen designs! #2851
+* Orders by order status screen now displays actual order count instead of max 99. #2853
+
+5.0
+-----
+* Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
+* Fixed a common crash when choosing a product image
+* You can now give your opinion for the Product sections with the new Give Feedback Banner
+ 
+4.9
+-----
+* Creates CrowdSignal integration for app Feedback survey
+* You can now edit variations (price, description, inventory, visibility and shipping)
+* Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
+ 
+4.8
+-----
+* Added a fix to display the Add shipment tracking section only if the Shipment Tracking plugin is available
+* Fixed a rare crash caused by attempting to hide a non-active view
+ 
+4.7
+-----
+* Disabled beta options and removed Improved Stats as selectable option from it
+* Set Stats V4 as the default choice
+* Update Stats V3 due date warning message to September 1, 2020
+* Fixed cursor window size-related crashes for device running Android P and above
+ 
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
 * Updated the background color of the login views.
 * Moved privacy notice for CA users to the About App screen.
+* Added a placeholder for orders without a customer name.
  
 4.5
 -----

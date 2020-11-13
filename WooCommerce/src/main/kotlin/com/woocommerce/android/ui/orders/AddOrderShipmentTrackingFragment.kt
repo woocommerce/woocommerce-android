@@ -14,15 +14,16 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
-import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import java.util.Calendar
@@ -39,6 +40,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         const val FIELD_IS_CUSTOM_PROVIDER = "is-custom-provider"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME = "order-tracking-custom-provider-name"
         const val FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL = "order-tracking-custom-provider-url"
+        const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
@@ -124,7 +126,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                             listener = this,
                             selectedProviderText = addTracking_editCarrier.text.toString(),
                             orderIdentifier = orderId)
-                    .also { it.show(requireFragmentManager(), AddOrderTrackingProviderListFragment.TAG) }
+                    .also { it.show(parentFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
         }
     }
 
@@ -146,7 +148,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -205,18 +207,16 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                 AppPrefs.setSelectedShipmentTrackingProviderName(providerText)
                 AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(isCustomProvider)
 
-                val orderShipmentTrackingModel = WCOrderShipmentTrackingModel()
-                orderShipmentTrackingModel.trackingNumber = trackingNumText
-                orderShipmentTrackingModel.dateShipped = getDateShippedText()
-                orderShipmentTrackingModel.trackingProvider = providerText
-                if (isCustomProvider) {
-                    orderShipmentTrackingModel.trackingLink = customProviderTrackingUrl
-                }
+                val shipmentTracking = OrderShipmentTracking(
+                    trackingNumber = trackingNumText,
+                    dateShipped = getDateShippedText(),
+                    trackingProvider = providerText,
+                    isCustomProvider = isCustomProvider,
+                    trackingLink = if (isCustomProvider) { customProviderTrackingUrl } else ""
+                )
 
-                if (presenter.pushShipmentTrackingRecord(orderId, orderShipmentTrackingModel, isCustomProvider)) {
-                    shouldShowDiscardDialog = false
-                    activity?.onBackPressed()
-                }
+                shouldShowDiscardDialog = false
+                navigateBackWithResult(KEY_ADD_SHIPMENT_TRACKING_RESULT, shipmentTracking)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -265,12 +265,15 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     override fun confirmDiscard() {
         isConfirmingDiscard = true
-        CustomDiscardDialog.showDiscardDialog(
+        WooDialog.showDialog(
                 requireActivity(),
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
                 posBtnAction = DialogInterface.OnClickListener { _, _ ->
                     shouldShowDiscardDialog = false
                     activity?.onBackPressed()
                 },
+                negativeButtonId = R.string.keep_editing,
                 negBtnAction = DialogInterface.OnClickListener { _, _ ->
                     isConfirmingDiscard = false
                 })
@@ -291,10 +294,10 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
      * example: May 9, 2019 -> 2019-05-09
      */
     override fun getDateShippedText(): String {
-        val dateSelected = DateUtils.getDateFromLocalizedLongDateString(
+        val dateSelected = DateUtils().getDateFromLocalizedLongDateString(
                 requireActivity(),
                 addTracking_date.text.toString())
-        return DateUtils.getYearMonthDayStringFromDate(dateSelected)
+        return DateUtils().getYearMonthDayStringFromDate(dateSelected)
     }
 
     override fun onTrackingProviderSelected(selectedCarrierName: String) {
@@ -328,7 +331,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     private fun displayFormatDateShippedText(dateString: String) {
         context?.let {
-            addTracking_date.setText(DateUtils.getLocalizedLongDateString(
+            addTracking_date.setText(DateUtils().getLocalizedLongDateString(
                     it,
                     dateString
             ))

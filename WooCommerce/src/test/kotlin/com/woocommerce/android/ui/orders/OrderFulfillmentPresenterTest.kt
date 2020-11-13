@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -41,6 +42,7 @@ class OrderFulfillmentPresenterTest {
     private val selectedSite: SelectedSite = mock()
     private val uiMessageResolver: UIMessageResolver = mock()
     private val networkStatus: NetworkStatus = mock()
+    private val shippngLabelStore: WCShippingLabelStore = mock()
 
     private val order = OrderTestUtils.generateOrder()
     private lateinit var presenter: OrderFulfillmentPresenter
@@ -48,7 +50,9 @@ class OrderFulfillmentPresenterTest {
     @Before
     fun setup() {
         presenter = spy(OrderFulfillmentPresenter(
-                dispatcher, orderStore, productStore, refundStore, selectedSite, uiMessageResolver, networkStatus
+                dispatcher, orderStore, productStore,
+            refundStore, selectedSite, shippngLabelStore,
+            uiMessageResolver, networkStatus
         ))
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
@@ -89,7 +93,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is already fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), true)
@@ -110,7 +114,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)
@@ -138,7 +142,7 @@ class OrderFulfillmentPresenterTest {
 
         presenter.takeView(view)
         doReturn(order).whenever(presenter).orderModel
-        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any())
+        doReturn(orderTrackingList).whenever(orderStore).getShipmentTrackingsForOrder(any(), any())
 
         // order shipment tracking is not fetched from api
         presenter.loadOrderDetail(order.getIdentifier(), false)

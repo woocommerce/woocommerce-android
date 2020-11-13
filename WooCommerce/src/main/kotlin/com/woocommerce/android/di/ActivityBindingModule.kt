@@ -3,15 +3,14 @@ package com.woocommerce.android.di
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpModule
 import com.woocommerce.android.ui.aztec.AztecModule
-import com.woocommerce.android.ui.dashboard.DashboardModule
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.LoginNoJetpackFragmentModule
 import com.woocommerce.android.ui.login.MagicLinkInterceptActivity
-import com.woocommerce.android.ui.login.MagicLinkInterceptFragmentModule
+import com.woocommerce.android.ui.login.WooLoginFragmentModule
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.orders.OrdersModule
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
 import com.woocommerce.android.ui.prefs.MainSettingsModule
@@ -31,22 +30,21 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
             modules = [
             MainModule::class,
-            DashboardModule::class,
             MyStoreModule::class,
             OrdersModule::class,
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
             SitePickerModule::class,
-            AztecModule::class
+            AztecModule::class,
+            ShippingLabelsModule::class
     ])
     abstract fun provideMainActivityInjector(): MainActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [
         LoginFragmentModule::class,
-        MagicLinkInterceptFragmentModule::class,
-        LoginNoJetpackFragmentModule::class])
+        WooLoginFragmentModule::class])
     abstract fun provideLoginActivityInjector(): LoginActivity
 
     @ActivityScope

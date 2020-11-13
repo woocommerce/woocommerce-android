@@ -123,15 +123,6 @@ class AppSettingsActivity : AppCompatActivity(),
         confirmLogout()
     }
 
-    override fun onV4StatsOptionChanged(enabled: Boolean) {
-        val isV4StatsEnabled = AppPrefs.isV4StatsUIEnabled()
-        if (isV4StatsEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.setIsV4StatsUIEnabled(enabled)
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
     override fun onProductsFeatureOptionChanged(enabled: Boolean) {
         val isProductsFeatureEnabled = AppPrefs.isProductsFeatureEnabled()
         if (isProductsFeatureEnabled != enabled) {

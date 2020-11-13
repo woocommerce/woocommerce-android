@@ -7,8 +7,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
@@ -23,6 +25,8 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
@@ -63,16 +67,35 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
             viewModel.onSettingsMenuOrderButtonClicked()
         }
 
-        if (FeatureFlag.PRODUCT_RELEASE_M3.isEnabled()) {
-            productReviewsAllowed.visibility = View.VISIBLE
-            productReviewsAllowedDivider.visibility = View.VISIBLE
-            productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.updateProductDraft(reviewsAllowed = isChecked)
+        val isSimple = viewModel.getProduct().productDraft?.productType == ProductType.SIMPLE
+        if (isSimple) {
+            productIsVirtual.visibility = View.VISIBLE
+            productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
+                viewModel.updateProductDraft(isVirtual = isChecked)
                 activity?.invalidateOptionsMenu()
             }
         } else {
-            productReviewsAllowed.visibility = View.GONE
-            productReviewsAllowedDivider.visibility = View.GONE
+            productIsVirtual.visibility = View.GONE
+        }
+
+        productReviewsAllowed.visibility = View.VISIBLE
+        productReviewsAllowedDivider.visibility = View.VISIBLE
+        productReviewsAllowed.setOnCheckedChangeListener { _, isChecked ->
+            AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_REVIEWS_TOGGLED)
+            viewModel.updateProductDraft(reviewsAllowed = isChecked)
+            activity?.invalidateOptionsMenu()
+        }
+
+        if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled() && viewModel.getProduct().storedProduct?.productType == SIMPLE) {
+            productIsDownloadable.visibility = View.VISIBLE
+            productIsDownloadableDivider.visibility = View.VISIBLE
+            productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
+                updateIsDownloadableFlag(checkbox, isChecked)
+            }
+        } else {
+            productIsDownloadable.visibility = View.GONE
+            productIsDownloadableDivider.visibility = View.GONE
         }
 
         productPurchaseNote.setOnClickListener {
@@ -177,9 +200,11 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         productCatalogVisibility.optionValue = product.catalogVisibility?.toLocalizedString(requireActivity())
         productSlug.optionValue = valueOrNotSet(product.slug)
         productReviewsAllowed.isChecked = product.reviewsAllowed
+        productIsVirtual.isChecked = product.isVirtual
         productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
+        productIsDownloadable.isChecked = product.isDownloadable
     }
 
     private fun setupObservers() {
@@ -191,5 +216,27 @@ class ProductSettingsFragment : BaseProductFragment(), NavigationResult {
         })
 
         updateProductView()
+    }
+
+    private fun updateIsDownloadableFlag(checkBox: CompoundButton, isChecked: Boolean) {
+        fun updateProductDraft(value: Boolean) {
+            viewModel.updateProductDraft(isDownloadable = value)
+            activity?.invalidateOptionsMenu()
+        }
+
+        if (!isChecked) {
+            MaterialAlertDialogBuilder(requireActivity())
+                .setView(R.layout.dialog_uncheck_is_downloadable_warning)
+                .setPositiveButton(R.string.product_uncheck_is_downloadable_warning_yes_button) { _, _ ->
+                    updateProductDraft(false)
+                }
+                .setNegativeButton(R.string.product_uncheck_is_downloadable_warning_no_button) { _, _ ->
+                    checkBox.isChecked = true
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            updateProductDraft(true)
+        }
     }
 }

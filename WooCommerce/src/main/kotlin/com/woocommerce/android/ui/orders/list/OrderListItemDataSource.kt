@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
 import com.woocommerce.android.model.TimeGroup.GROUP_OLDER_MONTH
@@ -14,8 +16,10 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -36,7 +40,8 @@ class OrderListItemDataSource(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus,
-    private val fetcher: OrderFetcher
+    private val fetcher: OrderFetcher,
+    private val resourceProvider: ResourceProvider
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,
@@ -60,9 +65,12 @@ class OrderListItemDataSource(
                     LoadingItem(remoteOrderId)
                 } else {
                     OrderListItemUI(
+                            localOrderId = LocalId(order.id),
                             remoteOrderId = RemoteId(order.remoteOrderId),
                             orderNumber = order.number,
-                            orderName = "${order.billingFirstName} ${order.billingLastName}",
+                            orderName = order.getBillingName(
+                                resourceProvider.getString(R.string.orderdetail_customer_name_default)
+                            ),
                             orderTotal = order.total,
                             status = order.status,
                             dateCreated = order.dateCreated,
@@ -115,7 +123,7 @@ class OrderListItemDataSource(
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
                 val currentDate = Date()
-                if (DateUtils.isAfterDate(currentDate, date)) {
+                if (DateUtils().isAfterDate(currentDate, date)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.main
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType.NEW_ORDER
@@ -12,7 +11,6 @@ import com.woocommerce.android.push.NotificationHandler.NotificationsUnseenRevie
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher.RevenueStatsAvailabilityChangeEvent
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
@@ -44,7 +42,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
@@ -242,12 +239,6 @@ class MainPresenter @Inject constructor(
     fun onEventMainThread(event: RequestFetchProductEvent) {
         val payload = WCProductStore.FetchSingleProductPayload(event.site, event.remoteProductId)
         dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: RevenueStatsAvailabilityChangeEvent) {
-        mainView?.updateStatsView(event.available)
     }
 
     fun onEventMainThread(event: SelectedSiteChangedEvent) {

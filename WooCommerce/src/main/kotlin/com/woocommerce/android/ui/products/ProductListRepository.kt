@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -15,6 +14,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -26,8 +26,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-@OpenClassOnDebug
-final class ProductListRepository @Inject constructor(
+class ProductListRepository @Inject constructor(
     prefsWrapper: PreferencesWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
@@ -41,6 +40,7 @@ final class ProductListRepository @Inject constructor(
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
     private var searchContinuation: CancellableContinuation<List<Product>>? = null
+    private var trashContinuation: CancellableContinuation<Boolean>? = null
     private var offset = 0
 
     private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
@@ -75,7 +75,8 @@ final class ProductListRepository @Inject constructor(
      */
     suspend fun fetchProductList(
         loadMore: Boolean = false,
-        productFilterOptions: Map<ProductFilterOption, String>
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        excludedProductIds: List<Long>? = null
     ): List<Product> {
         try {
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -87,7 +88,8 @@ final class ProductListRepository @Inject constructor(
                         PRODUCT_PAGE_SIZE,
                         offset,
                         productSortingChoice,
-                        filterOptions = productFilterOptions
+                        filterOptions = productFilterOptions,
+                        excludedProductIds = excludedProductIds
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
             }
@@ -95,7 +97,7 @@ final class ProductListRepository @Inject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "CancellationException while fetching products")
         }
 
-        return getProductList(productFilterOptions)
+        return getProductList(productFilterOptions, excludedProductIds)
     }
 
     /**
@@ -103,7 +105,11 @@ final class ProductListRepository @Inject constructor(
      * query and returns only that page of products - note that this returns null if the search
      * is interrupted (which means the user submitted another search while this was running)
      */
-    suspend fun searchProductList(searchQuery: String, loadMore: Boolean = false): List<Product>? {
+    suspend fun searchProductList(
+        searchQuery: String,
+        loadMore: Boolean = false,
+        excludedProductIds: List<Long>? = null
+    ): List<Product>? {
         // cancel any existing load or search
         loadContinuation?.cancel()
         searchContinuation?.cancel()
@@ -118,7 +124,8 @@ final class ProductListRepository @Inject constructor(
                         searchQuery,
                         PRODUCT_PAGE_SIZE,
                         offset,
-                        productSortingChoice
+                        productSortingChoice,
+                        excludedProductIds = excludedProductIds
                 )
                 dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
             }
@@ -131,14 +138,40 @@ final class ProductListRepository @Inject constructor(
     }
 
     /**
+     * Dispatches a request to trash a specific product
+     */
+    suspend fun trashProduct(remoteProductId: Long): Boolean {
+        return try {
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                trashContinuation = it
+
+                val payload = WCProductStore.DeleteProductPayload(
+                    selectedSite.get(),
+                    remoteProductId,
+                    forceDelete = false
+                )
+                dispatcher.dispatch(WCProductActionBuilder.newDeleteProductAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.d(WooLog.T.PRODUCTS, "CancellationException while trashing product")
+            false
+        }
+    }
+
+    /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(productFilterOptions: Map<ProductFilterOption, String>): List<Product> {
+    fun getProductList(
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        excludedProductIds: List<Long>? = null
+    ): List<Product> {
+        val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByFilterOptions(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
-                    sortType = productSortingChoice
+                    sortType = productSortingChoice,
+                    excludedProductIds = excludedIds
             )
             wcProducts.map { it.toAppModel() }
         } else {
@@ -147,10 +180,15 @@ final class ProductListRepository @Inject constructor(
         }
     }
 
+    /**
+     * Returns a single product
+     */
+    fun getProduct(remoteProductId: Long) = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_PRODUCTS) {
+        if (event.causeOfChange == FETCH_PRODUCTS && loadContinuation != null) {
             if (event.isError) {
                 loadContinuation?.resume(false)
                 AnalyticsTracker.track(
@@ -165,6 +203,13 @@ final class ProductListRepository @Inject constructor(
                 loadContinuation?.resume(true)
             }
             loadContinuation = null
+        } else if (event.causeOfChange == DELETED_PRODUCT && trashContinuation != null) {
+            if (event.isError) {
+                trashContinuation?.resume(false)
+            } else {
+                trashContinuation?.resume(true)
+            }
+            trashContinuation = null
         }
     }
 
