@@ -31,6 +31,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -164,6 +165,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         }
 
         option_beta_features.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
+
+        // No beta features currently available
+        option_beta_features.hide()
 
         option_privacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
