@@ -336,11 +336,11 @@
     <string name="print_shipping_label_info_step_count_3" translatable="false">3</string>
     <string name="print_shipping_label_info_step_count_4" translatable="false">4</string>
     <string name="print_shipping_label_info_step_count_5" translatable="false">5</string>
-    <string name="print_shipping_label_info_step_1">Make sure your printer and your device are connected to the <b>same WiFi networks</b></string>
-    <string name="print_shipping_label_info_step_2">After selecting <b>\"Print shipping label\"</b>, you may have to select and add a printer if you haven\'t printed from this device before.</string>
-    <string name="print_shipping_label_info_step_3">You can select your device\'s <b>default print service</b> or install your <b>printer\'s brand app</b> (this should appear as a recommended option)</string>
-    <string name="print_shipping_label_info_step_4">You might have to <b>configure WiFi printing directly on the printer itself.</b> Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
-    <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can <b>save your label as PDF</b> and send it by email to print it from another device.</string>
+    <string name="print_shipping_label_info_step_1">Make sure your printer and your device are connected to the &lt;b&gt;same WiFi networks&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_2">After selecting &lt;b&gt;\"Print shipping label\"&lt;/b&gt;, you may have to select and add a printer if you haven\'t printed from this device before.</string>
+    <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
+    <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
+    <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
 
     <!--
         Refunds
