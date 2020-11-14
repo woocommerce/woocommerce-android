@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -26,11 +27,14 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.BROWSING
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.DRAGGING
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
+import com.woocommerce.android.ui.products.downloads.DraggableItemTouchHelper
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -97,6 +101,10 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
+
+        DraggableItemTouchHelper(dragDirs = ItemTouchHelper.START or ItemTouchHelper.END or ItemTouchHelper.UP or ItemTouchHelper.DOWN) { from, to ->
+            imageGallery.onProductImagesPositionChanged(from, to)
+        }.attachToRecyclerView(imageGallery)
     }
 
     private fun setupObservers(viewModel: ProductImagesViewModel) {
@@ -115,6 +123,18 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             }
             new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
                 addImageButton.setText(titleRes)
+            }
+            new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
+                when (new.productImagesState) {
+                    BROWSING -> {
+                        doneButton?.isVisible = false
+                        addImageButton.visibility = View.VISIBLE
+                    }
+                    DRAGGING -> {
+                        doneButton?.isVisible = true
+                        addImageButton.visibility = View.GONE
+                    }
+                }
             }
         }
 
@@ -142,6 +162,10 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     override fun onGalleryImageClicked(image: Image) {
         viewModel.onGalleryImageClicked(image)
+    }
+
+    override fun onGalleryImageLongClicked() {
+        viewModel.onImageLongClick()
     }
 
     private fun showImageDetail(image: Image, skipThrottling: Boolean) {

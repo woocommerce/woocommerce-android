@@ -45,6 +45,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     interface OnGalleryImageClickListener {
         fun onGalleryImageClicked(image: Product.Image)
+        fun onGalleryImageLongClicked() { }
         fun onGalleryAddImageClicked() { }
     }
 
@@ -135,6 +136,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         adapter.showImages(images)
     }
 
+    fun onProductImagesPositionChanged(from: Int, to: Int) {
+        adapter.moveImage(from, to)
+    }
+
     fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
         this.listener = listener
         adapter.showImages(listOf(images))
@@ -185,6 +190,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun clearImages() {
             imageList.clear()
             notifyDataSetChanged()
+        }
+
+        fun moveImage(from: Int, to: Int) {
+            val item = imageList[from]
+            imageList.removeAt(from)
+            imageList.add(to, item)
+
+            notifyItemMoved(from, to)
         }
 
         fun showImages(images: List<Product.Image>) {
@@ -343,6 +356,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {
                     onImageClicked(adapterPosition)
+                }
+            }
+            itemView.setOnLongClickListener {
+                if (adapterPosition > NO_POSITION) {
+                    listener.onGalleryImageLongClicked()
+                    true
+                } else {
+                    false
                 }
             }
         }

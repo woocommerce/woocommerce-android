@@ -28,22 +28,10 @@ import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
 class ProductDownloadsFragment : BaseProductFragment() {
     private val itemTouchHelper by lazy {
-        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(UP or DOWN, 0) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val from = viewHolder.adapterPosition
-                val to = target.adapterPosition
-                viewModel.swapDownloadableFiles(from, to)
-                updateFilesFromProductDraft()
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+        DraggableItemTouchHelper(UP or DOWN) { from, to ->
+            viewModel.swapDownloadableFiles(from, to)
+            updateFilesFromProductDraft()
         }
-        ItemTouchHelper(simpleItemTouchCallback)
     }
 
     private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {
