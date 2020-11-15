@@ -137,17 +137,13 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
-        confirmationDialog = MaterialAlertDialogBuilder(ContextThemeWrapper(
-                requireActivity(), R.style.Theme_Woo_Dialog))
-                .setMessage(R.string.product_image_remove_confirmation)
-                .setCancelable(true)
-                .setPositiveButton(R.string.remove) { _, _ ->
-                    removeCurrentImage()
-                }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+        confirmationDialog = ConfirmRemoveProductImageDialog(
+                requireActivity(),
+                onPositiveButton = this::removeCurrentImage,
+                onNegativeButton = {
                     isConfirmationShowing = false
                 }
-                .show()
+        ).show()
     }
 
     private fun removeCurrentImage() {

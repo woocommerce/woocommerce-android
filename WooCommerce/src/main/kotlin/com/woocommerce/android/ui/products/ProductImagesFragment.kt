@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.BROWSING
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.DRAGGING
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
@@ -104,6 +105,10 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         }
     }
 
+    override fun onGalleryImageDeleteIconClicked(image: Image) {
+        viewModel.onGalleryImageDeleteIconClicked(image)
+    }
+
     private fun setupObservers(viewModel: ProductImagesViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.uploadingImageUris.takeIfNotEqualTo(old?.uploadingImageUris) { uris ->
@@ -147,9 +152,20 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 ShowCamera -> captureProductImage()
                 ShowWPMediaPicker -> showWPMediaPicker()
                 UpdateReorderedImageList -> updateReorderedImageList()
+                is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun showConfirmationDialog(image: Image) {
+        ConfirmRemoveProductImageDialog(
+                requireActivity(),
+                onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
+                onNegativeButton = {
+                    // no-op
+                }
+        ).show()
     }
 
     private fun updateReorderedImageList() {

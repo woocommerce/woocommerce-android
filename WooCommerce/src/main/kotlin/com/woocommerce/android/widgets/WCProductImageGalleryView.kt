@@ -58,6 +58,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun onGalleryAddImageClicked() { }
         fun onGalleryImageDragStarted() { }
         fun onGalleryImageMoved() { }
+        fun onGalleryImageDeleteIconClicked(image: Product.Image) { }
     }
 
     private var imageSize = 0
@@ -375,19 +376,21 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val src = getImage(position).source
+            val image = getImage(position)
+            val src = image.source
             val viewType = getItemViewType(position)
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
                 glideRequest.load(photonUrl).apply(glideTransform).into(holder.productImageView)
+                holder.bind(image)
             }
         }
     }
 
     private inner class ImageViewHolder(
-        view: View,
+        private val view: View,
         isDraggingEnabled: LiveData<Boolean>
     ) : RecyclerView.ViewHolder(view) {
         val productImageView: BorderedImageView = view.productImage
@@ -417,6 +420,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             isDraggingEnabled.observe(context as LifecycleOwner) { enabled ->
                 view.deleteImageButton.isVisible = enabled
                 itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
+            }
+        }
+
+        fun bind(image: Product.Image) {
+            view.deleteImageButton.setOnClickListener {
+                mListener.onGalleryImageDeleteIconClicked(image)
             }
         }
     }

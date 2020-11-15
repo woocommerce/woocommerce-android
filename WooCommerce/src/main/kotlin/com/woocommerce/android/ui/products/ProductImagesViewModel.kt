@@ -270,6 +270,14 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(images = reorderedImages)
     }
 
+    fun onGalleryImageDeleteIconClicked(image: Image) {
+        triggerEvent(ShowDeleteImageConfirmation(image))
+    }
+
+    fun onDeleteImageConfirmed(image: Image) {
+        viewState = viewState.copy(images = images - image)
+    }
+
     @Parcelize
     data class ViewState(
         val uploadingImageUris: List<Uri>? = null,
@@ -286,6 +294,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     object ShowCamera : Event()
     object ShowWPMediaPicker : Event()
     object UpdateReorderedImageList : Event()
+    data class ShowDeleteImageConfirmation(val image: Image) : Event()
     data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
 
     enum class ProductImagesState {
