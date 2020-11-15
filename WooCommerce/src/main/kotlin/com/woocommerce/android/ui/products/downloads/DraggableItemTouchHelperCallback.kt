@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 class DraggableItemTouchHelper(
     private val dragDirs: Int,
+    private val onDragStarted: () -> Unit = {},
     private val onMove: (from: Int, to: Int) -> Unit
 ) : ItemTouchHelper(
         object : ItemTouchHelper.SimpleCallback(dragDirs, 0) {
@@ -24,8 +25,12 @@ class DraggableItemTouchHelper(
             override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
                 // no-op
             }
+
+            override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                if(actionState == ACTION_STATE_DRAG){
+                    onDragStarted()
+                }
+            }
         }
 )
-
-
-

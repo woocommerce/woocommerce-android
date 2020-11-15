@@ -14,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
-import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -34,7 +33,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetai
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
-import com.woocommerce.android.ui.products.downloads.DraggableItemTouchHelper
+import com.woocommerce.android.ui.products.ProductImagesViewModel.UpdateReorderedImageList
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -43,11 +42,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
 class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_product_images),
-    BackPressListener, OnGalleryImageClickListener {
+    BackPressListener, OnGalleryImageInteractionListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
     }
@@ -58,7 +57,9 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     override val isDoneButtonVisible: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
+        get() = with(viewModel.viewStateData.liveData.value){
+            (this?.isDoneButtonVisible?.or(this.productImagesState == DRAGGING)) ?: false
+        }
     override val isDoneButtonEnabled: Boolean = true
     override val lastEvent: Event?
         get() = viewModel.event.value
@@ -101,10 +102,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
-
-        DraggableItemTouchHelper(dragDirs = ItemTouchHelper.START or ItemTouchHelper.END or ItemTouchHelper.UP or ItemTouchHelper.DOWN) { from, to ->
-            imageGallery.onProductImagesPositionChanged(from, to)
-        }.attachToRecyclerView(imageGallery)
     }
 
     private fun setupObservers(viewModel: ProductImagesViewModel) {
@@ -127,12 +124,13 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
                 when (new.productImagesState) {
                     BROWSING -> {
-                        doneButton?.isVisible = false
-                        addImageButton.visibility = View.VISIBLE
+                        addImageButton.isEnabled = true
+                        imageGallery.setDraggingState(isDragging = false)
                     }
                     DRAGGING -> {
                         doneButton?.isVisible = true
-                        addImageButton.visibility = View.GONE
+                        addImageButton.isEnabled = false
+                        imageGallery.setDraggingState(isDragging = true)
                     }
                 }
             }
@@ -143,14 +141,19 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
-                is ShowImageSourceDialog -> showImageSourceDialog()
+                ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                is ShowStorageChooser -> chooseProductImage()
-                is ShowCamera -> captureProductImage()
-                is ShowWPMediaPicker -> showWPMediaPicker()
+                ShowStorageChooser -> chooseProductImage()
+                ShowCamera -> captureProductImage()
+                ShowWPMediaPicker -> showWPMediaPicker()
+                UpdateReorderedImageList -> updateReorderedImageList()
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun updateReorderedImageList() {
+        viewModel.updateImages(reorderedImages = imageGallery.images)
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {
@@ -164,8 +167,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         viewModel.onGalleryImageClicked(image)
     }
 
-    override fun onGalleryImageLongClicked() {
-        viewModel.onImageLongClick()
+    override fun onGalleryImageDragStarted() {
+        viewModel.onDragStarted()
     }
 
     private fun showImageDetail(image: Image, skipThrottling: Boolean) {

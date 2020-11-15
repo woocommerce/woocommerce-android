@@ -42,4 +42,14 @@
         android:layout_gravity="center"
         android:visibility="gone"
         tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/deleteImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:contentDescription="@string/product_remove_photo"
+        tools:visibility="visible"
+        android:src="@drawable/ic_close" />
+
 </FrameLayout>
