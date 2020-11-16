@@ -124,7 +124,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         return orderDetailViewState.order?.items?.let { lineItems ->
             if (lineItems.isNotEmpty()) {
                 val remoteProductIds = lineItems.map { it.productId }
-                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
             } else false
         } ?: false
     }
