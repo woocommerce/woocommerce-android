@@ -1,1 +1,3 @@
- 
+Products: You can now add simple, grouped, and external products and save products as drafts. We’ll have more new features for you to try out soon!
+
+Other fixes: We fixed a bug affecting product variation names when the variation option was “open,” and a typo on the shipping label screen.
