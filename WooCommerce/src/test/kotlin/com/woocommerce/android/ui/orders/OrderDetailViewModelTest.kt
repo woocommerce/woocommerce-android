@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -242,6 +244,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+        }
+
+    @Test
+    fun `don't fetch products if we have all products`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val product = mixedProducts.first()
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val items = listOf(item, item.copy(productId = 2))
+            val ids = items.map { it.productId }
+
+            val order = order.copy(items = items)
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(listOf(product, product.copy(id = 2))).whenever(repository).getProductsByRemoteIds(ids)
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            viewModel.start()
+
+            verify(repository, never()).fetchProductsByRemoteIds(ids)
+        }
+
+    @Test
+    fun `fetch products if there are some missing`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val product = mixedProducts.first()
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val items = listOf(item, item.copy(productId = 2))
+            val ids = items.map { it.productId }
+
+            val order = order.copy(items = items)
+            doReturn(order).whenever(repository).getOrder(any())
+            doReturn(listOf(product)).whenever(repository).getProductsByRemoteIds(ids)
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            viewModel.start()
+
+            verify(repository, atLeastOnce()).fetchProductsByRemoteIds(ids)
         }
 
     @Test
