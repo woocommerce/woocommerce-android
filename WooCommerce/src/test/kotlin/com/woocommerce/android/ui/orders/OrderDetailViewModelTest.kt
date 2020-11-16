@@ -17,15 +17,18 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderDetailViewState
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -80,6 +83,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true
     )
+
+    private val mixedProducts = listOf(
+        ProductTestUtils.generateProduct(1),
+        ProductTestUtils.generateProduct(2, true)
+    ).map { it.toDataModel(null) }
+
+    private val virtualProducts = listOf(
+        ProductTestUtils.generateProduct(3, true),
+        ProductTestUtils.generateProduct(4, true)
+    ).map { it.toDataModel(null) }
 
     @Before
     fun setup() {
@@ -184,6 +197,50 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
             viewModel.start()
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+        }
+
+    @Test
+    fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
+            val virtualOrder = order.copy(items = virtualItems)
+
+            doReturn(virtualProducts).whenever(repository).getProductsByRemoteIds(listOf(3, 4))
+            doReturn(virtualOrder).whenever(repository).getOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            viewModel.start()
+
+            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(true)
+        }
+
+    @Test
+    fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
+            val mixedItems = listOf(item, item.copy(productId = 2))
+            val mixedOrder = order.copy(items = mixedItems)
+
+            doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(listOf(1, 2))
+            doReturn(mixedOrder).whenever(repository).getOrder(any())
+
+            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+            viewModel.start()
+
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
         }
 
