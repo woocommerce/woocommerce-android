@@ -30,19 +30,21 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         orderStatus_edit.setOnClickListener(onTap)
     }
 
-    fun updateOrder(order: Order) {
-        val dateStr = if (order.dateCreated.isToday()) {
-            order.dateCreated.getTimeString(context)
-        } else {
-            order.dateCreated.getMediumDate(context)
-        }
+    fun updateOrder(order: Order): Boolean {
+        val dateStr = order.dateCreated?.isToday()?.let { isToday ->
+            when(isToday) {
+                true -> order.dateCreated.getTimeString(context)
+                false -> order.dateCreated.getMediumDate(context)
+            }
+        } ?: return false
+
         orderStatus_dateAndOrderNum.text = context.getString(
             R.string.orderdetail_orderstatus_date_and_ordernum,
             dateStr,
             order.number
         )
-
         orderStatus_name.text = order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+        return true
     }
 
     private fun getTagView(orderStatus: OrderStatus): TagView {
