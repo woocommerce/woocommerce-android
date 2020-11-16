@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 15:54:04+0000
+Translation-Revision-Date: 2020-11-13 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">اختبار إنشاء منتج بسيط ومرتبط ومجمَّع بينما نستعد للبدء</string>
+    <string name="bottom_sheet_linked_products_desc">زيادة المبيعات من خلال عمليات البيع والبيع المتبادل</string>
+    <string name="edit_products_button">تحرير المنتجات</string>
+    <string name="add_products_button">إضافة منتجات</string>
+    <string name="cross_sells_desc">يتم الترويج للمنتجات في عربة التسوق عند تحديد المنتج الحالي</string>
+    <string name="cross_sells_label">منتجات تسويقية</string>
+    <string name="upsells_desc">المنتجات التي يتم الترويج لها بدلاً من المنتج المعروض حاليًا (على سبيل المثال: المنتجات الأكثر ربحية)</string>
+    <string name="upsells_label">منتجات يوصى بها</string>
+    <string name="product_detail_linked_products">المنتجات المرتبطة</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">اتصل بنا</string>
+    <string name="my_store_stats_availability_description">تأكَّد من أنَّك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنَّك قمت بتفعيل مسؤول WooCommerce.\n\nهل لا تزال تحتاج إلى المساعدة؟ %1$s</string>
+    <string name="my_store_stats_availability_title">يتعذر علينا عرض\n تحليلات مخزنك</string>
+    <string name="login_get_link_by_email">الحصول على رابط تسجيل الدخول عن طريق البريد الإلكتروني</string>
+    <string name="email_not_registered_wpcom">حسناً، لا يمكننا العثور على حساب WordPress.com متصلاً بعنوان البريد الإلكتروني هذا.</string>
+    <string name="settings_enable_product_adding_teaser_title">إنشاء المنتجات</string>
+    <string name="settings_preferences">التفضيلات</string>
+    <string name="product_trash_error">حدث خطأ في أثناء نقل المنتج في سلة المهملات</string>
+    <string name="product_trash_undo_snackbar_message">تم نقل المنتج إلى سلة المهملات</string>
+    <string name="product_trash_yes">نقل إلى سلة المهملات</string>
+    <string name="product_confirm_trash">هل تريد نقل هذا المنتج إلى سلة المهملات؟</string>
+    <string name="product_trash">نقل المنتج إلى سلة المهملات</string>
+    <string name="product_detail_no_variations">لا يحتوي هذا المنتج على تباينات حتى الآن</string>
+    <string name="product_variant_list_empty">لا تتوافر إضافة الخيارات، مثل الحجم واللون، على الويب حاليًا.  ستظهر هذه كخيارات على صفحة المنتج في موقعك.</string>
+    <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة ومترابطة ومجمَّعة في أثناء التنقل من تطبيق Woo. يمكنك تمكينه عن طريق تشغيل ميزة بيتا في إعدادات التطبيق. أليس جاهزًا بعد؟ احفظها كمسودة!</string>
+    <string name="product_adding_wip_title">أنشئ منتجات من التطبيق!</string>
+    <string name="product_ratings_count_zero">لا توجد تقييمات</string>
+    <string name="product_ratings_count_one">تم التقييم مرة واحدة</string>
+    <string name="product_ratings_count">تم تقييم %d من المرات</string>
+    <string name="product_detail_fetch_product_invalid_id_error">لم يتم العثور على المنتج</string>
+    <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك إرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
+    <string name="print_shipping_label_info_step_4">قد تضطر إلى التأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
+    <string name="print_shipping_label_info_step_3">يمكنك تحديد البرنامج الخاص بجهازك أو تثبيت برنامجك (ينبغي أن يظهر هذا كخيار موصى به)</string>
+    <string name="print_shipping_label_info_step_2">بعد التحديد، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
+    <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ</string>
+    <string name="print_shipping_label_format_options_title">خيارات تنسيق الملصق</string>
+    <string name="print_shipping_label_info_title">الطباعة باستخدام جهازك</string>
+    <string name="shipping_label_paper_size_label">ملصق (4 × 6 بوصات)</string>
+    <string name="shipping_label_paper_size_letter">خطاب (8.5 × 11 بوصة)</string>
+    <string name="shipping_label_paper_size_legal">قانوني (8.5 × 14 بوصة)</string>
+    <string name="shipping_label_preview_error">حدث خطأ في أثناء معاينة ملصق الشحن</string>
+    <string name="shipping_label_print_info">ألا تعرف كيفية الطباعة باستخدام هاتفك؟ </string>
+    <string name="shipping_label_paper_size_options_info">الرجوع إلى خيارات تخطيط الملصق ومقاس الورقة</string>
+    <string name="shipping_label_print_button">طباعة ملصق الشحن</string>
+    <string name="shipping_label_paper_size_options_title">اختيار مقاس الورقة</string>
+    <string name="shipping_label_paper_size">مقاس الورقة</string>
+    <string name="shipping_label_print_disclaimer">إذا كنتَ تستخدم الملصق بالفعل في حزمة ما، فإنَّ طباعته واستخدامه مجددًا يُعد انتهاكًا لشروط الخدمات لدينا.</string>
+    <string name="shipping_label_print_error_message">إذا كان ثمَّة خطأ في الطباعة عند شراء الملصق، فيمكنك طباعته مجددًا.</string>
+    <string name="order_begin_fulfillment">وسم الطلب بأنه مكتمل</string>
+    <string name="orderdetail_shipping_label_wip_message">إننا نعمل على تسهيل طباعة ملصقات الشحن مباشرة من جهازك!  في الوقت الحالي، إذا أنشأتَ ملصقات الشحن لهذا الطلب في مسؤول مخزنك باستخدام WooCommerce Shipping، فيمكنك طباعتها في تفاصيل طلبك هنا.</string>
+    <string name="orderdetail_shipping_label_wip_title">طباعة ملصقات الشحن من جهازك!</string>
+    <string name="orderdetail_shipping_label_reprint">إعادة طباعة ملصق الشحن</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">تم حفظ مسودة المنتج</string>
     <string name="product_detail_publish_product_draft_error">خطأ في أثناء حفظ مسودة المنتج</string>
     <string name="product_publish_draft_dialog_title">حفظ مسودة</string>
@@ -18,7 +71,9 @@ Language: ar
     <string name="continue_with_wpcom">المتابعة باستخدام WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">إذا تابعت مع Google وليس لديك حساب WordPress.com بالفعل، فأنت تقوم بإنشاء حساب وتوافق على %1$sشروط الخدمة%2$s.</string>
     <string name="continue_terms_of_service_text">بالمتابعة، أنت توافق على %1$sشروط الخدمة%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">سنرسل لك عبر البريد الإلكتروني رابطًا لإنشاء حسابك الجديد على WordPress.com.</string>
     <string name="signup_confirmation_message">سنستخدم عنوان البريد الإلكتروني هذا لإنشاء حسابك الجديد على WordPress.com.</string>
+    <string name="signup_magic_link_message">أرسلنا إليك رسالة عبر البريد الإلكتروني تتضمن رابط التسجيل لإنشاء حسابك الجديد على ووردبريس.كوم. تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط في رسالة البريد الإلكتروني التي استلمتها من WordPress.com.</string>
     <string name="sign_up_label">التسجيل</string>
     <string name="login_or">أو</string>
     <string name="continue_site_credentials">الاستمرار في تخزين بيانات الاعتماد</string>
@@ -28,6 +83,7 @@ Language: ar
     <string name="login_done">تمّ</string>
     <string name="magic_link_not_seeing_email_message">لم تشاهد البريد الإلكتروني؟ تحقّق من مجلد البريد المزعج أو البريد العشوائي.</string>
     <string name="login_magic_links_sent_label">تحقق من بريدك الإلكتروني على هذا الجهاز، واضغط على الرابط في رسالة البريد الإلكتروني التي ستستلمها من WordPress.com.</string>
+    <string name="login_magic_links_label">سنرسل لك عبر البريد الإلكتروني رابطًا يسجّل دخولك على الفور، دون الحاجة إلى كلمة مرور.</string>
     <string name="check_email">التحقق من البريد الإلكتروني</string>
     <string name="get_started">البدء</string>
     <string name="enter_account_info_for_site">أدخل معلومات حسابك %1$s.</string>
@@ -88,8 +144,6 @@ Language: ar
     <string name="variation_detail_price_warning">لن تظهر التباينات من دون السعر في مخزنك</string>
     <string name="variation_detail_update_product_success">تم تحديث التباين</string>
     <string name="grouped_product_btn_delete">حذف المنتج المجمَّع</string>
-    <string name="grouped_products_single">%d المنتج</string>
-    <string name="grouped_products_count">%d المنتجات</string>
     <string name="grouped_products">المنتجات المصنفة</string>
     <string name="product_type_edit">تغيير نوع المنتج</string>
     <string name="product_variation_no_price_set">لم يتم تعيين أي سعر</string>
@@ -231,7 +285,6 @@ Language: ar
     <string name="settings_app_theme_title">المظهر</string>
     <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
     <string name="product_short_description">وصف قصير</string>
-    <string name="my_store_stats_availability_message">نطرح تحسينات على إحصاءات المتاجر باستخدام الإصدار 4.0 من WooCommerce أو المتاجر التي يتم تثبيت إضافة مسؤول WooCommerce بها</string>
     <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى WooCommerce 4.0 أو إصدار أعلى منه، أو يمكنك تثبيت إضافة مسؤول WooCommerce للاستمرار في رؤية إحصاءاتك بعد الأول من سبتمبر 2020.</string>
     <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
@@ -408,7 +461,6 @@ Language: ar
     <string name="orderdetail_payment_paid_by_customer">يدفعه العميل</string>
     <string name="orderdetail_payment_summary_onhold">انتظار الدفع بواسطة %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s عبر %2$s</string>
-    <string name="my_store_stats_availability_title">تجربة إحصاءاتنا المُحسَّنة</string>
     <string name="dashboard_state_no_data">لا توجد أي إيرادات في هذه الفترة</string>
     <string name="no_thanks">لا شكرًا</string>
     <string name="try_it_now">جرّبه الآن</string>
@@ -1020,7 +1072,6 @@ Language: ar
     <string name="orderdetail_product_image_contentdesc">صورة المنتج</string>
     <string name="orderdetail_product_lineitem_sku">وحدة SKU:</string>
     <string name="orderdetail_product_lineitem_tax">الضريبة:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">إرسال بريد إلكتروني إلى العميل</string>
     <string name="orderdetail_billing_details">تفاصيل الفوترة</string>
     <string name="orderdetail_shipping_details">تفاصيل الشحن</string>

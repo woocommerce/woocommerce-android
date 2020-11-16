@@ -1,0 +1,3 @@
+5.4:
+* Informasi ragam produk ditampilkan secara penuh pada detail pesanan.
+* Memperbaiki crash yang jarang terjadi saat menambahkan kategori produk baru dan memilih opsi penyaringan produk.

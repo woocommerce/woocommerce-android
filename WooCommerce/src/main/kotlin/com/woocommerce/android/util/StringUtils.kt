@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
+import android.os.Build
 import android.text.Html
+import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
@@ -181,6 +183,17 @@ object StringUtils {
      */
     fun getRawTextFromHtml(htmlStr: String) =
             Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
+
+    /**
+     * Helper method for using the appropriate `Html.fromHtml()` for the build version.
+     */
+    fun fromHtml(htmlStr: String): Spanned {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(htmlStr)
+        }
+    }
 
     /**
      * Returns a string for the specified locale.

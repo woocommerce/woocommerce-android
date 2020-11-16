@@ -1,22 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-20 12:35:29+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Testa det nya enkla, länkade och grupperade produktskapandet medan vi gör oss redo för lansering</string>
+    <string name="bottom_sheet_linked_products_desc">Öka försäljningen med merförsäljning och korsförsäljning</string>
+    <string name="edit_products_button">Redigera produkter</string>
+    <string name="add_products_button">Lägg till produkter</string>
+    <string name="cross_sells_desc">Produkter som marknadsförs i kundvagnen när den nuvarande produkten är vald</string>
+    <string name="cross_sells_label">Korsförsäljning</string>
+    <string name="upsells_desc">Produkter som marknadsförs istället för den för närvarande visade produkten (dvs. mer lönsamma produkter)</string>
+    <string name="upsells_label">Merförsäljning</string>
+    <string name="product_detail_linked_products">Länkade produkter</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Kontakta oss</string>
+    <string name="my_store_stats_availability_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Admin aktiverad.\n\nBehöver du mer hjälp? %1$s</string>
+    <string name="my_store_stats_availability_title">Vi kan inte visa din\n butiks analys</string>
     <string name="login_get_link_by_email">Skaffa en länk för inloggning via e-post</string>
+    <string name="email_not_registered_wpcom">Hmm. Vi hittar inget konto hos WordPress.com som är kopplat till denna e-postadress.</string>
     <string name="settings_enable_product_adding_teaser_title">Skapar produkter</string>
+    <string name="settings_preferences">Inställningar</string>
+    <string name="product_trash_error">Ett fel inträffade när produkten skulle slängas</string>
     <string name="product_trash_undo_snackbar_message">Produkt flyttad till papperskorg</string>
     <string name="product_trash_yes">Flytta till papperskorg</string>
     <string name="product_confirm_trash">Vill du flytta denna produkt till papperskorgen?</string>
+    <string name="product_trash">Släng produkt</string>
     <string name="product_detail_no_variations">Denna produkt har inga variationer än</string>
+    <string name="product_variant_list_empty">Det går endast att lägga till alternativ som storlek och färg på webben. Dessa kommer att visas som alternativ på produktsidan på din webbplats.</string>
+    <string name="product_wip_message_m4">Det är nu möjligt att skapa nya enkla, länkade och grupperade produkter i farten med hjälp av Woo-appen. Du kan aktivera detta genom att aktivera beta-funktionen i appinställningarna. Inte riktigt klar? Spara dem som utkast!</string>
     <string name="product_adding_wip_title">Skapa produkter från appen!</string>
+    <string name="product_ratings_count_zero">\u2022 inga betyg</string>
+    <string name="product_ratings_count_one">\u2022 betygsatt en gång</string>
+    <string name="product_ratings_count">\u2022 betygsatt %d gånger</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
-    <string name="print_shipping_label_info_title">Skriv ut med din telefon</string>
+    <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du skicka produkten med e-post och skriva ut den från en annan enhet.</string>
+    <string name="print_shipping_label_info_step_4">Du kan behöva kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
+    <string name="print_shipping_label_info_step_3">Du kan välja din enhet eller installera din (detta bör visas som ett rekommenderat alternativ)</string>
+    <string name="print_shipping_label_info_step_2">När du har valt kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
+    <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till</string>
+    <string name="print_shipping_label_format_options_title">Alternativ för etikettformat</string>
+    <string name="print_shipping_label_info_title">Skriv ut med din enhet</string>
+    <string name="shipping_label_paper_size_label">Etikett (4 x 6 tum)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 tum)</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 tum)</string>
+    <string name="shipping_label_preview_error">Fel vid förhandsgranskning av fraktetikett</string>
+    <string name="shipping_label_print_info">Vet du hur du skriver ut med din telefon?</string>
+    <string name="shipping_label_paper_size_options_info">Se alternativen för etikettlayout och pappersstorlek</string>
+    <string name="shipping_label_print_button">Skriv ut fraktetikett</string>
     <string name="shipping_label_paper_size_options_title">Välj pappersstorlek</string>
     <string name="shipping_label_paper_size">Pappersstorlek</string>
+    <string name="shipping_label_print_disclaimer">Om du redan har använt etiketten på ett paket är det ett brott mot våra användarvillkor att skriva ut och använda den igen.</string>
+    <string name="shipping_label_print_error_message">Om det inträffade ett utskriftsfel när du köpte etiketten kan du skriva ut den igen.</string>
+    <string name="order_begin_fulfillment">Markera ordern som slutförd</string>
+    <string name="orderdetail_shipping_label_wip_message">Vi arbetar för att göra det enklare för dig att skriva ut fraktetiketter direkt från din enhet! Om du har skapat fraktetiketter för den här ordern i butiksadmin i WooCommerce Shopping kan du nu skriva ut dem under Beställningsinformation här.</string>
+    <string name="orderdetail_shipping_label_wip_title">Skriv ut fraktetiketter från din enhet!</string>
+    <string name="orderdetail_shipping_label_reprint">Skriv ut fraktetikett igen</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Produktutkast sparat</string>
     <string name="product_detail_publish_product_draft_error">Det gick inte att spara produktutkastet</string>
     <string name="product_publish_draft_dialog_title">Sparar utkast</string>
@@ -102,8 +144,6 @@ Language: sv_SE
     <string name="variation_detail_price_warning">Variationer utan pris kommer inte att visas i din butik</string>
     <string name="variation_detail_update_product_success">Variation uppdaterad</string>
     <string name="grouped_product_btn_delete">Ta bort den grupperade produkten</string>
-    <string name="grouped_products_single">%d produkt</string>
-    <string name="grouped_products_count">%d produkter</string>
     <string name="grouped_products">Grupperade produkter</string>
     <string name="product_type_edit">Ändra produkttyp</string>
     <string name="product_variation_no_price_set">Inget pris angivet</string>
@@ -246,7 +286,6 @@ Language: sv_SE
     <string name="settings_app_theme_title">Utseende</string>
     <string name="product_short_description_empty">Kort sammanfattning om produkten</string>
     <string name="product_short_description">Kort beskrivning</string>
-    <string name="my_store_stats_availability_message">Vi lanserar förbättringar av statistiken för butiker med WooCommerce 4.0 eller butiker som har WooCommerce Admin-tillägget installerat</string>
     <string name="my_store_stats_reverted_message">Vi har lanserat förbättringar av våra analyser. Uppgradera till WooCommerce 4.0 eller senare eller installera WooCommerce Admin-tillägget för att fortsätta att se din statistik efter den 1 september 2020</string>
     <string name="my_store_stats_reverted_title">Uppgradera för att fortsätta se din statistik</string>
     <string name="product_pricing_update_sale_price_error">Reapriset måste vara lägre än det ordinarie priset</string>
@@ -423,7 +462,6 @@ Language: sv_SE
     <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
-    <string name="my_store_stats_availability_title">Prova vår förbättrade statistik</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>
     <string name="no_thanks">Nej tack</string>
     <string name="try_it_now">Prova nu</string>
@@ -1035,7 +1073,6 @@ Language: sv_SE
     <string name="orderdetail_product_image_contentdesc">Produktbild</string>
     <string name="orderdetail_product_lineitem_sku">Artikelnr:</string>
     <string name="orderdetail_product_lineitem_tax">Moms:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-posta kund</string>
     <string name="orderdetail_billing_details">Faktureringsinformation</string>
     <string name="orderdetail_shipping_details">Leveransadress</string>
@@ -1053,7 +1090,7 @@ Language: sv_SE
     <string name="dashboard_action_view_orders">Visa ordrar</string>
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
-    <string name="dashboard_top_performers_total_orders">Totalt antal ordrar: %s</string>
+    <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
     <string name="dashboard_top_performers_total_spend">Spenderat totalt</string>
     <string name="dashboard_top_performers_description">Få insikt i hur produkter presterar i din butik</string>
     <string name="dashboard_top_performers_title">Toppresterande</string>

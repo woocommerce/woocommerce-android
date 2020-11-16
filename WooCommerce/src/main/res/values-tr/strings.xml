@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 15:54:04+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Yayına hazırlanırken yeni, basit, bağlantılı ve gruplandırılmış ürün oluşturma özelliğini deneyin</string>
+    <string name="bottom_sheet_linked_products_desc">Yukarı satış ve çapraz satış ile satışları artırın</string>
+    <string name="edit_products_button">Ürünleri düzenle</string>
+    <string name="add_products_button">Ürünleri ekle</string>
+    <string name="cross_sells_desc">Mevcut ürün seçildiğinde alışveriş sepetinde tanıtılan ürünler</string>
+    <string name="cross_sells_label">Çapraz satışlar</string>
+    <string name="upsells_desc">Şu anda görüntülenen ürün yerine tanıtılan ürünler (yani daha kârlı ürünler)</string>
+    <string name="upsells_label">Yukarı satışlar</string>
+    <string name="product_detail_linked_products">Bağlı ürünler</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Bizimle iletişim kurun</string>
+    <string name="my_store_stats_availability_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.\n\nHâlâ yardıma ihtiyacınız var mı? %1$s</string>
+    <string name="my_store_stats_availability_title">Mağazanızın analizlerini gösteremiyoruz</string>
+    <string name="login_get_link_by_email">E-posta ile bir oturum açma bağlantısı alın</string>
+    <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz.</string>
+    <string name="settings_enable_product_adding_teaser_title">Ürün oluşturma</string>
+    <string name="settings_preferences">Tercihler</string>
+    <string name="product_trash_error">Ürün çöp kutusuna taşınırken hata oluştu</string>
+    <string name="product_trash_undo_snackbar_message">Ürün çöp kutusuna taşındı</string>
+    <string name="product_trash_yes">Çöpe taşı</string>
+    <string name="product_confirm_trash">Bu ürünü Çöp Kutusu\'na taşımak istiyor musunuz?</string>
+    <string name="product_trash">Ürünü çöp kutusuna at</string>
+    <string name="product_detail_no_variations">Bu ürünün henüz hiç varyasyonu yok</string>
+    <string name="product_variant_list_empty">Boyut/beden/büyüklük ve renk gibi seçenekler eklemek şu anda yalnızca web\'de mevcuttur. Bunlar, sitenizin ürün sayfasında seçenekler olarak görünecektir.</string>
+    <string name="product_wip_message_m4">Artık Woo uygulamasını kullanarak yeni, basit, bağlantılı ve gruplandırılmış ürünler oluşturmanız mümkün. Uygulama ayarlarında beta özelliğini açarak bu özelliği etkinleştirebilirsiniz. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
+    <string name="product_adding_wip_title">Uygulamayı kullanarak ürünler oluşturun!</string>
+    <string name="product_ratings_count_zero">\u2022 puan yok</string>
+    <string name="product_ratings_count_one">\u2022 bir kez değerlendirildi</string>
+    <string name="product_ratings_count">\u2022 %d kez değerlendirildi</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Ürün bulunamadı</string>
+    <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
+    <string name="print_shipping_label_info_step_4">Yazıcı ürün yazılımının güncel olduğundan emin olmanız ve talimatlar için yazıcınızın belgelerine bakmanız gerekebilir.</string>
+    <string name="print_shipping_label_info_step_3">Cihazınızı seçebilir veya (bu önerilen bir seçenek olarak görünmelidir) yükleyebilirsiniz</string>
+    <string name="print_shipping_label_info_step_2">Seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
+    <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın şuna bağlı olduğundan emin olun:</string>
+    <string name="print_shipping_label_format_options_title">Etiket biçimi seçenekleri</string>
+    <string name="print_shipping_label_info_title">Cihazınızla yazdırın</string>
+    <string name="shipping_label_paper_size_label">Etiket (4 x 6 inç)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inç)</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inç)</string>
+    <string name="shipping_label_preview_error">Kargo etiketi önizlenirken hata oluştu</string>
+    <string name="shipping_label_print_info">Telefonunuzla nasıl yazdıracağınızı bilmiyor musunuz?</string>
+    <string name="shipping_label_paper_size_options_info">Etiket düzeni ve kağıt boyutu seçeneklerine bakın</string>
+    <string name="shipping_label_print_button">Kargo etiketini yazdır</string>
+    <string name="shipping_label_paper_size_options_title">Kağıt boyutu seç</string>
+    <string name="shipping_label_paper_size">Kağıt boyutu</string>
+    <string name="shipping_label_print_disclaimer">Etiketi bir pakette zaten kullandıysanız onu tekrar yazdırıp kullanmak hizmet şartlarımızın ihlali anlamına gelir.</string>
+    <string name="shipping_label_print_error_message">Etiketi satın aldığınızda bir yazdırma hatası olduysa tekrar yazdırabilirsiniz.</string>
+    <string name="order_begin_fulfillment">Siparişi tamamlandı olarak işaretle</string>
+    <string name="orderdetail_shipping_label_wip_message">Kargo etiketlerini doğrudan cihazınızdan yazdırmayı kolaylaştırmak için çalışıyoruz! Mağaza yöneticinizde WooCommerce Shipping ile bu sipariş için kargo etiketleri oluşturduysanız, şimdilik bunları burada, yani Sipariş Detayları bölümünüzde yazdırabilirsiniz.</string>
+    <string name="orderdetail_shipping_label_wip_title">Cihazınızdan kargo etiketleri yazdırın!</string>
+    <string name="orderdetail_shipping_label_reprint">Kargo etiketini tekrar yazdır</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Ürün taslağı kaydedildi</string>
     <string name="product_detail_publish_product_draft_error">Ürün taslağı kaydedilirken hata oluştu</string>
     <string name="product_publish_draft_dialog_title">Taslak kaydediliyor</string>
@@ -18,7 +71,9 @@ Language: tr
     <string name="continue_with_wpcom">WordPress.com ile devam et</string>
     <string name="continue_with_google_terms_of_service_text">Google ile devam ederseniz ve WordPress.com hesabınız yoksa, bir hesap oluşturup %1$shizmet şartlarımızı%2$s kabul etmiş olursunuz.</string>
     <string name="continue_terms_of_service_text">Devam etmekle, %1$shizmet koşullarını%2$s kabul etmiş olursunuz.</string>
+    <string name="signup_confirmation_magic_link_message">Yeni WordPress.com hesabınızı oluşturmak için size e-postayla bir kayıt bağlantısı göndereceğiz.</string>
     <string name="signup_confirmation_message">Bu e-posta adresini, yeni WordPress.com hesabınızı oluşturmak için kullanacağız.</string>
+    <string name="signup_magic_link_message">Yeni WordPress.com hesabınızı oluşturmanız için size kayıt bağlantısını içeren bir e-posta gönderdik. E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya tıklayın.</string>
     <string name="sign_up_label">Üye ol</string>
     <string name="login_or">veya</string>
     <string name="continue_site_credentials">Mağaza kimlik bilgileriyle devam edin </string>
@@ -28,6 +83,7 @@ Language: tr
     <string name="login_done">Bitti</string>
     <string name="magic_link_not_seeing_email_message">E-postayı görmüyor musunuz? İstenmeyen posta klasörünüzü kontrol edin.</string>
     <string name="login_magic_links_sent_label">E-postanızı bu cihazda kontrol edin ve WordPress.com’dan gelen e-postadaki bağlantıya tıklayın.</string>
+    <string name="login_magic_links_label">Size anında giriş yapacağınız bir bağlantıyı e-posta ile göndereceğiz, hiç bir parolaya gerek yok.</string>
     <string name="check_email">E-postayı kontrol et</string>
     <string name="get_started">Başlayın</string>
     <string name="enter_account_info_for_site">%1$s için hesap bilgilerinizi girin.</string>
@@ -88,8 +144,6 @@ Language: tr
     <string name="variation_detail_price_warning">Fiyatı olmayan varyasyonlar mağazanızda gösterilmeyecektir</string>
     <string name="variation_detail_update_product_success">Varyasyon güncellendi</string>
     <string name="grouped_product_btn_delete">Gruplanmış ürünü sil</string>
-    <string name="grouped_products_single">%d ürün</string>
-    <string name="grouped_products_count">%d ürünler</string>
     <string name="grouped_products">Gruplanmış ürünler</string>
     <string name="product_type_edit">Ürün türünü değiştir</string>
     <string name="product_variation_no_price_set">Fiyat belirtilmemiş</string>
@@ -231,7 +285,6 @@ Language: tr
     <string name="settings_app_theme_title">Görünüm</string>
     <string name="product_short_description_empty">Ürünle ilgili kısa bir özet</string>
     <string name="product_short_description">Kısa açıklama</string>
-    <string name="my_store_stats_availability_message">WooCommerce 4.0\'ı veya WooCommerce Yönetici eklentisini kullanan mağazalar için istatistiklerde geliştirmeler yapıyoruz</string>
     <string name="my_store_stats_reverted_message">Analizlerimiz için iyileştirmeler yaptık. İstatistiklerinizi 1 Eylül 2020\'den sonra da görmeye devam etmek için WooCommerce 4.0 veya daha üst bir sürüme yükseltin veya WooCommerce Yönetici eklentisini yükleyin.</string>
     <string name="my_store_stats_reverted_title">İstatistiklerinizi görmeye devam etmek için yeni sürüme geçin</string>
     <string name="product_pricing_update_sale_price_error">Satış fiyatı normal fiyattan düşük olmalıdır</string>
@@ -247,6 +300,8 @@ Language: tr
     <string name="product_tax_class">Vergi sınıfı</string>
     <string name="product_tax_status">Vergi durumu</string>
     <string name="product_tax_settings">Vergi ayarları</string>
+    <string name="product_schedule_sale_to_label">Şuraya:</string>
+    <string name="product_schedule_sale_from_label">Kimden</string>
     <string name="product_schedule_sale_sublabel">Bir satışı otomatik başlat ve durdur</string>
     <string name="product_schedule_sale_label">Programlı satış</string>
     <string name="order_refunds_store_admin_link_text">mağaza yöneticinizde</string>
@@ -406,7 +461,6 @@ Language: tr
     <string name="orderdetail_payment_paid_by_customer">Müşteri tarafından ödenen</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
-    <string name="my_store_stats_availability_title">Geliştirilmiş istatistiklerimizi deneyin</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
     <string name="no_thanks">Hayır, teşekkürler</string>
     <string name="try_it_now">Şimdi deneyin</string>
@@ -1018,7 +1072,6 @@ Language: tr
     <string name="orderdetail_product_image_contentdesc">Ürün Görseli</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Vergi:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">müşteriye e-posta gönderin</string>
     <string name="orderdetail_billing_details">Fatura Ayrıntıları</string>
     <string name="orderdetail_shipping_details">Gönderim Ayrıntıları</string>
