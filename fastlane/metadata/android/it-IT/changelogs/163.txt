@@ -1,0 +1,3 @@
+5.4:
+* Le informazioni sulle variazioni dei prodotti vengono visualizzate nei dettagli dell'ordine.
+* È stato risolto un crash raro che si verificava quando si aggiungeva una nuova categoria di prodotti e si selezionavano le opzioni di filtro dei prodotti.

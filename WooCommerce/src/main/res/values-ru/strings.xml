@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 11:54:05+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Оцените новую простую процедуру создания связанных и сгруппированных продуктов, которая готова к запуску</string>
+    <string name="bottom_sheet_linked_products_desc">Увеличивайте продажи благодаря продаже дополнительных и связанных продуктов</string>
+    <string name="edit_products_button">Изменить товары</string>
+    <string name="add_products_button">Добавить товары</string>
+    <string name="cross_sells_desc">Продукты, которые будут предложены пользователю в дополнение к выбранному продукту в корзине</string>
+    <string name="cross_sells_label">Кросселы</string>
+    <string name="upsells_desc">Продукты, которые будут предложены пользователю вместо просматриваемого в настоящий момент продукта (например, более прибыльные продукты)</string>
+    <string name="upsells_label">Апсейл</string>
+    <string name="product_detail_linked_products">Связанные продукты</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Связь с нами</string>
+    <string name="my_store_stats_availability_description">Убедитесь, что на сайте используется последняя версия WooCommerce и вы активировали WooCommerce Admin.\n\nПо-прежнему нужна помощь? %1$s</string>
+    <string name="my_store_stats_availability_title">Мы не можем показать аналитику\n для вашего магазина</string>
+    <string name="login_get_link_by_email">Получить ссылку для входа по email</string>
+    <string name="email_not_registered_wpcom">Не получается найти учётную запись WordPress.com для этого адреса email.</string>
+    <string name="settings_enable_product_adding_teaser_title">Создание продуктов</string>
+    <string name="settings_preferences">Параметры</string>
+    <string name="product_trash_error">Не удалось отправить продукт в корзину</string>
+    <string name="product_trash_undo_snackbar_message">Продукт перемещен в корзину</string>
+    <string name="product_trash_yes">Отправить в корзину</string>
+    <string name="product_confirm_trash">Вы уверены, что хотите переместить товар в корзину?</string>
+    <string name="product_trash">Отправить продукт в корзину</string>
+    <string name="product_detail_no_variations">Вариантов продукта пока нет</string>
+    <string name="product_variant_list_empty">Добавление опций, например размера и цвета, сейчас возможно только в Интернете. Эти варианты будут показаны на странице продукта на вашем сайте.</string>
+    <string name="product_wip_message_m4">Теперь можно на ходу создавать новые связанные и сгруппированные продукты в приложении Woo. Чтобы его активировать, включите бета-функцию в настройках приложения. Еще не готово? Сохраните их как черновик.</string>
+    <string name="product_adding_wip_title">Создавайте продукты в приложении!</string>
+    <string name="product_ratings_count_zero">\u2022 оценок нет</string>
+    <string name="product_ratings_count_one">\u2022 одна оценка</string>
+    <string name="product_ratings_count">\u2022 оценено %d раз</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Продукт не найден</string>
+    <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете отправить документ по эл. почте, чтобы распечатать его с другого устройства.</string>
+    <string name="print_shipping_label_info_step_4">Возможно, вам нужно проверить, обновлено ли встроенное ПО принтера, и ознакомиться с документацией принтера.</string>
+    <string name="print_shipping_label_info_step_3">Вы можете выбрать свое устройство или установить (здесь должен появиться рекомендованный вариант)</string>
+    <string name="print_shipping_label_info_step_2">После выбора вам потребуется выбрать и добавить принтер, если ранее вы не выполняли печать с данного устройства.</string>
+    <string name="print_shipping_label_info_step_1">Убедитесь, что ваш принтер и ваше устройство подключены к</string>
+    <string name="print_shipping_label_format_options_title">Варианты формата этикетки</string>
+    <string name="print_shipping_label_info_title">Печать с устройства</string>
+    <string name="shipping_label_paper_size_label">Этикетка (4 x 6 in)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 in)</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 in)</string>
+    <string name="shipping_label_preview_error">Не удалось выполнить предварительный просмотр транспортной этикетки</string>
+    <string name="shipping_label_print_info">Не знаете, как печатать с телефона?</string>
+    <string name="shipping_label_paper_size_options_info">См. макет этикетки и варианты размера бумаги</string>
+    <string name="shipping_label_print_button">Напечатать транспортную этикетку</string>
+    <string name="shipping_label_paper_size_options_title">Выбрать размер бумаги</string>
+    <string name="shipping_label_paper_size">Размер бумаги</string>
+    <string name="shipping_label_print_disclaimer">Если вы уже использовали этикетку в посылке, ее распечатка и повторное использование является нарушением наших условий предоставления услуг.</string>
+    <string name="shipping_label_print_error_message">Если при печати купленной этикетки произошла ошибка, можно распечатать ее еще раз.</string>
+    <string name="order_begin_fulfillment">Отметить заказ как выполненный</string>
+    <string name="orderdetail_shipping_label_wip_message">Мы стараемся упростить процедуру печати этикеток с устройства. Сейчас, если вы создали этикетки для этого заказа в разделе администрирования магазина с помощью WooCommerce Shipping, их можно распечатать из описания заказа (здесь).</string>
+    <string name="orderdetail_shipping_label_wip_title">Печатайте транспортные этикетки со своего устройства!</string>
+    <string name="orderdetail_shipping_label_reprint">Напечатать транспортную этикетку повторно</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Черновик товара сохранен</string>
     <string name="product_detail_publish_product_draft_error">Ошибка сохранения черновика товара</string>
     <string name="product_publish_draft_dialog_title">Сохранение черновика</string>
@@ -18,7 +71,9 @@ Language: ru
     <string name="continue_with_wpcom">Продолжить с WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Если вы продолжите работу с учетной записью Google, не имея учётной записи WordPress.com, вы создадите учётную запись и примете наши %1$sУсловия обслуживания%2$s.</string>
     <string name="continue_terms_of_service_text">Продолжив, вы соглашаетесь с нашими %1$sПравилами пользования%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">Мы пришлём вам ссылку для создания учётной записи WordPress.com.</string>
     <string name="signup_confirmation_message">Этот адрес эл.почты будет использован при создании вашей новой учётной записи WordPress.com.</string>
+    <string name="signup_magic_link_message">Мы выслали вам по электронной почте ссылку для регистрации новой учетной записи на WordPress.com. Проверьте почту на этом устройстве и нажмите ссылку в письме от WordPress.com</string>
     <string name="sign_up_label">Зарегистрироваться</string>
     <string name="login_or">или</string>
     <string name="continue_site_credentials">Продолжить с учетными данными магазина</string>
@@ -28,6 +83,7 @@ Language: ru
     <string name="login_done">Готово</string>
     <string name="magic_link_not_seeing_email_message">Не нашли письмо? Загляните в папку со спамом.</string>
     <string name="login_magic_links_sent_label">Проверьте почту на этом устройстве и нажмите ссылку в письме от WordPress.com</string>
+    <string name="login_magic_links_label">Мы пришлём вам ссылку для входа, которая позволит вам сразу войти без пароля.</string>
     <string name="check_email">Проверка почты</string>
     <string name="get_started">Начать </string>
     <string name="enter_account_info_for_site">Введите данные вашей учётной записи для %1$s.</string>
@@ -88,8 +144,6 @@ Language: ru
     <string name="variation_detail_price_warning">Варианты без цены не будут показаны в вашем магазине.</string>
     <string name="variation_detail_update_product_success">Вариант обновлен</string>
     <string name="grouped_product_btn_delete">Удалить сгруппированные товары</string>
-    <string name="grouped_products_single">%d товар</string>
-    <string name="grouped_products_count">%d товаров (товара)</string>
     <string name="grouped_products">Товары в группе</string>
     <string name="product_type_edit">Изменить тип товара</string>
     <string name="product_variation_no_price_set">Не установлена цена</string>
@@ -231,7 +285,6 @@ Language: ru
     <string name="settings_app_theme_title">Внешний вид</string>
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
-    <string name="my_store_stats_availability_message">Мы улучшили статистику для магазинов с WooCommerce 4.0 или расширением WooCommerce Admin</string>
     <string name="my_store_stats_reverted_message">Мы подготовили обновление для нашей системы аналитики. Для просмотра статистики с 1 сентября 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
     <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
@@ -408,7 +461,6 @@ Language: ru
     <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
-    <string name="my_store_stats_availability_title">Оцените улучшенный раздел статистики</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="try_it_now">Попробовать</string>
@@ -1020,7 +1072,6 @@ Language: ru
     <string name="orderdetail_product_image_contentdesc">Изображение товара</string>
     <string name="orderdetail_product_lineitem_sku">АРТИКУЛ:</string>
     <string name="orderdetail_product_lineitem_tax">Налог:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">отправить клиенту эл. письмо</string>
     <string name="orderdetail_billing_details">Платёжные сведения</string>
     <string name="orderdetail_shipping_details">Сведения о доставке</string>
@@ -1037,7 +1088,7 @@ Language: ru
     <string name="dashboard_fulfill_order_title_single">У вас есть 1 невыполненный заказ</string>
     <string name="dashboard_action_view_orders">Просмотреть заказы</string>
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
-    <string name="dashboard_top_performers_empty">Активность за этот период отсутствует</string>
+    <string name="dashboard_top_performers_empty">Нет активности за этот период</string>
     <string name="dashboard_top_performers_total_orders">Всего заказов: %s</string>
     <string name="dashboard_top_performers_total_spend">Общий объём выручки</string>
     <string name="dashboard_top_performers_description">Получайте информацию об эффективности продаж различных продуктов в вашем магазине</string>

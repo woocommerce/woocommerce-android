@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 15:54:04+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Probeer de nieuwe functies uit voor het aanmaken van een eenvoudig, gekoppeld of gegroepeerd product. De functies zijn bijna klaar voor lancering</string>
+    <string name="bottom_sheet_linked_products_desc">Meer verkopen met upselling en cross-selling</string>
+    <string name="edit_products_button">Producten bewerken</string>
+    <string name="add_products_button">Producten toevoegen</string>
+    <string name="cross_sells_desc">Gepromote producten in de winkelwagen als het huidige product is geselecteerd</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="upsells_desc">Gepromote producten in plaats van de momenteel weergegeven producten (ofwel winstgevendere producten)</string>
+    <string name="upsells_label">Upsells</string>
+    <string name="product_detail_linked_products">Gekoppelde producten</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Neem contact op</string>
+    <string name="my_store_stats_availability_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.\n\nMeer hulp nodig? %1$s</string>
+    <string name="my_store_stats_availability_title">We kunnen de statistieken van je\n winkel niet weergeven</string>
+    <string name="login_get_link_by_email">Krijg een inloglink via e-mail</string>
+    <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres.</string>
+    <string name="settings_enable_product_adding_teaser_title">Producten aanmaken</string>
+    <string name="settings_preferences">Voorkeuren</string>
+    <string name="product_trash_error">Fout bij weggooien van product</string>
+    <string name="product_trash_undo_snackbar_message">Product verplaatst naar prullenbak</string>
+    <string name="product_trash_yes">Naar prullenbak verplaatsen</string>
+    <string name="product_confirm_trash">Wil je dit product naar de prullenbak verplaatsen?</string>
+    <string name="product_trash">Product naar prullenbak verplaatsen</string>
+    <string name="product_detail_no_variations">Er zijn nog geen variaties op dit product</string>
+    <string name="product_variant_list_empty">Je kan momenteel alleen op de website opties zoals grootte en kleur toevoegen. Deze zullen als opties worden getoond op de productpagina van je site.</string>
+    <string name="product_wip_message_m4">Je kan nu nieuwe eenvoudige, gekoppelde en gegroepeerde producten aanmaken terwijl je onderweg bent met de Woo-app. Je kan dit inschakelen door de bèta-functie in te schakelen in de app-instellingen. Was je nog niet klaar? Sla ze op als een concept!</string>
+    <string name="product_adding_wip_title">Maak producten aan in de app!</string>
+    <string name="product_ratings_count_zero">\u2022 geen beoordelingen</string>
+    <string name="product_ratings_count_one">\u2022 1 keer beoordeeld</string>
+    <string name="product_ratings_count">\u2022 %d keer beoordeeld</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Product niet gevonden</string>
+    <string name="print_shipping_label_info_step_5">Als je nog steeds problemen ondervindt bij het afdrukken vanaf je apparaat, kan je het per e-mail verzenden om het vanaf een ander apparaat af te drukken.</string>
+    <string name="print_shipping_label_info_step_4">Het is mogelijk dat je moet nagaan of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
+    <string name="print_shipping_label_info_step_3">Je kan die van je apparaat selecteren of je (hier zou een aanbevolen optie moeten komen te staan) installeren</string>
+    <string name="print_shipping_label_info_step_2">Nadat je   hebt geselecteerd, moet je wellicht een printer selecteren en toevoegen als je nog niet eerder iets vanaf dit apparaat hebt afgedrukt.</string>
+    <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met het</string>
+    <string name="print_shipping_label_format_options_title">Opties labelformaat</string>
+    <string name="print_shipping_label_info_title">Afdrukken met je apparaat</string>
+    <string name="shipping_label_paper_size_label">Etiket (4 x 6 inch)</string>
+    <string name="shipping_label_paper_size_letter">Brief (8,5 x 11 inch)</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inch)</string>
+    <string name="shipping_label_preview_error">Fout bij voorbeeldweergave verzendlabel</string>
+    <string name="shipping_label_print_info">Weet je niet hoe je kan afdrukken met je telefoon?</string>
+    <string name="shipping_label_paper_size_options_info">Zie opties voor labellay-out en papierformaat</string>
+    <string name="shipping_label_print_button">Verzendlabel afdrukken</string>
+    <string name="shipping_label_paper_size_options_title">Papierformaat kiezen</string>
+    <string name="shipping_label_paper_size">Papierformaat</string>
+    <string name="shipping_label_print_disclaimer">Als je het label al voor een pakket hebt gebruikt, is het afdrukken en hergebruiken een overtreding van onze servicevoorwaarden.</string>
+    <string name="shipping_label_print_error_message">Als er een afdrukfout heeft plaatsgevonden toen je het label hebt aangeschaft, dan kan je het opnieuw afdrukken.</string>
+    <string name="order_begin_fulfillment">Bestelling markeren als voltooid</string>
+    <string name="orderdetail_shipping_label_wip_message">We zijn bezig om het eenvoudiger voor je te maken om verzendlabels rechtstreeks vanaf je apparaat af te drukken! Als je met WooCommerce Shipping verzendlabels voor deze bestelling hebt aangemaakt bij je winkelbeheer, kan je ze voorlopig hier, bij je bestelgegevens, afdrukken.</string>
+    <string name="orderdetail_shipping_label_wip_title">Verzendlabels afdrukken vanaf je apparaat!</string>
+    <string name="orderdetail_shipping_label_reprint">Verzendlabel opnieuw afdrukken</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Productconcept opgeslagen</string>
     <string name="product_detail_publish_product_draft_error">Fout bij het opslaan van productconcept</string>
     <string name="product_publish_draft_dialog_title">Concept wordt opgeslagen</string>
@@ -18,7 +71,9 @@ Language: nl
     <string name="continue_with_wpcom">Ga verder met WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Als je doorgaat met Google en nog geen WordPress.com account hebt, maakt je een account aan en gaat je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
     <string name="continue_terms_of_service_text">Als je doorgaat, ga je akkoord met onze %1$sServicevoorwaarden%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">We sturen je een link per e-mail om je nieuwe WordPress.com account aan te maken.</string>
     <string name="signup_confirmation_message">We gebruiken dit e-mailadres om je nieuwe WordPress.com account aan te maken.</string>
+    <string name="signup_magic_link_message">We hebben je een aanmeldlink toegestuurd om je nieuwe WordPress.com-account aan te maken. Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com ontvangt.</string>
     <string name="sign_up_label">Abonneren</string>
     <string name="login_or">of</string>
     <string name="continue_site_credentials">Doorgaan met winkel-inloggegevens</string>
@@ -28,6 +83,7 @@ Language: nl
     <string name="login_done">Klaar</string>
     <string name="magic_link_not_seeing_email_message">Zie je de e-mail niet? Controleer je spam-map of ongewenste e-mail.</string>
     <string name="login_magic_links_sent_label">Controleer je e-mail op dit apparaat en tik op de link in de e-mail die je van WordPress.com hebt ontvangen.</string>
+    <string name="login_magic_links_label">We e-mailen je een link waarmee je direct kan inloggen, zonder wachtwoord.</string>
     <string name="check_email">E-mail controleren</string>
     <string name="get_started">Aan de slag</string>
     <string name="enter_account_info_for_site">Voer je accountgegevens in voor %1$s.</string>
@@ -88,8 +144,6 @@ Language: nl
     <string name="variation_detail_price_warning">Variaties zonder prijs worden niet weergegeven in je winkel</string>
     <string name="variation_detail_update_product_success">Variatie bijgewerkt</string>
     <string name="grouped_product_btn_delete">Het gegroepeerde product verwijderen</string>
-    <string name="grouped_products_single">%d product</string>
-    <string name="grouped_products_count">%d producten</string>
     <string name="grouped_products">Gegroepeerde producten</string>
     <string name="product_type_edit">Producttype wijzigen</string>
     <string name="product_variation_no_price_set">Geen prijs ingesteld</string>
@@ -231,7 +285,6 @@ Language: nl
     <string name="settings_app_theme_title">Weergave</string>
     <string name="product_short_description_empty">Korte samenvatting van het product</string>
     <string name="product_short_description">Korte beschrijving</string>
-    <string name="my_store_stats_availability_message">We voeren verbeteringen door aan statistieken voor winkels met WooCommerce 4.0 of winkels waarvoor de WooCommerce Admin-plugin is geïnstalleerd</string>
     <string name="my_store_stats_reverted_message">We hebben verbeteringen doorgevoerd voor analyses. Upgrade naar WooCommerce 4.0 of hoger of installeer de WooCommerce Admin-plugin om je statistieken te kunnen blijven bekijken na dinsdag 1 september 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade om je statistieken te kunnen blijven bekijken</string>
     <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
@@ -408,7 +461,6 @@ Language: nl
     <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
-    <string name="my_store_stats_availability_title">Probeer onze verbeterde statistieken</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>
     <string name="no_thanks">Nee, liever niet</string>
     <string name="try_it_now">Probeer het nu</string>
@@ -1020,7 +1072,6 @@ Language: nl
     <string name="orderdetail_product_image_contentdesc">Productafbeelding</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Belasting:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">e-mail verzenden naar klant</string>
     <string name="orderdetail_billing_details">Factuurgegevens</string>
     <string name="orderdetail_shipping_details">Verzendgegevens</string>

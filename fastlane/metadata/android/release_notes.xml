@@ -1,49 +1,85 @@
+<ar>
+5.4:
+* يتم عرض معلومات تنوع المنتج بالكامل في تفاصيل الطلب.
+* إصلاح عطل نادر عند إضافة تصنيف منتج جديدة وتحديد خيارات تصفية المنتجات.
+</ar>
+<de-DE>
+5.4:
+* Produktvariationsinformationen werden in den Bestelldetails vollständig angezeigt.
+* Es wurde ein Fehler behoben, der zum Absturz führte, wenn eine neue Produktkategorie hinzugefügt und Produktfilteroptionen ausgewählt wurden.
+</de-DE>
+<es-ES>
+5.4:
+* La información del pedido muestra toda la información de variación del producto.
+* Se ha corregido un error raro que se producía al añadir una nueva categoría de producto y seleccionar opciones de filtros de productos.
+</es-ES>
 <fr-FR>
-5.3 :
-* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
-* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
-* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
-
+5.4 :
+* Les informations sur les variantes des produits s’affichent entièrement dans les détails de la commande.
+* Résolution d’un incident rare au moment de l’ajout d’une nouvelle catégorie de produits et de la sélection d’options de filtres de produits.
 </fr-FR>
 <iw-IL>
-5.3:
-* מוצרים: ב'הגדרות' ← 'אפשרויות ביתא', המתג 'מוצרים' זמין כעת. אפשר גם להוסיף מוצר פשוט, מוצר בקבוצה, מוצר חיצוני או מוצר עם סוגים, ולפרסם או לשמור אותם כטיוטה.
-* פרטי הזמנה: ההרחבה WooCommerce Shipping & Tax מאפשרת לך להדפיס ולבקש החזרים עבור תוויות משלוח קיימות.
-* שיפורים שונים: ביצענו תיקונים אחרים, כגון שיפור המהירות במסכי ההזמנה.
-
+5.4: 
+*מידע על סוג המוצר מוצג במלואו בפרטי ההזמנה.
+* תיקנו קריסה נדירה שקורית כשמוסיפים קטגוריית מוצר חדשה ובחורים אפשרויות לסינון מוצרים.
 </iw-IL>
+<id>
+5.4:
+* Informasi ragam produk ditampilkan secara penuh pada detail pesanan.
+* Memperbaiki crash yang jarang terjadi saat menambahkan kategori produk baru dan memilih opsi penyaringan produk.
+</id>
 <it-IT>
-5.3:
-* Prodotti: in Impostazioni → Funzionalità beta, è ora disponibile un interruttore Prodotti. Puoi anche aggiungere un prodotto semplice, raggruppato, esterno o variabile e pubblicarlo o salvarlo come una bozza.
-* Dettaglio dell'ordine: con l'estensione WooCommerce Shipping & Tax, puoi stampare e richiedere rimborsi per etichette di spedizione esistenti.
-* Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
-
+5.4:
+* Le informazioni sulle variazioni dei prodotti vengono visualizzate nei dettagli dell'ordine.
+* È stato risolto un crash raro che si verificava quando si aggiungeva una nuova categoria di prodotti e si selezionavano le opzioni di filtro dei prodotti.
 </it-IT>
+<ja-JP>
+5.4:
+ * 商品の検証情報全体が注文の詳細に表示されます。
+* 新しい商品カテゴリーを追加し、商品フィルターオプションを選択した際にまれに発生するクラッシュを修正しました。
+</ja-JP>
 <ko-KR>
-5.3:
-* 제품: 설정 → 베타 기능에서 이제 제품을 전환할 수 있습니다. 단순하고, 그룹화되고, 변형 가능하거나 외부 제품을 추가하여 공개하거나 임시글로 저장할 수도 있습니다.
-* 주문 상세 정보: WooCommerce 배송 및 세금 확장 기능을 통해 기존 배송 레이블을 인쇄하고 환불을 요청할 수 있습니다.
-* 기타 개선 사항: 주문 화면 속도 개선 등 다른 사항도 개선되었습니다.
-
+5.4:
+* 제품 변형 정보가 주문 상세 정보에 전체적으로 표시됩니다.
+* 새 제품 카테고리를 추가하고 제품 필터 옵션을 선택할 때 드물게 발생하는 충돌을 수정했습니다.
 </ko-KR>
+<nl-NL>
+5.4:
+* Informatie over productvariatie wordt volledig weergegeven bij bestellingsgegevens.
+* Een zeldzame crash verholpen bij het toevoegen van een nieuwe productcategorie en het selecteren van productfilters.
+</nl-NL>
+<pt-BR>
+5.4:
+* Exibição completa das informações de variação do produto nos detalhes do pedido.
+* Correção de uma falha rara ocorrida ao adicionar uma nova categoria de produto e selecionar as opções de filtro.
+</pt-BR>
+<ru-RU>
+5.4:
+* Информация о вариантах продуктов полностью отображается в сведениях о заказе.
+* Исправлена ошибка, приводившая к редким сбоям при добавлении новой категории продуктов и выборе параметров фильтрации продуктов.
+</ru-RU>
 <sv-SE>
-5.3:
-* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
-* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
-* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
-
+5.4:
+* Produktvariationsinformation visas fullständigt i orderdetaljerna.
+* En sällsynt krasch som inträffade vid tillägg av en ny produktkategori och val av produktfilteralternativ har åtgärdats.
 </sv-SE>
+<tr-TR>
+5.4:
+* Ürün varyasyon bilgileri, sipariş ayrıntılarında tam olarak görüntülenir.
+* Yeni bir ürün kategorisi eklerken ve ürün filtresi seçenekleri seçerken nadir görülen bir çökme düzeltildi.
+</tr-TR>
 <zh-CN>
-5.3：
-* 产品：在“设置”→“测试版功能”中，现在提供了一个“产品”开关。 您也可以添加简单的分组或外部产品，然后发布产品或将其另存为草稿。
-* 订单详情：您可以使用 WooCommerce Shipping & Tax 扩展程序打印现有配送标签和申请退款。
-* 其他改进：我们还修复了一些其他问题，例如提升了订单屏幕的加载速度。
-
+5.4：
+* 产品变体信息完全显示在订单详细信息中。
+* 修复了添加新产品类别和选择产品过滤选项时罕见出现的崩溃问题。
 </zh-CN>
+<zh-TW>
+5.4：
+* 訂單詳細資料會完整顯示商品子項資訊。
+* 修正少數情況下，新增商品類別並選取商品篩選選項時出現的當機問題。
+</zh-TW>
 <en-US>
-5.3:
-* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.
-* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.
-* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.
-
+5.4:
+* Product variation information fully displays in order details.
+* Fixed a rare crash when adding a new product category and selecting product filter options.
 </en-US>
