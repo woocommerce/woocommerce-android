@@ -17,7 +17,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -47,7 +47,7 @@ class ProductTypesBottomSheetViewModel @AssistedInject constructor(
             triggerEvent(ViewProductAdd)
             triggerEvent(ExitWithResult(productTypeUiItem.type))
         } else {
-            triggerEvent(ShowDiscardDialog(
+            triggerEvent(ShowDialog(
                 titleId = R.string.product_type_confirm_dialog_title,
                 messageId = R.string.product_type_confirm_dialog_message,
                 positiveButtonId = R.string.product_type_confirm_button,

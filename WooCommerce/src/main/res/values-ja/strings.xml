@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 15:54:04+0000
+Translation-Revision-Date: 2020-11-13 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">リリースの準備ができ次第、新しいリンクおよびグループ化された商品の作成機能をテストしてください</string>
+    <string name="bottom_sheet_linked_products_desc">アップセルとクロスセルで販売を伸ばしましょう</string>
+    <string name="edit_products_button">商品を編集</string>
+    <string name="add_products_button">商品追加</string>
+    <string name="cross_sells_desc">現在の商品が選択された際にカートで宣伝される商品です</string>
+    <string name="cross_sells_label">クロスセル</string>
+    <string name="upsells_desc">現在表示中の商品の代わりに宣伝される商品です (より安価な商品など)</string>
+    <string name="upsells_label">アップセル</string>
+    <string name="product_detail_linked_products">関連商品</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">お問い合わせ</string>
+    <string name="my_store_stats_availability_description">サイトで最新バージョンの WooCommerce を実行していることと、WooCommerce Admin を有効にしていることを確認してください。\n\nさらにサポートが必要ですか ? %1$s</string>
+    <string name="my_store_stats_availability_title">ストアのアナリティクスを表示できません</string>
+    <string name="login_get_link_by_email">ログインリンクをメールで取得</string>
+    <string name="email_not_registered_wpcom">このメールアドレスに紐付けられている WordPress.com アカウントが見つかりません</string>
+    <string name="settings_enable_product_adding_teaser_title">商品を作成中</string>
+    <string name="settings_preferences">設定</string>
+    <string name="product_trash_error">商品をゴミ箱へ移動中にエラーが発生しました</string>
+    <string name="product_trash_undo_snackbar_message">ゴミ箱に移動された商品</string>
+    <string name="product_trash_yes">ゴミ箱に移動</string>
+    <string name="product_confirm_trash">この商品をゴミ箱に移動しますか ?</string>
+    <string name="product_trash">商品をゴミ箱に入れる</string>
+    <string name="product_detail_no_variations">この商品にはまだバリエーションがありません</string>
+    <string name="product_variant_list_empty">サイズ、色といったオプションの追加は、現在 Web でのみ可能です。 サイトの商品ページにオプションとして表示されます。</string>
+    <string name="product_wip_message_m4">Woo アプリを使用して、外出先からも 新しくシンプルなリンクおよびグループ化された商品の作成ができるようになりました。アプリの設定からベータ版の機能をオンにするとお使いいただけます。 準備ができていませんか ? 下書きとして保存しましょう !</string>
+    <string name="product_adding_wip_title">アプリから商品を作成しましょう !</string>
+    <string name="product_ratings_count_zero">\u2022 評価なし</string>
+    <string name="product_ratings_count_one">\u2022 1件の評価</string>
+    <string name="product_ratings_count">\u2022 %d件の評価</string>
+    <string name="product_detail_fetch_product_invalid_id_error">商品が見つかりません</string>
+    <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、メールで別の端末に送信して印刷できます。</string>
+    <string name="print_shipping_label_info_step_4">プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
+    <string name="print_shipping_label_info_step_3">端末のアイテムを選択するか、自分のものをインストールできます (これは推奨オプションとして表示)</string>
+    <string name="print_shipping_label_info_step_2">選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
+    <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が次に接続されていることを確認してください</string>
+    <string name="print_shipping_label_format_options_title">ラベルの書式設定オプション</string>
+    <string name="print_shipping_label_info_title">端末から印刷</string>
+    <string name="shipping_label_paper_size_label">ラベル (4 x 6インチ)</string>
+    <string name="shipping_label_paper_size_letter">レター (8.5 x 11インチ)</string>
+    <string name="shipping_label_paper_size_legal">リーガル (8.5 x 14インチ)</string>
+    <string name="shipping_label_preview_error">配送ラベルのプレビューでエラーが発生しました</string>
+    <string name="shipping_label_print_info">スマートフォンから印刷する方法をご存知ですか ?</string>
+    <string name="shipping_label_paper_size_options_info">ラベルのレイアウトと用紙サイズのオプションを見る</string>
+    <string name="shipping_label_print_button">配送ラベルを印刷</string>
+    <string name="shipping_label_paper_size_options_title">用紙サイズを選択</string>
+    <string name="shipping_label_paper_size">用紙サイズ</string>
+    <string name="shipping_label_print_disclaimer">荷物に一度使用したラベルを印刷して再度使用すると、弊社の利用規約違反となります。</string>
+    <string name="shipping_label_print_error_message">購入したラベルで印刷エラーが発生した場合は、そのラベルをもう一度印刷できます。</string>
+    <string name="order_begin_fulfillment">注文を完了としてマーク</string>
+    <string name="orderdetail_shipping_label_wip_message">お使いの端末から配送ラベルをより簡単に直接印刷できるよう、改善を重ねているところです ! 現時点では、WooCommerce Shipping のストア管理からこの注文用に配送ラベルを作成した場合、こちらの「注文詳細」から印刷できます。</string>
+    <string name="orderdetail_shipping_label_wip_title">お手元の端末から配送ラベルを印刷しましょう !</string>
+    <string name="orderdetail_shipping_label_reprint">配送ラベルを再印刷</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">商品の下書きを保存しました</string>
     <string name="product_detail_publish_product_draft_error">商品の下書きの保存中にエラーが発生しました</string>
     <string name="product_publish_draft_dialog_title">下書きを保存しています</string>
@@ -18,7 +71,9 @@ Language: ja_JP
     <string name="continue_with_wpcom">WordPress.com で続ける</string>
     <string name="continue_with_google_terms_of_service_text">Google を引き続き使用し、WordPress.com アカウントをまだお持ちでない場合は、アカウントを作成して WordPress.com の%1$s利用規約%2$sに同意します。</string>
     <string name="continue_terms_of_service_text">継続することで、%1$s利用規約%2$sに合意したことになります。</string>
+    <string name="signup_confirmation_magic_link_message">新しい WordPress.com アカウントを作成するための登録リンクをメールでお送りします。</string>
     <string name="signup_confirmation_message">このメールアドレスは新しい WordPress.com アカウントの作成に使用します。</string>
+    <string name="signup_magic_link_message">新しい WordPress.com アカウントを作成するための登録リンクをメールでお送りしました。 この端末でメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
     <string name="sign_up_label">登録</string>
     <string name="login_or">または</string>
     <string name="continue_site_credentials">ストアのログイン情報で続ける</string>
@@ -28,6 +83,7 @@ Language: ja_JP
     <string name="login_done">終了</string>
     <string name="magic_link_not_seeing_email_message">メールが表示されない場合は、 スパムメールや迷惑メールのフォルダーを確認してください。</string>
     <string name="login_magic_links_sent_label">このデバイスでメールをチェックして、WordPress.com から届いたメールにあるリンクをタップしてください。</string>
+    <string name="login_magic_links_label">パスワードなしですぐにログインできるリンクのメールをお送りします。</string>
     <string name="check_email">メールを確認</string>
     <string name="get_started">今すぐ始める</string>
     <string name="enter_account_info_for_site">%1$s のアカウント情報を入力してください。</string>
@@ -86,8 +142,6 @@ Language: ja_JP
     <string name="variation_detail_price_warning">価格が設定されていないバリエーションはストアに表示されません</string>
     <string name="variation_detail_update_product_success">バリエーションが更新されました</string>
     <string name="grouped_product_btn_delete">セット販売商品を削除</string>
-    <string name="grouped_products_single">%d 商品</string>
-    <string name="grouped_products_count">%d 商品</string>
     <string name="grouped_products">セット販売商品</string>
     <string name="product_type_edit">商品タイプを変更</string>
     <string name="product_variation_no_price_set">価格未設定</string>
@@ -229,7 +283,6 @@ Language: ja_JP
     <string name="settings_app_theme_title">外観</string>
     <string name="product_short_description_empty">商品についての簡単な概要</string>
     <string name="product_short_description">簡単な説明</string>
-    <string name="my_store_stats_availability_message">WooCommerce 4.0 のストアまたは WooCommerce Admin プラグインがインストールされているストアに、強化された統計機能を提供開始します</string>
     <string name="my_store_stats_reverted_message">アナリティクスの改善を提供開始しました。 2020年9月1日以降も統計情報を引き続き表示するには、WooCommerce 4.0以降にアップグレードするか、WooCommerce Admin プラグインをインストールしてください。</string>
     <string name="my_store_stats_reverted_title">統計情報を引き続き表示するにはアップグレードしてください</string>
     <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
@@ -406,7 +459,6 @@ Language: ja_JP
     <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
-    <string name="my_store_stats_availability_title">強化された統計機能をお試しください</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
     <string name="no_thanks">結構です</string>
     <string name="try_it_now">今すぐお試しください</string>
@@ -1018,7 +1070,6 @@ Language: ja_JP
     <string name="orderdetail_product_image_contentdesc">商品画像</string>
     <string name="orderdetail_product_lineitem_sku">商品コード:</string>
     <string name="orderdetail_product_lineitem_tax">税:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">顧客にメールを送信</string>
     <string name="orderdetail_billing_details">請求詳細</string>
     <string name="orderdetail_shipping_details">配送詳細</string>
@@ -1035,11 +1086,11 @@ Language: ja_JP
     <string name="dashboard_fulfill_order_title_single">履行する注文が1件あります</string>
     <string name="dashboard_action_view_orders">注文を表示</string>
     <string name="dashboard_action_view_order">注文を表示</string>
-    <string name="dashboard_top_earners_empty">この期間のアクティビティはありません</string>
-    <string name="dashboard_top_earners_total_orders">注文合計:%s</string>
-    <string name="dashboard_top_earners_total_spend">支払い合計額</string>
-    <string name="dashboard_top_earners_description">ストアでの商品売り上げ状況に関する統計概要を得られます</string>
-    <string name="dashboard_top_earners_title">成績優秀者</string>
+    <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
+    <string name="dashboard_top_performers_total_orders">注文合計: %s</string>
+    <string name="dashboard_top_performers_total_spend">支払い合計額</string>
+    <string name="dashboard_top_performers_description">ストアでの商品売り上げ状況の統計概要をチェック</string>
+    <string name="dashboard_top_performers_title">成績優秀者</string>
     <string name="dashboard_stats_updated_date_time">%sに更新</string>
     <string name="dashboard_stats_updated_one_day">1日前に更新</string>
     <string name="dashboard_stats_updated_hours">%d時間前に更新</string>

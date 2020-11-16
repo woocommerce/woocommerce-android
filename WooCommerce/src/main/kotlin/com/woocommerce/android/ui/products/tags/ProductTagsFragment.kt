@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.tags
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -10,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -30,10 +33,15 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.synthetic.main.fragment_product_tags.*
 
 class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProductTagClickListener {
+    companion object {
+        private const val SEARCH_TYPING_DELAY_MS = 250L
+    }
+
     private lateinit var productTagsAdapter: ProductTagsAdapter
 
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
+    private val searchHandler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,7 +83,7 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        viewModel.fetchProductTags()
+        viewModel.loadProductTags()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -106,6 +114,22 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
             updateSelectedTags()
             true
         }
+
+        addProductTagView.setOnEditorTextChangedListener {
+            setProductTagsFilterDelayed(it.toString())
+        }
+    }
+
+    /**
+     * Submit the search after a brief delay unless the query has changed - this is used to
+     * perform a search while the user is typing
+     */
+    private fun setProductTagsFilterDelayed(filter: String) {
+        searchHandler.postDelayed({
+            if (filter == addProductTagView.getEnteredTag()) {
+                viewModel.setProductTagsFilter(filter)
+            }
+        }, SEARCH_TYPING_DELAY_MS)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -118,13 +142,21 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
                 showUpdateMenuItem(it)
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                if (isEmptyViewVisible) {
+                if (isEmptyViewVisible && !empty_view.isVisible) {
                     WooAnimUtils.fadeIn(empty_view)
                     empty_view.show(EmptyViewType.PRODUCT_TAG_LIST)
-                } else {
+                } else if (!isEmptyViewVisible && empty_view.isVisible) {
                     WooAnimUtils.fadeOut(empty_view)
                     empty_view.hide()
                 }
+            }
+            new.currentFilter.takeIfNotEqualTo(old?.currentFilter) { filter ->
+                if (filter.isEmpty()) {
+                    productTagsRecycler.itemAnimator = DefaultItemAnimator()
+                } else {
+                    productTagsRecycler.itemAnimator = null
+                }
+                productTagsAdapter.setFilter(filter)
             }
         }
 
@@ -138,7 +170,10 @@ class ProductTagsFragment : BaseProductFragment(), OnLoadMoreListener, OnProduct
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductTags -> findNavController().navigateUp()
+                is ExitProductTags -> {
+                    viewModel.clearProductTagFilter()
+                    findNavController().navigateUp()
+                }
                 else -> event.isHandled = false
             }
         })

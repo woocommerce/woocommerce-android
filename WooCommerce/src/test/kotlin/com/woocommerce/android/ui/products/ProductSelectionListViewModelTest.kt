@@ -32,6 +32,9 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         private const val PRODUCT_REMOTE_ID = 10L
     }
 
+    private val productList = ProductTestUtils.generateProductList()
+    private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)
+
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val savedState: SavedStateWithArgs = spy(
@@ -39,15 +42,15 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             SavedStateHandle(),
             null,
             ProductSelectionListFragmentArgs(
-                remoteProductId = PRODUCT_REMOTE_ID
+                remoteProductId = PRODUCT_REMOTE_ID,
+                groupedProductListType = GroupedProductListType.GROUPED,
+                excludedProductIds = excludedProductIds.joinToString(",")
             )
         )
     )
 
     private val coroutineDispatchers = CoroutineDispatchers(
         Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
-    private val productList = ProductTestUtils.generateProductList()
-    private val excludedProductIds = listOf(PRODUCT_REMOTE_ID)
 
     private lateinit var viewModel: ProductSelectionListViewModel
 

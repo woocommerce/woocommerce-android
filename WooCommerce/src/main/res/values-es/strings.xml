@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-15 14:54:04+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Prueba la creación de nuevos productos sencillos, relacionados y agrupados mientras preparamos el lanzamiento</string>
+    <string name="bottom_sheet_linked_products_desc">Aumenta las ventas con las ventas dirigidas y cruzadas</string>
+    <string name="edit_products_button">Editar productos</string>
+    <string name="add_products_button">Añadir productos</string>
+    <string name="cross_sells_desc">Productos promocionados en el carrito cuando se selecciona el producto actual</string>
+    <string name="cross_sells_label">Ventas cruzadas</string>
+    <string name="upsells_desc">Productos promocionados en lugar del producto que se está viendo actualmente (por ejemplo, productos más rentables)</string>
+    <string name="upsells_label">Ventas dirigidas</string>
+    <string name="product_detail_linked_products">Productos relacionados</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Contacta con nosotros</string>
+    <string name="my_store_stats_availability_description">Asegúrate de estar ejecutando la última versión de WooCommerce en tu sitio web y de haber activado WooCommerce Admin.\n\n¿Sigues necesitando ayuda? %1$s</string>
+    <string name="my_store_stats_availability_title">No podemos mostrar los análisis de tu tienda </string>
+    <string name="login_get_link_by_email">Obtener un enlace de acceso por correo electrónico</string>
+    <string name="email_not_registered_wpcom">Vaya, no encontramos una cuenta de WordPress.com conectada a esta dirección de correo electrónico.</string>
+    <string name="settings_enable_product_adding_teaser_title">Creación de productos</string>
+    <string name="settings_preferences">Preferencias</string>
+    <string name="product_trash_error">Error al enviar el producto a la papelera</string>
+    <string name="product_trash_undo_snackbar_message">Producto enviado a la papelera</string>
+    <string name="product_trash_yes">Mover a la papelera</string>
+    <string name="product_confirm_trash">¿Quieres mover este producto a la papelera?</string>
+    <string name="product_trash">Enviar producto a la papelera</string>
+    <string name="product_detail_no_variations">Este producto no tiene variaciones todavía</string>
+    <string name="product_variant_list_empty">En este momento, solo se pueden añadir opciones como tamaño y color en la web. Se mostrarán como opciones en la página de producto de tu sitio.</string>
+    <string name="product_wip_message_m4">Ahora es posible crear nuevos productos sencillos, relacionados y agrupados sobre la marcha, con la aplicación Woo. Para habilitarlo, activa la función beta en la configuración de la aplicación. ¿Aún no estás listo? ¡Guarda los cambios en un borrador!</string>
+    <string name="product_adding_wip_title">¡Crea productos desde la aplicación!</string>
+    <string name="product_ratings_count_zero">\u2022 no tiene valoraciones</string>
+    <string name="product_ratings_count_one">\u2022 ha recibido una valoración</string>
+    <string name="product_ratings_count">\u2022 ha recibido %d valoraciones</string>
+    <string name="product_detail_fetch_product_invalid_id_error">No se ha encontrado el producto</string>
+    <string name="print_shipping_label_info_step_5">Si sigues teniendo problemas para imprimir desde tu dispositivo, puedes enviarlo por correo electrónico para imprimirlo desde otro dispositivo.</string>
+    <string name="print_shipping_label_info_step_4">Comprueba que el firmware de la impresora está actualizado y consulta las instrucciones en la documentación de tu impresora.</string>
+    <string name="print_shipping_label_info_step_3">Puedes seleccionar el de tu dispositivo o instalar el tuyo (esta debería aparecer como la opción recomendada)</string>
+    <string name="print_shipping_label_info_step_2">Cuando hayas hecho la selección, puede que tengas que elegir y añadir una impresora si nunca has imprimido con este dispositivo.</string>
+    <string name="print_shipping_label_info_step_1">Asegúrate de que tu impresora y tu dispositivo están conectados al</string>
+    <string name="print_shipping_label_format_options_title">Opciones de formato de la etiqueta</string>
+    <string name="print_shipping_label_info_title">Imprimir con tu dispositivo</string>
+    <string name="shipping_label_paper_size_label">Etiqueta (4\" x 6\")</string>
+    <string name="shipping_label_paper_size_letter">Carta (8,5\" x 11\")</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5\" x 14\")</string>
+    <string name="shipping_label_preview_error">Error al obtener la vista previa de la etiqueta de envío</string>
+    <string name="shipping_label_print_info">¿No sabes cómo imprimir con tu teléfono?</string>
+    <string name="shipping_label_paper_size_options_info">Consulta las opciones de tamaño de papel y diseño de etiqueta</string>
+    <string name="shipping_label_print_button">Imprimir etiqueta de envío</string>
+    <string name="shipping_label_paper_size_options_title">Elegir tamaño de papel</string>
+    <string name="shipping_label_paper_size">Tamaño del papel</string>
+    <string name="shipping_label_print_disclaimer">Si ya has usado la etiqueta en un paquete, imprimirla y usarla de nuevo es una violación de nuestros términos y condiciones.</string>
+    <string name="shipping_label_print_error_message">Si hay un problema de impresión cuando compres la etiqueta puedes imprimirla de nuevo.</string>
+    <string name="order_begin_fulfillment">Marcar el pedido como completado</string>
+    <string name="orderdetail_shipping_label_wip_message">Estamos trabajando para que sea más sencillo imprimir etiquetas directamente con tu dispositivo. Por ahora, si has creado etiquetas de envío para este pedido en la administración de tu tienda con WooCommerce Shipping, puedes imprimirlas desde Detalles del pedido.</string>
+    <string name="orderdetail_shipping_label_wip_title">¡Imprime etiquetas de envío desde tu dispositivo!</string>
+    <string name="orderdetail_shipping_label_reprint">Volver a imprimir la etiqueta de envío</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">Borrador del producto guardado</string>
     <string name="product_detail_publish_product_draft_error">Error al guardar el borrador del producto</string>
     <string name="product_publish_draft_dialog_title">Guardando borrador</string>
@@ -18,7 +71,9 @@ Language: es
     <string name="continue_with_wpcom">Continuar con WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Si continúas con Google y aún no tienes una cuenta de WordPress.com, crearás una cuenta y aceptas nuestros %1$stérminos del servicio%2$s.</string>
     <string name="continue_terms_of_service_text">Si continúas, aceptas nuestros %1$stérminos del servicio%2$s.</string>
+    <string name="signup_confirmation_magic_link_message">Te enviaremos por correo electrónico un enlace de registro para crear tu nueva cuenta de WordPress.com.</string>
     <string name="signup_confirmation_message">Usaremos esta dirección de correo electrónico para crear tu nueva cuenta de WordPress.com.</string>
+    <string name="signup_magic_link_message">Te hemos enviado por correo electrónico un enlace de registro para crear tu cuenta de WordPress.com. Comprueba tu correo electrónico en este dispositivo y toca el enlace en el correo electrónico que has recibido de WordPress.com.</string>
     <string name="sign_up_label">Registro</string>
     <string name="login_or">o</string>
     <string name="continue_site_credentials">Continuar con las credenciales de la tienda</string>
@@ -28,6 +83,7 @@ Language: es
     <string name="login_done">Hecho</string>
     <string name="magic_link_not_seeing_email_message">¿No ves el correo electrónico? Comprueba tu carpeta de spam o correo no deseado.</string>
     <string name="login_magic_links_sent_label">Comprueba tu correo electrónico en este dispositivo y toca el enlace en el correo electrónico que has recibido de WordPress.com.</string>
+    <string name="login_magic_links_label">Te enviaremos por correo electrónico un enlace que te hará acceder automáticamente, sin necesidad de contraseña.</string>
     <string name="check_email">Comprobar el correo electrónico</string>
     <string name="get_started">Primeros pasos</string>
     <string name="enter_account_info_for_site">Introduce la información de tu cuenta para %1$s.</string>
@@ -88,8 +144,6 @@ Language: es
     <string name="variation_detail_price_warning">Las variaciones sin precio no se mostrarán en tu tienda</string>
     <string name="variation_detail_update_product_success">Variación actualizada</string>
     <string name="grouped_product_btn_delete">Eliminar el producto agrupado</string>
-    <string name="grouped_products_single">%d producto</string>
-    <string name="grouped_products_count">%d productos</string>
     <string name="grouped_products">Productos agrupados</string>
     <string name="product_type_edit">Cambiar tipo de producto</string>
     <string name="product_variation_no_price_set">Sin precio</string>
@@ -231,7 +285,6 @@ Language: es
     <string name="settings_app_theme_title">Apariencia</string>
     <string name="product_short_description_empty">Un resumen breve sobre el producto</string>
     <string name="product_short_description">Descripción corta</string>
-    <string name="my_store_stats_availability_message">Estamos implementando mejoras en las estadísticas para las tiendas con WooCommerce 4.0 o las tiendas que tienen instalado el plugin de administración de WooCommerce</string>
     <string name="my_store_stats_reverted_message">Hemos implementado mejoras en nuestro análisis. Actualiza a WooCommerce 4.0 o superior, o instala el plugin WooCommerce Admin para seguir viendo tus estadísticas después del 1 de setiembre de 2020.</string>
     <string name="my_store_stats_reverted_title">Actualiza para seguir viendo tus estadísticas</string>
     <string name="product_pricing_update_sale_price_error">El precio de venta debe ser inferior al precio normal</string>
@@ -408,7 +461,6 @@ Language: es
     <string name="orderdetail_payment_paid_by_customer">Pagado por el cliente</string>
     <string name="orderdetail_payment_summary_onhold">Pago pendiente a través de %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s a través de %2$s</string>
-    <string name="my_store_stats_availability_title">Prueba nuestras mejoras de las estadísticas</string>
     <string name="dashboard_state_no_data">Sin ingresos durante este periodo</string>
     <string name="no_thanks">No, gracias</string>
     <string name="try_it_now">Probar ahora</string>
@@ -1020,7 +1072,6 @@ Language: es
     <string name="orderdetail_product_image_contentdesc">Imagen del producto</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Impuesto:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">enviar correo electrónico al cliente</string>
     <string name="orderdetail_billing_details">Detalles de la facturación</string>
     <string name="orderdetail_shipping_details">Detalles del envío</string>
@@ -1037,11 +1088,11 @@ Language: es
     <string name="dashboard_fulfill_order_title_single">Tienes 1 pedido por realizar</string>
     <string name="dashboard_action_view_orders">Ver pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
-    <string name="dashboard_top_earners_empty">Sin actividad durante este periodo</string>
-    <string name="dashboard_top_earners_total_orders">Total de pedidos: %s</string>
-    <string name="dashboard_top_earners_total_spend">Gasto total</string>
-    <string name="dashboard_top_earners_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
-    <string name="dashboard_top_earners_title">Mejor rendimiento</string>
+    <string name="dashboard_top_performers_empty">Sin actividad en este periodo</string>
+    <string name="dashboard_top_performers_total_orders">Total de pedidos: %s</string>
+    <string name="dashboard_top_performers_total_spend">Gasto total</string>
+    <string name="dashboard_top_performers_description">Obtén detalles sobre el rendimiento de los productos en tu tienda</string>
+    <string name="dashboard_top_performers_title">Mejor rendimiento</string>
     <string name="dashboard_stats_updated_date_time">Se ha actualizado el %s</string>
     <string name="dashboard_stats_updated_one_day">Se ha actualizado hace 1 día.</string>
     <string name="dashboard_stats_updated_hours">Se ha actualizado hace %d horas</string>

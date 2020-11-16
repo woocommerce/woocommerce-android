@@ -1,5 +1,0 @@
-5.3:
-* Prodotti: in Impostazioni → Funzionalità beta, è ora disponibile un interruttore Prodotti. Puoi anche aggiungere un prodotto semplice, raggruppato, esterno o variabile e pubblicarlo o salvarlo come una bozza.
-* Dettaglio dell'ordine: con l'estensione WooCommerce Shipping & Tax, puoi stampare e richiedere rimborsi per etichette di spedizione esistenti.
-* Diversi miglioramenti: abbiamo effettuato altre correzioni, come migliorare la velocità nella schermata dell'ordine.
-

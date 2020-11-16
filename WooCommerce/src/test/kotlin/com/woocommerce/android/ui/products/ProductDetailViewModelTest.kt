@@ -13,6 +13,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -29,12 +30,12 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDiscardDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
+import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
@@ -57,6 +58,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productRepository: ProductDetailRepository = mock()
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
+    private val mediaFilesRepository: MediaFilesRepository = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -181,6 +183,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
                     true
+                ),
+                ComplexProperty(
+                    R.string.product_downloadable_files,
+                    resources.getString(R.string.product_downloadable_files_value_single),
+                    R.drawable.ic_gridicons_cloud
                 )
             )
         )
@@ -203,6 +210,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             resources,
             productCategoriesRepository,
             productTagsRepository,
+            mediaFilesRepository,
             prefs
         ))
 
@@ -451,7 +459,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var trashDialogShown = false
         viewModel.event.observeForever {
-            if (it is ShowDiscardDialog && it.messageId == R.string.product_confirm_trash) {
+            if (it is ShowDialog && it.messageId == R.string.product_confirm_trash) {
                 trashDialogShown = true
             }
         }

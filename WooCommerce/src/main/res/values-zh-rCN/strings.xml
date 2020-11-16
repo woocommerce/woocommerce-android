@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 15:54:04+0000
+Translation-Revision-Date: 2020-11-13 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">试用我们即将发布的简单、关联和分组的新产品创建功能</string>
+    <string name="bottom_sheet_linked_products_desc">通过追加销售和交叉销售增加销售额</string>
+    <string name="edit_products_button">编辑产品</string>
+    <string name="add_products_button">添加产品</string>
+    <string name="cross_sells_desc">选择当前产品时购物车中促销的产品</string>
+    <string name="cross_sells_label">交叉销售</string>
+    <string name="upsells_desc">促销产品而非当前浏览的产品（即利润更高的产品）</string>
+    <string name="upsells_label">追加销售</string>
+    <string name="product_detail_linked_products">关联产品</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">联系我们</string>
+    <string name="my_store_stats_availability_description">确保您的站点上运行的是最新版本的 WooCommerce，并且已激活 WooCommerce Admin。\n\n仍需要帮助？ %1$s</string>
+    <string name="my_store_stats_availability_title">我们无法显示您的\n商店分析</string>
+    <string name="login_get_link_by_email">通过电子邮件获取登录链接</string>
+    <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。</string>
+    <string name="settings_enable_product_adding_teaser_title">创建产品</string>
+    <string name="settings_preferences">首选项</string>
+    <string name="product_trash_error">将产品移动到回收站时出错</string>
+    <string name="product_trash_undo_snackbar_message">已将产品移动到回收站</string>
+    <string name="product_trash_yes">移动到回收站</string>
+    <string name="product_confirm_trash">您要将此产品移至回收站吗？</string>
+    <string name="product_trash">将产品移动到回收站</string>
+    <string name="product_detail_no_variations">该产品尚无变体</string>
+    <string name="product_variant_list_empty">目前仅支持通过网页添加尺寸和颜色等选项， 它们将以选项的形式显示在您站点的产品页面上。</string>
+    <string name="product_wip_message_m4">现在，您可以通过 Woo 应用程序随时随地创建简单、关联和分组的新产品。在应用程序设置中开启测试版功能可启用此功能。 还没准备好？ 将它们另存为草稿！</string>
+    <string name="product_adding_wip_title">通过应用程序创建产品！</string>
+    <string name="product_ratings_count_zero">\u2022 无评价</string>
+    <string name="product_ratings_count_one">\u2022 评价 1 次</string>
+    <string name="product_ratings_count">\u2022 评价 %d 次</string>
+    <string name="product_detail_fetch_product_invalid_id_error">找不到产品</string>
+    <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以通过电子邮件将其发送到其他设备打印。</string>
+    <string name="print_shipping_label_info_step_4">您可能必须确保打印机固件已更新，相关说明请参阅打印机文档。</string>
+    <string name="print_shipping_label_info_step_3">您可以选择设备自带的或安装您自己的（后者应显示为推荐选项）</string>
+    <string name="print_shipping_label_info_step_2">选好之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
+    <string name="print_shipping_label_info_step_1">确保您的打印机和设备已连接到</string>
+    <string name="print_shipping_label_format_options_title">标签格式选项</string>
+    <string name="print_shipping_label_info_title">通过设备打印</string>
+    <string name="shipping_label_paper_size_label">标签（4 x 6 英寸）</string>
+    <string name="shipping_label_paper_size_letter">Letter （8.5 x 11 英寸）</string>
+    <string name="shipping_label_paper_size_legal">Legal （8.5 x 14 英寸）</string>
+    <string name="shipping_label_preview_error">预览配送标签时出错</string>
+    <string name="shipping_label_print_info">不知道如何通过手机打印？</string>
+    <string name="shipping_label_paper_size_options_info">查看标签布局和纸张尺寸选项</string>
+    <string name="shipping_label_print_button">打印配送标签</string>
+    <string name="shipping_label_paper_size_options_title">选择纸张尺寸</string>
+    <string name="shipping_label_paper_size">纸张尺寸</string>
+    <string name="shipping_label_print_disclaimer">如果您已在包装中使用过该标签，再次打印和使用此标签会违反我们的服务条款。</string>
+    <string name="shipping_label_print_error_message">如果您已经购买了标签，但遇到打印错误，则可以再次打印。</string>
+    <string name="order_begin_fulfillment">将订单标记为完成</string>
+    <string name="orderdetail_shipping_label_wip_message">我们正竭力让您可以更轻松地直接通过设备打印配送标签！ 现在，如果您使用 WooCommerce Shipping 在商店管理中为此订单创建了配送标签，则可以在此处的“订单详情”中打印标签。</string>
+    <string name="orderdetail_shipping_label_wip_title">通过您的设备打印配送标签！</string>
+    <string name="orderdetail_shipping_label_reprint">重新打印配送标签</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">产品草稿已保存</string>
     <string name="product_detail_publish_product_draft_error">保存产品草稿时出错</string>
     <string name="product_publish_draft_dialog_title">正在保存草稿</string>
@@ -18,7 +71,9 @@ Language: zh_CN
     <string name="continue_with_wpcom">继续使用 WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">如果您继续使用 Google，并且还没有 WordPress.com 帐户，则需要创建一个帐户，并同意我们的%1$s服务条款%2$s。</string>
     <string name="continue_terms_of_service_text">继续即表示您同意我们的%1$s服务条款%2$s。</string>
+    <string name="signup_confirmation_magic_link_message">我们将通过电子邮件向您发送注册链接，供您创建新的 WordPress.com 帐户。</string>
     <string name="signup_confirmation_message">我们将使用此电子邮件地址为您创建新 WordPress.com 帐户。</string>
+    <string name="signup_magic_link_message">我们已通过电子邮件向您发送一个注册链接，供您创建新的 WordPress.com 帐户。 请在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
     <string name="sign_up_label">注册</string>
     <string name="login_or">或</string>
     <string name="continue_site_credentials">继续使用商店凭据</string>
@@ -28,6 +83,7 @@ Language: zh_CN
     <string name="login_done">完成</string>
     <string name="magic_link_not_seeing_email_message">没有看到电子邮件？ 请检查您的垃圾邮件文件夹。</string>
     <string name="login_magic_links_sent_label">在此设备上查看电子邮件，并轻点您从 WordPress.com 收到的电子邮件中的链接。</string>
+    <string name="login_magic_links_label">我们将通过电子邮件向您发送一个链接，无需密码即可登录。</string>
     <string name="check_email">查收电子邮件</string>
     <string name="get_started">开始</string>
     <string name="enter_account_info_for_site">输入您的 %1$s 帐户信息。</string>
@@ -88,8 +144,6 @@ Language: zh_CN
     <string name="variation_detail_price_warning">没有价格的变体不会在您的商店中显示</string>
     <string name="variation_detail_update_product_success">变体已更新</string>
     <string name="grouped_product_btn_delete">删除分组产品</string>
-    <string name="grouped_products_single">%d 个产品</string>
-    <string name="grouped_products_count">%d 个产品</string>
     <string name="grouped_products">分组产品</string>
     <string name="product_type_edit">更改产品类型</string>
     <string name="product_variation_no_price_set">未设置价格</string>
@@ -231,7 +285,6 @@ Language: zh_CN
     <string name="settings_app_theme_title">外观</string>
     <string name="product_short_description_empty">产品摘要</string>
     <string name="product_short_description">简短说明</string>
-    <string name="my_store_stats_availability_message">我们即将面向采用 WooCommerce 4.0 或安装了 WooCommerce Admin 插件的商店推出改进的统计功能</string>
     <string name="my_store_stats_reverted_message">我们已经对我们的分析功能进行了改进。 升级至 WooCommerce 4.0 或更高版本，或者安装 WooCommerce Admin 插件，方可在 2020 年 9 月 1 日后继续查看统计信息。</string>
     <string name="my_store_stats_reverted_title">升级以继续查看统计信息</string>
     <string name="product_pricing_update_sale_price_error">售价必须低于正常价格</string>
@@ -408,7 +461,6 @@ Language: zh_CN
     <string name="orderdetail_payment_paid_by_customer">客户支付</string>
     <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
-    <string name="my_store_stats_availability_title">试用经改进的统计页面</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>
     <string name="no_thanks">不用了，谢谢</string>
     <string name="try_it_now">立即试用</string>
@@ -1020,7 +1072,6 @@ Language: zh_CN
     <string name="orderdetail_product_image_contentdesc">产品图片</string>
     <string name="orderdetail_product_lineitem_sku">SKU：</string>
     <string name="orderdetail_product_lineitem_tax">税费：</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">向客户发送电子邮件</string>
     <string name="orderdetail_billing_details">账单详情</string>
     <string name="orderdetail_shipping_details">配送详情</string>
@@ -1037,11 +1088,11 @@ Language: zh_CN
     <string name="dashboard_fulfill_order_title_single">您有 1 个订单待处理</string>
     <string name="dashboard_action_view_orders">查看订单</string>
     <string name="dashboard_action_view_order">查看订单</string>
-    <string name="dashboard_top_earners_empty">这段时间内没有任何活动</string>
-    <string name="dashboard_top_earners_total_orders">订单总数：%s</string>
-    <string name="dashboard_top_earners_total_spend">总花费</string>
-    <string name="dashboard_top_earners_description">深入了解商店中产品的销售情况</string>
-    <string name="dashboard_top_earners_title">热销产品</string>
+    <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
+    <string name="dashboard_top_performers_total_orders">订单总数： %s</string>
+    <string name="dashboard_top_performers_total_spend">总花费</string>
+    <string name="dashboard_top_performers_description">深入了解商店中产品的销售情况</string>
+    <string name="dashboard_top_performers_title">热销产品</string>
     <string name="dashboard_stats_updated_date_time">更新时间：%s</string>
     <string name="dashboard_stats_updated_one_day">更新时间：1 天前</string>
     <string name="dashboard_stats_updated_hours">更新时间：%d 小时前</string>

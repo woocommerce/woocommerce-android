@@ -8,8 +8,8 @@
         style="@style/TextAppearance.Woo.Subtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_125"
         android:layout_marginStart="@dimen/major_150"
+        android:layout_marginTop="@dimen/major_125"
         android:layout_marginEnd="@dimen/major_150"
         android:text="@string/image_source_title" />
 
@@ -19,12 +19,12 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
         android:layout_marginTop="@dimen/major_75"
-        android:paddingStart="@dimen/major_150"
-        android:paddingEnd="@dimen/major_150"
-        android:gravity="center_vertical"
         android:background="?android:attr/selectableItemBackground"
         android:drawableStart="@drawable/ic_gridicons_image"
         android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
         android:text="@string/image_source_device_chooser" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -32,12 +32,12 @@
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
-        android:paddingStart="@dimen/major_150"
-        android:paddingEnd="@dimen/major_150"
-        android:gravity="center_vertical"
         android:background="?android:attr/selectableItemBackground"
         android:drawableStart="@drawable/ic_gridicons_camera"
         android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
         android:text="@string/image_source_device_camera" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -45,12 +45,12 @@
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
-        android:paddingStart="@dimen/major_150"
-        android:paddingEnd="@dimen/major_150"
         android:layout_marginBottom="@dimen/major_75"
-        android:gravity="center_vertical"
         android:background="?android:attr/selectableItemBackground"
         android:drawableStart="@drawable/ic_wordpress"
         android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
         android:text="@string/image_source_wp_media_library" />
 </LinearLayout>

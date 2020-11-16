@@ -39,4 +39,12 @@ class OrderDetailProductListAdapter(
     }
 
     override fun getItemCount() = orderItems.size
+
+    fun notifyProductChanged(productId: Long) {
+        for (position in orderItems.indices) {
+            if (orderItems[position].productId == productId) {
+                notifyItemChanged(position)
+            }
+        }
+    }
 }

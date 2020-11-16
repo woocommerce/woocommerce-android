@@ -1,15 +1,10 @@
 package com.woocommerce.android.ui.feedback
 
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,8 +14,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GENERAL_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SURVEY_SCREEN
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.extensions.configureStringClick
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin.FEEDBACK_SURVEY
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.WooClickableSpan
 import kotlinx.android.synthetic.main.fragment_feedback_completed.*
@@ -59,7 +55,8 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         getString(R.string.feedback_completed_description, contactUsText)
             .configureStringClick(
                 clickableContent = contactUsText,
-                clickAction = WooClickableSpan { activity?.startHelpActivity() }
+                clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) },
+                textField = completion_help_guide
             )
         btn_back_to_store.setOnClickListener { activity?.onBackPressed() }
     }
@@ -69,45 +66,13 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
         activity?.invalidateOptionsMenu()
     }
 
-    private fun String.configureStringClick(clickableContent: String, clickAction: WooClickableSpan) {
-        SpannableString(this)
-            .buildClickableUrlSpan(clickableContent, this, clickAction)
-            .let {
-                completion_help_guide.apply {
-                    setText(it, TextView.BufferType.SPANNABLE)
-                    movementMethod = LinkMovementMethod.getInstance()
-                }
-            }
-    }
-
-    private fun SpannableString.buildClickableUrlSpan(
-        clickableContent: String,
-        fullContent: String,
-        clickAction: WooClickableSpan
-    ) = apply {
-        setSpan(
-            clickAction,
-            (fullContent.length - clickableContent.length),
-            fullContent.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-    }
-
-    private fun FragmentActivity.startHelpActivity() =
-        startActivity(
-            HelpActivity.createIntent(
-                this,
-                Origin.FEEDBACK_SURVEY,
-                null
-            )
-        )
-
     private fun trackSurveyCompletedScreenAnalytics() {
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(
             SURVEY_SCREEN, mapOf(
             KEY_FEEDBACK_CONTEXT to feedbackContext,
             KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_COMPLETED
-        ))
+        )
+        )
     }
 }

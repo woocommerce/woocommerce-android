@@ -11,8 +11,10 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
@@ -42,6 +44,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCH
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -97,7 +100,9 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
-                product.productType()
+                product.linkedProducts(),
+                product.productType(),
+                product.downloads()
             ).filterNotEmpty()
         )
     }
@@ -112,6 +117,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -128,6 +134,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -144,6 +151,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -161,6 +169,7 @@ class ProductDetailCardBuilder(
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -196,7 +205,7 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                product.downloads(),
+                if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) null else product.downloadsLegacy(),
                 product.purchaseNote()
             ).filterNotEmpty()
         )
@@ -215,6 +224,25 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.downloads(): ProductProperty? {
+        if (!this.isDownloadable || this.downloads.isEmpty()) return null
+        return ComplexProperty(
+            title = R.string.product_downloadable_files,
+            value = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = this.downloads.size,
+                default = R.string.product_downloadable_files_value_multiple,
+                one = R.string.product_downloadable_files_value_single
+            ),
+            icon = R.drawable.ic_gridicons_cloud,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDownloads
+                )
+            }
+        )
+    }
+
+    private fun Product.downloadsLegacy(): ProductProperty? {
         return if (this.isDownloadable) {
             val limit = if (this.downloadLimit > 0) String.format(
                 resources.getString(R.string.product_download_limit_count),
@@ -226,7 +254,7 @@ class ProductDetailCardBuilder(
             ) else ""
 
             val downloadGroup = mapOf(
-                Pair(resources.getString(R.string.product_downloadable_files), this.fileCount.toString()),
+                Pair(resources.getString(R.string.product_downloadable_files), this.downloads.size.toString()),
                 Pair(resources.getString(R.string.product_download_limit), limit),
                 Pair(resources.getString(R.string.product_download_expiry), expiry)
             )
@@ -534,12 +562,7 @@ class ProductDetailCardBuilder(
         val showTitle = groupedProductsSize > 0
 
         val groupedProductsDesc = if (showTitle) {
-            StringUtils.getQuantityString(
-                resourceProvider = resources,
-                quantity = groupedProductsSize,
-                default = R.string.grouped_products_count,
-                one = R.string.grouped_products_single
-            )
+            StringUtils.getPluralString(resources, groupedProductsSize, R.plurals.product_count)
         } else {
             resources.getString(R.string.grouped_product_empty)
         }
@@ -553,6 +576,35 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewGroupedProducts(this.remoteId, this.groupedProductIds.joinToString(",")),
                 Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
+            )
+        }
+    }
+
+    private fun Product.linkedProducts(): ProductProperty? {
+        if (!hasLinkedProducts() || !FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
+            return null
+        }
+
+        val upsellDesc = StringUtils.getPluralString(
+            resources,
+            this.upsellProductIds.size,
+            R.plurals.upsell_product_count
+        )
+        val crossSellDesc = StringUtils.getPluralString(
+            resources,
+            this.crossSellProductIds.size,
+            R.plurals.cross_sell_product_count
+        )
+
+        return ComplexProperty(
+            R.string.product_detail_linked_products,
+            "$upsellDesc<br>$crossSellDesc",
+            R.drawable.ic_gridicons_reblog,
+            maxLines = 2
+        ) {
+            viewModel.onEditProductCardClicked(
+                ViewLinkedProducts(this.remoteId),
+                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }
     }

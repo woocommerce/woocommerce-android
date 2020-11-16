@@ -160,7 +160,7 @@
     <string name="login_discovery_error_option_select">Select an option</string>
     <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
     <!--
-        Dashboard View
+        My Store View
     -->
     <string name="dashboard_stats_granularity_days">Days</string>
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
@@ -182,11 +182,11 @@
     <string name="dashboard_stats_updated_one_day">Updated 1 day ago</string>
     <string name="dashboard_stats_updated_date_time">Updated on %s</string>
 
-    <string name="dashboard_top_earners_title">Top performers</string>
-    <string name="dashboard_top_earners_description">Gain insights into how products are performing on your store</string>
-    <string name="dashboard_top_earners_total_spend">Total spend</string>
-    <string name="dashboard_top_earners_total_orders">Total orders: %s</string>
-    <string name="dashboard_top_earners_empty">No activity this period</string>
+    <string name="dashboard_top_performers_title">Top performers</string>
+    <string name="dashboard_top_performers_description">Gain insights into how products are performing on your store</string>
+    <string name="dashboard_top_performers_total_spend">Total spend</string>
+    <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
+    <string name="dashboard_top_performers_empty">No activity this period</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -196,8 +196,9 @@
 
     <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
     <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after September 1, 2020.</string>
-    <string name="my_store_stats_availability_title">Try our improved stats</string>
-    <string name="my_store_stats_availability_message">We\'re rolling out improvements to stats for stores with WooCommerce 4.0 or stores with WooCommerce Admin plugin installed</string>
+    <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
+    <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
+    <string name="my_store_stats_availability_contact_us">Contact us</string>
     <!--
         Order List View
     -->
@@ -228,7 +229,7 @@
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
@@ -307,7 +308,7 @@
     <!--
         Shipping label Refunds
     -->
-    <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take a least 14 days to process.</string>
+    <string name="shipping_label_refund_message">You can request a refund for a shipping label that has not been used to ship a package. It will take at least 14 days to process.</string>
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
     <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
@@ -335,11 +336,11 @@
     <string name="print_shipping_label_info_step_count_3" translatable="false">3</string>
     <string name="print_shipping_label_info_step_count_4" translatable="false">4</string>
     <string name="print_shipping_label_info_step_count_5" translatable="false">5</string>
-    <string name="print_shipping_label_info_step_1">Make sure your printer and your device are connected to the <b>same WiFi networks</b></string>
-    <string name="print_shipping_label_info_step_2">After selecting <b>\"Print shipping label\"</b>, you may have to select and add a printer if you haven\'t printed from this device before.</string>
-    <string name="print_shipping_label_info_step_3">You can select your device\'s <b>default print service</b> or install your <b>printer\'s brand app</b> (this should appear as a recommended option)</string>
-    <string name="print_shipping_label_info_step_4">You might have to <b>configure WiFi printing directly on the printer itself.</b> Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
-    <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can <b>save your label as PDF</b> and send it by email to print it from another device.</string>
+    <string name="print_shipping_label_info_step_1">Make sure your printer and your device are connected to the &lt;b&gt;same WiFi networks&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_2">After selecting &lt;b&gt;\"Print shipping label\"&lt;/b&gt;, you may have to select and add a printer if you haven\'t printed from this device before.</string>
+    <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
+    <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
+    <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
 
     <!--
         Refunds
@@ -655,14 +656,33 @@
     <string name="product_add_tag_error">Error occurred when adding tags</string>
     <string name="product_type_edit">Change product type</string>
     <string name="grouped_products">Grouped products</string>
-    <string name="grouped_products_count">%d products</string>
-    <string name="grouped_products_single">%d product</string>
     <string name="grouped_product_btn_delete">Delete the grouped product</string>
     <string name="grouped_product_add">Add product</string>
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
+    <string name="product_detail_linked_products">Linked products</string>
+    <string name="upsells_label">Upsells</string>
+    <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="cross_sells_desc">Products promoted in the cart when current product is selected</string>
+    <string name="add_products_button">Add products</string>
+    <string name="edit_products_button">Edit products</string>
+
+    <plurals name="product_count">
+        <item quantity="one">%d product</item>
+        <item quantity="other">%d products</item>
+    </plurals>
+    <plurals name="cross_sell_product_count">
+        <item quantity="one">%d cross-sell product</item>
+        <item quantity="other">%d cross-sell products</item>
+    </plurals>
+    <plurals name="upsell_product_count">
+        <item quantity="one">%d upsell product</item>
+        <item quantity="other">%d upsell products</item>
+    </plurals>
+
     <!--
         Product Add more details Bottom sheet
     -->
@@ -671,6 +691,7 @@
     <string name="bottom_sheet_categories_desc">Organise your products into related groups</string>
     <string name="bottom_sheet_tags_desc">Make your products easier to find with tags</string>
     <string name="bottom_sheet_short_description_desc">A brief excerpt about your product</string>
+    <string name="bottom_sheet_linked_products_desc">Increase sales with upsells and cross-sells</string>
 
     <!--
         Variations
@@ -839,7 +860,7 @@
 
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
-    
+
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
 
 
@@ -856,10 +877,10 @@
     <string name="login_already_logged_in_wpcom">Already logged in to WordPress.com</string>
     <string name="login_username_at">\@%s</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-    
+
     <string name="login_site_address_help">Need help finding your site address?</string>
-    
-    
+
+
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -1343,43 +1364,79 @@
     <string name="send_link_by_email">Send link by email</string>
     <string name="create_account">Create account</string>
     <string name="or_type_your_password">Or type your password</string>
-    
+
     <string name="enter_email_to_continue_wordpress_com">Enter your email address to log in or create a WordPress.com account.</string>
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
-    
+
     <string name="login_magic_links_sent_label">Check your email on this device and tap the link in the email you received from WordPress.com.</string>
     <string name="magic_link_not_seeing_email_message">Not seeing the email? Check your Spam or Junk Mail folder.</string>
     <string name="connect_more">Connect another site</string>
     <string name="connect_site">Connect a site</string>
     <string name="login_done">Done</string>
-    
+
     <string name="login_find_your_connected_email">Find your connected email</string>
     <string name="continue_google_button_suffix">Continue with Google</string>
     <string name="continue_site_credentials">Continue with store credentials</string>
     <string name="login_or">or</string>
     <string name="sign_up_label">Sign Up</string>
-    
+
     <string name="signup_confirmation_message">We’ll use this email address to create your new WordPress.com account.</string>
-    
+
     <string name="continue_terms_of_service_text">By continuing, you agree to our %1$sTerms of Service%2$s.</string>
     <string name="continue_with_google_terms_of_service_text">If you continue with Google and don\'t already have a WordPress.com account, you are creating an account and you agree to our %1$sTerms of Service%2$s.</string>
     <string name="continue_with_wpcom">Continue with WordPress.com</string>
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
-    
+
     <string name="login_site_address">Site address</string>
-    <string name="login_site_address_help_title">What\'s my site address?</string>
-    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
-    <string name="login_find_your_site_adress">Find your site address</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+
+
+
+
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>
     <string name="login_get_link_by_email">Get a login link by email</string>
     <string name="signup_magic_link_message">We’ve emailed you a signup link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
     <string name="signup_confirmation_magic_link_message">We’ll email you a signup link to create your new WordPress.com account.</string>
+    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="login_site_address_help_title">What\'s my site address?</string>
+    <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
+    <string name="login_find_your_site_adress">Find your site address</string>
+
+    <string name="product_downloadable_files_value_multiple">%1$d files</string>
+    <string name="product_downloadable_files_value_single">1 file</string>
+    <string name="product_downloadable_files_add">Add file</string>
+    <string name="product_downloadable_files_url">File URL</string>
+    <string name="product_downloadable_files_url_info">This is the URL of the file which customers will get access to. URLs entered should already be encoded.</string>
+    <string name="product_downloadable_files_name">File Name</string>
+    <string name="product_downloadable_files_name_info">This is the name of the file shown to the customer</string>
+    <string name="product_downloadable_files_limit_info">Enter the number of time file can be downloaded or leave blank for unlimited downloads</string>
+    <string name="product_downloadable_files_expiry_info">Enter the number of days before a download limk expires, or leave blank if never it expires</string>
+    <string name="product_downloadable_files_limit">Download limit</string>
+    <string name="product_downloadable_files_expiry">Download expiration</string>
+    <string name="delete">Delete</string>
+    <string name="product_is_downloadable">Downloadable product</string>
+    <string name="product_downloadable_files_delete_confirmation">Are you sure you want to remove this file?</string>
+    <string name="product_downloadable_files_edit_title">File</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Are you sure you want to remove the ability to download files when product is purchased?</string>
+    <string name="product_uncheck_is_downloadable_warning_message">All files currently attached to this product will be removed.</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Cancel</string>
+    <string name="bottom_sheet_downloadable_files_desc">Include downloadable files with purchases</string>
+    <string name="product_downloadable_add_bottomsheet_header">Add downloadable file</string>
+    <string name="product_downloadable_files_add_title">Add downloadable file</string>
+    <string name="product_downloadable_files_upload_failed">Error uploading the file</string>
+    <string name="product_downloadable_files_upload_dialog_title">Uploading files</string>
+    <string name="product_downloadable_files_upload_dialog_message">Please wait…</string>
+    <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
+    <string name="product_downloadable_files_add_from_device">From device</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">From WordPress Media Library</string>
+    <string name="product_downloadable_files_add_manually">Enter file URL</string>
+    <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
+    <string name="product_downloadable_files_download_settings">Download Settings</string>
 </resources>

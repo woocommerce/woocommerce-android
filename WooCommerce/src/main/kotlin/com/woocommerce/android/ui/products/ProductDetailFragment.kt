@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,9 +28,10 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
-import com.woocommerce.android.ui.dialog.CustomDiscardDialog
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -40,6 +42,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
@@ -97,7 +100,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
 
     override fun onStop() {
         super.onStop()
-        CustomDiscardDialog.onCleared()
+        WooDialog.onCleared()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,7 +130,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             viewModel.updateProductDraft(type = it.value)
             changesMade()
         }
-        handleResult<List<Long>>(GroupedProductListFragment.KEY_GROUPED_PRODUCT_IDS_RESULT) {
+        handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.updateProductDraft(groupedProductIds = it)
             changesMade()
         }
@@ -171,6 +174,11 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             )
             changesMade()
         }
+
+        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
+            viewModel.showAddProductDownload(it.first().source)
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -179,13 +187,26 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             new.isProductUpdated?.takeIfNotEqualTo(old?.isProductUpdated) { showUpdateMenuItem(it) }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
-                showProgressDialog(it)
+                if (it) {
+                    showProgressDialog(R.string.product_update_dialog_title, R.string.product_update_dialog_message)
+                } else {
+                    hideProgressDialog()
+                }
             }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
                 imageGallery.setPlaceholderImageUris(it)
             }
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
                 productDetail_addMoreContainer.isVisible = isVisible
+            }
+            new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
+                if (it) {
+                    showProgressDialog(
+                        title = R.string.product_downloadable_files_upload_dialog_title,
+                        message = R.string.product_downloadable_files_upload_dialog_message)
+                } else {
+                    hideProgressDialog()
+                }
             }
         }
 
@@ -332,16 +353,13 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = getSubmitDetailProgressDialog().also {
-                it.show(parentFragmentManager, CustomProgressDialog.TAG)
-            }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
+    private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
     }
 
     private fun getSubmitDetailProgressDialog(): CustomProgressDialog {

@@ -1,0 +1,3 @@
+5.4:
+* Produktvariationsinformation visas fullständigt i orderdetaljerna.
+* En sällsynt krasch som inträffade vid tillägg av en ny produktkategori och val av produktfilteralternativ har åtgärdats.
