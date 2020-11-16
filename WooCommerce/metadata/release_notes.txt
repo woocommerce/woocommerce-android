@@ -1,2 +1,1 @@
-* Product variation information fully displays in order details.
-* Fixed a rare crash when adding a new product category and selecting product filter options.
+ 
