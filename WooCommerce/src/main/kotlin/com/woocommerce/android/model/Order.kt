@@ -25,7 +25,7 @@ data class Order(
     val remoteId: Long,
     val number: String,
     val localSiteId: Int,
-    val dateCreated: Date,
+    val dateCreated: Date?,
     val dateModified: Date,
     val datePaid: Date?,
     val status: CoreOrderStatus,

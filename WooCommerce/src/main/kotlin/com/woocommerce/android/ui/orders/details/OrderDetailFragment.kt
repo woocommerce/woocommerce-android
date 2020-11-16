@@ -188,6 +188,12 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showOrderDetail(order: Order) {
         orderDetail_orderStatus.updateOrder(order)
+            .takeIf { it.not() }
+            ?.let {
+                // showErrorScreen
+            }
+            ?.also { return }
+
         orderDetail_shippingMethodNotice.isVisible = order.multiShippingLinesAvailable
         orderDetail_customerInfo.updateCustomerInfo(
             order = order,
