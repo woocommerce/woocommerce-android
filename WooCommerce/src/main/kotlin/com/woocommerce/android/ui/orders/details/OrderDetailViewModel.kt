@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -49,6 +50,8 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.utils.sumBy
+import java.math.BigDecimal
 
 @OpenClassOnDebug
 class OrderDetailViewModel @AssistedInject constructor(
@@ -109,14 +112,24 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     final fun start() {
         EventBus.getDefault().register(this)
-        orderDetailRepository.getOrder(navArgs.orderId)?.let { orderInDb ->
+
+        val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
+        val needToFetch = checkIfFetchNeeded(orderInDb)
+        if (needToFetch || orderInDb == null) {
+            launch { fetchOrder(true) }
+        } else {
             checkShippingLabelRequirements(orderInDb)
             updateOrderState(orderInDb)
             loadOrderNotes()
             loadOrderRefunds()
             loadShipmentTrackings()
             loadOrderShippingLabels()
-        } ?: launch { fetchOrder(true) }
+        }
+    }
+
+    private fun checkIfFetchNeeded(order: Order?): Boolean {
+        val refunds = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
+        return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
     }
 
     fun onRefreshRequested() {
@@ -357,7 +370,7 @@ class OrderDetailViewModel @AssistedInject constructor(
                 checkShippingLabelRequirements(fetchedOrder)
                 updateOrderState(fetchedOrder)
                 loadOrderNotes()
-                loadOrderRefunds()
+                fetchOrderRefunds()
                 loadShipmentTrackings()
                 loadOrderShippingLabels()
             } else {
@@ -412,16 +425,13 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    private suspend fun fetchOrderRefunds() {
+        _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
+        loadOrderProducts()
+    }
+
     private fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        launch {
-            if (networkStatus.isConnected()) {
-                _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
-                loadOrderProducts()
-            }
-        }
-
-        // display products only if there are some non refunded items in the list
         loadOrderProducts()
     }
 
