@@ -9,8 +9,6 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/image_major_150"
         android:layout_gravity="center"
-        android:layout_marginStart="@dimen/minor_100"
-        android:layout_marginEnd="@dimen/minor_100"
         android:adjustViewBounds="true"
         android:contentDescription="@string/product_image_content_description"
         tools:layout_width="@dimen/image_major_150"

@@ -1,0 +1,3 @@
+5.4:
+* Produktvariationsinformationen werden in den Bestelldetails vollständig angezeigt.
+* Es wurde ein Fehler behoben, der zum Absturz führte, wenn eine neue Produktkategorie hinzugefügt und Produktfilteroptionen ausgewählt wurden.
