@@ -253,6 +253,9 @@ class OrderDetailRepository @Inject constructor(
     fun getOrderNotes(localOrderId: Int) =
         orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
 
+    suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
+        productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
+
     fun getProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
 

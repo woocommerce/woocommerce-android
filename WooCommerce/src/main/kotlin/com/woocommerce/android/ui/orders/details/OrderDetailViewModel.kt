@@ -367,7 +367,9 @@ class OrderDetailViewModel @AssistedInject constructor(
                 string.orderdetail_orderstatus_ordernum, order.number
             )
         )
-        loadOrderProducts()
+        launch {
+            loadOrderProducts()
+        }
     }
 
     private fun loadOrderNotes() {
@@ -388,13 +390,20 @@ class OrderDetailViewModel @AssistedInject constructor(
             if (networkStatus.isConnected()) {
                 _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
             }
-        }
 
-        // display products only if there are some non refunded items in the list
-        loadOrderProducts()
+            // display products only if there are some non refunded items in the list
+            loadOrderProducts()
+        }
     }
 
-    private fun loadOrderProducts() {
+    private suspend fun loadOrderProducts() {
+        // local DB might be missing some products, which need to be fetched
+        val productIds = order?.items?.map { it.productId } ?: emptyList()
+        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
+        if (numLocalProducts != order?.items?.size) {
+            orderDetailRepository.fetchProductsByRemoteIds(productIds)
+        }
+
         _productList.value = order?.let { order ->
             _orderRefunds.value?.let { refunds ->
                 if (refunds.hasNonRefundedProducts(order.items)) {
