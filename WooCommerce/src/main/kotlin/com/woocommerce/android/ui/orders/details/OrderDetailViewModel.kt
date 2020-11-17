@@ -118,8 +118,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (needToFetch || orderInDb == null) {
             launch { fetchOrder(true) }
         } else {
-            checkShippingLabelRequirements(orderInDb)
             updateOrderState(orderInDb)
+            checkShippingLabelRequirements(orderInDb)
             loadOrderNotes()
             loadOrderRefunds()
             loadShipmentTrackings()
@@ -367,8 +367,8 @@ class OrderDetailViewModel @AssistedInject constructor(
             )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
-                checkShippingLabelRequirements(fetchedOrder)
                 updateOrderState(fetchedOrder)
+                checkShippingLabelRequirements(fetchedOrder)
                 loadOrderNotes()
                 fetchOrderRefunds()
                 loadShipmentTrackings()
