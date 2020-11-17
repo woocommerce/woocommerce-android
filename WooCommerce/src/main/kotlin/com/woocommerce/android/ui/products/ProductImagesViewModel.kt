@@ -278,6 +278,15 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(images = images - image)
     }
 
+    fun onGalleryImageMoved(from: Int, to: Int) {
+        val reorderedImages = images.toMutableList()
+        val item = images[from]
+        reorderedImages.removeAt(from)
+        reorderedImages.add(to, item)
+
+        viewState = viewState.copy(images = reorderedImages)
+    }
+
     @Parcelize
     data class ViewState(
         val uploadingImageUris: List<Uri>? = null,

@@ -187,6 +187,10 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         viewModel.onDragStarted()
     }
 
+    override fun onGalleryImageMoved(from: Int, to: Int) {
+        viewModel.onGalleryImageMoved(from, to)
+    }
+
     private fun showImageDetail(image: Image, skipThrottling: Boolean) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
             viewModel.isImageDeletingAllowed, image.id

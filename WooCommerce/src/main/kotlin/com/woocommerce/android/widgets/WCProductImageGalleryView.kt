@@ -57,7 +57,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun onGalleryImageClicked(image: Product.Image)
         fun onGalleryAddImageClicked() { }
         fun onGalleryImageDragStarted() { }
-        fun onGalleryImageMoved() { }
+        fun onGalleryImageMoved(from: Int, to: Int) { }
         fun onGalleryImageDeleteIconClicked(image: Product.Image) { }
     }
 
@@ -169,8 +169,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private fun onProductImagesPositionChanged(from: Int, to: Int) {
-        adapter.moveImage(from, to)
-        mListener.onGalleryImageMoved()
+        mListener.onGalleryImageMoved(from, to)
     }
 
     fun showProductImage(images: Product.Image, listener: OnGalleryImageInteractionListener) {
@@ -231,14 +230,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun clearImages() {
             imageList.clear()
             notifyDataSetChanged()
-        }
-
-        fun moveImage(from: Int, to: Int) {
-            val item = imageList[from]
-            imageList.removeAt(from)
-            imageList.add(to, item)
-
-            notifyItemMoved(from, to)
         }
 
         fun showImages(images: List<Product.Image>) {
