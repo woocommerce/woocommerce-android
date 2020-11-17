@@ -11,20 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_055"
+msgid ""
+"5.5:\n"
+"Products: You can now add simple, grouped, and external products and save products as drafts. We’ll have more new features for you to try out soon!\n"
+"\n"
+"Other fixes: We fixed a bug affecting product variation names when the variation option was “open,” and a typo on the shipping label screen.\n"
+msgstr ""
+
 msgctxt "release_note_054"
 msgid ""
 "5.4:\n"
 "* Product variation information fully displays in order details.\n"
 "* Fixed a rare crash when adding a new product category and selecting product filter options.\n"
-msgstr ""
-
-msgctxt "release_note_053"
-msgid ""
-"5.3:\n"
-"* Products: In Settings → Beta Features, a Products switch is now available. You can also add a simple, grouped, external, or variable product and publish or save it as a draft.\n"
-"* Order detail: With the WooCommerce Shipping & Tax extension, you can print and request refunds for existing shipping labels.\n"
-"* Miscellaneous improvements: We’ve made other fixes, like improving the speed on order screens.\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
