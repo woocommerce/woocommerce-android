@@ -108,6 +108,9 @@ object ProductImagesUtils {
         } catch (e: IllegalStateException) {
             WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
             null
+        } catch (e: SecurityException) {
+            WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
+            null
         }
     }
 
