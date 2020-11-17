@@ -3,6 +3,8 @@
 5.6
 -----
  
+* Fixed an issue with unexpected shipment tracking UI in order details
+
 5.5
 -----
  

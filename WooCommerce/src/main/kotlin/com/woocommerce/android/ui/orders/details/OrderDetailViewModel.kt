@@ -143,7 +143,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         return order?.items?.let { lineItems ->
             if (lineItems.isNotEmpty()) {
                 val remoteProductIds = lineItems.map { it.productId }
-                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
             } else false
         } ?: false
     }
@@ -400,7 +400,9 @@ class OrderDetailViewModel @AssistedInject constructor(
                 string.orderdetail_orderstatus_ordernum, order.number
             )
         )
-        loadOrderProducts()
+        launch {
+            loadOrderProducts()
+        }
     }
 
     private fun checkShippingLabelRequirements(order: Order) {
@@ -433,10 +435,19 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        loadOrderProducts()
+        launch {
+            loadOrderProducts()
+        }
     }
 
-    private fun loadOrderProducts() {
+    private suspend fun loadOrderProducts() {
+        // local DB might be missing some products, which need to be fetched
+        val productIds = order?.items?.map { it.productId } ?: emptyList()
+        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
+        if (numLocalProducts != order?.items?.size) {
+            orderDetailRepository.fetchProductsByRemoteIds(productIds)
+        }
+
         _productList.value = order?.let { order ->
             _orderRefunds.value?.let { refunds ->
                 if (refunds.hasNonRefundedProducts(order.items)) {
