@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
+import android.os.Build
 import android.text.Html
+import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
@@ -54,8 +56,11 @@ object StringUtils {
      * Formats the string for the given [quantity], using the given params.
      * We need this because our translation platform doesn't support Android plurals.
      *
+     * This variant uses a [ResourceProvider]
+     *
      * If a string resource is not provided for [zero] or [one] the [default] resource will be used.
      *
+     * @param [resourceProvider] The string resources provider
      * @param [quantity] The number used to pick the correct string
      * @param [default] The desired string identifier to get when [quantity] is not (0 or 1)
      * @param [zero] Optional. The desired string identifier to use when [quantity] is exactly 0.
@@ -178,6 +183,17 @@ object StringUtils {
      */
     fun getRawTextFromHtml(htmlStr: String) =
             Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
+
+    /**
+     * Helper method for using the appropriate `Html.fromHtml()` for the build version.
+     */
+    fun fromHtml(htmlStr: String): Spanned {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(htmlStr)
+        }
+    }
 
     /**
      * Returns a string for the specified locale.

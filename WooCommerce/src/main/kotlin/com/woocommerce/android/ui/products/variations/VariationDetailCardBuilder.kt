@@ -89,7 +89,7 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.title(): ProductProperty {
         return Editable(
             string.product_detail_title_hint,
-            parentProduct?.name ?: optionName,
+            parentProduct?.name ?: getName(parentProduct),
             isReadOnly = true
         )
     }

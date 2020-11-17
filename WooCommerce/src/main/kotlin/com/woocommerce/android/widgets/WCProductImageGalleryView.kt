@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
@@ -39,6 +40,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private const val VIEW_TYPE_ADD_IMAGE = 2
         private const val NUM_COLUMNS = 2
         private const val ADD_IMAGE_ITEM_ID = Long.MAX_VALUE
+        private const val NUM_GRID_MARGINS = 3
     }
 
     interface OnGalleryImageClickListener {
@@ -109,10 +111,23 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         imageSize = if (isGridView) {
             val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            (screenWidth / 2) - (margin * 2)
+            (screenWidth - margin * NUM_GRID_MARGINS) / 2
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
+
+        addItemDecoration(
+                if (isGridView) {
+                    GridItemDecoration(
+                            spanCount = NUM_COLUMNS,
+                            spacing = resources.getDimensionPixelSize(dimen.margin_extra_large)
+                    )
+                } else {
+                    HorizontalItemDecoration(
+                            spacing = resources.getDimensionPixelSize(dimen.minor_100)
+                    )
+                }
+        )
     }
 
     fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
@@ -324,15 +339,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             addImageContainer.layoutParams.height = imageSize
             addImageContainer.layoutParams.width = imageSize
-
-            // add space between items in grid view
-            if (isGridView) {
-                val margin = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
-                with(productImageView.layoutParams as MarginLayoutParams) {
-                    this.topMargin = margin
-                    this.bottomMargin = margin
-                }
-            }
 
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {

@@ -1,20 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-02 14:54:04+0000
+Translation-Revision-Date: 2020-11-13 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">Gunakan pembuatan produk baru yang sederhana, ditautkan, dan dikelompokkan saat kami bersiap untuk meluncurkan</string>
+    <string name="bottom_sheet_linked_products_desc">Tingkatkan penjualan dengan upsell dan cross-sell</string>
+    <string name="edit_products_button">Edit produk</string>
+    <string name="add_products_button">Tambahkan produk</string>
+    <string name="cross_sells_desc">Produk dipromosikan dalam keranjang saat produk tersebut dipilih</string>
+    <string name="cross_sells_label">Cross-sells</string>
+    <string name="upsells_desc">Produk akan dipromosikan dari produk yang sedang dilihat (yaitu: produk yang lebih menguntungkan)</string>
+    <string name="upsells_label">Upsell</string>
+    <string name="product_detail_linked_products">Produk ditautkan</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">Hubungi kami</string>
+    <string name="my_store_stats_availability_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Admin.\n\nMasih memerlukan bantuan? %1$s</string>
+    <string name="my_store_stats_availability_title">Kami tidak dapat menampilkan\n analisis toko Anda</string>
+    <string name="login_get_link_by_email">Dapatkan tautan masuk lewat email</string>
+    <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini.</string>
+    <string name="settings_enable_product_adding_teaser_title">Membuat produk</string>
+    <string name="settings_preferences">Preferensi</string>
+    <string name="product_trash_error">Kesalahan saat membuang produk</string>
+    <string name="product_trash_undo_snackbar_message">Produk dipindahkan ke tempat sampah</string>
+    <string name="product_trash_yes">Pindahkan ke tempat sampah</string>
+    <string name="product_confirm_trash">Ingin memindahkan produk ini ke Tempat Sampah?</string>
+    <string name="product_trash">Buang produk</string>
+    <string name="product_detail_no_variations">Produk ini belum memiliki variasi</string>
+    <string name="product_variant_list_empty">Menambahkan opsi seperti ukuran dan warna saat ini hanya tersedia pada web. Pilihan tersebut akan muncul sebagai opsi pada halaman produk situs Anda.</string>
+    <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Anda dapat mengaktifkannya dengan mengaktifkan fitur beta pada pengaturan aplikasi. Belum siap? Simpan sebagai draf!</string>
+    <string name="product_adding_wip_title">Buat produk dari aplikasi!</string>
+    <string name="product_ratings_count_zero">\u2022 belum ada peringkat</string>
+    <string name="product_ratings_count_one">\u2022 diberi peringkat sekali</string>
+    <string name="product_ratings_count">\u2022 diberi peringkat %d kali</string>
+    <string name="product_detail_fetch_product_invalid_id_error">Produk tidak ditemukan</string>
+    <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
+    <string name="print_shipping_label_info_step_4">Anda mungkin perlu memastikan firmware mesin cetak sudah diperbarui dan lihat dokumen mesin cetak untuk petunjuk.</string>
+    <string name="print_shipping_label_info_step_3">Anda dapat memilih perangkat Anda atau pasang (ini akan muncul sebagai opsi yang disarankan)</string>
+    <string name="print_shipping_label_info_step_2">Setelah memilih , Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
+    <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke</string>
+    <string name="print_shipping_label_format_options_title">Opsi format Label</string>
+    <string name="print_shipping_label_info_title">Cetak dari perangkat Anda</string>
+    <string name="shipping_label_paper_size_label">Label (4 x 6 inci)</string>
+    <string name="shipping_label_paper_size_letter">Letter (8,5 x 11 inci)</string>
+    <string name="shipping_label_paper_size_legal">Legal (8,5 x 14 inci)</string>
+    <string name="shipping_label_preview_error">Kesalahan saat menampilkan pratinjau label pengiriman</string>
+    <string name="shipping_label_print_info">Tidak tahu cara mencetak dari telepon Anda?</string>
+    <string name="shipping_label_paper_size_options_info">Lihat tata letak label dan opsi ukuran kertas</string>
+    <string name="shipping_label_print_button">Cetak label pengiriman</string>
+    <string name="shipping_label_paper_size_options_title">Pilih ukuran kertas</string>
+    <string name="shipping_label_paper_size">Ukuran kertas</string>
+    <string name="shipping_label_print_disclaimer">Jika Anda telah menggunakan label pada kemasan, mencetak dan menggunakannya kembali merupakan pelanggaran terhadap ketentuan layanan kami.</string>
+    <string name="shipping_label_print_error_message">Jika terjadi kesalahan mencetak saat Anda membeli label, Anda dapat mencetaknya kembali.</string>
+    <string name="order_begin_fulfillment">Tandai pesanan selesai</string>
+    <string name="orderdetail_shipping_label_wip_message">Kami berusaha mempermudah Anda agar dapat mencetak label pengiriman langsung dari perangkat Anda! Untuk saat ini, jika telah membuat label pengiriman untuk pesanan ini di admin toko Anda dengan Pengiriman WooCommerce, Anda dapat mencetaknya di Detail Pesanan di sini.</string>
+    <string name="orderdetail_shipping_label_wip_title">Cetak label pengiriman dari perangkat Anda!</string>
+    <string name="orderdetail_shipping_label_reprint">Cetak ulang label pengiriman</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
+    <string name="product_detail_publish_product_draft_success">Draf produk disimpan</string>
+    <string name="product_detail_publish_product_draft_error">Kesalahan saat menyimpan draf produk</string>
+    <string name="product_publish_draft_dialog_title">Menyimpan draf</string>
+    <string name="product_status_trashed">Dibuang</string>
+    <string name="product_detail_save_as_draft">Simpan sebagai draf</string>
+    <string name="login_no_wpcom_account_found">Sepertinya %1$s tidak terhubung dengan akun WordPress.com.</string>
     <string name="signup_confirmation_title">Konfirmasi pendaftaran</string>
     <string name="reset_your_password">Reset kata sandi</string>
     <string name="enter_your_site_address">Masukkan alamat situs Anda</string>
     <string name="continue_with_wpcom">Lanjutkan dengan WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">Jika Anda melanjutkan dengan Google dan belum memiliki akun WordPress.com, Anda akan membuat akun dan menyetujui  %1$sKetentuan Layanan%2$s kami.</string>
     <string name="continue_terms_of_service_text">Dengan melanjutkan, Anda menyetujui %1$sKetentuan Layanan%2$s kami.</string>
-    <string name="signup_confirmation_magic_link_message">Kami akan mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru.</string>
+    <string name="signup_confirmation_magic_link_message">Kami akan mengirimi Anda email berisi tautan pendaftaran untuk membuat akun WordPress.com baru.</string>
     <string name="signup_confirmation_message">Kami akan menggunakan alamat email ini untuk membuat akun WordPress.com baru Anda.</string>
-    <string name="signup_magic_link_message">Kami telah mengirimkan tautan ke email Anda untuk membuat akun WordPress.com baru. Periksa email Anda pada perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com.</string>
+    <string name="signup_magic_link_message">Kami telah mengirimi Anda email berisi tautan masuk untuk membuat akun WordPress.com baru. Periksa e-mail Anda di perangkat ini, dan klik tautan pada e-mail yang Anda terima dari WordPress.com</string>
     <string name="sign_up_label">Mendaftar</string>
     <string name="login_or">atau</string>
     <string name="continue_site_credentials">Lanjutkan dengan kredensial toko</string>
@@ -24,7 +83,7 @@ Language: id
     <string name="login_done">Selesai</string>
     <string name="magic_link_not_seeing_email_message">Tidak menerima email? Periksa folder Spam atau Junk.</string>
     <string name="login_magic_links_sent_label">Periksa email Anda di perangkat yang Anda gunakan, dan klik tautan pada email yang Anda terima dari WordPress.com</string>
-    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan yang dapat Anda gunakan untuk login langsung, tanpa kata sandi.</string>
+    <string name="login_magic_links_label">Kami akan mengirimkan email berisi tautan yang bisa Anda gunakan untuk login dalam sekejap, tanpa kata sandi.</string>
     <string name="check_email">Periksa email</string>
     <string name="get_started">Mulai</string>
     <string name="enter_account_info_for_site">Masukkan informasi akun Anda untuk %1$s.</string>
@@ -85,15 +144,12 @@ Language: id
     <string name="variation_detail_price_warning">Variasi tanpa harga tidak akan ditampilkan di toko Anda</string>
     <string name="variation_detail_update_product_success">Variasi diperbarui</string>
     <string name="grouped_product_btn_delete">Hapus produk yang dikelompokkan</string>
-    <string name="grouped_products_single">%d produk</string>
-    <string name="grouped_products_count">%d produk</string>
     <string name="grouped_products">Produk yang dikelompokkan</string>
     <string name="product_type_edit">Ubah jenis produk</string>
     <string name="product_variation_no_price_set">Tidak ada harga yang ditentukan</string>
     <string name="product_variation_enabled">Diaktifkan</string>
     <string name="product_pricing_scheduled_sale_price_error">Anda harus menentukan harga obral jika ada obral yang dijadwalkan</string>
     <string name="product_wip_message_m3">Anda kini dapat menyunting produk yang dikelompokkan, eksternal, dan variabel; mengubah jenis produk; serta memperbarui kategori dan tag.</string>
-    <string name="product_reviews_count">\u2022 %d ulasan</string>
     <string name="product_review_list_item_title">%1$s berikan ulasan</string>
     <string name="feedback_request_like_it">Saya suka</string>
     <string name="feedback_request_make_better">Perlu ditingkatkan</string>
@@ -229,7 +285,6 @@ Language: id
     <string name="settings_app_theme_title">Tampilan</string>
     <string name="product_short_description_empty">Rangkuman ringkas tentang produk</string>
     <string name="product_short_description">Deskripsi singkat</string>
-    <string name="my_store_stats_availability_message">Kami meluncurkan peningkatan pada statistik untuk toko dengan WooCommerce 4.0 atau toko yang menginstal plugin WooCommerce Admin</string>
     <string name="my_store_stats_reverted_message">Kami telah meluncurkan peningkatan pada analitik kami. Upgrade ke WooCommerce 4.0 atau versi lebih baru atau instal plugin WooCommerce Admin untuk tetap bisa melihat statistik Anda setelah tanggal 1 September 2020.</string>
     <string name="my_store_stats_reverted_title">Upgrade untuk bisa tetap melihat statistik Anda</string>
     <string name="product_pricing_update_sale_price_error">Harga penjualan harus kurang dari harga biasa</string>
@@ -295,7 +350,6 @@ Language: id
     <string name="product_description">Deskripsi</string>
     <string name="product_edit_description">Sunting deskripsi</string>
     <string name="product_description_hint">Mulai menulis…</string>
-    <string name="product_variant_list_empty">Tambahkan opsi seperti ukuran dan warna dari web. Ini akan muncul sebagai opsi di halaman produk situs Anda</string>
     <string name="discard_message">Ingin membuang perubahan?</string>
     <string name="update">Perbarui</string>
     <string name="done">Selesai</string>
@@ -403,12 +457,10 @@ Language: id
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
-    <string name="order_mark_complete">Mulai pemenuhan</string>
     <string name="orderdetail_net">Net</string>
     <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
-    <string name="my_store_stats_availability_title">Cobalah statistik yang disempurnakan</string>
     <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>
     <string name="no_thanks">Tidak, terima kasih</string>
     <string name="try_it_now">Coba sekarang</string>
@@ -947,7 +999,6 @@ Language: id
     <string name="magic_link_unavailable_error_message">Saat ini tidak tersedia. Masukkan kata sandi Anda</string>
     <string name="login_magic_link_email_requesting">Meminta email login</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
-    <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini. Coba tautan di bawah ini untuk login menggunakan alamat situs Anda.</string>
     <string name="requesting_otp">Meminta kode verifikasi melalui SMS.</string>
     <string name="login_text_otp_another">Kirimi saya kode baru.</string>
     <string name="login_text_otp">Kirimi saya kode saja.</string>
@@ -1021,7 +1072,6 @@ Language: id
     <string name="orderdetail_product_image_contentdesc">Gambar Produk</string>
     <string name="orderdetail_product_lineitem_sku">SKU:</string>
     <string name="orderdetail_product_lineitem_tax">Pajak:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">kirim email ke pelanggan</string>
     <string name="orderdetail_billing_details">Detail Tagihan</string>
     <string name="orderdetail_shipping_details">Detail Pengiriman</string>

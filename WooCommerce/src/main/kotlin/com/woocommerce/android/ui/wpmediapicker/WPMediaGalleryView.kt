@@ -54,9 +54,9 @@ class WPMediaGalleryView @JvmOverloads constructor(
         fun onImageLongClicked(image: Product.Image)
     }
 
+    var isMultiSelectionAllowed: Boolean = true
     private var imageSize = 0
     private val selectedIds = ArrayList<Long>()
-    private var isMultiSelectionAllowed: Boolean = true
 
     private val adapter: WPMediaLibraryGalleryAdapter
     private val layoutInflater: LayoutInflater
@@ -245,7 +245,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
             }
 
             if (isMultiSelectionAllowed) {
-                // show and animate the count
+                // show and animate the count or check mark
                 if (selected) {
                     holder.textSelectionCount.text = String.format(
                         Locale.getDefault(),

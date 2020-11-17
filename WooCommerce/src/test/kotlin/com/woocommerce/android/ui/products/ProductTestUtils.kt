@@ -24,7 +24,14 @@ object ProductTestUtils {
             name = "product 1"
             description = "product 1 description"
             images = "[]"
-            downloads = "[]"
+            downloadable = true
+            downloads = """[
+                                {
+                                    "id": 1,
+                                    "name": "test",
+                                    "file": "https://testurl"
+                                }
+                            ]"""
             weight = "10"
             length = "1"
             width = "2"

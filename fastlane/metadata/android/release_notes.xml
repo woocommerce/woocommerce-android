@@ -1,81 +1,85 @@
+<ar>
+5.4:
+* يتم عرض معلومات تنوع المنتج بالكامل في تفاصيل الطلب.
+* إصلاح عطل نادر عند إضافة تصنيف منتج جديدة وتحديد خيارات تصفية المنتجات.
+</ar>
+<de-DE>
+5.4:
+* Produktvariationsinformationen werden in den Bestelldetails vollständig angezeigt.
+* Es wurde ein Fehler behoben, der zum Absturz führte, wenn eine neue Produktkategorie hinzugefügt und Produktfilteroptionen ausgewählt wurden.
+</de-DE>
 <es-ES>
-5.2:
-Mejoras en las funciones de edición para todos los tipos de productos:
-
-Se han añadido campos adicionales a los productos principales (etiquetas, categorías, tipo de producto, visibilidad y activación y desactivación de valoraciones). Ahora también se pueden editar los productos variables.
-
-Se han añadido campos básicos para los productos que no son principales (imágenes, nombre, descripción, precio de solo lectura, inventario de solo lectura, etiquetas, categorías, descripciones cortas y ajustes del producto).
-
+5.4:
+* La información del pedido muestra toda la información de variación del producto.
+* Se ha corregido un error raro que se producía al añadir una nueva categoría de producto y seleccionar opciones de filtros de productos.
 </es-ES>
 <fr-FR>
-5.2 :
-Options de modification améliorées pour tous les types de produit :
-
-Ajout de champs supplémentaires aux produits essentiels (étiquettes, catégories, type de produit, activer/désactiver les avis et visibilité). Les produits variables peuvent désormais être modifiés.
-
-Des champs de base ont été ajoutés pour les produits non essentiels (images, nom, description, prix en lecture seule, inventaire en lecture seule, étiquettes, catégories, courtes descriptions et paramètres de produit).
-
+5.4 :
+* Les informations sur les variantes des produits s’affichent entièrement dans les détails de la commande.
+* Résolution d’un incident rare au moment de l’ajout d’une nouvelle catégorie de produits et de la sélection d’options de filtres de produits.
 </fr-FR>
 <iw-IL>
-5.2:
-שיפורים ביכולות העריכה בכל סוגי המוצרים:
-
-הוספנו שדות במוצרי ליבה (תגיות, קטגוריות, סוגי מוצרים, הפעלה/השבתה של ביקורות ונראות). ניתן לערוך גם מוצרים עם סוגים.
-
-הוספנו שדות בסיסיים למוצרים שאינם מוצרי ליבה (תמונות, שם, תיאור, מחיר לקריאה בלבד, מלאי לקריאה בלבד, תגיות, קטגוריות, תיאורים קצרים והגדרות מוצר).
-
+5.4: 
+*מידע על סוג המוצר מוצג במלואו בפרטי ההזמנה.
+* תיקנו קריסה נדירה שקורית כשמוסיפים קטגוריית מוצר חדשה ובחורים אפשרויות לסינון מוצרים.
 </iw-IL>
+<id>
+5.4:
+* Informasi ragam produk ditampilkan secara penuh pada detail pesanan.
+* Memperbaiki crash yang jarang terjadi saat menambahkan kategori produk baru dan memilih opsi penyaringan produk.
+</id>
+<it-IT>
+5.4:
+* Le informazioni sulle variazioni dei prodotti vengono visualizzate nei dettagli dell'ordine.
+* È stato risolto un crash raro che si verificava quando si aggiungeva una nuova categoria di prodotti e si selezionavano le opzioni di filtro dei prodotti.
+</it-IT>
+<ja-JP>
+5.4:
+ * 商品の検証情報全体が注文の詳細に表示されます。
+* 新しい商品カテゴリーを追加し、商品フィルターオプションを選択した際にまれに発生するクラッシュを修正しました。
+</ja-JP>
 <ko-KR>
-5.2:
-모든 제품 유형에 대한 편집 기능 개선:
-
-핵심 제품에 추가 필드(태그, 카테고리, 제품 유형, 리뷰 사용/사용 안 함 및 가시성)가 추가되었습니다. 옵션 제품도 이제 편집할 수 있습니다.
-
-비 핵심 제품(이미지, 이름, 설명, 읽기 전용 가격, 읽기 전용 인벤토리, 태그, 카테고리, 간단한 설명 및 제품 설정)에 기본 필드가 추가되었습니다.
-
+5.4:
+* 제품 변형 정보가 주문 상세 정보에 전체적으로 표시됩니다.
+* 새 제품 카테고리를 추가하고 제품 필터 옵션을 선택할 때 드물게 발생하는 충돌을 수정했습니다.
 </ko-KR>
+<nl-NL>
+5.4:
+* Informatie over productvariatie wordt volledig weergegeven bij bestellingsgegevens.
+* Een zeldzame crash verholpen bij het toevoegen van een nieuwe productcategorie en het selecteren van productfilters.
+</nl-NL>
 <pt-BR>
-5.2:
-Melhorias nos recursos de edição para todos os produtos:
-
-Adicionados campos adicionais aos produtos principais (tags, categorias, tipo de produto, ativar/desativar avaliações e visibilidade). Produtos variáveis agora também podem ser editados.
-
-Adicionados campos básicos aos produtos secundários (imagens, nome, descrição, preço somente leitura, inventário somente leitura, tags, categorias, breves descrições e configurações do produto).
-
+5.4:
+* Exibição completa das informações de variação do produto nos detalhes do pedido.
+* Correção de uma falha rara ocorrida ao adicionar uma nova categoria de produto e selecionar as opções de filtro.
 </pt-BR>
 <ru-RU>
-5.2:
-Улучшены возможности редактирования всех типов товаров:
-
-в основные товары добавлены дополнительные поля (теги, категории, тип товара, включить/отключить отзывы и видимость). Товары с вариантами также можно редактировать.
-
-В товары, не относящиеся к основным, добавлены базовые поля (изображения, имя, описание, цена в режиме «только для чтения», количество товара в режиме «только для чтения», теги, категории, краткие описания и настройки товара).
-
+5.4:
+* Информация о вариантах продуктов полностью отображается в сведениях о заказе.
+* Исправлена ошибка, приводившая к редким сбоям при добавлении новой категории продуктов и выборе параметров фильтрации продуктов.
 </ru-RU>
 <sv-SE>
-5.2:
-Förbättringar av redigeringsfunktionerna för alla produkttyper:
-
-Ytterligare fält har lagts till för kärnprodukter (etiketter, kategorier, produkttyp, aktivera/inaktivera recensioner och synlighet). Det går nu även att redigera variabla produkter.
-
-Grundläggande fält har lagts till för icke-kärnprodukter (bilder, namn, beskrivning, skrivskyddat pris, skrivskyddat lager, etiketter, kategorier, korta beskrivningar och produktinställningar).
-
+5.4:
+* Produktvariationsinformation visas fullständigt i orderdetaljerna.
+* En sällsynt krasch som inträffade vid tillägg av en ny produktkategori och val av produktfilteralternativ har åtgärdats.
 </sv-SE>
+<tr-TR>
+5.4:
+* Ürün varyasyon bilgileri, sipariş ayrıntılarında tam olarak görüntülenir.
+* Yeni bir ürün kategorisi eklerken ve ürün filtresi seçenekleri seçerken nadir görülen bir çökme düzeltildi.
+</tr-TR>
+<zh-CN>
+5.4：
+* 产品变体信息完全显示在订单详细信息中。
+* 修复了添加新产品类别和选择产品过滤选项时罕见出现的崩溃问题。
+</zh-CN>
 <zh-TW>
-5.2：
-增強所有商品類型的編輯功能：
-
-為核心商品新增其他欄位 (標籤、類別、商品類型、啟用/停用評論和可見度)。 你現在也可以編輯子類商品。
-
-我們為非核心商品新增了基本欄位 (圖片、名稱、說明、唯讀價格、唯讀庫存、標籤、類別、簡短說明和商品設定)。
-
+5.4：
+* 訂單詳細資料會完整顯示商品子項資訊。
+* 修正少數情況下，新增商品類別並選取商品篩選選項時出現的當機問題。
 </zh-TW>
 <en-US>
-5.2:
-Enhancements to the editing capabilities for all product types:
-
-Additional fields added to core products (tags, categories, product type, enable/disable reviews, and visibility). Variable products can also now be edited.
-
-Basic fields added for non-core products (images, name, description, read-only price, read-only inventory, tags, categories, short descriptions, and product settings). 
- 
+5.4:
+* Product variation information fully displays in order details.
+* Fixed a rare crash when adding a new product category and selecting product filter options.
 </en-US>

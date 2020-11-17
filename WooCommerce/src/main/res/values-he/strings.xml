@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-15 15:54:03+0000
+Translation-Revision-Date: 2020-11-13 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">כדאי לבדוק את המוצרים הפשוטים, המקושרים והמקובצים החדשים בזמן שאנחנו מתכוננים להשקה</string>
+    <string name="bottom_sheet_linked_products_desc">להגדיל את המכירות עם שדרוגי מכירות ומכירות צולבות</string>
+    <string name="edit_products_button">לערוך מוצרים</string>
+    <string name="add_products_button">להוסיף מוצרים</string>
+    <string name="cross_sells_desc">מוצרים שמקודמים בעגלת הקניות כשהמוצרים הנוכחיים נבחרים</string>
+    <string name="cross_sells_label">מכירות צולבות</string>
+    <string name="upsells_desc">מוצרים שמקודמים במקום המוצרים שמוצגים עכשיו (כלומר, מוצרים רווחיים יותר)</string>
+    <string name="upsells_label">שדרוגי מכירות</string>
+    <string name="product_detail_linked_products">מוצרים מקושרים</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">ליצור קשר</string>
+    <string name="my_store_stats_availability_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Admin מופעל.\n\nעדיין דרושה לך עזרה? %1$s</string>
+    <string name="my_store_stats_availability_title">לא הצלחנו להפעיל את \nהניתוח הסטטיסטי של החנות</string>
+    <string name="login_get_link_by_email">לקבל קישור להתחברות באימייל</string>
+    <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו.</string>
+    <string name="settings_enable_product_adding_teaser_title">יצירת מוצרים</string>
+    <string name="settings_preferences">העדפות</string>
+    <string name="product_trash_error">שגיאה בהעברת המוצר לפח</string>
+    <string name="product_trash_undo_snackbar_message">המוצר הועבר לפח</string>
+    <string name="product_trash_yes">להעביר לפח</string>
+    <string name="product_confirm_trash">האם ברצונך להעביר מוצר זה לפח?</string>
+    <string name="product_trash">להעביר מוצר לפח</string>
+    <string name="product_detail_no_variations">למוצר זה אין עדיין סוגים</string>
+    <string name="product_variant_list_empty">הוספה של אפשרויות כגון גודל וצבע זמינה כעת באינטרנט בלבד. פריטים אלה יופיעו כאפשרויות בעמוד המוצר באתר שלך.</string>
+    <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום דרך האפליקציה WooCommerce. אפשר להפעיל אותה על ידי הפעלה של אפשרות הבטא בהגדרות האפליקציה. עדיין לא מתאים לך? אפשר לשמור אותם כטיוטה!</string>
+    <string name="product_adding_wip_title">אפשר ליצור מוצרים דרך האפליקציה!</string>
+    <string name="product_ratings_count_zero">\u2022 אין דירוגים</string>
+    <string name="product_ratings_count_one">\u2022 דורג פעם אחת</string>
+    <string name="product_ratings_count">\u2022 דורג %d פעמים</string>
+    <string name="product_detail_fetch_product_invalid_id_error">המוצר לא נמצא</string>
+    <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר לשלוח אותה באימייל כדי להדפיס דרך מכשיר אחר.</string>
+    <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך לוודא שהקושחה של המדפסת מעודכנת ולעיין במסמכי התיעוד של המדפסת לקבלת הנחיות.</string>
+    <string name="print_shipping_label_info_step_3">אפשר לבחור את המכשיר או להתקין את (פריט זה אמור להופיע בתור האפשרות המומלצת)</string>
+    <string name="print_shipping_label_info_step_2">אחרי הבחירה, ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
+    <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל</string>
+    <string name="print_shipping_label_format_options_title">אפשרויות לפורמט תווית</string>
+    <string name="print_shipping_label_info_title">להדפיס באמצעות המכשיר שלך</string>
+    <string name="shipping_label_paper_size_label">תווית (4 x‏ 6 אינץ\')</string>
+    <string name="shipping_label_paper_size_letter">מכתב (8.5 x‏ 11 אינץ\')</string>
+    <string name="shipping_label_paper_size_legal">משפטי (8.5 x‏ 14 אינץ\')</string>
+    <string name="shipping_label_preview_error">אירעה שגיאה בתצוגה המקדימה של תווית המשלוח</string>
+    <string name="shipping_label_print_info">אין לך מושג כיצד להדפיס באמצעות הטלפון שלך?</string>
+    <string name="shipping_label_paper_size_options_info">להציג פריסות תווית ואפשרויות לגודל הנייר</string>
+    <string name="shipping_label_print_button">להדפיס תווית משלוח</string>
+    <string name="shipping_label_paper_size_options_title">יש לבחור גודל נייר</string>
+    <string name="shipping_label_paper_size">גודל נייר</string>
+    <string name="shipping_label_print_disclaimer">אם כבר השתמשת בתווית שעל החבילה, הדפסתה והשימוש החוזר בה הם בגדר הפרה של תנאי השימוש שלנו.</string>
+    <string name="shipping_label_print_error_message">אם אירעה שגיאת הדפסה כשרכשת את התווית, אפשר להדפיס אותה שוב.</string>
+    <string name="order_begin_fulfillment">לסמן את ההזמנה כ\'הושלמה\'</string>
+    <string name="orderdetail_shipping_label_wip_message">אנחנו פועלים כדי ליצור תהליך הדפסה קל יותר לתוויות משלוח ישירות מהמכשיר שלך! בינתיים, אם יצרת תוויות משלוח עבור הזמנה זו במנהל החנות שלך באמצעות WooCommerce Shipping, אפשר להדפיס אותן בפרטי ההזמנה שלך כאן.</string>
+    <string name="orderdetail_shipping_label_wip_title">אפשר להדפיס תווית משלוח מהמכשיר שלך!</string>
+    <string name="orderdetail_shipping_label_reprint">להדפיס שוב תווית משלוח</string>
+    <string name="orderdetail_customer_note">‎\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">הטיוטה של המוצר נשמרה</string>
     <string name="product_detail_publish_product_draft_error">שגיאה בשמירה של טיוטת המוצר</string>
     <string name="product_publish_draft_dialog_title">שומר טיוטה</string>
@@ -18,9 +71,9 @@ Language: he_IL
     <string name="continue_with_wpcom">להמשיך עם WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">אם בחרת להמשיך עם Google או ועדיין אין לך חשבון ב-WordPress.com, חשבון ייווצר עבורך ויש הסכמה מצידך ⁦%1$s⁩לתנאי השירות⁦%2$s⁩ שלנו.</string>
     <string name="continue_terms_of_service_text">המשך הפעולה מהווה את הסכמתך ⁦%1$s⁩לתנאי השימוש⁦%2$s⁩ שלנו.</string>
-    <string name="signup_confirmation_magic_link_message">ברגעים אלה נשלח אליך אימייל עם קישור ישיר כדי ליצור את החשבון החדש שלך ב-WordPress.com.</string>
+    <string name="signup_confirmation_magic_link_message">נשלח לך באימייל קישור להרשמה כדי ליצור את חשבון WordPress.com החדש שלך.</string>
     <string name="signup_confirmation_message">אנחנו נשתמש בכתובת האימייל הזאת כדי ליצור את החשבון החדש שלך ב-WordPress.com.</string>
-    <string name="signup_magic_link_message">שלחנו אליך אימייל עם קישור ישיר כדי ליצור את החשבון החדש שלך ב-WordPress.com. עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
+    <string name="signup_magic_link_message">שלחנו לך באימייל קישור להרשמה כדי ליצור את חשבון WordPress.com החדש שלך. עליך לבדוק את האימייל במכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
     <string name="sign_up_label">הרשמה</string>
     <string name="login_or">או</string>
     <string name="continue_site_credentials">להמשיך עם פרטי הכניסה של החנות</string>
@@ -30,7 +83,7 @@ Language: he_IL
     <string name="login_done">בוצע</string>
     <string name="magic_link_not_seeing_email_message">לא רואה את האימייל? כדאי לבדוק בתיבת הספאם או דואר הזבל.</string>
     <string name="login_magic_links_sent_label">עליך לבדוק את האימייל ממכשיר זה ולהקיש על הקישור בהודעה שקיבלת מ-WordPress.com.</string>
-    <string name="login_magic_links_label">נשלח לך קישור מיוחד להתחברות מיידית, ללא צורך בסיסמה.</string>
+    <string name="login_magic_links_label">נשלח לך באימייל קישור להתחברות מיידית, ללא צורך בסיסמה.</string>
     <string name="check_email">יש לבדוק את האימייל</string>
     <string name="get_started">מתחילים כאן</string>
     <string name="enter_account_info_for_site">להזין את פרטי החשבון שלך ב-⁦%1$s⁩.</string>
@@ -91,15 +144,12 @@ Language: he_IL
     <string name="variation_detail_price_warning">סוגים ללא מחיר לא יוצגו בחנות שלך</string>
     <string name="variation_detail_update_product_success">הסוג עודכן</string>
     <string name="grouped_product_btn_delete">למחוק את המוצרים בקבוצה</string>
-    <string name="grouped_products_single">%d מוצר</string>
-    <string name="grouped_products_count">%d מוצרים</string>
     <string name="grouped_products">מוצרים בקבוצות</string>
     <string name="product_type_edit">לשנות סוג מוצר</string>
     <string name="product_variation_no_price_set">טרם צוין מחיר</string>
     <string name="product_variation_enabled">הופעל</string>
     <string name="product_pricing_scheduled_sale_price_error">עליך להגדיר את מחיר המבצע אם נקבע לוח זמנים למבצע</string>
     <string name="product_wip_message_m3">כעת אפשר להוסיף מוצרים בקבוצות, מוצרים חיצוניים ומוצרים עם סוגים שונים, לשנות את סוג המוצר ולעדכן את הקטגוריות והתגיות.</string>
-    <string name="product_reviews_count">\u2022 %d ביקורות</string>
     <string name="product_review_list_item_title">⁦%1$s⁩ הוסיפו ביקורת</string>
     <string name="feedback_request_like_it">אהבתי</string>
     <string name="feedback_request_make_better">אפשר לשפר</string>
@@ -235,7 +285,6 @@ Language: he_IL
     <string name="settings_app_theme_title">מראה</string>
     <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
     <string name="product_short_description">תיאור קצר</string>
-    <string name="my_store_stats_availability_message">אנחנו מפרסמים שיפורים לנתונים הסטטיסטיים בחנויות עם WooCommerce 4.0 או בחנויות שבהן הותקן התוסף WooCommerce Admin</string>
     <string name="my_store_stats_reverted_message">פרסמנו שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 בספטמבר 2020.</string>
     <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
@@ -301,7 +350,6 @@ Language: he_IL
     <string name="product_description">תיאור</string>
     <string name="product_edit_description">לערוך את התיאור</string>
     <string name="product_description_hint">להתחיל לכתוב…</string>
-    <string name="product_variant_list_empty">להוסיף אפשרות כגון גודל וצבע מהאינטרנט. האפשרויות האלו יוצגו כאפשרויות בעמוד המוצר של האתר שלך</string>
     <string name="discard_message">האם למחוק את השינויים שביצעת?</string>
     <string name="update">לעדכן</string>
     <string name="done">בוצע</string>
@@ -409,12 +457,10 @@ Language: he_IL
     <string name="orderdetail_refund_detail">%1$s דרך %2$s</string>
     <string name="settings_enable_v4_stats_title">נתונים סטטיסטיים משופרים</string>
     <string name="beta_features">תכונות ביתא</string>
-    <string name="order_mark_complete">להתחיל את ההשלמה</string>
     <string name="orderdetail_net">נטו</string>
     <string name="orderdetail_payment_paid_by_customer">שולם על ידי הלקוח</string>
     <string name="orderdetail_payment_summary_onhold">ממתין לתשלום דרך %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s דרך %2$s</string>
-    <string name="my_store_stats_availability_title">מומלץ לנסות את הנתונים הסטטיסטיים המשופרים</string>
     <string name="dashboard_state_no_data">אין רווחים בתקופה זאת</string>
     <string name="no_thanks">לא תודה</string>
     <string name="try_it_now">כדאי לנסות עכשיו</string>
@@ -953,7 +999,6 @@ Language: he_IL
     <string name="magic_link_unavailable_error_message">לא זמין כרגע. יש להזין סיסמה</string>
     <string name="login_magic_link_email_requesting">שולח בקשה לאימייל להתחברות</string>
     <string name="password_incorrect">נראה שהסיסמה הזו שגויה. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
-    <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו. מומלץ לנסות את הקישור למטה כדי להתחבר באמצעות כתובת האתר שלך.</string>
     <string name="requesting_otp">שולח קוד אימות באמצעות SMS.</string>
     <string name="login_text_otp_another">שליחת קוד נוסף בהודעת טקסט במקום.</string>
     <string name="login_text_otp">שלחו לי הודעת טקסט עם קוד במקום.</string>
@@ -1027,7 +1072,6 @@ Language: he_IL
     <string name="orderdetail_product_image_contentdesc">תמונת מוצר</string>
     <string name="orderdetail_product_lineitem_sku">מק\"ט:</string>
     <string name="orderdetail_product_lineitem_tax">מס:</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">שליחת הודעת אימייל ללקוח</string>
     <string name="orderdetail_billing_details">פרטי חיוב</string>
     <string name="orderdetail_shipping_details">פרטי משלוח</string>
@@ -1045,9 +1089,9 @@ Language: he_IL
     <string name="dashboard_action_view_orders">הצגת הזמנות</string>
     <string name="dashboard_action_view_order">הצגת הזמנה</string>
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>
-    <string name="dashboard_top_performers_total_orders">סה\"כ הזמנות: %s</string>
+    <string name="dashboard_top_performers_total_orders">סך כל ההזמנות: %s</string>
     <string name="dashboard_top_performers_total_spend">הוצאה כוללת</string>
-    <string name="dashboard_top_performers_description">קבלת תובנות על ביצועי המוצרים בחנות שלך</string>
+    <string name="dashboard_top_performers_description">לקבל תובנות על ביצועי המוצרים בחנות שלך</string>
     <string name="dashboard_top_performers_title">הביצועים הטובים ביותר</string>
     <string name="dashboard_stats_updated_date_time">עודכן ב-%s</string>
     <string name="dashboard_stats_updated_one_day">עודכן לפני יום</string>
