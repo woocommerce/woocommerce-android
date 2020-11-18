@@ -21,6 +21,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -202,6 +204,7 @@ class MainActivity : AppUpgradeActivity(),
             checkForAppUpdates()
         }
 
+        // detect when the collapsible toolbar if fully expanded
         app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             if (isAtNavigationRoot()) {
                 isToolbarExpanded = (verticalOffset == 0)
@@ -459,6 +462,9 @@ class MainActivity : AppUpgradeActivity(),
             toolbar.navigationIcon?.colorFilter = backArrowColorFilter
         }
 
+        // collapsible toolbar should only be able to expand for top-level fragments
+        enableToolbarExpansion(isAtRoot)
+
         previousDestinationId = destination.id
     }
 
@@ -469,6 +475,25 @@ class MainActivity : AppUpgradeActivity(),
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
         app_bar_layout.setExpanded(expand, animate)
+    }
+
+    fun enableToolbarExpansion(enable: Boolean) {
+        app_bar_layout.isActivated = enable
+        collapsing_toolbar.isTitleEnabled = enable
+        collapsing_toolbar.isEnabled = enable
+        collapsing_toolbar.isActivated = enable
+
+        val p = collapsing_toolbar.layoutParams as AppBarLayout.LayoutParams
+        p.scrollFlags = if (enable) {
+            SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+        } else {
+            0
+        }
+        collapsing_toolbar.setLayoutParams(p)
+
+        if (!enable) {
+            toolbar.title = title
+        }
     }
 
     /**
