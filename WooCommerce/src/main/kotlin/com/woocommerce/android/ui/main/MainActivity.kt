@@ -21,8 +21,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -478,24 +476,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
-        app_bar_layout.isActivated = enable
-        collapsing_toolbar.isTitleEnabled = enable
-        collapsing_toolbar.isEnabled = enable
-        collapsing_toolbar.isActivated = enable
-
-        (collapsing_toolbar.layoutParams as? AppBarLayout.LayoutParams)?.let { params ->
-            params.scrollFlags = if (enable) {
-                SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-            } else {
-                0
-            }
-            params.height = if (enable) {
-                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_height)
-            } else {
-                resources.getDimensionPixelSize(R.dimen.toolbar_height)
-            }
-        }
-
+        collapsing_toolbar.setTitleEnabled(enable)
         if (!enable) {
             toolbar.title = title
         }
