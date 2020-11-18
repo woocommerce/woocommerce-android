@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
 object ProductTestUtils {
-    fun generateProduct(productId: Long = 1L): Product {
+    fun generateProduct(productId: Long = 1L, isVirtual: Boolean = false): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
@@ -43,6 +43,7 @@ object ProductTestUtils {
             groupedProductIds = "[10,11]"
             ratingCount = 4
             shortDescription = "short desc"
+            virtual = isVirtual
         }.toAppModel()
     }
 
