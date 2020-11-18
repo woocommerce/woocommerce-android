@@ -73,8 +73,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     val toolbarTitle: String
         get() = orderDetailViewState.toolbarTitle ?: ""
 
-    val order: Order?
-        get() = orderDetailViewState.order
+    final lateinit var order: Order
+        private set
 
     // Keep track of the deleted shipment tracking number in case
     // the request to server fails, we need to display an error message
@@ -118,22 +118,25 @@ class OrderDetailViewModel @AssistedInject constructor(
             if (needToFetch) {
                 fetchOrder(true)
             } else {
-                orderInDb?.let { loadOrder(it) }
+                orderInDb?.let {
+                    order = orderInDb
+                    displayOrder()
+                }
             }
         }
     }
 
-    private suspend fun loadOrder(orderInDb: Order) {
-        updateOrderState(orderInDb)
+    private suspend fun displayOrder() {
+        updateOrderState()
         loadOrderNotes()
-        loadOrderProducts(orderInDb)
+        loadOrderProducts()
+        loadOrderRefunds()
 
         // update the order detail all at once to avoid intermittent showing & hiding of cards
-        var viewState = checkShippingLabelRequirements(orderInDb, orderDetailViewState)
+        var viewState = checkShippingLabelRequirements(orderDetailViewState)
         viewState = loadShipmentTracking(viewState)
-        viewState = loadOrderShippingLabels(orderInDb, viewState)
+        viewState = loadOrderShippingLabels(viewState)
         orderDetailViewState = viewState
-        loadOrderRefunds(orderInDb)
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -143,16 +146,17 @@ class OrderDetailViewModel @AssistedInject constructor(
             )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
-                updateOrderState(fetchedOrder)
+                order = fetchedOrder
+                updateOrderState()
                 loadOrderNotes()
-                loadOrderProducts(fetchedOrder)
+                loadOrderProducts()
+                fetchOrderRefunds()
 
                 // update the order detail all at once to avoid intermittent showing & hiding of cards
-                var viewState = checkShippingLabelRequirements(fetchedOrder, orderDetailViewState)
+                var viewState = checkShippingLabelRequirements(orderDetailViewState)
                 viewState = loadShipmentTracking(viewState)
-                viewState = loadOrderShippingLabels(fetchedOrder, viewState)
+                viewState = loadOrderShippingLabels(viewState)
                 orderDetailViewState = viewState
-                fetchOrderRefunds(fetchedOrder)
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
@@ -170,6 +174,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
+    // if local order data and refunds are out of sync, it needs to be fetched
     private fun checkIfFetchNeeded(order: Order?): Boolean {
         val refunds = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
         return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
@@ -182,13 +187,10 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun hasVirtualProductsOnly(): Boolean {
-        val order = orderDetailViewState.order ?: orderDetailRepository.getOrder(navArgs.orderId)
-        return order?.items?.let { lineItems ->
-            if (lineItems.isNotEmpty()) {
-                val remoteProductIds = lineItems.map { it.productId }
-                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
-            } else false
-        } ?: false
+        return if (order.items.isNotEmpty()) {
+            val remoteProductIds = order.items.map { it.productId }
+            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
+        } else false
     }
 
     fun onEditOrderStatusSelected() {
@@ -202,34 +204,32 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onIssueOrderRefundClicked() {
-        order?.let { triggerEvent(IssueOrderRefund(remoteOrderId = it.remoteId)) }
+        triggerEvent(IssueOrderRefund(remoteOrderId = order.remoteId))
     }
 
     fun onViewRefundedProductsClicked() {
-        order?.let { triggerEvent(ViewRefundedProducts(remoteOrderId = it.remoteId)) }
+        triggerEvent(ViewRefundedProducts(remoteOrderId = order.remoteId))
     }
 
     fun onAddOrderNoteClicked() {
-        order?.let { triggerEvent(AddOrderNote(orderIdentifier = it.identifier, orderNumber = it.number)) }
+        triggerEvent(AddOrderNote(orderIdentifier = order.identifier, orderNumber = order.number))
     }
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
-        order?.let { triggerEvent(RefundShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
+        triggerEvent(RefundShippingLabel(remoteOrderId = order.remoteId, shippingLabelId = shippingLabelId))
     }
 
     fun onPrintShippingLabelClicked(shippingLabelId: Long) {
-        order?.let { triggerEvent(PrintShippingLabel(remoteOrderId = it.remoteId, shippingLabelId = shippingLabelId)) }
+        triggerEvent(PrintShippingLabel(remoteOrderId = order.remoteId, shippingLabelId = shippingLabelId))
     }
 
     fun onAddShipmentTrackingClicked() {
-        order?.let {
-            triggerEvent(
-                AddOrderShipmentTracking(
-                orderIdentifier = it.identifier,
-                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
-                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
-            ))
-        }
+        triggerEvent(
+            AddOrderShipmentTracking(
+            orderIdentifier = order.identifier,
+            orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+            isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+        ))
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
@@ -261,9 +261,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onShippingLabelRefunded() {
         launch {
-            order?.let {
-                orderDetailViewState = loadOrderShippingLabels(it, orderDetailViewState)
-            }
+            orderDetailViewState = loadOrderShippingLabels(orderDetailViewState)
         }
     }
 
@@ -375,10 +373,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
-                    order?.let {
-                        orderDetailViewState = orderDetailViewState.copy(
-                            order = it.copy(status = CoreOrderStatus.fromValue(newStatus) ?: it.status))
-                    }
+                    order = order.copy(status = CoreOrderStatus.fromValue(newStatus) ?: order.status)
+                    orderDetailViewState = orderDetailViewState.copy(order = order)
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -390,11 +386,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onOrderStatusChangeReverted() {
-        order?.let {
-            orderDetailViewState = orderDetailViewState.copy(
-                orderStatus = orderDetailRepository.getOrderStatus(it.status.value)
-            )
-        }
+        orderDetailViewState = orderDetailViewState.copy(
+            orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
+        )
     }
 
     fun onShippingLabelNoticeTapped() {
@@ -409,7 +403,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         onOrderStatusChanged(CoreOrderStatus.COMPLETED.value)
     }
 
-    private suspend fun updateOrderState(order: Order) {
+    private suspend fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         orderDetailViewState = orderDetailViewState.copy(
             order = order,
@@ -420,20 +414,21 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
-    private fun checkShippingLabelRequirements(order: Order, viewState: ViewState): ViewState {
+    private fun checkShippingLabelRequirements(viewState: ViewState): ViewState {
         val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
         val plugin = orderDetailRepository.getWooServicesPluginInfo()
         val orderHasPhysicalProducts = !hasVirtualProductsOnly()
         val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
+        val areNonRefundedProductsLeft = !_productList.value.isNullOrEmpty()
         return viewState.copy(
             isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInUs &&
-                shippingAddressIsInUs && orderHasPhysicalProducts
+                shippingAddressIsInUs && orderHasPhysicalProducts && areNonRefundedProductsLeft
         )
     }
 
     private suspend fun loadOrderNotes() {
-        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
         launch {
+            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
             if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
@@ -443,25 +438,32 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun fetchOrderRefunds(order: Order) {
+    private suspend fun fetchOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
-        refreshNonRefundedProducts(order)
+        refreshNonRefundedProducts()
     }
 
-    private suspend fun loadOrderRefunds(order: Order) {
+    private suspend fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        refreshNonRefundedProducts(order)
+        refreshNonRefundedProducts()
     }
 
-    private suspend fun refreshNonRefundedProducts(order: Order) {
-        _productList.value = _orderRefunds.value?.let { refunds ->
+    private suspend fun refreshNonRefundedProducts() {
+        val products = _orderRefunds.value?.let { refunds ->
             if (refunds.hasNonRefundedProducts(order.items)) {
                 refunds.getNonRefundedProducts(order.items)
             } else emptyList()
         } ?: order.items
+
+        if (products.isEmpty()) {
+            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = false)
+        } else {
+            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = true)
+            _productList.value = products
+        }
     }
 
-    private suspend fun loadOrderProducts(order: Order) {
+    private suspend fun loadOrderProducts() {
         // local DB might be missing some products, which need to be fetched
         val productIds = order.items.map { it.productId }
         val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
@@ -485,11 +487,11 @@ class OrderDetailViewModel @AssistedInject constructor(
         return newViewState
     }
 
-    private suspend fun loadOrderShippingLabels(order: Order, viewState: ViewState): ViewState {
+    private suspend fun loadOrderShippingLabels(viewState: ViewState): ViewState {
         orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
             .whenNotNullNorEmpty {
                 _shippingLabels.value = it.loadProducts(order.items)
-                return hideShipmentTrackingAndProductsCard(viewState)
+                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
             }
 
         orderDetailRepository
@@ -500,15 +502,9 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
-                return hideShipmentTrackingAndProductsCard(viewState)
+                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
             }
-        return viewState
-    }
-
-    private fun hideShipmentTrackingAndProductsCard(viewState: ViewState): ViewState {
-        _productList.value = emptyList()
-        _shipmentTrackings.value = emptyList()
-        return viewState.copy(isShipmentTrackingAvailable = false)
+        return viewState.copy(isProductListVisible = true)
     }
 
     @SuppressWarnings("unused")
@@ -528,10 +524,13 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isShipmentTrackingAvailable: Boolean? = null,
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
-        val isShippingLabelBannerVisible: Boolean? = isCreateShippingLabelButtonVisible
+        val isProductListVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
+
+        val isShippingLabelBannerVisible: Boolean?
+            get() = isCreateShippingLabelButtonVisible
     }
 
     @AssistedInject.Factory
