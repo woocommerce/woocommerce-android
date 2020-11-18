@@ -209,6 +209,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         })
 
+        // see overridden onChildViewAdded() and onChildViewRemoved() below
         app_bar_layout.setOnHierarchyChangeListener(this)
     }
 
