@@ -11,6 +11,7 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
@@ -140,7 +141,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         imageSize = if (isGridView) {
             val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            (screenWidth - margin * NUM_GRID_MARGINS) / 2
+            val icon = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - icon
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
@@ -402,6 +404,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             addImageContainer.layoutParams.height = imageSize
             addImageContainer.layoutParams.width = imageSize
+
+            (productImageView.layoutParams as FrameLayout.LayoutParams).apply {
+                val margin = if (isGridView) context.resources.getDimensionPixelSize(R.dimen.margin_medium) else 0
+
+                setMargins(margin, margin, margin, margin)
+            }
 
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {

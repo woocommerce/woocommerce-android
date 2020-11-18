@@ -36,7 +36,7 @@
         android:id="@+id/imageGallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:isDraggingEnabled="true"
         app:isGridView="true"
-        app:showAddImageIcon="false"
-        app:isDraggingEnabled="true" />
+        app:showAddImageIcon="false" />
 </LinearLayout>
