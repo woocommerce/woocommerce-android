@@ -451,9 +451,9 @@ class MainActivity : AppUpgradeActivity(),
 
         // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
         if (isAtRoot && isToolbarExpanded) {
-            app_bar_layout.setExpanded(true, true)
+            expandToolbar(true, true)
         } else if (!isAtRoot) {
-            app_bar_layout.setExpanded(false, false)
+            expandToolbar(false, false)
             // we want the back arrow to be black (or white in dark mode), which is usually controlled by setting
             // colorControlNormal, but doing that would change all menu icons as well
             toolbar.navigationIcon?.colorFilter = backArrowColorFilter
