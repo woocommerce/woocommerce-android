@@ -51,7 +51,6 @@ import org.wordpress.android.fluxc.model.order.OrderIdSet
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.utils.sumBy
-import java.math.BigDecimal
 
 @OpenClassOnDebug
 class OrderDetailViewModel @AssistedInject constructor(
@@ -114,17 +113,24 @@ class OrderDetailViewModel @AssistedInject constructor(
         EventBus.getDefault().register(this)
 
         val orderInDb = orderDetailRepository.getOrder(navArgs.orderId)
-        val needToFetch = checkIfFetchNeeded(orderInDb)
-        if (needToFetch || orderInDb == null) {
-            launch { fetchOrder(true) }
-        } else {
-            updateOrderState(orderInDb)
-            checkShippingLabelRequirements(orderInDb)
-            loadOrderNotes()
-            loadOrderRefunds()
-            loadShipmentTrackings()
-            loadOrderShippingLabels()
+        val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
+        launch {
+            if (needToFetch) {
+                fetchOrder(true)
+            } else {
+                orderInDb?.let { loadOrder(it) }
+            }
         }
+    }
+
+    private suspend fun loadOrder(orderInDb: Order) {
+        loadOrderProducts(orderInDb)
+        updateOrderState(orderInDb)
+        checkShippingLabelRequirements(orderInDb)
+        loadOrderNotes()
+        loadOrderRefunds()
+        loadShipmentTrackings()
+        loadOrderShippingLabels()
     }
 
     private fun checkIfFetchNeeded(order: Order?): Boolean {
@@ -368,6 +374,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
+                loadOrderProducts(fetchedOrder)
                 updateOrderState(fetchedOrder)
                 checkShippingLabelRequirements(fetchedOrder)
                 loadOrderNotes()
@@ -391,7 +398,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateOrderState(order: Order) {
+    private suspend fun updateOrderState(order: Order) {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         orderDetailViewState = orderDetailViewState.copy(
             order = order,
@@ -400,9 +407,6 @@ class OrderDetailViewModel @AssistedInject constructor(
                 string.orderdetail_orderstatus_ordernum, order.number
             )
         )
-        launch {
-            loadOrderProducts()
-        }
     }
 
     private fun checkShippingLabelRequirements(order: Order) {
@@ -416,63 +420,59 @@ class OrderDetailViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadOrderNotes() {
-        launch {
-            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
-            if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
-            }
-            // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
-            orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
+    private suspend fun loadOrderNotes() {
+        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = true)
+        if (!orderDetailRepository.fetchOrderNotes(orderIdSet.id, orderIdSet.remoteOrderId)) {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
         }
+        // fetch order notes from the local db and hide the skeleton view
+        _orderNotes.value = orderDetailRepository.getOrderNotes(orderIdSet.id)
+        orderDetailViewState = orderDetailViewState.copy(isOrderNotesSkeletonShown = false)
     }
 
     private suspend fun fetchOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
-        loadOrderProducts()
+        refreshNonRefundedProducts()
     }
 
-    private fun loadOrderRefunds() {
+    private suspend fun loadOrderRefunds() {
         _orderRefunds.value = orderDetailRepository.getOrderRefunds(orderIdSet.remoteOrderId)
-        launch {
-            loadOrderProducts()
-        }
+        refreshNonRefundedProducts()
     }
 
-    private suspend fun loadOrderProducts() {
-        // local DB might be missing some products, which need to be fetched
-        val productIds = order?.items?.map { it.productId } ?: emptyList()
-        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
-        if (numLocalProducts != order?.items?.size) {
-            orderDetailRepository.fetchProductsByRemoteIds(productIds)
-        }
-
+    private suspend fun refreshNonRefundedProducts() {
         _productList.value = order?.let { order ->
             _orderRefunds.value?.let { refunds ->
                 if (refunds.hasNonRefundedProducts(order.items)) {
                     refunds.getNonRefundedProducts(order.items)
                 } else emptyList()
             } ?: order.items
-        } ?: emptyList()
+        }.orEmpty()
     }
 
-    private fun loadShipmentTrackings() {
-        launch {
-            when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
-                RequestResult.SUCCESS -> {
-                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
-                }
-                else -> {
-                    orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
-                    _shipmentTrackings.value = emptyList()
-                }
+    private suspend fun loadOrderProducts(order: Order) {
+        // local DB might be missing some products, which need to be fetched
+        val productIds = order.items.map { it.productId }.orEmpty()
+        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
+        if (numLocalProducts != order.items.size) {
+            orderDetailRepository.fetchProductsByRemoteIds(productIds)
+        }
+    }
+
+    private suspend fun loadShipmentTrackings() {
+        when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
+            RequestResult.SUCCESS -> {
+                _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
+                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = true)
+            }
+            else -> {
+                orderDetailViewState = orderDetailViewState.copy(isShipmentTrackingAvailable = false)
+                _shipmentTrackings.value = emptyList()
             }
         }
     }
 
-    private fun loadOrderShippingLabels() {
+    private suspend fun loadOrderShippingLabels() {
         order?.let { order ->
             orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
                 .whenNotNullNorEmpty {
@@ -480,18 +480,16 @@ class OrderDetailViewModel @AssistedInject constructor(
                     hideShipmentTrackingAndProductsCard()
                 }
 
-            launch {
-                orderDetailRepository
-                    .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
-                    .loadProducts(order.items)
-                    .whenNotNullNorEmpty {
-                        _shippingLabels.value = it
+            orderDetailRepository
+                .fetchOrderShippingLabels(orderIdSet.remoteOrderId)
+                .loadProducts(order.items)
+                .whenNotNullNorEmpty {
+                    _shippingLabels.value = it
 
-                        // hide the shipment tracking section and the product list section if
-                        // shipping labels are available for the order
-                        hideShipmentTrackingAndProductsCard()
-                    }
-            }
+                    // hide the shipment tracking section and the product list section if
+                    // shipping labels are available for the order
+                    hideShipmentTrackingAndProductsCard()
+                }
         }
     }
 
