@@ -14,24 +14,24 @@ theme across the entire app. Overridden versions should be added to the styles.x
         Toolbar Styles
     -->
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
-        <item name="titleTextStyle">@style/Woo.TextAppearance.CollapsingToolbar.Collapsed</item>
+        <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
     </style>
-    <style name="Woo.TextAppearance.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
+    <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">@dimen/expanded_toolbar_height</item>
     </style>
-    <style name="Woo.TextAppearance.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
+    <style name="TextAppearance.Woo.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
     </style>
     <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="collapsedTitleTextAppearance">
-            @style/Woo.TextAppearance.CollapsingToolbar.Collapsed
+            @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
         </item>
         <item name="expandedTitleTextAppearance">
-            @style/Woo.TextAppearance.CollapsingToolbar.Expanded
+            @style/TextAppearance.Woo.CollapsingToolbar.Expanded
         </item>
         <item name="expandedTitleMarginStart">16dp</item>
         <item name="expandedTitleMarginEnd">16dp</item>
