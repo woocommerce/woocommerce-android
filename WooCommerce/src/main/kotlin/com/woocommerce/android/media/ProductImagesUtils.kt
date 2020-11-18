@@ -104,7 +104,7 @@ object ProductImagesUtils {
         }
 
         return try {
-            MediaUtils.downloadExternalMedia(context, mediaUri)
+            MediaUtils.downloadExternalMedia(context.applicationContext, mediaUri)
         } catch (e: IllegalStateException) {
             WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
             null
