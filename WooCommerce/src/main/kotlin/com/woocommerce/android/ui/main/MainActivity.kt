@@ -483,13 +483,18 @@ class MainActivity : AppUpgradeActivity(),
         collapsing_toolbar.isEnabled = enable
         collapsing_toolbar.isActivated = enable
 
-        val p = collapsing_toolbar.layoutParams as AppBarLayout.LayoutParams
-        p.scrollFlags = if (enable) {
-            SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-        } else {
-            0
+        (collapsing_toolbar.layoutParams as? AppBarLayout.LayoutParams)?.let { params ->
+            params.scrollFlags = if (enable) {
+                SCROLL_FLAG_SCROLL or SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+            } else {
+                0
+            }
+            params.height = if (enable) {
+                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_height)
+            } else {
+                resources.getDimensionPixelSize(R.dimen.toolbar_height)
+            }
         }
-        collapsing_toolbar.setLayoutParams(p)
 
         if (!enable) {
             toolbar.title = title
