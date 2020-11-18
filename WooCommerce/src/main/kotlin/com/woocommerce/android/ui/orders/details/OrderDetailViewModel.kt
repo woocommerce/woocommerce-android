@@ -398,7 +398,6 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onShippingLabelNoticeTapped() {
-
     }
 
     fun onCreateShippingLabelButtonTapped() {
