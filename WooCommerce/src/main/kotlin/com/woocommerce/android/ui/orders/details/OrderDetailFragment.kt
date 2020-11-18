@@ -136,6 +136,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isShippingLabelBannerVisible?.takeIfNotEqualTo(old?.isShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it)
             }
+            new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
+                orderDetail_productList.isVisible = it
+            }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
@@ -154,16 +157,16 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             showOrderNotes(it)
         })
         viewModel.orderRefunds.observe(viewLifecycleOwner, Observer {
-            showOrderRefunds(it)
+            showOrderRefunds(it, viewModel.order)
         })
         viewModel.productList.observe(viewLifecycleOwner, Observer {
-            showOrderProducts(it)
+            showOrderProducts(it, viewModel.order.currency)
         })
         viewModel.shipmentTrackings.observe(viewLifecycleOwner, Observer {
             showShipmentTrackings(it)
         })
         viewModel.shippingLabels.observe(viewLifecycleOwner, Observer {
-            showShippingLabels(it)
+            showShippingLabels(it, viewModel.order.currency)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -246,7 +249,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         }
     }
 
-    private fun showOrderRefunds(refunds: List<Refund>) {
+    private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
         val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
         if (refundsCount > 0) {
@@ -259,7 +262,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         }
 
         // display refunds list in the payment info section, if available
-        val order = requireNotNull(viewModel.order)
         val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
         refunds.whenNotNullNorEmpty {
@@ -273,15 +275,14 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         }
     }
 
-    private fun showOrderProducts(products: List<Order.Item>) {
+    private fun showOrderProducts(products: List<Order.Item>, currency: String) {
         products.whenNotNullNorEmpty {
-            val order = requireNotNull(viewModel.order)
             with(orderDetail_productList) {
                 show()
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment
                 )
             }
@@ -303,15 +304,14 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         }
     }
 
-    private fun showShippingLabels(shippingLabels: List<ShippingLabel>) {
+    private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
         shippingLabels.whenNotNullNorEmpty {
-            val order = requireNotNull(viewModel.order)
             with(orderDetail_shippingLabelList) {
                 show()
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
+                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {
                         override fun onRefundRequested(shippingLabel: ShippingLabel) {
