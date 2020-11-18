@@ -133,6 +133,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
+            new.isShippingLabelBannerVisible?.takeIfNotEqualTo(old?.isShippingLabelBannerVisible) {
+                displayShippingLabelsWIPCard(it)
+            }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
@@ -305,7 +308,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             val order = requireNotNull(viewModel.order)
             with(orderDetail_shippingLabelList) {
                 show()
-                displayShippingLabelsWIPCard(true)
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
@@ -324,7 +326,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             }
         }.otherwise {
             orderDetail_shippingLabelList.hide()
-            displayShippingLabelsWIPCard(false)
         }
     }
 

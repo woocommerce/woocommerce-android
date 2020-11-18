@@ -517,7 +517,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null,
         val isShipmentTrackingAvailable: Boolean? = null,
         val refreshedProductId: Long? = null,
-        val isCreateShippingLabelButtonVisible: Boolean? = null
+        val isCreateShippingLabelButtonVisible: Boolean? = null,
+        val isShippingLabelBannerVisible: Boolean? = isCreateShippingLabelButtonVisible
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
