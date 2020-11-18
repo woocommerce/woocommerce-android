@@ -29,7 +29,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderDetailViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -77,7 +77,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
 
-    private val orderWithParameters = OrderDetailViewState(
+    private val orderWithParameters = ViewState(
         order = order,
         isRefreshing = false,
         isOrderNotesSkeletonShown = false,
@@ -99,8 +99,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(OrderDetailViewState()))
-            .whenever(savedState).getLiveData<OrderDetailViewState>(any(), any())
+        doReturn(MutableLiveData(ViewState()))
+            .whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
 
         doReturn(WooPlugin(true, true)).whenever(repository).getWooServicesPluginInfo()
@@ -140,7 +140,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
-        var orderData: OrderDetailViewState? = null
+        var orderData: ViewState? = null
         viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
@@ -381,7 +381,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
             doReturn(orderShippingLabels).whenever(repository).fetchOrderShippingLabels(any())
 
-            var orderData: OrderDetailViewState? = null
+            var orderData: ViewState? = null
             viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()

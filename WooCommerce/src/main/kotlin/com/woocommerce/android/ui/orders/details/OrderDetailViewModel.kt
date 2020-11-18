@@ -81,7 +81,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val orderDetailViewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
+    final val orderDetailViewStateData = LiveDataDelegate(savedState, ViewState())
     private var orderDetailViewState by orderDetailViewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -398,7 +398,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun updateOrderState(order: Order) {
+    private suspend fun updateOrderState(order: Order): ViewState {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         orderDetailViewState = orderDetailViewState.copy(
             order = order,
@@ -506,7 +506,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     @Parcelize
-    data class OrderDetailViewState(
+    data class ViewState(
         val order: Order? = null,
         val toolbarTitle: String? = null,
         val orderStatus: OrderStatus? = null,
