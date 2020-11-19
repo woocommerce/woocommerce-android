@@ -4,15 +4,12 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
-import android.graphics.PorterDuff.Mode.SRC_IN
-import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
@@ -128,10 +125,6 @@ class MainActivity : AppUpgradeActivity(),
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
-    private val backArrowColorFilter by lazy {
-        PorterDuffColorFilter(ContextCompat.getColor(this, R.color.color_back_arrow), SRC_IN)
-    }
-
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
@@ -158,6 +151,7 @@ class MainActivity : AppUpgradeActivity(),
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        toolbar.navigationIcon = null
 
         presenter.takeView(this)
 
@@ -383,14 +377,11 @@ class MainActivity : AppUpgradeActivity(),
             container.visibility = View.INVISIBLE
         }
 
-        val showUpIcon: Boolean
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            showUpIcon = false
             showCrossIcon = false
         } else {
             app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-            showUpIcon = true
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
@@ -416,15 +407,14 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
+        if (isAtRoot) {
+            toolbar.navigationIcon = null
+        } else if (showCrossIcon) {
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_white_24dp)
+        } else {
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
+        }
         supportActionBar?.let { actionBar ->
-            actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
-            @DrawableRes val icon = if (showCrossIcon) {
-                R.drawable.ic_gridicons_cross_white_24dp
-            } else {
-                R.drawable.ic_back_24dp
-            }
-            actionBar.setHomeAsUpIndicator(icon)
-
             // the image viewers should be shown full screen
             if (destination.id == R.id.productImageViewerFragment || destination.id == R.id.wpMediaViewerFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -456,9 +446,6 @@ class MainActivity : AppUpgradeActivity(),
             expandToolbar(expand = true, animate = true)
         } else if (!isAtRoot) {
             expandToolbar(expand = false, animate = false)
-            // we want the back arrow to be black (or white in dark mode), which is usually controlled by setting
-            // colorControlNormal, but doing that would change all menu icons as well
-            toolbar.navigationIcon?.colorFilter = backArrowColorFilter
         }
 
         // collapsible toolbar should only be able to expand for top-level fragments

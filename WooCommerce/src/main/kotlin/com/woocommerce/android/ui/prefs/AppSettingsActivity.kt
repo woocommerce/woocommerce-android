@@ -2,11 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.PorterDuff.Mode.SRC_IN
-import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -14,7 +11,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.push.FCMRegistrationIntentService
@@ -60,12 +56,6 @@ class AppSettingsActivity : AppCompatActivity(),
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.navigationIcon?.colorFilter = PorterDuffColorFilter(
-            ContextCompat.getColor(
-                this,
-                color.color_back_arrow
-            ), SRC_IN
-        )
 
         savedInstanceState?.let {
             siteChanged = it.getBoolean(KEY_SITE_CHANGED)

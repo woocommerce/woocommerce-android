@@ -15,6 +15,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
+        <item name="navigationIcon">@drawable/ic_back_24dp</item>
     </style>
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
