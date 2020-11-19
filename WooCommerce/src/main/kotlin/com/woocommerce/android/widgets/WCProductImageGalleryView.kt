@@ -222,8 +222,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
 
-        val images: List<Product.Image> = imageList
-
         val isDragging = MutableLiveData<Boolean>(false)
 
         fun clearImages() {
