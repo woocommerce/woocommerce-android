@@ -139,6 +139,9 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                     }
                 }
             }
+            new.isDragDropDescriptionVisible?.takeIfNotEqualTo(old?.isDragDropDescriptionVisible) { isVisible ->
+                dragAndDropDescription.isVisible = isVisible
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->

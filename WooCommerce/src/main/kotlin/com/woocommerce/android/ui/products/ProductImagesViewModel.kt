@@ -53,7 +53,8 @@ class ProductImagesViewModel @AssistedInject constructor(
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
             isImageDeletingAllowed = isMultiSelectionAllowed,
             images = navArgs.images.toList(),
-            isWarningVisible = !isMultiSelectionAllowed
+            isWarningVisible = !isMultiSelectionAllowed,
+            isDragDropDescriptionVisible = isMultiSelectionAllowed
         )
     ) { old, new ->
         if (old != new) {
@@ -295,6 +296,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         val images: List<Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,
         val isWarningVisible: Boolean? = null,
+        val isDragDropDescriptionVisible: Boolean? = null,
         val productImagesState: ProductImagesState = BROWSING
     ) : Parcelable
 

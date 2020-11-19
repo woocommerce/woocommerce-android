@@ -727,6 +727,7 @@
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
+    <string name="product_images_drag_and_drop_description">Drag and drop images to change the photo order</string>
 
 
     <!--
