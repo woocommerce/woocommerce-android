@@ -410,7 +410,7 @@ class MainActivity : AppUpgradeActivity(),
         if (isAtRoot) {
             toolbar.navigationIcon = null
         } else if (showCrossIcon) {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_white_24dp)
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
         } else {
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
         }
