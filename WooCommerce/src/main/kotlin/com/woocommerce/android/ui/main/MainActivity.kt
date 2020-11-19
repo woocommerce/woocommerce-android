@@ -421,7 +421,7 @@ class MainActivity : AppUpgradeActivity(),
             @DrawableRes val icon = if (showCrossIcon) {
                 R.drawable.ic_gridicons_cross_white_24dp
             } else {
-                R.drawable.ic_back_white_24dp
+                R.drawable.ic_back_24dp
             }
             actionBar.setHomeAsUpIndicator(icon)
 

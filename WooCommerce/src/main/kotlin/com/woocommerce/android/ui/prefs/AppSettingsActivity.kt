@@ -99,7 +99,7 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
         return if (findNavController(R.id.nav_host_fragment).navigateUp()) {
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_24dp)
             true
         } else {
             finish()
