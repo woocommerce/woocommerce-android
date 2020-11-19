@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.ui.common.InfoScreenFragmentDirections
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -86,7 +87,8 @@ class OrderNavigator @Inject constructor() {
                     R.string.shipping_label_more_information_heading,
                     R.string.shipping_label_more_information_message,
                     R.string.shipping_label_more_information_link,
-                    R.drawable.img_woo_desk_character
+                    R.drawable.img_woo_desk_character,
+                    LearnMoreAboutShippingLabels
                 )
                 fragment.findNavController().navigateSafely(action)
             }
