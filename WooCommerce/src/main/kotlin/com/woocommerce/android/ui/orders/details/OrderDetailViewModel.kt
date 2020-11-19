@@ -481,7 +481,6 @@ class OrderDetailViewModel @AssistedInject constructor(
             }
             else -> {
                 newViewState = viewState.copy(isShipmentTrackingAvailable = false)
-                _shipmentTrackings.value = emptyList()
             }
         }
         return newViewState
