@@ -121,6 +121,7 @@ class MainActivity : AppUpgradeActivity(),
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
     private var isToolbarExpanded = true
+    private var restoreToolbarHeight = 0
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -414,14 +415,22 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
         }
+
+        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment ||
+            destination.id == R.id.wpMediaViewerFragment
+
         supportActionBar?.let { actionBar ->
             // the image viewers should be shown full screen
-            if (destination.id == R.id.productImageViewerFragment || destination.id == R.id.wpMediaViewerFragment) {
+            if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                actionBar.hide()
+                restoreToolbarHeight = collapsing_toolbar.layoutParams.height
+                collapsing_toolbar.layoutParams.height = 0
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                actionBar.show()
+                if (restoreToolbarHeight > 0) {
+                    collapsing_toolbar.layoutParams.height = restoreToolbarHeight
+                    restoreToolbarHeight = 0
+                }
             }
         }
 
@@ -441,15 +450,17 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-        if (isAtRoot && isToolbarExpanded) {
-            expandToolbar(expand = true, animate = true)
-        } else if (!isAtRoot) {
-            expandToolbar(expand = false, animate = false)
-        }
+        if (!isFullScreenFragment) {
+            // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+            if (isAtRoot && isToolbarExpanded) {
+                expandToolbar(expand = true, animate = true)
+            } else if (!isAtRoot) {
+                expandToolbar(expand = false, animate = false)
+            }
 
-        // collapsible toolbar should only be able to expand for top-level fragments
-        enableToolbarExpansion(isAtRoot)
+            // collapsible toolbar should only be able to expand for top-level fragments
+            enableToolbarExpansion(isAtRoot)
+        }
 
         previousDestinationId = destination.id
     }

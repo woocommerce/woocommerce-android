@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/photoViewContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.products.ImageViewerFragment">
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/photoView"
