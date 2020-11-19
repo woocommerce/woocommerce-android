@@ -252,6 +252,7 @@ object OrderTestUtils {
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
                 "  }]"
+            refundTotal = -10.0
         }.toAppModel()
     }
 

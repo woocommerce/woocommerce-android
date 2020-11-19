@@ -419,10 +419,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         val plugin = orderDetailRepository.getWooServicesPluginInfo()
         val orderHasPhysicalProducts = !hasVirtualProductsOnly()
         val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
-        val areNonRefundedProductsLeft = !_productList.value.isNullOrEmpty()
         return viewState.copy(
             isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInUs &&
-                shippingAddressIsInUs && orderHasPhysicalProducts && areNonRefundedProductsLeft
+                shippingAddressIsInUs && orderHasPhysicalProducts
         )
     }
 
@@ -490,6 +489,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
             .whenNotNullNorEmpty {
                 _shippingLabels.value = it.loadProducts(order.items)
+
+                // hide the shipment tracking section and the product list section if
+                // shipping labels are available for the order
                 return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
             }
 
@@ -503,7 +505,8 @@ class OrderDetailViewModel @AssistedInject constructor(
                 // shipping labels are available for the order
                 return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
             }
-        return viewState.copy(isProductListVisible = true)
+
+        return viewState
     }
 
     @SuppressWarnings("unused")
