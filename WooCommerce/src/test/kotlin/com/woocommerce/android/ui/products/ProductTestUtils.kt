@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import java.sql.Date
+import java.time.Instant
 
 object ProductTestUtils {
     fun generateProduct(productId: Long = 1L): Product {
@@ -106,4 +108,15 @@ object ProductTestUtils {
             add(ProductCategory(11, "ba", "ba1", 8))
         }
     }
+
+    private fun generateProductImage(imageId: Long = 1L) =
+            Product.Image(
+                    id = imageId,
+                    name = "Image $imageId",
+                    source = "Image $imageId source",
+                    dateCreated = Date.from(Instant.EPOCH)
+            )
+
+    fun generateProductImagesList() =
+            (1L..10L).map { id -> generateProductImage(imageId = id) }
 }
