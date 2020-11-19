@@ -531,8 +531,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
 
-        val isShippingLabelBannerVisible: Boolean?
-            get() = isCreateShippingLabelButtonVisible
+        val isShippingLabelBannerVisible: Boolean
+            get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
     }
 
     @AssistedInject.Factory
