@@ -193,7 +193,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     private fun updateButtonStates() {
         val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
         viewState = viewState.copy(
-            isDoneButtonVisible = hasChanges,
+            isDoneButtonVisible = hasChanges || viewState.productImagesState == DRAGGING,
             chooserButtonButtonTitleRes = when {
                 isMultiSelectionAllowed -> string.product_add_photos
                 numImages > 0 -> string.product_replace_photo
