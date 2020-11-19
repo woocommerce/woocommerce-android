@@ -73,9 +73,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val glideRequest: GlideRequest<Drawable>
     private val glideTransform: RequestOptions
 
-    private lateinit var mListener: OnGalleryImageInteractionListener
-
-    val images: List<Product.Image>
+    private lateinit var listener: OnGalleryImageInteractionListener
 
     private val draggableItemTouchHelper = DraggableItemTouchHelper(
             dragDirs = ItemTouchHelper.START or
@@ -83,7 +81,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     ItemTouchHelper.UP or
                     ItemTouchHelper.DOWN,
             onDragStarted = {
-                mListener.onGalleryImageDragStarted()
+                listener.onGalleryImageDragStarted()
             },
             onMove = this::onProductImagesPositionChanged
     )
@@ -119,7 +117,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             it.setHasStableIds(true)
             setAdapter(it)
         }
-        images = adapter.images
 
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
@@ -166,16 +163,16 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageInteractionListener) {
-        this.mListener = listener
+        this.listener = listener
         adapter.showImages(images)
     }
 
     private fun onProductImagesPositionChanged(from: Int, to: Int) {
-        mListener.onGalleryImageMoved(from, to)
+        listener.onGalleryImageMoved(from, to)
     }
 
     fun showProductImage(images: Product.Image, listener: OnGalleryImageInteractionListener) {
-        this.mListener = listener
+        this.listener = listener
         adapter.showImages(listOf(images))
     }
 
@@ -212,9 +209,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private fun onImageClicked(position: Int) {
         val viewType = adapter.getItemViewType(position)
         if (viewType == VIEW_TYPE_IMAGE) {
-            mListener.onGalleryImageClicked(adapter.getImage(position))
+            listener.onGalleryImageClicked(adapter.getImage(position))
         } else if (viewType == VIEW_TYPE_ADD_IMAGE) {
-            mListener.onGalleryAddImageClicked()
+            listener.onGalleryAddImageClicked()
         }
     }
 
@@ -392,7 +389,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         @SuppressLint("ClickableViewAccessibility")
         val dragOnTouchListener = OnTouchListener { _, event ->
-            if(event.action == MotionEvent.ACTION_DOWN){
+            if (event.action == MotionEvent.ACTION_DOWN) {
                 draggableItemTouchHelper.startDrag(this@ImageViewHolder)
             }
             return@OnTouchListener false
@@ -424,7 +421,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         fun bind(image: Product.Image) {
             view.deleteImageButton.setOnClickListener {
-                mListener.onGalleryImageDeleteIconClicked(image)
+                listener.onGalleryImageDeleteIconClicked(image)
             }
         }
     }

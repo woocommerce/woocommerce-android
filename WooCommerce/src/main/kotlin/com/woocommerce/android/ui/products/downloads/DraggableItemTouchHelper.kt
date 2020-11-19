@@ -28,7 +28,7 @@ class DraggableItemTouchHelper(
 
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
-                if(actionState == ACTION_STATE_DRAG){
+                if (actionState == ACTION_STATE_DRAG) {
                     onDragStarted()
                 }
             }

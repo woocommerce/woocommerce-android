@@ -26,10 +26,13 @@ import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
 class ProductDownloadsFragment : BaseProductFragment() {
     private val itemTouchHelper by lazy {
-        DraggableItemTouchHelper(UP or DOWN) { from, to ->
-            viewModel.swapDownloadableFiles(from, to)
-            updateFilesFromProductDraft()
-        }
+        DraggableItemTouchHelper(
+                dragDirs = UP or DOWN,
+                onMove = { from, to ->
+                    viewModel.swapDownloadableFiles(from, to)
+                    updateFilesFromProductDraft()
+                }
+        )
     }
 
     private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {

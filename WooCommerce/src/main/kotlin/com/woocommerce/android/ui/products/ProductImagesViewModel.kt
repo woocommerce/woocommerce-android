@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -70,7 +71,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     private val hasChanges: Boolean
-        get() = originalImages != images || !viewState.uploadingImageUris.isNullOrEmpty()
+        get() = !originalImages.areSameImagesAs(images) || !viewState.uploadingImageUris.isNullOrEmpty()
 
     init {
         EventBus.getDefault().register(this)
@@ -143,24 +144,19 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
-        when(viewState.productImagesState){
+        when (viewState.productImagesState) {
             BROWSING -> {
                 AnalyticsTracker.track(
-                        Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
-                        mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+                    Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
                 )
 
                 triggerEvent(ExitWithResult(images))
             }
             DRAGGING -> {
-                viewState = viewState.copy(
-                        productImagesState = BROWSING
-                )
-                triggerEvent(UpdateReorderedImageList)
-                updateButtonStates()
+                viewState = viewState.copy(productImagesState = BROWSING)
             }
         }
-
     }
 
     fun onExit() {
@@ -267,10 +263,6 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(productImagesState = DRAGGING)
     }
 
-    fun updateImages(reorderedImages: List<Image>) {
-        viewState = viewState.copy(images = reorderedImages)
-    }
-
     fun onGalleryImageDeleteIconClicked(image: Image) {
         triggerEvent(ShowDeleteImageConfirmation(image))
     }
@@ -304,7 +296,6 @@ class ProductImagesViewModel @AssistedInject constructor(
     object ShowStorageChooser : Event()
     object ShowCamera : Event()
     object ShowWPMediaPicker : Event()
-    object UpdateReorderedImageList : Event()
     data class ShowDeleteImageConfirmation(val image: Image) : Event()
     data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
 

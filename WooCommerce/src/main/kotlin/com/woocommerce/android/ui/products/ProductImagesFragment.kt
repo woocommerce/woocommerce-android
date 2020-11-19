@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetai
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
-import com.woocommerce.android.ui.products.ProductImagesViewModel.UpdateReorderedImageList
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.KEY_WP_IMAGE_PICKER_RESULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -58,7 +57,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     override val isDoneButtonVisible: Boolean
-        get() = with(viewModel.viewStateData.liveData.value){
+        get() = with(viewModel.viewStateData.liveData.value) {
             (this?.isDoneButtonVisible?.or(this.productImagesState == DRAGGING)) ?: false
         }
     override val isDoneButtonEnabled: Boolean = true
@@ -154,7 +153,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 ShowStorageChooser -> chooseProductImage()
                 ShowCamera -> captureProductImage()
                 ShowWPMediaPicker -> showWPMediaPicker()
-                UpdateReorderedImageList -> updateReorderedImageList()
                 is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
                 else -> event.isHandled = false
             }
@@ -165,14 +163,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         ConfirmRemoveProductImageDialog(
                 requireActivity(),
                 onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
-                onNegativeButton = {
-                    // no-op
-                }
+                onNegativeButton = { /* no-op */ }
         ).show()
-    }
-
-    private fun updateReorderedImageList() {
-        viewModel.updateImages(reorderedImages = imageGallery.images)
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {
