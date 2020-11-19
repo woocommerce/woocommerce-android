@@ -45,7 +45,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
-import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class OrderDetailViewModelTest : BaseUnitTest() {
