@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.common
 
 import android.os.Bundle
-import android.view.ContextMenu
-import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -27,7 +26,11 @@ class InfoScreenFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_info_screen, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onResume() {
+        super.onResume()
+
+        AnalyticsTracker.trackViewShown(this)
+
         activity?.let {
             it.invalidateOptionsMenu()
             if (navArgs.screenTitle != 0) it.title = getString(navArgs.screenTitle)
@@ -35,7 +38,9 @@ class InfoScreenFragment : Fragment() {
                 ?.supportActionBar
                 ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
         }
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         showTextOrHide(navArgs.heading, info_heading)
         showTextOrHide(navArgs.message, info_message)
         showTextOrHide(navArgs.linkTitle, info_link)
