@@ -7,9 +7,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|top"
-        android:layout_gravity="center_vertical"
-        android:padding="@dimen/major_200">
+        android:layout_gravity="center"
+        android:padding="@dimen/major_100">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/info_heading"
@@ -20,6 +19,7 @@
             android:text="@string/shipping_label_more_information_heading"
             android:textAlignment="center"
             android:textStyle="bold"
+            android:layout_marginTop="@dimen/major_200"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
