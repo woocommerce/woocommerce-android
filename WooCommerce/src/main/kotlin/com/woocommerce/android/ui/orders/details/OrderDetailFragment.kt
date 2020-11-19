@@ -133,7 +133,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
-            new.isShippingLabelBannerVisible?.takeIfNotEqualTo(old?.isShippingLabelBannerVisible) {
+            new.isShippingLabelBannerVisible.takeIfNotEqualTo(old?.isShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it)
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
