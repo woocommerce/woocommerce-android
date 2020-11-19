@@ -58,7 +58,6 @@ class InfoScreenFragment : Fragment() {
         }
     }
 
-
     private fun showTextOrHide(@StringRes stringRes: Int, view: TextView) =
         if (stringRes != 0) view.text = getString(stringRes) else view.hide()
 

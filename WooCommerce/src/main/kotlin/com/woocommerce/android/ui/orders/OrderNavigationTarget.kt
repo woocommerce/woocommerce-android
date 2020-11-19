@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
