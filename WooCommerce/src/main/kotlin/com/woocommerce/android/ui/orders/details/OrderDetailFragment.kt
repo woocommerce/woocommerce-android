@@ -332,9 +332,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun displayShippingLabelsWIPCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
             orderDetail_shippingLabelsWipCard.isVisible = true
-            val wipCardMessageId = R.string.orderdetail_shipping_label_wip_message
+            val wipCardMessageId = R.string.orderdetail_shipping_label_m2_wip_message
             orderDetail_shippingLabelsWipCard.initView(
-                getString(R.string.orderdetail_shipping_label_wip_title),
+                getString(R.string.orderdetail_shipping_label_m2_wip_title),
                 getString(wipCardMessageId),
                 onGiveFeedbackClick = ::onGiveFeedbackClicked,
                 onDismissClick = ::onDismissProductWIPNoticeCardClicked
