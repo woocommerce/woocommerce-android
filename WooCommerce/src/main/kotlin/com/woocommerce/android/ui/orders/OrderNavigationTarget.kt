@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -39,6 +41,7 @@ sealed class OrderNavigationTarget : Event() {
     ) : OrderNavigationTarget()
     data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
     data class ViewShippingLabelPaperSizes(val currentPaperSize: ShippingLabelPaperSize) : OrderNavigationTarget()
+    object ViewCreateShippingLabelInfo : OrderNavigationTarget()
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
 }
