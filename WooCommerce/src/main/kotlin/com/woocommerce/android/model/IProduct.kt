@@ -15,7 +15,8 @@ interface IProduct {
      */
     fun getWeightWithUnits(weightUnit: String?): String {
         return if (weight > 0) {
-            "${weight.formatToString()}${weightUnit ?: ""}"
+            val unit = weightUnit ?: EMPTY
+            "${weight.formatToString()}$unit"
         } else ""
     }
 
