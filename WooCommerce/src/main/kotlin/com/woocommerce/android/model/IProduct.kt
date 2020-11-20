@@ -29,7 +29,7 @@ interface IProduct {
         val hasWidth = width > 0
         val hasHeight = height > 0
         val unit = dimensionUnit ?: ""
-        return if (hasLength && hasWidth && hasHeight) {
+        val size = if (hasLength && hasWidth && hasHeight) {
             "${length.formatToString()} " +
                 "x ${width.formatToString()} " +
                 "x ${height.formatToString()} $unit"
@@ -37,6 +37,7 @@ interface IProduct {
             "${width.formatToString()} x ${height.formatToString()} $unit"
         } else {
             ""
-        }.trim()
+        }
+        return size.trim()
     }
 }

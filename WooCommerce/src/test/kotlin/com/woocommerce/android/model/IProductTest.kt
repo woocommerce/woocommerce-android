@@ -88,8 +88,7 @@ class IProductTest {
 
         val expected = length.formatToString() +
             X + width.formatToString() +
-            X + height.formatToString() +
-            SPACE
+            X + height.formatToString()
         assertEquals(expected, result)
     }
 
