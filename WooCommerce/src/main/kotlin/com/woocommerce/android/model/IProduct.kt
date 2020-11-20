@@ -28,26 +28,39 @@ interface IProduct {
         val hasLength = length > 0
         val hasWidth = width > 0
         val hasHeight = height > 0
-        val unit = dimensionUnit ?: ""
+        val unit = dimensionUnit ?: EMPTY
         val size = if (hasLength && hasWidth && hasHeight) {
-            "${length.formatToString()} " +
-                "x ${width.formatToString()} " +
-                "x ${height.formatToString()} $unit"
+            length.formatToString() +
+                X + width.formatToString() +
+                X + height.formatToString() +
+                SPACE + unit
         } else if (hasLength && hasWidth) {
-            "${length.formatToString()} x ${width.formatToString()} $unit"
+            length.formatToString() +
+                X + width.formatToString() +
+                SPACE + unit
         } else if (hasLength && hasHeight) {
-            "${length.formatToString()} x ${height.formatToString()} $unit"
+            length.formatToString() +
+                X + height.formatToString() +
+                SPACE + unit
         } else if (hasWidth && hasHeight) {
-            "${width.formatToString()} x ${height.formatToString()} $unit"
+            width.formatToString() +
+                X + height.formatToString() +
+                SPACE + unit
         } else if (hasLength) {
-            "${length.formatToString()}$unit"
+            length.formatToString() + unit
         } else if (hasWidth) {
-            "${width.formatToString()}$unit"
+            width.formatToString() + unit
         } else if (hasHeight) {
-            "${height.formatToString()}$unit"
+            height.formatToString() + unit
         } else {
-            ""
+            EMPTY
         }
         return size.trim()
+    }
+
+    companion object {
+        private const val EMPTY = ""
+        private const val SPACE = " "
+        private const val X = " x "
     }
 }
