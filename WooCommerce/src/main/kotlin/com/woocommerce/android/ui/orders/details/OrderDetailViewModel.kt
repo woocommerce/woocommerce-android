@@ -23,6 +23,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
@@ -95,6 +96,10 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
+
+    private val wooShippingPluginInfo: WooPlugin by lazy {
+        orderDetailRepository.getWooServicesPluginInfo()
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -413,12 +418,12 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun checkShippingLabelRequirements(viewState: ViewState): ViewState {
         val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
-        val plugin = orderDetailRepository.getWooServicesPluginInfo()
+        val isShippingPluginReady = wooShippingPluginInfo.isInstalled && wooShippingPluginInfo.isActive
         val orderHasPhysicalProducts = !hasVirtualProductsOnly()
         val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
         return viewState.copy(
-            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInUs &&
-                shippingAddressIsInUs && orderHasPhysicalProducts
+            isCreateShippingLabelButtonVisible = isShippingPluginReady && storeIsInUs && shippingAddressIsInUs
+                && orderHasPhysicalProducts
         )
     }
 
