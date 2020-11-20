@@ -16,6 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_gridicons_megaphone"
+            android:paddingTop="@dimen/major_85"
+            android:paddingBottom="@dimen/major_85"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
