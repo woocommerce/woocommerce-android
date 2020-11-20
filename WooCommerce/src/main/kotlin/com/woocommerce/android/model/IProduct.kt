@@ -33,8 +33,18 @@ interface IProduct {
             "${length.formatToString()} " +
                 "x ${width.formatToString()} " +
                 "x ${height.formatToString()} $unit"
+        } else if (hasLength && hasWidth) {
+            "${length.formatToString()} x ${width.formatToString()} $unit"
+        } else if (hasLength && hasHeight) {
+            "${length.formatToString()} x ${height.formatToString()} $unit"
         } else if (hasWidth && hasHeight) {
             "${width.formatToString()} x ${height.formatToString()} $unit"
+        } else if (hasLength) {
+            "${length.formatToString()}$unit"
+        } else if (hasWidth) {
+            "${width.formatToString()}$unit"
+        } else if (hasHeight) {
+            "${height.formatToString()}$unit"
         } else {
             ""
         }
