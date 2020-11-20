@@ -40,8 +40,8 @@ interface IProduct {
                 X + dimensions[1].formatToString() +
                 X + dimensions[2].formatToString() +
                 SPACE + unit
-            else -> UnsupportedOperationException("More than three dimensions!")
-        } as String
+            else -> throw UnsupportedOperationException("More than three dimensions!")
+        }
         return size.trim()
     }
 
