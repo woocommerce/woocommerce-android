@@ -109,6 +109,60 @@ class IProductTest {
     }
 
     @Test
+    fun `given length and width without unit, when getting size, then return length and width without unit`() {
+        val length = 1f
+        val width = 2f
+        val product = product.copy(length = length, width = width, height = 0f)
+
+        val result = product.getSizeWithUnits(null)
+
+        val expected = length.formatToString() +
+            X + width.formatToString()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given length and width with unit, when getting size, then return length and width with unit`() {
+        val length = 1f
+        val width = 2f
+        val product = product.copy(length = length, width = width, height = 0f)
+
+        val result = product.getSizeWithUnits(DIMENSION_UNIT)
+
+        val expected = length.formatToString() +
+            X + width.formatToString() +
+            SPACE + DIMENSION_UNIT
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given length and height without unit, when getting size, then return length and height without unit`() {
+        val length = 1f
+        val height = 3f
+        val product = product.copy(length = length, width = 0f, height = height)
+
+        val result = product.getSizeWithUnits(null)
+
+        val expected = length.formatToString() +
+            X + height.formatToString()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given length and height with unit, when getting size, then return length and height with unit`() {
+        val length = 1f
+        val height = 3f
+        val product = product.copy(length = length, width = 0f, height = height)
+
+        val result = product.getSizeWithUnits(DIMENSION_UNIT)
+
+        val expected = length.formatToString() +
+            X + height.formatToString() +
+            SPACE + DIMENSION_UNIT
+        assertEquals(expected, result)
+    }
+
+    @Test
     fun `given width and height without unit, when getting size, then return width and height without unit`() {
         val width = 2f
         val height = 3f
@@ -132,6 +186,72 @@ class IProductTest {
         val expected = width.formatToString() +
             X + height.formatToString() +
             SPACE + DIMENSION_UNIT
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given length without unit, when getting size, then return length without unit`() {
+        val length = 1f
+        val product = product.copy(length = length, width = 0f, height = 0f)
+
+        val result = product.getSizeWithUnits(null)
+
+        val expected = length.formatToString()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given length with unit, when getting size, then return length with unit`() {
+        val length = 1f
+        val product = product.copy(length = length, width = 0f, height = 0f)
+
+        val result = product.getSizeWithUnits(DIMENSION_UNIT)
+
+        val expected = length.formatToString() + DIMENSION_UNIT
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given width without unit, when getting size, then return width without unit`() {
+        val width = 2f
+        val product = product.copy(length = 0f, width = width, height = 0f)
+
+        val result = product.getSizeWithUnits(null)
+
+        val expected = width.formatToString()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given width with unit, when getting size, then return width with unit`() {
+        val width = 2f
+        val product = product.copy(length = 0f, width = width, height = 0f)
+
+        val result = product.getSizeWithUnits(DIMENSION_UNIT)
+
+        val expected = width.formatToString() + DIMENSION_UNIT
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given height without unit, when getting size, then return height without unit`() {
+        val height = 3f
+        val product = product.copy(length = 0f, width = 0f, height = height)
+
+        val result = product.getSizeWithUnits(null)
+
+        val expected = height.formatToString()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given height with unit, when getting size, then return height with unit`() {
+        val height = 3f
+        val product = product.copy(length = 0f, width = 0f, height = height)
+
+        val result = product.getSizeWithUnits(DIMENSION_UNIT)
+
+        val expected = height.formatToString() + DIMENSION_UNIT
         assertEquals(expected, result)
     }
 
