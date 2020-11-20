@@ -72,6 +72,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+    private var screenTitle = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
@@ -96,7 +101,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         super.onStop()
     }
 
-    override fun getFragmentTitle() = viewModel.toolbarTitle
+    override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -139,7 +144,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 orderDetail_productList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
+            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
                 showOrderNotesSkeleton(it)
