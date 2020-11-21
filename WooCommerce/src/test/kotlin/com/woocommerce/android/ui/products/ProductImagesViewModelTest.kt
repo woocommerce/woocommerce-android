@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
@@ -14,7 +15,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,28 +34,25 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     @Mock
     lateinit var productImagesServiceWrapper: ProductImagesServiceWrapper
 
-    private val productImages = generateProductImagesList()
-
-    private val savedState: SavedStateWithArgs = spy(
+    private fun savedState(productImages: List<Image>) = spy(
             SavedStateWithArgs(
                     SavedStateHandle(),
                     arguments = null,
                     defaultArgs = ProductImagesFragmentArgs(
-                            0,
-                            productImages.toTypedArray(),
-                            null,
-                            false,
-                            123
+                            remoteId = 0,
+                            images = productImages.toTypedArray(),
+                            selectedImage = null,
+                            showChooser = false,
+                            requestCode = 123
                     )
             )
     )
 
-    @Before
-    fun setUp() {
+    private fun initialize(productImages: List<Image> = generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
                 networkStatus,
                 productImagesServiceWrapper,
-                savedState,
+                savedState(productImages),
                 coroutinesTestRule.testDispatchers
         ).apply {
             viewStateData.observeForever { _, _ -> }
@@ -64,6 +61,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Sets drag state when drag starts`() {
+        initialize()
+
         viewModel.onDragStarted()
 
         observeState { state ->
@@ -73,15 +72,20 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Trigger exit event on done button clicked when in browsing state`() {
+        val images = generateProductImagesList()
+        initialize(images)
+
         viewModel.onDoneButtonClicked()
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(ExitWithResult(productImages))
+            assertThat(event).isEqualTo(ExitWithResult(images))
         }
     }
 
     @Test
     fun `Exit dragging state on done button clicked when in dragging state`() {
+        initialize()
+
         viewModel.onDragStarted()
         viewModel.onDoneButtonClicked()
 
@@ -92,6 +96,8 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Show done button when view is in dragging state even there are no changes to the list`() {
+        initialize()
+
         viewModel.onDragStarted()
 
         observeState { state ->
@@ -101,7 +107,10 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Request image delete confirmation on image delete button clicked`() {
-        val imageToDelete = productImages.first()
+        val images = generateProductImagesList()
+        initialize(images)
+        val imageToDelete = images.first()
+
         viewModel.onGalleryImageDeleteIconClicked(imageToDelete)
 
         observeEvents { event ->
@@ -111,7 +120,10 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Remove image on remove confirmation`() {
-        val imageToDelete = productImages.first()
+        val images = generateProductImagesList()
+        initialize(images)
+        val imageToDelete = images.first()
+
         viewModel.onDeleteImageConfirmed(imageToDelete)
 
         observeState { state ->
@@ -121,14 +133,50 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Update list state on image reorder`() {
-        val imageA = productImages.first()
+        val images = generateProductImagesList()
+        initialize(images)
+        val imageA = images.first()
+
         viewModel.onGalleryImageMoved(
-                from = productImages.indexOf(imageA),
-                to = productImages.lastIndex
+                from = images.indexOf(imageA),
+                to = images.lastIndex
         )
 
         observeState { state ->
-            assertThat(state.images).contains(imageA, Index.atIndex(productImages.lastIndex))
+            assertThat(state.images).contains(imageA, Index.atIndex(images.lastIndex))
+        }
+    }
+
+    @Test
+    fun `Show drag and drop description where there are more than one images`() {
+        val twoImagesList = generateProductImagesList().subList(0, 2)
+        initialize(twoImagesList)
+
+        observeState { state ->
+            assertThat(state.isDragDropDescriptionVisible).isTrue()
+        }
+    }
+
+    @Test
+    fun `Hide drag and drop description where there is one image only`() {
+        val oneImageList = generateProductImagesList().subList(0, 1)
+        initialize(oneImageList)
+
+        observeState { state ->
+            assertThat(state.isDragDropDescriptionVisible).isFalse()
+        }
+    }
+
+    @Test
+    fun `Show drag and drop description when in dragging state even if there is one image only`() {
+        val twoImagesList = generateProductImagesList().subList(0, 2)
+        initialize(twoImagesList)
+
+        viewModel.onDragStarted()
+        viewModel.onDeleteImageConfirmed(twoImagesList.first())
+
+        observeState { state ->
+            assertThat(state.isDragDropDescriptionVisible).isTrue()
         }
     }
 

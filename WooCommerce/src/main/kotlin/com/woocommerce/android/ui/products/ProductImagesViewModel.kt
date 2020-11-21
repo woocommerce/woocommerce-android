@@ -60,6 +60,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     ) { old, new ->
         if (old != new) {
             updateButtonStates()
+            updateDragAndDropDescriptionStates()
         }
     }
     private var viewState by viewStateData
@@ -195,6 +196,12 @@ class ProductImagesViewModel @AssistedInject constructor(
                 numImages > 0 -> string.product_replace_photo
                 else -> string.product_add_photo
             }
+        )
+    }
+
+    private fun updateDragAndDropDescriptionStates() {
+        viewState = viewState.copy(
+                isDragDropDescriptionVisible = viewState.productImagesState == DRAGGING || images.size > 1
         )
     }
 

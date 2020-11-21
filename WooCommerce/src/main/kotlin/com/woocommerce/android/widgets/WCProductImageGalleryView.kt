@@ -156,24 +156,30 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     )
                 }
         )
-
-        if (isDraggingEnabled) {
-            draggableItemTouchHelper.attachToRecyclerView(this)
-        }
     }
 
-    fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageInteractionListener) {
+    fun showProductImages(
+        images: List<Product.Image>,
+        listener: OnGalleryImageInteractionListener
+    ) {
         this.listener = listener
         adapter.showImages(images)
+
+        updateDraggingEnabledState(images)
+    }
+
+    fun showProductImage(image: Product.Image, listener: OnGalleryImageInteractionListener) {
+        showProductImages(listOf(image), listener)
+    }
+
+    private fun updateDraggingEnabledState(images: List<Product.Image>) {
+        draggableItemTouchHelper.attachToRecyclerView(
+                if (isDraggingEnabled && images.size > 1) this else null
+        )
     }
 
     private fun onProductImagesPositionChanged(from: Int, to: Int) {
         listener.onGalleryImageMoved(from, to)
-    }
-
-    fun showProductImage(images: Product.Image, listener: OnGalleryImageInteractionListener) {
-        this.listener = listener
-        adapter.showImages(listOf(images))
     }
 
     fun clearImages() {
