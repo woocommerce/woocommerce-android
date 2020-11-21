@@ -138,8 +138,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         imageSize = if (isGridView) {
             val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            val icon = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - icon
+            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
