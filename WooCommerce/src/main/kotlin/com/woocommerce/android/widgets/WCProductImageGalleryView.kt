@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -165,14 +166,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         this.listener = listener
         adapter.showImages(images)
 
-        updateDraggingEnabledState(images)
+        updateDraggingItemTouchHelper(images)
     }
 
     fun showProductImage(image: Product.Image, listener: OnGalleryImageInteractionListener) {
         showProductImages(listOf(image), listener)
     }
 
-    private fun updateDraggingEnabledState(images: List<Product.Image>) {
+    private fun updateDraggingItemTouchHelper(images: List<Product.Image>) {
         draggableItemTouchHelper.attachToRecyclerView(
                 if (isDraggingEnabled && images.size > 1) this else null
         )
@@ -399,6 +400,12 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             return@OnTouchListener false
         }
 
+        val onClickListener = OnClickListener {
+            if (adapterPosition > NO_POSITION) {
+                onImageClicked(adapterPosition)
+            }
+        }
+
         init {
             productImageView.layoutParams.height = imageSize
             productImageView.layoutParams.width = if (isGridView) imageSize else WRAP_CONTENT
@@ -412,14 +419,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 setMargins(margin, margin, margin, margin)
             }
 
-            itemView.setOnClickListener {
-                if (adapterPosition > NO_POSITION) {
-                    onImageClicked(adapterPosition)
-                }
-            }
             isDraggingEnabled.observe(context as LifecycleOwner) { enabled ->
                 view.deleteImageButton.isVisible = enabled
                 itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
+                itemView.setOnClickListener(if (enabled) null else onClickListener)
             }
         }
 
