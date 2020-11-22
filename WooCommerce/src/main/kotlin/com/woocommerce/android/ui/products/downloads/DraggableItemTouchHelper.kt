@@ -26,6 +26,10 @@ class DraggableItemTouchHelper(
                 // no-op
             }
 
+            /*
+             `onSelectedChanged` is triggered on any drag & drop related events
+             for selected item on RecyclerView
+            */
             override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
                 if (actionState == ACTION_STATE_DRAG) {

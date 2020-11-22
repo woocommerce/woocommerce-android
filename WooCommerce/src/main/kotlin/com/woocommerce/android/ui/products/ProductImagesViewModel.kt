@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.BROWSING
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.DRAGGING
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -279,11 +280,7 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onGalleryImageMoved(from: Int, to: Int) {
-        val reorderedImages = images.toMutableList()
-        val item = images[from]
-        reorderedImages.removeAt(from)
-        reorderedImages.add(to, item)
-
+        val reorderedImages = images.swap(from, to)
         viewState = viewState.copy(images = reorderedImages)
     }
 

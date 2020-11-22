@@ -413,11 +413,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             addImageContainer.layoutParams.height = imageSize
             addImageContainer.layoutParams.width = imageSize
 
-            (productImageView.layoutParams as FrameLayout.LayoutParams).apply {
-                val margin = if (isGridView) context.resources.getDimensionPixelSize(R.dimen.margin_medium) else 0
-
-                setMargins(margin, margin, margin, margin)
-            }
+            setMargins()
 
             isDraggingEnabled.observe(context as LifecycleOwner) { enabled ->
                 view.deleteImageButton.isVisible = enabled
@@ -429,6 +425,19 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         fun bind(image: Product.Image) {
             view.deleteImageButton.setOnClickListener {
                 listener.onGalleryImageDeleteIconClicked(image)
+            }
+        }
+
+        private fun setMargins() {
+            (productImageView.layoutParams as FrameLayout.LayoutParams).apply {
+                val margin = if (isGridView) {
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(dimen.margin_medium)
+                    additionalMarginToFitDeleteIcon
+                } else {
+                    0
+                }
+
+                setMargins(margin, margin, margin, margin)
             }
         }
     }
