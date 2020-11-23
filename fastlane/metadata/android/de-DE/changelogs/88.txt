@@ -1,5 +1,0 @@
-3.0:
-* Die App unterstützt jetzt Rückerstattung nach Betrag. Diese Option findest du auf dem Bildschirm der Bestelldetails, und du kannst manuell eine teilweise oder vollständige Rückerstattung für einen bezahlten Auftrag gewähren.
-* Bei Produkten mit mehreren Bildern werden jetzt alle Bilder in einer Galerie angezeigt.
-* Fehlerkorrektur: Selten führte der Speichervorgang auf dem Bildschirm zum Hinzufügen einer Notiz zum Auftrag zu einem Absturz. Jetzt wurde aus „selten“ nie.
-* Die Ansicht mit den Auftragsdetails beinhaltet jetzt die Versandmethode für den Auftrag.

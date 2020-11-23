@@ -1,5 +1,0 @@
-3.0:
-* Uygulama artık tutara göre iade yapılmasını destekliyor. Bu özellik, ayrıntı ekranında bulunur ve ödemesi yapılmış bir sipariş için elle kısmi veya tam iade yapmanıza imkan verir.
-* Artık birden fazla resme sahip ürünlerin tüm resimleri galeride görüntüleniyor.
-* Hata düzeltmesi: “Sipariş Notu Ekle” ekranında yapılan kaydetme işlemi nadiren bir çökmeye yol açıyordu. Bu sorun giderildi.
-* Sipariş ayrıntıları görünümünde artık siparişin sevkiyat yöntemi görüntüleniyor.

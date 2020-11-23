@@ -1,5 +1,0 @@
-3.0:
-* Aplikasi kini mendukung pengembalian dana menurut jumlah. Tersedia di layar detail pesanan, dan memungkinkan Anda mengeluarkan pengembalian dana sebagian atau penuh secara manual untuk pesanan yang telah dibayar.
-* Produk dengan beberapa gambar kini menampilkan semua gambar di galeri.
-* Perbaikan bug: Jarang, penyimpanan saat di layar “Add Order Note” menyebabkan crash. Kini, “jarang” menjadi “tidak pernah”.
-* Tampilan detail pesanan kini mencakup metode pengiriman pesanan.

@@ -1,5 +1,0 @@
-3.0:
-* De app ondersteunt nu terugbetalingen per bedrag. Deze functie is beschikbaar via het bestelgegevensscherm en hiermee kun je handmatig een gedeeltelijke of volledige terugbetaling voor een betaalde bestelling uitvoeren.
-* Bij producten met meerdere afbeeldingen worden alle afbeeldingen nu in één galerij weergegeven.
-* Bugfix: Opslaan wanneer het scherm 'Bestelopmerking toevoegen' was geopend, leidde heel af en toe tot een crash. 'Heel af en toe' is nu vervangen door 'Nooit'.
-* Het overzicht van bestelgegevens bevat nu ook de verzendmethode.

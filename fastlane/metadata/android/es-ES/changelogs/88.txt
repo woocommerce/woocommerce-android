@@ -1,5 +1,0 @@
-3.0:
-* Ahora la aplicación admite reembolsos por importe. Está disponible en la pantalla de detalles del pedido y te permite emitir manualmente un reembolso parcial o total en un pedido pagado.
-* Los productos con varias imágenes ahora las muestran todas en una galería.
-* Corrección de errores: En raras ocasiones, el guardado en la pantalla "Añadir nota de pedido" provocaba un error. Ahora, "en raras ocasiones" es "nunca".
-* La vista de detalles del pedido ahora incluye el método de envío.

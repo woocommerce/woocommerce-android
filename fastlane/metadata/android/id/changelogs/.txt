@@ -1,2 +1,0 @@
-3.1.
-- Tidak dapat mengingat kredensial WordPress.com Anda? Tidak masalah! Kami telah menambahkan pilihan baru yang memungkinkan pengguna login menggunakan kredensial situs mereka. Jika kredensial ini berfungsi, aplikasi akan mengambil informasi akun WordPress.com yang tersambung dan memungkinkan pengguna menyelesaikan proses login menggunakan tautan ajaib.

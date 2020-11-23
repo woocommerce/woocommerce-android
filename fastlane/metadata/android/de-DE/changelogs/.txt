@@ -1,2 +1,0 @@
-3.1:
-- Du kannst dich nicht mehr an deine Anmeldedaten von WordPress.com erinnern? Kein Problem! Wir haben eine neue Option hinzugefügt, mit der Benutzer sich mit ihren Website-Anmeldedaten anmelden können. Wenn diese Anmeldedaten funktionieren, ruft die App die Informationen des verknüpften WordPress.com-Kontos ab und ermöglicht dem Benutzer, die Anmeldung über einen magischen Link abzuschließen.

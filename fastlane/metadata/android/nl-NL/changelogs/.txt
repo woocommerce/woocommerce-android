@@ -1,2 +1,0 @@
-3.1:
-- Ben je je WordPress.com-inloggegevens vergeten? Geen probleem! We hebben een nieuwe optie toegevoegd waarmee een gebruiker in kan loggen door middel van site-inloggegevens. Als deze inloggegevens werken, haalt de app de gegevens van het verbonden WordPress.com-account op en kan de gebruiker het inlogproces afronden via een magische link.

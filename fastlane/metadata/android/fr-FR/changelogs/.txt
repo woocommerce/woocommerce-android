@@ -1,2 +1,0 @@
-3.1 :
-- Vous avez oublié vos identifiants WordPress.com ? Pas de problème. Nous avons ajouté une nouvelle option qui permet à l'utilisateur de se connecter avec les identifiants de son site. Si ces identifiants fonctionnent, l'application récupère les informations du compte WordPress.com connecté et autorise l'utilisateur à terminer la procédure de connexion à l'aide d'un lien magique.
