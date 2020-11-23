@@ -5,6 +5,10 @@
  
 5.5
 -----
+
+5.4.1
+-----
+** Fixed issue in order product variations where an empty variation key would cause a crash [https://github.com/woocommerce/woocommerce-android/pull/3188]
  
 5.4
 -----
