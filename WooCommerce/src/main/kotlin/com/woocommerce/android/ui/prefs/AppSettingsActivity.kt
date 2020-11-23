@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,6 +24,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_app_settings.*
+import kotlinx.android.synthetic.main.view_toolbar.*
 import java.util.Locale
 import javax.inject.Inject
 
@@ -54,7 +54,7 @@ class AppSettingsActivity : AppCompatActivity(),
         setContentView(R.layout.activity_app_settings)
         presenter.takeView(this)
 
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         savedInstanceState?.let {
@@ -89,7 +89,7 @@ class AppSettingsActivity : AppCompatActivity(),
     override fun onSupportNavigateUp(): Boolean {
         AnalyticsTracker.trackBackPressed(this)
         return if (findNavController(R.id.nav_host_fragment).navigateUp()) {
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_white_24dp)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_24dp)
             true
         } else {
             finish()

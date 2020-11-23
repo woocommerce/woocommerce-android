@@ -85,6 +85,8 @@ class OrderListView @JvmOverloads constructor(
         ordersList.smoothScrollToPosition(0)
     }
 
+    fun getCurrentPosition() = (ordersList?.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() ?: 0
+
     /**
      * save the order list on configuration change
      */

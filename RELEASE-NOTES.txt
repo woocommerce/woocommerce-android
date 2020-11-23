@@ -1,11 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
 5.6
------
+----
+* [****] We've updated the UI to a crisper, cleaner design [https://github.com/woocommerce/woocommerce-android/pull/3136]
 * Fixed an issue with unexpected shipment tracking UI in order details
  
 5.5
 -----
+
  
 5.4
 -----
