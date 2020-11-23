@@ -1,5 +1,0 @@
-3.0:
-* Agora o aplicativo oferece reembolsos por valor. Com essa opção, disponível na tela “Detalhes do pedido”, você emite manualmente reembolsos parciais ou totais para pedidos pagos.
-* Agora produtos com várias imagens as exibem em uma galeria.
-* Correção de bug raro: a tela “Adicionar observação ao pedido” travava durante o salvamento. Não mais.
-* Agora a visualização “Detalhes do pedido” inclui o método de envio.

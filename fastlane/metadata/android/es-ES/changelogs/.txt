@@ -1,2 +1,0 @@
-3.1:
-- ¿Has olvidado tus credenciales de WordPress.com? ¡No hay problema! Hemos añadido una nueva opción que permite a los usuarios acceder con las credenciales de su sitio. Si las credenciales funcionan, la aplicación obtendrá la información de la cuenta de WordPress.com conectada y permitirá a los usuarios completar el proceso de acceso con un enlace mágico.

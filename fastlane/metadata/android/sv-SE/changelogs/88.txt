@@ -1,5 +1,0 @@
-3.0:
-* Appen stöder nu återbetalningar efter belopp. Det finns på din beställningsinformationsskärm och låter dig manuellt utfärda en partiell eller fullständig återbetalning för en betald beställning.
-* Produkter med flera bilder visar nu alla bilder i ett galleri.
-* Buggkorrigering: Sällan kunde en spara-åtgärd från skärmen Lägg till beställningsanteckning leda till en krasch. Nu har sällan blivit aldrig.
-* Beställningsinformationsvyn inkluderar nu beställningens fraktmetod.

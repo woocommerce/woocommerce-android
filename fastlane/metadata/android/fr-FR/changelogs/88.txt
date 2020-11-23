@@ -1,5 +1,0 @@
-3.0 :
-* L'application prend désormais en charge les remboursements par montant. Cette fonctionnalité est disponible sur l'écran des détails de la commande et vous permet d'exécuter manuellement un remboursement partiel ou complet d'une commande payée.
-* Lorsque des produits possèdent plusieurs images, elles sont désormais toutes présentées dans une galerie.
-* Résolution de bug : il arrivait dans de rares cas un échec de l'enregistrement à partir de l'écran « Ajouter une note à la commande ». Désormais, il n'y a plus aucun échec de l'enregistrement.
-* La vue présentant les détails de la commande mentionne désormais le mode de livraison de la commande.

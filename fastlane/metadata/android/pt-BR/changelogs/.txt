@@ -1,2 +1,0 @@
-3.1:
-- Não se lembra das suas credenciais do WordPress.com? Sem problema! Adicionamos uma nova opção que permite ao usuário fazer login usando as credenciais do site. Se essas credenciais funcionarem, o aplicativo buscará as informações da conta do WordPress.com conectada e permitirá que o usuário conclua o processo de login usando um link mágico.

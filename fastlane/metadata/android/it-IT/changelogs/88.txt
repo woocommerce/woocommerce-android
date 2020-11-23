@@ -1,5 +1,0 @@
-3.0:
-* L'app ora supporta i rimborsi per importo. È disponibile sulla schermata di dettaglio dell'ordine e ti consente di emettere un rimborso parziale o completo per un ordine pagato.
-* I prodotti con immagini multiple ora le mostrano tutte in una galleria.
-* Correzione di bug: raramente, il salvataggio sulla schermata per aggiungere una nota dell'ordine causava un arresto anomalo. Ora non accade mai.
-* La vista dei dettagli dell'ordine ora comprende il metodo di spedizione dell'ordine.
