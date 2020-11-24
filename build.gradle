@@ -102,6 +102,7 @@ ext {
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.40'
     flipperVersion = '0.52.0'
+    stateMachineVersion = '0.2.0'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks
