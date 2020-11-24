@@ -482,11 +482,20 @@ class MainActivity : AppUpgradeActivity(),
         }
         collapsing_toolbar.isTitleEnabled = enable
 
-        (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams).behavior = if (enable) {
+        // prevent child fragments from nested scroll
+        val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
+        params.behavior = if (enable) {
             AppBarLayout.Behavior()
         } else {
             DisableableAppBarLayoutBehavior()
         }
+
+        // prevent the toolbar from being dragged in child fragments
+        (params.behavior as AppBarLayout.Behavior).setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                return enable
+            }
+        })
     }
 
     /**
