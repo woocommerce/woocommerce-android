@@ -7,8 +7,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCr
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.State.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class ShippingLabelCreationFlow {
+class ShippingLabelCreationFlow @Inject constructor() {
     private val _effects = MutableStateFlow<SideEffect>(NoOp)
     val effects: StateFlow<SideEffect> = _effects
 

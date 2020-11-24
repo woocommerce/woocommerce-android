@@ -353,6 +353,7 @@
     <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
     <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
     <string name="shipping_label_more_information_link">Learn more</string>
+    <string name="shipping_label_create_title">Create shipping label</string>
 
     <!--
         Refunds
