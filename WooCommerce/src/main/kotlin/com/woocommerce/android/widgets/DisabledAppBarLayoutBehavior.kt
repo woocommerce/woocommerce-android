@@ -7,12 +7,21 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
 
 /**
- * Custom layout behavior which disables collapsing toolbar
+ * Custom layout behavior which prevents collapsing toolbar from being expanded
  */
-class DisableableAppBarLayoutBehavior : AppBarLayout.Behavior {
+class DisabledAppBarLayoutBehavior : AppBarLayout.Behavior {
+    init {
+        // prevent the toolbar from being dragged in child fragments
+        setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                return false
+            }
+        })
+    }
     constructor() : super() {}
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
+    // prevent nested scroll
     override fun onStartNestedScroll(
         parent: CoordinatorLayout,
         child: AppBarLayout,

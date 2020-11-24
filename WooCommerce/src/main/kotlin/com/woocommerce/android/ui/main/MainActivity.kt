@@ -55,7 +55,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
-import com.woocommerce.android.widgets.DisableableAppBarLayoutBehavior
+import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -482,20 +482,12 @@ class MainActivity : AppUpgradeActivity(),
         }
         collapsing_toolbar.isTitleEnabled = enable
 
-        // prevent child fragments from nested scroll
         val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
         params.behavior = if (enable) {
             AppBarLayout.Behavior()
         } else {
-            DisableableAppBarLayoutBehavior()
+            DisabledAppBarLayoutBehavior()
         }
-
-        // prevent the toolbar from being dragged in child fragments
-        (params.behavior as AppBarLayout.Behavior).setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
-            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
-                return enable
-            }
-        })
     }
 
     /**
@@ -507,7 +499,6 @@ class MainActivity : AppUpgradeActivity(),
      * @param isAtRoot The value that tells if root fragment is in the current destination
      * @param destination The object for the next navigation destination
      */
-
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
