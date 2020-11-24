@@ -430,8 +430,8 @@ class OrderDetailViewModel @AssistedInject constructor(
         val orderHasPhysicalProducts = !hasVirtualProductsOnly()
         val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
         return viewState.copy(
-            isCreateShippingLabelButtonVisible = isShippingPluginReady && storeIsInUs && shippingAddressIsInUs
-                && orderHasPhysicalProducts
+            isCreateShippingLabelButtonVisible = isShippingPluginReady && storeIsInUs && shippingAddressIsInUs &&
+                orderHasPhysicalProducts
         )
     }
 
