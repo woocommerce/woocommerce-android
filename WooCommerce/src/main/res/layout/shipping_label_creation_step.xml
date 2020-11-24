@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:contentDescription="@string/product_property_edit"
+        android:src="@drawable/ic_gridicons_list_checkmark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/caption"
+        tools:visibility="visible" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/caption"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/details"
+        app:layout_goneMarginStart="@dimen/major_100"
+        app:layout_goneMarginBottom="@dimen/major_100"
+        tools:text="textPropertyName this is really long text that will wrap."
+        tools:visibility="visible"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/details"
+        style="@style/Woo.Card.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:ellipsize="end"
+        android:lineSpacingExtra="@dimen/minor_25"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toTopOf="@id/continueButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toBottomOf="@+id/caption"
+        app:layout_goneMarginStart="@dimen/major_100"
+        app:layout_goneMarginTop="@dimen/major_100"
+        tools:visibility="visible"
+        tools:text="textPropertyValue thil wrap." />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/continueButton"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/continue_button"
+        android:paddingStart="@dimen/major_200"
+        android:paddingEnd="@dimen/major_200"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintStart_toStartOf="@id/details"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintTop_toBottomOf="@string/details" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_width="@dimen/minor_00"
+        android:layout_marginStart="@dimen/major_200"
+        android:layout_marginTop="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_goneMarginStart="@dimen/major_100" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

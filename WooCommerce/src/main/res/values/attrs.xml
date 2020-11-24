@@ -157,4 +157,12 @@
     <declare-styleable name="AddProductElementView">
         <attr name="buttonText" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="ShippingLabelCreationStepView">
+        <attr name="caption" format="string"/>
+        <attr name="details" format="string"/>
+        <attr name="icon" format="reference"/>
+        <attr name="button_visible" format="boolean"/>
+        <attr name="android:enabled"/>
+    </declare-styleable>
 </resources>
