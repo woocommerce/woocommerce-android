@@ -9,7 +9,7 @@ import com.google.android.material.appbar.AppBarLayout
  */
 class DisabledAppBarLayoutBehavior() : AppBarLayout.Behavior() {
     /**
-     * Prevent the toolbar from being dragged in child fragments
+     * Prevent the toolbar from being dragged
      */
     init {
         setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
