@@ -125,6 +125,9 @@ class MainActivity : AppUpgradeActivity(),
     private var isToolbarExpanded = true
     private var restoreToolbarHeight = 0
 
+    private val toolbarEnabledBehavior = AppBarLayout.Behavior()
+    private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
+
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
@@ -484,9 +487,9 @@ class MainActivity : AppUpgradeActivity(),
 
         val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
         params.behavior = if (enable) {
-            AppBarLayout.Behavior()
+            toolbarEnabledBehavior
         } else {
-            DisabledAppBarLayoutBehavior()
+            toolbarDisabledBehavior
         }
     }
 
