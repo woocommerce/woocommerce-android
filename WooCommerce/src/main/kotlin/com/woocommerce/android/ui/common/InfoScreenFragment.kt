@@ -36,7 +36,7 @@ class InfoScreenFragment : Fragment() {
             if (navArgs.screenTitle != 0) it.title = getString(navArgs.screenTitle)
             (it as? AppCompatActivity)
                 ?.supportActionBar
-                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         }
     }
 
