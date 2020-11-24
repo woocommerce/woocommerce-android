@@ -502,7 +502,11 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
-                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
+                return viewState.copy(
+                    isShipmentTrackingAvailable = false,
+                    isProductListVisible = false,
+                    areShippingLabelsVisible = true
+                )
             }
 
         orderDetailRepository
@@ -513,10 +517,14 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
-                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
+                return viewState.copy(
+                    isShipmentTrackingAvailable = false,
+                    isProductListVisible = false,
+                    areShippingLabelsVisible = true
+                )
             }
 
-        return viewState
+        return viewState.copy(areShippingLabelsVisible = false)
     }
 
     @SuppressWarnings("unused")
@@ -536,13 +544,17 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isShipmentTrackingAvailable: Boolean? = null,
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
-        val isProductListVisible: Boolean? = null
+        val isProductListVisible: Boolean? = null,
+        val areShippingLabelsVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
 
-        val isShippingLabelBannerVisible: Boolean
+        val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
+
+        val isReprintShippingLabelBannerVisible: Boolean
+            get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
     }
 
     @AssistedInject.Factory
