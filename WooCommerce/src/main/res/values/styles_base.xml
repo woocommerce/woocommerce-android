@@ -11,16 +11,45 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Widget.Woo"/>
 
     <!--
-        Toolbar Style
+        Toolbar Styles
     -->
-    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+    <style name="Widget.Woo.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
+        <item name="navigationIcon">@drawable/ic_back_24dp</item>
+    </style>
+    <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_height">@dimen/expanded_toolbar_height</item>
+    </style>
+    <style name="TextAppearance.Woo.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:layout_height">@dimen/toolbar_height</item>
+    </style>
+    <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="collapsedTitleTextAppearance">
+            @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
+        </item>
+        <item name="expandedTitleTextAppearance">
+            @style/TextAppearance.Woo.CollapsingToolbar.Expanded
+        </item>
+        <item name="expandedTitleMarginStart">16dp</item>
+        <item name="expandedTitleMarginEnd">16dp</item>
+        <item name="android:paddingEnd">4dp</item>
+    </style>
+    <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="tint">@color/color_secondary</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
 
     <!--
         AppBarLayout Style
     -->
-    <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
-        <item name="android:elevation">@dimen/plane_04</item>
-        <item name="android:fitsSystemWindows">false</item>
+    <style name="Woo.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="elevation">0dp</item>
+        <item name="liftOnScroll">true</item>
     </style>
 
     <!--
@@ -39,12 +68,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">
         <item name="tabMode">fixed</item>
         <item name="tabTextAppearance">?attr/textAppearanceButton</item>
-        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
-        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimary</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
         <item name="tabIndicatorHeight">2dp</item>
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
-        <item name="android:elevation">@dimen/plane_00</item>
+        <item name="android:background">@color/color_surface</item>
+        <item name="tabTextColor">@color/color_on_surface</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">

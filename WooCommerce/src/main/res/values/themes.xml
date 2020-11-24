@@ -10,7 +10,8 @@
         <item name="android:windowBackground">@drawable/bg_splash</item>
     </style>
 
-    <style name="Theme.Woo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Woo" parent="Theme.WooBase"/>
+    <style name="Theme.WooBase" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimarySurface">@color/color_primary_surface</item>
@@ -33,7 +34,6 @@
         <item name="colorControlNormal">@color/color_primary</item>
         <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="scrimBackground">@color/color_scrim_background</item>
-        <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:navigationBarColor">@color/nav_bar</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
@@ -85,6 +85,7 @@
         <item name="android:checkedTextViewStyle">@style/Woo.CheckedTextView</item>
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
         <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
+        <item name="actionOverflowButtonStyle">@style/Woo.ActionMode.OverflowButtonStyle</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

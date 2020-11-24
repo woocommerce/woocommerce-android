@@ -72,6 +72,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+    private var screenTitle = ""
+        set(value) {
+            field = value
+            updateActivityTitle()
+        }
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
@@ -96,7 +101,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         super.onStop()
     }
 
-    override fun getFragmentTitle() = viewModel.toolbarTitle
+    override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -133,13 +138,16 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
-            new.isShippingLabelBannerVisible.takeIfNotEqualTo(old?.isShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it)
+            new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
+                displayShippingLabelsWIPCard(it, false)
+            }
+            new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
+                displayShippingLabelsWIPCard(it, true)
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 orderDetail_productList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { activity?.title = it }
+            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
                 showOrderNotesSkeleton(it)
@@ -329,23 +337,32 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         }
     }
 
-    private fun displayShippingLabelsWIPCard(show: Boolean) {
+    private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
         if (show && feedbackState != DISMISSED) {
             orderDetail_shippingLabelsWipCard.isVisible = true
-            val wipCardMessageId = R.string.orderdetail_shipping_label_m2_wip_message
+            val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
+                R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
+            else
+                R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
+
             orderDetail_shippingLabelsWipCard.initView(
-                getString(R.string.orderdetail_shipping_label_m2_wip_title),
+                getString(wipCardTitleId),
                 getString(wipCardMessageId),
-                onGiveFeedbackClick = ::onGiveFeedbackClicked,
-                onDismissClick = ::onDismissProductWIPNoticeCardClicked
+                onGiveFeedbackClick = { onGiveFeedbackClicked(isReprintBanner) },
+                onDismissClick = { onDismissProductWIPNoticeCardClicked(isReprintBanner) }
             )
         } else orderDetail_shippingLabelsWipCard.isVisible = false
     }
 
-    private fun onGiveFeedbackClicked() {
+    private fun onGiveFeedbackClicked(isM1: Boolean) {
+        val context = if (isM1)
+            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
+        else
+            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
         ))
         registerFeedbackSetting(GIVEN)
@@ -354,14 +371,19 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             .apply { findNavController().navigateSafely(this) }
     }
 
-    private fun onDismissProductWIPNoticeCardClicked() {
+    private fun onDismissProductWIPNoticeCardClicked(isM1: Boolean) {
+        val context = if (isM1)
+            AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK
+        else
+            AnalyticsTracker.VALUE_SHIPPING_LABELS_M2_FEEDBACK
+
         AnalyticsTracker.track(
             FEATURE_FEEDBACK_BANNER, mapOf(
-            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SHIPPING_LABELS_M1_FEEDBACK,
+            AnalyticsTracker.KEY_FEEDBACK_CONTEXT to context,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
         ))
         registerFeedbackSetting(DISMISSED)
-        displayShippingLabelsWIPCard(false)
+        displayShippingLabelsWIPCard(false, isM1)
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {

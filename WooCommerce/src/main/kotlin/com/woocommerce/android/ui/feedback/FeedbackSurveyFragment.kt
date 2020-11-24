@@ -70,7 +70,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
             it.title = getString(R.string.feedback_survey_request_title)
             (it as? AppCompatActivity)
                 ?.supportActionBar
-                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         }
     }
 
