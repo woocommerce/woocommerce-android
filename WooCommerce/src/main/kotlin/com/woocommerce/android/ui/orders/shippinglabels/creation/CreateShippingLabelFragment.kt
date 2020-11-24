@@ -9,8 +9,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class CreateShippingLabelFragment  : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -24,7 +26,6 @@ class CreateShippingLabelFragment  : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.initCreationFlow()
         return inflater.inflate(R.layout.fragment_create_shipping_label, container, false)
     }
 }
