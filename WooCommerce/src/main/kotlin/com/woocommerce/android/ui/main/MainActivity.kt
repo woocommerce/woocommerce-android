@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -54,6 +55,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.DisableableAppBarLayoutBehavior
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -479,6 +481,12 @@ class MainActivity : AppUpgradeActivity(),
             toolbar.title = title
         }
         collapsing_toolbar.isTitleEnabled = enable
+
+        (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams).behavior = if (enable) {
+            AppBarLayout.Behavior()
+        } else {
+            DisableableAppBarLayoutBehavior()
+        }
     }
 
     /**
