@@ -635,6 +635,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
         const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
+        const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
 
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
