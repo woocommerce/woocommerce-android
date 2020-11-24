@@ -7,4 +7,9 @@
         <item name="android:windowBackground">@drawable/bg_splash</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <style name="Theme.Woo" parent="Theme.WooBase">
+        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
 </resources>

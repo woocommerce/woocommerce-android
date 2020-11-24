@@ -40,6 +40,8 @@
     <color name="color_scrim_background">@color/woo_white_alpha_038</color>
     <color name="color_default_image_background">@color/woo_gray_5</color>
 
+    <color name="color_back_arrow">@color/color_on_surface</color>
+
     <!--
         Icon-related resources that use the surface color should be assigned
         this resource.
@@ -55,7 +57,7 @@
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/woo_white</color>
+    <color name="color_icon_menu">@color/color_secondary</color>
 
     <!--
         Toolbar icons for login menus
@@ -71,7 +73,7 @@
     <!--
         App colors
     -->
-    <color name="color_status_bar">@color/woo_purple_60</color>
+    <color name="color_status_bar">@color/color_surface</color>
     <color name="default_window_background">#F2F2F2</color>
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>

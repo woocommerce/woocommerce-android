@@ -139,6 +139,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
@@ -572,6 +573,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(false)
         isSearching = true
         checkOrientation()
+        expandMainToolbar(false, animate = true)
         return true
     }
 
@@ -586,6 +588,7 @@ class OrderListFragment : TopLevelFragment(),
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
+        restoreMainToolbar()
         return true
     }
 
@@ -773,4 +776,6 @@ class OrderListFragment : TopLevelFragment(),
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
+
+    override fun isScrolledToTop() = order_list_view.getCurrentPosition() == 0
 }

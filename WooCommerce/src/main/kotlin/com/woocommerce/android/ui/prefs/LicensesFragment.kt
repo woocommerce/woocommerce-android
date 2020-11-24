@@ -33,7 +33,7 @@ class LicensesFragment : androidx.fragment.app.Fragment() {
 
         activity?.let {
             it.title = getString(R.string.settings_licenses)
-            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+            (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         }
     }
 }

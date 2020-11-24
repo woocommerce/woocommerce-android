@@ -105,7 +105,7 @@ object ChromeCustomTabUtils {
 
     private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
         val intent = CustomTabsIntent.Builder(tabSession)
-                .setToolbarColor(ContextCompat.getColor(context, R.color.color_primary_surface))
+                .setToolbarColor(ContextCompat.getColor(context, R.color.color_surface))
                 .addDefaultShareMenuItem()
                 .setShowTitle(true)
                 .build()

@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -178,6 +179,13 @@ class OrderDetailViewModel @AssistedInject constructor(
 
             triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
             launch {
+                AnalyticsTracker.track(
+                    ORDER_TRACKING_ADD,
+                    mapOf(AnalyticsTracker.KEY_ID to order?.remoteId,
+                        AnalyticsTracker.KEY_STATUS to order?.status,
+                        AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                )
+
                 val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
                     orderIdSet.id,
                     orderIdSet.remoteOrderId,
