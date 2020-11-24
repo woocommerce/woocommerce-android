@@ -39,7 +39,7 @@
     <!--
         App colors
     -->
-    <color name="color_status_bar">@color/woo_black_900</color>
+    <color name="color_status_bar">@color/color_surface</color>
     <color name="default_window_background">@color/woo_black_90</color>
     <color name="divider_color">@color/woo_white_alpha_012</color>
     <color name="image_border_color">@color/woo_white_alpha_012</color>

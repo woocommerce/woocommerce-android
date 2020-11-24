@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    This layout overrides the Zendesk layout of the same name so we can apply
+    our own style to the toolbar. This is a last resort because it may require
+    maintenance with every Zendesk upgrade, but since Zendesk hard codes its
+    toolbar style we have no alternative
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/request_list_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/request_list_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:navigationContentDescription="@string/abc_action_bar_up_description"
+                app:title="@string/request_list_activity_title" />
+
+            <zendesk.support.request.ViewAlmostRealProgressBar
+                android:id="@+id/request_list_progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/zs_request_toolbar_progress_bar_height"
+                android:layout_gravity="bottom"
+                android:indeterminate="false"
+                android:progressDrawable="@drawable/zs_request_toolbar_progress_bar" />
+
+        </FrameLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/request_list_scene_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:focusable="true" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/request_list_create_new_ticket_fab"
+        style="@style/zs_contact_us_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:accessibilityTraversalBefore="@id/request_list_scene_root"
+        android:importantForAccessibility="no"
+        tools:ignore="UnusedAttribute" />
+
+    <View
+        android:id="@+id/request_list_compat_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/zs_request_toolbar_shadow_space"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@drawable/zs_request_toolbar_shadow" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
