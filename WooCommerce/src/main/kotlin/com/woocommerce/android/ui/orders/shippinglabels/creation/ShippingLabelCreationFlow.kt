@@ -1,15 +1,21 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import android.util.Log
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.Event.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.SideEffect.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.State.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class ShippingLabelCreationFlow @Inject constructor() {
+    companion object {
+        private val TAG = ShippingLabelCreationFlow::class.simpleName
+    }
     private val _effects = MutableStateFlow<SideEffect>(NoOp)
     val effects: StateFlow<SideEffect> = _effects
 
@@ -91,10 +97,16 @@ class ShippingLabelCreationFlow @Inject constructor() {
             }
         }
 
-        onTransition {
-            val validTransition = it as? StateMachine.Transition.Valid ?: return@onTransition
-            validTransition.sideEffect?.let { sideEffect ->
-                _effects.value = sideEffect
+        state<PackageSelection> {
+        }
+
+        onTransition { transition ->
+            if (transition is StateMachine.Transition.Valid) {
+                transition.sideEffect?.let { sideEffect ->
+                    _effects.value = sideEffect
+                }
+            } else {
+                Log.e(TAG,"Invalid event ${transition.event} passed from ${transition.fromState}")
             }
         }
     }
