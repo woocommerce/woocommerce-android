@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -23,6 +24,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
@@ -71,9 +73,6 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val orderIdSet: OrderIdSet
         get() = navArgs.orderId.toIdSet()
 
-    val toolbarTitle: String
-        get() = orderDetailViewState.toolbarTitle ?: ""
-
     final lateinit var order: Order
         private set
 
@@ -99,6 +98,10 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
+
+    private val wooShippingPluginInfo: WooPlugin by lazy {
+        orderDetailRepository.getWooServicesPluginInfo()
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -241,6 +244,13 @@ class OrderDetailViewModel @AssistedInject constructor(
 
             triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
             launch {
+                AnalyticsTracker.track(
+                    ORDER_TRACKING_ADD,
+                    mapOf(AnalyticsTracker.KEY_ID to order?.remoteId,
+                        AnalyticsTracker.KEY_STATUS to order?.status,
+                        AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                )
+
                 val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
                     orderIdSet.id,
                     orderIdSet.remoteOrderId,
@@ -418,12 +428,12 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun checkShippingLabelRequirements(viewState: ViewState): ViewState {
         val storeIsInUs = orderDetailRepository.getStoreCountryCode()?.startsWith(US_COUNTRY_CODE) ?: false
-        val plugin = orderDetailRepository.getWooServicesPluginInfo()
+        val isShippingPluginReady = wooShippingPluginInfo.isInstalled && wooShippingPluginInfo.isActive
         val orderHasPhysicalProducts = !hasVirtualProductsOnly()
         val shippingAddressIsInUs = order.shippingAddress.country == US_COUNTRY_CODE
         return viewState.copy(
-            isCreateShippingLabelButtonVisible = plugin.isInstalled && plugin.isActive && storeIsInUs &&
-                shippingAddressIsInUs && orderHasPhysicalProducts
+            isCreateShippingLabelButtonVisible = isShippingPluginReady && storeIsInUs && shippingAddressIsInUs &&
+                orderHasPhysicalProducts
         )
     }
 
@@ -494,7 +504,11 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
-                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
+                return viewState.copy(
+                    isShipmentTrackingAvailable = false,
+                    isProductListVisible = false,
+                    areShippingLabelsVisible = true
+                )
             }
 
         orderDetailRepository
@@ -505,10 +519,14 @@ class OrderDetailViewModel @AssistedInject constructor(
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
-                return viewState.copy(isShipmentTrackingAvailable = false, isProductListVisible = false)
+                return viewState.copy(
+                    isShipmentTrackingAvailable = false,
+                    isProductListVisible = false,
+                    areShippingLabelsVisible = true
+                )
             }
 
-        return viewState
+        return viewState.copy(areShippingLabelsVisible = false)
     }
 
     @SuppressWarnings("unused")
@@ -528,13 +546,17 @@ class OrderDetailViewModel @AssistedInject constructor(
         val isShipmentTrackingAvailable: Boolean? = null,
         val refreshedProductId: Long? = null,
         val isCreateShippingLabelButtonVisible: Boolean? = null,
-        val isProductListVisible: Boolean? = null
+        val isProductListVisible: Boolean? = null,
+        val areShippingLabelsVisible: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
             get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
 
-        val isShippingLabelBannerVisible: Boolean
+        val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
+
+        val isReprintShippingLabelBannerVisible: Boolean
+            get() = !isCreateShippingLabelBannerVisible && areShippingLabelsVisible == true
     }
 
     @AssistedInject.Factory

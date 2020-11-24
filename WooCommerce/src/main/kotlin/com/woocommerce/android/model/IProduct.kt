@@ -15,8 +15,11 @@ interface IProduct {
      */
     fun getWeightWithUnits(weightUnit: String?): String {
         return if (weight > 0) {
-            "${weight.formatToString()}${weightUnit ?: ""}"
-        } else ""
+            val unit = weightUnit ?: EMPTY
+            weight.formatToString() + unit
+        } else {
+            EMPTY
+        }
     }
 
     /**
@@ -25,18 +28,31 @@ interface IProduct {
      * Eg: 12 x 15 x 13 in
      */
     fun getSizeWithUnits(dimensionUnit: String?): String {
-        val hasLength = length > 0
-        val hasWidth = width > 0
-        val hasHeight = height > 0
-        val unit = dimensionUnit ?: ""
-        return if (hasLength && hasWidth && hasHeight) {
-            "${length.formatToString()} " +
-                "x ${width.formatToString()} " +
-                "x ${height.formatToString()} $unit"
-        } else if (hasWidth && hasHeight) {
-            "${width.formatToString()} x ${height.formatToString()} $unit"
-        } else {
-            ""
-        }.trim()
+        val unit = dimensionUnit ?: EMPTY
+        val dimensions = arrayOf(length, width, height).filter { it > 0 }
+        val size = when (dimensions.size) {
+            NO_DIMENSIONS -> EMPTY
+            ONE_DIMENSIONAL -> dimensions[0].formatToString() + unit
+            TWO_DIMENSIONAL -> dimensions[0].formatToString() +
+                X + dimensions[1].formatToString() +
+                SPACE + unit
+            THREE_DIMENSIONAL -> dimensions[0].formatToString() +
+                X + dimensions[1].formatToString() +
+                X + dimensions[2].formatToString() +
+                SPACE + unit
+            else -> throw UnsupportedOperationException("More than three dimensions!")
+        }
+        return size.trim()
+    }
+
+    companion object {
+        private const val EMPTY = ""
+        private const val SPACE = " "
+        private const val X = " x "
+
+        private const val NO_DIMENSIONS = 0
+        private const val ONE_DIMENSIONAL = 1
+        private const val TWO_DIMENSIONAL = 2
+        private const val THREE_DIMENSIONAL = 3
     }
 }

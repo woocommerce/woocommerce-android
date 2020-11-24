@@ -94,7 +94,7 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
             }
         }
 
-        showToolbar(true)
+        fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
