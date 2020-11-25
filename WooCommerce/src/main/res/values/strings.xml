@@ -253,7 +253,6 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
-    <string name="orderdetail_order_fulfillment">Fulfill Order #%s</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
     <string name="orderdetail_hide_billing">Hide Billing</string>
@@ -286,7 +285,6 @@
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
     <string name="order_begin_fulfillment">Mark order complete</string>
-    <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
@@ -299,8 +297,6 @@
     <string name="order_detail_shipment_tracking_button_contentdesc">Track or delete shipment tracking</string>
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
-    <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
-    <string name="order_shipment_tracking_add_label">Optional tracking information</string>
     <string name="order_shipment_tracking_add_button">Add tracking</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
