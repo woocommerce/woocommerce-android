@@ -301,6 +301,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED,
         ADD_PRODUCT_SUCCESS,
         ADD_PRODUCT_FAILED,
+        PRODUCT_IMAGE_UPLOAD_FAILED,
 
         // -- Product Categories
         PRODUCT_CATEGORIES_LOADED,

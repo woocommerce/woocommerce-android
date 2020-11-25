@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
@@ -21,11 +20,17 @@
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+            android:elevation="@dimen/appbar_elevation">
 
-            <include
-                layout="@layout/view_toolbar"
-                android:id="@+id/toolbar"/>
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                style="@style/Woo.CollapsedToolbarLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/expanded_toolbar_height"
+                app:titleEnabled="true">
+
+                <include layout="@layout/view_toolbar" />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
@@ -37,7 +42,7 @@
             <FrameLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <!-- container for child fragments in the nav graph -->
             <androidx.fragment.app.FragmentContainerView
@@ -47,7 +52,7 @@
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/nav_graph_main"
-                tools:layout="@layout/fragment_my_store"/>
+                tools:layout="@layout/fragment_my_store" />
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -58,16 +63,16 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.woocommerce.android.ui.main.MainBottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:menu="@menu/menu_bottom_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_bottom_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

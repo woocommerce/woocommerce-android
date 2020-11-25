@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-10-16 11:54:05+0000
+Translation-Revision-Date: 2020-11-13 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="settings_enable_product_adding_teaser_message">在推出前搶先測試全新的簡單、連結和組合商品建立功能。</string>
+    <string name="bottom_sheet_linked_products_desc">透過追加銷售和交叉銷售提高銷售額</string>
+    <string name="edit_products_button">編輯商品</string>
+    <string name="add_products_button">新增商品</string>
+    <string name="cross_sells_desc">客戶選購目前商品時於購物車推銷其他商品</string>
+    <string name="cross_sells_label">交叉銷售</string>
+    <string name="upsells_desc">在客戶檢視商品時推銷其他商品 (例如：獲利更高的商品)</string>
+    <string name="upsells_label">追加銷售</string>
+    <string name="product_detail_linked_products">連結商品</string>
+    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="my_store_stats_availability_contact_us">聯絡我們</string>
+    <string name="my_store_stats_availability_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。\n\n還需要協助嗎？ %1$s</string>
+    <string name="my_store_stats_availability_title">無法顯示你的\n商店分析資料</string>
+    <string name="login_get_link_by_email">透過電子郵件取得登入連結</string>
+    <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。</string>
+    <string name="settings_enable_product_adding_teaser_title">建立商品</string>
+    <string name="settings_preferences">喜好設定</string>
+    <string name="product_trash_error">將商品移至垃圾桶時發生錯誤</string>
+    <string name="product_trash_undo_snackbar_message">已將商品移至垃圾桶</string>
+    <string name="product_trash_yes">移至垃圾桶</string>
+    <string name="product_confirm_trash">你要將此商品移至垃圾桶嗎？</string>
+    <string name="product_trash">將商品移至垃圾桶</string>
+    <string name="product_detail_no_variations">此商品尚無子項</string>
+    <string name="product_variant_list_empty">目前只在網頁上提供新增尺寸和顏色等選項。 這些選項會顯示在網站的商品頁面上。</string>
+    <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地建立新的簡單、連結和組合商品。在應用程式設定中開啟 Beta 功能即可啟用。 尚未建立完成嗎？ 將它們儲存為草稿！</string>
+    <string name="product_adding_wip_title">從應用程式建立商品！</string>
+    <string name="product_ratings_count_zero">\u2022 沒有評分</string>
+    <string name="product_ratings_count_one">\u2022 評分過一次</string>
+    <string name="product_ratings_count">\u2022 評分過 %d 次</string>
+    <string name="product_detail_fetch_product_invalid_id_error">找不到商品</string>
+    <string name="print_shipping_label_info_step_5">如果你仍然無法從裝置列印，可以透過電子郵件傳送檔案到其他裝置上列印。</string>
+    <string name="print_shipping_label_info_step_4">你可能必須確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
+    <string name="print_shipping_label_info_step_3">你可以選擇你的裝置或安裝 (應為建議選項)</string>
+    <string name="print_shipping_label_info_step_2">選取之後，如果你從未使用此裝置列印，可能必須先選取並新增印表機。</string>
+    <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到</string>
+    <string name="print_shipping_label_format_options_title">標籤格式選項</string>
+    <string name="print_shipping_label_info_title">使用你的裝置列印</string>
+    <string name="shipping_label_paper_size_label">標籤 (4 x 6 吋)</string>
+    <string name="shipping_label_paper_size_letter">信紙 (8.5 x 11 吋)</string>
+    <string name="shipping_label_paper_size_legal">法律文件紙 (8.5 x 14 吋)</string>
+    <string name="shipping_label_preview_error">預覽郵寄標籤時發生錯誤</string>
+    <string name="shipping_label_print_info">不知道如何使用手機列印？</string>
+    <string name="shipping_label_paper_size_options_info">查看標籤版面配置和紙張大小選項</string>
+    <string name="shipping_label_print_button">列印郵寄標籤</string>
+    <string name="shipping_label_paper_size_options_title">選擇紙張大小</string>
+    <string name="shipping_label_paper_size">紙張大小</string>
+    <string name="shipping_label_print_disclaimer">若你已在包裝中使用過該標籤，重複列印和使用會違反我們的服務條款。</string>
+    <string name="shipping_label_print_error_message">如果購買標籤時發生列印錯誤，可以重新列印。</string>
+    <string name="order_begin_fulfillment">將訂單標示為完成</string>
+    <string name="orderdetail_shipping_label_wip_message">我們正努力讓你以更輕鬆的方式直接從你的裝置列印郵寄標籤！ 如果你已經使用 WooCommerce Shipping 在商店管理員中為此訂單建立了郵寄標籤，可以在此處的「訂單詳細資料」中列印。</string>
+    <string name="orderdetail_shipping_label_wip_title">從你的裝置列印郵寄標籤！</string>
+    <string name="orderdetail_shipping_label_reprint">重新列印郵寄標籤</string>
+    <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="product_detail_publish_product_draft_success">已儲存商品草稿</string>
     <string name="product_detail_publish_product_draft_error">儲存商品草稿時發生錯誤</string>
     <string name="product_publish_draft_dialog_title">正在儲存草稿</string>
@@ -18,7 +71,9 @@ Language: zh_TW
     <string name="continue_with_wpcom">繼續使用 WordPress.com</string>
     <string name="continue_with_google_terms_of_service_text">如果你繼續使用 Google 操作且尚未擁有 WordPress.com 帳號，即表示你正在建立帳號，並同意我們的%1$s服務條款%2$s。</string>
     <string name="continue_terms_of_service_text">繼續操作即代表你同意我們的%1$s服務條款%2$s。</string>
+    <string name="signup_confirmation_magic_link_message">我們會透過電子郵件傳送註冊連結給你，使用此連結即可建立新的 WordPress.com 帳號。</string>
     <string name="signup_confirmation_message">我們會使用這個電子郵件地址，為你建立全新的 WordPress.com 帳號。</string>
+    <string name="signup_magic_link_message">我們已透過電子郵件傳送註冊連結給你，使用此連結即可建立新的 WordPress.com 帳號。 請使用此裝置查看電子郵件，並點選 WordPress.com 電子郵件中的連結。</string>
     <string name="sign_up_label">註冊</string>
     <string name="login_or">或</string>
     <string name="continue_site_credentials">使用商店憑證繼續</string>
@@ -28,6 +83,7 @@ Language: zh_TW
     <string name="login_done">完成</string>
     <string name="magic_link_not_seeing_email_message">沒看到電子郵件？ 請檢查你的「垃圾郵件」資料夾。</string>
     <string name="login_magic_links_sent_label">請使用此裝置查看電子郵件，並點選 WordPress.com 所傳送電子郵件中的連結。</string>
+    <string name="login_magic_links_label">我們會透過電子郵件傳送連結給你，讓你不必輸入密碼就能立刻登入。</string>
     <string name="check_email">檢查電子郵件</string>
     <string name="get_started">開始使用</string>
     <string name="enter_account_info_for_site">輸入你的 %1$s 帳號資訊。</string>
@@ -88,8 +144,6 @@ Language: zh_TW
     <string name="variation_detail_price_warning">未標示價格的商品變化項目不會顯示在你的商店中</string>
     <string name="variation_detail_update_product_success">已更新商品變化項目</string>
     <string name="grouped_product_btn_delete">刪除組合商品</string>
-    <string name="grouped_products_single">%d 件商品</string>
-    <string name="grouped_products_count">%d 件商品</string>
     <string name="grouped_products">組合商品</string>
     <string name="product_type_edit">變更商品類型</string>
     <string name="product_variation_no_price_set">未設定價格</string>
@@ -231,7 +285,6 @@ Language: zh_TW
     <string name="settings_app_theme_title">外觀</string>
     <string name="product_short_description_empty">關於產品的簡短摘要</string>
     <string name="product_short_description">簡短說明</string>
-    <string name="my_store_stats_availability_message">我們正在推出統計資料改善功能，適用於使用 WooCommerce 4.0 或安裝 WooCommerce Admin 外掛程式的商店</string>
     <string name="my_store_stats_reverted_message">我們已推出分析功能的改善項目。 請升級至 WooCommerce 4.0 以上版本或安裝 WooCommerce Admin 外掛程式，確保你可於 2020 年 9 月 1 日後繼續查看統計資料。</string>
     <string name="my_store_stats_reverted_title">升級以繼續查看統計資料</string>
     <string name="product_pricing_update_sale_price_error">優惠價格必須低於一般價格</string>
@@ -408,7 +461,6 @@ Language: zh_TW
     <string name="orderdetail_payment_paid_by_customer">顧客付款</string>
     <string name="orderdetail_payment_summary_onhold">等待透過 %s 支付的款項</string>
     <string name="orderdetail_payment_summary_completed">%1$s，付款方式：%2$s</string>
-    <string name="my_store_stats_availability_title">體驗我們改善的統計資料效能</string>
     <string name="dashboard_state_no_data">此期間沒有收益</string>
     <string name="no_thanks">不用了，謝謝</string>
     <string name="try_it_now">立即試試</string>
@@ -1020,7 +1072,6 @@ Language: zh_TW
     <string name="orderdetail_product_image_contentdesc">商品圖片</string>
     <string name="orderdetail_product_lineitem_sku">貨號：</string>
     <string name="orderdetail_product_lineitem_tax">稅金：</string>
-    <string name="orderdetail_product_lineitem_total_qty_and_price">%1$s (%2$s x %3$s)</string>
     <string name="orderdetail_email_contentdesc">傳送電子郵件給客戶</string>
     <string name="orderdetail_billing_details">帳單詳細資料</string>
     <string name="orderdetail_shipping_details">運送詳細資料</string>

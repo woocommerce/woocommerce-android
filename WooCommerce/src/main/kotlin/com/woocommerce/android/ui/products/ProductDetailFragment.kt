@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -298,9 +297,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener
             this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow &&
-            viewModel.hasChanges() &&
-            FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()
+        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow && viewModel.hasChanges()
 
         doneOrUpdateMenuItem?.let {
             it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)

@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -281,12 +280,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
+        expandMainToolbar(false, animate = true)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
+        restoreMainToolbar()
         return true
     }
 
@@ -424,11 +425,13 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
+            val wipCardTitleId = R.string.product_adding_wip_title
             val wipCardMessageId = R.string.product_wip_message_m4
+
             products_wip_card.visibility = View.VISIBLE
             products_wip_card.initView(
-                getString(R.string.product_adding_wip_title),
-                getString(wipCardMessageId),
+                title = getString(wipCardTitleId),
+                message = getString(wipCardMessageId),
                 onGiveFeedbackClick = ::onGiveFeedbackClicked,
                 onDismissClick = ::onDismissProductWIPNoticeCardClicked
             )
@@ -455,13 +458,9 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         fun hideButton() = run { addProductButton.isVisible = false }
         when (show) {
             true -> {
-                if (FeatureFlag.PRODUCT_RELEASE_M4.isEnabled()) {
-                    showButton()
-                    addProductButton.setOnClickListener {
-                        viewModel.onAddProductButtonClicked()
-                    }
-                } else {
-                    hideButton()
+                showButton()
+                addProductButton.setOnClickListener {
+                    viewModel.onAddProductButtonClicked()
                 }
             }
             else -> hideButton()
@@ -527,4 +526,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         FeatureFeedbackSettings(PRODUCTS_M3.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
+
+    override fun isScrolledToTop() = productsRecycler.computeVerticalScrollOffset() == 0
 }

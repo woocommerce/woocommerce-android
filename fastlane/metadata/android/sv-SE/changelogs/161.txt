@@ -1,5 +1,0 @@
-5.3:
-* Produkter: I Inställningar → Beta-funktioner finns det nu ett Produkter-reglage tillgängligt. Du kan också lägga till en enkel, grupperad, extern eller variabel produkt och publicera eller spara den som ett utkast.
-* Orderdetaljer: Med tillägget WooCommerce Shipping & Tax kan du nu skriva ut och begära återbetalningar för befintliga fraktetiketter.
-* Diverse förbättringar: Vi har gjort andra korrigeringar, som att förbättra hastigheten på orderskärmarna.
-

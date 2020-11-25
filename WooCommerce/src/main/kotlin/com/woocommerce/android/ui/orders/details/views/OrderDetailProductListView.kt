@@ -34,10 +34,10 @@ class OrderDetailProductListView @JvmOverloads constructor(
         productClickListener: OrderProductActionListener
     ) {
         productList_lblProduct.text = StringUtils.getQuantityString(
-            context,
-            orderItems.size,
-            R.string.orderdetail_product_multiple,
-            R.string.orderdetail_product
+            context = context,
+            quantity = orderItems.size,
+            default = R.string.orderdetail_product_multiple,
+            one = R.string.orderdetail_product
         )
 
         productList_products.apply {

@@ -1,5 +1,0 @@
-5.3 :
-* Produits : Dans Réglages → Fonctionnalités bêta, un commutateur Produits est désormais disponible. Vous pouvez ajouter un produit simple, groupé, externe ou variable et le publier ou l’enregistrer comme brouillon.
-* Détail de commande : avec l’extension WooCommerce Shipping & Tax, vous pouvez imprimer et demander le remboursement d’étiquettes d’expédition existantes.
-* Améliorations diverses : nous avons apporté d’autres correctifs, comme l’amélioration de la vitesse des écrans de commande.
-

@@ -87,7 +87,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         with(toolbar as Toolbar) {
             title = getString(R.string.order_shipment_tracking_provider_toolbar_title)
-            navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_white_24dp)
+            navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
             setNavigationOnClickListener { dismiss() }
             inflateMenu(R.menu.menu_search)
 
