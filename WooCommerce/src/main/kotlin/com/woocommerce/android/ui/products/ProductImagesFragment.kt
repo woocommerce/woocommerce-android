@@ -6,6 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -25,9 +28,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.ProductImagesUtils
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.BROWSING
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.DRAGGING
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
@@ -38,6 +40,7 @@ import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment.Companion.
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -46,7 +49,7 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import kotlinx.android.synthetic.main.fragment_product_images.*
 
 class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_product_images),
-    BackPressListener, OnGalleryImageInteractionListener {
+        OnGalleryImageInteractionListener {
     companion object {
         private const val KEY_CAPTURED_PHOTO_URI = "key_captured_photo_uri"
     }
@@ -57,9 +60,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     override val isDoneButtonVisible: Boolean
-        get() = with(viewModel.viewStateData.liveData.value) {
-            (this?.isDoneButtonVisible?.or(this.productImagesState == DRAGGING)) ?: false
-        }
+        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
+
     override val isDoneButtonEnabled: Boolean = true
     override val lastEvent: Event?
         get() = viewModel.event.value
@@ -90,6 +92,36 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
         setupViews()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        when (viewModel.viewStateData.liveData.value?.productImagesState) {
+            is Dragging -> {
+                inflater.inflate(R.menu.menu_dragging, menu)
+                setHomeIcon(R.drawable.ic_gridicons_cross_white_24dp)
+            }
+            Browsing -> {
+                super.onCreateOptionsMenu(menu, inflater)
+                setHomeIcon(R.drawable.ic_back_white_24dp)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (viewModel.viewStateData.liveData.value?.productImagesState) {
+            is Dragging -> {
+                when (item.itemId) {
+                    R.id.menu_validate -> {
+                        viewModel.onValidateButtonClicked()
+                        true
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun setupResultHandlers(viewModel: ProductImagesViewModel) {
@@ -126,13 +158,13 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 addImageButton.setText(titleRes)
             }
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
+                requireActivity().invalidateOptionsMenu()
                 when (new.productImagesState) {
-                    BROWSING -> {
+                    Browsing -> {
                         addImageButton.isEnabled = true
                         imageGallery.setDraggingState(isDragging = false)
                     }
-                    DRAGGING -> {
-                        doneButton?.isVisible = true
+                    is Dragging -> {
                         addImageButton.isEnabled = false
                         imageGallery.setDraggingState(isDragging = true)
                     }
@@ -179,7 +211,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     override fun onGalleryImageDragStarted() {
-        viewModel.onDragStarted()
+        viewModel.onGalleryImageDragStarted()
     }
 
     override fun onGalleryImageMoved(from: Int, to: Int) {
@@ -322,6 +354,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     override fun onExit() {
-        viewModel.onExit()
+        viewModel.onNavigateBackButtonClicked()
     }
 }

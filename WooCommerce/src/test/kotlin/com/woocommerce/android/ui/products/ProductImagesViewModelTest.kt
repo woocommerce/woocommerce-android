@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
 import com.woocommerce.android.util.CoroutineTestRule
@@ -63,10 +63,10 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     fun `Sets drag state when drag starts`() {
         initialize()
 
-        viewModel.onDragStarted()
+        viewModel.onGalleryImageDragStarted()
 
         observeState { state ->
-            assertThat(state.productImagesState).isEqualTo(ProductImagesState.DRAGGING)
+            assertThat(state.productImagesState is Dragging).isTrue()
         }
     }
 
@@ -79,29 +79,6 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
         observeEvents { event ->
             assertThat(event).isEqualTo(ExitWithResult(images))
-        }
-    }
-
-    @Test
-    fun `Exit dragging state on done button clicked when in dragging state`() {
-        initialize()
-
-        viewModel.onDragStarted()
-        viewModel.onDoneButtonClicked()
-
-        observeState { state ->
-            assertThat(state.productImagesState).isEqualTo(ProductImagesState.BROWSING)
-        }
-    }
-
-    @Test
-    fun `Show done button when view is in dragging state even there are no changes to the list`() {
-        initialize()
-
-        viewModel.onDragStarted()
-
-        observeState { state ->
-            assertThat(state.isDoneButtonVisible).isEqualTo(true)
         }
     }
 
@@ -172,11 +149,52 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         val twoImagesList = generateProductImagesList().subList(0, 2)
         initialize(twoImagesList)
 
-        viewModel.onDragStarted()
+        viewModel.onGalleryImageDragStarted()
         viewModel.onDeleteImageConfirmed(twoImagesList.first())
 
         observeState { state ->
             assertThat(state.isDragDropDescriptionVisible).isTrue()
+        }
+    }
+
+    @Test
+    fun `Validate drag and drop process on validation button clicked`() {
+        val images = generateProductImagesList()
+        val imageToRemove = images[3]
+        val imageToReorder = images[1]
+        initialize(images)
+
+        viewModel.onGalleryImageDragStarted()
+        viewModel.onGalleryImageMoved(
+                from = images.indexOf(imageToReorder),
+                to = 2
+        )
+        viewModel.onDeleteImageConfirmed(imageToRemove)
+        viewModel.onValidateButtonClicked()
+
+        observeState { state ->
+            assertThat(state.images).doesNotContain(imageToRemove)
+            assertThat(state.images).contains(imageToReorder, Index.atIndex(2))
+        }
+    }
+
+    @Test
+    fun `Revert to initial images when in dragging and exit button clicked`() {
+        val images = generateProductImagesList()
+        val imageToRemove = images[3]
+        val imageToReorder = images[1]
+        initialize(images)
+
+        viewModel.onGalleryImageDragStarted()
+        viewModel.onGalleryImageMoved(
+                from = images.indexOf(imageToReorder),
+                to = 2
+        )
+        viewModel.onDeleteImageConfirmed(imageToRemove)
+        viewModel.onNavigateBackButtonClicked()
+
+        observeState { state ->
+            assertThat(state.images).isEqualTo(images)
         }
     }
 

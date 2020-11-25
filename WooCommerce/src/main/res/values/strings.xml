@@ -728,6 +728,7 @@
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
+    <string name="product_images_validate_drag_and_drop">Validate</string>
 
 
     <!--
