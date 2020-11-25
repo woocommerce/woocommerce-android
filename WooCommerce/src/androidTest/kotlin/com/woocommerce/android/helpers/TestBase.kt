@@ -49,7 +49,7 @@ open class TestBase {
 }
 
 internal class UnlocalizedDateHelper : HandlebarsHelper<Any?>() {
-    @Throws(IOException::class) override fun apply(context: Any?, options: Options): Any {
+    @Throws (IOException::class) override fun apply(context: Any?, options: Options): Any {
         val format: String = options.hash("format", null)
         val offset: String = options.hash("offset", null)
         val timezone: String = options.hash("timezone", null)
