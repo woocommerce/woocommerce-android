@@ -67,13 +67,6 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
-            android:id="@+id/action_orderDetailFragment_to_orderProductListFragment"
-            app:destination="@id/orderProductListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
             android:id="@+id/action_orderDetailFragment_to_addOrderShipmentTrackingFragment"
             app:destination="@id/addOrderShipmentTrackingFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
@@ -134,18 +127,6 @@
         android:id="@+id/addOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment"
         tools:layout="@layout/fragment_add_order_note">
-        <argument
-            android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="orderNumber"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/orderProductListFragment"
-        android:name="com.woocommerce.android.ui.orders.OrderProductListFragment">
         <argument
             android:name="orderId"
             android:defaultValue='""'

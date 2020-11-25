@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.orders.OrdersModule.AddOrderShipmentTrackingFr
 import com.woocommerce.android.ui.orders.OrdersModule.AddOrderTrackingProviderListFragmentModule
 import com.woocommerce.android.ui.orders.OrdersModule.OrderDetailFragmentModule
 import com.woocommerce.android.ui.orders.OrdersModule.OrderListFragmentModule
-import com.woocommerce.android.ui.orders.OrdersModule.OrderProductListFragmentModule
 import com.woocommerce.android.ui.orders.details.OrderDetailFragment
 import com.woocommerce.android.ui.orders.details.OrderDetailModule
 import com.woocommerce.android.ui.orders.list.OrderListFragment
@@ -19,7 +18,6 @@ import dagger.android.ContributesAndroidInjector
 @Module(includes = [
     OrderListFragmentModule::class,
     OrderDetailFragmentModule::class,
-    OrderProductListFragmentModule::class,
     AddOrderNoteFragmentModule::class,
     AddOrderShipmentTrackingFragmentModule::class,
     AddOrderTrackingProviderListFragmentModule::class
@@ -37,13 +35,6 @@ object OrdersModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [OrderDetailModule::class])
         abstract fun orderDetailFragment(): OrderDetailFragment
-    }
-
-    @Module
-    abstract class OrderProductListFragmentModule {
-        @FragmentScope
-        @ContributesAndroidInjector(modules = [OrderProductListModule::class])
-        abstract fun orderProductListFragment(): OrderProductListFragment
     }
 
     @Module
