@@ -173,7 +173,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_DETAIL_ORDER_STATUS_EDIT_BUTTON_TAPPED,
         ORDER_DETAIL_PRODUCT_TAPPED,
         ORDER_DETAIL_PRODUCT_DETAIL_BUTTON_TAPPED,
-        ORDER_DETAIL_TRACK_PACKAGE_BUTTON_TAPPED,
         ORDER_TRACKING_LOADED,
         ORDER_DETAIL_TRACKING_DELETE_BUTTON_TAPPED,
         ORDER_DETAIL_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
@@ -199,12 +198,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_NOTE_ADD_FAILED,
         ORDER_NOTE_ADD_SUCCESS,
 
-        // -- Order Fulfillment
-        SNACK_ORDER_MARKED_COMPLETE_UNDO_BUTTON_TAPPED,
-        ORDER_FULFILLMENT_MARK_ORDER_COMPLETE_BUTTON_TAPPED,
-        ORDER_FULFILLMENT_TRACKING_ADD_TRACKING_BUTTON_TAPPED,
-        ORDER_FULFILLMENT_TRACKING_DELETE_BUTTON_TAPPED,
-
         // -- Order Shipment Tracking
         ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED,
         ORDER_TRACKING_ADD,
@@ -212,7 +205,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ORDER_TRACKING_ADD_SUCCESS,
         ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED,
         ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED,
-        ORDER_TRACKING_DELETE,
         ORDER_TRACKING_DELETE_SUCCESS,
         ORDER_TRACKING_DELETE_FAILED,
         ORDER_TRACKING_PROVIDERS_LOADED,
@@ -593,7 +585,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
         const val KEY_OPTION = "option"
-        const val KEY_SOURCE = "source"
         const val KEY_URL = "url"
         const val KEY_HAS_CONNECTED_STORES = "has_connected_stores"
         const val KEY_LAST_KNOWN_VERSION_CODE = "last_known_version_code"
@@ -615,7 +606,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
         const val VALUE_ORDER_DETAIL = "order_detail"
-        const val VALUE_ORDER_FULFILL = "order_fulfill"
 
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
