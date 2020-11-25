@@ -98,11 +98,11 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is Dragging -> {
                 inflater.inflate(R.menu.menu_dragging, menu)
-                setHomeIcon(R.drawable.ic_gridicons_cross_white_24dp)
+                setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
             }
             Browsing -> {
                 super.onCreateOptionsMenu(menu, inflater)
-                setHomeIcon(R.drawable.ic_back_white_24dp)
+                setHomeIcon(R.drawable.ic_back_24dp)
             }
         }
     }
