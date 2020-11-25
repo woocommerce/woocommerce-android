@@ -22,11 +22,11 @@
         "jsonBody": {
             "fields": ["period", "orders", "products", "coupons", "coupon_discount", "total_sales", "total_tax", "total_shipping", "total_shipping_tax", "total_refund", "total_tax_refund", "total_shipping_refund", "total_shipping_tax_refund", "currency", "gross_sales", "net_sales", "avg_order_value", "avg_products_per_order"],
             "data": [
-                ["{{now offset='-4 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 4000, 0, 0, 0],
-                ["{{now offset='-3 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 8400, 0, 0, 0],
-                ["{{now offset='-2 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 12750, 0, 0, 0],
-                ["{{now offset='-1 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 17800, 0, 0, 0],
-                ["{{now format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 20240, 0, 0, 0]
+                ["{{fnow offset='-4 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 4000, 0, 0, 0],
+                ["{{fnow offset='-3 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 8400, 0, 0, 0],
+                ["{{fnow offset='-2 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 12750, 0, 0, 0],
+                ["{{fnow offset='-1 years' format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 17800, 0, 0, 0],
+                ["{{fnow format='yyyy'}}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "USD", 20240, 0, 0, 0]
             ]
         }
     }

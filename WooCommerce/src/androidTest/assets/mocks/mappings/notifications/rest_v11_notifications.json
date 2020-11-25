@@ -77,7 +77,7 @@
                 "subtype": "store_review",
                 "read": 1,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-4 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-4 days' format=customformat}}",
                 "icon": "https:\/\/0.gravatar.com\/avatar\/01164960f041ff6fe4dff330968194a4?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/black-coral-shades\/comment-page-1\/#comment-6164",
                 "subject": [{
@@ -182,7 +182,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{now format=customformat}}",
+                "timestamp": "{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow format=customformat}}",
                 "icon": "https:\/\/0.gravatar.com\/avatar\/c1204ffc1a5bc3086f26cd3b23389e16?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/rose-gold-shades\/comment-page-1\/#comment-6163",
                 "subject": [{
@@ -287,7 +287,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-1 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-1 days' format=customformat}}",
                 "icon": "https:\/\/2.gravatar.com\/avatar\/54d8a49ef3170cf44d2bdc52133d52cf?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/rose-gold-shades\/comment-page-1\/#comment-6162",
                 "subject": [{
@@ -392,7 +392,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-1 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-1 days' format=customformat}}",
                 "icon": "https:\/\/2.gravatar.com\/avatar\/eb0ecee9cd38f0e1feb4aa66a515b957?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/colorado-shades\/comment-page-1\/#comment-6161",
                 "subject": [{
@@ -497,7 +497,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-5 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-5 days' format=customformat}}",
                 "icon": "https:\/\/1.gravatar.com\/avatar\/7c07b96537fbe2512c7a08fce2f431e4?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/black-coral-shades\/comment-page-1\/#comment-6156",
                 "subject": [{
@@ -607,7 +607,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-7 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-7 days' format=customformat}}",
                 "icon": "https:\/\/2.gravatar.com\/avatar\/e4ba34574a801931a8fc2913a12bf6f0?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/colorado-shades\/comment-page-1\/#comment-6155",
                 "subject": [{
@@ -717,7 +717,7 @@
                 "subtype": "store_review",
                 "read": 0,
                 "noticon": "\uf300",
-                "timestamp": "{{now offset='-7 days' format=customformat}}",
+                "timestamp": "{{fnow offset='-7 days' format=customformat}}",
                 "icon": "https:\/\/1.gravatar.com\/avatar\/1683ce7f573f1af1584ea5b33bbf0e19?s=256&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D256&r=G",
                 "url": "https:\/\/automatticwidgets.com\/product\/rose-gold-shades\/comment-page-1\/#comment-6154",
                 "subject": [{

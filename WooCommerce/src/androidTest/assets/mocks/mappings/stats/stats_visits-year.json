@@ -20,18 +20,18 @@
     "response": {
         "status": 200,
         "jsonBody": {
-            "date": "{{now format='yyyy-MM-dd'}}",
+            "date": "{{fnow format='yyyy-MM-dd'}}",
             "unit": "year",
             "fields": [
                 "period", 
                 "visitors"
             ],
             "data": [
-                ["{{now offset='-4 years' format='yyyy-MM-dd'}}", 500],
-                ["{{now offset='-3 years' format='yyyy-MM-dd'}}", 900],
-                ["{{now offset='-2 years' format='yyyy-MM-dd'}}", 1200],
-                ["{{now offset='-1 years' format='yyyy-MM-dd'}}", 1350],
-                ["{{now format='yyyy-MM-dd'}}", 1299]
+                ["{{fnow offset='-4 years' format='yyyy-MM-dd'}}", 500],
+                ["{{fnow offset='-3 years' format='yyyy-MM-dd'}}", 900],
+                ["{{fnow offset='-2 years' format='yyyy-MM-dd'}}", 1200],
+                ["{{fnow offset='-1 years' format='yyyy-MM-dd'}}", 1350],
+                ["{{fnow format='yyyy-MM-dd'}}", 1299]
             ]
         }
     }

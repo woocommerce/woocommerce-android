@@ -17,7 +17,7 @@
     "response": {
         "status": 200,
         "jsonBody": {
-            "date": "{{now format='yyyy-MM-dd'}}",
+            "date": "{{fnow format='yyyy-MM-dd'}}",
             "unit": "year",
             "limit": "3",
             "data": [{
