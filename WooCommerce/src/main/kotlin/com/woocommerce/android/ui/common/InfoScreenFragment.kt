@@ -58,8 +58,8 @@ class InfoScreenFragment : Fragment() {
         }
     }
 
-    private fun showTextOrHide(@StringRes stringRes: Int, view: TextView) =
-        if (stringRes != 0) view.text = getString(stringRes) else view.hide()
+    private fun TextView.showTextOrHide(@StringRes stringRes: Int) =
+        if (stringRes != 0) this.text = getString(stringRes) else hide()
 
     sealed class InfoScreenLinkAction : Serializable {
         object LearnMoreAboutShippingLabels : InfoScreenLinkAction() {
