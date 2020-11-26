@@ -162,7 +162,8 @@
         <attr name="caption" format="string"/>
         <attr name="details" format="string"/>
         <attr name="icon" format="reference"/>
-        <attr name="button_visible" format="boolean"/>
+        <attr name="continue_button_visible" format="boolean"/>
+        <attr name="edit_button_visible" format="boolean"/>
         <attr name="android:enabled"/>
     </declare-styleable>
 </resources>

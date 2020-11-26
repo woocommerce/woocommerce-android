@@ -6,25 +6,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+        android:id="@+id/originStep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:button_visible="true"
+        app:continue_button_visible="false"
+        app:edit_button_visible="true"
         app:caption="Ship from"
         app:details="Some address\nSecond line\nThird"
         app:icon="@drawable/ic_gridicons_shipping" />
 
     <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+        android:id="@+id/shippingStep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:enabled="false"
+        android:enabled="true"
+        app:continue_button_visible="true"
+        app:edit_button_visible="false"
         app:caption="Ship to"
         app:details="Some address\nSecond line\nThird"
         app:icon="@drawable/ic_gridicons_house" />
 
     <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+        android:id="@+id/packagingStep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
+        app:continue_button_visible="false"
+        app:edit_button_visible="false"
         app:caption="Package details"
         app:details="Select the type of packaging you’d like to ship your items in"
         app:icon="@drawable/ic_product" />

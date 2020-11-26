@@ -26,8 +26,12 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             val detailsText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_details)
             val iconRes = typedArray.getResourceId(R.styleable.ShippingLabelCreationStepView_icon, 0)
             val isEnabled = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_android_enabled, true)
-            val isContinueButtonVisible = typedArray.getBoolean(
-                R.styleable.ShippingLabelCreationStepView_button_visible,
+            val isContinueVisible = typedArray.getBoolean(
+                R.styleable.ShippingLabelCreationStepView_continue_button_visible,
+                false
+            )
+            val isEditVisible = typedArray.getBoolean(
+                R.styleable.ShippingLabelCreationStepView_edit_button_visible,
                 false
             )
             if (captionText.isNullOrEmpty() || detailsText.isNullOrEmpty() || iconRes == 0) {
@@ -37,7 +41,8 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             details = detailsText
             icon = iconRes
             isViewEnabled = isEnabled
-            isButtonVisible = isContinueButtonVisible
+            isContinueButtonVisible = isContinueVisible
+            isEditButtonVisible = isContinueVisible
         }
     }
 
@@ -51,10 +56,16 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             }
         }
 
-    var isButtonVisible: Boolean = false
+    var isContinueButtonVisible: Boolean = false
         set(value) {
             field = value
             continueButton.isVisible = value
+        }
+
+    var isEditButtonVisible: Boolean = false
+        set(value) {
+            field = value
+            editButton.isVisible = value
         }
 
     var caption: String = ""
@@ -77,7 +88,13 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             }
         }
 
-    var setOnButtonClickListener: (() -> Unit) = {}
+    var continueButtonClickListener: (() -> Unit) = {}
+        set(value) {
+            field = value
+            continueButton.setOnClickListener { value() }
+        }
+
+    var editButtonClickListener: (() -> Unit) = {}
         set(value) {
             field = value
             continueButton.setOnClickListener { value() }

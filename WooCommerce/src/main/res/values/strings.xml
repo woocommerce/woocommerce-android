@@ -27,6 +27,7 @@
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
+    <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
     <string name="subtotal">Subtotal</string>
