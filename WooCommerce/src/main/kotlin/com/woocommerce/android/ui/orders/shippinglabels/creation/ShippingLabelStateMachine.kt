@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.util.Log
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.Event.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.SideEffect.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFlow.State.*
@@ -30,7 +31,7 @@ class ShippingLabelCreationFlow @Inject constructor() {
 
         state<DataLoading> {
             on<DataLoaded> {
-                transitionTo(OriginAddressValidation, ValidateOriginAddress)
+                transitionTo(OriginAddressValidation(), ValidateOriginAddress)
             }
             on<DataLoadingFailed> {
                 transitionTo(DataLoadingError, ShowDataLoadingError)
@@ -69,7 +70,7 @@ class ShippingLabelCreationFlow @Inject constructor() {
 
         state<ShippingAddressValidation> {
             on<ShippingAddressValidated> {
-                transitionTo(PackageSelection, ShowPackagingDetails)
+                transitionTo(PackageSelectionStep, UpdateViewState)
             }
             on<ShippingAddressInvalid> {
                 transitionTo(ShippingAddressSuggestions, ShowShippingAddressSuggestions)
@@ -97,7 +98,16 @@ class ShippingLabelCreationFlow @Inject constructor() {
             }
         }
 
-        state<PackageSelection> {
+        state<PackageSelectionStep> {
+            on<ContinueToPackagingDetailsTapped> {
+                transitionTo(PackageDetailsSelection, ShowPackagingDetails)
+            }
+            on<EditOriginAddressTapped> {
+                transitionTo(OriginAddressEditing, OpenOriginAddressEditor)
+            }
+            on<EditShippingAddressTapped> {
+                transitionTo(ShippingAddressEditing, OpenShippingAddressEditor)
+            }
         }
 
         onTransition { transition ->
@@ -129,20 +139,21 @@ class ShippingLabelCreationFlow @Inject constructor() {
         object DataLoading : State()
         object DataLoadingError : State()
 
-        object OriginAddressValidation : State()
+        data class OriginAddressValidation(val originAddress: Address) : State()
         object OriginAddressSuggestions : State()
         object OriginAddressEditing : State()
 
-        object ShippingAddressValidation : State()
+        data class ShippingAddressValidation(val originAddress: Address) : State()
         object ShippingAddressSuggestions : State()
         object ShippingAddressEditing : State()
 
-        object PackageSelection : State()
+        object PackageSelectionStep : State()
+        object PackageDetailsSelection : State()
     }
 
     sealed class Event {
         object FlowStarted : Event()
-        object DataLoaded : Event()
+        data class DataLoaded(val order: Order) : Event()
         object DataLoadingFailed : Event()
 
         object OriginAddressValidated : Event()
@@ -150,6 +161,7 @@ class ShippingLabelCreationFlow @Inject constructor() {
         object OriginAddressInvalid : Event()
         object OriginAddressUsedAsIs : Event()
         object OriginAddressUpdated : Event()
+        object EditOriginAddressTapped : Event()
         object SuggestedOriginAddressSelected : Event()
         object SuggestedOriginAddressRejected : Event()
 
@@ -158,8 +170,11 @@ class ShippingLabelCreationFlow @Inject constructor() {
         object ShippingAddressInvalid : Event()
         object ShippingAddressUsedAsIs : Event()
         object ShippingAddressUpdated : Event()
+        object EditShippingAddressTapped : Event()
         object SuggestedShippingAddressSelected : Event()
         object SuggestedShippingAddressRejected : Event()
+
+        object ContinueToPackagingDetailsTapped : Event()
     }
 
     sealed class SideEffect {
@@ -176,5 +191,6 @@ class ShippingLabelCreationFlow @Inject constructor() {
         object OpenShippingAddressEditor : SideEffect()
 
         object ShowPackagingDetails : SideEffect()
+        data class UpdateViewState(val data: List<Data>) : SideEffect()
     }
 }
