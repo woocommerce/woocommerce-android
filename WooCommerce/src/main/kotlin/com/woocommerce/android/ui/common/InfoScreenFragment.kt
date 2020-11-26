@@ -41,9 +41,9 @@ class InfoScreenFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        showTextOrHide(navArgs.heading, info_heading)
-        showTextOrHide(navArgs.message, info_message)
-        showTextOrHide(navArgs.linkTitle, info_link)
+        info_heading.showTextOrHide(navArgs.heading)
+        info_message.showTextOrHide(navArgs.message)
+        info_link.showTextOrHide(navArgs.linkTitle)
 
         if (navArgs.imageResource != 0) {
             info_image.setImageDrawable(ContextCompat.getDrawable(requireContext(), navArgs.imageResource))
