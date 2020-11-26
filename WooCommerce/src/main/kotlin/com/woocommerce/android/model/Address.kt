@@ -79,4 +79,16 @@ data class Address(
             phone.isNotEmpty() || email.isNotEmpty() ||
             state.isNotEmpty() || city.isNotEmpty()
     }
+
+    override fun toString(): String {
+        return StringBuilder()
+            .appendWithIfNotEmpty("$firstName $lastName")
+            .appendWithIfNotEmpty(this.address1)
+            .appendWithIfNotEmpty(this.address2, "\n")
+            .appendWithIfNotEmpty(this.city, "\n")
+            .appendWithIfNotEmpty(this.state)
+            .appendWithIfNotEmpty(this.postcode)
+            .appendWithIfNotEmpty(this.country)
+            .toString()
+    }
 }
