@@ -347,6 +347,14 @@
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
 
     <!--
+        Create shipping labels
+    -->
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
+    <string name="shipping_label_more_information_link">Learn more</string>
+
+    <!--
         Refunds
     -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
