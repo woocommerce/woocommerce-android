@@ -1,7 +1,7 @@
 {
     "request": {
         "method": "GET",
-        "urlPattern": "/is-available/email(/)?($|\\?.*)"
+        "urlPath": "/is-available/email/"
     },
     "response": {
         "status": 200,

@@ -1,6 +1,6 @@
 {
     "request": {
-        "urlPattern": "/rest/v1.1/me/sites(\\?|/|$).*",
+        "urlPath": "/rest/v1.1/me/sites/",
         "method": "GET"
     },
     "response": {
