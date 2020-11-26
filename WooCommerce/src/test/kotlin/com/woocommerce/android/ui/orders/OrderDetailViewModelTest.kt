@@ -86,7 +86,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
         isCreateShippingLabelButtonVisible = false,
-        isProductListVisible = true
+        isProductListVisible = true,
+        areShippingLabelsVisible = false
     )
 
     private val mixedProducts = listOf(
