@@ -26,42 +26,77 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             val detailsText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_details)
             val iconRes = typedArray.getResourceId(R.styleable.ShippingLabelCreationStepView_icon, 0)
             val isEnabled = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_android_enabled, true)
-            val isButtonVisible = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_button_visible, false)
+            val isContinueButtonVisible = typedArray.getBoolean(
+                R.styleable.ShippingLabelCreationStepView_button_visible,
+                false
+            )
             if (captionText.isNullOrEmpty() || detailsText.isNullOrEmpty() || iconRes == 0) {
                 throw IllegalArgumentException("ShippingLabelCreationStepView must have caption, details and icon")
             }
-            caption?.text = captionText
-            details?.text = detailsText
-            this.icon?.setImageDrawable(ContextCompat.getDrawable(context, iconRes))
-            if (!isEnabled) {
+            caption = captionText
+            details = detailsText
+            icon = iconRes
+            isViewEnabled = isEnabled
+            isButtonVisible = isContinueButtonVisible
+        }
+    }
+
+    var isViewEnabled: Boolean = true
+        set(value) {
+            field = value
+            if (!value) {
                 setForegroundColor(ContextCompat.getColor(context, R.color.color_on_surface_disabled))
             } else {
                 resetColors()
             }
-            continueButton.isVisible = isButtonVisible
         }
-    }
 
-    fun update(caption: String? = null, details: String? = null, @DrawableRes icon: Int? = null) {
-        caption?.let { this.caption?.text = it }
-        details?.let { this.details?.text = it }
-        icon?.let { this.icon?.setImageDrawable(ContextCompat.getDrawable(context, it)) }
-    }
+    var isButtonVisible: Boolean = false
+        set(value) {
+            field = value
+            continueButton.isVisible = value
+        }
+
+    var caption: String = ""
+        set(value) {
+            field = value
+            captionTextView?.text = value
+        }
+
+    var details: String = ""
+        set(value) {
+            field = value
+            detailsTextView?.text = value
+        }
+
+    @DrawableRes var icon: Int = 0
+        set(value) {
+            field = value
+            if (icon != 0) {
+                this.iconImageView?.setImageDrawable(ContextCompat.getDrawable(context, value))
+            }
+        }
+
+    var setOnButtonClickListener: (() -> Unit) = {}
+        set(value) {
+            field = value
+            continueButton.setOnClickListener { value() }
+        }
 
     private fun setForegroundColor(@ColorInt color: Int) {
-        details?.tag = details?.currentTextColor
-        details?.setTextColor(color)
+        detailsTextView?.tag = detailsTextView?.currentTextColor
+        detailsTextView?.setTextColor(color)
 
-        caption?.tag = caption?.currentTextColor
-        caption?.setTextColor(color)
+        captionTextView?.tag = captionTextView?.currentTextColor
+        captionTextView?.setTextColor(color)
 
-        icon?.setColorFilter(color, SRC_IN)
+        iconImageView?.setColorFilter(color, SRC_IN)
     }
 
     private fun resetColors() {
-        (details?.tag as? Int)?.let { details?.setTextColor(it) }
-        (caption?.tag as? Int)?.let { caption?.setTextColor(it) }
-        icon?.clearColorFilter()
+        (detailsTextView?.tag as? Int)?.let { detailsTextView?.setTextColor(it) }
+        (captionTextView?.tag as? Int)?.let { captionTextView?.setTextColor(it) }
+        iconImageView?.clearColorFilter()
     }
 }
 
