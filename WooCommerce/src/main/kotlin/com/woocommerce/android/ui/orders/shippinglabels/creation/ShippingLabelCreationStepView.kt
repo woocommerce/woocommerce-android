@@ -26,11 +26,15 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             val detailsText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_details)
             val iconRes = typedArray.getResourceId(R.styleable.ShippingLabelCreationStepView_icon, 0)
             val isEnabled = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_android_enabled, true)
-            val isContinueVisible = typedArray.getBoolean(
+            val dividerVisible = typedArray.getBoolean(
+                R.styleable.ShippingLabelCreationStepView_divider_visible,
+                true
+            )
+            val continueButtonVisible = typedArray.getBoolean(
                 R.styleable.ShippingLabelCreationStepView_continue_button_visible,
                 false
             )
-            val isEditVisible = typedArray.getBoolean(
+            val editButtonVisible = typedArray.getBoolean(
                 R.styleable.ShippingLabelCreationStepView_edit_button_visible,
                 false
             )
@@ -41,8 +45,9 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             details = detailsText
             icon = iconRes
             isViewEnabled = isEnabled
-            isContinueButtonVisible = isContinueVisible
-            isEditButtonVisible = isContinueVisible
+            isContinueButtonVisible = continueButtonVisible
+            isEditButtonVisible = editButtonVisible
+            isDividerVisible = dividerVisible
         }
     }
 
@@ -54,6 +59,12 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             } else {
                 resetColors()
             }
+        }
+
+    var isDividerVisible: Boolean = false
+        set(value) {
+            field = value
+            divider.isVisible = value
         }
 
     var isContinueButtonVisible: Boolean = false
@@ -97,7 +108,7 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
     var editButtonClickListener: (() -> Unit) = {}
         set(value) {
             field = value
-            continueButton.setOnClickListener { value() }
+            editButton.setOnClickListener { value() }
         }
 
     private fun setForegroundColor(@ColorInt color: Int) {
