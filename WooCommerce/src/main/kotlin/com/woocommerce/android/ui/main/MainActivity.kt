@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -54,6 +55,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -122,6 +124,9 @@ class MainActivity : AppUpgradeActivity(),
     private var isMainThemeApplied = false
     private var isToolbarExpanded = true
     private var restoreToolbarHeight = 0
+
+    private val toolbarEnabledBehavior = AppBarLayout.Behavior()
+    private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -479,6 +484,13 @@ class MainActivity : AppUpgradeActivity(),
             toolbar.title = title
         }
         collapsing_toolbar.isTitleEnabled = enable
+
+        val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
+        params.behavior = if (enable) {
+            toolbarEnabledBehavior
+        } else {
+            toolbarDisabledBehavior
+        }
     }
 
     /**
@@ -490,7 +502,6 @@ class MainActivity : AppUpgradeActivity(),
      * @param isAtRoot The value that tells if root fragment is in the current destination
      * @param destination The object for the next navigation destination
      */
-
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()

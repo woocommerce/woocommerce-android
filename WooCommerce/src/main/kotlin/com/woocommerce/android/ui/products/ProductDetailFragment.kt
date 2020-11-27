@@ -48,11 +48,11 @@ import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 
-class ProductDetailFragment : BaseProductFragment(), OnGalleryImageClickListener, NavigationResult {
+class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
