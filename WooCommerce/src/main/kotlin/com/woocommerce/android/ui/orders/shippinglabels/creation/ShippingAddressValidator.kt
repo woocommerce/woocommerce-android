@@ -14,7 +14,7 @@ class ShippingAddressValidator @Inject constructor(
 
     sealed class ValidationResult {
         object Valid : ValidationResult()
-        object Invalid : ValidationResult()
+        data class Invalid(val suggested: Address) : ValidationResult()
         object NotRecognized : ValidationResult()
     }
 }
