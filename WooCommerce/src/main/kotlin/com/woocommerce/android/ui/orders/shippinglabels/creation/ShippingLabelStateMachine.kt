@@ -7,6 +7,13 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelSt
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Error.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CARRIER
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CUSTOMS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.DONE
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.ORIGIN_ADDRESS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PACKAGING
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PAYMENT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.SHIPPING_ADDRESS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +39,7 @@ class ShippingLabelStateMachine @Inject constructor() {
 
         state<DataLoading> {
             on<DataLoaded> { event ->
-                val data = Data(event.originAddress, event.shippingAddress)
+                val data = Data(event.originAddress, event.shippingAddress, setOf(ORIGIN_ADDRESS))
                 transitionTo(WaitingForUser(data), UpdateViewState(data))
             }
             on<DataLoadingFailed> {
@@ -42,99 +49,151 @@ class ShippingLabelStateMachine @Inject constructor() {
 
         state<WaitingForUser> {
             on<OriginAddressValidationStarted> {
-                transitionTo(OriginAddressValidation(data), ValidateOriginAddress(data.originAddress))
+                transitionTo(OriginAddressValidation(data), ValidateAddress(data.originAddress))
             }
             on<ShippingAddressValidationStarted> {
-                transitionTo(ShippingAddressValidation(data), ValidateShippingAddress(data.shippingAddress))
+                transitionTo(ShippingAddressValidation(data), ValidateAddress(data.shippingAddress))
             }
             on<PackageSelectionStarted> {
-                transitionTo(PackageSelection(data), ShowPackagingDetails)
+                transitionTo(PackageSelection(data), ShowPackageOptions)
             }
-            on<EditOriginAddressTapped> {
-                transitionTo(OriginAddressEditing(data), OpenOriginAddressEditor(data.originAddress))
+            on<CustomsDeclarationStarted> {
+                transitionTo(CustomsDeclaration(data), ShowCustomsForm)
             }
-            on<EditShippingAddressTapped> {
-                transitionTo(ShippingAddressEditing(data), OpenShippingAddressEditor(data.shippingAddress))
+            on<ShippingCarrierSelectionStarted> {
+                transitionTo(ShippingCarrierSelection(data), ShowCarrierOptions)
+            }
+            on<PaymentSelectionStarted> {
+                transitionTo(PaymentSelection(data), ShowPaymentDetails)
+            }
+            on<EditOriginAddressRequested> {
+                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
+            }
+            on<EditShippingAddressRequested> {
+                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
+            }
+            on<EditPackagingRequested> {
+                transitionTo(PackageSelection(data), ShowPackageOptions)
+            }
+            on<EditCustomsRequested> {
+                transitionTo(CustomsDeclaration(data), ShowCustomsForm)
+            }
+            on<EditShippingCarrierRequested> {
+                transitionTo(ShippingCarrierSelection(data), ShowCarrierOptions)
+            }
+            on<EditPaymentRequested> {
+                transitionTo(PaymentSelection(data), ShowPaymentDetails)
             }
         }
 
         state<OriginAddressValidation> {
-            on<OriginAddressValidated> { event ->
-                val newData = data.copy(originAddress = event.address, isOriginAddressValidated = true)
+            on<AddressValidated> { event ->
+                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
-            on<OriginAddressInvalid> {
-                transitionTo(OriginAddressSuggestions(data), ShowOriginAddressSuggestions)
+            on<AddressInvalid> { event ->
+                transitionTo(
+                    OriginAddressSuggestion(data),
+                    ShowAddressSuggestion(data.originAddress, event.suggested)
+                )
             }
-            on<OriginAddressNotRecognized> {
-                transitionTo(OriginAddressEditing(data), OpenOriginAddressEditor(data.originAddress))
+            on<AddressNotRecognized> {
+                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
             }
         }
 
-        state<OriginAddressSuggestions> {
-            on<SuggestedOriginAddressSelected> { event ->
-                val newData = data.copy(originAddress = event.address, isOriginAddressValidated = true)
+        state<OriginAddressSuggestion> {
+            on<SuggestedAddressSelected> { event ->
+                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
-            on<SuggestedOriginAddressRejected> {
-                transitionTo(OriginAddressEditing(data), OpenOriginAddressEditor(data.originAddress))
+            on<EditOriginAddressRequested> {
+                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
             }
         }
 
         state<OriginAddressEditing> {
-            on<OriginAddressUpdated> { event ->
-                transitionTo(OriginAddressValidation(data), ValidateOriginAddress(event.address))
+            on<AddressEditFinished> { event ->
+                transitionTo(OriginAddressValidation(data), ValidateAddress(event.address))
             }
-            on<OriginAddressUsedAsIs> { event ->
-                val newData = data.copy(originAddress = event.address, isOriginAddressValidated = true)
+            on<AddressUsedAsIs> { event ->
+                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
         }
 
         state<ShippingAddressValidation> {
-            on<ShippingAddressValidated> { event ->
-                val newData = data.copy(shippingAddress = event.address, isShippingAddressValidated = true)
+            on<AddressValidated> { event ->
+                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
-            on<ShippingAddressInvalid> {
-                transitionTo(ShippingAddressSuggestions(data), ShowShippingAddressSuggestions)
+            on<AddressInvalid> { event ->
+                transitionTo(
+                    ShippingAddressSuggestion(data),
+                    ShowAddressSuggestion(data.originAddress, event.suggested)
+                )
             }
-            on<ShippingAddressNotRecognized> {
-                transitionTo(ShippingAddressEditing(data), OpenShippingAddressEditor(data.shippingAddress))
+            on<AddressNotRecognized> {
+                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
             }
         }
 
-        state<OriginAddressSuggestions> {
-            on<SuggestedShippingAddressSelected> { event ->
-                val newData = data.copy(shippingAddress = event.address, isShippingAddressValidated = true)
+        state<OriginAddressSuggestion> {
+            on<SuggestedAddressSelected> { event ->
+                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
-            on<SuggestedShippingAddressRejected> {
-                transitionTo(ShippingAddressEditing(data), OpenShippingAddressEditor(data.shippingAddress))
+            on<EditShippingAddressRequested> {
+                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
             }
         }
 
         state<ShippingAddressEditing> {
-            on<ShippingAddressUpdated> { event ->
-                transitionTo(ShippingAddressValidation(data), ValidateShippingAddress(event.address))
+            on<AddressEditFinished> { event ->
+                transitionTo(ShippingAddressValidation(data), ValidateAddress(event.address))
             }
-            on<ShippingAddressUsedAsIs> { event ->
-                val newData = data.copy(shippingAddress = event.address, isShippingAddressValidated = true)
+            on<AddressUsedAsIs> { event ->
+                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
                 transitionTo(WaitingForUser(newData), UpdateViewState(newData))
             }
         }
 
         state<PackageSelection> {
+            on<PackagesSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + CUSTOMS)
+                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            }
+        }
+
+        state<CustomsDeclaration> {
+            on<CustomsFormFilledOut> {
+                val newData = data.copy(stepsDone = data.stepsDone + CARRIER)
+                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            }
+        }
+
+        state<ShippingCarrierSelection> {
+            on<ShippingCarrierSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + PAYMENT)
+                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            }
+        }
+
+        state<PaymentSelection> {
+            on<PaymentSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + DONE)
+                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            }
         }
 
         onTransition { transition ->
             if (transition is StateMachine.Transition.Valid) {
-                Log.d("onko: State", transition.toState.toString())
+                Log.d(TAG, transition.toState.toString())
                 transition.sideEffect?.let { sideEffect ->
                     _effects.value = sideEffect
                 }
             } else {
-                Log.e(TAG,"Invalid event ${transition.event} passed from ${transition.fromState}")
+                throw InvalidStateException("Unexpected event ${transition.event} passed from ${transition.fromState}")
             }
         }
     }
@@ -144,15 +203,19 @@ class ShippingLabelStateMachine @Inject constructor() {
     }
 
     fun handleEvent(event: Event) {
+        Log.d(TAG, event.toString())
         stateMachine.transition(event)
     }
 
     data class Data(
         val originAddress: Address,
         val shippingAddress: Address,
-        val isOriginAddressValidated: Boolean = false,
-        val isShippingAddressValidated: Boolean = false
+        val stepsDone: Set<FlowStep>
     )
+
+    enum class FlowStep {
+        ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT, DONE
+    }
 
     sealed class Error {
         object DataLoadingError : Error()
@@ -165,14 +228,17 @@ class ShippingLabelStateMachine @Inject constructor() {
         data class WaitingForUser(val data: Data) : State()
 
         data class OriginAddressValidation(val data: Data) : State()
-        data class OriginAddressSuggestions(val data: Data) : State()
+        data class OriginAddressSuggestion(val data: Data) : State()
         data class OriginAddressEditing(val data: Data) : State()
 
         data class ShippingAddressValidation(val data: Data) : State()
-        data class ShippingAddressSuggestions(val data: Data) : State()
+        data class ShippingAddressSuggestion(val data: Data) : State()
         data class ShippingAddressEditing(val data: Data) : State()
 
         data class PackageSelection(val data: Data) : State()
+        data class CustomsDeclaration(val data: Data) : State()
+        data class ShippingCarrierSelection(val data: Data) : State()
+        data class PaymentSelection(val data: Data) : State()
     }
 
     sealed class Event {
@@ -180,28 +246,34 @@ class ShippingLabelStateMachine @Inject constructor() {
         data class DataLoaded(val originAddress: Address, val shippingAddress: Address) : Event()
         object DataLoadingFailed : Event()
 
+        object AddressNotRecognized : Event()
+        data class AddressValidated(val address: Address) : Event()
+        data class AddressInvalid(val suggested: Address) : Event()
+        data class AddressUsedAsIs(val address: Address) : Event()
+        data class AddressEditFinished(val address: Address) : Event()
+        data class SuggestedAddressSelected(val address: Address) : Event()
+
         object OriginAddressValidationStarted : Event()
-        data class OriginAddressValidated(val address: Address) : Event()
-        object OriginAddressNotRecognized : Event()
-        object OriginAddressInvalid : Event()
-        data class OriginAddressUsedAsIs(val address: Address) : Event()
-        data class OriginAddressUpdated(val address: Address) : Event()
-        object EditOriginAddressTapped : Event()
-        data class SuggestedOriginAddressSelected(val address: Address) : Event()
-        object SuggestedOriginAddressRejected : Event()
+        object EditOriginAddressRequested : Event()
 
         object ShippingAddressValidationStarted : Event()
-        data class ShippingAddressValidated(val address: Address) : Event()
-        object ShippingAddressNotRecognized : Event()
-        object ShippingAddressInvalid : Event()
-        data class ShippingAddressUsedAsIs(val address: Address) : Event()
-        data class ShippingAddressUpdated(val address: Address) : Event()
-        object EditShippingAddressTapped : Event()
-        data class SuggestedShippingAddressSelected(val address: Address) : Event()
-        object SuggestedShippingAddressRejected : Event()
+        object EditShippingAddressRequested : Event()
 
         object PackageSelectionStarted : Event()
-        object EditPackagingAddressTapped : Event()
+        object EditPackagingRequested : Event()
+        object PackagesSelected : Event()
+
+        object CustomsDeclarationStarted : Event()
+        object EditCustomsRequested : Event()
+        object CustomsFormFilledOut : Event()
+
+        object ShippingCarrierSelectionStarted : Event()
+        object EditShippingCarrierRequested : Event()
+        object ShippingCarrierSelected : Event()
+
+        object PaymentSelectionStarted : Event()
+        object EditPaymentRequested : Event()
+        object PaymentSelected : Event()
     }
 
     sealed class SideEffect {
@@ -210,14 +282,15 @@ class ShippingLabelStateMachine @Inject constructor() {
         data class ShowError(val error: Error) : SideEffect()
         data class UpdateViewState(val data: Data) : SideEffect()
 
-        data class ValidateOriginAddress(val address: Address) : SideEffect()
-        object ShowOriginAddressSuggestions : SideEffect()
-        data class OpenOriginAddressEditor(val address: Address) : SideEffect()
+        data class ValidateAddress(val address: Address) : SideEffect()
+        data class ShowAddressSuggestion(val entered: Address, val suggested: Address) : SideEffect()
+        data class OpenAddressEditor(val address: Address) : SideEffect()
 
-        data class ValidateShippingAddress(val address: Address) : SideEffect()
-        object ShowShippingAddressSuggestions : SideEffect()
-        data class OpenShippingAddressEditor(val address: Address) : SideEffect()
-
-        object ShowPackagingDetails : SideEffect()
+        object ShowPackageOptions : SideEffect()
+        object ShowCustomsForm : SideEffect()
+        object ShowCarrierOptions : SideEffect()
+        object ShowPaymentDetails : SideEffect()
     }
+
+    class InvalidStateException(message: String) : Exception(message)
 }
