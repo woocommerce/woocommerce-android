@@ -284,8 +284,12 @@
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
     <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
-    <string name="order_begin_fulfillment">Mark order complete</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on “Create shipping label” to try it!</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
+    <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
+    <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
@@ -341,6 +345,14 @@
     <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
     <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
+
+    <!--
+        Create shipping labels
+    -->
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
+    <string name="shipping_label_more_information_link">Learn more</string>
 
     <!--
         Refunds

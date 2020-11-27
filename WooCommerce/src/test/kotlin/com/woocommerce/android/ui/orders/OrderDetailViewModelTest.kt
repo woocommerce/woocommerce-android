@@ -22,13 +22,14 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderDetailViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -43,6 +44,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class OrderDetailViewModelTest : BaseUnitTest() {
@@ -76,13 +78,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
 
-    private val orderWithParameters = OrderDetailViewState(
+    private val orderWithParameters = ViewState(
         order = order,
         isRefreshing = false,
         isOrderNotesSkeletonShown = false,
         isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
-        isShipmentTrackingAvailable = true
+        isShipmentTrackingAvailable = true,
+        isCreateShippingLabelButtonVisible = false,
+        isProductListVisible = true,
+        areShippingLabelsVisible = false
     )
 
     private val mixedProducts = listOf(
@@ -97,9 +102,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(MutableLiveData(OrderDetailViewState()))
-            .whenever(savedState).getLiveData<OrderDetailViewState>(any(), any())
+        doReturn(MutableLiveData(ViewState()))
+            .whenever(savedState).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
+
+        doReturn(WooPlugin(true, true)).whenever(repository).getWooServicesPluginInfo()
 
         viewModel = spy(OrderDetailViewModel(
             savedState,
@@ -122,7 +129,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the order detail view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
+        val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
+        val expectedViewState = orderWithParameters.copy(order = nonRefundedOrder)
+
+        doReturn(nonRefundedOrder).whenever(repository).getOrder(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -131,12 +141,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
         doReturn(emptyList<Refund>()).whenever(repository).getOrderRefunds(any())
-        doReturn(emptyList<Refund>()).whenever(repository).fetchOrderRefunds(any())
 
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
-        var orderData: OrderDetailViewState? = null
+        var orderData: ViewState? = null
         viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
@@ -171,7 +180,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(orderData).isEqualTo(orderWithParameters)
+        assertThat(orderData).isEqualTo(expectedViewState)
 
         assertThat(orderNotes).isNotEmpty
         assertThat(orderNotes).isEqualTo(testOrderNotes)
@@ -189,6 +198,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -210,6 +220,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(virtualProducts).whenever(repository).getProductsByRemoteIds(listOf(3, 4))
             doReturn(virtualOrder).whenever(repository).getOrder(any())
+            doReturn(virtualOrder).whenever(repository).fetchOrder(any())
+
+            doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -232,6 +245,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(listOf(1, 2))
             doReturn(mixedOrder).whenever(repository).getOrder(any())
+            doReturn(mixedOrder).whenever(repository).fetchOrder(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -248,21 +262,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `don't fetch products if we have all products`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val product = mixedProducts.first()
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val items = listOf(item, item.copy(productId = 2))
             val ids = items.map { it.productId }
 
             val order = order.copy(items = items)
             doReturn(order).whenever(repository).getOrder(any())
-            doReturn(listOf(product, product.copy(id = 2))).whenever(repository).getProductsByRemoteIds(ids)
-
-            doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
-            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-            doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
             viewModel.start()
 
@@ -279,6 +284,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val order = order.copy(items = items)
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
             doReturn(listOf(product)).whenever(repository).getProductsByRemoteIds(ids)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -297,6 +303,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Do not display product list when all products are refunded`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -310,27 +317,27 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
             doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
-            // refunds
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
                 it?.let { refunds.addAll(it) }
             }
 
-            var products = emptyList<Order.Item>()
-            viewModel.productList.observeForever {
-                it?.let { products = it }
+            var areProductsVisible: Boolean? = null
+            viewModel.orderDetailViewStateData.observeForever { _, new ->
+                areProductsVisible = new.isProductListVisible
             }
 
             viewModel.start()
 
+            assertThat(areProductsVisible).isFalse()
             assertThat(refunds).isNotEmpty
-            assertThat(products).isEmpty()
         }
 
     @Test
     fun `Do not display product list when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -342,28 +349,28 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
-            doReturn(orderShippingLabels).whenever(repository).fetchOrderShippingLabels(any())
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
                 it?.let { shippingLabels.addAll(it) }
             }
 
-            var products = emptyList<Order.Item>()
-            viewModel.productList.observeForever {
-                it?.let { products = it }
+            var areProductsVisible: Boolean? = null
+            viewModel.orderDetailViewStateData.observeForever { _, new ->
+                areProductsVisible = new.isProductListVisible
             }
 
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(products).isEmpty()
+            assertThat(areProductsVisible).isFalse()
         }
 
     @Test
     fun `Do not display shipment tracking when shipping labels are available`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -375,9 +382,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
-            doReturn(orderShippingLabels).whenever(repository).fetchOrderShippingLabels(any())
 
-            var orderData: OrderDetailViewState? = null
+            var orderData: ViewState? = null
             viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()
@@ -385,16 +391,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 it?.let { shippingLabels.addAll(it) }
             }
 
-            // order shipment Trackings
-            var shipmentTrackings = emptyList<OrderShipmentTracking>()
-            viewModel.shipmentTrackings.observeForever {
-                it?.let { shipmentTrackings = it }
-            }
-
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(shipmentTrackings).isEmpty()
             assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
         }
 
@@ -453,6 +452,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any())
         doReturn(orderStatus).doReturn(newOrderStatus).doReturn(orderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -499,6 +499,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newOrderStatus = OrderStatus(CoreOrderStatus.PROCESSING.value, CoreOrderStatus.PROCESSING.value)
 
         doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any())
         doReturn(orderStatus).doReturn(newOrderStatus).whenever(repository).getOrderStatus(any())
 
         doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
@@ -529,15 +530,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
@@ -557,15 +549,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
@@ -581,6 +564,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Add order note - Displays add note snackbar correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any())
 
         doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
         doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
@@ -616,15 +600,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowSnackbar) snackbar = it
@@ -650,6 +625,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             )
 
             doReturn(order).whenever(repository).getOrder(any())
+            doReturn(order).whenever(repository).fetchOrder(any())
 
             doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
