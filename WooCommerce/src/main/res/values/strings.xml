@@ -236,11 +236,11 @@
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
-    <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
+    <string name="orderdetail_payment_paid_by_customer">Paid</string>
     <string name="orderdetail_refunded">Refunded</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
-    <string name="orderdetail_net">Net</string>
+    <string name="orderdetail_net">Net Payment</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
