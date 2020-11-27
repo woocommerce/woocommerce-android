@@ -359,7 +359,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onDownloadLimitChanged(value: Int) {
+    fun onDownloadLimitChanged(value: Long) {
         viewState.productDraft?.let {
             updateProductDraft(
                 downloadLimit = value
@@ -701,7 +701,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         upsellProductIds: List<Long>? = null,
         crossSellProductIds: List<Long>? = null,
         downloads: List<ProductFile>? = null,
-        downloadLimit: Int? = null,
+        downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null
     ) {
