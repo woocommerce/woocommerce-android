@@ -62,7 +62,7 @@ class ProductDownloadsSettingsFragment : BaseProductFragment() {
     }
 
     private fun initFromProductDraft() {
-        fun Int.formatLimitAndExpiry(): String = if (this == -1) "" else this.toString()
+        fun Number.formatLimitAndExpiry(): String = if (this == -1) "" else this.toString()
         val product = requireNotNull(viewModel.getProduct().productDraft)
         product_download_limit.setText(product.downloadLimit.formatLimitAndExpiry())
         product_download_expiry.setText(product.downloadExpiry.formatLimitAndExpiry())
@@ -75,7 +75,7 @@ class ProductDownloadsSettingsFragment : BaseProductFragment() {
             changesMade()
         }
         product_download_limit.setOnTextChangedListener {
-            val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
+            val value = if (it.isNullOrEmpty()) -1 else it.toString().toLong()
             viewModel.onDownloadLimitChanged(value)
             changesMade()
         }

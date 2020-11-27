@@ -9,11 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.handleResult
@@ -28,22 +26,13 @@ import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
 class ProductDownloadsFragment : BaseProductFragment() {
     private val itemTouchHelper by lazy {
-        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(UP or DOWN, 0) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val from = viewHolder.adapterPosition
-                val to = target.adapterPosition
-                viewModel.swapDownloadableFiles(from, to)
-                updateFilesFromProductDraft()
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
-        }
-        ItemTouchHelper(simpleItemTouchCallback)
+        DraggableItemTouchHelper(
+                dragDirs = UP or DOWN,
+                onMove = { from, to ->
+                    viewModel.swapDownloadableFiles(from, to)
+                    updateFilesFromProductDraft()
+                }
+        )
     }
 
     private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {

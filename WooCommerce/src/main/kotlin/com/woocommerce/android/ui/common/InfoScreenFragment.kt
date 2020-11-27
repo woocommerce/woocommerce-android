@@ -41,9 +41,9 @@ class InfoScreenFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        showTextOrHide(navArgs.heading, info_heading)
-        showTextOrHide(navArgs.message, info_message)
-        showTextOrHide(navArgs.linkTitle, info_link)
+        info_heading.showTextOrHide(navArgs.heading)
+        info_message.showTextOrHide(navArgs.message)
+        info_link.showTextOrHide(navArgs.linkTitle)
 
         if (navArgs.imageResource != 0) {
             info_image.setImageDrawable(ContextCompat.getDrawable(requireContext(), navArgs.imageResource))
@@ -58,8 +58,8 @@ class InfoScreenFragment : Fragment() {
         }
     }
 
-    private fun showTextOrHide(@StringRes stringRes: Int, view: TextView) =
-        if (stringRes != 0) view.text = getString(stringRes) else view.hide()
+    private fun TextView.showTextOrHide(@StringRes stringRes: Int) =
+        if (stringRes != 0) this.text = getString(stringRes) else hide()
 
     sealed class InfoScreenLinkAction : Serializable {
         object LearnMoreAboutShippingLabels : InfoScreenLinkAction() {

@@ -18,9 +18,9 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
-            android:elevation="@dimen/appbar_elevation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/appbar_elevation">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -29,8 +29,7 @@
                 android:layout_height="@dimen/expanded_toolbar_height"
                 app:titleEnabled="true">
 
-                <include
-                    layout="@layout/view_toolbar" />
+                <include layout="@layout/view_toolbar" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 

@@ -42,7 +42,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageClickListener
+import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import kotlinx.android.synthetic.main.fragment_variation_detail.addImageContainer
 import kotlinx.android.synthetic.main.fragment_variation_detail.app_bar_layout
 import kotlinx.android.synthetic.main.fragment_variation_detail.cardsRecyclerView
@@ -50,7 +50,7 @@ import kotlinx.android.synthetic.main.fragment_variation_detail.imageGallery
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageClickListener {
+class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
