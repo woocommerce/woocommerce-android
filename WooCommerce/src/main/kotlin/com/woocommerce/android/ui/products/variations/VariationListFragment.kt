@@ -170,15 +170,20 @@ class VariationListFragment : BaseFragment(),
     }
 
     private fun showVariations(variations: List<ProductVariation>, parentProduct: Product?) {
-        val adapter = (variationList.adapter ?: VariationListAdapter(
-            requireContext(),
-            GlideApp.with(this),
-            this,
-            parentProduct,
-            viewModel::onItemClick
-        )) as VariationListAdapter
+        val adapter: VariationListAdapter
+        if (variationList.adapter == null) {
+            adapter = VariationListAdapter(
+                requireContext(),
+                GlideApp.with(this),
+                this,
+                parentProduct,
+                viewModel::onItemClick
+            )
+            variationList.adapter = adapter
+        } else {
+            adapter = variationList.adapter as VariationListAdapter
+        }
 
-        variationList.adapter = adapter
         adapter.setVariationList(variations)
     }
 }
