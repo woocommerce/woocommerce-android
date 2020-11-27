@@ -1,40 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-        android:id="@+id/originStep"
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:continue_button_visible="false"
-        app:edit_button_visible="true"
-        app:caption="Ship from"
-        app:details="Some address\nSecond line\nThird"
-        app:icon="@drawable/ic_gridicons_shipping" />
+        android:layout_height="wrap_content">
 
-    <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-        android:id="@+id/shippingStep"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="true"
-        app:continue_button_visible="true"
-        app:edit_button_visible="false"
-        app:caption="Ship to"
-        app:details="Some address\nSecond line\nThird"
-        app:icon="@drawable/ic_gridicons_house" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-        android:id="@+id/packagingStep"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        app:continue_button_visible="false"
-        app:edit_button_visible="false"
-        app:caption="Package details"
-        app:details="Select the type of packaging you’d like to ship your items in"
-        app:icon="@drawable/ic_product" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/originStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="true"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="true"
+                tools:details="Some address\nSecond line\nThird"
+                app:caption="@string/orderdetail_shipping_label_item_shipfrom"
+                app:icon="@drawable/ic_gridicons_shipping" />
 
-</LinearLayout>
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/shippingStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="true"
+                tools:continue_button_visible="true"
+                tools:edit_button_visible="false"
+                tools:details="Some address\nSecond line\nThird"
+                app:caption="@string/orderdetail_shipping_label_item_shipto"
+                app:icon="@drawable/ic_gridicons_house" />
+
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/packagingStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="false"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                app:caption="@string/shipping_label_create_packaging_details"
+                app:details="@string/shipping_label_create_packaging_details_description"
+                app:icon="@drawable/ic_product" />
+
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/customsStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="false"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                app:caption="@string/shipping_label_create_customs"
+                app:details="@string/shipping_label_create_customs_description"
+                app:icon="@drawable/ic_gridicons_globe" />
+
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/carrierStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="false"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                app:caption="@string/orderdetail_shipping_label_item_carrier"
+                app:details="@string/shipping_label_create_carrier_description"
+                app:icon="@drawable/ic_gridicons_money" />
+
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/paymentStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:enabled="false"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                app:divider_visible="false"
+                app:caption="@string/orderdetail_shipping_label_item_payment"
+                app:details="@string/shipping_label_create_payment_description"
+                app:icon="@drawable/ic_gridicons_credit_card" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.core.widget.NestedScrollView>

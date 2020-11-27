@@ -45,6 +45,15 @@ class CreateShippingLabelFragment  : BaseFragment() {
             new.packagingDetailsStep?.takeIfNotEqualTo(old?.packagingDetailsStep) {
                 packagingStep.update(it)
             }
+            new.customsStep?.takeIfNotEqualTo(old?.customsStep) {
+                customsStep.update(it)
+            }
+            new.carrierStep?.takeIfNotEqualTo(old?.carrierStep) {
+                carrierStep.update(it)
+            }
+            new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
+                paymentStep.update(it)
+            }
         }
 
         originStep.continueButtonClickListener = viewModel::onValidateOriginButtonTapped
@@ -56,9 +65,9 @@ class CreateShippingLabelFragment  : BaseFragment() {
     }
 
     private fun ShippingLabelCreationStepView.update(data: Step) {
-        details = data.details
-        isViewEnabled = data.isEnabled
-        isContinueButtonVisible = data.isContinueButtonVisible
-        isEditButtonVisible = data.isEditButtonVisible
+        data.details?.let { details = it }
+        data.isEnabled?.let { isViewEnabled = it }
+        data.isContinueButtonVisible?.let { isContinueButtonVisible = it }
+        data.isEditButtonVisible?.let { isEditButtonVisible = it }
     }
 }

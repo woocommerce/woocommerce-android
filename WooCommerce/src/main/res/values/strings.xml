@@ -355,6 +355,12 @@
     <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
     <string name="shipping_label_more_information_link">Learn more</string>
     <string name="shipping_label_create_title">Create shipping label</string>
+    <string name="shipping_label_create_packaging_details">Packaging details</string>
+    <string name="shipping_label_create_packaging_details_description">Select the type of packaging you’d like to ship your items in</string>
+    <string name="shipping_label_create_customs">Customs</string>
+    <string name="shipping_label_create_customs_description">Fill out customs form</string>
+    <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
+    <string name="shipping_label_create_payment_description">Add a new credit card</string>
 
     <!--
         Refunds

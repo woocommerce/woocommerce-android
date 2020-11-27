@@ -107,18 +107,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                          isContinueButtonVisible = true,
                          isEditButtonVisible = false
                      ),
-                     shippingAddressStep = Step(
-                         details = data.shippingAddress.toString(),
-                         isEnabled = false,
-                         isContinueButtonVisible = false,
-                         isEditButtonVisible = false
-                     ),
-                     packagingDetailsStep = Step(
-                         details = "Select packaging details",
-                         isEnabled = false,
-                         isContinueButtonVisible = false,
-                         isEditButtonVisible = false
-                     )
+                     shippingAddressStep = getDisabledStep(data.shippingAddress.toString()),
+                     packagingDetailsStep = getDisabledStep(),
+                     customsStep = getDisabledStep(),
+                     carrierStep = getDisabledStep(),
+                     paymentStep = getDisabledStep()
                  )
             }
             SHIPPING_ADDRESS -> {
@@ -133,12 +126,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         details = data.shippingAddress.toString(),
                         isEnabled = true,
                         isContinueButtonVisible = true,
-                        isEditButtonVisible = false
-                    ),
-                    packagingDetailsStep = Step(
-                        details = "Select packaging details",
-                        isEnabled = false,
-                        isContinueButtonVisible = false,
                         isEditButtonVisible = false
                     )
                 )
@@ -168,6 +155,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             else -> { viewState }
         }
     }
+
+    private fun getDisabledStep(newDetails: String? = null) = Step(
+        details = newDetails,
+        isEnabled = false,
+        isContinueButtonVisible = false,
+        isEditButtonVisible = false
+    )
 
     private fun showError(error: Error) {
         when (error) {
@@ -232,15 +226,18 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     data class ViewState(
         val originAddressStep: Step? = null,
         val shippingAddressStep: Step? = null,
-        val packagingDetailsStep: Step? = null
+        val packagingDetailsStep: Step? = null,
+        val customsStep: Step? = null,
+        val carrierStep: Step? = null,
+        val paymentStep: Step? = null
     ) : Parcelable
 
     @Parcelize
     data class Step(
-        val details: String,
-        val isEnabled: Boolean,
-        val isContinueButtonVisible: Boolean,
-        val isEditButtonVisible: Boolean
+        val details: String? = null,
+        val isEnabled: Boolean? = null,
+        val isContinueButtonVisible: Boolean? = null,
+        val isEditButtonVisible: Boolean? = null
     ) : Parcelable
 
     private enum class FlowState {
