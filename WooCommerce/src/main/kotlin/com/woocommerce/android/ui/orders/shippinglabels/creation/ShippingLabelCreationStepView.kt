@@ -26,6 +26,7 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             val detailsText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_details)
             val iconRes = typedArray.getResourceId(R.styleable.ShippingLabelCreationStepView_icon, 0)
             val isEnabled = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_android_enabled, true)
+            val highlighted = typedArray.getBoolean(R.styleable.ShippingLabelCreationStepView_highlighted, false)
             val dividerVisible = typedArray.getBoolean(
                 R.styleable.ShippingLabelCreationStepView_divider_visible,
                 true
@@ -45,6 +46,7 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             isContinueButtonVisible = continueButtonVisible
             isEditButtonVisible = editButtonVisible
             isDividerVisible = dividerVisible
+            isHighlighted = highlighted
         }
     }
 
@@ -53,6 +55,16 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
             field = value
             if (!value) {
                 setForegroundColor(ContextCompat.getColor(context, R.color.color_on_surface_disabled))
+            } else {
+                resetColors()
+            }
+        }
+
+    var isHighlighted: Boolean = false
+        set(value) {
+            field = value
+            if (!value) {
+                setIconColor(ContextCompat.getColor(context, R.color.color_on_surface_high))
             } else {
                 resetColors()
             }
@@ -109,13 +121,20 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
         }
 
     private fun setForegroundColor(@ColorInt color: Int) {
+        setTextColor(color)
+        setIconColor(color)
+    }
+
+    private fun setIconColor(color: Int) {
+        iconImageView?.setColorFilter(color, SRC_IN)
+    }
+
+    private fun setTextColor(color: Int) {
         detailsTextView?.tag = detailsTextView?.currentTextColor
         detailsTextView?.setTextColor(color)
 
         captionTextView?.tag = captionTextView?.currentTextColor
         captionTextView?.setTextColor(color)
-
-        iconImageView?.setColorFilter(color, SRC_IN)
     }
 
     private fun resetColors() {
