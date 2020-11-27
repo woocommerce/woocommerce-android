@@ -51,10 +51,6 @@
             tools:listitem="@layout/order_detail_product_list_item"
             tools:targetApi="lollipop" />
 
-        <View
-            style="@style/Woo.Divider.TitleAligned"
-            android:layout_marginTop="@dimen/minor_50" />
-
         <!-- Print shipping label -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/shippingLabelList_printBtn"
