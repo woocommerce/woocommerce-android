@@ -51,7 +51,7 @@ class CreateShippingLabelFragment  : BaseFragment() {
         originStep.editButtonClickListener = viewModel::onEditOriginAddressButtonTapped
         shippingStep.continueButtonClickListener = viewModel::onValidateShippingButtonTapped
         shippingStep.editButtonClickListener = viewModel::onEditShippingAddressButtonTapped
-        packagingStep.continueButtonClickListener = viewModel::onContinueToCarrierButtonTapped
+        packagingStep.continueButtonClickListener = viewModel::onShowPackagingDetailsButtonTapped
         packagingStep.editButtonClickListener = viewModel::onEditPackagingButtonTapped
     }
 

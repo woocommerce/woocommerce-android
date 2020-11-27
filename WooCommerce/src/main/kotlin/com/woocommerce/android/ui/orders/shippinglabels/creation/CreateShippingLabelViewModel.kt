@@ -80,7 +80,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 Log.d("onko: Effect", sideEffect.toString())
                 when (sideEffect) {
                     is LoadData -> loadData(sideEffect.orderId)
-                    is ShowError -> { showError(sideEffect.error) }
+                    is ShowError -> showError(sideEffect.error)
                     is ValidateOriginAddress -> validateOriginAddress(sideEffect.address)
                     ShowOriginAddressSuggestions -> TODO()
                     is OpenOriginAddressEditor -> TODO()
@@ -89,8 +89,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     is OpenShippingAddressEditor -> TODO()
                     ShowPackagingDetails -> TODO()
                     is UpdateViewState -> updateViewState(sideEffect.data)
-                    NoOp -> {
-                    }
+                    NoOp -> {}
                 }
             }
         }
@@ -225,7 +224,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(ShippingAddressValidationStarted)
     }
 
-    fun onContinueToCarrierButtonTapped() {
+    fun onShowPackagingDetailsButtonTapped() {
         stateMachine.handleEvent(PackageSelectionStarted)
     }
 

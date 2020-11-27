@@ -38,11 +38,8 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
                 R.styleable.ShippingLabelCreationStepView_edit_button_visible,
                 false
             )
-            if (captionText.isNullOrEmpty() || detailsText.isNullOrEmpty() || iconRes == 0) {
-                throw IllegalArgumentException("ShippingLabelCreationStepView must have caption, details and icon")
-            }
-            caption = captionText
-            details = detailsText
+            caption = captionText ?: ""
+            details = detailsText ?: ""
             icon = iconRes
             isViewEnabled = isEnabled
             isContinueButtonVisible = continueButtonVisible
