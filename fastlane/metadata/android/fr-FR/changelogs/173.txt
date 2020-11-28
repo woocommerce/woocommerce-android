@@ -1,0 +1,4 @@
+5.5 :
+Produits : vous pouvez désormais ajouter des produits simples, groupés et externes, et enregistrer des brouillons de produit. Vous pourrez tester de nouvelles fonctionnalités sous peu !
+
+Autres correctifs : nous avons résolu un bug affectant les noms des variantes de produits, lorsque l’option de la variante était « Ouvert », et corrigé une faute de frappe sur l’écran des étiquettes de livraison.

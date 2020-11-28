@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 13:54:04+0000
+Translation-Revision-Date: 2020-11-27 09:54:09+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">اختبار إنشاء منتج بسيط ومرتبط ومجمَّع بينما نستعد للبدء</string>
+    <string name="product_downloadable_files_download_settings">تنزيل الإعدادات</string>
+    <string name="product_downloadable_files_name_invalid">يرجى إدخال اسم صالح</string>
+    <string name="product_downloadable_files_add_manually">إدخال عنوان URL للملف</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">من مكتبة وسائط ووردبريس</string>
+    <string name="product_downloadable_files_add_from_device">من الجهاز</string>
+    <string name="product_downloadable_files_url_invalid">تحقق من أن عنوان URL الذي تم إدخاله صحيح</string>
+    <string name="product_downloadable_files_upload_dialog_message">يُرجى الانتظار…</string>
+    <string name="product_downloadable_files_upload_dialog_title">رفع الملفات</string>
+    <string name="product_downloadable_files_upload_failed">خطأ في رفع الملف</string>
+    <string name="product_downloadable_files_add_title">إضافة ملف قابل للتنزيل</string>
+    <string name="product_downloadable_add_bottomsheet_header">إضافة ملف قابل للتنزيل</string>
+    <string name="bottom_sheet_downloadable_files_desc">تضمين الملفات القابلة للتنزيل مع المشتريات</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">إلغاء</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">نعم، يمكنك التغيير</string>
+    <string name="product_uncheck_is_downloadable_warning_message">سيتم إزالة جميع الملفات المرفقة حاليًا بهذا المنتج.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">هل أنت متأكد من أنك تريد إزالة القدرة على تنزيل الملفات عند شراء المنتج؟</string>
+    <string name="product_downloadable_files_edit_title">ملف</string>
+    <string name="product_downloadable_files_delete_confirmation">هل أنت متأكد أنك تريد إزالة هذا الملف؟</string>
+    <string name="product_is_downloadable">منتج قابل للتنزيل</string>
+    <string name="delete">حذف</string>
+    <string name="product_downloadable_files_expiry">انتهاء صلاحية التنزيل</string>
+    <string name="product_downloadable_files_limit">حدود التنزيل</string>
+    <string name="product_downloadable_files_expiry_info">إدخال عدد الأيام قبل انتهاء صلاحية رابط التنزيل، أو ترك الحقل فارغًا إذا لم تتنهِ صلاحيته أبدًا</string>
+    <string name="product_downloadable_files_limit_info">إدخال عدد المرات التي يمكن تنزيل الملف فيها أو ترك فراغ للتنزيلات غير المحدودة</string>
+    <string name="product_downloadable_files_name_info">هذا هو اسم الملف المعروض أمام العميل</string>
+    <string name="product_downloadable_files_name">اسم الملف</string>
+    <string name="product_downloadable_files_url_info">هذا هو عنوان URL للملف الذي سيصل العملاء إليه. ينبغي ترميز عناوين URL التي تم إدخالها بالفعل</string>
+    <string name="product_downloadable_files_url">رابط الملف</string>
+    <string name="product_downloadable_files_add">إضافة ملف</string>
+    <string name="product_downloadable_files_value_single">1 ملف</string>
+    <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ ملفات</string>
+    <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة مرتبطة ومجمَّعة في أثناء التنقل من تطبيق Woo. أليست جاهزة حتى الآن؟ احفظها كمسودة!</string>
+    <string name="print_shipping_label_info_step_4">قد تضطر إلى &lt;b>تكوين طباعة WiFi مباشرة على الطابعة نفسها.&lt;/b> تأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
+    <string name="print_shipping_label_info_step_3">يمكنك تحديد &lt;b>خدمة الطباعة الافتراضية&lt;/b> الخاصة بجهازك أو تثبيت &lt;b>تطبيق العلامة التجارية للطابعة&lt;/b> (ينبغي أن يظهر هذا كخيار موصى به)</string>
+    <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ &lt;b>شبكات WiFi نفسها&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">زيادة المبيعات من خلال عمليات البيع والبيع المتبادل</string>
     <string name="edit_products_button">تحرير المنتجات</string>
     <string name="add_products_button">إضافة منتجات</string>
@@ -30,17 +64,13 @@ Language: ar
     <string name="product_trash">نقل المنتج إلى سلة المهملات</string>
     <string name="product_detail_no_variations">لا يحتوي هذا المنتج على تباينات حتى الآن</string>
     <string name="product_variant_list_empty">لا تتوافر إضافة الخيارات، مثل الحجم واللون، على الويب حاليًا.  ستظهر هذه كخيارات على صفحة المنتج في موقعك.</string>
-    <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة ومترابطة ومجمَّعة في أثناء التنقل من تطبيق Woo. يمكنك تمكينه عن طريق تشغيل ميزة بيتا في إعدادات التطبيق. أليس جاهزًا بعد؟ احفظها كمسودة!</string>
     <string name="product_adding_wip_title">أنشئ منتجات من التطبيق!</string>
     <string name="product_ratings_count_zero">لا توجد تقييمات</string>
     <string name="product_ratings_count_one">تم التقييم مرة واحدة</string>
     <string name="product_ratings_count">تم تقييم %d من المرات</string>
     <string name="product_detail_fetch_product_invalid_id_error">لم يتم العثور على المنتج</string>
-    <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك إرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
-    <string name="print_shipping_label_info_step_4">قد تضطر إلى التأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
-    <string name="print_shipping_label_info_step_3">يمكنك تحديد البرنامج الخاص بجهازك أو تثبيت برنامجك (ينبغي أن يظهر هذا كخيار موصى به)</string>
-    <string name="print_shipping_label_info_step_2">بعد التحديد، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
-    <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ</string>
+    <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك &lt;b>حفظ التسمية الخاصة بك بصيغة PDF&lt;/b> وإرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
+    <string name="print_shipping_label_info_step_2">بعد تحديد &lt;b>\"طباعة ملصق الشحن\"&lt;/b>، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
     <string name="print_shipping_label_format_options_title">خيارات تنسيق الملصق</string>
     <string name="print_shipping_label_info_title">الطباعة باستخدام جهازك</string>
     <string name="shipping_label_paper_size_label">ملصق (4 × 6 بوصات)</string>
@@ -163,7 +193,7 @@ Language: ar
     <string name="shipping_label_refund_button">بطاقة عملية استرداد الأموال (-⁦%1$s⁩)</string>
     <string name="shipping_label_refund_amount_title">المبلغ الذي يستحق الاسترداد</string>
     <string name="shipping_label_refund_purchase_date_title">تاريخ الشراء</string>
-    <string name="shipping_label_refund_message">يمكنك طلب استرداد أموال بطاقة الشحن التي لم يتم استخدامها لشحن طرد. سيستغرق الأمر 14 يومًا على الأقل للمعالجة.</string>
+    <string name="shipping_label_refund_message">يمكنك طلب استرداد أموال بطاقة الشحن التي لم يتم استخدامها لشحن طرد. ستستغرق المعالجة 14 يومًا على الأقل.</string>
     <string name="orderdetail_shipping_label_request_refund">طلب استرداد الأموال</string>
     <string name="orderdetail_shipping_label_item_menu">استرداد أموال بطاقة الشحن</string>
     <string name="product_type_physical">فعلي</string>

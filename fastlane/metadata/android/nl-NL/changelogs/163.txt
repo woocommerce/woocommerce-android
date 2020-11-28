@@ -1,3 +1,0 @@
-5.4:
-* Informatie over productvariatie wordt volledig weergegeven bij bestellingsgegevens.
-* Een zeldzame crash verholpen bij het toevoegen van een nieuwe productcategorie en het selecteren van productfilters.

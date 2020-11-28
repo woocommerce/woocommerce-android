@@ -1,3 +1,0 @@
-5.4:
-* Ürün varyasyon bilgileri, sipariş ayrıntılarında tam olarak görüntülenir.
-* Yeni bir ürün kategorisi eklerken ve ürün filtresi seçenekleri seçerken nadir görülen bir çökme düzeltildi.
