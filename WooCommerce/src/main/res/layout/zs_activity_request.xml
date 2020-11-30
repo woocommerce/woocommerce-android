@@ -1,16 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     This layout overrides the Zendesk layout of the same name so we can apply
-    our own style to the toolbar. This is a last resort because it may require
-    maintenance with every Zendesk upgrade, but since Zendesk hard codes its
-    toolbar style we have no alternative
+    our own style to the toolbar and disable ViewBinding. This is a last resort
+    because it may require maintenance with every Zendesk upgrade, but since
+    Zendesk hard codes its toolbar style and doesn't work with ViewBinding we
+    have no alternative.
 -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_request"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:viewBindingIgnore="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/activity_request_appbar"
@@ -39,8 +40,8 @@
                 android:layout_height="@dimen/zs_request_toolbar_progress_bar_height"
                 android:layout_gravity="bottom"
                 android:indeterminate="false"
-                android:visibility="visible"
-                android:progressDrawable="@drawable/zs_request_toolbar_progress_bar" />
+                android:progressDrawable="@drawable/zs_request_toolbar_progress_bar"
+                android:visibility="visible" />
 
         </FrameLayout>
 
@@ -55,19 +56,19 @@
             android:id="@+id/activity_request_conversation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <zendesk.support.request.RequestViewConversationsDisabled
             android:id="@+id/activity_request_conversation_disabled"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <zendesk.support.request.RequestViewLoading
             android:id="@+id/activity_request_loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
     </FrameLayout>
 
@@ -76,6 +77,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/zs_request_toolbar_shadow_space"
         android:background="@drawable/zs_request_toolbar_shadow"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
