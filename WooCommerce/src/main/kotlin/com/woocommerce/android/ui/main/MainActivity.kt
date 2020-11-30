@@ -128,7 +128,6 @@ class MainActivity : AppUpgradeActivity(),
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
     private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
 
-    private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
     private lateinit var binding: ActivityMainBinding
@@ -169,7 +168,7 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
-        bottomNavView = binding.bottomNav.also { it.init(supportFragmentManager, this) }
+        binding.bottomNav.also { it.init(supportFragmentManager, this) }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -246,7 +245,7 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         // settings icon only appears on the dashboard
-        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == MY_STORE
+        menu?.findItem(R.id.menu_settings)?.isVisible = binding.bottomNav.currentPosition == MY_STORE
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -273,7 +272,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
         super.onSaveInstanceState(outState)
     }
@@ -281,7 +280,7 @@ class MainActivity : AppUpgradeActivity(),
     private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.also {
             val id = it.getInt(KEY_BOTTOM_NAV_POSITION, MY_STORE.id)
-            bottomNavView.restoreSelectedItemState(id)
+            binding.bottomNav.restoreSelectedItemState(id)
 
             val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
             if (count > 0) {
@@ -306,8 +305,8 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (bottomNavView.currentPosition != MY_STORE) {
-            bottomNavView.currentPosition = MY_STORE
+        if (binding.bottomNav.currentPosition != MY_STORE) {
+            binding.bottomNav.currentPosition = MY_STORE
         } else {
             super.onBackPressed()
         }
@@ -348,7 +347,7 @@ class MainActivity : AppUpgradeActivity(),
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
     internal fun getActiveTopLevelFragment(): TopLevelFragment? {
-        val tag = bottomNavView.currentPosition.getTag()
+        val tag = binding.bottomNav.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
 
@@ -413,7 +412,7 @@ class MainActivity : AppUpgradeActivity(),
                 }
                 R.id.productDetailFragment -> {
                     // show Cross icon only when product detail isn't opened from the product list
-                    bottomNavView.currentPosition != PRODUCTS
+                    binding.bottomNav.currentPosition != PRODUCTS
                 }
                 else -> {
                     false
@@ -597,8 +596,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // Complete UI initialization
-
-        bottomNavView.init(supportFragmentManager, this)
+        binding.bottomNav.init(supportFragmentManager, this)
         initFragment(null)
     }
 
@@ -638,29 +636,29 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun hideReviewsBadge() {
-        bottomNavView.showReviewsBadge(false)
+        binding.bottomNav.showReviewsBadge(false)
         NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
     }
 
     override fun showReviewsBadge() {
-        bottomNavView.showReviewsBadge(true)
+        binding.bottomNav.showReviewsBadge(true)
     }
 
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
-            bottomNavView.clearOrderBadgeCount()
+            binding.bottomNav.clearOrderBadgeCount()
         }
         presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {
         unfilledOrderCount = count
-        bottomNavView.setOrderBadgeCount(count)
+        binding.bottomNav.setOrderBadgeCount(count)
     }
 
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
-        bottomNavView.setOrderBadgeCount(0)
+        binding.bottomNav.setOrderBadgeCount(0)
     }
 
     override fun fetchRevenueStatsAvailability(site: SiteModel) {
@@ -738,7 +736,7 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
                 } ?: NotificationChannelType.REVIEW
 
-                bottomNavView.currentPosition = when (notificationChannelType) {
+                binding.bottomNav.currentPosition = when (notificationChannelType) {
                     NotificationChannelType.NEW_ORDER -> ORDERS
                     else -> REVIEWS
                 }
@@ -755,7 +753,7 @@ class MainActivity : AppUpgradeActivity(),
 
                 // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
                 // the app is in the right section
-                bottomNavView.currentPosition = MY_STORE
+                binding.bottomNav.currentPosition = MY_STORE
 
                 // launch 'Tickets' page of Zendesk
                 startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -778,20 +776,20 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
-                    bottomNavView.currentPosition = REVIEWS
+                    binding.bottomNav.currentPosition = REVIEWS
                 }
             }
         } else {
-            bottomNavView.currentPosition = MY_STORE
+            binding.bottomNav.currentPosition = MY_STORE
         }
     }
     // endregion
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
-        bottomNavView.updatePositionAndDeferInit(ORDERS)
+        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
 
-        val fragment = bottomNavView.getFragment(ORDERS)
+        val fragment = binding.bottomNav.getFragment(ORDERS)
         (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
     }
 
@@ -842,8 +840,8 @@ class MainActivity : AppUpgradeActivity(),
         // make sure the review tab is active if the user came here from a notification
         if (launchedFromNotification) {
             showBottomNav()
-            bottomNavView.currentPosition = REVIEWS
-            bottomNavView.active(REVIEWS.position)
+            binding.bottomNav.currentPosition = REVIEWS
+            binding.bottomNav.active(REVIEWS.position)
         }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
@@ -874,10 +872,10 @@ class MainActivity : AppUpgradeActivity(),
         remoteNoteId: Long,
         markComplete: Boolean
     ) {
-        if (bottomNavView.currentPosition != ORDERS) {
-            bottomNavView.currentPosition = ORDERS
+        if (binding.bottomNav.currentPosition != ORDERS) {
+            binding.bottomNav.currentPosition = ORDERS
             val navPos = ORDERS.position
-            bottomNavView.active(navPos)
+            binding.bottomNav.active(navPos)
         }
 
         if (markComplete) {
@@ -913,14 +911,14 @@ class MainActivity : AppUpgradeActivity(),
     override fun hideBottomNav() {
         if (isBottomNavShowing) {
             isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(bottomNavView, false, Duration.MEDIUM)
+            WooAnimUtils.animateBottomBar(binding.bottomNav, false, Duration.MEDIUM)
         }
     }
 
     override fun showBottomNav() {
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(bottomNavView, true, Duration.SHORT)
+            WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
         }
     }
 
