@@ -35,6 +35,7 @@ data class Order(
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
     val refundTotal: BigDecimal,
+    val feesTotal: BigDecimal,
     val currency: String,
     val customerNote: String,
     val discountCodes: String,
@@ -128,6 +129,10 @@ fun WCOrderModel.toAppModel(): Order {
             this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+            this.getFeeLineList()
+                    .map { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO }
+                    .ifEmpty { listOf(BigDecimal.ZERO) }
+                    .reduce { fee1, fee2 -> fee1 + fee2 },
             this.currency,
             this.customerNote,
             this.discountCodes,
