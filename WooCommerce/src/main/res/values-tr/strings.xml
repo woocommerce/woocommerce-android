@@ -1,12 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Yayına hazırlanırken yeni, basit, bağlantılı ve gruplandırılmış ürün oluşturma özelliğini deneyin</string>
+    <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
+    <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
+    <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Ortam Kütüphanesinden</string>
+    <string name="product_downloadable_files_add_from_device">Cihazdan</string>
+    <string name="product_downloadable_files_url_invalid">Girilen URL\'nin geçerli olup olmadığını kontrol edin</string>
+    <string name="product_downloadable_files_upload_dialog_message">Lütfen bekleyin…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Dosyalar yükleniyor</string>
+    <string name="product_downloadable_files_upload_failed">Dosya yüklenirken hata oldu</string>
+    <string name="product_downloadable_files_add_title">İndirilebilir dosya ekle</string>
+    <string name="product_downloadable_add_bottomsheet_header">İndirilebilir dosya ekle</string>
+    <string name="bottom_sheet_downloadable_files_desc">Satın alma işlemlerine indirilebilir dosyaları ekle</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">İptal</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Evet, değiştir</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Şu anda bu ürüne eklenmiş olan tüm dosyalar kaldırılacaktır.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Ürün satın alındığında dosya indirme özelliğini kaldırmak istediğinizden emin misiniz?</string>
+    <string name="product_downloadable_files_edit_title">Dosya</string>
+    <string name="product_downloadable_files_delete_confirmation">Bu dosyayı kaldırmak istediğinizden emin misiniz?</string>
+    <string name="product_is_downloadable">İndirilebilir ürün</string>
+    <string name="delete">Sil</string>
+    <string name="product_downloadable_files_expiry">Son indirme tarihi</string>
+    <string name="product_downloadable_files_limit">İndirme sınırı</string>
+    <string name="product_downloadable_files_expiry_info">Bir indirme bağlantısının süresini gün olarak girin veya sona erme tarihi yoksa boş bırakın</string>
+    <string name="product_downloadable_files_limit_info">Dosyanın kaç kez indirilebileceğini girin veya sınırsız indirme için boş bırakın</string>
+    <string name="product_downloadable_files_name_info">Bu, müşteriye gösterilen dosyanın adıdır.</string>
+    <string name="product_downloadable_files_name">Dosya adı</string>
+    <string name="product_downloadable_files_url_info">Bu, müşterilerin erişeceği dosyanın URL\'sidir. Girilen URL\'ler önceden kodlanmış olmalıdır.</string>
+    <string name="product_downloadable_files_url">Dosya URL\'si</string>
+    <string name="product_downloadable_files_add">Dosya ekle</string>
+    <string name="product_downloadable_files_value_single">1 dosya</string>
+    <string name="product_downloadable_files_value_multiple">%1$d dosya</string>
+    <string name="product_wip_message_m4">Artık hareket halindeyken Woo uygulamasından basit, bağlantılı ve gruplandırılmış ürünler oluşturmak mümkün. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
+    <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b>doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b> Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
+    <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b>aynı WiFi ağlarına&lt;/b> bağlı olduğundan emin olun</string>
     <string name="bottom_sheet_linked_products_desc">Yukarı satış ve çapraz satış ile satışları artırın</string>
     <string name="edit_products_button">Ürünleri düzenle</string>
     <string name="add_products_button">Ürünleri ekle</string>
@@ -30,17 +63,13 @@ Language: tr
     <string name="product_trash">Ürünü çöp kutusuna at</string>
     <string name="product_detail_no_variations">Bu ürünün henüz hiç varyasyonu yok</string>
     <string name="product_variant_list_empty">Boyut/beden/büyüklük ve renk gibi seçenekler eklemek şu anda yalnızca web\'de mevcuttur. Bunlar, sitenizin ürün sayfasında seçenekler olarak görünecektir.</string>
-    <string name="product_wip_message_m4">Artık Woo uygulamasını kullanarak yeni, basit, bağlantılı ve gruplandırılmış ürünler oluşturmanız mümkün. Uygulama ayarlarında beta özelliğini açarak bu özelliği etkinleştirebilirsiniz. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
     <string name="product_adding_wip_title">Uygulamayı kullanarak ürünler oluşturun!</string>
     <string name="product_ratings_count_zero">\u2022 puan yok</string>
     <string name="product_ratings_count_one">\u2022 bir kez değerlendirildi</string>
     <string name="product_ratings_count">\u2022 %d kez değerlendirildi</string>
     <string name="product_detail_fetch_product_invalid_id_error">Ürün bulunamadı</string>
-    <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
-    <string name="print_shipping_label_info_step_4">Yazıcı ürün yazılımının güncel olduğundan emin olmanız ve talimatlar için yazıcınızın belgelerine bakmanız gerekebilir.</string>
-    <string name="print_shipping_label_info_step_3">Cihazınızı seçebilir veya (bu önerilen bir seçenek olarak görünmelidir) yükleyebilirsiniz</string>
-    <string name="print_shipping_label_info_step_2">Seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
-    <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın şuna bağlı olduğundan emin olun:</string>
+    <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, &lt;b>etiketinizi PDF olarak kaydedebilir&lt;/b> ve başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
+    <string name="print_shipping_label_info_step_2"> &lt;b>\"Gönderim etiketi yazdır\"&lt;/b> öğesini seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
     <string name="print_shipping_label_format_options_title">Etiket biçimi seçenekleri</string>
     <string name="print_shipping_label_info_title">Cihazınızla yazdırın</string>
     <string name="shipping_label_paper_size_label">Etiket (4 x 6 inç)</string>

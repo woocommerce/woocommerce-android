@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-26 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Prueba la creación de nuevos productos sencillos, relacionados y agrupados mientras preparamos el lanzamiento</string>
+    <string name="product_downloadable_files_download_settings">Ajustes de descarga</string>
+    <string name="product_downloadable_files_name_invalid">Introduce un nombre válido</string>
+    <string name="product_downloadable_files_add_manually">Introduce la URL del archivo</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Desde la Biblioteca de medios de WordPress</string>
+    <string name="product_downloadable_files_add_from_device">Desde el dispositivo</string>
+    <string name="product_downloadable_files_url_invalid">Comprueba que la URL introducida es válida</string>
+    <string name="product_downloadable_files_upload_dialog_message">Por favor, espera…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Subiendo archivos</string>
+    <string name="product_downloadable_files_upload_failed">Error al subir el archivo</string>
+    <string name="product_downloadable_files_add_title">Añadir archivo descargable</string>
+    <string name="product_downloadable_add_bottomsheet_header">Añadir archivo descargable</string>
+    <string name="bottom_sheet_downloadable_files_desc">Incluir archivos descargables con compras</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Cancelar</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Sí, cambiar</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Se eliminarán todos los archivos adjuntos al producto en este momento.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">¿Seguro que quieres eliminar la opción de descargar archivos al comprar el producto?</string>
+    <string name="product_downloadable_files_edit_title">Archivo</string>
+    <string name="product_downloadable_files_delete_confirmation">¿Seguro que quieres eliminar este archivo?</string>
+    <string name="product_is_downloadable">Producto descargable</string>
+    <string name="delete">Eliminar</string>
+    <string name="product_downloadable_files_expiry">Vencimiento de la descarga</string>
+    <string name="product_downloadable_files_limit">Límite de descargas</string>
+    <string name="product_downloadable_files_expiry_info">Introduce el número de días antes de que expire un enlace de descarga, o déjalo en blanco si no caduca</string>
+    <string name="product_downloadable_files_limit_info">Introduce el número de veces que se puede descargar un archivo, déjalo en blanco para no limitar las descargas</string>
+    <string name="product_downloadable_files_name_info">Este es el nombre del archivo que se muestra al cliente</string>
+    <string name="product_downloadable_files_name">Nombre del archivo</string>
+    <string name="product_downloadable_files_url_info">Esta es la URL del archivo al que los clientes podrán acceder. Las URL introducidas ya deberían estar cifradas.</string>
+    <string name="product_downloadable_files_url">URL del archivo</string>
+    <string name="product_downloadable_files_add">Añadir un archivo</string>
+    <string name="product_downloadable_files_value_single">1 archivo</string>
+    <string name="product_downloadable_files_value_multiple">%1$d archivos</string>
+    <string name="product_wip_message_m4">Ahora es posible crear productos sencillos, relacionados y agrupados sobre la marcha desde la aplicación Woo. ¿No lo tienes todo listo aún? ¡Guarda los cambios en un borrador!</string>
+    <string name="print_shipping_label_info_step_4">Quizá tengas que &lt;b>configurar la impresión por wifi directamente en la impresora.&lt;/b>Comprueba que el firmware de la impresora está actualizado y consulta las instrucciones en la documentación de tu impresora.</string>
+    <string name="print_shipping_label_info_step_3">Selecciona el &lt;b>servicio de impresión predeterminado&lt;/b> del dispositivo o instala la &lt;b>aplicación nativa de la impresora&lt;/b> (esta acción debería ser la opción recomendada)</string>
+    <string name="print_shipping_label_info_step_1">Comprueba que la impresora y el dispositivo estén conectados a las &lt;b>mismas redes wifi&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Aumenta las ventas con las ventas dirigidas y cruzadas</string>
     <string name="edit_products_button">Editar productos</string>
     <string name="add_products_button">Añadir productos</string>
@@ -30,17 +64,13 @@ Language: es
     <string name="product_trash">Enviar producto a la papelera</string>
     <string name="product_detail_no_variations">Este producto no tiene variaciones todavía</string>
     <string name="product_variant_list_empty">En este momento, solo se pueden añadir opciones como tamaño y color en la web. Se mostrarán como opciones en la página de producto de tu sitio.</string>
-    <string name="product_wip_message_m4">Ahora es posible crear nuevos productos sencillos, relacionados y agrupados sobre la marcha, con la aplicación Woo. Para habilitarlo, activa la función beta en la configuración de la aplicación. ¿Aún no estás listo? ¡Guarda los cambios en un borrador!</string>
     <string name="product_adding_wip_title">¡Crea productos desde la aplicación!</string>
     <string name="product_ratings_count_zero">\u2022 no tiene valoraciones</string>
     <string name="product_ratings_count_one">\u2022 ha recibido una valoración</string>
     <string name="product_ratings_count">\u2022 ha recibido %d valoraciones</string>
     <string name="product_detail_fetch_product_invalid_id_error">No se ha encontrado el producto</string>
-    <string name="print_shipping_label_info_step_5">Si sigues teniendo problemas para imprimir desde tu dispositivo, puedes enviarlo por correo electrónico para imprimirlo desde otro dispositivo.</string>
-    <string name="print_shipping_label_info_step_4">Comprueba que el firmware de la impresora está actualizado y consulta las instrucciones en la documentación de tu impresora.</string>
-    <string name="print_shipping_label_info_step_3">Puedes seleccionar el de tu dispositivo o instalar el tuyo (esta debería aparecer como la opción recomendada)</string>
-    <string name="print_shipping_label_info_step_2">Cuando hayas hecho la selección, puede que tengas que elegir y añadir una impresora si nunca has imprimido con este dispositivo.</string>
-    <string name="print_shipping_label_info_step_1">Asegúrate de que tu impresora y tu dispositivo están conectados al</string>
+    <string name="print_shipping_label_info_step_5">Si sigues teniendo problemas para imprimir desde tu dispositivo &lt;b>guarda la etiqueta en formato PDF&lt;/b> y envíala por correo electrónico para imprimirla con otro dispositivo.</string>
+    <string name="print_shipping_label_info_step_2">Cuando selecciones &lt;b>\"Imprimir etiqueta de envío\"&lt;/b>, puede que tengas que seleccionar y añadir una impresora si no has impreso nada antes desde ese dispositivo.</string>
     <string name="print_shipping_label_format_options_title">Opciones de formato de la etiqueta</string>
     <string name="print_shipping_label_info_title">Imprimir con tu dispositivo</string>
     <string name="shipping_label_paper_size_label">Etiqueta (4\" x 6\")</string>
@@ -163,7 +193,7 @@ Language: es
     <string name="shipping_label_refund_button">Etiqueta de reembolso (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Cantidad elegible para el reembolso</string>
     <string name="shipping_label_refund_purchase_date_title">Fecha de compra</string>
-    <string name="shipping_label_refund_message">Puedes solicitar un reembolso para una etiqueta de envío que no se haya utilizado para enviar un paquete.  Tardará al menos 14 días en procesarse.</string>
+    <string name="shipping_label_refund_message">Puedes solicitar un reembolso para una etiqueta de envío que no se haya utilizado para enviar un paquete. Tardará al menos 14 días en procesarse.</string>
     <string name="orderdetail_shipping_label_request_refund">Solicitar un reembolso</string>
     <string name="orderdetail_shipping_label_item_menu">Etiqueta de envío de reembolso</string>
     <string name="product_type_physical">Físico</string>

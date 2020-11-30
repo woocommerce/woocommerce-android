@@ -1,0 +1,4 @@
+5.5:
+Produk: Sekarang Anda dapat menambahkan produk yang sederhana, dikelompokkan, dan eksternal, serta menyimpan produk sebagai draf. Kami akan segera meluncurkan beberapa fitur baru untuk Anda coba!
+
+Perbaikan lainnya: Kami memperbaiki bug yang memengaruhi nama variasi produk ketika opsi variasi "dibuka", serta salah ketik pada layar label pengiriman.

@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 13:54:04+0000
+Translation-Revision-Date: 2020-11-25 10:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">在推出前搶先測試全新的簡單、連結和組合商品建立功能。</string>
+    <string name="product_downloadable_files_download_settings">下載設定</string>
+    <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
+    <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">來自 WordPress 媒體庫</string>
+    <string name="product_downloadable_files_add_from_device">來自裝置</string>
+    <string name="product_downloadable_files_url_invalid">檢查輸入的 URL 是否有效</string>
+    <string name="product_downloadable_files_upload_dialog_message">請稍候…</string>
+    <string name="product_downloadable_files_upload_dialog_title">正在上傳檔案</string>
+    <string name="product_downloadable_files_upload_failed">上傳檔案時發生錯誤</string>
+    <string name="product_downloadable_files_add_title">新增可下載的檔案</string>
+    <string name="product_downloadable_add_bottomsheet_header">新增可下載的檔案</string>
+    <string name="bottom_sheet_downloadable_files_desc">在購買項目包含可下載的檔案</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">取消</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">是，請變更</string>
+    <string name="product_uncheck_is_downloadable_warning_message">目前附加到此產品的所有檔案將被移除。</string>
+    <string name="product_uncheck_is_downloadable_warning_title">確定要在購買產品後移除下載檔案的功能？</string>
+    <string name="product_downloadable_files_edit_title">檔案</string>
+    <string name="product_downloadable_files_delete_confirmation">確定要移除此檔案？</string>
+    <string name="product_is_downloadable">可下載的產品</string>
+    <string name="delete">刪除</string>
+    <string name="product_downloadable_files_expiry">下載期限</string>
+    <string name="product_downloadable_files_limit">下載限制</string>
+    <string name="product_downloadable_files_expiry_info">輸入下載連結的使用期限，保留空白則表示永久有效</string>
+    <string name="product_downloadable_files_limit_info">輸入可以下載檔案的次數，保留空白則表示無次數限制</string>
+    <string name="product_downloadable_files_name_info">這是向顧客顯示的檔案名稱</string>
+    <string name="product_downloadable_files_name">檔案名稱</string>
+    <string name="product_downloadable_files_url_info">這是顧客能夠存取的檔案 URL。 輸入的 URL 應該已編碼。</string>
+    <string name="product_downloadable_files_url">檔案 URL</string>
+    <string name="product_downloadable_files_add">新增檔案</string>
+    <string name="product_downloadable_files_value_single">1 個檔案</string>
+    <string name="product_downloadable_files_value_multiple">%1$d 個檔案</string>
+    <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地新增簡單、連結和組合產品。尚未建立完成嗎？ 將它們儲存為草稿！</string>
+    <string name="print_shipping_label_info_step_4">你可能必須&lt;b>在印表機上直接設定 WiFi 列印。&lt;/b>請確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
+    <string name="print_shipping_label_info_step_3">你可以選擇裝置的&lt;b>預設列印服務&lt;/b>或安裝&lt;b>印表機的品牌應用程式&lt;/b> (應顯示為建議選項)</string>
+    <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到&lt;b>同樣的 WiFi 網路&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">透過追加銷售和交叉銷售提高銷售額</string>
     <string name="edit_products_button">編輯商品</string>
     <string name="add_products_button">新增商品</string>
@@ -30,17 +64,13 @@ Language: zh_TW
     <string name="product_trash">將商品移至垃圾桶</string>
     <string name="product_detail_no_variations">此商品尚無子項</string>
     <string name="product_variant_list_empty">目前只在網頁上提供新增尺寸和顏色等選項。 這些選項會顯示在網站的商品頁面上。</string>
-    <string name="product_wip_message_m4">你現在可以透過 Woo 應用程式隨時隨地建立新的簡單、連結和組合商品。在應用程式設定中開啟 Beta 功能即可啟用。 尚未建立完成嗎？ 將它們儲存為草稿！</string>
     <string name="product_adding_wip_title">從應用程式建立商品！</string>
     <string name="product_ratings_count_zero">\u2022 沒有評分</string>
     <string name="product_ratings_count_one">\u2022 評分過一次</string>
     <string name="product_ratings_count">\u2022 評分過 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到商品</string>
-    <string name="print_shipping_label_info_step_5">如果你仍然無法從裝置列印，可以透過電子郵件傳送檔案到其他裝置上列印。</string>
-    <string name="print_shipping_label_info_step_4">你可能必須確認已更新印表機韌體，並參閱印表機文件以取得指示。</string>
-    <string name="print_shipping_label_info_step_3">你可以選擇你的裝置或安裝 (應為建議選項)</string>
-    <string name="print_shipping_label_info_step_2">選取之後，如果你從未使用此裝置列印，可能必須先選取並新增印表機。</string>
-    <string name="print_shipping_label_info_step_1">請確認你的印表機和裝置已連接到</string>
+    <string name="print_shipping_label_info_step_5">如果仍無法從裝置列印，可以&lt;b>將標籤另存為 PDF 檔&lt;/b>，並透過電子郵件傳送檔案到其他裝置上列印。</string>
+    <string name="print_shipping_label_info_step_2">如果你從未使用此裝置列印，選取&lt;b>「列印郵寄標籤」&lt;/b>之後，可能必須先選取並新增印表機。</string>
     <string name="print_shipping_label_format_options_title">標籤格式選項</string>
     <string name="print_shipping_label_info_title">使用你的裝置列印</string>
     <string name="shipping_label_paper_size_label">標籤 (4 x 6 吋)</string>
@@ -163,7 +193,7 @@ Language: zh_TW
     <string name="shipping_label_refund_button">退款標籤 (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">符合退款資格的金額</string>
     <string name="shipping_label_refund_purchase_date_title">購買日期</string>
-    <string name="shipping_label_refund_message">你可以針對尚未用於運送包裹的郵寄標籤要求退款。 退款需至少 14 天處理時間。</string>
+    <string name="shipping_label_refund_message">你可以針對尚未用於運送包裹的郵寄標籤要求退款。 需要至少 14 天的處理時間。</string>
     <string name="orderdetail_shipping_label_request_refund">要求退款</string>
     <string name="orderdetail_shipping_label_item_menu">退還郵寄標籤的款項</string>
     <string name="product_type_physical">實體</string>
