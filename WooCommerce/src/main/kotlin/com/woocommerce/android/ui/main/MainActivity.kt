@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
@@ -64,8 +66,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -131,6 +131,9 @@ class MainActivity : AppUpgradeActivity(),
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
 
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var toolbar: Toolbar
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
 
@@ -155,13 +158,18 @@ class MainActivity : AppUpgradeActivity(),
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setContentView(binding.root)
+
+        // we have to use findViewById rather than view binding for the toolbar since it's an included layout
+        toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
         presenter.takeView(this)
 
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+        bottomNavView = binding.bottomNav.also { it.init(supportFragmentManager, this) }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -203,14 +211,14 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // detect when the collapsible toolbar if fully expanded
-        app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+        binding.appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             if (isAtNavigationRoot()) {
                 isToolbarExpanded = (verticalOffset == 0)
             }
         })
 
         // see overridden onChildViewAdded() and onChildViewRemoved() below
-        app_bar_layout.setOnHierarchyChangeListener(this)
+        binding.appBarLayout.setOnHierarchyChangeListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -378,16 +386,16 @@ class MainActivity : AppUpgradeActivity(),
 
         // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {
-            container.visibility = View.VISIBLE
+            binding.container.visibility = View.VISIBLE
         } else {
-            container.visibility = View.INVISIBLE
+            binding.container.visibility = View.INVISIBLE
         }
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
             showCrossIcon = false
         } else {
-            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
@@ -428,12 +436,12 @@ class MainActivity : AppUpgradeActivity(),
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = collapsing_toolbar.layoutParams.height
-                collapsing_toolbar.layoutParams.height = 0
+                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+                binding.collapsingToolbar.layoutParams.height = 0
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 if (restoreToolbarHeight > 0) {
-                    collapsing_toolbar.layoutParams.height = restoreToolbarHeight
+                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
                     restoreToolbarHeight = 0
                 }
             }
@@ -472,20 +480,20 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun setTitle(title: CharSequence?) {
         super.setTitle(title)
-        collapsing_toolbar.title = title
+        binding.collapsingToolbar.title = title
     }
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
-        app_bar_layout.setExpanded(expand, animate)
+        binding.appBarLayout.setExpanded(expand, animate)
     }
 
     private fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
         }
-        collapsing_toolbar.isTitleEnabled = enable
+        binding.collapsingToolbar.isTitleEnabled = enable
 
-        val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
+        val params = (binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams)
         params.behavior = if (enable) {
             toolbarEnabledBehavior
         } else {
@@ -835,7 +843,7 @@ class MainActivity : AppUpgradeActivity(),
         if (launchedFromNotification) {
             showBottomNav()
             bottomNavView.currentPosition = REVIEWS
-            bottom_nav.active(REVIEWS.position)
+            bottomNavView.active(REVIEWS.position)
         }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
@@ -869,7 +877,7 @@ class MainActivity : AppUpgradeActivity(),
         if (bottomNavView.currentPosition != ORDERS) {
             bottomNavView.currentPosition = ORDERS
             val navPos = ORDERS.position
-            bottom_nav.active(navPos)
+            bottomNavView.active(navPos)
         }
 
         if (markComplete) {
@@ -895,7 +903,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
-        if (isConnected) offline_bar.hide() else offline_bar.show()
+        if (isConnected) binding.offlineBar.hide() else binding.offlineBar.show()
     }
 
     private fun checkConnection() {
@@ -905,14 +913,14 @@ class MainActivity : AppUpgradeActivity(),
     override fun hideBottomNav() {
         if (isBottomNavShowing) {
             isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(bottom_nav, false, Duration.MEDIUM)
+            WooAnimUtils.animateBottomBar(bottomNavView, false, Duration.MEDIUM)
         }
     }
 
     override fun showBottomNav() {
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(bottom_nav, true, Duration.SHORT)
+            WooAnimUtils.animateBottomBar(bottomNavView, true, Duration.SHORT)
         }
     }
 
@@ -961,11 +969,11 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onChildViewAdded(parent: View?, child: View?) {
         parent?.postDelayed({
-            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }, 100L)
     }
 
     override fun onChildViewRemoved(parent: View?, child: View?) {
-        app_bar_layout.elevation = 0f
+        binding.appBarLayout.elevation = 0f
     }
 }
