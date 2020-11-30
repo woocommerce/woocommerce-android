@@ -1,0 +1,4 @@
+5.5:
+Productos: Ahora puedes añadir productos sencillos, agrupados y externos, y guardar productos como borradores. ¡Muy pronto podrás probar nuevas prestaciones!
+
+Otras correcciones: Hemos corregido un error que afectaba a los nombres de variaciones cuando la opción estaba "abierta", y un error de escritura en la pantalla de etiquetas de envío.

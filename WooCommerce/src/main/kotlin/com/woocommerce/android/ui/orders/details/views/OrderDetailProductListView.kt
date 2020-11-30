@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -72,20 +73,23 @@ class OrderDetailProductListView @JvmOverloads constructor(
         }
     }
 
-    fun showOrderFulfillOption(
-        show: Boolean,
-        onOrderFulfillTapped: () -> Unit
+    fun showMarkOrderCompleteButton(
+        isVisible: Boolean,
+        onMarkOrderCompleteButtonTapped: () -> Unit
     ) {
-        if (show) {
-            productList_btnFulfill.visibility = View.VISIBLE
-            productList_btnDetails.visibility = View.GONE
-            productList_btnDetails.setOnClickListener(null)
-            productList_btnFulfill.setOnClickListener { onOrderFulfillTapped() }
-        } else {
-            productList_btnFulfill.visibility = View.GONE
-            productList_btnDetails.visibility = View.GONE
-            productList_btnDetails.setOnClickListener(null)
-            productList_btnFulfill.setOnClickListener(null)
-        }
+        productList_btnMarkOrderComplete.isVisible = isVisible
+        productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
+    }
+
+    fun showCreateShippingLabelButton(
+        isVisible: Boolean,
+        onCreateShippingLabelButtonTapped: () -> Unit,
+        onShippingLabelNoticeTapped: () -> Unit
+    ) {
+        productList_btnCreateShippingLabel.isVisible = isVisible
+        productList_btnCreateShippingLabel.setOnClickListener { onCreateShippingLabelButtonTapped() }
+
+        productList_shippingLabelsNotice.isVisible = isVisible
+        productList_shippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
     }
 }
