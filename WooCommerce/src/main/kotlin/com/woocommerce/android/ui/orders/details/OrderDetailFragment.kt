@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabe
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -136,10 +137,10 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                 showMarkOrderCompleteButton(it)
             }
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
-                showShippingLabelButton(it)
+                showShippingLabelButton(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()))
             }
             new.isCreateShippingLabelBannerVisible.takeIfNotEqualTo(old?.isCreateShippingLabelBannerVisible) {
-                displayShippingLabelsWIPCard(it, false)
+                displayShippingLabelsWIPCard(it && FeatureFlag.SHIPPING_LABELS_M2.isEnabled(requireContext()), false)
             }
             new.isReprintShippingLabelBannerVisible.takeIfNotEqualTo(old?.isReprintShippingLabelBannerVisible) {
                 displayShippingLabelsWIPCard(it, true)
