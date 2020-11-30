@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-26 10:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Оцените новую простую процедуру создания связанных и сгруппированных продуктов, которая готова к запуску</string>
+    <string name="product_downloadable_files_download_settings">Настройки загрузки</string>
+    <string name="product_downloadable_files_name_invalid">Введите правильное имя</string>
+    <string name="product_downloadable_files_add_manually">Введите URL-адрес файла</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Из библиотеки файлов WordPress</string>
+    <string name="product_downloadable_files_add_from_device">С устройства</string>
+    <string name="product_downloadable_files_url_invalid">Убедитесь, что введен допустимый URL-адрес</string>
+    <string name="product_downloadable_files_upload_dialog_message">Пожалуйста, подождите…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Загрузка файлов</string>
+    <string name="product_downloadable_files_upload_failed">Ошибка загрузки файлов</string>
+    <string name="product_downloadable_files_add_title">Добавьте скачиваемый файл</string>
+    <string name="product_downloadable_add_bottomsheet_header">Добавьте скачиваемый файл</string>
+    <string name="bottom_sheet_downloadable_files_desc">Добавлять к покупкам скачиваемый файл</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Отмена</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Да, изменить</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Все прикрепленные к этому товару файлы будут удалены.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Отключить возможность скачивать файлы при покупке товара?</string>
+    <string name="product_downloadable_files_edit_title">Файл</string>
+    <string name="product_downloadable_files_delete_confirmation">Удалить файл?</string>
+    <string name="product_is_downloadable">Загружаемый товар</string>
+    <string name="delete">Удалить</string>
+    <string name="product_downloadable_files_expiry">Срок действия для загрузок</string>
+    <string name="product_downloadable_files_limit">Лимит загрузок</string>
+    <string name="product_downloadable_files_expiry_info">Введите количество дней, по окончанию которых ссылка на скачивание перестанет работать, или оставьте пустым, если срок действия не указан</string>
+    <string name="product_downloadable_files_limit_info">Укажите количество загрузок файла или оставьте поле пустым, чтобы не ограничивать количество загрузок</string>
+    <string name="product_downloadable_files_name_info">Это имя файла, которое видит клиент</string>
+    <string name="product_downloadable_files_name">Имя файла</string>
+    <string name="product_downloadable_files_url_info">Это URL-адрес файла, к которому клиенты получат доступ. Введенные URL-адреса должны быть уже закодированы.</string>
+    <string name="product_downloadable_files_url">Ссылка на файл</string>
+    <string name="product_downloadable_files_add">Добавить файл</string>
+    <string name="product_downloadable_files_value_single">1 файл</string>
+    <string name="product_downloadable_files_value_multiple">%1$d файлы</string>
+    <string name="product_wip_message_m4">Теперь можно на ходу создавать новые простые, связанные и сгруппированные товары в приложении Woo. Еще не готовы? Сохраните их как черновик.</string>
+    <string name="print_shipping_label_info_step_4">Возможно, нужно &lt;b>настроить печать по Wi-Fi на самом принтере&lt;/b>. Убедитесь, что микропрограммное обеспечение принтера обновлено, и ознакомьтесь с документацией принтера.</string>
+    <string name="print_shipping_label_info_step_3">Можно выбрать для принтера &lt;b>службу печати по умолчанию&lt;/b> или установить &lt;b>приложение от производителя принтера&lt;/b> (здесь должен появиться рекомендованный вариант).</string>
+    <string name="print_shipping_label_info_step_1">Убедитесь, что ваши принтер и устройство подключены к &lt;b>одной сети Wi-Fi&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Увеличивайте продажи благодаря продаже дополнительных и связанных продуктов</string>
     <string name="edit_products_button">Изменить товары</string>
     <string name="add_products_button">Добавить товары</string>
@@ -30,17 +64,13 @@ Language: ru
     <string name="product_trash">Отправить продукт в корзину</string>
     <string name="product_detail_no_variations">Вариантов продукта пока нет</string>
     <string name="product_variant_list_empty">Добавление опций, например размера и цвета, сейчас возможно только в Интернете. Эти варианты будут показаны на странице продукта на вашем сайте.</string>
-    <string name="product_wip_message_m4">Теперь можно на ходу создавать новые связанные и сгруппированные продукты в приложении Woo. Чтобы его активировать, включите бета-функцию в настройках приложения. Еще не готово? Сохраните их как черновик.</string>
     <string name="product_adding_wip_title">Создавайте продукты в приложении!</string>
     <string name="product_ratings_count_zero">\u2022 оценок нет</string>
     <string name="product_ratings_count_one">\u2022 одна оценка</string>
     <string name="product_ratings_count">\u2022 оценено %d раз</string>
     <string name="product_detail_fetch_product_invalid_id_error">Продукт не найден</string>
-    <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете отправить документ по эл. почте, чтобы распечатать его с другого устройства.</string>
-    <string name="print_shipping_label_info_step_4">Возможно, вам нужно проверить, обновлено ли встроенное ПО принтера, и ознакомиться с документацией принтера.</string>
-    <string name="print_shipping_label_info_step_3">Вы можете выбрать свое устройство или установить (здесь должен появиться рекомендованный вариант)</string>
-    <string name="print_shipping_label_info_step_2">После выбора вам потребуется выбрать и добавить принтер, если ранее вы не выполняли печать с данного устройства.</string>
-    <string name="print_shipping_label_info_step_1">Убедитесь, что ваш принтер и ваше устройство подключены к</string>
+    <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете &lt;b>сохранить этикетку в формате PDF&lt;/b> и отправить ее по эл. почте, чтобы распечатать с другого устройства.</string>
+    <string name="print_shipping_label_info_step_2">Нажав &lt;b>«Напечатать транспортную этикетку»&lt;/b>, можно выбрать и добавить принтер, если ранее вы не выполняли печать с этого устройства.</string>
     <string name="print_shipping_label_format_options_title">Варианты формата этикетки</string>
     <string name="print_shipping_label_info_title">Печать с устройства</string>
     <string name="shipping_label_paper_size_label">Этикетка (4 x 6 in)</string>
@@ -163,7 +193,7 @@ Language: ru
     <string name="shipping_label_refund_button">Вернуть оплату почтового бланка (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Сумма, доступная для возврата</string>
     <string name="shipping_label_refund_purchase_date_title">Дата покупки</string>
-    <string name="shipping_label_refund_message">Вы можете запросить возврат средств за неиспользованный почтовый бланк Обработка займет не менее 14 дней.</string>
+    <string name="shipping_label_refund_message">Вы можете запросить возврат средств за неиспользованный почтовый бланк Обработка займет от 14 дней.</string>
     <string name="orderdetail_shipping_label_request_refund">Запросить возврат средств</string>
     <string name="orderdetail_shipping_label_item_menu">Вернуть средства за почтовый бланк</string>
     <string name="product_type_physical">Физический</string>

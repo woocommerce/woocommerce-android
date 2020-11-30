@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Probeer de nieuwe functies uit voor het aanmaken van een eenvoudig, gekoppeld of gegroepeerd product. De functies zijn bijna klaar voor lancering</string>
+    <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
+    <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
+    <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Vanuit WordPress-mediabibliotheek</string>
+    <string name="product_downloadable_files_add_from_device">Vanuit apparaat</string>
+    <string name="product_downloadable_files_url_invalid">Controleer of de ingevoerde URL geldig is</string>
+    <string name="product_downloadable_files_upload_dialog_message">Een moment geduld …</string>
+    <string name="product_downloadable_files_upload_dialog_title">Bestanden worden geüpload</string>
+    <string name="product_downloadable_files_upload_failed">Fout bij uploaden van bestand</string>
+    <string name="product_downloadable_files_add_title">Downloadbaar bestand toevoegen</string>
+    <string name="product_downloadable_add_bottomsheet_header">Downloadbaar bestand toevoegen</string>
+    <string name="bottom_sheet_downloadable_files_desc">Downloadbare bestanden bijvoegen bij aankopen</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Annuleren</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Ja, wijzigen</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Alle bestanden die momenteel aan het product toegevoegd zijn, worden verwijderd.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Weet je zeker dat je de mogelijkheid wil verwijderen om bestanden te downloaden na aankoop van het product?</string>
+    <string name="product_downloadable_files_edit_title">Bestand</string>
+    <string name="product_downloadable_files_delete_confirmation">Weet je zeker dat je dit bestand wil verwijderen?</string>
+    <string name="product_is_downloadable">Downloadbaar product</string>
+    <string name="delete">Verwijderen</string>
+    <string name="product_downloadable_files_expiry">Verloopdatum download</string>
+    <string name="product_downloadable_files_limit">Downloadlimiet</string>
+    <string name="product_downloadable_files_expiry_info">Voer het aantal dagen in voordat een downloadlink verloopt, of laat leeg om onbeperkt beschikbaar te laten</string>
+    <string name="product_downloadable_files_limit_info">Voer het aantal keer in dat een bestand gedownload kan worden of laat leeg voor een onbeperkt aantal downloads</string>
+    <string name="product_downloadable_files_name_info">Dit is de naam van het bestand dat klanten te zien krijgen</string>
+    <string name="product_downloadable_files_name">Bestandsnaam</string>
+    <string name="product_downloadable_files_url_info">Dit is de URL van het bestand die klanten tot hun beschikking zullen hebben. Ingevoerde URL\'s zouden al versleuteld moeten zijn.</string>
+    <string name="product_downloadable_files_url">Bestand-URL</string>
+    <string name="product_downloadable_files_add">Bestand toevoegen</string>
+    <string name="product_downloadable_files_value_single">1 bestand</string>
+    <string name="product_downloadable_files_value_multiple">%1$d bestanden</string>
+    <string name="product_wip_message_m4">Je kan nu nieuwe eenvoudige, gekoppelde en gegroepeerde producten aanmaken terwijl je onderweg bent met de Woo-app. Was je nog niet klaar? Sla ze op als een concept!</string>
+    <string name="print_shipping_label_info_step_4">Het is mogelijk dat &lt;b>je afdrukken via wifi op de printer zelf moet instellen.&lt;/b> Controleer of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
+    <string name="print_shipping_label_info_step_3">Je kan de &lt;b>standaard afdrukservice&lt;/b> van je apparaat selecteren, of de &lt;b>bijbehorende app van je printer&lt;/b> installeren (dit zou de aanbevolen optie moeten zijn)</string>
+    <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met &lt;b>dezelfde wifi-netwerken&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Meer verkopen met upselling en cross-selling</string>
     <string name="edit_products_button">Producten bewerken</string>
     <string name="add_products_button">Producten toevoegen</string>
@@ -30,17 +64,13 @@ Language: nl
     <string name="product_trash">Product naar prullenbak verplaatsen</string>
     <string name="product_detail_no_variations">Er zijn nog geen variaties op dit product</string>
     <string name="product_variant_list_empty">Je kan momenteel alleen op de website opties zoals grootte en kleur toevoegen. Deze zullen als opties worden getoond op de productpagina van je site.</string>
-    <string name="product_wip_message_m4">Je kan nu nieuwe eenvoudige, gekoppelde en gegroepeerde producten aanmaken terwijl je onderweg bent met de Woo-app. Je kan dit inschakelen door de bèta-functie in te schakelen in de app-instellingen. Was je nog niet klaar? Sla ze op als een concept!</string>
     <string name="product_adding_wip_title">Maak producten aan in de app!</string>
     <string name="product_ratings_count_zero">\u2022 geen beoordelingen</string>
     <string name="product_ratings_count_one">\u2022 1 keer beoordeeld</string>
     <string name="product_ratings_count">\u2022 %d keer beoordeeld</string>
     <string name="product_detail_fetch_product_invalid_id_error">Product niet gevonden</string>
-    <string name="print_shipping_label_info_step_5">Als je nog steeds problemen ondervindt bij het afdrukken vanaf je apparaat, kan je het per e-mail verzenden om het vanaf een ander apparaat af te drukken.</string>
-    <string name="print_shipping_label_info_step_4">Het is mogelijk dat je moet nagaan of de firmware van de printer bijgewerkt is. Zie de documenten van je printer voor instructies.</string>
-    <string name="print_shipping_label_info_step_3">Je kan die van je apparaat selecteren of je (hier zou een aanbevolen optie moeten komen te staan) installeren</string>
-    <string name="print_shipping_label_info_step_2">Nadat je   hebt geselecteerd, moet je wellicht een printer selecteren en toevoegen als je nog niet eerder iets vanaf dit apparaat hebt afgedrukt.</string>
-    <string name="print_shipping_label_info_step_1">Zorg dat je printer en je apparaat verbonden zijn met het</string>
+    <string name="print_shipping_label_info_step_5">Als je nog steeds problemen ondervindt bij het afdrukken vanaf je apparaat, kan je &lt;b>het label opslaan als pdf&lt;/b> en het per e-mail verzenden om het vanaf een ander apparaat af te drukken.</string>
+    <string name="print_shipping_label_info_step_2">Nadat je &lt;b>\'Verzendlabel afdrukken\'&lt;/b> hebt geselecteerd, moet je wellicht een printer selecteren en toevoegen als je nog niet eerder iets vanaf dit apparaat hebt afgedrukt.</string>
     <string name="print_shipping_label_format_options_title">Opties labelformaat</string>
     <string name="print_shipping_label_info_title">Afdrukken met je apparaat</string>
     <string name="shipping_label_paper_size_label">Etiket (4 x 6 inch)</string>
