@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.orders
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -75,6 +78,17 @@ class OrderNavigator @Inject constructor() {
             is ViewPrintShippingLabelInfo -> {
                 val action = PrintShippingLabelFragmentDirections
                     .actionPrintShippingLabelFragmentToPrintShippingLabelInfoFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewCreateShippingLabelInfo -> {
+                val action = OrderDetailFragmentDirections.actionGlobalInfoScreenFragment(
+                    R.string.shipping_label_more_information_title,
+                    R.string.shipping_label_more_information_heading,
+                    R.string.shipping_label_more_information_message,
+                    R.string.shipping_label_more_information_link,
+                    R.drawable.img_woo_desk_character,
+                    LearnMoreAboutShippingLabels
+                )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShippingLabelFormatOptions -> {
