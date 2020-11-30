@@ -24,7 +24,7 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@id/rootFragment"
+            app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <action
@@ -308,5 +308,42 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+    </action>
+    <fragment
+        android:id="@+id/infoScreenFragment"
+        android:name="com.woocommerce.android.ui.common.InfoScreenFragment"
+        android:label="InfoScreenFragment">
+        <argument
+            android:name="screenTitle"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="heading"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="message"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="linkTitle"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="imageResource"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="linkAction"
+            app:argType="com.woocommerce.android.ui.common.InfoScreenFragment$InfoScreenLinkAction"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_global_infoScreenFragment"
+        app:destination="@id/infoScreenFragment"
+        app:enterAnim="@anim/activity_fade_in"
+        app:popExitAnim="@anim/activity_fade_out">
     </action>
 </navigation>

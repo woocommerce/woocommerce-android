@@ -1,0 +1,4 @@
+5.5:
+Produtos: agora você pode adicionar produtos simples, agrupados e externos e salvá-los como rascunho. Em breve, lançaremos mais funcionalidades para você testar!
+
+Outras correções: corrigimos um erro de grafia na tela da etiqueta de envio e um bug que afetava os nomes de variação dos produtos quando a opção de variação estava "aberta".

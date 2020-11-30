@@ -1,3 +1,0 @@
-5.4:
-* Exibição completa das informações de variação do produto nos detalhes do pedido.
-* Correção de uma falha rara ocorrida ao adicionar uma nova categoria de produto e selecionar as opções de filtro.

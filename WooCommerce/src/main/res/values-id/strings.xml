@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-27 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Gunakan pembuatan produk baru yang sederhana, ditautkan, dan dikelompokkan saat kami bersiap untuk meluncurkan</string>
+    <string name="product_downloadable_files_download_settings">Pengaturan Unduh</string>
+    <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
+    <string name="product_downloadable_files_add_manually">Masukkan URL file</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Dari Pustaka Media WordPress</string>
+    <string name="product_downloadable_files_add_from_device">Dari perangkat</string>
+    <string name="product_downloadable_files_url_invalid">Pastikan url yang dimasukkan valid</string>
+    <string name="product_downloadable_files_upload_dialog_message">Harap tunggu…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Mengunggah file</string>
+    <string name="product_downloadable_files_upload_failed">Error saat mengunggah file</string>
+    <string name="product_downloadable_files_add_title">Tambahkan file yang dapat diunduh</string>
+    <string name="product_downloadable_add_bottomsheet_header">Tambahkan file yang dapat diunduh</string>
+    <string name="bottom_sheet_downloadable_files_desc">Termasuk file yang dapat diunduh dengan pembelian</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Batal</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Ya, ubah</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Semua file yang saat ini terlampir pada produk ini akan dihapus. </string>
+    <string name="product_uncheck_is_downloadable_warning_title">Anda yakin ingin menghapus izin unduh file saat produk dibeli?</string>
+    <string name="product_downloadable_files_edit_title">File</string>
+    <string name="product_downloadable_files_delete_confirmation">Anda yakin ingin menghapus file ini?</string>
+    <string name="product_is_downloadable">Produk yang dapat diunduh</string>
+    <string name="delete">Hapus</string>
+    <string name="product_downloadable_files_expiry">Masa berlaku unduhan</string>
+    <string name="product_downloadable_files_limit">Batas unduhan</string>
+    <string name="product_downloadable_files_expiry_info">Masukkan jumlah hari sebelum tautan unduhan kedaluwarsa, atau biarkan kosong jika tidak ada masa berlaku</string>
+    <string name="product_downloadable_files_limit_info">Masukkan angka untuk jumlah maksimal file dapat diunduh atau biarkan kosong untuk unduhan tanpa batas</string>
+    <string name="product_downloadable_files_name_info">Ini adalah nama file yang ditampilkan untuk pelanggan</string>
+    <string name="product_downloadable_files_name">Nama File</string>
+    <string name="product_downloadable_files_url_info">Ini adalah URL file yang akan dapat diakses pelanggan. URL yang dimasukkan harus sudah dikodekan.</string>
+    <string name="product_downloadable_files_url">URL berkas</string>
+    <string name="product_downloadable_files_add">Tambahkan file</string>
+    <string name="product_downloadable_files_value_single">1 file</string>
+    <string name="product_downloadable_files_value_multiple">%1$d file</string>
+    <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Belum siap? Simpan sebagai draf!</string>
+    <string name="print_shipping_label_info_step_4">Anda mungkin perlu &lt;b>mengonfigurasi pencetakan melalui WiFi langsung dari mesin cetak.&lt;/b> Pastikan firmware mesin cetak sudah diperbarui dan lihat manual mesin cetak untuk mengetahui petunjuknya.</string>
+    <string name="print_shipping_label_info_step_3">Anda dapat memilih &lt;b>layanan cetak default&lt;/b> perangkat atau pasang &lt;b>aplikasi khusus mesin cetak&lt;/b> Anda (ini akan muncul sebagai opsi yang disarankan)</string>
+    <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke &lt;b>jaringan WiFi yang sama&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Tingkatkan penjualan dengan upsell dan cross-sell</string>
     <string name="edit_products_button">Edit produk</string>
     <string name="add_products_button">Tambahkan produk</string>
@@ -30,17 +64,13 @@ Language: id
     <string name="product_trash">Buang produk</string>
     <string name="product_detail_no_variations">Produk ini belum memiliki variasi</string>
     <string name="product_variant_list_empty">Menambahkan opsi seperti ukuran dan warna saat ini hanya tersedia pada web. Pilihan tersebut akan muncul sebagai opsi pada halaman produk situs Anda.</string>
-    <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Anda dapat mengaktifkannya dengan mengaktifkan fitur beta pada pengaturan aplikasi. Belum siap? Simpan sebagai draf!</string>
     <string name="product_adding_wip_title">Buat produk dari aplikasi!</string>
     <string name="product_ratings_count_zero">\u2022 belum ada peringkat</string>
     <string name="product_ratings_count_one">\u2022 diberi peringkat sekali</string>
     <string name="product_ratings_count">\u2022 diberi peringkat %d kali</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produk tidak ditemukan</string>
-    <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
-    <string name="print_shipping_label_info_step_4">Anda mungkin perlu memastikan firmware mesin cetak sudah diperbarui dan lihat dokumen mesin cetak untuk petunjuk.</string>
-    <string name="print_shipping_label_info_step_3">Anda dapat memilih perangkat Anda atau pasang (ini akan muncul sebagai opsi yang disarankan)</string>
-    <string name="print_shipping_label_info_step_2">Setelah memilih , Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
-    <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke</string>
+    <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat &lt;b>menyimpan label Anda dalam format PDF&lt;/b> dan mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
+    <string name="print_shipping_label_info_step_2">Setelah memilih &lt;b>\"Cetak label pengiriman\"&lt;/b>, Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
     <string name="print_shipping_label_format_options_title">Opsi format Label</string>
     <string name="print_shipping_label_info_title">Cetak dari perangkat Anda</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 inci)</string>

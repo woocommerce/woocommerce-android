@@ -58,7 +58,7 @@ data class Product(
     val shippingClassId: Long,
     val isDownloadable: Boolean,
     val downloads: List<ProductFile>,
-    val downloadLimit: Int,
+    val downloadLimit: Long,
     val downloadExpiry: Int,
     val purchaseNote: String,
     val numVariations: Int,
