@@ -4,8 +4,6 @@
 ----
 * [****] We've updated the UI to a crisper, cleaner design [https://github.com/woocommerce/woocommerce-android/pull/3136]
 * Fixed an issue with unexpected shipment tracking UI in order details
- 
-* Fixed an issue with unexpected shipment tracking UI in order details
 
 5.5
 -----
