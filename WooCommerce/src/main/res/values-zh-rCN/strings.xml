@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 13:54:04+0000
+Translation-Revision-Date: 2020-11-27 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">试用我们即将发布的简单、关联和分组的新产品创建功能</string>
+    <string name="product_downloadable_files_download_settings">下载设置</string>
+    <string name="product_downloadable_files_name_invalid">请输入有效的名称</string>
+    <string name="product_downloadable_files_add_manually">输入文件 URL</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">从 WordPress 媒体库</string>
+    <string name="product_downloadable_files_add_from_device">从设备</string>
+    <string name="product_downloadable_files_url_invalid">请检查输入的 url 是否有效</string>
+    <string name="product_downloadable_files_upload_dialog_message">请稍候…</string>
+    <string name="product_downloadable_files_upload_dialog_title">正在上传文件</string>
+    <string name="product_downloadable_files_upload_failed">上传文件时出错</string>
+    <string name="product_downloadable_files_add_title">添加可下载文件</string>
+    <string name="product_downloadable_add_bottomsheet_header">添加可下载文件</string>
+    <string name="bottom_sheet_downloadable_files_desc">购买产品中包括可下载文件</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">取消</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">是的，更改</string>
+    <string name="product_uncheck_is_downloadable_warning_message">当前附加到该产品的所有文件都将被删除。</string>
+    <string name="product_uncheck_is_downloadable_warning_title">是否确定要在购买产品时删除下载文件的功能？</string>
+    <string name="product_downloadable_files_edit_title">文件</string>
+    <string name="product_downloadable_files_delete_confirmation">是否确定要删除此文件？</string>
+    <string name="product_is_downloadable">可下载产品</string>
+    <string name="delete">删除</string>
+    <string name="product_downloadable_files_expiry">下载有效期</string>
+    <string name="product_downloadable_files_limit">下载限制</string>
+    <string name="product_downloadable_files_expiry_info">输入下载链接的有效天数，或者留空，使其永久有效</string>
+    <string name="product_downloadable_files_limit_info">输入文件可以下载的次数，或者留空以供无限次下载</string>
+    <string name="product_downloadable_files_name_info">此文件名将面向客户显示。</string>
+    <string name="product_downloadable_files_name">文件名</string>
+    <string name="product_downloadable_files_url_info">这是供客户访问的文件 URL。 所输入的 URL 应已编码。</string>
+    <string name="product_downloadable_files_url">文件 URL</string>
+    <string name="product_downloadable_files_add">添加文件</string>
+    <string name="product_downloadable_files_value_single">1 个文件</string>
+    <string name="product_downloadable_files_value_multiple">%1$d 个文件</string>
+    <string name="product_wip_message_m4">现在可通过 Woo 应用程序随时随地新建简单的关联和分组产品。还没有准备好？ 将它们另存为草稿！</string>
+    <string name="print_shipping_label_info_step_4">您可能需要&lt;b>直接在打印机上配置 WiFi 打印&lt;/b>。确保打印机固件已更新，相关说明请参阅打印机文档。</string>
+    <string name="print_shipping_label_info_step_3">您可以选择设备的&lt;b>默认打印服务&lt;/b>或安装&lt;b>打印机的品牌应用&lt;/b>（后者应显示为推荐选项）</string>
+    <string name="print_shipping_label_info_step_1">确保您的打印机和设备连接到&lt;b>相同的 WiFi 网络&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">通过追加销售和交叉销售增加销售额</string>
     <string name="edit_products_button">编辑产品</string>
     <string name="add_products_button">添加产品</string>
@@ -30,17 +64,13 @@ Language: zh_CN
     <string name="product_trash">将产品移动到回收站</string>
     <string name="product_detail_no_variations">该产品尚无变体</string>
     <string name="product_variant_list_empty">目前仅支持通过网页添加尺寸和颜色等选项， 它们将以选项的形式显示在您站点的产品页面上。</string>
-    <string name="product_wip_message_m4">现在，您可以通过 Woo 应用程序随时随地创建简单、关联和分组的新产品。在应用程序设置中开启测试版功能可启用此功能。 还没准备好？ 将它们另存为草稿！</string>
     <string name="product_adding_wip_title">通过应用程序创建产品！</string>
     <string name="product_ratings_count_zero">\u2022 无评价</string>
     <string name="product_ratings_count_one">\u2022 评价 1 次</string>
     <string name="product_ratings_count">\u2022 评价 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到产品</string>
-    <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以通过电子邮件将其发送到其他设备打印。</string>
-    <string name="print_shipping_label_info_step_4">您可能必须确保打印机固件已更新，相关说明请参阅打印机文档。</string>
-    <string name="print_shipping_label_info_step_3">您可以选择设备自带的或安装您自己的（后者应显示为推荐选项）</string>
-    <string name="print_shipping_label_info_step_2">选好之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
-    <string name="print_shipping_label_info_step_1">确保您的打印机和设备已连接到</string>
+    <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以&lt;b>将标签另存为 PDF &lt;/b>，并通过电子邮件将其发送到其他设备打印。</string>
+    <string name="print_shipping_label_info_step_2">选择&lt;b>“打印配送标签”&lt;/b>之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
     <string name="print_shipping_label_format_options_title">标签格式选项</string>
     <string name="print_shipping_label_info_title">通过设备打印</string>
     <string name="shipping_label_paper_size_label">标签（4 x 6 英寸）</string>

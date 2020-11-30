@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "5.5-rc-2"
+            versionName "5.5"
         }
-        versionCode 172
+        versionCode 173
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -123,6 +123,7 @@ dependencies {
 
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
+        exclude group: "com.google.guava", module: "guava"
     }
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
@@ -153,6 +154,11 @@ dependencies {
     }
 
     implementation 'com.automattic:tracks:1.2.1'
+    constraints {
+        implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
+            because 'previous version from tracks conflicts with WireMock for UI tests'
+        }
+    }
 
     implementation("$gradle.ext.fluxCBinaryPath:fluxc:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -235,14 +241,19 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
-    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+        exclude group: 'asm', module: 'asm'
+        exclude group: 'org.json', module: 'json'
+    }
+    androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"

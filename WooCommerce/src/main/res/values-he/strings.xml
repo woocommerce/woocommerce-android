@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 15:54:04+0000
+Translation-Revision-Date: 2020-11-25 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">כדאי לבדוק את המוצרים הפשוטים, המקושרים והמקובצים החדשים בזמן שאנחנו מתכוננים להשקה</string>
+    <string name="product_downloadable_files_download_settings">הגדרות הורדה</string>
+    <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
+    <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">מספריית המדיה של WordPress</string>
+    <string name="product_downloadable_files_add_from_device">מהמכשיר</string>
+    <string name="product_downloadable_files_url_invalid">יש לוודא שכתובת ה-URL שהוזנה חוקית</string>
+    <string name="product_downloadable_files_upload_dialog_message">רק רגע…</string>
+    <string name="product_downloadable_files_upload_dialog_title">מעלה קבצים</string>
+    <string name="product_downloadable_files_upload_failed">אירעה שגיאה בהעלאת הקובץ</string>
+    <string name="product_downloadable_files_add_title">להוסיף קובץ להורדה</string>
+    <string name="product_downloadable_add_bottomsheet_header">להוסיף קובץ להורדה</string>
+    <string name="bottom_sheet_downloadable_files_desc">לכלול קבצים להורדה עם רכישות</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">ביטול</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">כן, אני רוצה לשנות</string>
+    <string name="product_uncheck_is_downloadable_warning_message">כל הקבצים שמחוברים עכשיו למוצר זה יוסרו.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">האם ברצונך להסיר את היכולת להוריד קבצים עם רכישת המוצר?</string>
+    <string name="product_downloadable_files_edit_title">קובץ</string>
+    <string name="product_downloadable_files_delete_confirmation">האם ברצונך להסיר את הקובץ הזה?</string>
+    <string name="product_is_downloadable">מוצר להורדה</string>
+    <string name="delete">מחק</string>
+    <string name="product_downloadable_files_expiry">תאריך התפוגה של ההורדה</string>
+    <string name="product_downloadable_files_limit">מגבלת הורדות</string>
+    <string name="product_downloadable_files_expiry_info">יש להזין את מספר הימים עד לתאריך התפוגה של הקישור להורדה או להשאיר ריק אם אין לו תאריך תפוגה</string>
+    <string name="product_downloadable_files_limit_info">יש להזין את מספר הפעמים שאפשר להוריד את הקובץ או להשאיר ריק כדי לאפשר הורדות ללא הגבלה</string>
+    <string name="product_downloadable_files_name_info">זהו שם הקובץ שמוצג ללקוח</string>
+    <string name="product_downloadable_files_name">שם קובץ</string>
+    <string name="product_downloadable_files_url_info">זוהי כתובת ה-URL של הקובץ שאליו הלקוחות יקבלו גישה. כתובות ה-URL שהוזנו כבר אמורות להיות מקודדות.</string>
+    <string name="product_downloadable_files_url">כתובת URL של קובץ</string>
+    <string name="product_downloadable_files_add">להוסיף קובץ</string>
+    <string name="product_downloadable_files_value_single">קובץ אחד</string>
+    <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ קבצים</string>
+    <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום, דרך האפליקציה של WooCommerce. לא מתאים לך כרגע? אפשר לשמור אותם כטיוטה!</string>
+    <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך &lt;b>להגדיר את ההדפסת מה-WiFi ישירות מהמדפסת עצמה.&lt;/b> יש לוודא שהקושחה של המדפסת מעודכנת ולבדוק את ההוראות בתיעוד של המדפסת.</string>
+    <string name="print_shipping_label_info_step_3">אפשר לבחור את &lt;b>שירות ההדפסה בברירת מחדל&lt;/b> של המכשיר או להתקין את &lt;b>אפליקציית המותג של המדפסת&lt;/b> (היא אמורה להופיע כאפשרות מומלצת)</string>
+    <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל &lt;b>אותן רשתות WiFi‏ &lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">להגדיל את המכירות עם שדרוגי מכירות ומכירות צולבות</string>
     <string name="edit_products_button">לערוך מוצרים</string>
     <string name="add_products_button">להוסיף מוצרים</string>
@@ -30,17 +64,13 @@ Language: he_IL
     <string name="product_trash">להעביר מוצר לפח</string>
     <string name="product_detail_no_variations">למוצר זה אין עדיין סוגים</string>
     <string name="product_variant_list_empty">הוספה של אפשרויות כגון גודל וצבע זמינה כעת באינטרנט בלבד. פריטים אלה יופיעו כאפשרויות בעמוד המוצר באתר שלך.</string>
-    <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום דרך האפליקציה WooCommerce. אפשר להפעיל אותה על ידי הפעלה של אפשרות הבטא בהגדרות האפליקציה. עדיין לא מתאים לך? אפשר לשמור אותם כטיוטה!</string>
     <string name="product_adding_wip_title">אפשר ליצור מוצרים דרך האפליקציה!</string>
     <string name="product_ratings_count_zero">\u2022 אין דירוגים</string>
     <string name="product_ratings_count_one">\u2022 דורג פעם אחת</string>
     <string name="product_ratings_count">\u2022 דורג %d פעמים</string>
     <string name="product_detail_fetch_product_invalid_id_error">המוצר לא נמצא</string>
-    <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר לשלוח אותה באימייל כדי להדפיס דרך מכשיר אחר.</string>
-    <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך לוודא שהקושחה של המדפסת מעודכנת ולעיין במסמכי התיעוד של המדפסת לקבלת הנחיות.</string>
-    <string name="print_shipping_label_info_step_3">אפשר לבחור את המכשיר או להתקין את (פריט זה אמור להופיע בתור האפשרות המומלצת)</string>
-    <string name="print_shipping_label_info_step_2">אחרי הבחירה, ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
-    <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל</string>
+    <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר &lt;b>לשמור את התווית שלך בקובץ PDF‏ &lt;/b> ולשלוח באימייל כדי להדפיס אותה ממכשיר אחר.</string>
+    <string name="print_shipping_label_info_step_2">אחרי הבחירה באפשרות &lt;b>\"הדפסת תווית משלוח\"&lt;/b> ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
     <string name="print_shipping_label_format_options_title">אפשרויות לפורמט תווית</string>
     <string name="print_shipping_label_info_title">להדפיס באמצעות המכשיר שלך</string>
     <string name="shipping_label_paper_size_label">תווית (4 x‏ 6 אינץ\')</string>
@@ -163,7 +193,7 @@ Language: he_IL
     <string name="shipping_label_refund_button">התווית של ההחזר הכספי (-⁦%1$s⁩)</string>
     <string name="shipping_label_refund_amount_title">ניתן לקבל החזר כספי עבור הסכום</string>
     <string name="shipping_label_refund_purchase_date_title">תאריך רכישה</string>
-    <string name="shipping_label_refund_message">אפשר לבקש החזר כספי עבור תווית משלוח שלא נעשה בה שימוש כדי לשלוח חבילה. תהליך העיבוד יימשך לפחות 14 ימים.</string>
+    <string name="shipping_label_refund_message">אפשר לבקש החזר כספי עבור תווית משלוח שלא נעשה בה שימוש כדי לשלוח חבילה. עיבוד הבקשה יארך 14 ימים לפחות.</string>
     <string name="orderdetail_shipping_label_request_refund">בקשה להחזר כספי</string>
     <string name="orderdetail_shipping_label_item_menu">לבצע החזר כספי על תווית המשלוח</string>
     <string name="product_type_physical">פיזי</string>
