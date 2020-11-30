@@ -1,3 +1,0 @@
-5.4 :
-* Les informations sur les variantes des produits s’affichent entièrement dans les détails de la commande.
-* Résolution d’un incident rare au moment de l’ajout d’une nouvelle catégorie de produits et de la sélection d’options de filtres de produits.

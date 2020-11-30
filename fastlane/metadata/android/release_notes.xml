@@ -1,85 +1,102 @@
 <ar>
-5.4:
-* يتم عرض معلومات تنوع المنتج بالكامل في تفاصيل الطلب.
-* إصلاح عطل نادر عند إضافة تصنيف منتج جديدة وتحديد خيارات تصفية المنتجات.
+5.5:
+المنتجات: يمكنك الآن إضافة منتجات بسيطة ومجمَّعة وخارجية فضلاً عن حفظ المنتجات كمسودات. سنوفر لك المزيد من الميزات الجديدة لتجربتها قريبًا!
+
+إصلاحات أخرى: لقد أصلحنا خطأً يؤثر في أسماء المنتجات المختلفة عندما كان خيار التباين "متاحًا" بالإضافة إلى وقوع خطأ إملائي في شاشة ملصق الشحن.
 </ar>
 <de-DE>
-5.4:
-* Produktvariationsinformationen werden in den Bestelldetails vollständig angezeigt.
-* Es wurde ein Fehler behoben, der zum Absturz führte, wenn eine neue Produktkategorie hinzugefügt und Produktfilteroptionen ausgewählt wurden.
+5.5:
+Produkte: Du kannst jetzt auch ein einfaches, gruppiertes oder externes Produkt hinzufügen und es als Entwurf speichern. Bald gibt es noch mehr neue Funktionen für dich!
+
+Weitere Fehlerbehebungen: Wir haben einen Fehler behoben, der negative Auswirkungen auf die Produktvariantennamen hatte, wenn die Variante auf „offen“ stand. Außerdem haben wir den Rechtschreibfehler auf dem Versandetikett korrigiert.
 </de-DE>
 <es-ES>
-5.4:
-* La información del pedido muestra toda la información de variación del producto.
-* Se ha corregido un error raro que se producía al añadir una nueva categoría de producto y seleccionar opciones de filtros de productos.
+5.5:
+Productos: Ahora puedes añadir productos sencillos, agrupados y externos, y guardar productos como borradores. ¡Muy pronto podrás probar nuevas prestaciones!
+
+Otras correcciones: Hemos corregido un error que afectaba a los nombres de variaciones cuando la opción estaba "abierta", y un error de escritura en la pantalla de etiquetas de envío.
 </es-ES>
 <fr-FR>
-5.4 :
-* Les informations sur les variantes des produits s’affichent entièrement dans les détails de la commande.
-* Résolution d’un incident rare au moment de l’ajout d’une nouvelle catégorie de produits et de la sélection d’options de filtres de produits.
+5.5 :
+Produits : vous pouvez désormais ajouter des produits simples, groupés et externes, et enregistrer des brouillons de produit. Vous pourrez tester de nouvelles fonctionnalités sous peu !
+
+Autres correctifs : nous avons résolu un bug affectant les noms des variantes de produits, lorsque l’option de la variante était « Ouvert », et corrigé une faute de frappe sur l’écran des étiquettes de livraison.
 </fr-FR>
 <iw-IL>
-5.4: 
-*מידע על סוג המוצר מוצג במלואו בפרטי ההזמנה.
-* תיקנו קריסה נדירה שקורית כשמוסיפים קטגוריית מוצר חדשה ובחורים אפשרויות לסינון מוצרים.
+5.5:
+מוצרים: עכשיו אפשר להוסיף מוצרים פשוטים, מקובצים וחיצוניים ולשמור מוצרים כטיוטות. בקרוב אפשר יהיה לנסות אפשרויות חדשות שנוסיף!
+
+תיקונים נוספים: תיקנו באג שהשפיע על שמות של סוגי מוצרים כשאפשרות הסוג הייתה פתוחה ותיקנו שגיאת הקלדה במסך של תווית המשלוח.
 </iw-IL>
 <id>
-5.4:
-* Informasi ragam produk ditampilkan secara penuh pada detail pesanan.
-* Memperbaiki crash yang jarang terjadi saat menambahkan kategori produk baru dan memilih opsi penyaringan produk.
+5.5:
+Produk: Sekarang Anda dapat menambahkan produk yang sederhana, dikelompokkan, dan eksternal, serta menyimpan produk sebagai draf. Kami akan segera meluncurkan beberapa fitur baru untuk Anda coba!
+
+Perbaikan lainnya: Kami memperbaiki bug yang memengaruhi nama variasi produk ketika opsi variasi "dibuka", serta salah ketik pada layar label pengiriman.
 </id>
 <it-IT>
-5.4:
-* Le informazioni sulle variazioni dei prodotti vengono visualizzate nei dettagli dell'ordine.
-* È stato risolto un crash raro che si verificava quando si aggiungeva una nuova categoria di prodotti e si selezionavano le opzioni di filtro dei prodotti.
+5.5:
+Prodotti: Ora è possibile aggiungere prodotti semplici, raggruppati ed esterni e salvare i prodotti come bozze. Presto metteremo a disposizione altre nuove funzionalità da provare!
+
+Altre correzioni: Abbiamo corretto un bug che influenzava i nomi delle varianti dei prodotti quando l'opzione di variazione era "aperta" e un errore di battitura sulla schermata dell'etichetta di spedizione.
 </it-IT>
 <ja-JP>
-5.4:
- * 商品の検証情報全体が注文の詳細に表示されます。
-* 新しい商品カテゴリーを追加し、商品フィルターオプションを選択した際にまれに発生するクラッシュを修正しました。
+5.5 : 
+商品 : シンプルでグループ化された外部製品を追加して、商品を下書きとして保存できるようになりました。 間もなくお試しいただける新機能がさらにあります。
+
+その他の修正 : バリエーションのオプションが「open」の場合に商品のバリエーション名に影響するバグと、発送ラベル画面の誤字を修正しました。
 </ja-JP>
 <ko-KR>
-5.4:
-* 제품 변형 정보가 주문 상세 정보에 전체적으로 표시됩니다.
-* 새 제품 카테고리를 추가하고 제품 필터 옵션을 선택할 때 드물게 발생하는 충돌을 수정했습니다.
+5.5:
+제품: 이제 간단하고 그룹화된 외부 제품을 추가하고 제품을 임시글로 저장할 수 있습니다. 더 많은 새로운 기능을 곧 사용해 볼 수 있습니다!
+
+기타 수정 사항: 변형 옵션이 "오픈"일 때 제품 변형 이름에 영향을 주는 버그와 배송 레이블 화면의 오타를 수정했습니다.
 </ko-KR>
 <nl-NL>
-5.4:
-* Informatie over productvariatie wordt volledig weergegeven bij bestellingsgegevens.
-* Een zeldzame crash verholpen bij het toevoegen van een nieuwe productcategorie en het selecteren van productfilters.
+5.5:
+Producten: Je kan nu een eenvoudige, gegroepeerde en externe producten toevoegen en als concept opslaan. Binnenkort komen er nog meer nieuwe functies voor je beschikbaar!
+
+Overig: We hebben een bug opgelost m.b.t. namen van productvariaties als de variatie op 'open' stond, en een typfout op het scherm met verzendlabels.
 </nl-NL>
 <pt-BR>
-5.4:
-* Exibição completa das informações de variação do produto nos detalhes do pedido.
-* Correção de uma falha rara ocorrida ao adicionar uma nova categoria de produto e selecionar as opções de filtro.
+5.5:
+Produtos: agora você pode adicionar produtos simples, agrupados e externos e salvá-los como rascunho. Em breve, lançaremos mais funcionalidades para você testar!
+
+Outras correções: corrigimos um erro de grafia na tela da etiqueta de envio e um bug que afetava os nomes de variação dos produtos quando a opção de variação estava "aberta".
 </pt-BR>
 <ru-RU>
-5.4:
-* Информация о вариантах продуктов полностью отображается в сведениях о заказе.
-* Исправлена ошибка, приводившая к редким сбоям при добавлении новой категории продуктов и выборе параметров фильтрации продуктов.
+5.5:
+Товары: теперь можно добавлять простые, сгруппированные и внешние товары и сохранять товары в черновики. Скоро будут доступны и другие новые функции!
+
+Другие исправления: исправлена ошибка в названиях вариантов товара при их открытии и опечатка на экране транспортной этикетки.
 </ru-RU>
 <sv-SE>
-5.4:
-* Produktvariationsinformation visas fullständigt i orderdetaljerna.
-* En sällsynt krasch som inträffade vid tillägg av en ny produktkategori och val av produktfilteralternativ har åtgärdats.
+5.5:
+Produkter: Du kan nu lägga till enkla, grupperade och externa produkter och spara produkter som utkast. Vi har fler funktioner på gång som du snart kommer att få prova!
+
+Övriga korrigeringar: Vi har åtgärdat ett fel som påverkade variationsnamnen när variationsalternativet var "open", samt ett stavfel på fraktetikettsskärmen.
 </sv-SE>
 <tr-TR>
-5.4:
-* Ürün varyasyon bilgileri, sipariş ayrıntılarında tam olarak görüntülenir.
-* Yeni bir ürün kategorisi eklerken ve ürün filtresi seçenekleri seçerken nadir görülen bir çökme düzeltildi.
+5.5:
+Ürünler: Artık basit, gruplanmış ve harici ürünler ekleyebilir ve ürünleri taslak olarak kaydedebilirsiniz. Yakında deneyebileceğiniz daha fazla yeni özellik sunacağız.
+
+Diğer düzeltmeler: Varyasyon seçeneği "açık" olduğunda ürün varyasyon adlarını etkileyen bir hata ve gönderim etiketi ekranındaki bir yazım hatası düzeltilmiştir.
 </tr-TR>
 <zh-CN>
-5.4：
-* 产品变体信息完全显示在订单详细信息中。
-* 修复了添加新产品类别和选择产品过滤选项时罕见出现的崩溃问题。
+5.5：
+产品：您现在可以添加简单的分组和外部产品，并将产品另存为草稿。 我们很快将推出更多新功能，供您试用！
+
+其他修复：我们修复影响产品变体名称的错误。修复该错误之前，当变体选项为“open”时，会影响产品的变体名称，并且盘配送标签屏幕上会出现拼写错误。
 </zh-CN>
 <zh-TW>
-5.4：
-* 訂單詳細資料會完整顯示商品子項資訊。
-* 修正少數情況下，新增商品類別並選取商品篩選選項時出現的當機問題。
+5.5：
+產品：你現在可以新增簡單、組合和外部產品，並將產品存為草稿。 我們即將推出更多新功能供你試用！
+
+其他修正：我們修正「啟用」變化選項時影響產品變化名稱的錯誤，以及運送標籤畫面上的錯字。
 </zh-TW>
 <en-US>
-5.4:
-* Product variation information fully displays in order details.
-* Fixed a rare crash when adding a new product category and selecting product filter options.
+5.5:
+Products: You can now add simple, grouped, and external products and save products as drafts. We’ll have more new features for you to try out soon!
+
+Other fixes: We fixed a bug affecting product variation names when the variation option was “open,” and a typo on the shipping label screen.
 </en-US>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Clear text traffic is used for running connected tests against a mock server -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
     <debug-overrides>
         <trust-anchors>
             <!-- Trust user added certificate authorities while debuggable only -->

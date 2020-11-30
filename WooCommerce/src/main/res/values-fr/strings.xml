@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 15:54:04+0000
+Translation-Revision-Date: 2020-11-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Testez la nouvelle fonction de création de produits simples, associés et groupés que nous sommes sur le point de lancer.</string>
+    <string name="product_downloadable_files_download_settings">Réglages du téléchargement</string>
+    <string name="product_downloadable_files_name_invalid">Veuillez saisir un nom valide</string>
+    <string name="product_downloadable_files_add_manually">Saisir l’URL du fichier</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">À partir de la bibliothèque des médias WordPress</string>
+    <string name="product_downloadable_files_add_from_device">Depuis l’appareil</string>
+    <string name="product_downloadable_files_url_invalid">Vérifier que l’URL entrée est valide</string>
+    <string name="product_downloadable_files_upload_dialog_message">Veuillez patienter…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Envoi de fichiers</string>
+    <string name="product_downloadable_files_upload_failed">Erreur lors de l’envoi du fichier</string>
+    <string name="product_downloadable_files_add_title">Ajouter un fichier téléchargeable</string>
+    <string name="product_downloadable_add_bottomsheet_header">Ajouter un fichier téléchargeable</string>
+    <string name="bottom_sheet_downloadable_files_desc">Inclure des fichiers téléchargeables avec les achats</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Annuler</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Oui, modifier</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Tous les fichiers actuellement joints à ce produit seront supprimés.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Voulez-vous vraiment supprimer la possibilité de télécharger des fichiers lorsque le produit est acheté ?</string>
+    <string name="product_downloadable_files_edit_title">Fichier</string>
+    <string name="product_downloadable_files_delete_confirmation">Voulez-vous vraiment supprimer ce fichier ?</string>
+    <string name="product_is_downloadable">Produit téléchargeable</string>
+    <string name="delete">Effacer</string>
+    <string name="product_downloadable_files_expiry">Expiration du téléchargement</string>
+    <string name="product_downloadable_files_limit">Limite de téléchargement</string>
+    <string name="product_downloadable_files_expiry_info">Saisir le nombre de jours avant qu’un lien de téléchargement n’expire ou laisser vide s’il n’expire jamais</string>
+    <string name="product_downloadable_files_limit_info">Saisir le nombre de fois que le fichier peut être téléchargé ou laisser vide pour des téléchargements illimités</string>
+    <string name="product_downloadable_files_name_info">Le nom du fichier affiché au client</string>
+    <string name="product_downloadable_files_name">Nom du fichier</string>
+    <string name="product_downloadable_files_url_info">L’URL du fichier auquel les clients auront accès. Les URL entrées doivent déjà être codées.</string>
+    <string name="product_downloadable_files_url">URL du fichier</string>
+    <string name="product_downloadable_files_add">Ajouter un fichier</string>
+    <string name="product_downloadable_files_value_single">1 fichier</string>
+    <string name="product_downloadable_files_value_multiple">%1$d fichiers</string>
+    <string name="product_wip_message_m4">Il est désormais possible de créer à la volée de nouveaux produits simples, liés et groupés, à partir de l’application Woo. Vous n’êtes pas encore prêt ? Enregistrez-les comme brouillon !</string>
+    <string name="print_shipping_label_info_step_4">Il se peut que vous deviez &lt;b>configurer l’impression Wi-Fi directement depuis l’imprimante.&lt;/b> Assurez-vous que le micrologiciel de l’imprimante est mis à jour et consultez la documentation de votre imprimante pour obtenir des instructions.</string>
+    <string name="print_shipping_label_info_step_3">Vous pouvez sélectionner le &lt;b>service d’impression par défaut&lt;/b> de votre appareil ou installer l’&lt;b>application de la marque de votre imprimante&lt;/b> (celle-ci devrait s’afficher comme option recommandée)</string>
+    <string name="print_shipping_label_info_step_1">Vérifiez que votre imprimante et votre appareil sont connectés au &lt;b>même réseau Wi-Fi&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Augmenter les ventes à l’aide de produits suggérés et de ventes croisées</string>
     <string name="edit_products_button">Modifier des produits</string>
     <string name="add_products_button">Ajouter des produits</string>
@@ -30,17 +64,13 @@ Language: fr
     <string name="product_trash">Déplacer le produit vers la corbeille</string>
     <string name="product_detail_no_variations">Le produit n’a aucune variante pour le moment</string>
     <string name="product_variant_list_empty">L’ajout d’options, comme la taille et la couleur, n’est actuellement disponible que sur le Web. Ces options apparaîtront sur la page de produit de votre site.</string>
-    <string name="product_wip_message_m4">Il est désormais possible de créer de nouveaux produits simples, associés et groupés où que vous soyez dans l’application Woo. Pour cela, vous devez activer la fonctionnalité bêta dans les réglages de l’application. Pas encore prêt ? Enregistrez-les comme brouillon !</string>
     <string name="product_adding_wip_title">Créez des produits dans l’application !</string>
     <string name="product_ratings_count_zero">\u2022 pas de notes</string>
     <string name="product_ratings_count_one">\u2022 noté une fois</string>
     <string name="product_ratings_count">\u2022 noté %d fois</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produit introuvable</string>
-    <string name="print_shipping_label_info_step_5">Si vous rencontrez toujours des difficultés d’impression depuis votre appareil, vous pouvez l’envoyer par e-mail pour l’imprimer depuis un autre appareil.</string>
-    <string name="print_shipping_label_info_step_4">Vous devrez peut-être vous assurer que le micrologiciel de l’imprimante est mis à jour et consulter la documentation de votre imprimante pour obtenir des instructions.</string>
-    <string name="print_shipping_label_info_step_3">Vous pouvez sélectionner celle de votre téléphone ou installer la vôtre (cela devrait apparaître comme une option recommandée)</string>
-    <string name="print_shipping_label_info_step_2">Après la sélection, vous devrez peut-être sélectionner et ajouter une imprimante si vous n’avait jamais imprimé depuis cet appareil auparavant.</string>
-    <string name="print_shipping_label_info_step_1">Vérifiez que votre imprimante et votre appareil sont connectés au</string>
+    <string name="print_shipping_label_info_step_5">Si vous rencontrez toujours des difficultés d’impression à partir de votre appareil, vous pouvez &lt;b>enregistrer votre étiquette au format PDF&lt;/b> et l’envoyer par e-mail pour pouvoir l’imprimer depuis un autre appareil.</string>
+    <string name="print_shipping_label_info_step_2">Après avoir sélectionné &lt;b>« Imprimer l’étiquette d’expédition »&lt;/b>, vous devrez peut-être sélectionner et ajouter une imprimante si vous n’avez jamais imprimé depuis cet appareil auparavant.</string>
     <string name="print_shipping_label_format_options_title">Options de format des étiquettes</string>
     <string name="print_shipping_label_info_title">Imprimer avec votre appareil</string>
     <string name="shipping_label_paper_size_label">Étiquette (4 x 6 po)</string>
