@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CARRIER
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CUSTOMS
@@ -19,17 +18,16 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelSt
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PAYMENT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.SHIPPING_ADDRESS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_create_shipping_label.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class CreateShippingLabelFragment  : BaseFragment() {
+class CreateShippingLabelFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-
     @Inject lateinit var viewModelFactory: ViewModelFactory
+
     val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)

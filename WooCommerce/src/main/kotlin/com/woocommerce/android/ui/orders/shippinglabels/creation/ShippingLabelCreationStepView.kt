@@ -143,4 +143,3 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
         iconImageView?.clearColorFilter()
     }
 }
-
