@@ -46,7 +46,8 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         binding.switchSendStats.isChecked = presenter.getSendUsageStats()
         binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)))
+                    AnalyticsTracker.KEY_STATE to
+                        AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)))
             presenter.setSendUsageStats(isChecked)
         }
 
@@ -67,7 +68,8 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
         binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)))
+                    AnalyticsTracker.KEY_STATE to
+                        AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)))
             presenter.setCrashReportingEnabled(requireActivity(), isChecked)
         }
     }
