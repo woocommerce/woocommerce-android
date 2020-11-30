@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.View
+import android.view.LayoutInflater
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Checkable
@@ -14,6 +14,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.annotation.StyleRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ViewSettingsToggleOptionBinding
 import com.woocommerce.android.util.StyleAttrUtils
 import com.woocommerce.android.util.UiHelpers
 import kotlinx.android.synthetic.main.view_settings_toggle_option.view.*
@@ -24,8 +25,11 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.settingsToggleOptionStyle,
     @StyleRes defStyleRes: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr), Checkable {
+    private var _binding: ViewSettingsToggleOptionBinding? = null
+    private val binding get() = _binding!!
+
     init {
-        View.inflate(context, R.layout.view_settings_toggle_option, this)
+        _binding = ViewSettingsToggleOptionBinding.inflate(LayoutInflater.from(ctx), this)
 
         // Sets the selectable background
         val outValue = TypedValue()
@@ -73,6 +77,11 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
                 a.recycle()
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        _binding = null
     }
 
     var title: String?

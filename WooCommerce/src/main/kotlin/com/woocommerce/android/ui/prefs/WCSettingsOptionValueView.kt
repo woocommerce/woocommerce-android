@@ -29,7 +29,6 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
 
     init {
         _binding = ViewOptionWithActiveSettingBinding.inflate(LayoutInflater.from(ctx), this)
-        ViewOptionWithActiveSettingBinding.bind(this)
 
         orientation = VERTICAL
         isFocusable = true
@@ -98,5 +97,10 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
         super.setEnabled(enabled)
         binding.optionTitle.isEnabled = enabled
         binding.optionValue.isEnabled = enabled
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        _binding = null
     }
 }
