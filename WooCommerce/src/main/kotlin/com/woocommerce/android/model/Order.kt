@@ -115,64 +115,64 @@ data class Order(
 
 fun WCOrderModel.toAppModel(): Order {
     return Order(
-            OrderIdentifier(this),
-            this.remoteOrderId,
-            this.number,
-            this.localSiteId,
-            DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
-            DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
-            DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-        CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
-            this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.getOrderSubtotal().toBigDecimal().roundError(),
-            this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
-            this.getFeeLineList()
+            identifier = OrderIdentifier(this),
+            remoteId = this.remoteOrderId,
+            number = this.number,
+            localSiteId = this.localSiteId,
+            dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
+            dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
+            datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
+            status = CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
+            total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
+            totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+            feesTotal = this.getFeeLineList()
                     .map { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO }
                     .ifEmpty { listOf(BigDecimal.ZERO) }
                     .reduce { fee1, fee2 -> fee1 + fee2 },
-            this.currency,
-            this.customerNote,
-            this.discountCodes,
-            this.paymentMethod,
-            this.paymentMethodTitle,
-            CASH_PAYMENTS.contains(this.paymentMethod),
-            this.pricesIncludeTax,
-            this.isMultiShippingLinesAvailable(),
-            this.getBillingAddress().let {
+            currency = this.currency,
+            customerNote = this.customerNote,
+            discountCodes = this.discountCodes,
+            paymentMethod = this.paymentMethod,
+            paymentMethodTitle = this.paymentMethodTitle,
+            isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
+            pricesIncludeTax = this.pricesIncludeTax,
+            multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
+            billingAddress = this.getBillingAddress().let {
                 Address(
-                    it.company,
-                    it.firstName,
-                    it.lastName,
-                    this.billingPhone,
-                    it.country,
-                    it.state,
-                    it.address1,
-                    it.address2,
-                    it.city,
-                    it.postcode,
-                    this.billingEmail
+                        it.company,
+                        it.firstName,
+                        it.lastName,
+                        this.billingPhone,
+                        it.country,
+                        it.state,
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.postcode,
+                        this.billingEmail
                 )
             },
-            this.getShippingAddress().let {
+            shippingAddress = this.getShippingAddress().let {
                 Address(
-                    it.company,
-                    it.firstName,
-                    it.lastName,
-                    "",
-                    it.country,
-                    it.state,
-                    it.address1,
-                    it.address2,
-                    it.city,
-                    it.postcode,
-                    ""
+                        it.company,
+                        it.firstName,
+                        it.lastName,
+                        "",
+                        it.country,
+                        it.state,
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.postcode,
+                        ""
                 )
             },
-            getShippingLineList().map { it.methodTitle },
-            getLineItemList()
+            shippingMethodList = getShippingLineList().map { it.methodTitle },
+            items = getLineItemList()
                     .filter { it.productId != null && it.id != null }
                     .map {
                         Item(
