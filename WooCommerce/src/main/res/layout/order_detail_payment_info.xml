@@ -171,7 +171,6 @@
 
                 <!-- Divider -->
                 <View
-                    android:id="@+id/paymentInfo_total-paid_divider"
                     style="@style/Woo.Divider"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginEnd="@dimen/minor_00"/>
