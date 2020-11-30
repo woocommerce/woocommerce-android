@@ -29,7 +29,6 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
     private var _binding: FragmentSettingsPrivacyBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSettingsPrivacyBinding.inflate(inflater, container, false)
         return binding.root
