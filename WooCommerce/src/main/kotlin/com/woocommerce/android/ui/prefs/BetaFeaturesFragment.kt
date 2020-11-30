@@ -9,9 +9,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED
+import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import kotlinx.android.synthetic.main.fragment_settings_beta.*
 
 class BetaFeaturesFragment : Fragment() {
     companion object {
@@ -20,8 +20,12 @@ class BetaFeaturesFragment : Fragment() {
 
     private lateinit var settingsListener: AppSettingsListener
 
+    private var _binding: FragmentSettingsBetaBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_settings_beta, container, false)
+        _binding = FragmentSettingsBetaBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -32,11 +36,11 @@ class BetaFeaturesFragment : Fragment() {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
 
-        switchProductsUI.isChecked = AppPrefs.isProductsFeatureEnabled()
-        switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchProductsUI.isChecked = AppPrefs.isProductsFeatureEnabled()
+        binding.switchProductsUI.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     SETTINGS_BETA_FEATURES_PRODUCTS_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchProductsUI.isChecked)))
+                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(binding.switchProductsUI.isChecked)))
             settingsListener.onProductsFeatureOptionChanged(isChecked)
         }
     }
