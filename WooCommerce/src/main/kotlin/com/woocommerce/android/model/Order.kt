@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -130,9 +131,7 @@ fun WCOrderModel.toAppModel(): Order {
             discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
             feesTotal = this.getFeeLineList()
-                    .map { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO }
-                    .ifEmpty { listOf(BigDecimal.ZERO) }
-                    .reduce { fee1, fee2 -> fee1 + fee2 },
+                    .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
             currency = this.currency,
             customerNote = this.customerNote,
             discountCodes = this.discountCodes,
