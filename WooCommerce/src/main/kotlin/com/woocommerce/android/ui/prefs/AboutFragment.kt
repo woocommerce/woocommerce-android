@@ -84,4 +84,9 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         super.onStop()
         ChromeCustomTabUtils.disconnect(activity as Context)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

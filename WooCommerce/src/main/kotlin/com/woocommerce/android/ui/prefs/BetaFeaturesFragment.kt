@@ -51,4 +51,9 @@ class BetaFeaturesFragment : Fragment() {
 
         activity?.setTitle(R.string.beta_features)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
