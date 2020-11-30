@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-24 14:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Testa det nya enkla, länkade och grupperade produktskapandet medan vi gör oss redo för lansering</string>
+    <string name="product_downloadable_files_download_settings">Inställningar för nedladdning</string>
+    <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
+    <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Från WordPress-mediabiblioteket</string>
+    <string name="product_downloadable_files_add_from_device">Från enhet</string>
+    <string name="product_downloadable_files_url_invalid">Kontrollera att den angivna URL:en är giltig</string>
+    <string name="product_downloadable_files_upload_dialog_message">Vänta …</string>
+    <string name="product_downloadable_files_upload_dialog_title">Laddar upp filer</string>
+    <string name="product_downloadable_files_upload_failed">Fel vid uppladdning av filen</string>
+    <string name="product_downloadable_files_add_title">Lägg till nedladdningsbar fil</string>
+    <string name="product_downloadable_add_bottomsheet_header">Lägg till nedladdningsbar fil</string>
+    <string name="bottom_sheet_downloadable_files_desc">Inkludera nedladdningsbara filer med köp</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Avbryt</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Ja, ändra</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Alla filer som för närvarande är associerade med den här produkten kommer att tas bort.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Är du säker på att du vill ta bort möjligheten att ladda ned filer när produkten köps?</string>
+    <string name="product_downloadable_files_edit_title">Fil</string>
+    <string name="product_downloadable_files_delete_confirmation">Är du säker på att du vill ta bort den här filen?</string>
+    <string name="product_is_downloadable">Nedladdningsbar produkt</string>
+    <string name="delete">Radera</string>
+    <string name="product_downloadable_files_expiry">Tidsgräns för nedladdning</string>
+    <string name="product_downloadable_files_limit">Nedladdningsgräns</string>
+    <string name="product_downloadable_files_expiry_info">Ange antalet dagar innan en nedladdningslänk löper ut, eller lämna fältet tomt om länken aldrig löper ut.</string>
+    <string name="product_downloadable_files_limit_info">Ange antalet gånger som filen kan laddas ned eller lämna fältet tomt för obegränsade nerladdningar</string>
+    <string name="product_downloadable_files_name_info">Detta är namnet på filen som visas för kunden</string>
+    <string name="product_downloadable_files_name">Filnamn</string>
+    <string name="product_downloadable_files_url_info">Detta är URL:en för filen som kunderna får tillgång till. URL:er som anges bör redan vara kodade.</string>
+    <string name="product_downloadable_files_url">Fil-URL</string>
+    <string name="product_downloadable_files_add">Lägg till fil</string>
+    <string name="product_downloadable_files_value_single">1 fil</string>
+    <string name="product_downloadable_files_value_multiple">%1$d filer</string>
+    <string name="product_wip_message_m4">Det är nu möjligt att skapa nya enkla, länkade och grupperade produkter i farten med hjälp av Woo-appen. Är du inte klar än? Spara dem som utkast!</string>
+    <string name="print_shipping_label_info_step_4">Du kan behöva &lt;b>konfigurera Wi-Fi-utskrift direkt på själva skrivaren.&lt;/b> Kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
+    <string name="print_shipping_label_info_step_3">Du kan välja din enhets &lt;b>standardutskriftstjänst&lt;/b> eller installera din &lt;b>skrivares varumärkesapp&lt;/b> (detta bör visas som ett rekommenderat alternativ)</string>
+    <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till &lt;b>samma Wi-Fi-nätverk&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Öka försäljningen med merförsäljning och korsförsäljning</string>
     <string name="edit_products_button">Redigera produkter</string>
     <string name="add_products_button">Lägg till produkter</string>
@@ -30,17 +64,13 @@ Language: sv_SE
     <string name="product_trash">Släng produkt</string>
     <string name="product_detail_no_variations">Denna produkt har inga variationer än</string>
     <string name="product_variant_list_empty">Det går endast att lägga till alternativ som storlek och färg på webben. Dessa kommer att visas som alternativ på produktsidan på din webbplats.</string>
-    <string name="product_wip_message_m4">Det är nu möjligt att skapa nya enkla, länkade och grupperade produkter i farten med hjälp av Woo-appen. Du kan aktivera detta genom att aktivera beta-funktionen i appinställningarna. Inte riktigt klar? Spara dem som utkast!</string>
     <string name="product_adding_wip_title">Skapa produkter från appen!</string>
     <string name="product_ratings_count_zero">\u2022 inga betyg</string>
     <string name="product_ratings_count_one">\u2022 betygsatt en gång</string>
     <string name="product_ratings_count">\u2022 betygsatt %d gånger</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
-    <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du skicka produkten med e-post och skriva ut den från en annan enhet.</string>
-    <string name="print_shipping_label_info_step_4">Du kan behöva kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
-    <string name="print_shipping_label_info_step_3">Du kan välja din enhet eller installera din (detta bör visas som ett rekommenderat alternativ)</string>
-    <string name="print_shipping_label_info_step_2">När du har valt kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
-    <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till</string>
+    <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du &lt;b>spara din etikett som en PDF-fil&lt;/b> och skicka den med e-post för att skriva ut den från en annan enhet.</string>
+    <string name="print_shipping_label_info_step_2">När du har valt &lt;b>\"Skriv ut fraktetikett\"&lt;/b> kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
     <string name="print_shipping_label_format_options_title">Alternativ för etikettformat</string>
     <string name="print_shipping_label_info_title">Skriv ut med din enhet</string>
     <string name="shipping_label_paper_size_label">Etikett (4 x 6 tum)</string>
@@ -163,7 +193,7 @@ Language: sv_SE
     <string name="shipping_label_refund_button">Återbetalningsetikett (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Belopp berättigat för återbetalning</string>
     <string name="shipping_label_refund_purchase_date_title">Inköpsdatum</string>
-    <string name="shipping_label_refund_message">Du kan begära en återbetalning för en leveransetikett som inte har använts för att skicka ett paket. Det tar minst 14 dagar att bearbeta.</string>
+    <string name="shipping_label_refund_message">Du kan begära en återbetalning för en fraktetikett som inte har använts för att skicka ett paket. Den kommer att ta minst 14 dagar att behandla.</string>
     <string name="orderdetail_shipping_label_request_refund">Begär en återbetalning</string>
     <string name="orderdetail_shipping_label_item_menu">Fraktetikett för återbetalning</string>
     <string name="product_type_physical">Fysisk</string>

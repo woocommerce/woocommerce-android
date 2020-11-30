@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-13 14:54:04+0000
+Translation-Revision-Date: 2020-11-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="settings_enable_product_adding_teaser_message">Prova la nuova funzionalità di creazione di prodotti semplici, collegati e raggruppati mentre ci prepariamo al lancio</string>
+    <string name="product_downloadable_files_download_settings">Impostazioni download</string>
+    <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
+    <string name="product_downloadable_files_add_manually">Inserisci URL file</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Dalla libreria multimediale WordPress</string>
+    <string name="product_downloadable_files_add_from_device">Dal dispositivo</string>
+    <string name="product_downloadable_files_url_invalid">Verifica che l\'URL inserito sia valido</string>
+    <string name="product_downloadable_files_upload_dialog_message">Attendi…</string>
+    <string name="product_downloadable_files_upload_dialog_title">Caricamento file</string>
+    <string name="product_downloadable_files_upload_failed">Errore durante il caricamento del file</string>
+    <string name="product_downloadable_files_add_title">Aggiungi file scaricabile</string>
+    <string name="product_downloadable_add_bottomsheet_header">Aggiungi file scaricabile</string>
+    <string name="bottom_sheet_downloadable_files_desc">Includi i file scaricabili con gli acquisti</string>
+    <string name="product_uncheck_is_downloadable_warning_no_button">Annulla</string>
+    <string name="product_uncheck_is_downloadable_warning_yes_button">Sì, modifica</string>
+    <string name="product_uncheck_is_downloadable_warning_message">Tutti i file attualmente collegati a questo prodotto saranno rimossi.</string>
+    <string name="product_uncheck_is_downloadable_warning_title">Desideri rimuovere la possibilità di scaricare i file quando il prodotto viene acquistato?</string>
+    <string name="product_downloadable_files_edit_title">File</string>
+    <string name="product_downloadable_files_delete_confirmation">Desideri rimuovere questo file?</string>
+    <string name="product_is_downloadable">Prodotto scaricabile</string>
+    <string name="delete">Elimina</string>
+    <string name="product_downloadable_files_expiry">Scadenza download</string>
+    <string name="product_downloadable_files_limit">Limite di download</string>
+    <string name="product_downloadable_files_expiry_info">Inserisci il numero di giorni prima della scadenza di un link di download oppure lascia vuoto il campo se non scade mai</string>
+    <string name="product_downloadable_files_limit_info">Inserisci il numero di volte che il file può essere scaricato oppure lascia vuoto il campo per consentire download illimitati</string>
+    <string name="product_downloadable_files_name_info">Questo è il nome del file mostrato al cliente</string>
+    <string name="product_downloadable_files_name">Nome file</string>
+    <string name="product_downloadable_files_url_info">Questo è l\'URL del file a cui i clienti avranno accesso. Gli URL inseriti dovrebbero essere già codificati.</string>
+    <string name="product_downloadable_files_url">URL del file</string>
+    <string name="product_downloadable_files_add">Aggiungi file</string>
+    <string name="product_downloadable_files_value_single">1 file</string>
+    <string name="product_downloadable_files_value_multiple">%1$d file</string>
+    <string name="product_wip_message_m4">Dall\'app Woo ora puoi creare nuovi prodotti semplici, collegati e raggruppati anche mentre viaggi. Non sei ancora pronto? Salva come bozza.</string>
+    <string name="print_shipping_label_info_step_4">Potrebbe essere necessario &lt;b>configurare la stampa Wi-Fi direttamente sulla stampante stessa&lt;/b>. Assicurati che il firmware della stampante sia aggiornato e consulta la documentazione della stampante per le istruzioni.</string>
+    <string name="print_shipping_label_info_step_3">Puoi selezionare il &lt;b> servizio di stampa predefinito&lt;/b> del dispositivo oppure installare l\'&lt;b>app della stampante &lt;/b> (dovrebbe apparire come opzione consigliata)</string>
+    <string name="print_shipping_label_info_step_1">Assicurati che stampante e dispositivo siano collegati alla &lt;b>stessa rete Wi-Fi&lt;/b></string>
     <string name="bottom_sheet_linked_products_desc">Incrementa le vendite con upsell e cross-sell</string>
     <string name="edit_products_button">Modifica prodotti</string>
     <string name="add_products_button">Aggiungi prodotti</string>
@@ -30,17 +64,13 @@ Language: it
     <string name="product_trash">Sposta il prodotto nel cestino</string>
     <string name="product_detail_no_variations">Questo prodotto non dispone ancora di varianti</string>
     <string name="product_variant_list_empty">L\'aggiunta delle opzioni come dimensioni e colore è attualmente disponibile solo sul web. Queste verranno visualizzate come opzioni sulla pagina del prodotto del tuo sito.</string>
-    <string name="product_wip_message_m4">Dall\'app Woo ora puoi creare nuovi prodotti semplici, collegati e raggruppati anche mentre viaggi. Puoi abilitarlo attivando la funzione beta nelle impostazioni dell\'app. Non sei ancora pronto? Salva come bozza.</string>
     <string name="product_adding_wip_title">Crea nuovi prodotti dall\'app!</string>
     <string name="product_ratings_count_zero">\u2022 nessuna valutazione</string>
     <string name="product_ratings_count_one">\u2022 valutato una volta</string>
     <string name="product_ratings_count">\u2022 valutato %d volte</string>
     <string name="product_detail_fetch_product_invalid_id_error">Prodotto non trovato</string>
-    <string name="print_shipping_label_info_step_5">Se stai ancora riscontrando problemi di stampa dal dispositivo, puoi inviarlo tramite e-mail per stampare da un altro dispositivo.</string>
-    <string name="print_shipping_label_info_step_4">Potresti dover assicurarti che il firmware della stampante sia aggiornato e controllare la documentazione della stampante per le istruzioni.</string>
-    <string name="print_shipping_label_info_step_3">Puoi selezionare quella del tuo dispositivo o installare la tua (questa dovrebbe apparire come un\'opzione consigliata)</string>
-    <string name="print_shipping_label_info_step_2">Dopo la scelta, potresti dover selezionare e aggiungere una stampante se non hai stampato da questo dispositivo prima.</string>
-    <string name="print_shipping_label_info_step_1">Assicurati che stampante e dispositivo siano collegati a</string>
+    <string name="print_shipping_label_info_step_5">Se stai ancora riscontrando problemi di stampa dal tuo dispositivo, puoi &lt;b>salvare la tua etichetta come PDF&lt;/b> e inviarla via e-mail per stamparla da un altro dispositivo.</string>
+    <string name="print_shipping_label_info_step_2">Dopo aver selezionato &lt;b>\"Stampa le etichette di spedizione\"&lt;/b>, potrebbe essere necessario selezionare e aggiungere una stampante se non hai stampato da questo dispositivo prima.</string>
     <string name="print_shipping_label_format_options_title">Opzioni formato etichetta</string>
     <string name="print_shipping_label_info_title">Stampa dal dispositivo</string>
     <string name="shipping_label_paper_size_label">Etichetta (4 x 6 pollici)</string>
