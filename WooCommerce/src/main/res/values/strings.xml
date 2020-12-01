@@ -243,6 +243,7 @@
     <string name="orderdetail_net">Net Payment</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
+    <string name="orderdetail_payment_fees">Fees</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
@@ -1434,5 +1435,4 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
-    <string name="fees">Fees</string>
 </resources>
