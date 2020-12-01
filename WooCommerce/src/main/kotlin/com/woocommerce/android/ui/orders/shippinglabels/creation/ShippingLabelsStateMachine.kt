@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class ShippingLabelStateMachine @Inject constructor() {
+class ShippingLabelsStateMachine @Inject constructor() {
     companion object {
-        private val TAG = ShippingLabelStateMachine::class.simpleName
+        private val TAG = ShippingLabelsStateMachine::class.simpleName
     }
 
     private val _effects = MutableStateFlow<SideEffect>(SideEffect.NoOp)
