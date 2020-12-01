@@ -27,6 +27,22 @@
         <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
 
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Woo.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Woo.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Woo.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Woo.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Woo.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Woo.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Woo.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Woo.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Woo.Overline</item>
+        <item name="textAppearanceBadge">@style/TextAppearance.Woo.Badge</item>
+
         <!-- Custom Widgets -->
         <item name="tagViewStyle">@style/Woo.Tag</item>
         <item name="flowLayoutStyle">@style/Woo.FlowLayout</item>
@@ -42,6 +58,14 @@
         <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
     </style>
 
+    <!-- TextViews -->
+
+    <style name="Widget.LoginFlow.TextView.Label" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
+    <!-- Buttons -->
     <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
         <item name="textColor">@color/color_secondary</item>
