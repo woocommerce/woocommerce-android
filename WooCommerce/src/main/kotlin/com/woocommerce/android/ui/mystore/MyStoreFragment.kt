@@ -33,7 +33,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.my_store_stats.*
+import kotlinx.android.synthetic.main.my_store_stats.* // TODO
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
@@ -227,6 +227,7 @@ class MyStoreFragment : TopLevelFragment(),
         binding.myStoreTopPerformers.removeListener()
         presenter.dropView()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
