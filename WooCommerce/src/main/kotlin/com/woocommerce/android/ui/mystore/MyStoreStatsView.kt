@@ -53,7 +53,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
     private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
-    
+
     companion object {
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
@@ -99,7 +99,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private val visitorsValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.visitors_value)
-    
+
     private val revenueValue
         get() = binding.root.findViewById<MaterialTextView>(R.id.revenue_value)
 
@@ -156,7 +156,11 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
             val inflater = LayoutInflater.from(context)
-            val skeleton = inflater.inflate(R.layout.skeleton_dashboard_stats, binding.chartContainer, false) as ViewGroup
+            val skeleton = inflater.inflate(
+                R.layout.skeleton_dashboard_stats,
+                binding.chartContainer,
+                false
+            ) as ViewGroup
             val barWidth = getSkeletonBarWidth()
             for (i in 0 until skeleton.childCount) {
                 skeleton.getChildAt(i).layoutParams.width = barWidth
@@ -238,7 +242,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.chart.setOnChartValueSelectedListener(this)
         binding.chart.onChartGestureListener = this
     }
-    
+
     /**
      * Called when nothing has been selected or an "un-select" has been made.
      */

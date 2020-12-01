@@ -21,7 +21,7 @@ class MyStoreStatsRevertedNoticeCard @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = MyStoreStatsRevertedNoticeBinding.inflate(LayoutInflater.from(ctx), this)
-    
+
     fun initView(listener: MyStoreStatsAvailabilityListener) {
         binding.myStoreRevertedViewMore.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {

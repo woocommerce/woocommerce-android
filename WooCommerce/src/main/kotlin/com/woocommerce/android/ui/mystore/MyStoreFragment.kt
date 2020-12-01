@@ -89,7 +89,7 @@ class MyStoreFragment : TopLevelFragment(),
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
-    
+
     private val myStoreDateBar
         get() = activity?.findViewById<MyStoreDateRangeView>(R.id.my_store_date_bar)
 
