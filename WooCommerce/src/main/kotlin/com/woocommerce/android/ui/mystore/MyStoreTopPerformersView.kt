@@ -31,7 +31,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    private val binding = MyStoreTopPerformersBinding.bind(this)
+    private val binding = MyStoreTopPerformersBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
