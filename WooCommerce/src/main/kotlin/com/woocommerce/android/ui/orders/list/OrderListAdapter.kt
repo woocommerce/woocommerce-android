@@ -5,14 +5,13 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.annotation.LayoutRes
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.OrderListHeaderBinding
 import com.woocommerce.android.databinding.OrderListItemBinding
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.toOrderStatus
@@ -48,21 +47,31 @@ class OrderListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+
         return when (viewType) {
             VIEW_TYPE_ORDER_ITEM -> {
                 OrderItemUIViewHolder(
                     OrderListItemBinding.inflate(
-                        LayoutInflater.from(parent.getContext()),
-                        parent, false
+                        inflater,
+                        parent,
+                        false
                     )
                 )
             }
             VIEW_TYPE_LOADING -> {
-                val view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.skeleton_order_list_item_auto, parent, false)
+                val view = inflater.inflate(R.layout.skeleton_order_list_item_auto, parent, false)
                 LoadingViewHolder(view)
             }
-            VIEW_TYPE_SECTION_HEADER -> SectionHeaderViewHolder(R.layout.order_list_header, parent)
+            VIEW_TYPE_SECTION_HEADER -> {
+                SectionHeaderViewHolder(
+                    OrderListHeaderBinding.inflate(
+                        inflater,
+                        parent,
+                        false
+                    )
+                )
+            }
             else -> {
                 // Fail fast if a new view type is added so we can handle it
                 throw IllegalStateException("The view type '$viewType' needs to be handled")
@@ -126,7 +135,10 @@ class OrderListAdapter(
             viewBinding.orderDate.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
             viewBinding.orderNum.text = "#${orderItemUI.orderNumber}"
             viewBinding.orderName.text = orderItemUI.orderName
-            viewBinding.orderTotal.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
+            viewBinding.orderTotal.text = currencyFormatter.formatCurrency(
+                orderItemUI.orderTotal,
+                orderItemUI.currencyCode
+            )
             viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
             // clear existing tags and add new ones
@@ -165,13 +177,10 @@ class OrderListAdapter(
 
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    private class SectionHeaderViewHolder(
-        @LayoutRes layout: Int,
-        parentView: ViewGroup
-    ) : RecyclerView.ViewHolder(LayoutInflater.from(parentView.context).inflate(layout, parentView, false)) {
-        private val titleView: TextView = itemView.findViewById(R.id.orderListHeader)
+    private class SectionHeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
+        RecyclerView.ViewHolder(viewBinding.getRoot()) {
         fun onBind(header: SectionHeader) {
-            titleView.setText(TimeGroup.valueOf(header.title.name).labelRes)
+            viewBinding.orderListHeader.setText(TimeGroup.valueOf(header.title.name).labelRes)
         }
     }
 }

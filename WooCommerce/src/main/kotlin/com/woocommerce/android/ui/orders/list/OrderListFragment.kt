@@ -41,9 +41,6 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_order_list.view.*
-import kotlinx.android.synthetic.main.order_list_view.*
-import kotlinx.android.synthetic.main.order_list_view.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
 import org.wordpress.android.util.DisplayUtils
@@ -121,6 +118,9 @@ class OrderListFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
 
+    private val emptyView
+        get() = binding.orderListView.emptyView
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -166,7 +166,7 @@ class OrderListFragment : TopLevelFragment(),
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
         binding.orderRefreshLayout.apply {
             // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = order_list_view.ordersList
+            scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
@@ -415,23 +415,24 @@ class OrderListFragment : TopLevelFragment(),
             it?.let { emptyViewType ->
                 when (emptyViewType) {
                     EmptyViewType.SEARCH_RESULTS -> {
-                        empty_view.show(emptyViewType, searchQueryOrFilter = searchQuery)
+                        binding.orderStatusListView
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
                     EmptyViewType.ORDER_LIST -> {
-                        empty_view.show(emptyViewType) {
+                        emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
                     EmptyViewType.ORDER_LIST_FILTERED -> {
-                        empty_view.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
+                        emptyView.show(emptyViewType, searchQueryOrFilter = viewModel.orderStatusFilter)
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
-                        empty_view.show(emptyViewType) {
+                        emptyView.show(emptyViewType) {
                             refreshOrders()
                         }
                     }
                     else -> {
-                        empty_view.show(emptyViewType)
+                        emptyView.show(emptyViewType)
                     }
                 }
             } ?: hideEmptyView()
@@ -439,7 +440,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun hideEmptyView() {
-        empty_view?.hide()
+        emptyView.hide()
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {

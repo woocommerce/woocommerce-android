@@ -24,6 +24,12 @@ class OrderListView @JvmOverloads constructor(
     private lateinit var ordersAdapter: OrderListAdapter
     private lateinit var listener: OrderListListener
 
+    val emptyView
+        get() = binding.emptyView
+
+    val ordersList
+        get() = binding.ordersList
+
     fun init(
         currencyFormatter: CurrencyFormatter,
         orderListListener: OrderListListener
@@ -82,7 +88,8 @@ class OrderListView @JvmOverloads constructor(
         binding.ordersList.smoothScrollToPosition(0)
     }
 
-    fun getCurrentPosition() = (binding.ordersList.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() ?: 0
+    fun getCurrentPosition() =
+        (binding.ordersList.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() ?: 0
 
     /**
      * save the order list on configuration change
