@@ -98,9 +98,4 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
         binding.optionTitle.isEnabled = enabled
         binding.optionValue.isEnabled = enabled
     }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        _binding = null
-    }
 }

@@ -78,11 +78,6 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        _binding = null
-    }
-
     var title: String?
         get() = binding.toggleSettingTitle.text.toString()
         set(value) { UiHelpers.setTextOrHide(binding.toggleSettingTitle, value) }
