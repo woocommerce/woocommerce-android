@@ -15,12 +15,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED
+import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.my_store_top_performers.view.*
-import kotlinx.android.synthetic.main.top_performers_list_item.view.*
+import kotlinx.android.synthetic.main.top_performers_list_item.view.* // TODO
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -32,9 +32,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.my_store_top_performers, this)
-    }
+    private val binding = MyStoreTopPerformersBinding.bind(this)
 
     private lateinit var selectedSite: SelectedSite
     private lateinit var formatCurrencyForDisplay: FormatCurrencyRounded
@@ -54,19 +52,19 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         this.formatCurrencyForDisplay = formatCurrencyForDisplay
         this.statsCurrencyCode = statsCurrencyCode
 
-        topPerformers_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-        topPerformers_recycler.adapter = TopPerformersAdapter(
+        binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter(
             context,
             formatCurrencyForDisplay,
             statsCurrencyCode,
             listener
         )
-        topPerformers_recycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
+        binding.topPerformersRecycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
         // and only processes the first click event. More details on this issue can be found here:
         // https://github.com/woocommerce/woocommerce-android/issues/2074
-        topPerformers_recycler.isMotionEventSplittingEnabled = false
+        binding.topPerformersRecycler.isMotionEventSplittingEnabled = false
     }
 
     fun removeListener() {
@@ -83,7 +81,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().toLowerCase())
         )
 
-        topPerformers_recycler.adapter = TopPerformersAdapter(
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter(
             context,
             formatCurrencyForDisplay,
             statsCurrencyCode,
@@ -97,7 +95,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                dashboard_top_performers_container,
+                binding.dashboardTopPerformersContainer,
                 R.layout.skeleton_dashboard_top_performers,
                 delayed = true
             )
@@ -107,18 +105,18 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     private fun showEmptyView(show: Boolean) {
-        topPerformers_emptyView.isVisible = show
+        binding.topPerformersEmptyView.isVisible = show
     }
 
     fun updateView(topPerformers: List<WCTopPerformerProductModel>) {
-        (topPerformers_recycler.adapter as TopPerformersAdapter).setTopPerformers(topPerformers)
+        (binding.topPerformersRecycler.adapter as TopPerformersAdapter).setTopPerformers(topPerformers)
         showEmptyView(topPerformers.isEmpty())
     }
 
     fun showErrorView(show: Boolean) {
         showEmptyView(false)
-        topPerformers_error.isVisible = show
-        topPerformers_recycler.isVisible = !show
+        binding.topPerformersEmptyView.isVisible = show
+        binding.topPerformersRecycler.isVisible = !show
     }
 
     class TopPerformersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
