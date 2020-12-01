@@ -118,6 +118,9 @@ class OrderListFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
 
+    private val appBarLayout
+        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
+
     private val emptyView
         get() = binding.orderListView.emptyView
 
@@ -769,7 +772,7 @@ class OrderListFragment : TopLevelFragment(),
     // endregion
 
     private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+        (appBarLayout)?.let { appBar ->
             if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
@@ -777,7 +780,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        appBarLayout?.removeView(tabLayout)
     }
 
     override fun isScrolledToTop() = binding.orderListView.getCurrentPosition() == 0
