@@ -20,7 +20,6 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.top_performers_list_item.view.* // TODO
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -120,11 +119,11 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     }
 
     class TopPerformersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var productNameText: TextView = view.text_ProductName
-        var productOrdersText: TextView = view.text_ProductOrders
-        var totalSpendText: TextView = view.text_TotalSpend
-        var productImage: ImageView = view.image_product
-        var divider: View = view.divider
+        var productNameText: TextView = view.findViewById(R.id.text_ProductName)
+        var productOrdersText: TextView = view.findViewById(R.id.text_ProductOrders)
+        var totalSpendText: TextView = view.findViewById(R.id.text_TotalSpend)
+        var productImage: ImageView = view.findViewById(R.id.image_product)
+        var divider: View = view.findViewById(R.id.divider)
     }
 
     class TopPerformersAdapter(
