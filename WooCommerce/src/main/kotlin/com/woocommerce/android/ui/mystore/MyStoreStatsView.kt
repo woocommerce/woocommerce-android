@@ -24,6 +24,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -38,7 +39,6 @@ import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.* // TODO
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
@@ -54,10 +54,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
     private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
     
-    init {
-        View.inflate(context, R.layout.my_store_stats, this)
-    }
-
     companion object {
         private const val UPDATE_DELAY_TIME_MS = 60 * 1000L
     }
@@ -97,6 +93,18 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
     private val fadeHandler = Handler()
+
+    private val visitorsLayout
+        get() = binding.root.findViewById<ViewGroup>(R.id.visitors_layout)
+
+    private val visitorsValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.visitors_value)
+    
+    private val revenueValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.revenue_value)
+
+    private val ordersValue
+        get() = binding.root.findViewById<MaterialTextView>(R.id.orders_value)
 
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -230,17 +238,17 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.chart.setOnChartValueSelectedListener(this)
         binding.chart.onChartGestureListener = this
     }
-
+    
     /**
      * Called when nothing has been selected or an "un-select" has been made.
      */
     override fun onNothingSelected() {
         // update the total values of the chart here
         updateChartView()
-        if (visitors_layout.visibility == View.GONE) {
-            visitors_layout.visibility = View.VISIBLE
+        if (visitorsLayout.visibility == View.GONE) {
+            visitorsLayout.visibility = View.VISIBLE
         }
-        fadeInLabelValue(visitors_value, chartVisitorStats.values.sum().toString())
+        fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
 
         // update date bar when unselected
         listener?.onChartValueUnSelected(revenueStatsModel, activeGranularity)
@@ -251,20 +259,20 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         // display the revenue for this entry
         val formattedRevenue = getFormattedRevenueValue(barEntry.y.toDouble())
-        revenue_value.text = formattedRevenue
+        revenueValue.text = formattedRevenue
 
         // display the order count for this entry
         val date = getDateFromIndex(barEntry.x.toInt())
-        val orderValue = chartOrderStats[date]?.toInt() ?: 0
-        orders_value.text = orderValue.toString()
+        val value = chartOrderStats[date]?.toInt() ?: 0
+        ordersValue.text = value.toString()
 
         // display the visitor count for this entry only if the text is NOT empty
         val visitorValue = getFormattedVisitorValue(date)
         if (visitorValue.isEmpty()) {
-            visitors_layout.visibility = View.GONE
+            visitorsLayout.visibility = View.GONE
         } else {
-            visitors_layout.visibility = View.VISIBLE
-            visitors_value.text = visitorValue
+            visitorsLayout.visibility = View.VISIBLE
+            visitorsValue.text = visitorValue
         }
 
         // update the date bar
@@ -313,27 +321,27 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        if (visitors_layout.visibility == View.GONE) {
-            WooAnimUtils.fadeIn(visitors_layout)
+        if (visitorsLayout.visibility == View.GONE) {
+            WooAnimUtils.fadeIn(visitorsLayout)
         }
-        fadeInLabelValue(visitors_value, visitorStats.values.sum().toString())
+        fadeInLabelValue(visitorsValue, visitorStats.values.sum().toString())
     }
 
     fun showVisitorStatsError() {
-        if (visitors_layout.visibility == View.VISIBLE) {
-            WooAnimUtils.fadeOut(visitors_layout)
+        if (visitorsLayout.visibility == View.VISIBLE) {
+            WooAnimUtils.fadeOut(visitorsLayout)
         }
     }
 
     fun clearLabelValues() {
         val color = ContextCompat.getColor(context, R.color.skeleton_color)
-        visitors_value.setTextColor(color)
-        revenue_value.setTextColor(color)
-        orders_value.setTextColor(color)
+        visitorsValue.setTextColor(color)
+        revenueValue.setTextColor(color)
+        ordersValue.setTextColor(color)
 
-        visitors_value.setText(R.string.emdash)
-        revenue_value.setText(R.string.emdash)
-        orders_value.setText(R.string.emdash)
+        visitorsValue.setText(R.string.emdash)
+        revenueValue.setText(R.string.emdash)
+        ordersValue.setText(R.string.emdash)
     }
 
     fun clearChartData() {
@@ -350,8 +358,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         val orderCount = totalModel?.ordersCount ?: 0
         val orders = orderCount.toString()
 
-        fadeInLabelValue(revenue_value, revenue)
-        fadeInLabelValue(orders_value, orders)
+        fadeInLabelValue(revenueValue, revenue)
+        fadeInLabelValue(ordersValue, orders)
 
         if (chartRevenueStats.isEmpty() || totalModel?.totalSales?.toInt() == 0) {
             clearLastUpdated()
