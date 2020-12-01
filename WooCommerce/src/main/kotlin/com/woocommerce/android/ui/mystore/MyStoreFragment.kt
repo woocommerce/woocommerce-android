@@ -141,15 +141,16 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
-        tabLayout.setId(R.id.stats_tab_layout)
 
         myStoreDateBar.initView()
+
         binding.myStoreStats.initView(
             activeGranularity,
             listener = this,
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         )
+
         binding.myStoreTopPerformers.initView(
             listener = this,
             selectedSite = selectedSite,
