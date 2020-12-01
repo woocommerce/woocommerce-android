@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.OrderListItemBinding
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
@@ -21,7 +22,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemU
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.tags.TagView
-import kotlinx.android.synthetic.main.order_list_item.view.*
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
@@ -49,7 +49,14 @@ class OrderListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_ORDER_ITEM -> OrderItemUIViewHolder(R.layout.order_list_item, parent)
+            VIEW_TYPE_ORDER_ITEM -> {
+                OrderItemUIViewHolder(
+                    OrderListItemBinding.inflate(
+                        LayoutInflater.from(parent.getContext()),
+                        parent, false
+                    )
+                )
+            }
             VIEW_TYPE_LOADING -> {
                 val view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.skeleton_order_list_item_auto, parent, false)
@@ -110,28 +117,20 @@ class OrderListAdapter(
         } ?: return null
     }
 
-    private inner class OrderItemUIViewHolder(
-        @LayoutRes layout: Int,
-        parentView: ViewGroup
-    ) : RecyclerView.ViewHolder(LayoutInflater.from(parentView.context).inflate(layout, parentView, false)) {
-        private val orderDateView = itemView.orderDate
-        private val orderNumView = itemView.orderNum
-        private val orderNameView = itemView.orderName
-        private val orderTotalView = itemView.orderTotal
-        private val orderTagList = itemView.orderTags
-        private val divider = itemView.divider
-
+    private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.getRoot()) {
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
-            orderDateView.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
-            orderNumView.text = "#${orderItemUI.orderNumber}"
-            orderNameView.text = orderItemUI.orderName
-            orderTotalView.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
-            divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
+
+            viewBinding.orderDate.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
+            viewBinding.orderNum.text = "#${orderItemUI.orderNumber}"
+            viewBinding.orderName.text = orderItemUI.orderName
+            viewBinding.orderTotal.text = currencyFormatter.formatCurrency(orderItemUI.orderTotal, orderItemUI.currencyCode)
+            viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
             // clear existing tags and add new ones
-            orderTagList.removeAllViews()
+            viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)
 
             this.itemView.setOnClickListener {
@@ -149,11 +148,11 @@ class OrderListAdapter(
          */
         private fun processTagView(status: String, holder: OrderItemUIViewHolder) {
             val orderStatus = activeOrderStatusMap[status]
-                    ?: createTempOrderStatus(status)
+                ?: createTempOrderStatus(status)
             val orderTag = OrderStatusTag(orderStatus.toOrderStatus())
             val tagView = TagView(holder.itemView.context)
             tagView.tag = orderTag
-            holder.orderTagList.addView(tagView)
+            holder.viewBinding.orderTags.addView(tagView)
         }
 
         private fun createTempOrderStatus(status: String): WCOrderStatusModel {
