@@ -91,7 +91,7 @@ class MyStoreFragment : TopLevelFragment(),
         get() = activity as? MainNavigationRouter
 
     private val myStoreDateBar
-        get() = activity?.findViewById<MyStoreDateRangeView>(R.id.my_store_date_bar)
+        get() = binding.myStoreStats.myStoreDateBar
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -143,7 +143,7 @@ class MyStoreFragment : TopLevelFragment(),
         }
         tabLayout.setId(R.id.stats_tab_layout)
 
-        myStoreDateBar?.initView()
+        myStoreDateBar.initView()
         binding.myStoreStats.initView(
             activeGranularity,
             listener = this,
@@ -168,7 +168,7 @@ class MyStoreFragment : TopLevelFragment(),
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tabStatsPosition = tab.position
-                myStoreDateBar?.clearDateRangeValues()
+                myStoreDateBar.clearDateRangeValues()
                 binding.myStoreStats.loadDashboardStats(activeGranularity)
                 binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
             }
@@ -248,7 +248,7 @@ class MyStoreFragment : TopLevelFragment(),
         if (activeGranularity == granularity) {
             binding.myStoreStats.showErrorView(false)
             binding.myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
-            myStoreDateBar?.updateDateRangeView(revenueStatsModel, granularity)
+            myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
         }
     }
 
@@ -332,7 +332,7 @@ class MyStoreFragment : TopLevelFragment(),
                 if (forced) {
                     binding.myStoreStats.clearLabelValues()
                     binding.myStoreStats.clearChartData()
-                    myStoreDateBar?.clearDateRangeValues()
+                    myStoreDateBar.clearDateRangeValues()
                 }
                 presenter.run {
                     loadStats(activeGranularity, forced)
@@ -370,11 +370,11 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     override fun onChartValueSelected(dateString: String, period: StatsGranularity) {
-        myStoreDateBar?.updateDateViewOnScrubbing(dateString, period)
+        myStoreDateBar.updateDateViewOnScrubbing(dateString, period)
     }
 
     override fun onChartValueUnSelected(revenueStatsModel: WCRevenueStatsModel?, period: StatsGranularity) {
-        myStoreDateBar?.updateDateRangeView(revenueStatsModel, period)
+        myStoreDateBar.updateDateRangeView(revenueStatsModel, period)
     }
 
     /**
@@ -452,7 +452,7 @@ class MyStoreFragment : TopLevelFragment(),
         }
 
         tabLayout.visibility = dashboardVisibility
-        myStoreDateBar?.visibility = dashboardVisibility
+        myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
     }
