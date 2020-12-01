@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED
+import com.woocommerce.android.databinding.FragmentAddOrderNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.base.BaseFragment
@@ -22,7 +23,6 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteContract.Presenter
 import com.woocommerce.android.util.AnalyticsUtils
-import kotlinx.android.synthetic.main.fragment_add_order_note.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
@@ -45,6 +45,9 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
 
+    private var _binding: FragmentAddOrderNoteBinding? = null
+    private val binding get() = _binding!!
+
     private val navArgs: AddOrderNoteFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +57,8 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_add_order_note, container, false)
+        _binding = FragmentAddOrderNoteBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -64,12 +68,12 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         orderNumber = navArgs.orderNumber
 
         savedInstanceState?.let { state ->
-            addNote_switch.isChecked = state.getBoolean(FIELD_IS_CUSTOMER_NOTE)
+            binding.addNoteSwitch.isChecked = state.getBoolean(FIELD_IS_CUSTOMER_NOTE)
             if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
             }
             state.getString(FIELD_NOTE_TEXT)?.let {
-                addNote_editor.setText(it)
+                binding.addNoteEditor.setText(it)
             }
         }
 
@@ -79,21 +83,21 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         }
 
         if (presenter.hasBillingEmail(orderId)) {
-            addNote_switch.setOnCheckedChangeListener { _, isChecked ->
+            binding.addNoteSwitch.setOnCheckedChangeListener { _, isChecked ->
                 AnalyticsTracker.track(
                         ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED,
                         mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked)))
 
                 val drawableId = if (isChecked) R.drawable.ic_note_public else R.drawable.ic_note_private
-                addNote_icon.setImageDrawable(ContextCompat.getDrawable(requireActivity(), drawableId))
+                binding.addNoteIcon.setImageDrawable(ContextCompat.getDrawable(requireActivity(), drawableId))
             }
         } else {
-            addNote_switch.visibility = View.GONE
+            binding.addNoteSwitch.visibility = View.GONE
         }
 
         if (savedInstanceState == null) {
-            addNote_editor.requestFocus()
-            ActivityUtils.showKeyboard(addNote_editor)
+            binding.addNoteEditor.requestFocus()
+            ActivityUtils.showKeyboard(binding.addNoteEditor)
         }
 
         presenter.takeView(this)
@@ -132,7 +136,7 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
                 val noteText = getNoteText()
                 if (noteText.isNotEmpty()) {
                     val orderNote = OrderNote(
-                        isCustomerNote = addNote_switch.isChecked,
+                        isCustomerNote = binding.addNoteSwitch.isChecked,
                         note = noteText
                     )
                     shouldShowDiscardDialog = false
@@ -146,12 +150,12 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(FIELD_NOTE_TEXT, getNoteText())
-        outState.putBoolean(FIELD_IS_CUSTOMER_NOTE, addNote_switch?.isChecked ?: false)
+        outState.putBoolean(FIELD_IS_CUSTOMER_NOTE, binding.addNoteSwitch.isChecked)
         outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         super.onSaveInstanceState(outState)
     }
 
-    override fun getNoteText() = addNote_editor?.text?.toString()?.trim() ?: ""
+    override fun getNoteText() = binding.addNoteEditor.text?.toString()?.trim() ?: ""
 
     /**
      * Prevent back press in the main activity if the user entered a note so we can confirm the discard
