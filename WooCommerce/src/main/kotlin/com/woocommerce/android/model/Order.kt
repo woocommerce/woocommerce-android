@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -35,6 +36,7 @@ data class Order(
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
     val refundTotal: BigDecimal,
+    val feesTotal: BigDecimal,
     val currency: String,
     val customerNote: String,
     val discountCodes: String,
@@ -114,60 +116,62 @@ data class Order(
 
 fun WCOrderModel.toAppModel(): Order {
     return Order(
-            OrderIdentifier(this),
-            this.remoteOrderId,
-            this.number,
-            this.localSiteId,
-            DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
-            DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
-            DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-        CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
-            this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.getOrderSubtotal().toBigDecimal().roundError(),
-            this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-            -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
-            this.currency,
-            this.customerNote,
-            this.discountCodes,
-            this.paymentMethod,
-            this.paymentMethodTitle,
-            CASH_PAYMENTS.contains(this.paymentMethod),
-            this.pricesIncludeTax,
-            this.isMultiShippingLinesAvailable(),
-            this.getBillingAddress().let {
+            identifier = OrderIdentifier(this),
+            remoteId = this.remoteOrderId,
+            number = this.number,
+            localSiteId = this.localSiteId,
+            dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
+            dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
+            datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
+            status = CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
+            total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
+            totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
+            refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
+            feesTotal = this.getFeeLineList()
+                    .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
+            currency = this.currency,
+            customerNote = this.customerNote,
+            discountCodes = this.discountCodes,
+            paymentMethod = this.paymentMethod,
+            paymentMethodTitle = this.paymentMethodTitle,
+            isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
+            pricesIncludeTax = this.pricesIncludeTax,
+            multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
+            billingAddress = this.getBillingAddress().let {
                 Address(
-                    it.company,
-                    it.firstName,
-                    it.lastName,
-                    this.billingPhone,
-                    it.country,
-                    it.state,
-                    it.address1,
-                    it.address2,
-                    it.city,
-                    it.postcode,
-                    this.billingEmail
+                        it.company,
+                        it.firstName,
+                        it.lastName,
+                        this.billingPhone,
+                        it.country,
+                        it.state,
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.postcode,
+                        this.billingEmail
                 )
             },
-            this.getShippingAddress().let {
+            shippingAddress = this.getShippingAddress().let {
                 Address(
-                    it.company,
-                    it.firstName,
-                    it.lastName,
-                    "",
-                    it.country,
-                    it.state,
-                    it.address1,
-                    it.address2,
-                    it.city,
-                    it.postcode,
-                    ""
+                        it.company,
+                        it.firstName,
+                        it.lastName,
+                        "",
+                        it.country,
+                        it.state,
+                        it.address1,
+                        it.address2,
+                        it.city,
+                        it.postcode,
+                        ""
                 )
             },
-            getShippingLineList().map { it.methodTitle },
-            getLineItemList()
+            shippingMethodList = getShippingLineList().map { it.methodTitle },
+            items = getLineItemList()
                     .filter { it.productId != null && it.id != null }
                     .map {
                         Item(
