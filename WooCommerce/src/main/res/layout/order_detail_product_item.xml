@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/major_100"
         tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView
