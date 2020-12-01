@@ -24,12 +24,9 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.settingsOptionValueStyle,
     @StyleRes defStyleRes: Int = 0
 ) : LinearLayout(ctx, attrs, defStyleAttr) {
-    private var _binding: ViewOptionWithActiveSettingBinding? = null
-    private val binding get() = _binding!!
+    private val binding = ViewOptionWithActiveSettingBinding.inflate(LayoutInflater.from(ctx), this)
 
     init {
-        _binding = ViewOptionWithActiveSettingBinding.inflate(LayoutInflater.from(ctx), this)
-
         orientation = VERTICAL
         isFocusable = true
         isClickable = true

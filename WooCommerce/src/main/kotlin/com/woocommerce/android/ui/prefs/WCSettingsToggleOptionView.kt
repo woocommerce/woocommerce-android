@@ -24,12 +24,9 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.settingsToggleOptionStyle,
     @StyleRes defStyleRes: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr), Checkable {
-    private var _binding: ViewSettingsToggleOptionBinding? = null
-    private val binding get() = _binding!!
+    private val binding = ViewSettingsToggleOptionBinding.inflate(LayoutInflater.from(ctx), this)
 
     init {
-        _binding = ViewSettingsToggleOptionBinding.inflate(LayoutInflater.from(ctx), this)
-
         // Sets the selectable background
         val outValue = TypedValue()
         context.theme.resolveAttribute(attr.selectableItemBackground, outValue, true)
