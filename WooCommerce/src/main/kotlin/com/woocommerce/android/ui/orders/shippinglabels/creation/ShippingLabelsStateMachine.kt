@@ -11,10 +11,6 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
-    companion object {
-        private val TAG = ShippingLabelsStateMachine::class.simpleName
-    }
-
     private val _effects = MutableStateFlow<SideEffect>(SideEffect.NoOp)
     val effects: StateFlow<SideEffect> = _effects
 
