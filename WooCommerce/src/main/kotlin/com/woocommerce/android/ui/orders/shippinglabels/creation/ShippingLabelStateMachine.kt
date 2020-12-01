@@ -3,64 +3,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.util.Log
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Error.DataLoadingError
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressEditFinished
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressInvalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressNotRecognized
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressUsedAsIs
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressValidated
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.CustomsDeclarationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.CustomsFormFilledOut
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.DataLoaded
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.DataLoadingFailed
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditCustomsRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditOriginAddressRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditPackagingRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditPaymentRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditShippingAddressRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditShippingCarrierRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.FlowStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.OriginAddressValidationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PackageSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PackagesSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PaymentSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PaymentSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingAddressValidationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingCarrierSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingCarrierSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.SuggestedAddressSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CARRIER
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CUSTOMS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.DONE
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.ORIGIN_ADDRESS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PACKAGING
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PAYMENT
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.SHIPPING_ADDRESS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.LoadData
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.NoOp
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.OpenAddressEditor
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowAddressSuggestion
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowCarrierOptions
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowCustomsForm
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowError
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowPackageOptions
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowPaymentDetails
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.UpdateViewState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ValidateAddress
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.CustomsDeclaration
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.DataLoading
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.DataLoadingFailure
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.Idle
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.OriginAddressEditing
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.OriginAddressSuggestion
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.OriginAddressValidation
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.PackageSelection
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.PaymentSelection
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.ShippingAddressEditing
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.ShippingAddressSuggestion
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.ShippingAddressValidation
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.ShippingCarrierSelection
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.State.WaitingForUser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,164 +14,182 @@ class ShippingLabelStateMachine @Inject constructor() {
         private val TAG = ShippingLabelStateMachine::class.simpleName
     }
 
-    private val _effects = MutableStateFlow<SideEffect>(NoOp)
+    private val _effects = MutableStateFlow<SideEffect>(SideEffect.NoOp)
     val effects: StateFlow<SideEffect> = _effects
 
     private val stateMachine = StateMachine.create<State, Event, SideEffect> {
-        initialState(Idle)
+        initialState(State.Idle)
 
-        state<Idle> {
-            on<FlowStarted> { event ->
-                transitionTo(DataLoading, LoadData(event.orderId))
+        state<State.Idle> {
+            on<Event.FlowStarted> { event ->
+                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
             }
         }
 
-        state<DataLoading> {
-            on<DataLoaded> { event ->
-                val data = Data(event.originAddress, event.shippingAddress, setOf(ORIGIN_ADDRESS))
-                transitionTo(WaitingForUser(data), UpdateViewState(data))
+        state<State.DataLoading> {
+            on<Event.DataLoaded> { event ->
+                val data = Data(event.originAddress, event.shippingAddress, setOf(FlowStep.ORIGIN_ADDRESS))
+                transitionTo(State.WaitingForUser(data), SideEffect.UpdateViewState(data))
             }
-            on<DataLoadingFailed> {
-                transitionTo(DataLoadingFailure, ShowError(DataLoadingError))
-            }
-        }
-
-        state<WaitingForUser> {
-            on<OriginAddressValidationStarted> {
-                transitionTo(OriginAddressValidation(data), ValidateAddress(data.originAddress))
-            }
-            on<ShippingAddressValidationStarted> {
-                transitionTo(ShippingAddressValidation(data), ValidateAddress(data.shippingAddress))
-            }
-            on<PackageSelectionStarted> {
-                transitionTo(PackageSelection(data), ShowPackageOptions)
-            }
-            on<CustomsDeclarationStarted> {
-                transitionTo(CustomsDeclaration(data), ShowCustomsForm)
-            }
-            on<ShippingCarrierSelectionStarted> {
-                transitionTo(ShippingCarrierSelection(data), ShowCarrierOptions)
-            }
-            on<PaymentSelectionStarted> {
-                transitionTo(PaymentSelection(data), ShowPaymentDetails)
-            }
-            on<EditOriginAddressRequested> {
-                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
-            }
-            on<EditShippingAddressRequested> {
-                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
-            }
-            on<EditPackagingRequested> {
-                transitionTo(PackageSelection(data), ShowPackageOptions)
-            }
-            on<EditCustomsRequested> {
-                transitionTo(CustomsDeclaration(data), ShowCustomsForm)
-            }
-            on<EditShippingCarrierRequested> {
-                transitionTo(ShippingCarrierSelection(data), ShowCarrierOptions)
-            }
-            on<EditPaymentRequested> {
-                transitionTo(PaymentSelection(data), ShowPaymentDetails)
+            on<Event.DataLoadingFailed> {
+                transitionTo(State.DataLoadingFailure, SideEffect.ShowError(Error.DataLoadingError))
             }
         }
 
-        state<OriginAddressValidation> {
-            on<AddressValidated> { event ->
-                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.WaitingForUser> {
+            on<Event.OriginAddressValidationStarted> {
+                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(data.originAddress))
             }
-            on<AddressInvalid> { event ->
+            on<Event.ShippingAddressValidationStarted> {
+                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(data.shippingAddress))
+            }
+            on<Event.PackageSelectionStarted> {
+                transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions)
+            }
+            on<Event.CustomsDeclarationStarted> {
+                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+            }
+            on<Event.ShippingCarrierSelectionStarted> {
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+            }
+            on<Event.PaymentSelectionStarted> {
+                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentDetails)
+            }
+            on<Event.EditOriginAddressRequested> {
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
+            }
+            on<Event.EditShippingAddressRequested> {
+                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
+            }
+            on<Event.EditPackagingRequested> {
+                transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions)
+            }
+            on<Event.EditCustomsRequested> {
+                transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
+            }
+            on<Event.EditShippingCarrierRequested> {
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+            }
+            on<Event.EditPaymentRequested> {
+                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentDetails)
+            }
+        }
+
+        state<State.OriginAddressValidation> {
+            on<Event.AddressValidated> { event ->
+                val newData = data.copy(
+                    originAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
+            }
+            on<Event.AddressInvalid> { event ->
                 transitionTo(
-                    OriginAddressSuggestion(data),
-                    ShowAddressSuggestion(data.originAddress, event.suggested)
+                    State.OriginAddressSuggestion(data),
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
                 )
             }
-            on<AddressNotRecognized> {
-                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
+            on<Event.AddressNotRecognized> {
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
             }
         }
 
-        state<OriginAddressSuggestion> {
-            on<SuggestedAddressSelected> { event ->
-                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.OriginAddressSuggestion> {
+            on<Event.SuggestedAddressSelected> { event ->
+                val newData = data.copy(
+                    originAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
-            on<EditOriginAddressRequested> {
-                transitionTo(OriginAddressEditing(data), OpenAddressEditor(data.originAddress))
-            }
-        }
-
-        state<OriginAddressEditing> {
-            on<AddressEditFinished> { event ->
-                transitionTo(OriginAddressValidation(data), ValidateAddress(event.address))
-            }
-            on<AddressUsedAsIs> { event ->
-                val newData = data.copy(originAddress = event.address, stepsDone = data.stepsDone + SHIPPING_ADDRESS)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            on<Event.EditOriginAddressRequested> {
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
             }
         }
 
-        state<ShippingAddressValidation> {
-            on<AddressValidated> { event ->
-                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.OriginAddressEditing> {
+            on<Event.AddressEditFinished> { event ->
+                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(event.address))
             }
-            on<AddressInvalid> { event ->
+            on<Event.AddressUsedAsIs> { event ->
+                val newData = data.copy(
+                    originAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
+            }
+        }
+
+        state<State.ShippingAddressValidation> {
+            on<Event.AddressValidated> { event ->
+                val newData = data.copy(
+                    shippingAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
+            }
+            on<Event.AddressInvalid> { event ->
                 transitionTo(
-                    ShippingAddressSuggestion(data),
-                    ShowAddressSuggestion(data.originAddress, event.suggested)
+                    State.ShippingAddressSuggestion(data),
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
                 )
             }
-            on<AddressNotRecognized> {
-                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
+            on<Event.AddressNotRecognized> {
+                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
             }
         }
 
-        state<OriginAddressSuggestion> {
-            on<SuggestedAddressSelected> { event ->
-                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.OriginAddressSuggestion> {
+            on<Event.SuggestedAddressSelected> { event ->
+                val newData = data.copy(
+                    shippingAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
-            on<EditShippingAddressRequested> {
-                transitionTo(ShippingAddressEditing(data), OpenAddressEditor(data.shippingAddress))
-            }
-        }
-
-        state<ShippingAddressEditing> {
-            on<AddressEditFinished> { event ->
-                transitionTo(ShippingAddressValidation(data), ValidateAddress(event.address))
-            }
-            on<AddressUsedAsIs> { event ->
-                val newData = data.copy(shippingAddress = event.address, stepsDone = data.stepsDone + PACKAGING)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+            on<Event.EditShippingAddressRequested> {
+                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
             }
         }
 
-        state<PackageSelection> {
-            on<PackagesSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + CUSTOMS)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.ShippingAddressEditing> {
+            on<Event.AddressEditFinished> { event ->
+                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(event.address))
+            }
+            on<Event.AddressUsedAsIs> { event ->
+                val newData = data.copy(
+                    shippingAddress = event.address,
+                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                )
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
-        state<CustomsDeclaration> {
-            on<CustomsFormFilledOut> {
-                val newData = data.copy(stepsDone = data.stepsDone + CARRIER)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.PackageSelection> {
+            on<Event.PackagesSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.CUSTOMS)
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
-        state<ShippingCarrierSelection> {
-            on<ShippingCarrierSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + PAYMENT)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.CustomsDeclaration> {
+            on<Event.CustomsFormFilledOut> {
+                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.CARRIER)
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
-        state<PaymentSelection> {
-            on<PaymentSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + DONE)
-                transitionTo(WaitingForUser(newData), UpdateViewState(newData))
+        state<State.ShippingCarrierSelection> {
+            on<Event.ShippingCarrierSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.PAYMENT)
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
+            }
+        }
+
+        state<State.PaymentSelection> {
+            on<Event.PaymentSelected> {
+                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.DONE)
+                transitionTo(State.WaitingForUser(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
@@ -246,7 +206,7 @@ class ShippingLabelStateMachine @Inject constructor() {
     }
 
     fun start(orderId: String) {
-        stateMachine.transition(FlowStarted(orderId))
+        stateMachine.transition(Event.FlowStarted(orderId))
     }
 
     fun handleEvent(event: Event) {
