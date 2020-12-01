@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import android.util.Log
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -195,7 +196,7 @@ class ShippingLabelStateMachine @Inject constructor() {
 
         onTransition { transition ->
             if (transition is StateMachine.Transition.Valid) {
-                Log.d(TAG, transition.toState.toString())
+                WooLog.d(T.ORDERS, transition.toState.toString())
                 transition.sideEffect?.let { sideEffect ->
                     _effects.value = sideEffect
                 }
@@ -210,7 +211,7 @@ class ShippingLabelStateMachine @Inject constructor() {
     }
 
     fun handleEvent(event: Event) {
-        Log.d(TAG, event.toString())
+        WooLog.d(T.ORDERS, event.toString())
         stateMachine.transition(event)
     }
 
