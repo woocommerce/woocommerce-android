@@ -85,7 +85,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '1.6.27'
+    fluxCVersion = '4891dbd3d7f69cba50e8dc0296d80924cd1650d3'
     daggerVersion = '2.29.1'
     glideVersion = '4.10.0'
     testRunnerVersion = '1.0.1'
@@ -161,9 +161,9 @@ task applyCredentials(type:Exec, dependsOn:checkBundle) {
     }
 }
 
-tasks.register("installDeps") {
+tasks.register("configureApply") {
     group = 'Onboarding'
-    description = 'Install dependencies for production builds'
+    description = 'Install dependencies for debug and production builds'
     dependsOn applyCredentials
     doLast {
         println("Done")
