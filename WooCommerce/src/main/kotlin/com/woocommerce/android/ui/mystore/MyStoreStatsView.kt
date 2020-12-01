@@ -27,6 +27,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
@@ -37,8 +38,7 @@ import com.woocommerce.android.util.FormatCurrencyRounded
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.*
-import kotlinx.android.synthetic.main.dashboard_stats.view.*
+import kotlinx.android.synthetic.main.dashboard_main_stats_row.view.* // TODO
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DateTimeUtils
@@ -52,6 +52,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
+    private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
+    
     init {
         View.inflate(context, R.layout.my_store_stats, this)
     }
@@ -85,11 +87,11 @@ class MyStoreStatsView @JvmOverloads constructor(
             // up before the chart data is added once the request completes
             if (value) {
                 clearLabelValues()
-                chart.setNoDataText(null)
-                chart.clear()
+                binding.chart.setNoDataText(null)
+                binding.chart.clear()
             } else {
                 // TODO: add a custom empty view
-                chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
+                binding.chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
             field = value
         }
@@ -146,14 +148,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (show) {
             // inflate the skeleton view and adjust the bar widths based on the granularity
             val inflater = LayoutInflater.from(context)
-            val skeleton = inflater.inflate(R.layout.skeleton_dashboard_stats, chart_container, false) as ViewGroup
+            val skeleton = inflater.inflate(R.layout.skeleton_dashboard_stats, binding.chartContainer, false) as ViewGroup
             val barWidth = getSkeletonBarWidth()
             for (i in 0 until skeleton.childCount) {
                 skeleton.getChildAt(i).layoutParams.width = barWidth
             }
 
-            skeletonView.show(chart_container, skeleton, delayed = true)
-            dashboard_recency_text.text = null
+            skeletonView.show(binding.chartContainer, skeleton, delayed = true)
+            binding.dashboardRecencyText.text = null
         } else {
             skeletonView.hide()
         }
@@ -187,7 +189,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      * One-time chart initialization with settings common to all granularities.
      */
     private fun initChart() {
-        with(chart) {
+        with(binding.chart) {
             with(xAxis) {
                 position = XAxisPosition.BOTTOM
                 setDrawGridLines(false)
@@ -225,8 +227,8 @@ class MyStoreStatsView @JvmOverloads constructor(
             setNoDataTextColor(ContextCompat.getColor(context, R.color.graph_no_data_text_color))
             getPaint(Chart.PAINT_INFO).textSize = context.resources.getDimension(R.dimen.text_minor_125)
         }
-        chart.setOnChartValueSelectedListener(this)
-        chart.onChartGestureListener = this
+        binding.chart.setOnChartValueSelectedListener(this)
+        binding.chart.onChartGestureListener = this
     }
 
     /**
@@ -283,7 +285,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      * removes the highlighted value, which in turn removes the marker view
      */
     private fun hideMarker() {
-        chart.highlightValue(null)
+        binding.chart.highlightValue(null)
     }
 
     fun updateView(revenueStatsModel: WCRevenueStatsModel?, currencyCode: String?) {
@@ -305,8 +307,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showErrorView(show: Boolean) {
         isRequestingStats = false
-        dashboard_stats_error.isVisible = show
-        chart.isVisible = !show
+        binding.dashboardStatsError.isVisible = show
+        binding.chart.isVisible = !show
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
@@ -335,11 +337,11 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun clearChartData() {
-        chart.data?.clearValues()
+        binding.chart.data?.clearValues()
     }
 
     private fun updateChartView() {
-        val wasEmpty = chart.barData?.let { it.dataSetCount == 0 } ?: true
+        val wasEmpty = binding.chart.barData?.let { it.dataSetCount == 0 } ?: true
 
         val totalModel = revenueStatsModel?.parseTotal()
         val grossRevenue = totalModel?.totalSales ?: 0.0
@@ -378,7 +380,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
-        with(chart) {
+        with(binding.chart) {
             data = BarData(dataSet)
             if (wasEmpty) {
                 animateY(duration)
@@ -484,7 +486,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateRecencyMessage() {
-        dashboard_recency_text.text = getRecencyMessage()
+        binding.dashboardRecencyText.text = getRecencyMessage()
         lastUpdatedHandler?.removeCallbacks(lastUpdatedRunnable)
 
         if (lastUpdated != null) {
