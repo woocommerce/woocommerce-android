@@ -3,10 +3,7 @@ package com.woocommerce.android.ui.mystore
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.TOP_EARNER_PRODUCT_TAPPED
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
+import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FormatCurrencyRounded
@@ -118,13 +116,8 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         binding.topPerformersRecycler.isVisible = !show
     }
 
-    class TopPerformersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var productNameText: TextView = view.findViewById(R.id.text_ProductName)
-        var productOrdersText: TextView = view.findViewById(R.id.text_ProductOrders)
-        var totalSpendText: TextView = view.findViewById(R.id.text_TotalSpend)
-        var productImage: ImageView = view.findViewById(R.id.image_product)
-        var divider: View = view.findViewById(R.id.divider)
-    }
+    class TopPerformersViewHolder(val viewBinding: TopPerformersListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.getRoot())
 
     class TopPerformersAdapter(
         context: Context,
@@ -155,9 +148,12 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopPerformersViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.top_performers_list_item, parent, false)
-            return TopPerformersViewHolder(view)
+            return TopPerformersViewHolder(
+                TopPerformersListItemBinding.inflate(
+                    LayoutInflater.from(parent.getContext()),
+                    parent, false
+                )
+            )
         }
 
         override fun onBindViewHolder(holder: TopPerformersViewHolder, position: Int) {
@@ -165,16 +161,16 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             val numOrders = String.format(orderString, FormatUtils.formatDecimal(topPerformer.quantity))
             val total = formatCurrencyForDisplay(topPerformer.total, statsCurrencyCode)
 
-            holder.productNameText.text = StringEscapeUtils.unescapeHtml4(topPerformer.product.name)
-            holder.productOrdersText.text = numOrders
-            holder.totalSpendText.text = total
-            holder.divider.isVisible = position < itemCount - 1
+            holder.viewBinding.textProductName.text = StringEscapeUtils.unescapeHtml4(topPerformer.product.name)
+            holder.viewBinding.textProductOrders.text = numOrders
+            holder.viewBinding.textTotalSpend.text = total
+            holder.viewBinding.divider.isVisible = position < itemCount - 1
 
             val imageUrl = PhotonUtils.getPhotonImageUrl(topPerformer.product.getFirstImageUrl(), imageSize, 0)
             GlideApp.with(holder.itemView.context)
                 .load(imageUrl)
                 .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))
-                .into(holder.productImage)
+                .into(holder.viewBinding.imageProduct)
 
             holder.itemView.setOnClickListener {
                 AnalyticsTracker.track(TOP_EARNER_PRODUCT_TAPPED)
