@@ -12,51 +12,11 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Invalid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.NotRecognized
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Valid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Data
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Error
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Error.DataLoadingError
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressEditFinished
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressInvalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressNotRecognized
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.AddressValidated
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.CustomsDeclarationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.CustomsFormFilledOut
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.DataLoaded
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditCustomsRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditOriginAddressRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditPackagingRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditPaymentRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditShippingAddressRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.EditShippingCarrierRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.OriginAddressValidationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PackageSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PackagesSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PaymentSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.PaymentSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingAddressValidationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingCarrierSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.ShippingCarrierSelectionStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.Event.SuggestedAddressSelected
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CARRIER
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.CUSTOMS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.DONE
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.ORIGIN_ADDRESS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PACKAGING
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.PAYMENT
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.FlowStep.SHIPPING_ADDRESS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.LoadData
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.NoOp
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.OpenAddressEditor
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowAddressSuggestion
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowCarrierOptions
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowCustomsForm
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowError
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowPackageOptions
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ShowPaymentDetails
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.UpdateViewState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelStateMachine.SideEffect.ValidateAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -76,7 +36,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val wcStore: WooCommerceStore,
     private val orderDetailRepository: OrderDetailRepository,
-    private val stateMachine: ShippingLabelStateMachine,
+    private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingAddressValidator
 ) : ScopedViewModel(savedState, dispatchers) {
     // TODO: temporary until the fragment is merged
@@ -93,23 +53,23 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         launch {
             stateMachine.effects.collect { sideEffect ->
                 when (sideEffect) {
-                    NoOp -> null
-                    is ShowError -> {
+                    SideEffect.NoOp -> null
+                    is SideEffect.ShowError -> {
                         showError(sideEffect.error)
                         null
                     }
-                    is UpdateViewState -> {
+                    is SideEffect.UpdateViewState -> {
                         updateViewState(sideEffect.data)
                         null
                     }
-                    is LoadData -> loadData(sideEffect.orderId)
-                    is ValidateAddress -> validateAddress(sideEffect.address)
-                    is OpenAddressEditor -> AddressEditFinished(sideEffect.address)
-                    is ShowAddressSuggestion -> SuggestedAddressSelected(sideEffect.entered)
-                    is ShowPackageOptions -> PackagesSelected
-                    is ShowCustomsForm -> CustomsFormFilledOut
-                    is ShowCarrierOptions -> ShippingCarrierSelected
-                    is ShowPaymentDetails -> PaymentSelected
+                    is SideEffect.LoadData -> loadData(sideEffect.orderId)
+                    is SideEffect.ValidateAddress -> validateAddress(sideEffect.address)
+                    is SideEffect.OpenAddressEditor -> Event.AddressEditFinished(sideEffect.address)
+                    is SideEffect.ShowAddressSuggestion -> Event.SuggestedAddressSelected(sideEffect.entered)
+                    is SideEffect.ShowPackageOptions -> Event.PackagesSelected
+                    is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
+                    is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
+                    is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
                 }.also { event ->
                     event?.let { stateMachine.handleEvent(it) }
                 }
@@ -120,9 +80,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private fun updateViewState(data: Data) {
-        val latestStep = data.stepsDone.maxBy { it.ordinal } ?: ORIGIN_ADDRESS
+        val latestStep = data.stepsDone.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
         viewState = when (latestStep) {
-            ORIGIN_ADDRESS -> {
+            FlowStep.ORIGIN_ADDRESS -> {
                 viewState.copy(
                     originAddressStep = Step.current(data.originAddress.toString()),
                     shippingAddressStep = Step.notDone(data.shippingAddress.toString()),
@@ -132,7 +92,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.notDone()
                 )
             }
-            SHIPPING_ADDRESS -> {
+            FlowStep.SHIPPING_ADDRESS -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.current(data.shippingAddress.toString()),
@@ -142,7 +102,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.notDone()
                 )
             }
-            PACKAGING -> {
+            FlowStep.PACKAGING -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
@@ -152,7 +112,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.notDone()
                 )
             }
-            CUSTOMS -> {
+            FlowStep.CUSTOMS -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
@@ -162,7 +122,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.notDone()
                 )
             }
-            CARRIER -> {
+            FlowStep.CARRIER -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
@@ -172,7 +132,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.notDone()
                 )
             }
-            PAYMENT -> {
+            FlowStep.PAYMENT -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
@@ -182,7 +142,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     paymentStep = Step.current()
                 )
             }
-            DONE -> {
+            FlowStep.DONE -> {
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
@@ -197,32 +157,32 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun showError(error: Error) {
         when (error) {
-            DataLoadingError -> triggerEvent(ShowSnackbar(R.string.dashboard_stats_error))
+            Error.DataLoadingError -> triggerEvent(ShowSnackbar(R.string.dashboard_stats_error))
         }
     }
 
     private fun loadData(orderId: String): Event {
         val order = requireNotNull(orderDetailRepository.getOrder(orderId))
-        return DataLoaded(order.billingAddress, order.shippingAddress)
+        return Event.DataLoaded(order.billingAddress, order.shippingAddress)
     }
 
     private fun validateAddress(address: Address): Event {
         return when (val result = addressValidator.validateAddress(address)) {
-            Valid -> AddressValidated(address)
-            is Invalid -> AddressInvalid(result.suggested)
-            NotRecognized -> AddressNotRecognized
+            Valid -> Event.AddressValidated(address)
+            is Invalid -> Event.AddressInvalid(result.suggested)
+            NotRecognized -> Event.AddressNotRecognized
         }
     }
 
     fun onEditButtonTapped(step: FlowStep) {
         when (step) {
-            ORIGIN_ADDRESS -> EditOriginAddressRequested
-            SHIPPING_ADDRESS -> EditShippingAddressRequested
-            PACKAGING -> EditPackagingRequested
-            CUSTOMS -> EditCustomsRequested
-            CARRIER -> EditShippingCarrierRequested
-            PAYMENT -> EditPaymentRequested
-            DONE -> null
+            FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
+            FlowStep.SHIPPING_ADDRESS -> Event.EditShippingAddressRequested
+            FlowStep.PACKAGING -> Event.EditPackagingRequested
+            FlowStep.CUSTOMS -> Event.EditCustomsRequested
+            FlowStep.CARRIER -> Event.EditShippingCarrierRequested
+            FlowStep.PAYMENT -> Event.EditPaymentRequested
+            FlowStep.DONE -> null
         }.also { event ->
             event?.let { stateMachine.handleEvent(it) }
         }
@@ -230,13 +190,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onContinueButtonTapped(step: FlowStep) {
         when (step) {
-            ORIGIN_ADDRESS -> OriginAddressValidationStarted
-            SHIPPING_ADDRESS -> ShippingAddressValidationStarted
-            PACKAGING -> PackageSelectionStarted
-            CUSTOMS -> CustomsDeclarationStarted
-            CARRIER -> ShippingCarrierSelectionStarted
-            PAYMENT -> PaymentSelectionStarted
-            DONE -> null
+            FlowStep.ORIGIN_ADDRESS -> Event.OriginAddressValidationStarted
+            FlowStep.SHIPPING_ADDRESS -> Event.ShippingAddressValidationStarted
+            FlowStep.PACKAGING -> Event.PackageSelectionStarted
+            FlowStep.CUSTOMS -> Event.CustomsDeclarationStarted
+            FlowStep.CARRIER -> Event.ShippingCarrierSelectionStarted
+            FlowStep.PAYMENT -> Event.PaymentSelectionStarted
+            FlowStep.DONE -> null
         }.also { event ->
             event?.let { stateMachine.handleEvent(it) }
         }
