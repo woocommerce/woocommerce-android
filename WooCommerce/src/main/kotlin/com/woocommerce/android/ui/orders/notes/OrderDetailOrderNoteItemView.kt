@@ -8,6 +8,7 @@ import android.text.Spanned
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
@@ -34,17 +35,18 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
         binding.orderNoteHeader.text = header
         binding.orderNoteNote.text = getHtmlText(note.note)
 
-        when {
+        @DrawableRes val drawableId = when {
             note.isCustomerNote -> {
-                binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
+                R.drawable.ic_note_public
             }
             note.isSystemNote -> {
-                binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_system))
+                R.drawable.ic_note_system
             }
             else -> {
-                binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
+                R.drawable.ic_note_private
             }
         }
+        binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, drawableId))
     }
 
     private fun getHtmlText(txt: String): Spanned {
