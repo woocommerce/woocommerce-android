@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
@@ -69,6 +68,7 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
     private var newDataAvailable = false // New reviews are available in cache
     private var listState: Parcelable? = null // Save the state of the recycler view
 
+    private var pendingModerationRequest: ProductReviewModerationRequest? = null
     private var pendingModerationRemoteReviewId: Long? = null
     private var pendingModerationNewStatus: String? = null
     private var changeReviewStatusSnackbar: Snackbar? = null
@@ -225,11 +225,19 @@ class ReviewListFragment : TopLevelFragment(), ItemDecorationListener, ReviewLis
         })
 
         viewModel.moderateProductReview.observe(viewLifecycleOwner, Observer {
-            it?.let { request -> handleReviewModerationRequest(request) }
+            if (reviewsAdapter.isEmpty()) {
+                pendingModerationRequest = it
+            } else {
+                it?.let { request -> handleReviewModerationRequest(request) }
+            }
         })
 
         viewModel.reviewList.observe(viewLifecycleOwner, Observer {
             showReviewList(it)
+            pendingModerationRequest?.let {
+                handleReviewModerationRequest(it)
+                pendingModerationRequest = null
+            }
         })
     }
 
