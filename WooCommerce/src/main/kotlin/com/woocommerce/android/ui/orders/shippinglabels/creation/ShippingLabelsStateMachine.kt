@@ -9,11 +9,78 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+/*
+
+The finite-state machine that manages the shipping label creation workflow. The following diagram represents the initial
+data-loading and origin address verification and it illustrates the relationships between different states, events and
+side effects (in parentheses).
+
+                  +
+                  |
+                  |
+                  v
+           +------+-------+                             +--------------------------+
+           |              |                             |                          |    SuggestedAddressSelected
+           |     Idle     |                             |         Waiting          |       (UpdateViewState)
+           |              |                             |           For            +<-------------------------------+
+           +------+-------+    +----------------------->+          Input           |                                |
+                  |            |      DataLoaded        |                          +<---------------+               |
+      FlowStarted |            |  (UpdateViewState)     +---+----+-----------------+                |               |
+      (LoadData)  |            |                            |    |                                  |               |
+                  |            |                            |    | OriginAddressValidationStarted   |               |
+                  v            |                            |    |       (ValidateAddress)          |               |
+           +------+-------+    |                            |    |                                  |               |
+           |              |    |                            |    |                                  |               |
+           | Data Loading +----+                            |    |                                  |               |
+           |              |                                 |    |                                  |               |
+           +------+-------+                                 |    |                                  |               |
+                  |              EditOriginAddressRequested |    |                                  |               |
+DataLoadingFailed |                  (OpenAddressEditor)    |    |                                  |               |
+   (ShowError)    |            +----------------------------+    |                                  |               |
+                  v            |                                 v                                  |               |
+           +------+-------+    |                      +----------+----------+   AddressValidated    |               |
+           |              |    |   AddressEditFinished|                     |   (UpdateViewState)   |               |
+           | Data Loading |    |    (ValidateAddress) |    Origin Address   +-----------------------+               |
+           |   Failure    |    |  +------------------>+      Validation     |                                       |
+           |              |    |  |                   |                     +---------+                             |
+           +--------------+    |  |                   +----+---+------------+         |      AddressInvalid         |
+                               |  |                        |   ^                      | (ShowAddressSuggestions)    |
+                               |  |                        |   |                      |                             |
+                               |  |                        |   |                      |                             |
+                               |  |   AddressNotRecognized |   |                      |                             |
+                               |  |   (OpenAddressEditor)  |   | AddressEditFinished  |                             |
+                               |  |                        |   |  (ValidateAddress)   |                             |
+                               |  |                        |   |                      |                             |
+                               |  |                        |   |                      |                             |
+                               |  |                        v   |                      v                             |
+                               |  |     +------------------+-+ |                +-----+--------------+              |
+                               |  +-----+                    | |                |                    |              |
+                               |        |   Origin Address   | |                |   Origin Address   +--------------+
+                               +------->+       Editing      +-+                |    Suggestions     |
+                                        |                    |                  |                    |
+                                        +--------+-----------+                  +---------+----------+
+                                                 ^                                        |
+                                                 |                                        |
+                                                 |                                        |
+                                                 |                                        |
+                                                 +----------------------------------------+
+                                                          EditOriginAddressRequested
+                                                             (OpenAddressEditor)
+ */
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
+    // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
+    // the view states based on the triggered side-effects
     private val _effects = MutableStateFlow<SideEffect>(SideEffect.NoOp)
     val effects: StateFlow<SideEffect> = _effects
 
+    // the actual state machine behavior is defined by a DSL using the following format:
+    //
+    // state<STATE> {
+    //     on<EVENT> {
+    //         transitionTo(NEXT_STATE, SIDE_EFFECT)
+    //     }
+    // }
     private val stateMachine = StateMachine.create<State, Event, SideEffect> {
         initialState(State.Idle)
 
@@ -190,6 +257,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
         }
 
+        // transition listener passes the side effects to the flow
         onTransition { transition ->
             if (transition is StateMachine.Transition.Valid) {
                 WooLog.d(T.ORDERS, transition.toState.toString())
@@ -202,21 +270,33 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
     }
 
+    /**
+     * Starts the initial event sequence (see the diagram)
+     */
     fun start(orderId: String) {
         stateMachine.transition(Event.FlowStarted(orderId))
     }
 
+    /**
+     * Incoming external event that triggers a transition (such as user input)
+     */
     fun handleEvent(event: Event) {
         WooLog.d(T.ORDERS, event.toString())
         stateMachine.transition(event)
     }
 
+    /**
+     * Data passed around between states
+     */
     data class Data(
         val originAddress: Address,
         val shippingAddress: Address,
         val stepsDone: Set<FlowStep>
     )
 
+    /**
+     * The main shipping label creation steps
+     */
     enum class FlowStep {
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT, DONE
     }
