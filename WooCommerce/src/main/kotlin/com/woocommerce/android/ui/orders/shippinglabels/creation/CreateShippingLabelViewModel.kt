@@ -6,9 +6,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Invalid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.NotRecognized
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Valid
@@ -26,15 +24,11 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val repository: ShippingLabelRepository,
-    private val networkStatus: NetworkStatus,
-    private val wcStore: WooCommerceStore,
     private val orderDetailRepository: OrderDetailRepository,
     private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingAddressValidator
