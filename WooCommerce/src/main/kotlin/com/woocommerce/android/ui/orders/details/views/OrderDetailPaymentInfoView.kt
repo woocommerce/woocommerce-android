@@ -82,6 +82,14 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             )
         }
 
+        // Populate or hide the fees section
+        if (order.feesTotal isEqualTo BigDecimal.ZERO) {
+            paymentInfo_feesSection.hide()
+        } else {
+            paymentInfo_feesSection.show()
+            paymentInfo_Fees.text = formatCurrencyForDisplay(order.feesTotal)
+        }
+
         // Populate or hide refund section
         if (order.refundTotal > BigDecimal.ZERO) {
             paymentInfo_refundSection.show()

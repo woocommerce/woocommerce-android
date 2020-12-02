@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -13,6 +14,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -23,8 +25,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_app_settings.*
-import kotlinx.android.synthetic.main.view_toolbar.*
 import java.util.Locale
 import javax.inject.Inject
 
@@ -47,13 +47,19 @@ class AppSettingsActivity : AppCompatActivity(),
     private var siteChanged = false
     private var isBetaOptionChanged = false
 
+    private lateinit var binding: ActivityAppSettingsBinding
+    private lateinit var toolbar: Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_app_settings)
+        binding = ActivityAppSettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         presenter.takeView(this)
 
+        toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -112,7 +118,7 @@ class AppSettingsActivity : AppCompatActivity(),
         // for the current store.
         selectedSite.getIfExists()?.let {
             Snackbar.make(
-                    main_content,
+                    binding.mainContent,
                     getString(R.string.settings_switch_site_notifs_msg, it.name),
                     BaseTransientBottomBar.LENGTH_LONG
             ).show()
