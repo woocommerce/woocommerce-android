@@ -40,23 +40,13 @@
         tools:text="Candle" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_sku"
-        style="@style/Woo.ListItem.Body"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        tools:text="T3124"
-        tools:visibility="visible" />
-
-    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_total"
         style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/major_100"
         tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -66,7 +56,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_sku"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
         tools:text="Red, Medium • $15.00 x 2" />
 
     <com.google.android.material.textview.MaterialTextView

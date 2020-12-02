@@ -1,9 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-
 5.7
 -----
 * [*] Minor style tweaks to the login screens
- 
+* [*] Show fees in the payment details of orders [https://github.com/woocommerce/woocommerce-android/pull/3228]
+
 5.6
 ----
 * [****] We've updated the UI to a crisper, cleaner design [https://github.com/woocommerce/woocommerce-android/pull/3136]
