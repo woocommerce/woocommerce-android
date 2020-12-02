@@ -10,8 +10,8 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentAboutBinding
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.android.synthetic.main.fragment_about.*
 import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
 
@@ -20,39 +20,43 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         const val TAG = "about"
     }
 
+    private var _binding: FragmentAboutBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_about, container, false)
+        _binding = FragmentAboutBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         val isLandscape = DisplayUtils.isLandscape(activity)
-        about_image.visibility = if (isLandscape) {
+        binding.aboutImage.visibility = if (isLandscape) {
             View.GONE
         } else {
             View.VISIBLE
         }
 
         val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
-        about_version.text = version
+        binding.aboutVersion.text = version
 
         val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
-        about_copyright.text = copyright
+        binding.aboutCopyright.text = copyright
 
-        about_url.setOnClickListener {
+        binding.aboutUrl.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_HOME)
         }
 
-        about_privacy.setOnClickListener {
+        binding.aboutPrivacy.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
         }
 
-        about_privacy_ca.setOnClickListener {
+        binding.aboutPrivacyCa.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY_CA)
         }
 
-        about_tos.setOnClickListener {
+        binding.aboutTos.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_TOS)
         }
     }
@@ -79,5 +83,10 @@ class AboutFragment : androidx.fragment.app.Fragment() {
     override fun onStop() {
         super.onStop()
         ChromeCustomTabUtils.disconnect(activity as Context)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
