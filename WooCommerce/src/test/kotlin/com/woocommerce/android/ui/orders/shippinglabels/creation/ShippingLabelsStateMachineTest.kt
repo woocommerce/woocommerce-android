@@ -66,4 +66,29 @@ class ShippingLabelsStateMachineTest {
 
         assertThat(sideEffect).isEqualTo(SideEffect.UpdateViewState(data))
     }
+
+    @Test
+    fun `Test successful address verification`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val expectedSideEffectCount = 5 // necessary to terminate the flow
+        var sideEffect: SideEffect? = null
+        launch {
+            stateMachine.effects.take(expectedSideEffectCount).collect {
+                sideEffect = it
+            }
+        }
+
+        stateMachine.start(orderId)
+        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
+        stateMachine.handleEvent(Event.OriginAddressValidationStarted)
+
+        assertThat(sideEffect).isEqualTo(SideEffect.ValidateAddress(data.originAddress))
+
+        val newData = data.copy(
+            originAddress = data.originAddress,
+            stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+        )
+        stateMachine.handleEvent(Event.AddressValidated(data.originAddress))
+
+        assertThat(sideEffect).isEqualTo(SideEffect.UpdateViewState(newData))
+    }
 }
