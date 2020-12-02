@@ -85,7 +85,7 @@ class ShippingLabelsStateMachineTest {
 
         val newData = data.copy(
             originAddress = data.originAddress,
-            stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
         stateMachine.handleEvent(Event.AddressValidated(data.originAddress))
 

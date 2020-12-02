@@ -72,7 +72,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private fun updateViewState(data: Data) {
-        val latestStep = data.stepsDone.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
+        val latestStep = data.flowSteps.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
         viewState = when (latestStep) {
             FlowStep.ORIGIN_ADDRESS -> {
                 viewState.copy(
