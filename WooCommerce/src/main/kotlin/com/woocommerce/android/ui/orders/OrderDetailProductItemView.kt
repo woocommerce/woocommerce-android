@@ -40,13 +40,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
         productInfo_name.maxLines = maxLinesInName
 
-        if (item.sku.isEmpty()) {
-            productInfo_sku.visibility = View.GONE
-        } else {
-            productInfo_sku.visibility = View.VISIBLE
-            productInfo_sku.text = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
-        }
-
         val productPrice = formatCurrencyForDisplay(item.price)
         val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u25CF " } ?: StringUtils.EMPTY
 
