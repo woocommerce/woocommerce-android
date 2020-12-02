@@ -36,15 +36,9 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
         binding.orderNoteNote.text = getHtmlText(note.note)
 
         @DrawableRes val drawableId = when {
-            note.isCustomerNote -> {
-                R.drawable.ic_note_public
-            }
-            note.isSystemNote -> {
-                R.drawable.ic_note_system
-            }
-            else -> {
-                R.drawable.ic_note_private
-            }
+            note.isCustomerNote -> R.drawable.ic_note_public
+            note.isSystemNote -> R.drawable.ic_note_system
+            else -> R.drawable.ic_note_private
         }
         binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, drawableId))
     }
