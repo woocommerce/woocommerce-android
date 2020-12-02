@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.spy
-import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -22,19 +21,7 @@ class ShippingLabelsStateMachineTest {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
     private val orderId = "123"
-    private val originAddress = Address(
-        company = "KFC",
-        firstName = "Harland",
-        lastName = "Sanders",
-        phone = "12345678",
-        country = "US",
-        state = "KY",
-        address1 = "123 Main St.",
-        address2 = "",
-        city = "Lexington",
-        postcode = "11222",
-        email = "boss@kfc.com"
-    )
+    private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val data = Data(originAddress, shippingAddress, setOf(FlowStep.ORIGIN_ADDRESS))
 
