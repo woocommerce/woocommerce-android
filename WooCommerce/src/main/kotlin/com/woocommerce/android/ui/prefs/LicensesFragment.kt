@@ -7,23 +7,27 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentLicensesBinding
 import com.woocommerce.android.util.StringUtils
-import kotlinx.android.synthetic.main.fragment_licenses.*
 
 class LicensesFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val TAG = "licenses"
     }
 
+    private var _binding: FragmentLicensesBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_licenses, container, false)
+        _binding = FragmentLicensesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         context?.let {
             val prompt = StringUtils.getRawFileUrl(it, R.raw.licenses)
-            webView.loadData(prompt, "text/html", "utf-8")
+            binding.webView.loadData(prompt, "text/html", "utf-8")
         }
     }
 
@@ -35,5 +39,10 @@ class LicensesFragment : androidx.fragment.app.Fragment() {
             it.title = getString(R.string.settings_licenses)
             (it as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

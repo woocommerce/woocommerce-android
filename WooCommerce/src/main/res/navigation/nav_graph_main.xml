@@ -24,7 +24,7 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@id/rootFragment"
+            app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <action

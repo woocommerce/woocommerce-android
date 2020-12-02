@@ -4,13 +4,14 @@ import android.R.attr
 import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.StyleRes
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ViewOptionWithActiveSettingBinding
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.StyleAttrUtils
-import kotlinx.android.synthetic.main.view_option_with_active_setting.view.*
 
 /**
  * A custom clickable view that displays an option title and the active selected value. Used for
@@ -23,8 +24,9 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.settingsOptionValueStyle,
     @StyleRes defStyleRes: Int = 0
 ) : LinearLayout(ctx, attrs, defStyleAttr) {
+    private val binding = ViewOptionWithActiveSettingBinding.inflate(LayoutInflater.from(ctx), this)
+
     init {
-        View.inflate(context, R.layout.view_option_with_active_setting, this)
         orientation = VERTICAL
         isFocusable = true
         isClickable = true
@@ -39,7 +41,7 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
                     .obtainStyledAttributes(attrs, R.styleable.WCSettingsOptionValueView, defStyleAttr, defStyleRes)
             try {
                 // Set the view title and style
-                option_title.text = StyleAttrUtils.getString(
+                binding.optionTitle.text = StyleAttrUtils.getString(
                         a,
                         isInEditMode,
                         R.styleable.WCSettingsOptionValueView_optionTitle,
@@ -52,13 +54,13 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
                         R.styleable.WCSettingsOptionValueView_optionValue,
                         R.styleable.WCSettingsOptionValueView_tools_optionValue
                 )?.let {
-                    option_value.visibility = View.VISIBLE
-                    option_value.text = it
+                    binding.optionValue.visibility = View.VISIBLE
+                    binding.optionValue.text = it
                 }
 
                 // Set max lines
                 if (a.hasValue(R.styleable.WCSettingsOptionValueView_optionValueMaxLines)) {
-                    option_value.maxLines = StyleAttrUtils.getInt(
+                    binding.optionValue.maxLines = StyleAttrUtils.getInt(
                             a,
                             isInEditMode,
                             R.styleable.WCSettingsOptionValueView_optionValueMaxLines,
@@ -73,24 +75,24 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
     }
 
     var optionTitle: String
-        get() { return option_title.text.toString() }
-        set(value) { option_title.text = value }
+        get() { return binding.optionTitle.text.toString() }
+        set(value) { binding.optionTitle.text = value }
 
     var optionValue: String?
-        get() { return option_value.text.toString() }
+        get() { return binding.optionValue.text.toString() }
         set(value) {
             if (value.isNullOrEmpty()) {
-                option_value.text = StringUtils.EMPTY
-                option_value.visibility = View.GONE
+                binding.optionValue.text = StringUtils.EMPTY
+                binding.optionValue.visibility = View.GONE
             } else {
-                option_value.text = value
-                option_value.visibility = View.VISIBLE
+                binding.optionValue.text = value
+                binding.optionValue.visibility = View.VISIBLE
             }
         }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        option_title?.isEnabled = enabled
-        option_value?.isEnabled = enabled
+        binding.optionTitle.isEnabled = enabled
+        binding.optionValue.isEnabled = enabled
     }
 }

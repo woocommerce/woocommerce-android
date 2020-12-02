@@ -90,6 +90,31 @@
                     tools:text="-$4.00"/>
             </LinearLayout>
 
+            <!-- Fees -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_feesSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                android:focusable="true"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblFees"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/orderdetail_payment_fees"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_Fees"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="$45.00"/>
+            </LinearLayout>
+
             <!-- Shipping -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -171,7 +196,6 @@
 
                 <!-- Divider -->
                 <View
-                    android:id="@+id/paymentInfo_total-paid_divider"
                     style="@style/Woo.Divider"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginEnd="@dimen/minor_00"/>
