@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.base
 
+import androidx.annotation.LayoutRes
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 
@@ -11,7 +12,7 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
         BaseFragment()
     }
 
-    constructor(layoutId: Int) {
+    constructor(@LayoutRes layoutId: Int) {
         BaseFragment(layoutId)
     }
 
