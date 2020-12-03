@@ -16,8 +16,16 @@ import javax.inject.Inject
  * All top level fragments and child fragments should extend this class to provide a consistent method
  * of setting the activity title
  */
-abstract class BaseFragment : Fragment(), BaseFragmentView, HasAndroidInjector {
+open class BaseFragment : Fragment, BaseFragmentView, HasAndroidInjector {
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
+    constructor() {
+        Fragment()
+    }
+
+    constructor(layoutId: Int) {
+        Fragment(layoutId)
+    }
 
     companion object {
         private const val KEY_TITLE = "title"
