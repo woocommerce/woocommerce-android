@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -102,10 +105,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(data.originAddress))
+                transitionTo(
+                    State.OriginAddressValidation(data),
+                    SideEffect.ValidateAddress(data.originAddress, ORIGIN)
+                )
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(data.shippingAddress))
+                transitionTo(
+                    State.ShippingAddressValidation(data),
+                    SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
+                )
             }
             on<Event.PackageSelectionStarted> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions)
@@ -156,6 +165,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressNotRecognized> {
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
             }
+            on<Event.AddressValidationFailed> {
+                transitionTo(State.OriginAddressValidationFailure, SideEffect.ShowError(Error.AddressValidationError))
+            }
         }
 
         state<State.OriginAddressSuggestion> {
@@ -173,7 +185,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.OriginAddressEditing> {
             on<Event.AddressEditFinished> { event ->
-                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(event.address))
+                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(event.address, ORIGIN))
             }
             on<Event.AddressUsedAsIs> { event ->
                 val newData = data.copy(
@@ -201,6 +213,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressNotRecognized> {
                 transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
             }
+            on<Event.AddressValidationFailed> {
+                transitionTo(State.ShippingAddressValidationFailure, SideEffect.ShowError(Error.AddressValidationError))
+            }
         }
 
         state<State.OriginAddressSuggestion> {
@@ -218,7 +233,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.ShippingAddressEditing> {
             on<Event.AddressEditFinished> { event ->
-                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(event.address))
+                transitionTo(
+                    State.ShippingAddressValidation(data),
+                    SideEffect.ValidateAddress(event.address, DESTINATION)
+                )
             }
             on<Event.AddressUsedAsIs> { event ->
                 val newData = data.copy(
@@ -303,6 +321,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class Error {
         object DataLoadingError : Error()
+        object AddressValidationError : Error()
     }
 
     sealed class State {
@@ -314,10 +333,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class OriginAddressValidation(val data: Data) : State()
         data class OriginAddressSuggestion(val data: Data) : State()
         data class OriginAddressEditing(val data: Data) : State()
+        object OriginAddressValidationFailure : State()
 
         data class ShippingAddressValidation(val data: Data) : State()
         data class ShippingAddressSuggestion(val data: Data) : State()
         data class ShippingAddressEditing(val data: Data) : State()
+        object ShippingAddressValidationFailure : State()
 
         data class PackageSelection(val data: Data) : State()
         data class CustomsDeclaration(val data: Data) : State()
@@ -330,12 +351,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class DataLoaded(val originAddress: Address, val shippingAddress: Address) : Event()
         object DataLoadingFailed : Event()
 
-        object AddressNotRecognized : Event()
+        data class AddressNotRecognized(val address: Address) : Event()
         data class AddressValidated(val address: Address) : Event()
         data class AddressInvalid(val suggested: Address) : Event()
         data class AddressUsedAsIs(val address: Address) : Event()
         data class AddressEditFinished(val address: Address) : Event()
         data class SuggestedAddressSelected(val address: Address) : Event()
+        object AddressValidationFailed : Event()
 
         object OriginAddressValidationStarted : Event()
         object EditOriginAddressRequested : Event()
@@ -366,7 +388,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class ShowError(val error: Error) : SideEffect()
         data class UpdateViewState(val data: Data) : SideEffect()
 
-        data class ValidateAddress(val address: Address) : SideEffect()
+        data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
         data class ShowAddressSuggestion(val entered: Address, val suggested: Address) : SideEffect()
         data class OpenAddressEditor(val address: Address) : SideEffect()
 

@@ -7,12 +7,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Invalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NotRecognized
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Valid
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressInvalid
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressNotRecognized
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -56,7 +59,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         null
                     }
                     is SideEffect.LoadData -> loadData(sideEffect.orderId)
-                    is SideEffect.ValidateAddress -> validateAddress(sideEffect.address)
+                    is SideEffect.ValidateAddress -> validateAddress(sideEffect.address, sideEffect.type)
                     is SideEffect.OpenAddressEditor -> Event.AddressEditFinished(sideEffect.address)
                     is SideEffect.ShowAddressSuggestion -> Event.SuggestedAddressSelected(sideEffect.entered)
                     is SideEffect.ShowPackageOptions -> Event.PackagesSelected
@@ -158,11 +161,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         return Event.DataLoaded(order.billingAddress, order.shippingAddress)
     }
 
-    private fun validateAddress(address: Address): Event {
-        return when (val result = addressValidator.validateAddress(address)) {
-            Valid -> Event.AddressValidated(address)
-            is Invalid -> Event.AddressInvalid(result.suggested)
-            NotRecognized -> Event.AddressNotRecognized
+    private suspend fun validateAddress(address: Address, type: AddressType): Event {
+        return when (val result = addressValidator.validateAddress(address, type)) {
+            ValidationResult.Valid -> AddressValidated(address)
+            is ValidationResult.Invalid -> AddressInvalid(result.suggested)
+            ValidationResult.NotRecognized -> AddressNotRecognized(address)
+            is ValidationResult.Error -> AddressValidationFailed
         }
     }
 
