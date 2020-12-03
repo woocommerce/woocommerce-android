@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.shippinglabels
 
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
@@ -11,10 +11,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R.string
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragmentArgs
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModel
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundViewModel.ShippingLabelRefundViewState
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -46,7 +44,7 @@ class ShippingLabelRefundViewModelTest : BaseUnitTest() {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
     private val shippingLabel = OrderTestUtils.generateShippingLabel(
-        remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
+            remoteOrderId = REMOTE_ORDER_ID, shippingLabelId = REMOTE_SHIPPING_LABEL_ID
     )
 
     private val savedState: SavedStateWithArgs = spy(
