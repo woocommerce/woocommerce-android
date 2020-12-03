@@ -118,9 +118,6 @@ class OrderListFragment : TopLevelFragment(),
         TabLayout(requireContext(), null, R.attr.tabStyle)
     }
 
-    private val appBarLayout
-        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-
     private val emptyView
         get() = binding.orderListView.emptyView
 
