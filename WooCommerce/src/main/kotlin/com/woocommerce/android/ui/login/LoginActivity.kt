@@ -119,7 +119,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = uri?.host?.let { it } ?: ""
+        val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
