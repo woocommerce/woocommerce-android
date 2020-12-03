@@ -34,7 +34,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     private val repository: OrderDetailRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
-    private val addressValidator: ShippingAddressValidator = mock()
+    private val addressValidator: ShippingLabelAddressValidator = mock()
     private lateinit var stateFlow: MutableStateFlow<SideEffect>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()

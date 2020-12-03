@@ -7,9 +7,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Invalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.NotRecognized
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddressValidator.ValidationResult.Valid
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Invalid
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NotRecognized
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Valid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
@@ -31,7 +31,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val stateMachine: ShippingLabelsStateMachine,
-    private val addressValidator: ShippingAddressValidator
+    private val addressValidator: ShippingLabelAddressValidator
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 

@@ -5,8 +5,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingAddress
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
-class ShippingAddressValidator @Inject constructor(
-    private val shippingLabelStore: WCShippingLabelStore
+class ShippingLabelAddressValidator @Inject constructor(
+    private val shippingLabelStore: WCShippingLabelStore,
+    private val selectedSite: SelectedSite
 ) {
     fun validateAddress(address: Address): ValidationResult {
         return Valid
