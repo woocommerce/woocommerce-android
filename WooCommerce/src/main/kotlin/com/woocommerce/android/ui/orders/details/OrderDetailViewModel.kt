@@ -193,7 +193,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.items.map { it.productId }
-            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
+            val products = orderDetailRepository.getProductsByRemoteIds(remoteProductIds)
+            products.isNotEmpty() && products.all { it.virtual }
         } else false
     }
 
