@@ -480,7 +480,7 @@ class MainActivity : AppUpgradeActivity(),
         app_bar_layout.setExpanded(expand, animate)
     }
 
-    private fun enableToolbarExpansion(enable: Boolean) {
+    fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
         }

@@ -583,7 +583,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(false)
         isSearching = true
         checkOrientation()
-        expandMainToolbar(false, animate = true)
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
@@ -598,7 +598,7 @@ class OrderListFragment : TopLevelFragment(),
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
-        restoreMainToolbar()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
