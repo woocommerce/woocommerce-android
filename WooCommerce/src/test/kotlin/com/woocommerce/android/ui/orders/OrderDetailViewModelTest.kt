@@ -145,6 +145,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
+        doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
+
         var orderData: ViewState? = null
         viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
 
@@ -623,6 +625,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 dateShipped = "132434323",
                 isCustomProvider = true
             )
+
+            doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
 
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
