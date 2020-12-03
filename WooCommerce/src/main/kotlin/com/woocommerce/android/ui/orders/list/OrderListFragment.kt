@@ -570,7 +570,6 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         clearOrderListData()
-        showTabs(false)
         isSearching = true
         checkOrientation()
         removeTabLayoutFromAppBar()
@@ -668,7 +667,6 @@ class OrderListFragment : TopLevelFragment(),
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
-        showTabs(true)
         (activity as? MainActivity)?.showBottomNav()
 
         if (isFilterEnabled) closeFilteredList()
