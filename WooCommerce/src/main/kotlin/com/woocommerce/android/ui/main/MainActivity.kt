@@ -971,6 +971,8 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onChildViewRemoved(parent: View?, child: View?) {
-        binding.appBarLayout.elevation = 0f
+        parent?.postDelayed({
+            binding.appBarLayout.elevation = 0f
+        }, 100L)
     }
 }
