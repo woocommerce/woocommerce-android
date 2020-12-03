@@ -48,6 +48,7 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -65,7 +66,8 @@ class OrderListViewModel @AssistedInject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val fetcher: OrderFetcher,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -122,6 +124,9 @@ class OrderListViewModel @AssistedInject constructor(
             // Populate any cached order status options immediately since we use this
             // value in many different places in the order list view.
             _orderStatusOptions.value = repository.getCachedOrderStatusOptions()
+
+            // refresh plugin information
+            wooCommerceStore.fetchWooCommerceServicesPluginInfo(selectedSite.get())
         }
     }
 

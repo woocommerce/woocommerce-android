@@ -61,6 +61,10 @@ android {
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -276,6 +280,8 @@ dependencies {
 
     implementation "org.apache.commons:commons-lang3:3.9"
     implementation "org.apache.commons:commons-text:1.8"
+
+    implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

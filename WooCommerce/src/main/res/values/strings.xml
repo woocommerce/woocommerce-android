@@ -236,13 +236,14 @@
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
-    <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
+    <string name="orderdetail_payment_paid_by_customer">Paid</string>
     <string name="orderdetail_refunded">Refunded</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
-    <string name="orderdetail_net">Net</string>
+    <string name="orderdetail_net">Net Payment</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
+    <string name="orderdetail_payment_fees">Fees</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
@@ -280,8 +281,13 @@
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
     <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
-    <string name="order_begin_fulfillment">Mark order complete</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on “Create shipping label” to try it!</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
+    <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
+    <string name="order_mark_complete">Mark order complete</string>
+    <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
     <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
@@ -334,6 +340,14 @@
     <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
     <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
+
+    <!--
+        Create shipping labels
+    -->
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
+    <string name="shipping_label_more_information_link">Learn more</string>
 
     <!--
         Refunds
@@ -905,8 +919,7 @@
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
-
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
     <string name="send_verification_email">Send verification email</string>
@@ -1398,7 +1411,7 @@
     <string name="login_get_link_by_email">Get a login link by email</string>
     <string name="signup_magic_link_message">We’ve emailed you a signup link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
     <string name="signup_confirmation_magic_link_message">We’ll email you a signup link to create your new WordPress.com account.</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="login_site_address_help_title">What\'s my site address?</string>
     <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_find_your_site_adress">Find your site address</string>

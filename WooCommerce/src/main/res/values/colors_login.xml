@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Override colors in the WordPressLoginFlow library in this file.
+-->
+<resources>
+<!--    <color name="login_input_label_static_text_color">@color/color_on_surface_disabled</color>-->
+    <color name="login_secondary_button_icon_tint_color">@color/color_on_surface_disabled</color>
+</resources>
