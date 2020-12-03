@@ -244,13 +244,13 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
         if (authOptions != null) {
             if (authOptions.isPasswordless) {
-                showMagicLinkRequestScreen(email, verifyEmail, false, true)
+                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
             } else {
                 showEmailPasswordScreen(email, verifyEmail, isMagicLinkEnabled)
             }
         } else {
             if (isMagicLinkEnabled) {
-                showMagicLinkRequestScreen(email, verifyEmail, true, false)
+                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = true, forceRequestAtStart = false)
             } else {
                 showEmailPasswordScreen(email, verifyEmail, false)
             }
@@ -660,6 +660,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
-        TODO("Not yet implemented")
+        showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
     }
 }
