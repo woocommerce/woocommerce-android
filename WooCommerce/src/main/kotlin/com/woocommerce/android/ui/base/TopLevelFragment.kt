@@ -25,20 +25,18 @@ abstract class TopLevelFragment : BaseFragment(), TopLevelFragmentView {
     abstract fun isScrolledToTop(): Boolean
 
     /**
-     * Called when the fragment shows a search view so the toolbar size is shrunk
-     * to a non-expanded size
+     * Called when the fragment shows or hides a search view so we can properly disable the collapsing
+     * toolbar when a search is active
      */
-    fun expandMainToolbar(expand: Boolean, animate: Boolean) {
-        (activity as? MainActivity)?.expandToolbar(expand, animate)
-    }
-
-    /**
-     * Called when the fragment hides a search view so the toolbar can be re-expanded
-     * if scrolled to the top
-     */
-    fun restoreMainToolbar() {
-        if (isScrolledToTop()) {
-            expandMainToolbar(true, true)
+    fun onSearchViewActiveChanged(isActive: Boolean) {
+        (activity as? MainActivity)?.let {
+            if (isActive) {
+                it.enableToolbarExpansion(false)
+                it.expandToolbar(false, false)
+            } else {
+                it.enableToolbarExpansion(true)
+                it.expandToolbar(true, true)
+            }
         }
     }
 }
