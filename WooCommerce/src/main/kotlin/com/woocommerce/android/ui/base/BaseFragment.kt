@@ -20,13 +20,8 @@ import javax.inject.Inject
 open class BaseFragment : Fragment, BaseFragmentView, HasAndroidInjector {
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    constructor() {
-        Fragment()
-    }
-
-    constructor(@LayoutRes layoutId: Int) {
-        Fragment(layoutId)
-    }
+    constructor() : super()
+    constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     companion object {
         private const val KEY_TITLE = "title"
