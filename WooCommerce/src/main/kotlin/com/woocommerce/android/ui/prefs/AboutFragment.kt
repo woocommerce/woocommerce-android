@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -15,7 +16,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
 
-class AboutFragment : androidx.fragment.app.Fragment() {
+class AboutFragment : Fragment(R.layout.fragment_about) {
     companion object {
         const val TAG = "about"
     }
@@ -28,8 +29,10 @@ class AboutFragment : androidx.fragment.app.Fragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentAboutBinding.bind(view)
 
         val isLandscape = DisplayUtils.isLandscape(activity)
         binding.aboutImage.visibility = if (isLandscape) {
