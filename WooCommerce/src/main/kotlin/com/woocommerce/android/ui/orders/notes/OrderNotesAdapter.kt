@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.orders.notes
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.woocommerce.android.databinding.OrderDetailNoteListHeaderBinding
+import com.woocommerce.android.databinding.OrderDetailNoteListNoteBinding
 import com.woocommerce.android.ui.orders.notes.OrderNoteListItem.Header
 import com.woocommerce.android.ui.orders.notes.OrderNoteListItem.Note
 import com.woocommerce.android.ui.orders.notes.OrderNoteListItem.ViewType
@@ -23,9 +26,26 @@ class OrderNotesAdapter : Adapter<OrderNoteViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderNoteViewHolder {
+        val inflater = LayoutInflater.from(parent.getContext())
         return when (viewType) {
-            ViewType.NOTE.id -> NoteItemViewHolder(parent)
-            ViewType.HEADER.id -> HeaderItemViewHolder(parent)
+            ViewType.NOTE.id -> {
+                NoteItemViewHolder(
+                    OrderDetailNoteListNoteBinding.inflate(
+                        inflater,
+                        parent,
+                        false
+                    )
+                )
+            }
+            ViewType.HEADER.id -> {
+                HeaderItemViewHolder(
+                    OrderDetailNoteListHeaderBinding.inflate(
+                        inflater,
+                        parent,
+                        false
+                    )
+                )
+            }
             else -> throw IllegalArgumentException("Unexpected view type in OrderNotesAdapter")
         }
     }

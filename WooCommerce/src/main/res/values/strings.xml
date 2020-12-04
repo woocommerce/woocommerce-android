@@ -927,8 +927,7 @@
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
-
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
     <string name="send_verification_email">Send verification email</string>

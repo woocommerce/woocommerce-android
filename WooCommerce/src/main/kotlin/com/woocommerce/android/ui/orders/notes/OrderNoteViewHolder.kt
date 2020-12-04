@@ -1,29 +1,20 @@
 package com.woocommerce.android.ui.orders.notes
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.R
+import androidx.viewbinding.ViewBinding
+import com.woocommerce.android.databinding.OrderDetailNoteListHeaderBinding
+import com.woocommerce.android.databinding.OrderDetailNoteListNoteBinding
 
-abstract class OrderNoteViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
-        LayoutInflater.from(
-                parent.context
-        ).inflate(layout, parent, false)
-)
+abstract class OrderNoteViewHolder(viewBinding: ViewBinding) : RecyclerView.ViewHolder(viewBinding.getRoot())
 
-class HeaderItemViewHolder(parent: ViewGroup) : OrderNoteViewHolder(parent, R.layout.order_detail_note_list_header) {
-    private val header: MaterialTextView = itemView.findViewById(R.id.orderDetail_noteListHeader)
-
+class HeaderItemViewHolder(val viewBinding: OrderDetailNoteListHeaderBinding) : OrderNoteViewHolder(viewBinding) {
     fun bind(item: OrderNoteListItem.Header) {
-        header.text = item.text
+        viewBinding.orderDetailNoteListHeader.text = item.text
     }
 }
 
-class NoteItemViewHolder(parent: ViewGroup) : OrderNoteViewHolder(parent, R.layout.order_detail_note_list_note) {
-    private val noteItem = itemView as OrderDetailOrderNoteItemView
+class NoteItemViewHolder(val viewBinding: OrderDetailNoteListNoteBinding) : OrderNoteViewHolder(viewBinding) {
     fun bind(item: OrderNoteListItem.Note, isLast: Boolean) {
-        noteItem.initView(item.note, isLast)
+        viewBinding.noteItemView.initView(item.note, isLast)
     }
 }
