@@ -84,10 +84,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
 
         updateStoreViews()
 
