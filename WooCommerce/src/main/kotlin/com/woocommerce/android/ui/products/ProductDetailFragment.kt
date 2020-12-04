@@ -292,6 +292,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
             }
         }
 
+        // Some users are experiencing a crash because the entry R.id.menu_view_product is missing from the menu
+        // see: https://github.com/woocommerce/woocommerce-android/issues/3241
+        // If this happens, we will send the below report, and we avoid the crash using the null checks below
+        // TODO: remove the null checks once the root cause is identified is fixed
         if (menu.findItem(R.id.menu_view_product) == null) {
             val message = """menu.findItem(R.id.menu_view_product) is null
                 |User is ${if (viewModel.isAddFlow) "creating a product" else "modifying a product"}
