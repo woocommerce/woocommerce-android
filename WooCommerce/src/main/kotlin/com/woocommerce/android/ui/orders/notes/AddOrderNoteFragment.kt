@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.orders.notes
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -27,7 +25,9 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPressListener {
+class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note),
+    AddOrderNoteContract.View,
+    BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         private const val FIELD_NOTE_TEXT = "note_text"
@@ -56,13 +56,10 @@ class AddOrderNoteFragment : BaseFragment(), AddOrderNoteContract.View, BackPres
         retainInstance = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentAddOrderNoteBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        _binding = FragmentAddOrderNoteBinding.bind(view)
 
         orderId = navArgs.orderId
         orderNumber = navArgs.orderNumber
