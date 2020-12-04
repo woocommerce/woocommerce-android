@@ -193,7 +193,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.items.map { it.productId }
-            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
+            val products = orderDetailRepository.getProductsByRemoteIds(remoteProductIds)
+            products.isNotEmpty() && products.all { it.virtual }
         } else false
     }
 
@@ -484,17 +485,17 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadShipmentTracking(viewState: ViewState): ViewState {
-        val newViewState: ViewState
-        when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
+        if (hasVirtualProductsOnly()) return viewState.copy(isShipmentTrackingAvailable = false)
+
+        return when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
             RequestResult.SUCCESS -> {
                 _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                newViewState = viewState.copy(isShipmentTrackingAvailable = true)
+                viewState.copy(isShipmentTrackingAvailable = true)
             }
             else -> {
-                newViewState = viewState.copy(isShipmentTrackingAvailable = false)
+                viewState.copy(isShipmentTrackingAvailable = false)
             }
         }
-        return newViewState
     }
 
     private suspend fun loadOrderShippingLabels(viewState: ViewState): ViewState {
