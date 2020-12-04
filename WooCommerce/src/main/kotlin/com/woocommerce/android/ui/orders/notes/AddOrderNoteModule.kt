@@ -13,9 +13,8 @@ import dagger.multibindings.IntoMap
 
 @Module
 internal abstract class AddOrderNoteModule {
-    @Module
+
     companion object {
-        @JvmStatic
         @Provides
         fun provideDefaultArgs(fragment: AddOrderNoteFragment): Bundle? {
             return fragment.arguments
@@ -24,7 +23,7 @@ internal abstract class AddOrderNoteModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(OrderListViewModel::class)
+    @ViewModelKey(AddOrderNoteViewModel::class)
     abstract fun bindFactory(factory: AddOrderNoteViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
