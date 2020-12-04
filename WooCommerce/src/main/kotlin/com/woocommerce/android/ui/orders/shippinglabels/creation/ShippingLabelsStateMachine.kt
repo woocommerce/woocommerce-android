@@ -168,7 +168,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressInvalid> { event ->
                 transitionTo(
                     State.OriginAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, ORIGIN)
                 )
             }
             on<Event.AddressNotRecognized> {
@@ -216,7 +216,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressInvalid> { event ->
                 transitionTo(
                     State.ShippingAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, DESTINATION)
                 )
             }
             on<Event.AddressNotRecognized> {
@@ -397,7 +397,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class UpdateViewState(val data: Data) : SideEffect()
 
         data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
-        data class ShowAddressSuggestion(val entered: Address, val suggested: Address) : SideEffect()
+        data class ShowAddressSuggestion(
+            val entered: Address,
+            val suggested: Address,
+            val type: AddressType
+        ) : SideEffect()
         data class OpenAddressEditor(val address: Address,val type: AddressType) : SideEffect()
 
         object ShowPackageOptions : SideEffect()
