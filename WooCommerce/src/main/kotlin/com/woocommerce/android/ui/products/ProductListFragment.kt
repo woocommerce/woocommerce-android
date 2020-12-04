@@ -55,7 +55,9 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list), OnProductClickListener, ProductSortAndFilterListener,
+class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
+    OnProductClickListener,
+    ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener,
