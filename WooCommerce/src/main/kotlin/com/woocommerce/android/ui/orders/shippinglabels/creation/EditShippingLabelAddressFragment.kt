@@ -125,16 +125,16 @@ class EditShippingLabelAddressFragment : BaseFragment() {
 
     private fun gatherData(): Address {
         return Address(
-            company = binding.company.toString(),
-            firstName = binding.name.toString(),
+            company = binding.company.text.toString(),
+            firstName = binding.name.text.toString(),
             lastName = "",
-            phone = binding.phone.toString(),
-            address1 = binding.address1.toString(),
-            address2 = binding.address2.toString(),
-            postcode = binding.zip.toString(),
-            state = binding.state.toString(),
-            city = binding.city.toString(),
-            country = binding.country.toString(),
+            phone = binding.phone.text.toString(),
+            address1 = binding.address1.text.toString(),
+            address2 = binding.address2.text.toString(),
+            postcode = binding.zip.text.toString(),
+            state = binding.state.text.toString(),
+            city = binding.city.text.toString(),
+            country = binding.country.text.toString(),
             email = ""
         )
     }
