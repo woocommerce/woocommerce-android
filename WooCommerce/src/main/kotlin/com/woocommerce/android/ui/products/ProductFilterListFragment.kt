@@ -32,7 +32,9 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import javax.inject.Inject
 
-class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list), OnProductFilterClickListener, BackPressListener {
+class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
+    OnProductFilterClickListener,
+    BackPressListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
