@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -47,7 +48,7 @@ import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContract.View {
+class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
     companion object {
         const val TAG = "main-settings"
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
@@ -73,13 +74,10 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        _binding = FragmentSettingsMainBinding.bind(view)
 
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener

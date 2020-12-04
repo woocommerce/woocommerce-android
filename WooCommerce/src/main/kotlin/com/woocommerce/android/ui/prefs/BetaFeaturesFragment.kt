@@ -18,13 +18,10 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
     private lateinit var settingsListener: AppSettingsListener
 
-    private var _binding: FragmentSettingsBetaBinding? = null
-    private val binding get() = _binding!!
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentSettingsBetaBinding.bind(view)
+        val binding = FragmentSettingsBetaBinding.bind(view)
 
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
@@ -47,10 +44,5 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.beta_features)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
