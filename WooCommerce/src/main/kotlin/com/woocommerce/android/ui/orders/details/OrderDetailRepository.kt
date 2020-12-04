@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
@@ -187,6 +188,26 @@ class OrderDetailRepository @Inject constructor(
                 continuationAddOrderNote = it
 
                 val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), noteModel)
+                dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
+            } ?: false
+        } catch (e: CancellationException) {
+            WooLog.e(ORDERS, "CancellationException while adding order note $remoteOrderId")
+            false
+        }
+    }
+
+    suspend fun addOrderNote(
+        localOrderId: Int,
+        remoteOrderId: Long,
+        noteModel: OrderNote
+    ): Boolean {
+        return try {
+            continuationAddOrderNote?.cancel()
+            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                continuationAddOrderNote = it
+
+                val dataModel = noteModel.toDataModel()
+                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), dataModel)
                 dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
             } ?: false
         } catch (e: CancellationException) {
