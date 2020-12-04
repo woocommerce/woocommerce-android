@@ -166,10 +166,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.AddressInvalid> { event ->
-                transitionTo(
-                    State.OriginAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, ORIGIN)
-                )
+                // Temporary for testing
+//                transitionTo(
+//                    State.OriginAddressSuggestion(data),
+//                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, ORIGIN)
+//                )
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
             on<Event.AddressNotRecognized> {
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
