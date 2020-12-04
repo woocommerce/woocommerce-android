@@ -3,15 +3,19 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditFinished
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressInvalid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressNotRecognized
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
@@ -20,6 +24,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,29 +54,31 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         launch {
             stateMachine.effects.collect { sideEffect ->
                 when (sideEffect) {
-                    SideEffect.NoOp -> null
-                    is SideEffect.ShowError -> {
-                        showError(sideEffect.error)
-                        null
+                    SideEffect.NoOp -> { }
+                    is SideEffect.ShowError -> showError(sideEffect.error)
+                    is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
+                    is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
+                    is SideEffect.ValidateAddress -> handleResult {
+                        validateAddress(sideEffect.address, sideEffect.type)
                     }
-                    is SideEffect.UpdateViewState -> {
-                        updateViewState(sideEffect.data)
-                        null
-                    }
-                    is SideEffect.LoadData -> loadData(sideEffect.orderId)
-                    is SideEffect.ValidateAddress -> validateAddress(sideEffect.address, sideEffect.type)
-                    is SideEffect.OpenAddressEditor -> Event.AddressEditFinished(sideEffect.address)
-                    is SideEffect.ShowAddressSuggestion -> Event.SuggestedAddressSelected(sideEffect.entered)
+                    is SideEffect.OpenAddressEditor -> triggerEvent(
+                        ShowAddressEditor(sideEffect.address, sideEffect.type)
+                    )
+                    is SideEffect.ShowAddressSuggestion -> triggerEvent(
+                        ShowAddressEditor(sideEffect.entered, sideEffect.type)
+                    )
                     is SideEffect.ShowPackageOptions -> Event.PackagesSelected
                     is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
                     is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
                     is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
-                }.also { event ->
-                    event?.let { stateMachine.handleEvent(it) }
                 }
             }
         }
         stateMachine.start(arguments.orderIdentifier)
+    }
+
+    private suspend fun handleResult(action: suspend () -> Event) {
+        stateMachine.handleEvent(action())
     }
 
     private fun updateViewState(data: Data) {
@@ -152,7 +159,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun showError(error: Error) {
         when (error) {
-            Error.DataLoadingError -> triggerEvent(ShowSnackbar(R.string.dashboard_stats_error))
+            DataLoadingError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
+            AddressValidationError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
         }
     }
 
@@ -168,6 +176,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             ValidationResult.NotRecognized -> AddressNotRecognized(address)
             is ValidationResult.Error -> AddressValidationFailed
         }
+    }
+
+    fun onAddressEditFinished(address: Address) {
+        stateMachine.handleEvent(AddressEditFinished(address))
     }
 
     fun onEditButtonTapped(step: FlowStep) {
@@ -241,6 +253,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 isHighlighted = false
             )
         }
+    }
+
+    sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
+        data class ShowAddressEditor(val address: Address, val type: AddressType): CreateShippingLabelEvent()
     }
 
     @AssistedInject.Factory
