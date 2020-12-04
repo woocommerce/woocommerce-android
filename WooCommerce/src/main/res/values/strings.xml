@@ -356,6 +356,17 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_edit_address_name">Name</string>
+    <string name="shipping_label_edit_address_company">Company</string>
+    <string name="shipping_label_edit_address_phone">Phone</string>
+    <string name="shipping_label_edit_address_address">Address</string>
+    <string name="shipping_label_edit_address_city">City</string>
+    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
+    <string name="shipping_label_edit_address_country">Country</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
+    <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
+    <string name="shipping_label_edit_data_validation_error">Data validation failed</string>
 
     <!--
         Refunds

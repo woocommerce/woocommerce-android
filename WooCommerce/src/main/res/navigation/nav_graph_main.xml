@@ -360,5 +360,21 @@
         <argument
             android:name="orderIdentifier"
             app:argType="string" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelAddressFragment"
+            app:destination="@id/editShippingLabelAddressFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/editShippingLabelAddressFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment"
+        android:label="EditShippingLabelAddressFragment">
+        <argument
+            android:name="address"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="addressType"
+            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
     </fragment>
 </navigation>
