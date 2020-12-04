@@ -2,19 +2,17 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.products_sort_and_filters_card.view.*
+import com.woocommerce.android.databinding.ProductsSortAndFiltersCardBinding
 
 class ProductSortAndFiltersCard @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.products_sort_and_filters_card, this)
-    }
+    private val binding = ProductsSortAndFiltersCardBinding.inflate(LayoutInflater.from(ctx), this)
 
     interface ProductSortAndFilterListener {
         fun onFilterOptionSelected()
@@ -22,17 +20,17 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
     }
 
     fun initView(listener: ProductSortAndFilterListener) {
-        btn_product_filter.setOnClickListener { listener.onFilterOptionSelected() }
-        btn_product_sorting.setOnClickListener { listener.onSortOptionSelected() }
+        binding.btnProductFilter.setOnClickListener { listener.onFilterOptionSelected() }
+        binding.btnProductSorting.setOnClickListener { listener.onSortOptionSelected() }
     }
 
     fun setSortingTitle(title: String) {
-        btn_product_sorting.text = title
+        binding.btnProductSorting.text = title
     }
 
     fun updateFilterSelection(filterCount: Int) {
         val isFilterEnabled = filterCount > 0
-        with(btn_product_filter) {
+        with(binding.btnProductFilter) {
             text = if (isFilterEnabled) {
                 context.getString(R.string.product_list_filters_selected, filterCount)
             } else context.getString(R.string.product_list_filters)
