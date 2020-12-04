@@ -184,7 +184,7 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onResume() {
         super.onResume()
-        addTabLayoutToAppBar(tabLayout)
+        addTabLayoutToAppBar()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -279,19 +279,19 @@ class OrderListFragment : TopLevelFragment(),
 
         if (isActive) {
             showOptionsMenu(true)
-            addTabLayoutToAppBar(tabLayout)
+            addTabLayoutToAppBar()
 
             if (isSearching) {
                 clearSearchResults()
             }
         } else {
-            removeTabLayoutFromAppBar(tabLayout)
+            removeTabLayoutFromAppBar()
         }
     }
 
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
-        addTabLayoutToAppBar(tabLayout)
+        addTabLayoutToAppBar()
 
         if (isOrderStatusFilterEnabled()) {
             viewModel.reloadListFromCache()
@@ -301,7 +301,7 @@ class OrderListFragment : TopLevelFragment(),
     }
 
     override fun onChildFragmentOpened() {
-        removeTabLayoutFromAppBar(tabLayout)
+        removeTabLayoutFromAppBar()
     }
 
     /**
@@ -570,9 +570,9 @@ class OrderListFragment : TopLevelFragment(),
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         clearOrderListData()
-        showTabs(false)
         isSearching = true
         checkOrientation()
+        removeTabLayoutFromAppBar()
         expandMainToolbar(false, animate = true)
         return true
     }
@@ -589,6 +589,7 @@ class OrderListFragment : TopLevelFragment(),
         }
         loadListForActiveTab()
         restoreMainToolbar()
+        addTabLayoutToAppBar()
         return true
     }
 
@@ -666,7 +667,6 @@ class OrderListFragment : TopLevelFragment(),
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
-        showTabs(true)
         (activity as? MainActivity)?.showBottomNav()
 
         if (isFilterEnabled) closeFilteredList()
@@ -765,7 +765,7 @@ class OrderListFragment : TopLevelFragment(),
     }
     // endregion
 
-    private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
+    private fun addTabLayoutToAppBar() {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
             if (isActive && !appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
@@ -773,7 +773,7 @@ class OrderListFragment : TopLevelFragment(),
         }
     }
 
-    private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
+    private fun removeTabLayoutFromAppBar() {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
 

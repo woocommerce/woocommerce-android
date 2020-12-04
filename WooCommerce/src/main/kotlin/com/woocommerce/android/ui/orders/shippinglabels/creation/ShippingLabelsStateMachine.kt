@@ -20,55 +20,61 @@ side effects (in parentheses).
 
                   +
                   |
-                  |
-                  v
-           +------+-------+                             +--------------------------+
-           |              |                             |                          |    SuggestedAddressSelected
-           |     Idle     |                             |         Waiting          |       (UpdateViewState)
-           |              |                             |           For            +<-------------------------------+
-           +------+-------+    +----------------------->+          Input           |                                |
-                  |            |      DataLoaded        |                          +<---------------+               |
-      FlowStarted |            |  (UpdateViewState)     +---+----+-----------------+                |               |
-      (LoadData)  |            |                            |    |                                  |               |
-                  |            |                            |    | OriginAddressValidationStarted   |               |
-                  v            |                            |    |       (ValidateAddress)          |               |
-           +------+-------+    |                            |    |                                  |               |
-           |              |    |                            |    |                                  |               |
-           | Data Loading +----+                            |    |                                  |               |
-           |              |                                 |    |                                  |               |
-           +------+-------+                                 |    |                                  |               |
-                  |              EditOriginAddressRequested |    |                                  |               |
-DataLoadingFailed |                  (OpenAddressEditor)    |    |                                  |               |
-   (ShowError)    |            +----------------------------+    |                                  |               |
-                  v            |                                 v                                  |               |
-           +------+-------+    |                      +----------+----------+   AddressValidated    |               |
-           |              |    |   AddressEditFinished|                     |   (UpdateViewState)   |               |
-           | Data Loading |    |    (ValidateAddress) |    Origin Address   +-----------------------+               |
-           |   Failure    |    |  +------------------>+      Validation     |                                       |
-           |              |    |  |                   |                     +---------+                             |
-           +--------------+    |  |                   +----+---+------------+         |      AddressInvalid         |
-                               |  |                        |   ^                      | (ShowAddressSuggestions)    |
-                               |  |                        |   |                      |                             |
-                               |  |                        |   |                      |                             |
-                               |  |   AddressNotRecognized |   |                      |                             |
-                               |  |   (OpenAddressEditor)  |   | AddressEditFinished  |                             |
-                               |  |                        |   |  (ValidateAddress)   |                             |
-                               |  |                        |   |                      |                             |
-                               |  |                        |   |                      |                             |
-                               |  |                        v   |                      v                             |
-                               |  |     +------------------+-+ |                +-----+--------------+              |
-                               |  +-----+                    | |                |                    |              |
-                               |        |   Origin Address   | |                |   Origin Address   +--------------+
-                               +------->+       Editing      +-+                |    Suggestions     |
-                                        |                    |                  |                    |
-                                        +--------+-----------+                  +---------+----------+
-                                                 ^                                        |
-                                                 |                                        |
-                                                 |                                        |
-                                                 |                                        |
-                                                 +----------------------------------------+
-                                                          EditOriginAddressRequested
-                                                             (OpenAddressEditor)
+                  |                                     +--------------------------+
+                  v                                     |                          +<------------------------------+
+           +------+-------+                             |                          |                               |
+           |              |                             |         Waiting          |  SuggestedAddressSelected     |
+           |     Idle     |                             |           For            |     (UpdateViewState)         |
+           |              |                             |          Input           +<--------------------------+   |
+           +------+-------+    +----------------------->+                          |                           |   |
+                  |            |      DataLoaded        |                          +<---------------+          |   |
+      FlowStarted |            |  (UpdateViewState)     +---+----+-----------------+                |          |   |
+      (LoadData)  |            |                            |    |                                  |          |   |
+                  |            |                            |    | OriginAddressValidationStarted   |          |   |
+                  v            |                            |    |       (ValidateAddress)          |          |   |
+           +------+-------+    |                            |    |                                  |          |   |
+           |              |    |                            |    |                                  |          |   |
+           | Data Loading +----+                            |    |                                  |          |   |
+           |              |                                 |    |                                  |          |   |
+           +------+-------+                                 |    |                                  |          |   |
+                  |              EditOriginAddressRequested |    |                                  |          |   |
+DataLoadingFailed |                  (OpenAddressEditor)    |    |                                  |          |   |
+   (ShowError)    |            +----------------------------+    |                                  |          |   |
+                  v            |                                 v                                  |          |   |
+           +------+-------+    |                      +----------+----------+   AddressValidated    |          |   |
+           |              |    |   AddressEditFinished|                     |   (UpdateViewState)   |          |   |
+           | Data Loading |    |    (ValidateAddress) |    Origin Address   +-----------------------+          |   |
+           |   Failure    |    |  +------------------>+      Validation     |                                  |   |
+           |              |    |  |                   |                     |                                  |   |
+           +--------------+    |  |                   +----+----------+-----+                                  |   |
+                               |  |                        |          |                                        |   |
+                               |  |                        |          |                                        |   |
+                               |  |                        |          |                                        |   |
+                               |  |   AddressNotRecognized |          |      AddressInvalid                    |   |
+                               |  |   (OpenAddressEditor)  |          | (ShowAddressSuggestions)               |   |
+                               |  |                        |          |                                        |   |
+                               |  |                        |          |                                        |   |
+                               |  |                        |          |                                        |   |
+                               |  |                        v          v                                        |   |
+                               |  |     +------------------+-+      +-+-------------------+                    |   |
+                               |  +-----+                    |      |                     |                    |   |
+                               |        |   Origin Address   |      |    Origin Address   +--------------------+   |
+                               +------->+       Editing      |      |     Suggestions     |                        |
+                                        |                    |      |                     |                        |
+                                        +--+-----+-----------+      +-----------+---------+                        |
+                                           |     ^                              |                                  |
+                                           |     |                              |                                  |
+                                           |     |                              |                                  |
+                                           |     |                              |                                  |
+                                           |     +------------------------------+                                  |
+                                           |        EditOriginAddressRequested                                     |
+                                           |           (OpenAddressEditor)                                         |
+                                           |                                                                       |
+                                           |                                                                       |
+                                           +-----------------------------------------------------------------------+
+                                                                       AddressUsedAsIs
+                                                                      (UpdateViewState)
+
  */
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
