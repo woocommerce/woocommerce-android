@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -13,7 +11,7 @@ import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 
-class BetaFeaturesFragment : Fragment() {
+class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
         const val TAG = "beta-features"
     }
@@ -23,13 +21,11 @@ class BetaFeaturesFragment : Fragment() {
     private var _binding: FragmentSettingsBetaBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentSettingsBetaBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        _binding = FragmentSettingsBetaBinding.bind(view)
+
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
         } else {
