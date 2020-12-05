@@ -22,6 +22,7 @@ data class ShippingLabel(
     val currency: String = "",
     val paperSize: String = "",
     val productNames: List<String> = emptyList(),
+    val productIds: List<Long> = emptyList(),
     val originAddress: Address? = null,
     val destinationAddress: Address? = null,
     val refund: Refund? = null,
@@ -53,6 +54,7 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         currency,
         paperSize,
         getProductNameList().map { it.trim() },
+        getProductIdsList(),
         getOriginAddress()?.toAppModel(),
         getDestinationAddress()?.toAppModel(),
         getRefundModel()?.toAppModel()
@@ -83,12 +85,22 @@ fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.
 }
 
 /**
- * Method fetches a list of product details for the product names associated with each shipping label
+ * Method fetches a list of product details for the product ids or names associated with each shipping label
+ *
+ * The [ShippingLabel.productIds] field is only available from the API after WCS 1.24.1.
+ * Adding a check in this method to fetch products by productIds only if it is available.
+ * Otherwise default to using [ShippingLabel.productNames]
  */
 fun List<ShippingLabel>.loadProducts(products: List<Order.Item>): List<ShippingLabel> {
     return this.map { shippingLabel ->
-        shippingLabel.copy(
-            products = products.filter { it.name in shippingLabel.productNames }
-        )
+        if (shippingLabel.productIds.isEmpty()) {
+            shippingLabel.copy(
+                products = products.filter { it.name in shippingLabel.productNames }
+            )
+        } else {
+            shippingLabel.copy(
+                products = products.filter { it.uniqueId in shippingLabel.productIds }
+            )
+        }
     }
 }
