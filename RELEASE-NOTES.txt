@@ -2,6 +2,7 @@
 5.7
 -----
 * [*] Show fees in the payment details of orders [https://github.com/woocommerce/woocommerce-android/pull/3228]
+* [*] Fixed a bug where variable products was not displayed when shipping labels were purchased for an order. [https://github.com/woocommerce/woocommerce-android/pull/3283]
 
 5.6
 ----
