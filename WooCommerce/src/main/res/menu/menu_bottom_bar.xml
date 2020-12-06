@@ -3,21 +3,21 @@
 
     <item
         android:id="@+id/dashboard"
-        android:icon="@drawable/ic_menu_dashboard"
+        android:icon="@drawable/as_menu_dashboard"
         android:title="@string/my_store" />
 
     <item
         android:id="@+id/orders"
-        android:icon="@drawable/ic_menu_orders_list"
+        android:icon="@drawable/as_menu_orders_list"
         android:title="@string/orders" />
 
     <item
         android:id="@+id/products"
-        android:icon="@drawable/ic_menu_products_list"
+        android:icon="@drawable/as_menu_products_list"
         android:title="@string/products" />
 
     <item
         android:id="@+id/reviews"
-        android:icon="@drawable/ic_gridicons_star_outline"
+        android:icon="@drawable/as_menu_reviews"
         android:title="@string/review_notifications" />
 </menu>
