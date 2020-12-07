@@ -5,13 +5,11 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -48,7 +46,7 @@ import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
-class OrderListFragment : TopLevelFragment(),
+class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
     companion object {
         const val TAG: String = "OrderListFragment"
@@ -158,64 +156,53 @@ class OrderListFragment : TopLevelFragment(),
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
-        binding.orderRefreshLayout.apply {
-            // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = binding.orderListView.ordersList
-            setOnRefreshListener {
-                AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
-                refreshOrders()
-            }
-        }
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentOrderListBinding.bind(view)
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         binding.orderStatusListView.init(listener = this)
+
         initializeViewModel()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        addTabLayoutToAppBar()
-        AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        // Get the english version to use for setting the tab tag.
-        val englishTabArray = StringUtils
-                .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
-
-        resources.getStringArray(R.array.order_list_tabs).toList()
-                .forEachIndexed { index, title ->
-                    val tab = tabLayout.newTab().apply {
-                        text = title
-                        tag = englishTabArray?.get(index) ?: title
-                    }
-                    tabLayout.addTab(tab)
-
-                    // If this tab is the one that should be active, select it and load
-                    // the appropriate list.
-                    if (index == calculateStartupTabPosition()) {
-                        orderStatusFilter = calculateOrderStatusFilter(tab)
-                        tab.select()
-                    }
-                }
+        initializeTabs()
 
         listState?.let {
             binding.orderListView.onFragmentRestoreInstanceState(it)
             listState = null
         }
+
+        val filterOrSearchEnabled = isFilterEnabled || isSearching
+        showTabs(!filterOrSearchEnabled)
+
+        if (isFilterEnabled) {
+            viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
+        } else if (isSearching) {
+            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
+        } else {
+            loadListForActiveTab()
+        }
+    }
+
+    private fun initializeTabs() {
+        // Get the english version to use for setting the tab tag.
+        val englishTabArray = StringUtils
+            .getStringArrayByLocale(requireContext(), R.array.order_list_tabs, "en")
+
+        resources.getStringArray(R.array.order_list_tabs).toList()
+            .forEachIndexed { index, title ->
+                val tab = tabLayout.newTab().apply {
+                    text = title
+                    tag = englishTabArray?.get(index) ?: title
+                }
+                tabLayout.addTab(tab)
+
+                // If this tab is the one that should be active, select it and load
+                // the appropriate list.
+                if (index == calculateStartupTabPosition()) {
+                    orderStatusFilter = calculateOrderStatusFilter(tab)
+                    tab.select()
+                }
+            }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -241,17 +228,12 @@ class OrderListFragment : TopLevelFragment(),
                 binding.orderListView.scrollToTop()
             }
         })
+    }
 
-        val filterOrSearchEnabled = isFilterEnabled || isSearching
-        showTabs(!filterOrSearchEnabled)
-
-        if (isFilterEnabled) {
-            viewModel.submitSearchOrFilter(statusFilter = orderStatusFilter)
-        } else if (isSearching) {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        } else {
-            loadListForActiveTab()
-        }
+    override fun onResume() {
+        super.onResume()
+        addTabLayoutToAppBar()
+        AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
