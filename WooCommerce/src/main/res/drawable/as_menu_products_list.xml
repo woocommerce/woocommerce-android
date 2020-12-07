@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_focused="true"
+        android:drawable="@drawable/ic_menu_products_list">
+    </item>
+
+    <item
+        android:id="@+id/selected"
+        android:state_selected="true"
+        android:drawable="@drawable/ic_menu_products_list">
+    </item>
+
+    <item
+        android:id="@+id/unselected"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_menu_products_list">
+    </item>
+
+    <transition
+        android:fromId="@id/unselected"
+        android:toId="@id/selected">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <animated-vector
+            android:drawable="@drawable/ic_menu_products_list">
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="lid_clip"
+                android:animation="@animator/ic_menu_products_list_lid_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="lid_path"
+                android:animation="@animator/ic_menu_products_list_lid_path">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="circle"
+                android:animation="@animator/ic_menu_products_list_circle">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="square"
+                android:animation="@animator/ic_menu_products_list_square">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="triangle"
+                android:animation="@animator/ic_menu_products_list_triangle">
+            </target>
+
+        </animated-vector>
+
+    </transition>
+
+</animated-selector>
