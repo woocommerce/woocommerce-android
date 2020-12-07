@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <objectAnimator
+        android:propertyName="pathData"
+        android:duration="333"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:valueFrom="M 8 10 L 4 10 L 4 17 L 8 17 L 8 10 Z"
+        android:valueTo="M 8 8 L 4 8 L 4 17 L 8 17 L 8 10 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+    <objectAnimator
+        android:propertyName="pathData"
+        android:duration="333"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:startOffset="333"
+        android:valueFrom="M 8 8 L 4 8 L 4 17 L 8 17 L 8 8 Z"
+        android:valueTo="M 8 11 L 4 11 L 4 17 L 8 17 L 8 11 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+    <objectAnimator
+        android:propertyName="pathData"
+        android:duration="333"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:startOffset="666"
+        android:valueFrom="M 8 11 L 4 11 L 4 17 L 8 17 L 8 11 Z"
+        android:valueTo="M 8 10 L 4 10 L 4 17 L 8 17 L 8 10 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+</set>
