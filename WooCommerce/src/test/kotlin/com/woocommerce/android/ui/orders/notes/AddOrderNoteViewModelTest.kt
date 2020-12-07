@@ -25,10 +25,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -64,8 +62,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
         )
     )
 
-    @Before
-    fun setup() {
+    fun initViewModel() {
         viewModel = AddOrderNoteViewModel(
             savedState = savedState,
             dispathers = coroutinesTestRule.testDispatchers,
@@ -85,6 +82,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
         }
         doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
 
+        initViewModel()
         var state: AddOrderNoteViewModel.ViewState? = null
         viewModel.addOrderNoteViewStateData.observeForever { _, new ->
             state = new
@@ -101,19 +99,21 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
         }
         doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
 
+        initViewModel()
         var state: AddOrderNoteViewModel.ViewState? = null
         viewModel.addOrderNoteViewStateData.observeForever { _, new ->
             state = new
         }
 
-        assertFalse(state!!.showCustomerNoteSwitch)
+        assertTrue(state!!.showCustomerNoteSwitch)
     }
 
     @Test
     fun `Has the right title`() {
-        doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
         doReturn("title").whenever(resourceProvider)
             .getString(R.string.orderdetail_orderstatus_ordernum, REMOTE_ORDER_NUMBER)
+
+        initViewModel()
         val title = viewModel.screenTitle
 
         assertEquals("title", title)
@@ -122,6 +122,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
     @Test
     fun `hide the add button if text is empty`() {
+        initViewModel()
         viewModel.onOrderTextEntered("")
 
         var state: AddOrderNoteViewModel.ViewState? = null
@@ -134,6 +135,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show the add button if text is not empty`() {
+        initViewModel()
         viewModel.onOrderTextEntered("note")
 
         var state: AddOrderNoteViewModel.ViewState? = null
@@ -153,6 +155,8 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(true).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+
+            initViewModel()
 
             val events = mutableListOf<Event>()
             viewModel.event.observeForever { new -> events.add(new) }
@@ -178,6 +182,8 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
         coroutinesTestRule.testDispatcher.runBlockingTest {
             doReturn(false).whenever(networkStatus).isConnected()
 
+            initViewModel()
+
             var event: Event? = null
             viewModel.event.observeForever { new -> event = new }
 
@@ -199,6 +205,8 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(networkStatus).isConnected()
             doReturn(testOrder).whenever(repository).getOrder(REMOTE_ORDER_ID)
             doReturn(false).whenever(repository).addOrderNote(eq(REMOTE_ORDER_ID), eq(testOrder.remoteId), any())
+
+            initViewModel()
 
             var event: Event? = null
             viewModel.event.observeForever { new -> event = new }
