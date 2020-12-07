@@ -33,7 +33,6 @@ class AddOrderNoteViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispathers) {
-
     val addOrderNoteViewStateData = LiveDataDelegate(savedState, ViewState())
     private var addOrderNoteViewState by addOrderNoteViewStateData
 
