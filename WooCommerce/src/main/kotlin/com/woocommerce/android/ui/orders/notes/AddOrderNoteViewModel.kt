@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.notes
 
+import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -17,6 +18,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -61,7 +63,7 @@ class AddOrderNoteViewModel @AssistedInject constructor(
         addOrderNoteViewState = addOrderNoteViewState.copy(draftNote = draftNote)
     }
 
-    fun onIsCustomerCheckboxChanged(isChecked: Boolean){
+    fun onIsCustomerCheckboxChanged(isChecked: Boolean) {
         AnalyticsTracker.track(
             ADD_ORDER_NOTE_EMAIL_NOTE_TO_CUSTOMER_TOGGLED,
             mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
@@ -88,20 +90,32 @@ class AddOrderNoteViewModel @AssistedInject constructor(
         }
         AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteOrderId))
 
-        addOrderNoteViewState.copy(isProgressDialogShown = true)
+        addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = true)
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            if(orderDetailRepository.addOrderNote(order.id, order.remoteOrderId, note))
-            {
+            if (orderDetailRepository.addOrderNote(order.id, order.remoteOrderId, note)) {
+                addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_added))
                 triggerEvent(ExitWithResult(note))
             } else {
+                addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_error))
             }
         }
     }
 
+    fun onBackPressed() {
+        if (addOrderNoteViewState.draftNote.note.trim().isNotEmpty()) {
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    triggerEvent(Exit)
+                }
+            ))
+        } else {
+            triggerEvent(Exit)
+        }
+    }
 
     @Parcelize
     data class ViewState(
@@ -109,7 +123,6 @@ class AddOrderNoteViewModel @AssistedInject constructor(
         val hasBillingEmail: Boolean = false,
         val isProgressDialogShown: Boolean = false
     ) : Parcelable
-
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddOrderNoteViewModel>
