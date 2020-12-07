@@ -7,21 +7,20 @@ import android.text.Html
 import android.text.Spanned
 import android.text.format.DateFormat
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.OrderDetailNoteItemBinding
 import com.woocommerce.android.model.OrderNote
-import kotlinx.android.synthetic.main.order_detail_note_item.view.*
 
 class OrderDetailOrderNoteItemView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.order_detail_note_item, this)
-    }
+    private val binding = OrderDetailNoteItemBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     @SuppressLint("SetTextI18n")
     fun initView(note: OrderNote, showBottomPadding: Boolean) {
@@ -33,20 +32,15 @@ class OrderDetailOrderNoteItemView @JvmOverloads constructor(
         }
         val header = if (note.isSystemNote) "$date ($type)" else "$date - ${note.author} ($type)"
 
-        orderNote_header.text = header
-        orderNote_note.text = getHtmlText(note.note)
+        binding.orderNoteHeader.text = header
+        binding.orderNoteNote.text = getHtmlText(note.note)
 
-        when {
-            note.isCustomerNote -> {
-                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_public))
-            }
-            note.isSystemNote -> {
-                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_system))
-            }
-            else -> {
-                orderNote_icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_note_private))
-            }
+        @DrawableRes val drawableId = when {
+            note.isCustomerNote -> R.drawable.ic_note_public
+            note.isSystemNote -> R.drawable.ic_note_system
+            else -> R.drawable.ic_note_private
         }
+        binding.orderNoteIcon.setImageDrawable(ContextCompat.getDrawable(context, drawableId))
     }
 
     private fun getHtmlText(txt: String): Spanned {

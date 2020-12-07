@@ -383,7 +383,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress)
+            showEmailLoginScreen(siteAddressClean)
         } else {
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)

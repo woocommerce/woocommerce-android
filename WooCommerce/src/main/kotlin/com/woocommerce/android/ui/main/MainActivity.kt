@@ -391,6 +391,7 @@ class MainActivity : AppUpgradeActivity(),
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
+            app_bar_layout.elevation = 0f
             showCrossIcon = false
         } else {
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
@@ -971,6 +972,8 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onChildViewRemoved(parent: View?, child: View?) {
-        binding.appBarLayout.elevation = 0f
+        parent?.postDelayed({
+            binding.appBarLayout.elevation = 0f
+        }, 100L)
     }
 }
