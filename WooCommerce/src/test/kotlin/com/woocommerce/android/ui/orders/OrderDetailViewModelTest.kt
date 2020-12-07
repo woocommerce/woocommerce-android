@@ -545,57 +545,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not add order note when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
-        doReturn(false).whenever(networkStatus).isConnected()
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
-
-        viewModel.start()
-        viewModel.onNewOrderNoteAdded(testOrderNotes[0])
-
-        verify(repository, times(0)).addOrderNote(any(), any(), any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
-    }
-
-    @Test
-    fun `Add order note - Displays add note snackbar correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
-        doReturn(order).whenever(repository).fetchOrder(any())
-
-        doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
-        doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-        doReturn(true).whenever(repository).addOrderNote(any(), any(), any())
-
-        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-        doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
-
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
-
-        var orderNotes = emptyList<OrderNote>()
-        viewModel.orderNotes.observeForever {
-            it?.let { orderNotes = it }
-        }
-
-        val orderNote = OrderNote(note = "Testing new order note", isCustomerNote = true)
-        viewModel.start()
-        viewModel.onNewOrderNoteAdded(orderNote)
-
-        verify(repository, times(1)).addOrderNote(any(), any(), any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.add_order_note_added))
-        assertThat(orderNotes.size).isEqualTo(testOrderNotes.size + 1)
-    }
-
-    @Test
     fun `Do not add shipment tracking when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         doReturn(order).whenever(repository).getOrder(any())
         doReturn(false).whenever(networkStatus).isConnected()
@@ -610,7 +559,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val shipmentTracking = testOrderShipmentTrackings[0].copy(isCustomProvider = false)
         viewModel.onNewShipmentTrackingAdded(shipmentTracking)
 
-        verify(repository, times(0)).addOrderNote(any(), any(), any())
+        verify(repository, times(0)).addOrderShipmentTracking(any(), any(), any(), any())
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
 
