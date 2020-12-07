@@ -118,6 +118,7 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note),
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
