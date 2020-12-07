@@ -36,6 +36,7 @@
         app:layout_constraintBottom_toTopOf="@id/detailsTextView"
         app:layout_goneMarginStart="@dimen/major_100"
         app:layout_goneMarginBottom="@dimen/major_100"
+        app:layout_goneMarginEnd="@dimen/major_100"
         tools:text="textPropertyName this is really long text that will wrap."
         tools:visibility="visible"/>
 
