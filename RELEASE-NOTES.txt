@@ -2,6 +2,7 @@
 5.7
 -----
 * [*] Show fees in the payment details of orders [https://github.com/woocommerce/woocommerce-android/pull/3228]
+* [*] Added support for passwordless logins [https://github.com/woocommerce/woocommerce-android/pull/3268]
 
 5.6
 ----
