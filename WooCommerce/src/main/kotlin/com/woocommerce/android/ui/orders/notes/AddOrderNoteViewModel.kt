@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_NOTE_ADD
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -26,18 +25,16 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.store.WCOrderStore
 
 class AddOrderNoteViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispathers: CoroutineDispatchers,
-    private val orderStore: WCOrderStore,
     private val resourceProvider: ResourceProvider,
     private val networkStatus: NetworkStatus,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispathers) {
 
-    final val addOrderNoteViewStateData = LiveDataDelegate(savedState, ViewState())
+    val addOrderNoteViewStateData = LiveDataDelegate(savedState, ViewState())
     private var addOrderNoteViewState by addOrderNoteViewStateData
 
     private val navArgs: AddOrderNoteFragmentArgs by savedState.navArgs()
@@ -60,7 +57,7 @@ class AddOrderNoteViewModel @AssistedInject constructor(
 
     fun onOrderTextEntered(text: String) {
         val draftNote = addOrderNoteViewState.draftNote.copy(note = text)
-        addOrderNoteViewState = addOrderNoteViewState.copy(draftNote = draftNote)
+        addOrderNoteViewState = addOrderNoteViewState.copy(draftNote = draftNote, canAddNote = text.isNotBlank())
     }
 
     fun onIsCustomerCheckboxChanged(isChecked: Boolean) {
@@ -73,28 +70,30 @@ class AddOrderNoteViewModel @AssistedInject constructor(
     }
 
     private fun checkIfHasBillingMail() {
-        val email = orderStore.getOrderByIdentifier(orderId)?.billingEmail
-        addOrderNoteViewState = addOrderNoteViewState.copy(hasBillingEmail = email?.isNotEmpty() == true)
+        val email = orderDetailRepository.getOrder(orderId)?.billingAddress?.email
+        addOrderNoteViewState = addOrderNoteViewState.copy(showCustomerNoteSwitch = email?.isNotEmpty() == true)
     }
 
     fun pushOrderNote() {
+        if (addOrderNoteViewState.draftNote.note.isBlank()) return
+
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(R.string.offline_error))
             return
         }
 
-        val order = orderStore.getOrderByIdentifier(orderId)
+        val order = orderDetailRepository.getOrder(orderId)
         if (order == null) {
             triggerEvent(ShowSnackbar(R.string.add_order_note_error))
             return
         }
-        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteOrderId))
+        AnalyticsTracker.track(ORDER_NOTE_ADD, mapOf(AnalyticsTracker.KEY_PARENT_ID to order.remoteId))
 
         addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = true)
 
         val note = addOrderNoteViewState.draftNote
         launch {
-            if (orderDetailRepository.addOrderNote(order.id, order.remoteOrderId, note)) {
+            if (orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)) {
                 addOrderNoteViewState = addOrderNoteViewState.copy(isProgressDialogShown = false)
                 triggerEvent(ShowSnackbar(R.string.add_order_note_added))
                 triggerEvent(ExitWithResult(note))
@@ -120,7 +119,8 @@ class AddOrderNoteViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val draftNote: OrderNote = OrderNote(note = "", isCustomerNote = false),
-        val hasBillingEmail: Boolean = false,
+        val canAddNote: Boolean = false,
+        val showCustomerNoteSwitch: Boolean = false,
         val isProgressDialogShown: Boolean = false
     ) : Parcelable
 

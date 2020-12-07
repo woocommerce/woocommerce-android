@@ -47,6 +47,8 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
     private var _binding: FragmentAddOrderNoteBinding? = null
     private val binding get() = _binding!!
 
+    protected var addMenuItem: MenuItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -87,6 +89,8 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_add, menu)
+        addMenuItem = menu.findItem(R.id.menu_add)
+        addMenuItem!!.isVisible = false
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -136,13 +140,17 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
                 }
                 binding.addNoteSwitch.isChecked = it.isCustomerNote
 
-                if (new.hasBillingEmail) {
+                if (new.showCustomerNoteSwitch) {
                     binding.addNoteSwitch.isVisible = true
                     val noteIcon = if (it.isCustomerNote) R.drawable.ic_note_public else R.drawable.ic_note_private
                     binding.addNoteIcon.setImageResource(noteIcon)
                 } else {
                     binding.addNoteSwitch.isVisible = false
                 }
+            }
+
+            new.canAddNote.takeIfNotEqualTo(old?.canAddNote) {
+                addMenuItem?.isVisible = it
             }
 
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) {

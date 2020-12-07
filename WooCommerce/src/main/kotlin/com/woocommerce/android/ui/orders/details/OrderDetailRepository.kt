@@ -178,36 +178,22 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderNote(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        noteModel: WCOrderNoteModel
-    ): Boolean {
-        return try {
-            continuationAddOrderNote?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
-                continuationAddOrderNote = it
-
-                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), noteModel)
-                dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-            } ?: false
-        } catch (e: CancellationException) {
-            WooLog.e(ORDERS, "CancellationException while adding order note $remoteOrderId")
-            false
-        }
-    }
-
-    suspend fun addOrderNote(
-        localOrderId: Int,
+        orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
         noteModel: OrderNote
     ): Boolean {
         return try {
             continuationAddOrderNote?.cancel()
+            val order = orderStore.getOrderByIdentifier(orderIdentifier)
+            if (order == null) {
+                WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
+                return false
+            }
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationAddOrderNote = it
 
                 val dataModel = noteModel.toDataModel()
-                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), dataModel)
+                val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
                 dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
             } ?: false
         } catch (e: CancellationException) {
