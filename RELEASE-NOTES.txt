@@ -2,6 +2,7 @@
 5.7
 -----
 * [*] Show fees in the payment details of orders [https://github.com/woocommerce/woocommerce-android/pull/3228]
+* [**] Fixed an issue where the app could not open the email client on Android 11 during the magic link login process. [https://github.com/woocommerce/woocommerce-android/pull/3291]
 
 5.6
 ----
