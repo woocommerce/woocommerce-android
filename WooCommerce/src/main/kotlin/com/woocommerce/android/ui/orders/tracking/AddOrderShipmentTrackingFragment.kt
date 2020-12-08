@@ -9,12 +9,16 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
+import com.woocommerce.android.databinding.FragmentAddShipmentTrackingBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.base.BaseFragment
@@ -22,6 +26,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.synthetic.main.fragment_add_shipment_tracking.*
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -30,8 +35,10 @@ import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackingContract.View,
-    AddOrderTrackingProviderActionListener, BackPressListener {
+class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_shipment_tracking),
+    AddOrderShipmentTrackingContract.View,
+    AddOrderTrackingProviderActionListener,
+    BackPressListener {
     companion object {
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"
@@ -45,7 +52,9 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var presenter: AddOrderShipmentTrackingContract.Presenter
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel: AddOrderShipmentTrackingViewModel by viewModels { viewModelFactory }
 
     private var isConfirmingDiscard = false
     private var shouldShowDiscardDialog = true
@@ -78,10 +87,10 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
             addTracking_number.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_NUMBER, ""))
             addTracking_date.setText(savedInstanceState.getString(FIELD_ORDER_TRACKING_DATE_SHIPPED, ""))
             addTracking_custom_provider_name.setText(
-                    savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, "")
+                savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_NAME, "")
             )
             addTracking_custom_provider_url.setText(
-                    savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, "")
+                savedInstanceState.getString(FIELD_ORDER_TRACKING_CUSTOM_PROVIDER_URL, "")
             )
             if (savedInstanceState.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
                 confirmDiscard()
@@ -104,41 +113,79 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
             hideCustomProviderFields()
         }
 
-        presenter.takeView(this)
 
-        // When date field is clicked, open calendar dialog with default date set to
-        // current date if no date was previously selected
-        addTracking_date.setOnClickListener {
-            val calendar = FluxCDateUtils.getCalendarInstance(getDateShippedText())
-            dateShippedPickerDialog = DatePickerDialog(requireActivity(),
-                    DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                        val actualMonth = month + 1
-                        displayFormatDateShippedText(String.format("$year-$actualMonth-$dayOfMonth"))
-                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val binding = FragmentAddShipmentTrackingBinding.bind(view)
+        initUi(binding)
+        setupObservers(binding)
+    }
+
+    private fun setupObservers(binding: FragmentAddShipmentTrackingBinding) {
+        viewModel.addOrderShipmentTrackingViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.carrier.takeIfNotEqualTo(old?.carrier) {
+                if (it.isCustom) {
+                    showCustomProviderFields()
+                    binding.addTrackingEditCarrier.setText(getString(R.string.order_shipment_tracking_custom_provider_section_name))
+                    if (binding.addTrackingCustomProviderName.text.toString() != it.name) {
+                        binding.addTrackingCustomProviderName.setText(it.name)
+                    }
+                } else {
+                    hideCustomProviderFields()
+                    binding.addTrackingEditCarrier.setText(it.name)
+                }
+            }
+            new.trackingNumber.takeIfNotEqualTo(old?.trackingNumber) {
+                if (binding.addTrackingNumber.text.toString() != it) {
+                    binding.addTrackingNumber.setText(it)
+                }
+            }
+            new.trackingLink.takeIfNotEqualTo(old?.trackingLink) {
+                if (binding.addTrackingCustomProviderUrl.text.toString() != it) {
+                    binding.addTrackingCustomProviderUrl.setText(it)
+                }
+            }
+            new.date.takeIfNotEqualTo(old?.date) {
+                binding.addTrackingDate.setText(DateUtils().getLocalizedLongDateString(requireActivity(), it))
+            }
+        }
+    }
+
+    private fun initUi(binding: FragmentAddShipmentTrackingBinding) {
+        binding.addTrackingEditCarrier.setOnClickListener {
+            providerListPickerDialog = AddOrderTrackingProviderListFragment
+                .newInstance(
+                    listener = this,
+                    selectedProviderText = binding.addTrackingEditCarrier.text.toString(),
+                    orderIdentifier = orderId
+                )
+                .also { it.show(parentFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
+        }
+
+        binding.addTrackingDate.setOnClickListener {
+            val calendar = FluxCDateUtils.getCalendarInstance(viewModel.currentSelectedDate)
+            dateShippedPickerDialog = DatePickerDialog(
+                requireActivity(),
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    viewModel.onDateChanged("$year-${month + 1}-$dayOfMonth")
+                },
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
             )
             dateShippedPickerDialog?.show()
         }
 
-        // When carrier field is clicked, open dialog fragment to display list of providers
-        addTracking_editCarrier.setOnClickListener {
-            providerListPickerDialog = AddOrderTrackingProviderListFragment
-                    .newInstance(
-                            listener = this,
-                            selectedProviderText = addTracking_editCarrier.text.toString(),
-                            orderIdentifier = orderId)
-                    .also { it.show(parentFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
+        binding.addTrackingCustomProviderName.doOnTextChanged { text, _, _, _ ->
+            viewModel.onCustomCarrierNameEntered(text.toString())
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // If calendar dialog or provider list dialog is displaying when activity is in a paused state,
-        // then dismiss the dialog
-        dateShippedPickerDialog?.dismiss()
-        dateShippedPickerDialog = null
-
-        providerListPickerDialog?.dismiss()
-        providerListPickerDialog = null
+        binding.addTrackingNumber.doOnTextChanged { text, _, _, _ ->
+            viewModel.onTrackingNumberEntered(text.toString())
+        }
+        binding.addTrackingCustomProviderUrl.doOnTextChanged { text, _, _, _ ->
+            viewModel.onTrackingLinkEntered(text.toString())
+        }
     }
 
     override fun onResume() {
@@ -149,14 +196,14 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
+        dateShippedPickerDialog?.dismiss()
+        dateShippedPickerDialog = null
+
+        providerListPickerDialog?.dismiss()
+        providerListPickerDialog = null
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-    }
-
-    override fun onDestroy() {
-        presenter.dropView()
-        super.onDestroy()
     }
 
     /**
@@ -183,7 +230,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                     addTracking_carrierLayout.error = null
                     addTracking_custom_provider_name.requestFocus()
                     addTracking_customNameLayout.error = getString(
-                            R.string.order_shipment_tracking_empty_custom_provider_name
+                        R.string.order_shipment_tracking_empty_custom_provider_name
                     )
                     return true
                 }
@@ -212,7 +259,9 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
                     dateShipped = getDateShippedText(),
                     trackingProvider = providerText,
                     isCustomProvider = isCustomProvider,
-                    trackingLink = if (isCustomProvider) { customProviderTrackingUrl } else ""
+                    trackingLink = if (isCustomProvider) {
+                        customProviderTrackingUrl
+                    } else ""
                 )
 
                 shouldShowDiscardDialog = false
@@ -232,7 +281,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         val customProviderText = addTracking_custom_provider_name.text.toString()
         val customTrackingUrlText = addTracking_custom_provider_url.text.toString()
         val displayConfirmDialog = providerText.isNotEmpty() || trackingNumText.isNotEmpty() ||
-                (isCustomProvider() && (customProviderText.isNotEmpty() || customTrackingUrlText.isNotEmpty()))
+            (isCustomProvider() && (customProviderText.isNotEmpty() || customTrackingUrlText.isNotEmpty()))
 
         return if (displayConfirmDialog && shouldShowDiscardDialog) {
             confirmDiscard()
@@ -266,17 +315,17 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
     override fun confirmDiscard() {
         isConfirmingDiscard = true
         WooDialog.showDialog(
-                requireActivity(),
-                messageId = R.string.discard_message,
-                positiveButtonId = R.string.discard,
-                posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    shouldShowDiscardDialog = false
-                    activity?.onBackPressed()
-                },
-                negativeButtonId = R.string.keep_editing,
-                negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                })
+            requireActivity(),
+            messageId = R.string.discard_message,
+            positiveButtonId = R.string.discard,
+            posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                shouldShowDiscardDialog = false
+                activity?.onBackPressed()
+            },
+            negativeButtonId = R.string.keep_editing,
+            negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmingDiscard = false
+            })
     }
 
     override fun getProviderText(): String {
@@ -295,8 +344,9 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
      */
     override fun getDateShippedText(): String {
         val dateSelected = DateUtils().getDateFromLocalizedLongDateString(
-                requireActivity(),
-                addTracking_date.text.toString())
+            requireActivity(),
+            addTracking_date.text.toString()
+        )
         return DateUtils().getYearMonthDayStringFromDate(dateSelected)
     }
 
@@ -306,7 +356,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
         addTracking_editCarrier.isFocusableInTouchMode = false
         addTracking_editCarrier.isFocusable = false
         isSelectedProviderCustom = addTracking_editCarrier.text.toString() ==
-                getString(R.string.order_shipment_tracking_custom_provider_section_name)
+            getString(R.string.order_shipment_tracking_custom_provider_section_name)
         // Display custom provider fields only if selectedCarrierName = custom provider
         if (isCustomProvider()) {
             showCustomProviderFields()
@@ -331,10 +381,12 @@ class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackin
 
     private fun displayFormatDateShippedText(dateString: String) {
         context?.let {
-            addTracking_date.setText(DateUtils().getLocalizedLongDateString(
+            addTracking_date.setText(
+                DateUtils().getLocalizedLongDateString(
                     it,
                     dateString
-            ))
+                )
+            )
         }
     }
 
