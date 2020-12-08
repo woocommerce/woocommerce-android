@@ -3,14 +3,11 @@ package com.woocommerce.android.ui.products
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductDetailBottomSheetListItemBinding
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetAdapter.ProductTypesBottomSheetViewHolder
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
-import kotlinx.android.synthetic.main.product_detail_bottom_sheet_list_item.view.*
 
 class ProductTypesBottomSheetAdapter(
     private val onItemClicked: (productTypeUiItem: ProductTypesBottomSheetUiItem) -> Unit
@@ -23,8 +20,12 @@ class ProductTypesBottomSheetAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTypesBottomSheetViewHolder {
         return ProductTypesBottomSheetViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.product_detail_bottom_sheet_list_item, parent, false))
+            ProductDetailBottomSheetListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ProductTypesBottomSheetViewHolder, position: Int) {
@@ -48,27 +49,24 @@ class ProductTypesBottomSheetAdapter(
         }
     }
 
-    class ProductTypesBottomSheetViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val productTypeName: TextView = view.productDetailInfoItem_name
-        private val productTypeDesc: TextView = view.productDetailInfoItem_desc
-        private val productTypeIcon: ImageView = view.productDetailInfoItem_icon
-
+    class ProductTypesBottomSheetViewHolder(val viewBinder: ProductDetailBottomSheetListItemBinding) :
+        RecyclerView.ViewHolder(viewBinder.root) {
         fun bind(
             item: ProductTypesBottomSheetUiItem,
             onItemClicked: (productTypeUiItem: ProductTypesBottomSheetUiItem) -> Unit
         ) {
-            productTypeName.text = view.context.getString(item.titleResource)
-            productTypeDesc.text = view.context.getString(item.descResource)
-            productTypeIcon.visibility = View.VISIBLE
-            productTypeIcon.setImageResource(item.iconResource)
+            viewBinder.productDetailInfoItemName.text = itemView.context.getString(item.titleResource)
+            viewBinder.productDetailInfoItemDesc.text = itemView.context.getString(item.descResource)
+            viewBinder.productDetailInfoItemIcon.visibility = View.VISIBLE
+            viewBinder.productDetailInfoItemIcon.setImageResource(item.iconResource)
 
-            view.setOnClickListener {
+            itemView.setOnClickListener {
                 onItemClicked(item)
             }
 
-            view.isEnabled = item.isEnabled
-            productTypeName.isEnabled = item.isEnabled
-            productTypeDesc.isEnabled = item.isEnabled
+            itemView.isEnabled = item.isEnabled
+            viewBinder.productDetailInfoItemName.isEnabled = item.isEnabled
+            viewBinder.productDetailInfoItemDesc.isEnabled = item.isEnabled
         }
     }
 
