@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -16,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -31,10 +30,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.fragment_product_filter_list.*
 import javax.inject.Inject
 
-class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener, BackPressListener {
+class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
+    OnProductFilterClickListener,
+    BackPressListener {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
@@ -48,22 +48,16 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener, 
 
     private var clearAllMenuItem: MenuItem? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_filter_list, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupObservers(viewModel)
-    }
+        val binding = FragmentProductFilterListBinding.bind(view)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
+        setupObservers(viewModel)
 
         productFilterListAdapter = ProductFilterListAdapter(this)
-        with(filterList) {
+        with(binding.filterList) {
             addItemDecoration(
                     AlignedDividerDecoration(
                             requireActivity(),
@@ -80,7 +74,7 @@ class ProductFilterListFragment : BaseFragment(), OnProductFilterClickListener, 
             isMotionEventSplittingEnabled = false
         }
 
-        filterList_btnShowProducts.setOnClickListener {
+        binding.filterListBtnShowProducts.setOnClickListener {
             AnalyticsTracker.track(Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
                     mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString()))
             val bundle = Bundle()

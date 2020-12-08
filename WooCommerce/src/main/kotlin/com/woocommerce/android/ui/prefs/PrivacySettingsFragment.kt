@@ -2,9 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,29 +18,24 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySettingsContract.View {
+class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
     }
 
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter
 
-    private var _binding: FragmentSettingsPrivacyBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentSettingsPrivacyBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         presenter.takeView(this)
+
+        val binding = FragmentSettingsPrivacyBinding.bind(view)
 
         binding.switchSendStats.isChecked = presenter.getSendUsageStats()
         binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
@@ -77,7 +71,6 @@ class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySetting
     override fun onDestroyView() {
         presenter.dropView()
         super.onDestroyView()
-        _binding = null
     }
 
     override fun onResume() {

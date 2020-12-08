@@ -12,10 +12,14 @@
     <!-- Dangerous permissions, access must be requested at runtime -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- Required for Android 11 to allow camera access -->
     <queries>
+        <!-- Required for Android 11 to allow camera access -->
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <!-- Required for Android 11 and allows for querying for installed apps -->
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
         </intent>
     </queries>
 
