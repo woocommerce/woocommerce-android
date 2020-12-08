@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -409,6 +410,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onCreateShippingLabelButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        triggerEvent(StartShippingLabelCreationFlow(order.identifier))
     }
 
     fun onMarkOrderCompleteButtonTapped() {
@@ -470,7 +472,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (products.isEmpty()) {
             orderDetailViewState = orderDetailViewState.copy(isProductListVisible = false)
         } else {
-            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = true)
+            orderDetailViewState = orderDetailViewState.copy(
+                isProductListVisible = orderDetailViewState.areShippingLabelsVisible != true
+            )
             _productList.value = products
         }
     }
