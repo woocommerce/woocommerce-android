@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
@@ -9,6 +10,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.OrderDetailCustomerInfoBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
@@ -17,16 +19,13 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.util.PhoneUtils
 import com.woocommerce.android.widgets.AppRatingDialog
-import kotlinx.android.synthetic.main.order_detail_customer_info.view.*
 
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.order_detail_customer_info, this)
-    }
+    private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun updateCustomerInfo(
         order: Order,
@@ -36,20 +35,20 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val shippingAddress = order.formatShippingInformationForDisplay()
         when {
             isVirtualOrder -> {
-                customerInfo_shippingSection.hide()
-                customerInfo_viewMore.hide()
-                customerInfo_morePanel.show()
-                customerInfo_morePanel.expand()
-                customerInfo_viewMore.setOnClickListener(null)
+                binding.customerInfoShippingSection.hide()
+                binding.customerInfoViewMore.hide()
+                binding.customerInfoMorePanel.show()
+                binding.customerInfoMorePanel.expand()
+                binding.customerInfoViewMore.setOnClickListener(null)
             }
             shippingAddress.isEmpty() -> {
-                customerInfo_shippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
-                customerInfo_shippingMethodSection.hide()
+                binding.customerInfoShippingAddr.text = context.getString(R.string.orderdetail_empty_shipping_address)
+                binding.customerInfoShippingMethodSection.hide()
             }
             else -> {
-                customerInfo_shippingAddr.text = shippingAddress
-                customerInfo_shippingMethodSection.isVisible = order.shippingMethodList.firstOrNull()?.let {
-                    customerInfo_shippingMethod.text = it
+                binding.customerInfoShippingAddr.text = shippingAddress
+                binding.customerInfoShippingMethodSection.isVisible = order.shippingMethodList.firstOrNull()?.let {
+                    binding.customerInfoShippingMethod.text = it
                     true
                 } ?: false
             }
@@ -57,78 +56,78 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         // customer note
         if (order.customerNote.isNotEmpty()) {
-            customerInfo_customerNoteSection.show()
-            customerInfo_customerNote.text = context.getString(R.string.orderdetail_customer_note, order.customerNote)
+            binding.customerInfoCustomerNoteSection.show()
+            binding.customerInfoCustomerNote.text = context.getString(R.string.orderdetail_customer_note, order.customerNote)
         } else {
-            customerInfo_customerNoteSection.hide()
+            binding.customerInfoCustomerNoteSection.hide()
         }
 
         // billing info
         val billingInfo = order.formatBillingInformationForDisplay()
         if (order.billingAddress.hasInfo()) {
             if (billingInfo.isNotEmpty()) {
-                customerInfo_billingAddr.visibility = View.VISIBLE
-                customerInfo_billingAddr.text = billingInfo
-                customerInfo_divider2.visibility = View.VISIBLE
+                binding.customerInfoBillingAddr.visibility = View.VISIBLE
+                binding.customerInfoBillingAddr.text = billingInfo
+                binding.customerInfoDivider2.visibility = View.VISIBLE
             } else {
-                customerInfo_billingAddr.visibility = View.GONE
-                customerInfo_divider2.visibility = View.GONE
+                binding.customerInfoBillingAddr.visibility = View.GONE
+                binding.customerInfoDivider2.visibility = View.GONE
             }
 
             // display phone only if available, otherwise, hide the view
             if (order.billingAddress.phone.isNotEmpty()) {
-                customerInfo_phone.text = PhoneUtils.formatPhone(order.billingAddress.phone)
-                customerInfo_phone.visibility = View.VISIBLE
-                customerInfo_divider3.visibility = View.VISIBLE
-                customerInfo_callOrMessageBtn.visibility = View.VISIBLE
-                customerInfo_callOrMessageBtn.setOnClickListener {
+                binding.customerInfoPhone.text = PhoneUtils.formatPhone(order.billingAddress.phone)
+                binding.customerInfoPhone.visibility = View.VISIBLE
+                binding.customerInfoDivider3.visibility = View.VISIBLE
+                binding.customerInfoCallOrMessageBtn.visibility = View.VISIBLE
+                binding.customerInfoCallOrMessageBtn.setOnClickListener {
                     showCallOrMessagePopup(order)
                 }
             } else {
-                customerInfo_phone.visibility = View.GONE
-                customerInfo_divider3.visibility = View.GONE
-                customerInfo_callOrMessageBtn.visibility = View.GONE
+                binding.customerInfoPhone.visibility = View.GONE
+                binding.customerInfoDivider3.visibility = View.GONE
+                binding.customerInfoCallOrMessageBtn.visibility = View.GONE
             }
 
             // display email address info only if available, otherwise, hide the view
             if (order.billingAddress.email.isNotEmpty()) {
-                customerInfo_emailAddr.text = order.billingAddress.email
-                customerInfo_emailAddr.visibility = View.VISIBLE
-                customerInfo_emailBtn.visibility - View.VISIBLE
-                customerInfo_emailBtn.setOnClickListener {
+                binding.customerInfoEmailAddr.text = order.billingAddress.email
+                binding.customerInfoEmailAddr.visibility = View.VISIBLE
+                binding.customerInfoEmailBtn.visibility - View.VISIBLE
+                binding.customerInfoEmailBtn.setOnClickListener {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_EMAIL_MENU_EMAIL_TAPPED)
                     OrderCustomerHelper.createEmail(context, order, order.billingAddress.email)
                     AppRatingDialog.incrementInteractions()
                 }
             } else {
-                customerInfo_emailAddr.visibility = View.GONE
-                customerInfo_emailBtn.visibility = View.GONE
-                customerInfo_divider3.visibility = View.GONE
+                binding.customerInfoEmailAddr.visibility = View.GONE
+                binding.customerInfoEmailBtn.visibility = View.GONE
+                binding.customerInfoDivider3.visibility = View.GONE
             }
 
-            customerInfo_viewMore.setOnClickListener {
-                val isChecked = customerInfo_viewMoreButtonImage.rotation == 0F
+            binding.customerInfoViewMore.setOnClickListener {
+                val isChecked = binding.customerInfoViewMoreButtonImage.rotation == 0F
                 if (isChecked) {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_SHOW_BILLING_TAPPED)
-                    customerInfo_morePanel.expand()
-                    customerInfo_viewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-                    customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
+                    binding.customerInfoMorePanel.expand()
+                    binding.customerInfoViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+                    binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_hide_billing)
                 } else {
                     AnalyticsTracker.track(Stat.ORDER_DETAIL_CUSTOMER_INFO_HIDE_BILLING_TAPPED)
-                    customerInfo_morePanel.collapse()
-                    customerInfo_viewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                    customerInfo_viewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
+                    binding.customerInfoMorePanel.collapse()
+                    binding.customerInfoViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                    binding.customerInfoViewMoreButtonTitle.text = context.getString(R.string.orderdetail_show_billing)
                 }
             }
         } else {
-            customerInfo_viewMore.hide()
-            customerInfo_morePanel.hide()
-            customerInfo_viewMore.setOnClickListener(null)
+            binding.customerInfoViewMore.hide()
+            binding.customerInfoMorePanel.hide()
+            binding.customerInfoViewMore.setOnClickListener(null)
         }
     }
 
     private fun showCallOrMessagePopup(order: Order) {
-        val popup = PopupMenu(context, customerInfo_callOrMessageBtn)
+        val popup = PopupMenu(context, binding.customerInfoCallOrMessageBtn)
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
