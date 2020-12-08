@@ -65,7 +65,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     fun initViewModel() {
         viewModel = AddOrderNoteViewModel(
             savedState = savedState,
-            dispathers = coroutinesTestRule.testDispatchers,
+            dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = repository,
             resourceProvider = resourceProvider,
             networkStatus = networkStatus
