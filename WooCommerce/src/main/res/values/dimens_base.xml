@@ -62,6 +62,9 @@ so that's the baseline as defined in `major_100`.
     <dimen name="line_spacing_extra_50">2sp</dimen>
     <dimen name="line_spacing_extra_100">4sp</dimen>
 
+    <!-- Button heights -->
+    <dimen name="button_height_major_100">36sp</dimen>
+
     <!-- Smaller image sizes (ex. icons) -->
     <dimen name="image_minor_50">24dp</dimen>
     <dimen name="image_minor_60">26dp</dimen>
