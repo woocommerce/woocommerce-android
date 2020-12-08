@@ -12,6 +12,10 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListModule
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteModule
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingModule
+import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment
+import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

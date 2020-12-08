@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import android.content.Context
 import android.os.Bundle
@@ -18,7 +18,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CARRIER_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
-import com.woocommerce.android.ui.orders.AddOrderTrackingProviderListAdapter.OnProviderClickListener
+import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListAdapter.OnProviderClickListener
+import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListContract.Presenter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
@@ -27,7 +28,8 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
-class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingProviderListContract.View,
+class AddOrderTrackingProviderListFragment : DialogFragment(),
+        AddOrderTrackingProviderListContract.View,
         OnQueryTextListener, OnProviderClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
@@ -53,7 +55,7 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
         }
     }
 
-    @Inject lateinit var presenter: AddOrderTrackingProviderListContract.Presenter
+    @Inject lateinit var presenter: Presenter
 
     private var orderIdentifier: OrderIdentifier? = null
     private var selectedProviderText: String? = null
@@ -113,9 +115,9 @@ class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingP
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(
-                context,
-                getCountryName(),
-                this
+            context,
+            getCountryName(),
+            this
         )
 
         // Update previously selected provider by the user, if available

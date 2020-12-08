@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import android.content.Context
 import android.view.View
@@ -163,7 +163,9 @@ class AddOrderTrackingProviderListAdapter(
         override fun getContentItemsTotal() = list.size
 
         override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
-            return ItemViewHolder(view)
+            return ItemViewHolder(
+                    view
+            )
         }
 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -185,7 +187,9 @@ class AddOrderTrackingProviderListAdapter(
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
-            return HeaderViewHolder(view)
+            return HeaderViewHolder(
+                    view
+            )
         }
 
         override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {

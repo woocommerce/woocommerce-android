@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import android.app.DatePickerDialog
 import android.content.DialogInterface
@@ -31,7 +31,7 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 class AddOrderShipmentTrackingFragment : BaseFragment(), AddOrderShipmentTrackingContract.View,
-        AddOrderTrackingProviderActionListener, BackPressListener {
+    AddOrderTrackingProviderActionListener, BackPressListener {
     companion object {
         const val FIELD_ORDER_TRACKING_NUMBER = "order-tracking-number"
         const val FIELD_ORDER_TRACKING_DATE_SHIPPED = "order-tracking-date-shipped"

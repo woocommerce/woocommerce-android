@@ -9,6 +9,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingContract
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingPresenter
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.Dispatcher
@@ -32,9 +34,11 @@ class AddOrderShipmentTrackingPresenterTest {
 
     @Before
     fun setup() {
-        presenter = spy(AddOrderShipmentTrackingPresenter(
+        presenter = spy(
+            AddOrderShipmentTrackingPresenter(
                 dispatcher, orderStore, selectedSite, networkStatus
-        ))
+            )
+        )
         // Use a dummy selected site
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(true).whenever(networkStatus).isConnected()

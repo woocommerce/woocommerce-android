@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
