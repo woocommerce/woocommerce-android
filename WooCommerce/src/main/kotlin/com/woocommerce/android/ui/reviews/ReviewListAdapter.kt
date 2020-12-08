@@ -4,11 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.NotifsListItemBinding
+import com.woocommerce.android.databinding.OrderListHeaderBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.TimeGroup
@@ -20,7 +21,6 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
-import kotlinx.android.synthetic.main.order_list_header.view.*
 
 class ReviewListAdapter(
     private val context: Context,
@@ -355,19 +355,29 @@ class ReviewListAdapter(
             }
         }
 
-        override fun getHeaderViewHolder(view: View) = HeaderViewHolder(view)
+        override fun getHeaderViewHolder(view: View): HeaderViewHolder {
+            super.getHeaderViewHolder(view)
+            val parent = view as ViewGroup
+            return HeaderViewHolder(
+                OrderListHeaderBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+        }
 
         override fun onBindHeaderViewHolder(holder: ViewHolder) {
-            val headerViewHolder = holder as HeaderViewHolder
-
-            when (TimeGroup.valueOf(title)) {
-                TimeGroup.GROUP_OLDER_MONTH -> headerViewHolder.title.setText(R.string.date_timeframe_older_month)
-                TimeGroup.GROUP_OLDER_WEEK -> headerViewHolder.title.setText(R.string.date_timeframe_older_week)
-                TimeGroup.GROUP_OLDER_TWO_DAYS -> headerViewHolder.title.setText(R.string.date_timeframe_older_two_days)
-                TimeGroup.GROUP_YESTERDAY -> headerViewHolder.title.setText(R.string.date_timeframe_yesterday)
-                TimeGroup.GROUP_TODAY -> headerViewHolder.title.setText(R.string.date_timeframe_today)
-                TimeGroup.GROUP_FUTURE -> headerViewHolder.title.setText(R.string.date_timeframe_future)
+            @StringRes val headerId = when (TimeGroup.valueOf(title)) {
+                TimeGroup.GROUP_OLDER_MONTH -> R.string.date_timeframe_older_month
+                TimeGroup.GROUP_OLDER_WEEK -> R.string.date_timeframe_older_week
+                TimeGroup.GROUP_OLDER_TWO_DAYS -> R.string.date_timeframe_older_two_days
+                TimeGroup.GROUP_YESTERDAY -> R.string.date_timeframe_yesterday
+                TimeGroup.GROUP_TODAY -> R.string.date_timeframe_today
+                TimeGroup.GROUP_FUTURE -> R.string.date_timeframe_future
             }
+
+            (holder as HeaderViewHolder).bind(headerId)
         }
     }
 
@@ -402,7 +412,10 @@ class ReviewListAdapter(
         }
     }
 
-    private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.orderListHeader as TextView
+    private class HeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(@StringRes headerId: Int) {
+            viewBinding.orderListHeader.text = viewBinding.root.context.getString(headerId)
+        }
     }
 }
