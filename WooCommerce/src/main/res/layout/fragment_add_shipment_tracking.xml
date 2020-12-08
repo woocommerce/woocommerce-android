@@ -14,7 +14,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/addTracking_editContainer"
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -23,7 +23,7 @@
 
             <!-- Select provider view -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/addTracking_carrierLayout"
+                android:id="@+id/carrier_layout"
                 style="@style/Woo.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addTracking_editCarrier"
+                    android:id="@+id/carrier"
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
 
             <!-- Add custom provider name view -only visible if custom provider is selected -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/addTracking_customNameLayout"
+                android:id="@+id/custom_provider_name_layout"
                 style="@style/Woo.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                 app:counterMaxLength="@integer/max_length_tracking_number">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addTracking_custom_provider_name"
+                    android:id="@+id/custom_provider_name"
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
 
             <!-- Add tracking number view -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/addTracking_numberLayout"
+                android:id="@+id/tracking_number_layout"
                 style="@style/Woo.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 app:counterMaxLength="@integer/max_length_tracking_number">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addTracking_number"
+                    android:id="@+id/tracking_number"
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
 
             <!-- Add custom provider tracking url view -only visible if custom provider is selected -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/addTracking_customUrlLayout"
+                android:id="@+id/custom_provider_url_layout"
                 style="@style/Woo.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 app:counterMaxLength="@integer/max_length_tracking_number">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addTracking_custom_provider_url"
+                    android:id="@+id/custom_provider_url"
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/addTracking_date"
+                    android:id="@+id/date"
                     style="@style/Woo.TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
