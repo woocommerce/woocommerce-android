@@ -471,7 +471,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (products.isEmpty()) {
             orderDetailViewState = orderDetailViewState.copy(isProductListVisible = false)
         } else {
-            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = true)
+            orderDetailViewState = orderDetailViewState.copy(
+                isProductListVisible = orderDetailViewState.areShippingLabelsVisible != true
+            )
             _productList.value = products
         }
     }
