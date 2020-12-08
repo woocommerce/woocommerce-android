@@ -90,8 +90,7 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
         menu.clear()
         inflater.inflate(R.menu.menu_add, menu)
         addMenuItem = menu.findItem(R.id.menu_add)
-        addMenuItem!!.isVisible = false
-        super.onCreateOptionsMenu(menu, inflater)
+        addMenuItem!!.isVisible = viewModel.shouldShowAddButton
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

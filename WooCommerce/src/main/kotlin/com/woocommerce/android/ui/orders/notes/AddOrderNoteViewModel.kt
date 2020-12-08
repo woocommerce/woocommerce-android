@@ -28,11 +28,11 @@ import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 class AddOrderNoteViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
-    dispathers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
     private val resourceProvider: ResourceProvider,
     private val networkStatus: NetworkStatus,
     private val orderDetailRepository: OrderDetailRepository
-) : ScopedViewModel(savedState, dispathers) {
+) : ScopedViewModel(savedState, dispatchers) {
     val addOrderNoteViewStateData = LiveDataDelegate(savedState, ViewState())
     private var addOrderNoteViewState by addOrderNoteViewStateData
 
@@ -47,6 +47,9 @@ class AddOrderNoteViewModel @AssistedInject constructor(
     val screenTitle: String
         get() = resourceProvider.getString(R.string.orderdetail_orderstatus_ordernum, orderNumber)
 
+    val shouldShowAddButton: Boolean
+        get() = addOrderNoteViewState.canAddNote
+
     init {
         if (orderId.isEmpty() || orderNumber.isEmpty()) {
             triggerEvent(Exit)
@@ -56,7 +59,7 @@ class AddOrderNoteViewModel @AssistedInject constructor(
 
     fun onOrderTextEntered(text: String) {
         val draftNote = addOrderNoteViewState.draftNote.copy(note = text)
-        addOrderNoteViewState = addOrderNoteViewState.copy(draftNote = draftNote, canAddNote = text.isNotBlank())
+        addOrderNoteViewState = addOrderNoteViewState.copy(draftNote = draftNote)
     }
 
     fun onIsCustomerCheckboxChanged(isChecked: Boolean) {
@@ -118,10 +121,12 @@ class AddOrderNoteViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val draftNote: OrderNote = OrderNote(note = "", isCustomerNote = false),
-        val canAddNote: Boolean = false,
         val showCustomerNoteSwitch: Boolean = false,
         val isProgressDialogShown: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        val canAddNote: Boolean
+            get() = draftNote.note.isNotBlank()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddOrderNoteViewModel>
