@@ -410,6 +410,8 @@
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+    <string name="add_order_note_progress_title">Adding note</string>
+    <string name="add_order_note_progress_message">Please wait</string>
 
     <!--
     Order List Tab Labels

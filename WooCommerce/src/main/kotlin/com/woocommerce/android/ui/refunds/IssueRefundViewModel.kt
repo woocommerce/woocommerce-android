@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.refunds
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
@@ -17,25 +16,23 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.util.max
-import com.woocommerce.android.ui.orders.notes.OrderNoteRepository
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
+import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
@@ -45,12 +42,16 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
@@ -73,7 +74,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val noteRepository: OrderNoteRepository,
+    private val orderDetailRepository: OrderDetailRepository,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore
 ) : ScopedViewModel(savedState, dispatchers) {
@@ -364,7 +365,8 @@ class IssueRefundViewModel @AssistedInject constructor(
 
                         refundSummaryState.refundReason?.let { reason ->
                             if (reason.isNotBlank()) {
-                                noteRepository.createOrderNote(order.identifier, reason, false)
+                                val note = OrderNote(note = reason, isCustomerNote = false)
+                                orderDetailRepository.addOrderNote(order.identifier, order.remoteId, note)
                             }
                         }
 
