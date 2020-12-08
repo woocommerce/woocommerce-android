@@ -15,10 +15,8 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -341,6 +339,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
+        override fun onViewAttachedToWindow(holder: ImageViewHolder) {
+            holder.onViewAttached()
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val holder = ImageViewHolder(
                     layoutInflater.inflate(R.layout.image_gallery_item, parent, false),
@@ -382,28 +384,38 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 holder.bind(image)
             }
         }
+
+        override fun onViewDetachedFromWindow(holder: ImageViewHolder) {
+            holder.onViewDetached()
+        }
     }
 
     private inner class ImageViewHolder(
         private val view: View,
-        isDraggingEnabled: LiveData<Boolean>
+        private val isDraggingEnabled: LiveData<Boolean>
     ) : RecyclerView.ViewHolder(view) {
         val productImageView: BorderedImageView = view.productImage
         val uploadProgress: ProgressBar = view.uploadProgess
         val addImageContainer: ViewGroup = view.addImageContainer
 
         @SuppressLint("ClickableViewAccessibility")
-        val dragOnTouchListener = OnTouchListener { _, event ->
+        private val dragOnTouchListener = OnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 draggableItemTouchHelper.startDrag(this@ImageViewHolder)
             }
             return@OnTouchListener false
         }
 
-        val onClickListener = OnClickListener {
+        private val onClickListener = OnClickListener {
             if (adapterPosition > NO_POSITION) {
                 onImageClicked(adapterPosition)
             }
+        }
+
+        private val onDraggingEnabledChanged: (Boolean) -> Unit = { enabled ->
+            itemView.setOnClickListener(if (enabled) null else onClickListener)
+            view.deleteImageButton.isVisible = enabled
+            itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
         }
 
         init {
@@ -414,12 +426,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             addImageContainer.layoutParams.width = imageSize
 
             setMargins()
+        }
 
-            isDraggingEnabled.observe(context as LifecycleOwner) { enabled ->
-                view.deleteImageButton.isVisible = enabled
-                itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
-                itemView.setOnClickListener(if (enabled) null else onClickListener)
-            }
+        fun onViewAttached() {
+            isDraggingEnabled.observeForever(onDraggingEnabledChanged)
+        }
+
+        fun onViewDetached() {
+            isDraggingEnabled.removeObserver(onDraggingEnabledChanged)
         }
 
         fun bind(image: Product.Image) {
