@@ -356,11 +356,10 @@ class ReviewListAdapter(
         }
 
         override fun getHeaderViewHolder(view: View): HeaderViewHolder {
-            super.getHeaderViewHolder(view)
             val parent = view as ViewGroup
             return HeaderViewHolder(
                 OrderListHeaderBinding.inflate(
-                    LayoutInflater.from(parent.context),
+                    LayoutInflater.from(view.context),
                     parent,
                     false
                 )
