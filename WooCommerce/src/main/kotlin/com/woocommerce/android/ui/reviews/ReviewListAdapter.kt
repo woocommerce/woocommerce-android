@@ -1,13 +1,14 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.RatingBar
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.NotifsListItemBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.TimeGroup
@@ -19,7 +20,6 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
-import kotlinx.android.synthetic.main.notifs_list_item.view.*
 import kotlinx.android.synthetic.main.order_list_header.view.*
 
 class ReviewListAdapter(
@@ -335,37 +335,21 @@ class ReviewListAdapter(
     ) {
         override fun getContentItemsTotal() = list.size
 
-        override fun getItemViewHolder(view: View) = ItemViewHolder(view)
+        override fun getItemViewHolder(view: View): ItemViewHolder {
+            val parent = view as ViewGroup
+            return ItemViewHolder(
+                NotifsListItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+        }
 
         override fun onBindItemViewHolder(holder: ViewHolder, position: Int) {
             val review = list[position]
             val itemHolder = holder as ItemViewHolder
-            itemHolder.rating.visibility = View.GONE
-            itemHolder.icon.setImageResource(R.drawable.ic_comment)
-            itemHolder.desc.maxLines = 2
-
-            if (review.rating > 0) {
-                itemHolder.rating.numStars = review.rating
-                itemHolder.rating.rating = 100F // necessary to hide unfilled stars
-                itemHolder.rating.visibility = View.VISIBLE
-            } else {
-                itemHolder.rating.visibility = View.GONE
-            }
-
-            itemHolder.title.text = if (review.product == null) {
-                context.getString(
-                    R.string.product_review_list_item_title, review.reviewerName)
-            } else {
-                context.getString(
-                    R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
-            }
-
-            itemHolder.desc.text = StringUtils.getRawTextFromHtml(review.review)
-
-            if (position == getContentItemsTotal() - 1) {
-                itemHolder.divider.visibility = View.INVISIBLE
-            }
-
+            itemHolder.bind(review, position, getContentItemsTotal())
             itemHolder.itemView.setOnClickListener {
                 clickListener.onReviewClick(review)
             }
@@ -387,12 +371,35 @@ class ReviewListAdapter(
         }
     }
 
-    private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var icon: ImageView = view.notif_icon
-        var title: TextView = view.notif_title as TextView
-        var desc: TextView = view.notif_desc as TextView
-        var rating: RatingBar = view.notif_rating
-        val divider: View = view.notif_divider
+    private class ItemViewHolder(val viewBinding: NotifsListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(review: ProductReview, position: Int, totalItems: Int) {
+            viewBinding.notifRating.visibility = View.GONE
+            viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
+            viewBinding.notifDesc.maxLines = 2
+
+            if (review.rating > 0) {
+                viewBinding.notifRating.numStars = review.rating
+                viewBinding.notifRating.rating = 100F // necessary to hide unfilled stars
+                viewBinding.notifRating.visibility = View.VISIBLE
+            } else {
+                viewBinding.notifRating.visibility = View.GONE
+            }
+
+            viewBinding.notifTitle.text = if (review.product == null) {
+                viewBinding.root.context.getString(
+                    R.string.product_review_list_item_title, review.reviewerName)
+            } else {
+                viewBinding.root.context.getString(
+                    R.string.review_list_item_title, review.reviewerName, review.product?.name?.fastStripHtml())
+            }
+
+            viewBinding.notifDesc.text = StringUtils.getRawTextFromHtml(review.review)
+
+            if (position == totalItems - 1) {
+                viewBinding.notifDivider.visibility = View.INVISIBLE
+            }
+        }
     }
 
     private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
