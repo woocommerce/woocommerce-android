@@ -66,7 +66,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private var showAddImageIcon = false
     private var isDraggingEnabled = false
 
-
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
 
