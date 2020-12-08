@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -15,21 +14,15 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
 
-class AboutFragment : androidx.fragment.app.Fragment() {
+class AboutFragment : Fragment(R.layout.fragment_about) {
     companion object {
         const val TAG = "about"
     }
 
-    private var _binding: FragmentAboutBinding? = null
-    private val binding get() = _binding!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentAboutBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        val binding = FragmentAboutBinding.bind(view)
 
         val isLandscape = DisplayUtils.isLandscape(activity)
         binding.aboutImage.visibility = if (isLandscape) {
@@ -83,10 +76,5 @@ class AboutFragment : androidx.fragment.app.Fragment() {
     override fun onStop() {
         super.onStop()
         ChromeCustomTabUtils.disconnect(activity as Context)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

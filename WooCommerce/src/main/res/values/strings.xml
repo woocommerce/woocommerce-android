@@ -27,6 +27,7 @@
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
+    <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
     <string name="subtotal">Subtotal</string>
@@ -349,6 +350,13 @@
     <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
     <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
     <string name="shipping_label_more_information_link">Learn more</string>
+    <string name="shipping_label_create_title">Create shipping label</string>
+    <string name="shipping_label_create_packaging_details">Packaging details</string>
+    <string name="shipping_label_create_packaging_details_description">Select the type of packaging you\’d like to ship your items in</string>
+    <string name="shipping_label_create_customs">Customs</string>
+    <string name="shipping_label_create_customs_description">Fill out customs form</string>
+    <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
+    <string name="shipping_label_create_payment_description">Add a new credit card</string>
 
     <!--
         Refunds
@@ -402,6 +410,8 @@
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+    <string name="add_order_note_progress_title">Adding note</string>
+    <string name="add_order_note_progress_message">Please wait</string>
 
     <!--
     Order List Tab Labels

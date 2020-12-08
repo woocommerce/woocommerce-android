@@ -33,8 +33,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingAddressValidator
 ) : ScopedViewModel(savedState, dispatchers) {
-    // TODO: temporary until the fragment is merged
-//    private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
+    private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -69,12 +68,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 }
             }
         }
-        // TODO: temporary until the fragment is merged
-//        stateMachine.start(arguments.orderIdentifier)
+        stateMachine.start(arguments.orderIdentifier)
     }
 
     private fun updateViewState(data: Data) {
-        val latestStep = data.stepsDone.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
+        val latestStep = data.flowSteps.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
         viewState = when (latestStep) {
             FlowStep.ORIGIN_ADDRESS -> {
                 viewState.copy(

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
@@ -310,24 +311,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onNewOrderNoteAdded(orderNote: OrderNote) {
-        if (networkStatus.isConnected()) {
-            val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
-            orderNotes.add(0, orderNote)
-            _orderNotes.value = orderNotes
-
-            triggerEvent(ShowSnackbar(string.add_order_note_added))
-            launch {
-                if (!orderDetailRepository
-                        .addOrderNote(orderIdSet.id, orderIdSet.remoteOrderId, orderNote.toDataModel())
-                ) {
-                    triggerEvent(ShowSnackbar(string.add_order_note_error))
-                    orderNotes.remove(orderNote)
-                    _orderNotes.value = orderNotes
-                }
-            }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
+        orderNotes.add(0, orderNote)
+        _orderNotes.value = orderNotes
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
@@ -409,6 +395,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onCreateShippingLabelButtonTapped() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        triggerEvent(StartShippingLabelCreationFlow(order.identifier))
     }
 
     fun onMarkOrderCompleteButtonTapped() {
@@ -470,7 +457,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (products.isEmpty()) {
             orderDetailViewState = orderDetailViewState.copy(isProductListVisible = false)
         } else {
-            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = true)
+            orderDetailViewState = orderDetailViewState.copy(
+                isProductListVisible = orderDetailViewState.areShippingLabelsVisible != true
+            )
             _productList.value = products
         }
     }

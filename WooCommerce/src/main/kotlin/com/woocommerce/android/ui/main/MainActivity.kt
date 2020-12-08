@@ -392,7 +392,7 @@ class MainActivity : AppUpgradeActivity(),
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            app_bar_layout.elevation = 0f
+            binding.appBarLayout.elevation = 0f
             showCrossIcon = false
         } else {
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()

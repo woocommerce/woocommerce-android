@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -13,23 +11,18 @@ import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 
-class BetaFeaturesFragment : Fragment() {
+class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
     companion object {
         const val TAG = "beta-features"
     }
 
     private lateinit var settingsListener: AppSettingsListener
 
-    private var _binding: FragmentSettingsBetaBinding? = null
-    private val binding get() = _binding!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentSettingsBetaBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val binding = FragmentSettingsBetaBinding.bind(view)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
         } else {
@@ -51,10 +44,5 @@ class BetaFeaturesFragment : Fragment() {
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.beta_features)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

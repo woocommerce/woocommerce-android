@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_focused="true"
+        android:drawable="@drawable/ic_menu_reviews">
+    </item>
+
+    <item
+        android:id="@+id/selected"
+        android:state_selected="true"
+        android:drawable="@drawable/ic_menu_reviews">
+    </item>
+
+    <item
+        android:id="@+id/unselected"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_menu_reviews">
+    </item>
+
+    <transition
+        android:fromId="@id/unselected"
+        android:toId="@id/selected">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <animated-vector
+            android:drawable="@drawable/ic_menu_reviews">
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="inner_clip"
+                android:animation="@animator/ic_menu_reviews_inner_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="outer_clip"
+                android:animation="@animator/ic_menu_reviews_outer_clip">
+            </target>
+
+        </animated-vector>
+
+    </transition>
+
+</animated-selector>

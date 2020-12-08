@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -13,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -20,15 +19,15 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
-import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
+import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.fragment_product_filter_option_list.*
 import dagger.Lazy
 import javax.inject.Inject
 
-class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionClickListener {
+class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_filter_option_list),
+    OnProductFilterOptionClickListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
@@ -38,21 +37,14 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionCli
 
     private lateinit var mProductFilterOptionListAdapter: ProductFilterOptionListAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_filter_option_list, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val binding = FragmentProductFilterOptionListBinding.bind(view)
         setupObservers(viewModel)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this)
-        with(filterOptionList) {
+        with(binding.filterOptionList) {
             addItemDecoration(
                     AlignedDividerDecoration(
                             requireActivity(),
@@ -69,7 +61,7 @@ class ProductFilterOptionListFragment : BaseFragment(), OnProductFilterOptionCli
             isMotionEventSplittingEnabled = false
         }
 
-        filterOptionList_btnShowProducts.setOnClickListener {
+        binding.filterOptionListBtnShowProducts.setOnClickListener {
             AnalyticsTracker.track(
                     Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
                     mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
