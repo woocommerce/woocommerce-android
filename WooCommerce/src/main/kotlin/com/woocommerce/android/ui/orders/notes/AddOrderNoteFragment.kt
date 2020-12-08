@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.orders.notes
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
@@ -31,7 +29,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddOrderNoteFragment : BaseFragment(), BackPressListener {
+class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         const val KEY_ADD_NOTE_RESULT = "key_add_note_result"
@@ -44,26 +42,19 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
 
     private var progressDialog: CustomProgressDialog? = null
 
-    private var _binding: FragmentAddOrderNoteBinding? = null
-    private val binding get() = _binding!!
-
-    protected var addMenuItem: MenuItem? = null
+    private var addMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentAddOrderNoteBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initUi()
-        setupObservers()
+        val binding = FragmentAddOrderNoteBinding.bind(view)
+        initUi(binding)
+        setupObservers(binding)
 
         if (savedInstanceState == null) {
             binding.addNoteEditor.requestFocus()
@@ -112,7 +103,7 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
         return false
     }
 
-    private fun initUi() {
+    private fun initUi(binding: FragmentAddOrderNoteBinding) {
         binding.addNoteEditor.doOnTextChanged { text, _, _, _ ->
             viewModel.onOrderTextEntered(text.toString())
         }
@@ -122,7 +113,7 @@ class AddOrderNoteFragment : BaseFragment(), BackPressListener {
         }
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(binding: FragmentAddOrderNoteBinding) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_ADD_NOTE_RESULT, event.data)
