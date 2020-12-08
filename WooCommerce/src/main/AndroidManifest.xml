@@ -55,7 +55,7 @@
 
         <activity
             android:name=".ui.sitepicker.SitePickerActivity"
-            android:theme="@style/Theme.Woo.DayNight"/>
+            android:theme="@style/LoginTheme"/>
 
         <activity android:name=".ui.login.MagicLinkInterceptActivity">
             <intent-filter>

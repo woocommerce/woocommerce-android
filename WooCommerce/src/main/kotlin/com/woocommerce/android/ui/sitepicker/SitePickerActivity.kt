@@ -364,6 +364,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         no_stores_view.visibility = View.GONE
+        btn_what_is_jetpack.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
 
@@ -491,9 +492,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        btn_what_is_jetpack.setOnClickListener {
-            AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
-            LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+        with(btn_what_is_jetpack) {
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+                LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+            }
+            visibility = View.VISIBLE
         }
 
         with(button_primary) {
