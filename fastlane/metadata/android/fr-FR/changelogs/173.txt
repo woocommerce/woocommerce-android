@@ -1,4 +1,3 @@
-5.5 :
-Produits : vous pouvez désormais ajouter des produits simples, groupés et externes, et enregistrer des brouillons de produit. Vous pourrez tester de nouvelles fonctionnalités sous peu !
-
-Autres correctifs : nous avons résolu un bug affectant les noms des variantes de produits, lorsque l’option de la variante était « Ouvert », et corrigé une faute de frappe sur l’écran des étiquettes de livraison.
+Nous vous avons reçu 5/5 :
+vous l’aviez demandé, nous vous avons écouté ! Vous pouvez désormais créer des produits simples, groupés et externes directement à partir de vos appareils mobiles Android préférés.  Transformez vos idées en produits, même lorsque vous n’êtes pas au bureau.
+Autres correctifs : nous avons corrigé un bug affectant les noms des variantes de produits lorsque l’option de variante était « Ouvert », ainsi qu’une faute de frappe dans l’écran de l’étiquette d’expédition.

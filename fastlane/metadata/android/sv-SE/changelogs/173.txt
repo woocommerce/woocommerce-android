@@ -1,4 +1,3 @@
 5.5:
-Produkter: Du kan nu lägga till enkla, grupperade och externa produkter och spara produkter som utkast. Vi har fler funktioner på gång som du snart kommer att få prova!
-
+Du önskade, vi lyssnade! Du kan nu skapa enkla, grupperade och externa produkter direkt från dina mobila Android-enheter. Förvandla idéer till produkter – även när du inte är vid skrivbordet.
 Övriga korrigeringar: Vi har åtgärdat ett fel som påverkade variationsnamnen när variationsalternativet var "open", samt ett stavfel på fraktetikettsskärmen.
