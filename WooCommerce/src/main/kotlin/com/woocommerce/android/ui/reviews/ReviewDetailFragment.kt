@@ -17,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -37,7 +38,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_review_detail.*
 import org.wordpress.android.util.DateTimeUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.HtmlUtils
@@ -45,7 +45,7 @@ import org.wordpress.android.util.PhotonUtils
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
-class ReviewDetailFragment : BaseFragment() {
+class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
@@ -55,6 +55,9 @@ class ReviewDetailFragment : BaseFragment() {
     private var runOnStartFunc: (() -> Unit)? = null
     private var productIconSize: Int = 0
     private val skeletonView = SkeletonView()
+
+    private var _binding: FragmentReviewDetailBinding? = null
+    private val binding get() = _binding!!
 
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
@@ -79,6 +82,8 @@ class ReviewDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentReviewDetailBinding.bind(view)
+
         initializeViewModel()
     }
 
@@ -99,6 +104,7 @@ class ReviewDetailFragment : BaseFragment() {
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun getFragmentTitle() = getString(R.string.wc_review_title)
@@ -135,19 +141,19 @@ class ReviewDetailFragment : BaseFragment() {
         val avatarUrl = UrlUtils.removeQuery(review.reviewerAvatarUrl) + "?s=" + size + "&d=404"
 
         // Populate reviewer section
-        GlideApp.with(review_gravatar.context)
+        GlideApp.with(binding.reviewGravatar.context)
                 .load(avatarUrl)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
                 .circleCrop()
-                .into(review_gravatar)
+                .into(binding.reviewGravatar)
 
-        review_user_name.text = review.reviewerName
-        review_time.text = DateTimeUtils.javaDateToTimeSpan(review.dateCreated, requireActivity())
+        binding.reviewUserName.text = review.reviewerName
+        binding.reviewTime.text = DateTimeUtils.javaDateToTimeSpan(review.dateCreated, requireActivity())
 
         // Populate reviewed product info
         review.product?.let { product ->
-            review_product_name.text = product.name.fastStripHtml()
-            review_open_product.setOnClickListener {
+            binding.reviewProductName.text = product.name.fastStripHtml()
+            binding.reviewOpenProduct.setOnClickListener {
                 AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(activity as Context, product.externalUrl)
             }
@@ -155,14 +161,14 @@ class ReviewDetailFragment : BaseFragment() {
         }
 
         if (review.rating > 0) {
-            review_rating_bar.rating = review.rating.toFloat()
-            review_rating_bar.visibility = View.VISIBLE
+            binding.reviewRatingBar.rating = review.rating.toFloat()
+            binding.reviewRatingBar.visibility = View.VISIBLE
         } else {
-            review_rating_bar.visibility = View.GONE
+            binding.reviewRatingBar.visibility = View.GONE
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val stars = review_rating_bar.progressDrawable as? LayerDrawable
+            val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
             stars?.getDrawable(2)?.setColorFilter(
                     ContextCompat.getColor(requireContext(), R.color.alert_yellow),
                     PorterDuff.Mode.SRC_ATOP
@@ -170,7 +176,7 @@ class ReviewDetailFragment : BaseFragment() {
         }
 
         // Set the review text
-        review_description.text = HtmlUtils.fromHtml(review.review)
+        binding.reviewDescription.text = HtmlUtils.fromHtml(review.review)
 
         // Initialize the moderation buttons and set review status
         configureModerationButtons(ProductReviewStatus.fromString(review.status))
@@ -185,13 +191,13 @@ class ReviewDetailFragment : BaseFragment() {
             GlideApp.with(activity as Context)
                     .load(imageUrl)
                     .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
-                    .into(review_product_icon)
+                    .into(binding.reviewProductIcon)
         }
     }
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(container, R.layout.skeleton_notif_detail, delayed = true)
+            skeletonView.show(binding.container, R.layout.skeleton_notif_detail, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -207,32 +213,32 @@ class ReviewDetailFragment : BaseFragment() {
 
     private fun configureModerationButtons(status: ProductReviewStatus) {
         val visibility = if (navArgs.enableModeration) View.VISIBLE else View.GONE
-        review_approve.visibility = visibility
-        review_spam.visibility = visibility
-        review_trash.visibility = visibility
+        binding.reviewApprove.visibility = visibility
+        binding.reviewSpam.visibility = visibility
+        binding.reviewTrash.visibility = visibility
 
         if (navArgs.enableModeration) {
-            review_approve.setOnCheckedChangeListener(null)
+            binding.reviewApprove.setOnCheckedChangeListener(null)
 
             // Use the status override if present,else new status
             when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
-                APPROVED -> review_approve.isChecked = true
-                HOLD -> review_approve.isChecked = false
+                APPROVED -> binding.reviewApprove.isChecked = true
+                HOLD -> binding.reviewApprove.isChecked = false
                 else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
             }
 
             // Configure the moderate button
-            review_approve.setOnCheckedChangeListener(moderateListener)
+            binding.reviewApprove.setOnCheckedChangeListener(moderateListener)
 
             // Configure the spam button
-            review_spam.setOnClickListener {
+            binding.reviewSpam.setOnClickListener {
                 AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
                 processReviewModeration(SPAM)
             }
 
             // Configure the trash button
-            review_trash.setOnClickListener {
+            binding.reviewTrash.setOnClickListener {
                 AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
                 processReviewModeration(TRASH)
