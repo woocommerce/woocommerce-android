@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -17,6 +15,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
+import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -55,10 +54,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_order_detail.*
 import javax.inject.Inject
 
-class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductActionListener {
+class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), NavigationResult, OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -70,6 +68,9 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
+
+    private var _binding: FragmentOrderDetailBinding? = null
+    private val binding get() = _binding!!
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
@@ -87,11 +88,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_order_detail, container, false)
-    }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -106,16 +102,22 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentOrderDetailBinding.bind(view)
+
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        orderRefreshLayout?.apply {
-            scrollUpChild = scrollView
+        binding.orderRefreshLayout.apply {
+            scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
@@ -146,7 +148,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                 displayShippingLabelsWIPCard(it, true)
             }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
-                orderDetail_productList.isVisible = it
+                binding.orderDetailProductList.isVisible = it
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
@@ -157,7 +159,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                 showAddShipmentTracking(it)
             }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                orderRefreshLayout.isRefreshing = it
+                binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
         }
@@ -206,13 +208,13 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun showOrderDetail(order: Order) {
-        orderDetail_orderStatus.updateOrder(order)
-        orderDetail_shippingMethodNotice.isVisible = order.multiShippingLinesAvailable
-        orderDetail_customerInfo.updateCustomerInfo(
+        binding.orderDetailOrderStatus.updateOrder(order)
+        binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
+        binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly()
         )
-        orderDetail_paymentInfo.updatePaymentInfo(
+        binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() }
@@ -220,17 +222,17 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
-        orderDetail_orderStatus.updateStatus(orderStatus) {
+        binding.orderDetailOrderStatus.updateStatus(orderStatus) {
             viewModel.onEditOrderStatusSelected()
         }
     }
 
     private fun showMarkOrderCompleteButton(isVisible: Boolean) {
-        orderDetail_productList.showMarkOrderCompleteButton(isVisible, viewModel::onMarkOrderCompleteButtonTapped)
+        binding.orderDetailProductList.showMarkOrderCompleteButton(isVisible, viewModel::onMarkOrderCompleteButtonTapped)
     }
 
     private fun showShippingLabelButton(isVisible: Boolean) {
-        orderDetail_productList.showCreateShippingLabelButton(
+        binding.orderDetailProductList.showCreateShippingLabelButton(
             isVisible,
             viewModel::onCreateShippingLabelButtonTapped,
             viewModel::onShippingLabelNoticeTapped
@@ -239,21 +241,21 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showSkeleton(show: Boolean) {
         when (show) {
-            true -> skeletonView.show(orderDetail_container, R.layout.skeleton_order_detail, delayed = true)
+            true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
     }
 
     private fun showOrderNotesSkeleton(show: Boolean) {
-        orderDetail_noteList.showSkeleton(show)
+        binding.orderDetailNoteList.showSkeleton(show)
     }
 
     private fun refreshProduct(remoteProductId: Long) {
-        orderDetail_productList.notifyProductChanged(remoteProductId)
+        binding.orderDetailProductList.notifyProductChanged(remoteProductId)
     }
 
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
-        orderDetail_noteList.updateOrderNotesView(orderNotes) {
+        binding.orderDetailNoteList.updateOrderNotesView(orderNotes) {
             viewModel.onAddOrderNoteClicked()
         }
     }
@@ -262,21 +264,21 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
         // display the refunds count in the refunds section
         val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
         if (refundsCount > 0) {
-            orderDetail_refundsInfo.show()
-            orderDetail_refundsInfo.updateRefundCount(refundsCount) {
+            binding.orderDetailRefundsInfo.show()
+            binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
                 viewModel.onViewRefundedProductsClicked()
             }
         } else {
-            orderDetail_refundsInfo.hide()
+            binding.orderDetailRefundsInfo.hide()
         }
 
         // display refunds list in the payment info section, if available
         val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
         refunds.whenNotNullNorEmpty {
-            orderDetail_paymentInfo.showRefunds(order, it, formatCurrency)
+            binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {
-            orderDetail_paymentInfo.showRefundTotal(
+            binding.orderDetailPaymentInfo.showRefundTotal(
                 show = order.isRefundAvailable,
                 refundTotal = order.refundTotal,
                 formatCurrencyForDisplay = formatCurrency
@@ -286,7 +288,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
 
     private fun showOrderProducts(products: List<Order.Item>, currency: String) {
         products.whenNotNullNorEmpty {
-            with(orderDetail_productList) {
+            with(binding.orderDetailProductList) {
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,
@@ -294,11 +296,11 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                     productClickListener = this@OrderDetailFragment
                 )
             }
-        }.otherwise { orderDetail_productList.hide() }
+        }.otherwise { binding.orderDetailProductList.hide() }
     }
 
     private fun showAddShipmentTracking(show: Boolean) {
-        with(orderDetail_shipmentList) {
+        with(binding.orderDetailShipmentList) {
             isVisible = show
             showAddTrackingButton(show) { viewModel.onAddShipmentTrackingClicked() }
         }
@@ -307,14 +309,14 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun showShipmentTrackings(
         shipmentTrackings: List<OrderShipmentTracking>
     ) {
-        orderDetail_shipmentList.updateShipmentTrackingList(shipmentTrackings) {
+        binding.orderDetailShipmentList.updateShipmentTrackingList(shipmentTrackings) {
             viewModel.onDeleteShipmentTrackingClicked(it)
         }
     }
 
     private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
         shippingLabels.whenNotNullNorEmpty {
-            with(orderDetail_shippingLabelList) {
+            with(binding.orderDetailShippingLabelList) {
                 show()
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
@@ -333,25 +335,25 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
                 )
             }
         }.otherwise {
-            orderDetail_shippingLabelList.hide()
+            binding.orderDetailShippingLabelList.hide()
         }
     }
 
     private fun displayShippingLabelsWIPCard(show: Boolean, isReprintBanner: Boolean) {
         if (show && feedbackState != DISMISSED) {
-            orderDetail_shippingLabelsWipCard.isVisible = true
+            binding.orderDetailShippingLabelsWipCard.isVisible = true
             val (wipCardTitleId, wipCardMessageId) = if (isReprintBanner)
                 R.string.orderdetail_shipping_label_wip_title to R.string.orderdetail_shipping_label_wip_message
             else
                 R.string.orderdetail_shipping_label_m2_wip_title to R.string.orderdetail_shipping_label_m2_wip_message
 
-            orderDetail_shippingLabelsWipCard.initView(
+            binding.orderDetailShippingLabelsWipCard.initView(
                 getString(wipCardTitleId),
                 getString(wipCardMessageId),
                 onGiveFeedbackClick = { onGiveFeedbackClicked(isReprintBanner) },
                 onDismissClick = { onDismissProductWIPNoticeCardClicked(isReprintBanner) }
             )
-        } else orderDetail_shippingLabelsWipCard.isVisible = false
+        } else binding.orderDetailShippingLabelsWipCard.isVisible = false
     }
 
     private fun onGiveFeedbackClicked(isM1: Boolean) {
