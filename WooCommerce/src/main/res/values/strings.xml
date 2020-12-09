@@ -369,6 +369,7 @@
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View on Google Maps or try contacting the customer to make sure the address is correct.</string>
 
     <!--
         Refunds
