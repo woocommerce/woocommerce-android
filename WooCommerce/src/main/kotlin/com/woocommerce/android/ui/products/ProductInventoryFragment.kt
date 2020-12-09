@@ -12,7 +12,6 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -22,7 +21,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.android.synthetic.main.fragment_product_inventory.*
 
 class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
-    BackPressListener, ProductItemSelectorDialogListener {
+    ProductItemSelectorDialogListener {
     private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
