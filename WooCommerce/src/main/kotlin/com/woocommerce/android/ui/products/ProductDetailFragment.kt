@@ -11,8 +11,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.annotation.StringRes
+import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +45,7 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -284,20 +286,40 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
+        fun Menu.printItems(): String = buildString {
+            this@printItems.forEach {
+                append("${resources.getResourceName(it.itemId)}\n")
+            }
+        }
+
+        // Some users are experiencing a crash because the entry R.id.menu_view_product is missing from the menu
+        // see: https://github.com/woocommerce/woocommerce-android/issues/3241
+        // If this happens, we will send the below report, and we avoid the crash using the null checks below
+        // TODO: remove the null checks once the root cause is identified is fixed
+        if (menu.findItem(R.id.menu_view_product) == null) {
+            val message = """menu.findItem(R.id.menu_view_product) is null
+                |User is ${if (viewModel.isAddFlow) "creating a product" else "modifying a product"}
+                |menu elements:
+                |${menu.printItems()}
+            """.trimMargin()
+            CrashUtils.logException(NullPointerException(message))
+        }
+
         // visibility of these menu items depends on whether we're in the add product flow
-        menu.findItem(R.id.menu_view_product).isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
-        menu.findItem(R.id.menu_share).isVisible = !viewModel.isAddFlow
-        menu.findItem(R.id.menu_product_settings).isVisible = true
+        menu.findItem(R.id.menu_view_product)?.isVisible = viewModel.isProductPublished && !viewModel.isAddFlow
+        menu.findItem(R.id.menu_share)?.isVisible = !viewModel.isAddFlow
+        menu.findItem(R.id.menu_product_settings)?.isVisible = true
 
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
+            if (this == null) return@with
             val title = SpannableString(this.title)
             title.setSpan(ForegroundColorSpan(Color.RED), 0, title.length, 0)
             this.setTitle(title)
             this.isVisible = viewModel.isTrashEnabled
         }
 
-        menu.findItem(R.id.menu_save_as_draft).isVisible = viewModel.isAddFlow && viewModel.hasChanges()
+        menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.isAddFlow && viewModel.hasChanges()
 
         doneOrUpdateMenuItem?.let {
             it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)

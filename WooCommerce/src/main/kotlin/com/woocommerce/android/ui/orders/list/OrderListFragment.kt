@@ -569,6 +569,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         checkOrientation()
         removeTabLayoutFromAppBar()
         expandMainToolbar(false, animate = true)
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
@@ -585,6 +586,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         loadListForActiveTab()
         restoreMainToolbar()
         addTabLayoutToAppBar()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
