@@ -8,28 +8,40 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditShippingLabelAddressBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class EditShippingLabelAddressFragment : BaseFragment() {
+class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
+    private var progressDialog: CustomProgressDialog? = null
     private var _binding: FragmentEditShippingLabelAddressBinding? = null
     private val binding get() = _binding!!
 
@@ -51,6 +63,11 @@ class EditShippingLabelAddressFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
     }
 
     override fun onStop() {
@@ -103,18 +120,73 @@ class EditShippingLabelAddressFragment : BaseFragment() {
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
             }
+            new.addressError?.takeIfNotEqualTo(old?.addressError) {
+                showErrorOrClear(binding.address1Layout, it)
+            }
+            new.nameError?.takeIfNotEqualTo(old?.nameError) {
+                showErrorOrClear(binding.nameLayout, it)
+            }
+            new.cityError?.takeIfNotEqualTo(old?.cityError) {
+                showErrorOrClear(binding.cityLayout, it)
+            }
+            new.zipError?.takeIfNotEqualTo(old?.zipError) {
+                showErrorOrClear(binding.zipLayout, it)
+            }
+            new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
+                if (it.isBlank()) {
+                    binding.errorBanner.hide()
+                } else {
+                    binding.errorBannerMessage.text = it
+                    binding.errorBanner.show()
+                }
+            }
+            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
+                if (isVisible) {
+                    showProgressDialog()
+                } else {
+                    hideProgressDialog()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(
-                    CreateShippingLabelFragment.KEY_EDIT_ADDRESS_DIALOG_RESULT,
+                    CreateShippingLabelFragment.EDIT_ADDRESS_DIALOG_RESULT,
                     event.data
                 )
+                is CancelAddressEditing -> navigateBackWithNotice(
+                    CreateShippingLabelFragment.EDIT_ADDRESS_DIALOG_CLOSED
+                )
+                is Exit -> findNavController().navigateUp()
+                is ShowSuggestedAddress -> {
+                }
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun showErrorOrClear(inputLayout: TextInputLayout, @StringRes message: Int) {
+        if (message == 0) {
+            inputLayout.error = null
+        } else {
+            inputLayout.error = resources.getString(message)
+        }
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            title = getString(R.string.shipping_label_edit_address_validation_progress_title),
+            message = getString(R.string.shipping_label_edit_address_validation_progress_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     private fun initializeViews() {
@@ -137,5 +209,10 @@ class EditShippingLabelAddressFragment : BaseFragment() {
             country = binding.country.text.toString(),
             email = ""
         )
+    }
+
+    // Let the ViewModel know the user is attempting to close the screen
+    override fun onRequestAllowBackPress(): Boolean {
+        return (viewModel.event.value == Exit).also { if (it.not()) viewModel.onExit() }
     }
 }
