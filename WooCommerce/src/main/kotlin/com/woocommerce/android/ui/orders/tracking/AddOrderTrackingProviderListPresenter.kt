@@ -30,7 +30,7 @@ class AddOrderTrackingProviderListPresenter @Inject constructor(
     private val networkStatus: NetworkStatus
 ) : AddOrderTrackingProviderListContract.Presenter {
     companion object {
-        private val TAG: String = AddOrderShipmentTrackingPresenter::class.java.simpleName
+        private val TAG: String = AddOrderTrackingProviderListPresenter::class.java.simpleName
     }
 
     override var orderModel: WCOrderModel? = null
