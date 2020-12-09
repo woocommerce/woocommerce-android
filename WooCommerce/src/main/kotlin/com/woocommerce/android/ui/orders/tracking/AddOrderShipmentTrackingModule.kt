@@ -25,5 +25,6 @@ internal abstract class AddOrderShipmentTrackingModule {
     @Binds
     @IntoMap
     @ViewModelKey(AddOrderShipmentTrackingViewModel::class)
-    abstract fun bindFactory(factory: AddOrderShipmentTrackingViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(factory: AddOrderShipmentTrackingViewModel.Factory):
+        ViewModelAssistedFactory<out ViewModel>
 }

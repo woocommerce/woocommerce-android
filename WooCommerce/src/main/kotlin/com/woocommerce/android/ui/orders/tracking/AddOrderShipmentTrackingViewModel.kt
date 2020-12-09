@@ -4,7 +4,6 @@ import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -20,14 +19,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
@@ -36,7 +32,6 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
-
     private val navArgs: AddOrderShipmentTrackingFragmentArgs by savedState.navArgs()
 
     val addOrderShipmentTrackingViewStateData = LiveDataDelegate(
@@ -136,9 +131,10 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
     }
 
     fun onBackButtonPressed(): Boolean {
-        return if (addOrderShipmentTrackingViewState.carrier.name.isNotEmpty()
-            || addOrderShipmentTrackingViewState.trackingNumber.isNotEmpty()
-            || (addOrderShipmentTrackingViewState.carrier.isCustom && addOrderShipmentTrackingViewState.trackingLink.isNotEmpty())) {
+        return if (addOrderShipmentTrackingViewState.carrier.name.isNotEmpty() ||
+            addOrderShipmentTrackingViewState.trackingNumber.isNotEmpty() ||
+            (addOrderShipmentTrackingViewState.carrier.isCustom &&
+                addOrderShipmentTrackingViewState.trackingLink.isNotEmpty())) {
             triggerEvent(ShowDialog.buildDiscardDialogEvent(
                 positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
                     triggerEvent(Exit)

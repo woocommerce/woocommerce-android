@@ -76,7 +76,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
 
     private fun setupObservers(binding: FragmentAddShipmentTrackingBinding) {
         viewModel.addOrderShipmentTrackingViewStateData.observe(viewLifecycleOwner) { old, new ->
-            //Carrier data
+            // Carrier data
             new.carrier.takeIfNotEqualTo(old?.carrier) {
                 if (it.isCustom) {
                     showCustomProviderFields(binding)
@@ -96,7 +96,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
                 binding.customProviderNameLayout.error = error?.let { getString(it) }
             }
 
-            //tracking number
+            // tracking number
             new.trackingNumber.takeIfNotEqualTo(old?.trackingNumber) {
                 if (binding.trackingNumber.text.toString() != it) {
                     binding.trackingNumber.setText(it)
@@ -106,7 +106,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
                 binding.trackingNumberLayout.error = error?.let { getString(it) }
             }
 
-            //custom URL
+            // custom URL
             new.trackingLink.takeIfNotEqualTo(old?.trackingLink) {
                 if (binding.customProviderUrl.text.toString() != it) {
                     binding.customProviderUrl.setText(it)

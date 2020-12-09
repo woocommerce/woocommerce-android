@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Carrier(val name: String, val isCustom: Boolean): Parcelable
+data class Carrier(val name: String, val isCustom: Boolean) : Parcelable
