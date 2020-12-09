@@ -259,10 +259,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
-        data class ShowAddressEditor(val address: Address, val type: AddressType): CreateShippingLabelEvent()
-    }
-
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<CreateShippingLabelViewModel>
 }
