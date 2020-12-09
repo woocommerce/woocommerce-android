@@ -240,8 +240,8 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
         progressDialog?.dismiss()
         if (show) {
             progressDialog = CustomProgressDialog.show(
-                getString(R.string.add_order_note_progress_title),
-                getString(R.string.add_order_note_progress_message)
+                getString(R.string.order_shipment_tracking_progress_title),
+                getString(R.string.order_shipment_tracking_progress_message)
             ).also {
                 it.show(parentFragmentManager, CustomProgressDialog.TAG)
             }
