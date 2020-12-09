@@ -69,7 +69,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 viewState = viewState.copy(
                     bannerMessage = resourceProvider.getString(
                         R.string.shipping_label_validation_error_template,
-                        getStringResource(result.message)
+                        resourceProvider.getString(getStringResource(result.message))
                     )
                 )
                 triggerEvent(ShowSnackbar(getStringResource(result.message)))

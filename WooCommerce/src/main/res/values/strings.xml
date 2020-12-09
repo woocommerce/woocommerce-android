@@ -376,6 +376,7 @@
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
     <string name="shipping_label_error_required_field">Required field</string>
+    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
 
     <!--
         Refunds
