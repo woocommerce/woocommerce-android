@@ -12,7 +12,7 @@
         android:layout_marginBottom="@dimen/minor_100">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/validationWarning"
+            android:id="@+id/errorBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/major_100"
@@ -21,7 +21,7 @@
             android:focusable="true">
 
             <ImageView
-                android:id="@+id/warningIcon"
+                android:id="@+id/errorBannerIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
@@ -30,13 +30,13 @@
                 android:src="@drawable/ic_info_outline_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/warningBody"
+                app:layout_constraintTop_toTopOf="@id/errorBannerMessage"
                 app:layout_constraintVertical_bias="0.0"
                 app:tint="@color/warning_foreground_color"
                 tools:visibility="visible" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/warningBody"
+                android:id="@+id/errorBannerMessage"
                 style="@style/Woo.TextView.Warning"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -44,14 +44,14 @@
                 android:layout_marginTop="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_100"
                 android:text="@string/shipping_label_edit_address_error_warning"
-                app:layout_constraintBottom_toTopOf="@id/warningDivider"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/warningIcon"
+                app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 
             <View
-                android:id="@+id/warningDivider"
+                android:id="@+id/errorBannerDivider"
                 style="@style/Woo.Divider.Warning"
                 android:layout_width="@dimen/minor_00"
                 app:layout_constraintBottom_toBottomOf="parent"
