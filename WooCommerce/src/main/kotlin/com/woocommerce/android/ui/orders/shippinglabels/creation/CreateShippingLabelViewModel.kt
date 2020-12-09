@@ -7,7 +7,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
@@ -15,16 +15,15 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditFinished
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressChangeSuggested
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressInvalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressNotRecognized
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -62,11 +61,15 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         validateAddress(sideEffect.address, sideEffect.type)
                     }
                     is SideEffect.OpenAddressEditor -> triggerEvent(
-                        ShowAddressEditor(sideEffect.address, sideEffect.type)
+                        ShowAddressEditor(
+                            sideEffect.address,
+                            sideEffect.type,
+                            sideEffect.validationResult
+                        )
                     )
-                    is SideEffect.ShowAddressSuggestion -> triggerEvent(
-                        ShowAddressEditor(sideEffect.entered, sideEffect.type)
-                    )
+                    is SideEffect.ShowAddressSuggestion -> handleResult {
+                        Event.SuggestedAddressSelected(sideEffect.suggested)
+                    }
                     is SideEffect.ShowPackageOptions -> Event.PackagesSelected
                     is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
                     is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
@@ -173,14 +176,18 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private suspend fun validateAddress(address: Address, type: AddressType): Event {
         return when (val result = addressValidator.validateAddress(address, type)) {
             ValidationResult.Valid -> AddressValidated(address)
-            is ValidationResult.Invalid -> AddressInvalid(result.suggested)
-            ValidationResult.NotRecognized -> AddressNotRecognized(address)
+            is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
+            is ValidationResult.NotFound, is ValidationResult.Invalid -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
 
-    fun onAddressEditFinished(address: Address) {
-        stateMachine.handleEvent(AddressEditFinished(address))
+    fun onAddressEditConfirmed(address: Address) {
+        stateMachine.handleEvent(AddressValidated(address))
+    }
+
+    fun onAddressEditCanceled() {
+        stateMachine.handleEvent(AddressEditCanceled)
     }
 
     fun onEditButtonTapped(step: FlowStep) {

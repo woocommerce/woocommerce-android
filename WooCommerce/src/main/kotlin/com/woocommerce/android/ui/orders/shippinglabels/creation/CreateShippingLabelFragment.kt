@@ -9,13 +9,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.CARRIER
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.CUSTOMS
@@ -33,7 +35,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class CreateShippingLabelFragment : BaseFragment() {
     companion object {
-        const val KEY_EDIT_ADDRESS_DIALOG_RESULT = "key_edit_address_dialog_result"
+        const val EDIT_ADDRESS_DIALOG_RESULT = "key_edit_address_dialog_result"
+        const val EDIT_ADDRESS_DIALOG_CLOSED = "key_edit_address_dialog_closed"
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -71,8 +74,11 @@ class CreateShippingLabelFragment : BaseFragment() {
     }
 
     private fun setupResultHandlers() {
-        handleResult<Address>(KEY_EDIT_ADDRESS_DIALOG_RESULT) {
-            viewModel.onAddressEditFinished(it)
+        handleResult<Address>(EDIT_ADDRESS_DIALOG_RESULT) {
+            viewModel.onAddressEditConfirmed(it)
+        }
+        handleNotice(EDIT_ADDRESS_DIALOG_CLOSED) {
+            viewModel.onAddressEditCanceled()
         }
     }
 
@@ -98,7 +104,10 @@ class CreateShippingLabelFragment : BaseFragment() {
             }
             new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
                 if (isVisible) {
-                    showProgressDialog(R.string.loading_stores, R.string.wc_approve)
+                    showProgressDialog(
+                        R.string.shipping_label_edit_address_validation_progress_title,
+                        R.string.shipping_label_edit_address_validation_progress_message
+                    )
                 } else {
                     hideProgressDialog()
                 }
@@ -110,9 +119,14 @@ class CreateShippingLabelFragment : BaseFragment() {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowAddressEditor -> {
                     val action = CreateShippingLabelFragmentDirections
-                        .actionCreateShippingLabelFragmentToEditShippingLabelAddressFragment(event.address, event.type)
+                        .actionCreateShippingLabelFragmentToEditShippingLabelAddressFragment(
+                            event.address,
+                            event.type,
+                            event.validationResult
+                        )
                     findNavController().navigateSafely(action)
                 }
+                is ShowSuggestedAddress -> {}
                 else -> event.isHandled = false
             }
         })
