@@ -280,7 +280,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun showOrderProducts(products: List<Order.Item>, currency: String) {
         products.whenNotNullNorEmpty {
             with(orderDetail_productList) {
-                show()
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,

@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
@@ -30,7 +31,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
@@ -177,16 +177,22 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderNote(
-        localOrderId: Int,
+        orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
-        noteModel: WCOrderNoteModel
+        noteModel: OrderNote
     ): Boolean {
         return try {
             continuationAddOrderNote?.cancel()
+            val order = orderStore.getOrderByIdentifier(orderIdentifier)
+            if (order == null) {
+                WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
+                return false
+            }
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationAddOrderNote = it
 
-                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), noteModel)
+                val dataModel = noteModel.toDataModel()
+                val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
                 dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
             } ?: false
         } catch (e: CancellationException) {

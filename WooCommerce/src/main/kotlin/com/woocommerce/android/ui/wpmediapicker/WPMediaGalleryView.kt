@@ -222,7 +222,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
                 for (image in images) {
                     selectedIds.add(image.id)
                 }
-            } else {
+            } else if (images.isNotEmpty()) {
                 selectedIds.add(images.first().id)
             }
             notifyDataSetChanged()

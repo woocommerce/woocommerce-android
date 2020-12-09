@@ -88,6 +88,7 @@
     <string name="more_options">More options</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
+    <string name="please_wait">Please wait…</string>
     <!--
         Date/Time Labels
     -->
@@ -131,7 +132,7 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
+    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account. You\'ll need to install and connect the free Jetpack plugin on your WooCommerce stores to use this app.</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
@@ -145,6 +146,7 @@
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_text">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
     <string name="login_jetpack_view_instructions">Learn how to install and connect Jetpack</string>
+    <string name="login_jetpack_view_instructions_alt">Learn more about connecting Jetpack</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -351,7 +353,7 @@
     <string name="shipping_label_more_information_link">Learn more</string>
     <string name="shipping_label_create_title">Create shipping label</string>
     <string name="shipping_label_create_packaging_details">Packaging details</string>
-    <string name="shipping_label_create_packaging_details_description">Select the type of packaging you’d like to ship your items in</string>
+    <string name="shipping_label_create_packaging_details_description">Select the type of packaging you\’d like to ship your items in</string>
     <string name="shipping_label_create_customs">Customs</string>
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
@@ -366,7 +368,7 @@
     <string name="shipping_label_edit_address_country">Country</string>
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
-    <string name="shipping_label_edit_data_validation_error">Data validation failed</string>
+    <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
 
     <!--
         Refunds
@@ -420,6 +422,8 @@
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+    <string name="add_order_note_progress_title">Adding note</string>
+    <string name="add_order_note_progress_message">Please wait</string>
 
     <!--
     Order List Tab Labels

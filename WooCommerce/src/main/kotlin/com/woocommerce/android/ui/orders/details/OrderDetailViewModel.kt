@@ -194,7 +194,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.items.map { it.productId }
-            orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
+            val products = orderDetailRepository.getProductsByRemoteIds(remoteProductIds)
+            products.isNotEmpty() && products.all { it.virtual }
         } else false
     }
 
@@ -310,24 +311,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onNewOrderNoteAdded(orderNote: OrderNote) {
-        if (networkStatus.isConnected()) {
-            val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
-            orderNotes.add(0, orderNote)
-            _orderNotes.value = orderNotes
-
-            triggerEvent(ShowSnackbar(string.add_order_note_added))
-            launch {
-                if (!orderDetailRepository
-                        .addOrderNote(orderIdSet.id, orderIdSet.remoteOrderId, orderNote.toDataModel())
-                ) {
-                    triggerEvent(ShowSnackbar(string.add_order_note_error))
-                    orderNotes.remove(orderNote)
-                    _orderNotes.value = orderNotes
-                }
-            }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
+        orderNotes.add(0, orderNote)
+        _orderNotes.value = orderNotes
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
@@ -471,7 +457,9 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (products.isEmpty()) {
             orderDetailViewState = orderDetailViewState.copy(isProductListVisible = false)
         } else {
-            orderDetailViewState = orderDetailViewState.copy(isProductListVisible = true)
+            orderDetailViewState = orderDetailViewState.copy(
+                isProductListVisible = orderDetailViewState.areShippingLabelsVisible != true
+            )
             _productList.value = products
         }
     }
@@ -486,17 +474,17 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadShipmentTracking(viewState: ViewState): ViewState {
-        val newViewState: ViewState
-        when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
+        if (hasVirtualProductsOnly()) return viewState.copy(isShipmentTrackingAvailable = false)
+
+        return when (orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)) {
             RequestResult.SUCCESS -> {
                 _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                newViewState = viewState.copy(isShipmentTrackingAvailable = true)
+                viewState.copy(isShipmentTrackingAvailable = true)
             }
             else -> {
-                newViewState = viewState.copy(isShipmentTrackingAvailable = false)
+                viewState.copy(isShipmentTrackingAvailable = false)
             }
         }
-        return newViewState
     }
 
     private suspend fun loadOrderShippingLabels(viewState: ViewState): ViewState {

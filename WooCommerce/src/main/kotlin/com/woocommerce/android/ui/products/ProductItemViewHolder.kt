@@ -1,52 +1,47 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import kotlinx.android.synthetic.main.product_list_item.view.*
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 
-class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(
-        parent.context
-    ).inflate(R.layout.product_list_item, parent, false)
-) {
-    private val imageSize = parent.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
+    RecyclerView.ViewHolder(viewBinding.root) {
+    private val context = viewBinding.root.context
+    private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
     private val bullet = "\u2022"
-    private val statusColor = ContextCompat.getColor(parent.context, R.color.product_status_fg_other)
-    private val statusPendingColor = ContextCompat.getColor(parent.context, R.color.product_status_fg_pending)
+    private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
+    private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
 
     fun bind(
         product: Product,
         isActivated: Boolean = false
     ) {
-        val context = itemView.context
-        itemView.isActivated = isActivated
+        viewBinding.root.isActivated = isActivated
 
-        itemView.productName.text = if (product.name.isEmpty()) {
+        viewBinding.productName.text = if (product.name.isEmpty()) {
             context.getString(R.string.untitled)
         } else {
             HtmlUtils.fastStripHtml(product.name)
         }
 
         val stockAndStatus = getProductStockStatusText(context, product)
-        with(itemView.productStockAndStatus) {
+        with(viewBinding.productStockAndStatus) {
             if (stockAndStatus != null) {
                 visibility = View.VISIBLE
                 text = HtmlCompat.fromHtml(
@@ -63,13 +58,13 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         when {
             itemView.isActivated -> {
                 size = imageSize / 2
-                itemView.productImage.setImageResource(R.drawable.ic_menu_check)
-                itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
+                viewBinding.productImage.setImageResource(R.drawable.ic_menu_check)
+                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
             }
             firstImage.isNullOrEmpty() -> {
                 size = imageSize / 2
-                itemView.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                itemView.productImage.setImageResource(R.drawable.ic_product)
+                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                viewBinding.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
                 size = imageSize
@@ -77,11 +72,11 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
                 GlideApp.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
-                    .into(itemView.productImage)
+                    .into(viewBinding.productImage)
             }
         }
 
-        itemView.productImage.layoutParams.apply {
+        viewBinding.productImage.layoutParams.apply {
             height = size
             width = size
         }
@@ -91,7 +86,7 @@ class ProductItemViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         product: Product,
         onItemDeleted: (product: Product) -> Unit
     ) {
-        with(itemView.product_btnDelete) {
+        with(viewBinding.productBtnDelete) {
             isVisible = true
             setOnClickListener { onItemDeleted.invoke(product) }
         }

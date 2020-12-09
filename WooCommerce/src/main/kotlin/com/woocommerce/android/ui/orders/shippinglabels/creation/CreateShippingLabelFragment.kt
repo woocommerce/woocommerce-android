@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.SHIPPING_ADDRESS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.android.synthetic.main.fragment_create_shipping_label.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -33,6 +35,8 @@ class CreateShippingLabelFragment : BaseFragment() {
     companion object {
         const val KEY_EDIT_ADDRESS_DIALOG_RESULT = "key_edit_address_dialog_result"
     }
+
+    private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -54,6 +58,11 @@ class CreateShippingLabelFragment : BaseFragment() {
 
         initializeViewModel()
         initializeViews()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
     }
 
     private fun initializeViewModel() {
@@ -87,6 +96,13 @@ class CreateShippingLabelFragment : BaseFragment() {
             new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
                 paymentStep.update(it)
             }
+            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
+                if (isVisible) {
+                    showProgressDialog(R.string.loading_stores, R.string.wc_approve)
+                } else {
+                    hideProgressDialog()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -100,6 +116,20 @@ class CreateShippingLabelFragment : BaseFragment() {
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     private fun initializeViews() {

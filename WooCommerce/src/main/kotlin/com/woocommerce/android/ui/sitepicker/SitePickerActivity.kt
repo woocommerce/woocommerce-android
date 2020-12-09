@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,6 +34,7 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -41,6 +43,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -49,8 +52,10 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
+import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
+import kotlinx.android.synthetic.main.view_login_no_stores.btn_what_is_jetpack
 import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
@@ -359,6 +364,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         no_stores_view.visibility = View.GONE
+        btn_what_is_jetpack.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
         button_email_help.visibility = View.GONE
 
@@ -486,7 +492,25 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
+        with(btn_what_is_jetpack) {
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+                LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+            }
+            visibility = View.VISIBLE
+        }
+
         with(button_primary) {
+            text = getString(R.string.login_jetpack_view_instructions_alt)
+            isEnabled = true
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
+                ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_INSTRUCTIONS)
+            }
+        }
+
+        with(button_secondary) {
+            visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             isEnabled = true
             setOnClickListener {
@@ -496,10 +520,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                     unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
                 }
             }
-        }
-
-        with(button_secondary) {
-            visibility = View.GONE
         }
     }
 

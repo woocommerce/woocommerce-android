@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -17,7 +17,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.dialog_product_list_sorting.*
 import javax.inject.Inject
 
 class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
@@ -27,8 +26,12 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
 
     private val viewModel: ProductSortingViewModel by viewModels { viewModelFactory }
 
+    private var _binding: DialogProductListSortingBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_product_list_sorting, container, false)
+        _binding = DialogProductListSortingBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -43,6 +46,11 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
         showSortingOptions()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -55,14 +63,14 @@ class ProductSortingFragment : BottomSheetDialogFragment(), HasAndroidInjector {
     }
 
     private fun showSortingOptions() {
-        val adapter = sorting_optionsList.adapter as? ProductSortingListAdapter
+        val adapter = binding.sortingOptionsList.adapter as? ProductSortingListAdapter
                 ?: ProductSortingListAdapter(
                         viewModel::onSortingOptionChanged,
                         ProductSortingViewModel.SORTING_OPTIONS,
                         viewModel.sortingChoice
                 )
-        sorting_optionsList.adapter = adapter
-        sorting_optionsList.layoutManager = LinearLayoutManager(activity)
+        binding.sortingOptionsList.adapter = adapter
+        binding.sortingOptionsList.layoutManager = LinearLayoutManager(activity)
     }
 
     override fun androidInjector(): AndroidInjector<Any> {

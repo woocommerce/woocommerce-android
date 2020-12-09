@@ -15,8 +15,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/minor_100"
             android:layout_marginBottom="@dimen/minor_100">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:background="@color/warning_background_color"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/warningIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:contentDescription="@string/shipping_label_edit_address_validation_error"
+                    android:src="@drawable/ic_info_outline_24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/warningBody"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:tint="@color/warning_foreground_color"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/warningBody"
+                    style="@style/Woo.TextView.Warning"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_200"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:text="@string/variation_detail_price_warning"
+                    app:layout_constraintBottom_toTopOf="@id/warningDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/warningIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
+
+                <View
+                    android:id="@+id/warningDivider"
+                    style="@style/Woo.Divider.Warning"
+                    android:layout_width="@dimen/minor_00"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameLayout"

@@ -1,15 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R.layout
+import com.woocommerce.android.databinding.ProductFilterListItemBinding
 import com.woocommerce.android.extensions.areSameAs
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
-import kotlinx.android.synthetic.main.product_filter_list_item.view.*
 
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener
@@ -31,15 +28,17 @@ class ProductFilterListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductFilterViewHolder {
-        return ProductFilterViewHolder(LayoutInflater.from(parent.context)
-                .inflate(layout.product_filter_list_item, parent, false))
+        return ProductFilterViewHolder(
+            ProductFilterListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ProductFilterViewHolder, position: Int) {
-        val filter = filterList[position]
-        holder.txtFilterName.text = filter.filterItemName
-        holder.txtFilterSelection.text = filter.filterOptionListItems.first { it.isSelected }.filterOptionItemName
-
+        holder.bind(filterList[position])
         holder.itemView.setOnClickListener {
             clickListener.onProductFilterClick(position)
         }
@@ -52,8 +51,12 @@ class ProductFilterListAdapter(
     private fun isSameList(newList: List<FilterListItemUiModel>) =
         filterList.areSameAs(newList) { this.isSameFilter(it) }
 
-    class ProductFilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtFilterName: TextView = view.filterItemName
-        val txtFilterSelection: TextView = view.filterItemSelection
+    class ProductFilterViewHolder(val viewBinding: ProductFilterListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(filter: FilterListItemUiModel) {
+            viewBinding.filterItemName.text = filter.filterItemName
+            viewBinding.filterItemSelection.text =
+                filter.filterOptionListItems.first { it.isSelected }.filterOptionItemName
+        }
     }
 }

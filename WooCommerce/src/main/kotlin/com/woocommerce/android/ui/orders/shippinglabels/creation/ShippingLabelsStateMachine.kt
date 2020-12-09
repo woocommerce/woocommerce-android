@@ -216,9 +216,14 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.AddressInvalid> { event ->
+                // Temporary for testing
+//                transitionTo(
+//                    State.ShippingAddressSuggestion(data),
+//                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, DESTINATION)
+//                )
                 transitionTo(
-                    State.ShippingAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, DESTINATION)
+                    State.ShippingAddressEditing(data),
+                    SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
                 )
             }
             on<Event.AddressNotRecognized> {

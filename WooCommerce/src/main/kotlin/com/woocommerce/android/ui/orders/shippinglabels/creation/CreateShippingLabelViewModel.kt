@@ -78,12 +78,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private suspend fun handleResult(action: suspend () -> Event) {
+        viewState = viewState.copy(isProgressDialogVisible = true)
         stateMachine.handleEvent(action())
+        viewState = viewState.copy(isProgressDialogVisible = false)
     }
 
     private fun updateViewState(data: Data) {
-        val latestStep = data.flowSteps.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS
-        viewState = when (latestStep) {
+        viewState = when (data.flowSteps.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS) {
             FlowStep.ORIGIN_ADDRESS -> {
                 viewState.copy(
                     originAddressStep = Step.current(data.originAddress.toString()),
@@ -192,7 +193,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             FlowStep.PAYMENT -> Event.EditPaymentRequested
             FlowStep.DONE -> null
         }.also { event ->
-            event?.let { stateMachine.handleEvent(it) }
+            event?.let {
+                stateMachine.handleEvent(it)
+            }
         }
     }
 
@@ -217,7 +220,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val packagingDetailsStep: Step? = null,
         val customsStep: Step? = null,
         val carrierStep: Step? = null,
-        val paymentStep: Step? = null
+        val paymentStep: Step? = null,
+        val isProgressDialogVisible: Boolean? = null
     ) : Parcelable
 
     @Parcelize

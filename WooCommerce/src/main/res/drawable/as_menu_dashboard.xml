@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_focused="true"
+        android:drawable="@drawable/ic_menu_dashboard">
+    </item>
+
+    <item
+        android:id="@+id/selected"
+        android:state_selected="true"
+        android:drawable="@drawable/ic_menu_dashboard">
+    </item>
+
+    <item
+        android:id="@+id/unselected"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_menu_dashboard">
+    </item>
+
+    <transition
+        android:fromId="@id/unselected"
+        android:toId="@id/selected">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <animated-vector
+            android:drawable="@drawable/ic_menu_dashboard">
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bar_left"
+                android:animation="@animator/ic_menu_dashboard_bar_left">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bar_middle"
+                android:animation="@animator/ic_menu_dashboard_bar_middle">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bar_right"
+                android:animation="@animator/ic_menu_dashboard_bar_right">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="line_bottom"
+                android:animation="@animator/ic_menu_dashboard_line_bottom">
+            </target>
+
+        </animated-vector>
+
+    </transition>
+
+</animated-selector>
