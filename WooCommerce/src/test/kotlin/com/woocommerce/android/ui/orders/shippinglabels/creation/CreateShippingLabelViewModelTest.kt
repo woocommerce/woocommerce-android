@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
@@ -216,9 +217,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         verify(stateMachine).handleEvent(OriginAddressValidationStarted)
 
-        stateFlow.value = SideEffect.ValidateAddress(originAddress)
+        stateFlow.value = SideEffect.ValidateAddress(originAddress, ORIGIN)
 
-        verify(addressValidator).validateAddress(originAddress)
+        verify(addressValidator).validateAddress(originAddress, ORIGIN)
     }
 
     @Test
@@ -233,8 +234,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         verify(stateMachine).handleEvent(Event.EditOriginAddressRequested)
 
-        stateFlow.value = SideEffect.OpenAddressEditor(originAddress)
+        stateFlow.value = SideEffect.OpenAddressEditor(originAddress, ORIGIN)
 
-        verify(stateMachine).handleEvent(Event.AddressEditFinished(originAddress))
+        verify(stateMachine).handleEvent(Event.AddressValidated(originAddress))
     }
 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.spy
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -68,7 +69,7 @@ class ShippingLabelsStateMachineTest {
         stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
-        assertThat(sideEffect).isEqualTo(SideEffect.ValidateAddress(data.originAddress))
+        assertThat(sideEffect).isEqualTo(SideEffect.ValidateAddress(data.originAddress, ORIGIN))
 
         val newData = data.copy(
             originAddress = data.originAddress,
