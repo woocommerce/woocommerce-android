@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -105,10 +106,7 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
         }
 
         AnalyticsTracker.track(ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED)
-        AppRatingDialog.incrementInteractions()
-
-        AppPrefs.setSelectedShipmentTrackingProviderName(addOrderShipmentTrackingViewState.carrier.name)
-        AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(addOrderShipmentTrackingViewState.carrier.isCustom)
+        triggerEvent(SaveTrackingPrefsEvent(addOrderShipmentTrackingViewState.carrier))
 
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -126,14 +124,7 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
                 trackingLink = addOrderShipmentTrackingViewState.trackingLink
             )
 
-            val orderIdSet = orderId.toIdSet()
-
-            if (orderDetailRepository.addOrderShipmentTracking(
-                    orderIdSet.id,
-                    orderIdSet.remoteOrderId,
-                    shipmentTracking.toDataModel(),
-                    shipmentTracking.isCustomProvider
-                )) {
+            if (orderDetailRepository.addOrderShipmentTracking(orderId, shipmentTracking)) {
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
                 triggerEvent(ExitWithResult(shipmentTracking))
@@ -171,6 +162,8 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
         val customCarrierNameError: Int? = null,
         val trackingNumberError: Int? = null
     ) : Parcelable
+
+    data class SaveTrackingPrefsEvent(val carrier: Carrier) : MultiLiveEvent.Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddOrderShipmentTrackingViewModel>

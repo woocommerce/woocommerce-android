@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,7 +12,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddShipmentTrackingBinding
@@ -24,12 +23,14 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import org.wordpress.android.util.ActivityUtils
 import java.util.Calendar
@@ -120,12 +121,16 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
                 showProgressDialog(it)
             }
         }
-        viewModel.event.observe(viewLifecycleOwner) {event ->
-            when(event){
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_ADD_SHIPMENT_TRACKING_RESULT, event.data)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is SaveTrackingPrefsEvent -> {
+                    AppPrefs.setSelectedShipmentTrackingProviderName(event.carrier.name)
+                    AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(event.carrier.isCustom)
+                }
                 else -> event.isHandled = false
             }
         }
@@ -198,6 +203,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
                 activity?.let {
                     ActivityUtils.hideKeyboard(it)
                 }
+                AppRatingDialog.incrementInteractions()
                 viewModel.onAddButtonTapped()
                 true
             }

@@ -202,11 +202,10 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderShipmentTracking(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        shipmentTrackingModel: WCOrderShipmentTrackingModel,
-        isCustomProvider: Boolean
+        orderIdentifier: OrderIdentifier,
+        shipmentTrackingModel: OrderShipmentTracking
     ): Boolean {
+        val orderIdSet = orderIdentifier.toIdSet()
         return try {
             continuationAddShipmentTracking?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -214,18 +213,19 @@ class OrderDetailRepository @Inject constructor(
 
                 val payload = AddOrderShipmentTrackingPayload(
                     selectedSite.get(),
-                    localOrderId,
-                    remoteOrderId,
-                    shipmentTrackingModel,
-                    isCustomProvider
+                    orderIdSet.id,
+                    orderIdSet.remoteOrderId,
+                    shipmentTrackingModel.toDataModel(),
+                    shipmentTrackingModel.isCustomProvider
                 )
                 dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
             } ?: false
         } catch (e: CancellationException) {
-            WooLog.e(ORDERS, "CancellationException while adding shipment tracking $remoteOrderId")
+            WooLog.e(ORDERS, "CancellationException while adding shipment tracking ${orderIdSet.remoteOrderId}")
             false
         }
     }
+
 
     suspend fun deleteOrderShipmentTracking(
         localOrderId: Int,
