@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import android.os.Parcelable
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Error
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Invalid
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NotRecognized
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.Valid
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
@@ -15,6 +13,7 @@ import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationRes
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress.Type
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
 
@@ -29,27 +28,38 @@ class ShippingLabelAddressValidator @Inject constructor(
 
         return if (result.isError) {
             // TODO: Add analytics
-            Error(result.error.type)
+            ValidationResult.Error(result.error.type)
         } else {
             when (result.model) {
-                null -> NotRecognized
-                is InvalidRequest, is InvalidAddress -> NotRecognized
+                null -> ValidationResult.Error(GENERIC_ERROR)
+                is InvalidRequest -> ValidationResult.NotFound((result.model as InvalidRequest).message)
+                is InvalidAddress -> ValidationResult.Invalid((result.model as InvalidAddress).message)
                 is WCAddressVerificationResult.Valid -> {
                     val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
                     if (suggestion != address) {
-                        Invalid(suggestion)
+                        ValidationResult.SuggestedChanges(suggestion)
                     } else {
-                        Valid
+                        ValidationResult.Valid
                     }
                 }
             }
         }
     }
 
-    sealed class ValidationResult {
+    sealed class ValidationResult : Parcelable {
+        @Parcelize
         object Valid : ValidationResult()
-        data class Invalid(val suggested: Address) : ValidationResult()
-        object NotRecognized : ValidationResult()
+
+        @Parcelize
+        data class SuggestedChanges(val suggested: Address) : ValidationResult()
+
+        @Parcelize
+        data class Invalid(val message: String) : ValidationResult()
+
+        @Parcelize
+        data class NotFound(val message: String) : ValidationResult()
+
+        @Parcelize
         data class Error(val type: WooErrorType) : ValidationResult()
     }
 
