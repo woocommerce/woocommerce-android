@@ -28,8 +28,7 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import javax.inject.Inject
 
-class AddOrderTrackingProviderListFragment : DialogFragment(),
-        AddOrderTrackingProviderListContract.View,
+class AddOrderTrackingProviderListFragment : DialogFragment(), AddOrderTrackingProviderListContract.View,
         OnQueryTextListener, OnProviderClickListener {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
@@ -115,9 +114,9 @@ class AddOrderTrackingProviderListFragment : DialogFragment(),
 
         // Initialise the adapter
         providerListAdapter = AddOrderTrackingProviderListAdapter(
-            context,
-            getCountryName(),
-            this
+                context,
+                getCountryName(),
+                this
         )
 
         // Update previously selected provider by the user, if available

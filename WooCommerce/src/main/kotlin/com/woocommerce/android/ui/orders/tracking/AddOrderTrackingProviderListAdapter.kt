@@ -82,8 +82,8 @@ class AddOrderTrackingProviderListAdapter(
          * then that country section should be displayed first
          * */
         val countryProvidersMap = providers
-                .groupBy { it.country }
-                .mapValues { entry -> entry.value.map { it } }
+            .groupBy { it.country }
+            .mapValues { entry -> entry.value.map { it } }
 
         val finalMap = mutableMapOf<String, List<WCOrderShipmentProviderModel>>()
         countryProvidersMap[storeCountry]?.let { wcOrderShipmentProviderModels ->
@@ -108,12 +108,12 @@ class AddOrderTrackingProviderListAdapter(
     private fun getCustomProviderSection(): ProviderListSection? {
         context?.let {
             val customShipmentProviderModel: WCOrderShipmentProviderModel =
-                    WCOrderShipmentProviderModel().apply {
-                        carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name)
-                    }
+                WCOrderShipmentProviderModel().apply {
+                    carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name)
+                }
             return ProviderListSection(
-                    it.getString(R.string.order_shipment_tracking_custom_provider_section_title),
-                    listOf(customShipmentProviderModel)
+                it.getString(R.string.order_shipment_tracking_custom_provider_section_title),
+                listOf(customShipmentProviderModel)
             )
         }
         return null
@@ -129,8 +129,8 @@ class AddOrderTrackingProviderListAdapter(
                     val filteredList = ArrayList<WCOrderShipmentProviderModel>()
                     for (row in providerSearchList) {
                         if (row.carrierName.contains(charString) ||
-                                row.country.contains(charString) ||
-                                row.carrierLink.contains(charString)) {
+                            row.country.contains(charString) ||
+                            row.carrierLink.contains(charString)) {
                             filteredList.add(row)
                         }
                     }
@@ -156,16 +156,14 @@ class AddOrderTrackingProviderListAdapter(
         val country: String,
         val list: List<WCOrderShipmentProviderModel>
     ) : StatelessSection(
-            SectionParameters.Builder(R.layout.dialog_order_tracking_provider_list_item)
-                    .headerResourceId(R.layout.dialog_order_tracking_provider_list_header)
-                    .build()
+        SectionParameters.Builder(R.layout.dialog_order_tracking_provider_list_item)
+            .headerResourceId(R.layout.dialog_order_tracking_provider_list_header)
+            .build()
     ) {
         override fun getContentItemsTotal() = list.size
 
         override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
-            return ItemViewHolder(
-                    view
-            )
+            return ItemViewHolder(view)
         }
 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -187,9 +185,7 @@ class AddOrderTrackingProviderListAdapter(
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
-            return HeaderViewHolder(
-                    view
-            )
+            return HeaderViewHolder(view)
         }
 
         override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
