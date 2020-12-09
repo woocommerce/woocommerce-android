@@ -376,5 +376,9 @@
         <argument
             android:name="addressType"
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
+        <argument
+            android:name="validationResult"
+            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
+            app:nullable="true" />
     </fragment>
 </navigation>
