@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,7 +28,9 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import org.wordpress.android.util.ActivityUtils
 import java.util.Calendar
 import javax.inject.Inject
@@ -49,13 +52,11 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
     private var isSelectedProviderCustom = false
     private var dateShippedPickerDialog: DatePickerDialog? = null
     private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
-
-    private val navArgs: AddOrderShipmentTrackingFragmentArgs by navArgs()
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -114,12 +115,17 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
             new.date.takeIfNotEqualTo(old?.date) {
                 binding.date.setText(DateUtils().getLocalizedLongDateString(requireActivity(), it))
             }
+
+            new.showLoadingProgress.takeIfNotEqualTo(old?.showLoadingProgress) {
+                showProgressDialog(it)
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) {event ->
             when(event){
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_ADD_SHIPMENT_TRACKING_RESULT, event.data)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }
         }
@@ -189,6 +195,9 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
+                activity?.let {
+                    ActivityUtils.hideKeyboard(it)
+                }
                 viewModel.onAddButtonTapped()
                 true
             }
@@ -196,9 +205,6 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
         }
     }
 
-    /**
-     * Prevent back press in the main activity if the user entered a note so we can confirm the discard
-     */
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonPressed()
     }
@@ -222,5 +228,18 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
     private fun hideCustomProviderFields(binding: FragmentAddShipmentTrackingBinding) {
         binding.customProviderNameLayout.visibility = View.GONE
         binding.customProviderUrlLayout.visibility = View.GONE
+    }
+
+    private fun showProgressDialog(show: Boolean) {
+        progressDialog?.dismiss()
+        if (show) {
+            progressDialog = CustomProgressDialog.show(
+                getString(R.string.add_order_note_progress_title),
+                getString(R.string.add_order_note_progress_message)
+            ).also {
+                it.show(parentFragmentManager, CustomProgressDialog.TAG)
+            }
+            progressDialog?.isCancelable = false
+        }
     }
 }

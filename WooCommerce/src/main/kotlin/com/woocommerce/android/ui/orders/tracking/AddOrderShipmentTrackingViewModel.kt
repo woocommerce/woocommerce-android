@@ -6,29 +6,34 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.AppRatingDialog
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val resourceProvider: ResourceProvider
+    private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
 
     private val navArgs: AddOrderShipmentTrackingFragmentArgs by savedState.navArgs()
@@ -37,7 +42,7 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
         savedState = savedState,
         initialValue = ViewState(
             isSelectedProviderCustom = navArgs.isCustomProvider,
-            carrier = Carrier("", navArgs.isCustomProvider)
+            carrier = Carrier(navArgs.orderTrackingProvider ?: "", navArgs.isCustomProvider)
         )
     )
     private var addOrderShipmentTrackingViewState by addOrderShipmentTrackingViewStateData
@@ -105,14 +110,38 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
         AppPrefs.setSelectedShipmentTrackingProviderName(addOrderShipmentTrackingViewState.carrier.name)
         AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(addOrderShipmentTrackingViewState.carrier.isCustom)
 
-        val shipmentTracking = OrderShipmentTracking(
-            trackingNumber = addOrderShipmentTrackingViewState.trackingNumber,
-            dateShipped = addOrderShipmentTrackingViewState.date,
-            trackingProvider = addOrderShipmentTrackingViewState.carrier.name,
-            isCustomProvider = addOrderShipmentTrackingViewState.carrier.isCustom,
-            trackingLink = addOrderShipmentTrackingViewState.trackingLink
-        )
-        triggerEvent(ExitWithResult(shipmentTracking))
+        if (!networkStatus.isConnected()) {
+            triggerEvent(ShowSnackbar(string.offline_error))
+            return
+        }
+
+        addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = true)
+
+        launch {
+            val shipmentTracking = OrderShipmentTracking(
+                trackingNumber = addOrderShipmentTrackingViewState.trackingNumber,
+                dateShipped = addOrderShipmentTrackingViewState.date,
+                trackingProvider = addOrderShipmentTrackingViewState.carrier.name,
+                isCustomProvider = addOrderShipmentTrackingViewState.carrier.isCustom,
+                trackingLink = addOrderShipmentTrackingViewState.trackingLink
+            )
+
+            val orderIdSet = orderId.toIdSet()
+
+            if (orderDetailRepository.addOrderShipmentTracking(
+                    orderIdSet.id,
+                    orderIdSet.remoteOrderId,
+                    shipmentTracking.toDataModel(),
+                    shipmentTracking.isCustomProvider
+                )) {
+                addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
+                triggerEvent(ExitWithResult(shipmentTracking))
+            } else {
+                addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
+                triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
+            }
+        }
     }
 
     fun onBackButtonPressed(): Boolean {
