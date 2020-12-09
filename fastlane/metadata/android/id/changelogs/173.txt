@@ -1,4 +1,3 @@
 5.5:
-Produk: Sekarang Anda dapat menambahkan produk yang sederhana, dikelompokkan, dan eksternal, serta menyimpan produk sebagai draf. Kami akan segera meluncurkan beberapa fitur baru untuk Anda coba!
-
+Anda meminta, kami menyediakannya! Sekarang Anda dapat membuat produk sederhana, dikelompokkan, dan eksternal langsung dari perangkat seluler Android favorit Anda. Ubah ide jadi produk nyata – bahkan tanpa mesti duduk di depan komputer.
 Perbaikan lainnya: Kami memperbaiki bug yang memengaruhi nama variasi produk ketika opsi variasi "dibuka", serta salah ketik pada layar label pengiriman.

@@ -1,4 +1,3 @@
 5.5:
-Produkte: Du kannst jetzt auch ein einfaches, gruppiertes oder externes Produkt hinzufügen und es als Entwurf speichern. Bald gibt es noch mehr neue Funktionen für dich!
-
+Dein Wunsch ist uns Befehl! Ab sofort kannst du einfache, gruppierte oder externe Produkte direkt über deine bevorzugten Android-Mobilgeräte erstellen.  Wandle Ideen in Produkte um – auch wenn du nicht an deinem Computer sitzt.
 Weitere Fehlerbehebungen: Wir haben einen Fehler behoben, der negative Auswirkungen auf die Produktvariantennamen hatte, wenn die Variante auf „offen“ stand. Außerdem haben wir den Rechtschreibfehler auf dem Versandetikett korrigiert.
