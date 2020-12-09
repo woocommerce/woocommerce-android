@@ -50,8 +50,8 @@ DataLoadingFailed |                  (OpenAddressEditor)    |    |              
                                |                           |          |                                        |   |
                                |                           |          |                                        |   |
                                |                           |          |                                        |   |
-                               |                           |          |      AddressInvalid                    |   |
-                               |                           |          | (ShowAddressSuggestions)               |   |
+                               |         AddressInvalid    |          |  AddressChangeSuggested                |   |
+                               |      (OpenAddressEditor)  |          | (ShowAddressSuggestions)               |   |
                                |                           |          |                                        |   |
                                |                           |          |                                        |   |
                                |                           |          |                                        |   |
