@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
  * observed as a LiveData using the same key - see the Fragment.handleResult() extension function. This mechanism is
  * used to facilitate the request-result communication between 2 separate fragments.
  *
- * @param [key] A unique string that is the same as the one used in [handleResult]
+ * @param [key] A unique string that is the same as the one used in [handleNotice]
  * @param [result] A result value to be returned
  *
  */
@@ -18,12 +18,18 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
     findNavController().navigateUp()
 }
 
+fun Fragment.navigateBackWithNotice(key: String) {
+    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, key)
+    findNavController().navigateUp()
+}
+
+
 /**
  * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
  * with the supplied key.
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
- * @param [entryId] An optional ID to identify the correct back stack entry. It's required when calling [handleResult]
+ * @param [entryId] An optional ID to identify the correct back stack entry. It's required when calling [handleNotice]
  *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
  * @param [handler] A result handler
  *
@@ -32,7 +38,7 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * to 1.
  */
 fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) -> Unit) {
-    val entry = if (entryId != null) {
+    if (entryId != null) {
         findNavController().getBackStackEntry(entryId)
     } else {
         findNavController().currentBackStackEntry
@@ -44,6 +50,24 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
             Observer {
                 saveState.remove<T>(key)
                 handler(it)
+            }
+        )
+    }
+}
+
+fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit) {
+    if (entryId != null) {
+        findNavController().getBackStackEntry(entryId)
+    } else {
+        findNavController().currentBackStackEntry
+    }
+
+    findNavController().currentBackStackEntry?.savedStateHandle?.let { saveState ->
+        saveState.getLiveData<String>(key).observe(
+            this.viewLifecycleOwner,
+            Observer {
+                saveState.remove<String>(key)
+                handler()
             }
         )
     }
