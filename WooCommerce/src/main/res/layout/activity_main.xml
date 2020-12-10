@@ -54,6 +54,20 @@
                 app:navGraph="@navigation/nav_graph_main"
                 tools:layout="@layout/fragment_my_store" />
         </FrameLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addProductButton"
+            style="@style/Woo.AddButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/major_100"
+            android:animateLayoutChanges="true"
+            android:contentDescription="@string/add_products_button"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.woocommerce.android.ui.network.OfflineStatusBarView

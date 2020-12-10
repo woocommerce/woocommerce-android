@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -151,9 +152,17 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         if (hidden) {
             disableSearchListeners()
             trashProductUndoSnack?.dismiss()
+            showAddProductButton(false)
         } else {
             enableSearchListeners()
+            if (!viewModel.isSearching()) {
+                showAddProductButton(true)
+            }
         }
+    }
+
+    override fun onChildFragmentOpened() {
+        showAddProductButton(false)
     }
 
     override fun onReturnedFromChildFragment() {
@@ -161,6 +170,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
         if (!viewModel.isSearching()) {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+            showAddProductButton(true)
         }
     }
 
@@ -442,16 +452,31 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showAddProductButton(show: Boolean) {
-        fun showButton() = run { binding.addProductButton.isVisible = true }
-        fun hideButton() = run { binding.addProductButton.isVisible = false }
+        // note that the FAB is part of the main activity so it can be direct child of the CoordinatorLayout
+        val addProductButton = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
+
+        fun showButton() = run {
+            if (!addProductButton.isVisible) {
+                addProductButton.show()
+            }
+        }
+        fun hideButton() = run {
+            if (addProductButton.isVisible) {
+                addProductButton.hide()
+            }
+        }
+
         when (show) {
             true -> {
                 showButton()
-                binding.addProductButton.setOnClickListener {
+                addProductButton.setOnClickListener {
                     viewModel.onAddProductButtonClicked()
                 }
             }
-            else -> hideButton()
+            else -> {
+                hideButton()
+                addProductButton.setOnClickListener(null)
+            }
         }
     }
 
