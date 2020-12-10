@@ -192,7 +192,6 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
      * Reusing the same menu used for adding order notes
      */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
         inflater.inflate(R.menu.menu_add, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
