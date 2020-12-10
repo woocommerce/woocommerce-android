@@ -151,8 +151,12 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         if (hidden) {
             disableSearchListeners()
             trashProductUndoSnack?.dismiss()
+            showAddProductButton(false)
         } else {
             enableSearchListeners()
+            if (!viewModel.isSearching()) {
+                showAddProductButton(true)
+            }
         }
     }
 
