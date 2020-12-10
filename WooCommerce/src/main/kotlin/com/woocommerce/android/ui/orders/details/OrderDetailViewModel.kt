@@ -239,37 +239,13 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        if (networkStatus.isConnected()) {
-            val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
-            shipmentTrackings.add(0, shipmentTracking)
-            _shipmentTrackings.value = shipmentTrackings
-
-            triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
-            launch {
-                AnalyticsTracker.track(
-                    ORDER_TRACKING_ADD,
-                    mapOf(AnalyticsTracker.KEY_ID to order?.remoteId,
-                        AnalyticsTracker.KEY_STATUS to order?.status,
-                        AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
-                )
-
-                val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
-                    orderIdSet.id,
-                    orderIdSet.remoteOrderId,
-                    shipmentTracking.toDataModel(),
-                    shipmentTracking.isCustomProvider
-                )
-                if (!addedShipmentTracking) {
-                    triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
-                    shipmentTrackings.remove(shipmentTracking)
-                    _shipmentTrackings.value = shipmentTrackings
-                } else {
-                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                }
-            }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        AnalyticsTracker.track(
+            ORDER_TRACKING_ADD,
+            mapOf(AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+        )
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
     fun onShippingLabelRefunded() {
