@@ -442,13 +442,15 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showAddProductButton(show: Boolean) {
-        val addProductFab = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
-        fun showButton() = run { addProductFab.isVisible = true }
-        fun hideButton() = run { addProductFab.isVisible = false }
+        val addProductButton = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
+
+        fun showButton() = run { addProductButton.isVisible = true }
+        fun hideButton() = run { addProductButton.isVisible = false }
+
         when (show) {
             true -> {
                 showButton()
-                addProductFab.setOnClickListener {
+                addProductButton.setOnClickListener {
                     viewModel.onAddProductButtonClicked()
                 }
             }

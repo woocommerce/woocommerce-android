@@ -60,6 +60,7 @@
             style="@style/Woo.AddButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/major_100"
             android:animateLayoutChanges="true"
             android:visibility="gone"
