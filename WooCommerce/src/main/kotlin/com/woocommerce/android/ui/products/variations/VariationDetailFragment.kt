@@ -48,6 +48,7 @@ import kotlinx.android.synthetic.main.fragment_variation_detail.app_bar_layout
 import kotlinx.android.synthetic.main.fragment_variation_detail.cardsRecyclerView
 import kotlinx.android.synthetic.main.fragment_variation_detail.imageGallery
 import org.wordpress.android.util.ActivityUtils
+import java.util.Date
 import javax.inject.Inject
 
 class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageInteractionListener {
@@ -165,11 +166,16 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             )
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            if (it.isNotEmpty()) {
-                viewModel.onVariationChanged(
-                    image = it.first()
-                )
+            val updatedImage = if (it.isEmpty()) {
+                // Image was deleted. Create a placeholder image with ID 0
+                Image(0, "", "", Date())
+            } else {
+                it.first()
             }
+
+            viewModel.onVariationChanged(
+                image = updatedImage
+            )
         }
     }
 
