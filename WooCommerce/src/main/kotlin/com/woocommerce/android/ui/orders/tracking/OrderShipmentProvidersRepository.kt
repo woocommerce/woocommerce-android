@@ -21,9 +21,10 @@ import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
+import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class OrderShipmentProvidersRepository(
+class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val dispatcher: Dispatcher
@@ -88,6 +89,8 @@ class OrderShipmentProvidersRepository(
         } else {
             continuationFetchTrackingProviders?.resume(SUCCESS)
         }
+
+        val result = Result
     }
 
     private enum class RequesResult {

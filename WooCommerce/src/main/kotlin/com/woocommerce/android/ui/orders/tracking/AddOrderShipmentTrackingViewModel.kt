@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TR
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -78,6 +79,13 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
 
     fun onDateChanged(date: String) {
         addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(date = date)
+    }
+
+    fun onCarrierClicked() {
+        triggerEvent(ViewShipmentTrackingProviders(
+            orderIdentifier = orderId,
+            selectedProvider = addOrderShipmentTrackingViewState.carrier.name
+        ))
     }
 
     fun onAddButtonTapped() {

@@ -162,9 +162,13 @@
             app:argType="boolean" />
         <action
             android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
-            app:destination="@id/addOrderTrackingProviderListFragment" />
+            app:destination="@id/addOrderTrackingProviderListFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
-    <dialog
+    <fragment
         android:id="@+id/addOrderTrackingProviderListFragment"
         android:name="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment"
         tools:layout="@layout/dialog_order_tracking_provider_list">
@@ -172,7 +176,11 @@
             android:name="orderId"
             android:defaultValue='""'
             app:argType="string" />
-    </dialog>
+        <argument
+            android:name="selectedProvider"
+            android:defaultValue=""
+            app:argType="string"/>
+    </fragment>
     <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
