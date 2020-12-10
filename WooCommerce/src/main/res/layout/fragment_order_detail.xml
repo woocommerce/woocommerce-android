@@ -49,15 +49,6 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
-                <!-- Shipping Labels List -->
-                <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
-                    android:id="@+id/orderDetail_shippingLabelList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:visibility="gone"
-                    android:contentDescription="@string/shipping_labels"/>
-
                 <!-- Product List -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
@@ -78,6 +69,15 @@
                     android:clipToPadding="false"
                     android:visibility="gone"
                     android:contentDescription="@string/refunds"/>
+
+                <!-- Shipping Labels List -->
+                <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
+                    android:id="@+id/orderDetail_shippingLabelList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:visibility="gone"
+                    android:contentDescription="@string/shipping_labels"/>
 
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView

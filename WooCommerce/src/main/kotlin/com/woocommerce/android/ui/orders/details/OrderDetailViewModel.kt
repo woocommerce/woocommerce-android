@@ -26,6 +26,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
@@ -465,14 +466,19 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private suspend fun loadOrderShippingLabels(viewState: ViewState): ViewState {
         orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
+            .loadProducts(order.items)
             .whenNotNullNorEmpty {
-                _shippingLabels.value = it.loadProducts(order.items)
+                _shippingLabels.value = it
+
+                // If there are some products not associated with any shipping labels (when shipping labels
+                // are refunded, for instance), the products card should be displayed with those products
+                _productList.value = it.getNonRefundedShippingLabelProducts()
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
                 return viewState.copy(
                     isShipmentTrackingAvailable = false,
-                    isProductListVisible = false,
+                    isProductListVisible = _productList.value?.isNotEmpty(),
                     areShippingLabelsVisible = true
                 )
             }
@@ -483,11 +489,15 @@ class OrderDetailViewModel @AssistedInject constructor(
             .whenNotNullNorEmpty {
                 _shippingLabels.value = it
 
+                // If there are some products not associated with any shipping labels (when shipping labels
+                // are refunded, for instance), the products card should be displayed with those products
+                _productList.value = it.getNonRefundedShippingLabelProducts()
+
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
                 return viewState.copy(
                     isShipmentTrackingAvailable = false,
-                    isProductListVisible = false,
+                    isProductListVisible = _productList.value?.isNotEmpty(),
                     areShippingLabelsVisible = true
                 )
             }

@@ -104,3 +104,10 @@ fun List<ShippingLabel>.loadProducts(products: List<Order.Item>): List<ShippingL
         }
     }
 }
+
+fun List<ShippingLabel>.getNonRefundedShippingLabelProducts(): List<Order.Item> {
+    val nonRefundedProductSet = mutableSetOf<Order.Item>()
+    this.filter { it.refund != null }
+        .map { nonRefundedProductSet.addAll(it.products) }
+    return nonRefundedProductSet.toList()
+}
