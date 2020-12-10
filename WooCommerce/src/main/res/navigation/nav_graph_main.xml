@@ -160,7 +160,19 @@
             android:name="isCustomProvider"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
+            app:destination="@id/addOrderTrackingProviderListFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/addOrderTrackingProviderListFragment"
+        android:name="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment"
+        tools:layout="@layout/dialog_order_tracking_provider_list">
+        <argument
+            android:name="orderId"
+            android:defaultValue='""'
+            app:argType="string" />
+    </dialog>
     <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
