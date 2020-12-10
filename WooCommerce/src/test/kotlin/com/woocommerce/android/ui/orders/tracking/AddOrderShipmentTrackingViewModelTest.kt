@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.any
@@ -14,9 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentArgs
-import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
-import com.woocommerce.android.ui.orders.tracking.Carrier
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
