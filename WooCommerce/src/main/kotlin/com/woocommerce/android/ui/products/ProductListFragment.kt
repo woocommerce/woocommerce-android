@@ -160,11 +160,16 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         }
     }
 
+    override fun onChildFragmentOpened() {
+        showAddProductButton(false)
+    }
+
     override fun onReturnedFromChildFragment() {
         showOptionsMenu(true)
 
         if (!viewModel.isSearching()) {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+            showAddProductButton(true)
         }
     }
 
