@@ -380,5 +380,33 @@
             android:name="validationResult"
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out"
+            app:destination="@id/itemSelectorDialog" />
     </fragment>
+    <dialog
+        android:id="@+id/itemSelectorDialog"
+        android:name="com.woocommerce.android.ui.ItemSelectorDialog"
+        android:label="ItemSelectorDialog" >
+        <argument
+            android:name="selectedItem"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="keys"
+            app:argType="string[]" />
+        <argument
+            android:name="values"
+            app:argType="string[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </dialog>
 </navigation>
