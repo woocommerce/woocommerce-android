@@ -487,7 +487,7 @@ class MainActivity : AppUpgradeActivity(),
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
-    private fun enableToolbarExpansion(enable: Boolean) {
+    fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
         }

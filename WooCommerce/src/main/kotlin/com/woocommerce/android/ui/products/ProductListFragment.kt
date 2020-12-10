@@ -267,14 +267,14 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
-        expandMainToolbar(false, animate = true)
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
-        restoreMainToolbar()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
