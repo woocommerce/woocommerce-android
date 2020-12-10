@@ -96,6 +96,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         _binding = FragmentProductListBinding.bind(view)
         setupObservers(viewModel)
         setupResultHandlers()
+        setHasOptionsMenu(true)
 
         listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
