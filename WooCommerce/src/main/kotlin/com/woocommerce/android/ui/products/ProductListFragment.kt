@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -441,12 +442,13 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showAddProductButton(show: Boolean) {
-        fun showButton() = run { binding.addProductButton.isVisible = true }
-        fun hideButton() = run { binding.addProductButton.isVisible = false }
+        val addProductFab = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
+        fun showButton() = run { addProductFab.isVisible = true }
+        fun hideButton() = run { addProductFab.isVisible = false }
         when (show) {
             true -> {
                 showButton()
-                binding.addProductButton.setOnClickListener {
+                addProductFab.setOnClickListener {
                     viewModel.onAddProductButtonClicked()
                 }
             }
