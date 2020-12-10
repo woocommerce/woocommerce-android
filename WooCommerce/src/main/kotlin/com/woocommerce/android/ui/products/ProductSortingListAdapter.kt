@@ -1,17 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R.layout
+import com.woocommerce.android.databinding.ProductSortingListItemBinding
 import com.woocommerce.android.ui.products.ProductSortingListAdapter.ProductSortingViewHolder
 import com.woocommerce.android.ui.products.ProductSortingViewModel.SortingListItemUIModel
-import kotlinx.android.synthetic.main.product_sorting_list_item.view.*
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 class ProductSortingListAdapter(
@@ -27,8 +23,13 @@ class ProductSortingListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSortingViewHolder {
-        return ProductSortingViewHolder(LayoutInflater.from(parent.context)
-                .inflate(layout.product_sorting_list_item, parent, false))
+        return ProductSortingViewHolder(
+            ProductSortingListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ProductSortingViewHolder, position: Int) {
@@ -39,18 +40,16 @@ class ProductSortingListAdapter(
 
     override fun getItemCount() = options.size
 
-    class ProductSortingViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val txtSortingName: TextView = view.sortingItem_name
-        private val txtSortingSelection: ImageView = view.sortingItem_tick
-
+    class ProductSortingViewHolder(val viewBinding: ProductSortingListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(
             item: SortingListItemUIModel,
             onItemClicked: (option: ProductSorting) -> Unit,
             selectedOption: ProductSorting
         ) {
-            txtSortingName.text = view.context.getString(item.stringResource)
-            txtSortingSelection.isVisible = item.value == selectedOption
-            view.setOnClickListener {
+            viewBinding.sortingItemName.text = itemView.context.getString(item.stringResource)
+            viewBinding.sortingItemTick.isVisible = item.value == selectedOption
+            itemView.setOnClickListener {
                 onItemClicked(item.value)
             }
         }

@@ -2,31 +2,28 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FeatureWipNoticeBinding
 import com.woocommerce.android.util.WooAnimUtils
-import kotlinx.android.synthetic.main.feature_wip_notice.view.*
 
 class FeatureWIPNoticeCard @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.feature_wip_notice, this)
-    }
+    private val binding = FeatureWipNoticeBinding.inflate(LayoutInflater.from(ctx), this)
 
     private var isExpanded: Boolean
         set(value) {
-            feature_wip_viewMore.isChecked = value
+            binding.featureWipViewMore.isChecked = value
             if (value) {
-                WooAnimUtils.fadeIn(feature_wip_morePanel)
+                WooAnimUtils.fadeIn(binding.featureWipMorePanel)
             } else {
-                WooAnimUtils.fadeOut(feature_wip_morePanel)
+                WooAnimUtils.fadeOut(binding.featureWipMorePanel)
             }
         }
-        get() = feature_wip_viewMore.isChecked
+        get() = binding.featureWipViewMore.isChecked
 
     fun initView(
         title: String,
@@ -34,17 +31,18 @@ class FeatureWIPNoticeCard @JvmOverloads constructor(
         onGiveFeedbackClick: () -> Unit = {},
         onDismissClick: () -> Unit = {}
     ) {
-        feature_wip_viewMore.setOnCheckedChangeListener { _, isChecked ->
+        binding.featureWipViewMore.setOnCheckedChangeListener { _, isChecked ->
             isExpanded = isChecked
         }
 
         isExpanded = false
-        feature_wip_viewMore.textOn = title
-        feature_wip_viewMore.textOff = title
-        feature_wip_viewMore.text = title
-        feature_wip_message.text = message
 
-        btn_give_feedback.setOnClickListener { onGiveFeedbackClick() }
-        btn_dismiss.setOnClickListener { onDismissClick() }
+        binding.featureWipViewMore.textOn = title
+        binding.featureWipViewMore.textOff = title
+        binding.featureWipViewMore.text = title
+        binding.featureWipMessage.text = message
+
+        binding.btnGiveFeedback.setOnClickListener { onGiveFeedbackClick() }
+        binding.btnDismiss.setOnClickListener { onDismissClick() }
     }
 }

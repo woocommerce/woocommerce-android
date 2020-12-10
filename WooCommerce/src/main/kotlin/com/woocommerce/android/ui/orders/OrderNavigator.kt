@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentT
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
@@ -94,6 +95,11 @@ class OrderNavigator @Inject constructor() {
             is ViewShippingLabelFormatOptions -> {
                 val action = PrintShippingLabelFragmentDirections
                     .actionPrintShippingLabelFragmentToLabelFormatOptionsFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+            is StartShippingLabelCreationFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderIdentifier)
                 fragment.findNavController().navigateSafely(action)
             }
         }

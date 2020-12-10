@@ -1,17 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R.layout
+import com.woocommerce.android.databinding.ProductFilterOptionListItemBinding
 import com.woocommerce.android.extensions.areSameAs
-import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
-import kotlinx.android.synthetic.main.product_filter_option_list_item.view.*
+import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
 
 class ProductFilterOptionListAdapter(
     private val clickListener: OnProductFilterOptionClickListener
@@ -33,20 +29,19 @@ class ProductFilterOptionListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductFilterOptionViewHolder {
-        return ProductFilterOptionViewHolder(LayoutInflater.from(parent.context)
-                .inflate(layout.product_filter_option_list_item, parent, false))
+        return ProductFilterOptionViewHolder(
+            ProductFilterOptionListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ProductFilterOptionViewHolder, position: Int) {
-        val filter = filterList[position]
-        holder.txtFilterName.text = filter.filterOptionItemName
-
-        val isChecked = filter.isSelected
-        holder.selectedFilterItemRadioButton.isVisible = isChecked
-        holder.selectedFilterItemRadioButton.isChecked = isChecked
-
+        holder.bind(filterList[position])
         holder.itemView.setOnClickListener {
-            clickListener.onFilterOptionClick(filter)
+            clickListener.onFilterOptionClick(filterList[position])
         }
     }
 
@@ -57,8 +52,12 @@ class ProductFilterOptionListAdapter(
     private fun isSameList(newList: List<FilterListOptionItemUiModel>) =
         filterList.areSameAs(newList) { this.isSameFilterOption(it) }
 
-    class ProductFilterOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtFilterName: TextView = view.filterOptionItem_name
-        val selectedFilterItemRadioButton: RadioButton = view.filterOptionItem_tick
+    class ProductFilterOptionViewHolder(val viewBinding: ProductFilterOptionListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(filter: FilterListOptionItemUiModel) {
+            viewBinding.filterOptionItemName.text = filter.filterOptionItemName
+            viewBinding.filterOptionItemTick.isVisible = filter.isSelected
+            viewBinding.filterOptionItemTick.isChecked = filter.isSelected
+        }
     }
 }

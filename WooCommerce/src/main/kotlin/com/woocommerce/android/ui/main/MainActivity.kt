@@ -66,6 +66,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -391,6 +392,7 @@ class MainActivity : AppUpgradeActivity(),
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
+            binding.appBarLayout.elevation = 0f
             showCrossIcon = false
         } else {
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()

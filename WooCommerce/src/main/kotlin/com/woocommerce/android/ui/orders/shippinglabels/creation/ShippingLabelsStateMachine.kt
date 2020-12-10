@@ -149,7 +149,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressValidated> { event ->
                 val newData = data.copy(
                     originAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                    flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -168,7 +168,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.SuggestedAddressSelected> { event ->
                 val newData = data.copy(
                     originAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                    flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -184,7 +184,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressUsedAsIs> { event ->
                 val newData = data.copy(
                     originAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.SHIPPING_ADDRESS
+                    flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -194,7 +194,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressValidated> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                    flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -213,7 +213,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.SuggestedAddressSelected> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                    flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -229,7 +229,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.AddressUsedAsIs> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
-                    stepsDone = data.stepsDone + FlowStep.PACKAGING
+                    flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
@@ -237,28 +237,28 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.PackageSelection> {
             on<Event.PackagesSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.CUSTOMS)
+                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.CUSTOMS)
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
         state<State.CustomsDeclaration> {
             on<Event.CustomsFormFilledOut> {
-                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.CARRIER)
+                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.CARRIER)
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
         state<State.ShippingCarrierSelection> {
             on<Event.ShippingCarrierSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.PAYMENT)
+                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.PAYMENT)
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
         }
 
         state<State.PaymentSelection> {
             on<Event.PaymentSelected> {
-                val newData = data.copy(stepsDone = data.stepsDone + FlowStep.DONE)
+                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.DONE)
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
         }
@@ -297,7 +297,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     data class Data(
         val originAddress: Address,
         val shippingAddress: Address,
-        val stepsDone: Set<FlowStep>
+        val flowSteps: Set<FlowStep>
     )
 
     /**

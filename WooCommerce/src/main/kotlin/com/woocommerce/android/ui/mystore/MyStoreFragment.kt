@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
@@ -41,7 +39,7 @@ import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import javax.inject.Inject
 
-class MyStoreFragment : TopLevelFragment(),
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     MyStoreContract.View,
     MyStoreStatsListener {
     companion object {
@@ -98,12 +96,11 @@ class MyStoreFragment : TopLevelFragment(),
         super.onAttach(context)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentMyStoreBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentMyStoreBinding.bind(view)
+
         binding.myStoreRefreshLayout.setOnRefreshListener {
             // Track the user gesture
             AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
@@ -112,11 +109,6 @@ class MyStoreFragment : TopLevelFragment(),
             binding.myStoreRefreshLayout.isRefreshing = false
             refreshMyStoreStats(forced = true)
         }
-        return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         savedInstanceState?.let { bundle ->
             isRefreshPending = bundle.getBoolean(STATE_KEY_REFRESH_PENDING, false)

@@ -93,7 +93,7 @@ fun WCShippingLabelModel.WCShippingLabelRefundModel.toAppModel(): ShippingLabel.
  */
 fun List<ShippingLabel>.loadProducts(products: List<Order.Item>): List<ShippingLabel> {
     return this.map { shippingLabel ->
-        if (shippingLabel.productIds.isEmpty()) {
+        if (shippingLabel.productIds.isNullOrEmpty()) {
             shippingLabel.copy(
                 products = products.filter { it.name in shippingLabel.productNames }
             )

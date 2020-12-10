@@ -42,4 +42,5 @@ sealed class OrderNavigationTarget : Event() {
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()
     object ViewPrintShippingLabelInfo : OrderNavigationTarget()
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
+    data class StartShippingLabelCreationFlow(val orderIdentifier: String) : OrderNavigationTarget()
 }

@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -287,7 +287,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     private fun showOrderProducts(products: List<Order.Item>, currency: String) {
         products.whenNotNullNorEmpty {
             with(orderDetail_productList) {
-                show()
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,

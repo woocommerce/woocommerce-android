@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_focused="true"
+        android:drawable="@drawable/ic_menu_orders_list">
+    </item>
+
+    <item
+        android:id="@+id/selected"
+        android:state_selected="true"
+        android:drawable="@drawable/ic_menu_orders_list">
+    </item>
+
+    <item
+        android:id="@+id/unselected"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_menu_orders_list">
+    </item>
+
+    <transition
+        android:fromId="@id/unselected"
+        android:toId="@id/selected">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <animated-vector
+            android:drawable="@drawable/ic_menu_orders_list">
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="page_fold"
+                android:animation="@animator/ic_menu_orders_list_page_fold">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="line_bottom"
+                android:animation="@animator/ic_menu_orders_list_line_bottom">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="line_top"
+                android:animation="@animator/ic_menu_orders_list_line_top">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="page_tab"
+                android:animation="@animator/ic_menu_orders_list_page_tab">
+            </target>
+
+        </animated-vector>
+
+    </transition>
+
+</animated-selector>
