@@ -472,7 +472,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                     viewModel.onAddProductButtonClicked()
                 }
             }
-            else -> hideButton()
+            else -> {
+                hideButton()
+                addProductButton.setOnClickListener(null)
+            }
         }
     }
 
