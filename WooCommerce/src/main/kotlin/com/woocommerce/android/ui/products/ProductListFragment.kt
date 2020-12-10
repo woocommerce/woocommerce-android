@@ -451,6 +451,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showAddProductButton(show: Boolean) {
+        // note that the FAB is part of the main activity so it can be direct child of the CoordinatorLayout
         val addProductButton = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
 
         fun showButton() = run {
