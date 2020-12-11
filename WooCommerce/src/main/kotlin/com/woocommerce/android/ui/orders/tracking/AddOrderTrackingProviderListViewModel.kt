@@ -59,6 +59,7 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
         TrackingProviderListViewState = TrackingProviderListViewState.copy(showSkeleton = true)
         launch {
             val shipmentProviders = shipmentProvidersRepository.fetchOrderShipmentProviders(orderId)
+            TrackingProviderListViewState = TrackingProviderListViewState.copy(showSkeleton = false)
             when {
                 shipmentProviders == null -> {
                     triggerEvent(ShowSnackbar(R.string.order_shipment_tracking_provider_list_error_fetch_generic))
@@ -70,7 +71,6 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
                     AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
                     providersList = shipmentProviders
                     TrackingProviderListViewState = TrackingProviderListViewState.copy(
-                        showSkeleton = false,
                         providersList = shipmentProviders
                     )
                 }
