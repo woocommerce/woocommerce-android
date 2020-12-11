@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationUpdated
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -43,6 +44,8 @@ class VariationDetailRepository @Inject constructor(
 
     private var remoteProductId: Long = 0L
     private var remoteVariationId: Long = 0L
+
+    var lastUpdateVariationErrorType: ProductErrorType? = null
 
     init {
         dispatcher.register(this)
@@ -135,6 +138,7 @@ class VariationDetailRepository @Inject constructor(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
                         AnalyticsTracker.KEY_ERROR_DESC to event.error?.message))
+                lastUpdateVariationErrorType = event.error?.type
                 continuationUpdateVariation?.resume(false)
             } else {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_SUCCESS)
