@@ -39,11 +39,13 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<T>(key).observe(
+        saveState.getLiveData<T?>(key).observe(
             this.viewLifecycleOwner,
             Observer {
-                saveState.remove<T>(key)
-                handler(it)
+                it?.let {
+                    handler(it)
+                    saveState.set(key, null)
+                }
             }
         )
     }
