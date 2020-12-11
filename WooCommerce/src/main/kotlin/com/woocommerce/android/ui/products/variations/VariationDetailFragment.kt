@@ -166,12 +166,8 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             )
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            val updatedImage = if (it.isEmpty()) {
-                // Image was deleted. Create a placeholder image with ID 0
-                Image(0, "", "", Date())
-            } else {
-                it.first()
-            }
+            // If empty, the image was deleted. Create a placeholder image with ID 0
+            val updatedImage = it.firstOrNull() ?: Image(0, "", "", Date())
 
             viewModel.onVariationChanged(
                 image = updatedImage
