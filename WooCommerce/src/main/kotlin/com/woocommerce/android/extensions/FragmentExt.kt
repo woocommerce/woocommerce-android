@@ -38,7 +38,7 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
         findNavController().currentBackStackEntry
     }
 
-    findNavController().currentBackStackEntry?.savedStateHandle?.let { saveState ->
+    entry?.savedStateHandle?.let { saveState ->
         saveState.getLiveData<T>(key).observe(
             this.viewLifecycleOwner,
             Observer {
