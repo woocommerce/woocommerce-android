@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
-import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton

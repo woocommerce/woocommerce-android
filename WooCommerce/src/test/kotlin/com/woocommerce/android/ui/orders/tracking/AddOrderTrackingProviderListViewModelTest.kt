@@ -9,7 +9,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.model.OrderShipmentProvider
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineTestRule

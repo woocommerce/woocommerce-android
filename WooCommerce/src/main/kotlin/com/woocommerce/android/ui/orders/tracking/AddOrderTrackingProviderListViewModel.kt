@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TR
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_CUSTOM_PROVIDER_SELECTED
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.OrderShipmentProvider
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -20,9 +19,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
