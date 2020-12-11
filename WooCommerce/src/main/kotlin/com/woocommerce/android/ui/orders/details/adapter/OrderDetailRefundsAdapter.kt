@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.adapter
 
 import android.text.format.DateFormat
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
@@ -30,7 +31,9 @@ class OrderDetailRefundsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ViewHolder {
         return ViewHolder(
-            OrderDetailRefundPaymentItemBinding.bind(parent),
+            OrderDetailRefundPaymentItemBinding.inflate(
+                LayoutInflater.from(parent.context)
+            ),
             isCashPayment,
             paymentMethodTitle,
             formatCurrency)
