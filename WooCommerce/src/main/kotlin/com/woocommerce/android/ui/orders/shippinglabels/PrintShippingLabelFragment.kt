@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -80,7 +81,7 @@ class PrintShippingLabelFragment : BaseFragment() {
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {
-        handleResult<ShippingLabelPaperSize>(
+        handleDialogResult<ShippingLabelPaperSize>(
             ShippingLabelPaperSizeSelectorDialog.KEY_PAPER_SIZE_RESULT,
             R.id.printShippingLabelFragment
         ) {
