@@ -154,6 +154,11 @@ class AddOrderShipmentTrackingViewModel @AssistedInject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        orderDetailRepository.onCleanup()
+    }
+
     @Parcelize
     data class ViewState(
         val isSelectedProviderCustom: Boolean,
