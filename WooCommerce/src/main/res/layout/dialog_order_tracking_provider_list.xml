@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.woocommerce.android.ui.orders.AddOrderTrackingProviderListFragment">
+    tools:context="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"

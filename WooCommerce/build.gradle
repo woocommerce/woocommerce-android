@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "5.6-rc-2"
+            versionName "5.6-rc-5"
         }
-        versionCode 175
+        versionCode 178
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -225,7 +225,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:4.12"

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.tracking
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.base.BasePresenter

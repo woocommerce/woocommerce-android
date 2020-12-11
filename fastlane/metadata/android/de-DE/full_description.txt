@@ -1,18 +1,22 @@
-Betreibe deinen WooCommerce-Shop, egal wo du bist.
+Verwalte dein Business von unterwegs aus – mit der WooCommerce Mobile App. Erstelle Produkte, berarbeite Bestellungen und behalte wichtige Statistiken im Überblick – alles in Echtzeit.
 
-Verwalte Bestellungen, verfolge Verkäufe und überwache Shopaktivitäten mit Benachrichtigungen in Echtzeit.
+FÜGE PRODUKTE HINZU
+Erstelle, gruppiere und veröffentliche Produkte direkt über deine bevorzugten Android-Mobilgeräte. Lasse deiner Kreativität freien Lauf – wandle deine Ideen innerhalb weniger Sekunden in Produkte um oder speichere sie als Entwürfe für später.
 
-BESTELLUNGEN ANZEIGEN UND VERWALTEN
-Scrolle durch deine Bestellungen, filtere oder durchsuche sie. Tippe zum Anzeigen von Bestellinformationen wie Produkt(e), Wert, Kundendaten, Versanddetails und Hinweisen.
+ERHALTE BENACHRICHTIGUNGEN
+Verpasse keine Bestellungen oder Bewertungen. Aktiviere Echtzeitbenachrichtigungen und bleibe stets über alle Geschehnisse auf dem Laufenden. So kannst du dich ganz entspannt auf's Geldverdienen konzentrieren!
 
-DEINEN SHOP VERFOLGEN
-Erfahre, welche Produkte am beliebtesten sind. Überprüfe deine Gesamteinnahmen und lasse dir Bestellungen und Besucherdaten nach Woche, Monat und Jahr sortiert anzeigen.
+ZEIGE BESTELLUNGEN AN UND BEARBEITE SIE
+Scrolle durch die Zusammenfassungen oder Suche nach Kunden oder Bestellspezifika. Nutze die Detailansicht, um dir Einzelabrechnungen anzusehen, die Auftragsabwicklung zu starten oder den Bestellstatus zu ändern. Füge der Bestellung Notizen hinzu oder sende Kunden eine Follow-up-E-Mail.
 
-BESTELLBENACHRICHTIGUNGEN IN ECHTZEIT
-Erhalte Benachrichtigungen zu Shopaktivitäten wie neuen Bestellungen und Produktbewertungen.
+VERFOLGE DEINE STATISTIKEN NACH
+Erfahre auf einen Blick, welche Produkte besonders erfolgreich sind. Kontrolliere deine Gesamteinnahmen, die Anzahl der Bestellungen und die Besucherdaten pro Woche, Monat und Jahr. Wissen = Macht!
 
-WooCommerce bietet die flexibelste E-Commerce-Plattform zum Aufbau deines Online-Geschäfts. Sie ist mit WordPress erstellt und in die weltweit besten Content-Management-Tools integriert. Von Kaffee-Abos über Spanischkurse und Mitgliedschaften im Fitnessstudio bis hin zu komplexem E-Commerce auf Unternehmensniveau – erstelle jetzt einen neuen Shop unter WooCommerce.com/start und bring deine Idee auf den Markt.
+WECHSLE ZWISCHEN DEN STORES
+Wenn du mehr als ein Business hast, kannst du binnen weniger Sekunden nahtlos zwischen deinen Stores umschalten.
 
-Anforderungen: WooCommerce v3.5+, das Jetpack-Plugin
+WooCommerce ist die weltweit anpassbarste Open-Source E-Commerce-Plattform. Ganz gleich, ob du ein Business eröffnest, einen Onlineauftritt für ein bereits bestehendes Geschäft aufbaust oder Websites für Kunden designst: Mit WooCommerce bietet dein Store eine attraktive Mischung aus Inhalten und Commerce.
 
-Den Datenschutzhinweis für Benutzer in Kalifornien kannst du unter  https://automattic.com/privacy/#california-consumer-privacy-act-ccpa anzeigen.
+Anforderungen: WooCommerce Version 3.5 und höher; Jetpack-Plugin.
+
+Den Datenschutzhinweis für Benutzer in Kalifornien findest du unter https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

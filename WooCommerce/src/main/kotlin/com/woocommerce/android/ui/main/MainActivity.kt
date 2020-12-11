@@ -66,6 +66,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -486,7 +487,7 @@ class MainActivity : AppUpgradeActivity(),
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
-    private fun enableToolbarExpansion(enable: Boolean) {
+    fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
         }

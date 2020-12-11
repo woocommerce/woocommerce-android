@@ -26,6 +26,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.getNonRefundedShippingLabelProducts
 import com.woocommerce.android.model.hasNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
@@ -239,37 +240,13 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        if (networkStatus.isConnected()) {
-            val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
-            shipmentTrackings.add(0, shipmentTracking)
-            _shipmentTrackings.value = shipmentTrackings
-
-            triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
-            launch {
-                AnalyticsTracker.track(
-                    ORDER_TRACKING_ADD,
-                    mapOf(AnalyticsTracker.KEY_ID to order?.remoteId,
-                        AnalyticsTracker.KEY_STATUS to order?.status,
-                        AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
-                )
-
-                val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
-                    orderIdSet.id,
-                    orderIdSet.remoteOrderId,
-                    shipmentTracking.toDataModel(),
-                    shipmentTracking.isCustomProvider
-                )
-                if (!addedShipmentTracking) {
-                    triggerEvent(ShowSnackbar(string.order_shipment_tracking_error))
-                    shipmentTrackings.remove(shipmentTracking)
-                    _shipmentTrackings.value = shipmentTrackings
-                } else {
-                    _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-                }
-            }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        AnalyticsTracker.track(
+            ORDER_TRACKING_ADD,
+            mapOf(AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+        )
+        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
     }
 
     fun onShippingLabelRefunded() {
@@ -311,24 +288,9 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onNewOrderNoteAdded(orderNote: OrderNote) {
-        if (networkStatus.isConnected()) {
-            val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
-            orderNotes.add(0, orderNote)
-            _orderNotes.value = orderNotes
-
-            triggerEvent(ShowSnackbar(string.add_order_note_added))
-            launch {
-                if (!orderDetailRepository
-                        .addOrderNote(orderIdSet.id, orderIdSet.remoteOrderId, orderNote.toDataModel())
-                ) {
-                    triggerEvent(ShowSnackbar(string.add_order_note_error))
-                    orderNotes.remove(orderNote)
-                    _orderNotes.value = orderNotes
-                }
-            }
-        } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        val orderNotes = _orderNotes.value?.toMutableList() ?: mutableListOf()
+        orderNotes.add(0, orderNote)
+        _orderNotes.value = orderNotes
     }
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
@@ -504,14 +466,19 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private suspend fun loadOrderShippingLabels(viewState: ViewState): ViewState {
         orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
+            .loadProducts(order.items)
             .whenNotNullNorEmpty {
-                _shippingLabels.value = it.loadProducts(order.items)
+                _shippingLabels.value = it
+
+                // If there are some products not associated with any shipping labels (when shipping labels
+                // are refunded, for instance), the products card should be displayed with those products
+                _productList.value = it.getNonRefundedShippingLabelProducts()
 
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
                 return viewState.copy(
                     isShipmentTrackingAvailable = false,
-                    isProductListVisible = false,
+                    isProductListVisible = _productList.value?.isNotEmpty(),
                     areShippingLabelsVisible = true
                 )
             }
@@ -522,11 +489,15 @@ class OrderDetailViewModel @AssistedInject constructor(
             .whenNotNullNorEmpty {
                 _shippingLabels.value = it
 
+                // If there are some products not associated with any shipping labels (when shipping labels
+                // are refunded, for instance), the products card should be displayed with those products
+                _productList.value = it.getNonRefundedShippingLabelProducts()
+
                 // hide the shipment tracking section and the product list section if
                 // shipping labels are available for the order
                 return viewState.copy(
                     isShipmentTrackingAvailable = false,
-                    isProductListVisible = false,
+                    isProductListVisible = _productList.value?.isNotEmpty(),
                     areShippingLabelsVisible = true
                 )
             }

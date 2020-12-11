@@ -145,7 +145,7 @@
     </fragment>
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
-        android:name="com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment"
+        android:name="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment"
         tools:layout="@layout/fragment_add_shipment_tracking">
         <argument
             android:name="orderId"
