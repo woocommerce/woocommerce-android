@@ -45,6 +45,13 @@ class OrderShipmentProvidersRepository @Inject constructor(
 
     suspend fun fetchOrderShipmentProviders(orderIdentifier: OrderIdentifier): List<OrderShipmentProvider>? {
         continuationFetchTrackingProviders?.cancel()
+        // Check db first
+        val providersInDb = getShipmentProvidersFromDB()
+        if (providersInDb.isNotEmpty()) {
+            return providersInDb
+        }
+
+        // Fetch from API
         val order = orderStore.getOrderByIdentifier(orderIdentifier)
         if (order == null) {
             WooLog.e(
