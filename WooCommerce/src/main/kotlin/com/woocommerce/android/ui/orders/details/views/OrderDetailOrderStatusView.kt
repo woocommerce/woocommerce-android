@@ -41,7 +41,8 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
             order.number
         )
 
-        binding.orderStatusName.text = order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
+        binding.orderStatusName.text =
+            order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
     }
 
     private fun getTagView(orderStatus: OrderStatus): TagView {

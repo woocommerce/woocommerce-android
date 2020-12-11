@@ -228,7 +228,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), Naviga
     }
 
     private fun showMarkOrderCompleteButton(isVisible: Boolean) {
-        binding.orderDetailProductList.showMarkOrderCompleteButton(isVisible, viewModel::onMarkOrderCompleteButtonTapped)
+        binding.orderDetailProductList.showMarkOrderCompleteButton(
+            isVisible,
+            viewModel::onMarkOrderCompleteButtonTapped
+        )
     }
 
     private fun showShippingLabelButton(isVisible: Boolean) {

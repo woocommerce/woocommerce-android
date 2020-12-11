@@ -57,7 +57,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         // customer note
         if (order.customerNote.isNotEmpty()) {
             binding.customerInfoCustomerNoteSection.show()
-            binding.customerInfoCustomerNote.text = context.getString(R.string.orderdetail_customer_note, order.customerNote)
+            binding.customerInfoCustomerNote.text = context.getString(
+                R.string.orderdetail_customer_note,
+                order.customerNote
+            )
         } else {
             binding.customerInfoCustomerNoteSection.hide()
         }

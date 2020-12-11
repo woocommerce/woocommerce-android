@@ -46,7 +46,7 @@ class OrderDetailRefundsAdapter(
     override fun getItemCount(): Int = refundList.size
 
     class ViewHolder(
-        val viewBinding: OrderDetailRefundPaymentItemBinding,
+        private val viewBinding: OrderDetailRefundPaymentItemBinding,
         private val isCashPayment: Boolean,
         private val paymentMethodTitle: String,
         private val formatCurrency: (BigDecimal) -> String
