@@ -22,4 +22,5 @@ interface MainNavigationRouter {
     fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?)
     fun showFeedbackSurvey()
     fun showProductAddBottomSheet()
+    fun showSettingsScreen()
 }

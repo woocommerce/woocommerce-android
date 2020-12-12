@@ -5,8 +5,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -66,7 +64,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -231,22 +228,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun showProgressDialog(@StringRes stringId: Int) {
         hideProgressDialog()
         progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // don't show the options menu unless we're at the root
-        if (isAtNavigationRoot()) {
-            menuInflater.inflate(R.menu.menu_action_bar, menu)
-            return true
-        } else {
-            return false
-        }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        // settings icon only appears on the dashboard
-        menu?.findItem(R.id.menu_settings)?.isVisible = binding.bottomNav.currentPosition == MY_STORE
-        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onResume() {
@@ -517,23 +498,6 @@ class MainActivity : AppUpgradeActivity(),
         return (isDialogDestination && activeChildIsRoot) || isAtRoot
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            // User clicked the "up" button in the action bar
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            // User selected the settings menu option
-            R.id.menu_settings -> {
-                showSettingsScreen()
-                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -584,6 +548,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showSettingsScreen() {
+        AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }

@@ -23,7 +23,6 @@ interface MainContract {
         fun showLoginScreen()
         fun showSitePickerScreen()
         fun updateSelectedSite()
-        fun showSettingsScreen()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()
