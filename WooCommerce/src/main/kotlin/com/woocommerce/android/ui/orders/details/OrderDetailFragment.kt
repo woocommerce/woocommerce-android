@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -193,7 +194,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), Naviga
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
-        handleResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT) {
+        handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
             viewModel.onOrderStatusChanged(it)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
