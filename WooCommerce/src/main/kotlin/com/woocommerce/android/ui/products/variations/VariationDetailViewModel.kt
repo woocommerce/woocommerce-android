@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Date
 
@@ -226,7 +227,14 @@ class VariationDetailViewModel @AssistedInject constructor(
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
                 triggerEvent(ShowSnackbar(string.variation_detail_update_product_success))
             } else {
-                triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
+                if (
+                    variation.image?.id == 0L &&
+                    variationRepository.lastUpdateVariationErrorType == ProductErrorType.INVALID_VARIATION_IMAGE_ID
+                ) {
+                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_image_error))
+                } else {
+                    triggerEvent(ShowSnackbar(string.variation_detail_update_variation_error))
+                }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
