@@ -39,10 +39,16 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
 
     private val viewModel: AddOrderTrackingProviderListViewModel by viewModels { viewModelFactory }
 
-    private lateinit var providerListAdapter: AddOrderTrackingProviderListAdapter
+    private val providerListAdapter: AddOrderTrackingProviderListAdapter by lazy {
+        val countryName = StringUtils.getCountryByCountryCode(requireContext(), viewModel.countryCode)
+        AddOrderTrackingProviderListAdapter(
+            context,
+            countryName,
+            this
+        )
+    }
 
     private var searchView: SearchView? = null
-    private var searchQuery: String = ""
 
     private val skeletonView = SkeletonView()
 
@@ -61,11 +67,15 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
-        val searchMenuItem = menu?.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as? SearchView?
+        // We don't use the menu R.menu.menu_search as it's being used in [OrderListFragment]
+        // and it's onPrepareOptionsMenu unassign our listeners after screen rotation
+        inflater.inflate(R.menu.menu_shipment_tracking_providers, menu)
+        val searchMenuItem = menu.findItem(R.id.menu_shipment_providers_search)
+        searchView = searchMenuItem!!.actionView as SearchView
         searchView?.let {
-            it.setQuery(viewModel.TrackingProviderListViewStateData.liveData.value?.query ?: "", false)
+            val currentQuery = viewModel.TrackingProviderListViewStateData.liveData.value?.query ?: ""
+            it.setQuery(currentQuery, false)
+            if (currentQuery.isNotEmpty()) it.isIconified = false
             it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
             it.setOnQueryTextListener(this@AddOrderTrackingProviderListFragment)
         }
@@ -107,12 +117,6 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
     }
 
     private fun initUi(binding: DialogOrderTrackingProviderListBinding) {
-        val countryName = StringUtils.getCountryByCountryCode(requireContext(), viewModel.countryCode)
-        providerListAdapter = AddOrderTrackingProviderListAdapter(
-            context,
-            countryName,
-            this
-        )
         providerListAdapter.selectedCarrierName = viewModel.currentSelectedProvider
 
         binding.providerList.apply {
