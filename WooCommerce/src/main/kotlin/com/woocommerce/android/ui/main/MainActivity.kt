@@ -87,6 +87,7 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
+        private const val KEY_IS_TOOLBAR_EXPANDED = "is-toolbar-expanded"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
 
@@ -256,6 +257,7 @@ class MainActivity : AppUpgradeActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        outState.putBoolean(KEY_IS_TOOLBAR_EXPANDED, isToolbarExpanded)
         super.onSaveInstanceState(outState)
     }
 
@@ -268,6 +270,8 @@ class MainActivity : AppUpgradeActivity(),
             if (count > 0) {
                 showOrderBadge(count)
             }
+
+            isToolbarExpanded = it.getBoolean(KEY_IS_TOOLBAR_EXPANDED)
         }
     }
 
@@ -457,9 +461,9 @@ class MainActivity : AppUpgradeActivity(),
 
         if (!isFullScreenFragment) {
             // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-            if (isAtRoot && isToolbarExpanded) {
-                expandToolbar(expand = true, animate = true)
-            } else if (!isAtRoot) {
+            if (isAtRoot) {
+                expandToolbar(expand = isToolbarExpanded, animate = false)
+            } else {
                 expandToolbar(expand = false, animate = false)
             }
 
