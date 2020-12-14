@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.mystore
 
 import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.core.view.children
@@ -98,6 +101,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -223,6 +227,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         presenter.dropView()
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_action_bar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                (activity as? MainNavigationRouter)?.showSettingsScreen()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
