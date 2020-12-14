@@ -1,3 +1,0 @@
-5.5:
-Tu hai chiesto e noi abbiamo ascoltato. Ora puoi creare prodotti semplici, raggruppati ed esterni direttamente dai tuoi dispositivi mobili Android preferiti. Trasforma le idee in prodotti anche quando sei lontano dal tuo desktop.
-Altre correzioni: abbiamo corretto un bug che influenzava i nomi delle varianti dei prodotti quando l'opzione di variazione era "aperta" e un errore di battitura sulla schermata dell'etichetta di spedizione.

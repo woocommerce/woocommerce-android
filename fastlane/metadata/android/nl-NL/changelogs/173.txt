@@ -1,3 +1,0 @@
-5.5:
-Jullie vroegen, wij antwoordden! Je kan nu rechtstreeks vanaf je favoriete mobiele Android-apparaten eenvoudige, gegroepeerde en externe producten aanmaken. Maak meteen werk van je ingevingen, zelfs als je onderweg bent.
-Overig: We hebben een bug opgelost m.b.t. namen van productvariaties als de variatie op 'open' stond, evenals een typfout op het scherm met verzendlabels.

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-24 14:54:05+0000
+Translation-Revision-Date: 2020-12-01 13:42:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Validera</string>
+    <string name="product_images_drag_and_drop_description">Dra och släpp för att ändra ordning på foton</string>
     <string name="product_downloadable_files_download_settings">Inställningar för nedladdning</string>
     <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
     <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
@@ -41,6 +43,7 @@ Language: sv_SE
     <string name="print_shipping_label_info_step_4">Du kan behöva &lt;b>konfigurera Wi-Fi-utskrift direkt på själva skrivaren.&lt;/b> Kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
     <string name="print_shipping_label_info_step_3">Du kan välja din enhets &lt;b>standardutskriftstjänst&lt;/b> eller installera din &lt;b>skrivares varumärkesapp&lt;/b> (detta bör visas som ett rekommenderat alternativ)</string>
     <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till &lt;b>samma Wi-Fi-nätverk&lt;/b></string>
+    <string name="settings_enable_product_adding_teaser_message">Testa det nya enkla, länkade och grupperade produktskapandet medan vi gör oss redo för lansering</string>
     <string name="bottom_sheet_linked_products_desc">Öka försäljningen med merförsäljning och korsförsäljning</string>
     <string name="edit_products_button">Redigera produkter</string>
     <string name="add_products_button">Lägg till produkter</string>
@@ -790,7 +793,6 @@ Language: sv_SE
     <string name="order_shipment_tracking_delete_error">Fel vid borttagning av spårning</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Borttagning spårning av försändelse</string>
     <string name="order_shipment_tracking_add_button">Lägg till spårning</string>
-    <string name="order_shipment_tracking_add_label">Valfri spårningsinformation</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Spåra eller ta bort spårning av försändelse</string>
     <string name="orderdetail_delete_tracking">Ta bort spårning</string>
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
@@ -849,7 +851,6 @@ Language: sv_SE
     <string name="product_name">Rubrik</string>
     <string name="product_detail_fetch_product_error">Produkten kunde inte hämtas</string>
     <string name="add_order_note_invalid_order">Ogiltig order</string>
-    <string name="order_shipment_tracking_shipped_date">Skickad den %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Kopiera spårningsnummer till Urklipp</string>
     <string name="order_shipment_tracking_section_cd">Spårning av försändelse</string>
     <string name="order_shipment_tracking_button">Spåra paket</string>
@@ -909,7 +910,6 @@ Language: sv_SE
     <string name="review_moderation_undo">Recension markerad som %1$s</string>
     <string name="add_order_note_sublabel">Om detta inaktiveras kommer noteringen att vara privat</string>
     <string name="order_error_fetch_generic">Det gick inte att hämta ordern</string>
-    <string name="dashboard_fulfill_orders_msg">Granska, förbered och skicka dessa väntande ordrar</string>
     <string name="back">Tillbaka</string>
     <string name="notification_channel_review_title">Produktrecensionsaviseringar</string>
     <string name="notification_channel_order_title">Ny order-aviseringar</string>
@@ -1084,13 +1084,11 @@ Language: sv_SE
     <string name="order_error_update_general">Det gick inte att ändra ordern</string>
     <string name="order_error_fetch_notes_generic">Det gick inte att hämta ordernoteringar</string>
     <string name="order_fulfill_marked_complete">Ordern har markerats som slutförd</string>
-    <string name="order_fulfill_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_addnote_contentdesc">Lägg till en ordernotering</string>
     <string name="orderdetail_add_note">Lägg till en notering</string>
     <string name="orderdetail_hide_billing">Dölj fakturering</string>
     <string name="orderdetail_show_billing">Visa fakturering</string>
     <string name="orderdetail_payment_cleared">Betalning godkänd</string>
-    <string name="orderdetail_order_fulfillment">Fullfölj order med nummer %s</string>
     <string name="orderdetail_order_notes">Ordernoteringar</string>
     <string name="orderdetail_note_private">Privat</string>
     <string name="orderdetail_note_hint">Skapa en ordernotering</string>
@@ -1115,8 +1113,6 @@ Language: sv_SE
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Nummer %s</string>
     <string name="orderlist_no_orders">Inga ordrar</string>
-    <string name="dashboard_fulfill_order_title_multiple">Du har %1$d ordrar att fullfölja</string>
-    <string name="dashboard_fulfill_order_title_single">Du har 1 order att fullfölja</string>
     <string name="dashboard_action_view_orders">Visa ordrar</string>
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
