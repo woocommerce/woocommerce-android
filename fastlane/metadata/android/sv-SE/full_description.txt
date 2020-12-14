@@ -1,17 +1,21 @@
-Kör din WooCommerce-butik var du än är.
+Hantera ditt företag i farten med WooCommerce-mobilappen. Skapa produkter, behandla beställningar och få viktig statistik i realtid.
 
-Hantera ordrar, spåra försäljning och övervaka butiksaktivitet med ordermeddelanden i realtid.
+LÄGG TILL PRODUKTER
+Skapa, gruppera och publicera produkter direkt från dina mobila Android-enheter. Fånga kreativiteten i ögonblicket – förvandla dina idéer till produkter på några sekunder, eller spara dem som utkast för senare användning.
 
-Visa och hantera beställningar
-Bläddra igenom, filtrera eller sök efter specifika beställningar. Nudda för att se orderinformation – inklusive produkter, värde, kunddata, fraktuppgifter och noteringar.
+FÅ NOTISER
+Missa aldrig en beställning eller en recension. Håll rädslan för att missa något stången genom att aktivera notiser i realtid – du kommer att höra det där beroendeframkallande "ka-ching"-ljudet vid varje ny försäljning!
 
-Håll koll på din butik
-Se vilka produkter som presterar bäst. Kontrollera dina totala intäkter och se data om ordrar och besökare sorterat enligt vecka, månad och år.
+VISA OCH ÄNDRA BESTÄLLNINGAR
+Bläddra bland sammanfattningarna, eller sök baserat på kund- eller beställningsdetaljer. Tryck på detaljerna för att se specificerad fakturering, börja behandla beställningen eller ändra beställningens status. Lägg till anteckningar i beställningen eller skicka ett uppföljningsmeddelande direkt till kunden.
 
-Beställningsaviseringar i realtid
-Få meddelanden om butiksaktivitet – inklusive nya beställningar och produktrecensioner.
+SPÅRA DIN STATISTIK
+Se en överblick av vilka produkter som presterar bäst. Håll koll på dina totala intäkter, antalet beställningar och besökardata per vecka, månad och år. Kunskap = makt!
 
-WooCommerce är den mest anpassningsbara e-handelsplattformen för att skapa ditt företag online. Den är byggd på WordPress och därmed integrerad med världens bästa verktyg för innehållshantering. Från prenumerationer på kaffe till spanskalektioner och gymmedlemskap till komplex e-handel på företagsnivå – besök WooCommerce.com/start för att starta en ny butik och skapa verklighet av din idé.
+VÄXLA MELLAN BUTIKER
+Om du har mer än en butik kan du växla sömlöst mellan dem på några sekunder.
+
+WooCommerce är världens mest anpassningsbara e-handelsplattform med öppen källkod. Oavsett om du startar en verksamhet, tar din befintliga butik online eller om du utvecklar webbplatser åt kunder, använd WooCommerce så får du en butik som har en överlägsen kombination av innehåll och handel.
 
 Förhandskrav: WooCommerce v3.5+, Jetpack-tillägget.
 

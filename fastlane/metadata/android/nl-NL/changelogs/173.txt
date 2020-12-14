@@ -1,4 +1,0 @@
-5.5:
-Producten: Je kan nu een eenvoudige, gegroepeerde en externe producten toevoegen en als concept opslaan. Binnenkort komen er nog meer nieuwe functies voor je beschikbaar!
-
-Overig: We hebben een bug opgelost m.b.t. namen van productvariaties als de variatie op 'open' stond, en een typfout op het scherm met verzendlabels.

@@ -1,4 +1,0 @@
-5.5:
-Produkte: Du kannst jetzt auch ein einfaches, gruppiertes oder externes Produkt hinzufügen und es als Entwurf speichern. Bald gibt es noch mehr neue Funktionen für dich!
-
-Weitere Fehlerbehebungen: Wir haben einen Fehler behoben, der negative Auswirkungen auf die Produktvariantennamen hatte, wenn die Variante auf „offen“ stand. Außerdem haben wir den Rechtschreibfehler auf dem Versandetikett korrigiert.
