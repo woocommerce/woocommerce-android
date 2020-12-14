@@ -16,6 +16,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddShipmentTrackingBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
@@ -23,6 +24,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.OrderNavigationTarget
+import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -37,9 +40,7 @@ import java.util.Calendar
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
-class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_shipment_tracking),
-    AddOrderTrackingProviderActionListener,
-    BackPressListener {
+class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
@@ -47,12 +48,12 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var navigator: OrderNavigator
 
     private val viewModel: AddOrderShipmentTrackingViewModel by viewModels { viewModelFactory }
 
     private var isSelectedProviderCustom = false
     private var dateShippedPickerDialog: DatePickerDialog? = null
-    private var providerListPickerDialog: AddOrderTrackingProviderListFragment? = null
     private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,6 +124,7 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is OrderNavigationTarget -> navigator.navigate(this, event)
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_ADD_SHIPMENT_TRACKING_RESULT, event.data)
@@ -134,17 +136,15 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
                 else -> event.isHandled = false
             }
         }
+
+        handleResult<Carrier>(AddOrderTrackingProviderListFragment.SHIPMENT_TRACKING_PROVIDER_RESULT) {
+            viewModel.onCarrierSelected(it)
+        }
     }
 
     private fun initUi(binding: FragmentAddShipmentTrackingBinding) {
         binding.carrier.setOnClickListener {
-            providerListPickerDialog = AddOrderTrackingProviderListFragment
-                .newInstance(
-                    listener = this,
-                    selectedProviderText = binding.carrier.text.toString(),
-                    orderIdentifier = viewModel.orderId
-                )
-                .also { it.show(parentFragmentManager, AddOrderTrackingProviderListFragment.TAG) }
+            viewModel.onCarrierClicked()
         }
 
         binding.date.setOnClickListener {
@@ -181,8 +181,6 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
         dateShippedPickerDialog?.dismiss()
         dateShippedPickerDialog = null
 
-        providerListPickerDialog?.dismiss()
-        providerListPickerDialog = null
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
@@ -212,17 +210,6 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonPressed()
-    }
-
-    override fun onTrackingProviderSelected(selectedCarrierName: String) {
-        isSelectedProviderCustom = selectedCarrierName ==
-            getString(R.string.order_shipment_tracking_custom_provider_section_name)
-
-        val carrier = Carrier(
-            name = if (isSelectedProviderCustom) "" else selectedCarrierName,
-            isCustom = isSelectedProviderCustom
-        )
-        viewModel.onCarrierSelected(carrier)
     }
 
     private fun showCustomProviderFields(binding: FragmentAddShipmentTrackingBinding) {

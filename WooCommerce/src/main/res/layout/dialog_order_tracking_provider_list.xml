@@ -2,22 +2,10 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/snack_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <include
-            layout="@layout/view_toolbar"
-            android:id="@+id/toolbar"/>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <!--
         This container is necessary for displaying the loading skeleton
     -->
@@ -28,7 +16,7 @@
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/addTrackingProviderList"
+            android:id="@+id/providerList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/dialog_order_tracking_provider_list_item"
