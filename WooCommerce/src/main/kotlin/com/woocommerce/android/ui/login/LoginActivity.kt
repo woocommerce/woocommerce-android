@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -661,5 +662,9 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
         showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
+    }
+
+    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload?) {
+        TODO("Not yet implemented")
     }
 }
