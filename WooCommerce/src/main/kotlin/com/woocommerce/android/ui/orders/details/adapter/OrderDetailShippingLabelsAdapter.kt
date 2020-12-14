@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
-import com.woocommerce.android.databinding.OrderDetailShippingLabelListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import kotlinx.android.synthetic.main.order_detail_shipping_label_list_item.view.*
 import java.math.BigDecimal
 
 class OrderDetailShippingLabelsAdapter(
@@ -50,12 +50,7 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ShippingLabelsViewHolder {
         return ShippingLabelsViewHolder(
-            OrderDetailShippingLabelListItemBinding.inflate(LayoutInflater.from(parent.context)),
-            viewPool,
-            productImageMap,
-            formatCurrencyForDisplay,
-            listener,
-            productClickListener
+            parent, viewPool, productImageMap, formatCurrencyForDisplay, listener, productClickListener
         )
     }
 
@@ -66,19 +61,19 @@ class OrderDetailShippingLabelsAdapter(
     override fun getItemCount(): Int = shippingLabels.size
 
     class ShippingLabelsViewHolder(
-        private val viewBinding: OrderDetailShippingLabelListItemBinding,
+        parent: ViewGroup,
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
     ) : RecyclerView.ViewHolder(
-        viewBinding.root
+        LayoutInflater.from(parent.context).inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
     ) {
         fun bind(shippingLabel: ShippingLabel) {
             // display product list if product list is not empty
             if (shippingLabel.products.isNotEmpty()) {
-                with(viewBinding.shippingLabelListProducts) {
+                with(itemView.shippingLabelList_products) {
                     layoutManager = LinearLayoutManager(context)
                     adapter = OrderDetailProductListAdapter(
                         shippingLabel.products,
@@ -102,19 +97,20 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             if (shippingLabel.id == 0L) {
-                viewBinding.shippingLabelItemTrackingNumber.isVisible = false
-                viewBinding.shippingLabelItemMorePanel.isVisible = false
-                viewBinding.shippingLabelListLblPackage.text =
-                    itemView.context.getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+                itemView.shippingLabelItem_trackingNumber.isVisible = false
+                itemView.shippingLabelItem_morePanel.isVisible = false
+                with(itemView.shippingLabelList_lblPackage) {
+                    text = context.getString(R.string.orderdetail_shipping_label_unpackaged_products_header)
+                }
                 return
             }
 
             // display tracking number details if shipping label is not refunded
             val isRefunded = shippingLabel.refund == null
-            viewBinding.shippingLabelListBtnMenu.isVisible = isRefunded
-            viewBinding.shippingLabelListPrintBtn.isVisible = isRefunded
-            viewBinding.shippingLabelListProducts.isVisible = isRefunded
-            with(viewBinding.shippingLabelItemTrackingNumber) {
+            itemView.shippingLabelList_btnMenu.isVisible = isRefunded
+            itemView.shippingLabelList_printBtn.isVisible = isRefunded
+            itemView.shippingLabelList_products.isVisible = isRefunded
+            with(itemView.shippingLabelItem_trackingNumber) {
                 if (shippingLabel.refund != null) {
                     setShippingLabelTitle(
                         context.getString(
@@ -132,7 +128,7 @@ class OrderDetailShippingLabelsAdapter(
                         R.string.order_shipment_tracking_number_label
                     ))
                     setShippingLabelValue(shippingLabel.trackingNumber)
-                    viewBinding.shippingLabelListBtnMenu.setOnClickListener {
+                    itemView.shippingLabelList_btnMenu.setOnClickListener {
                         showRefundPopup(shippingLabel, listener)
                     }
 
@@ -147,32 +143,32 @@ class OrderDetailShippingLabelsAdapter(
                         }
                     } else showTrackingItemButton(false)
 
-                    viewBinding.shippingLabelListPrintBtn.setOnClickListener {
+                    itemView.shippingLabelList_printBtn.setOnClickListener {
                         listener.onPrintShippingLabelClicked(shippingLabel)
                     }
                 }
             }
 
             // click on view more details section
-            viewBinding.shippingLabelItemViewMore.setOnClickListener {
-                val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
+            itemView.shippingLabelItem_viewMore.setOnClickListener {
+                val isChecked = itemView.shippingLabelItem_viewMoreButtonImage.rotation == 0F
                 if (isChecked) {
-                    viewBinding.shippingLabelItemMorePanel.expand()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                    itemView.shippingLabelItem_morePanel.expand()
+                    itemView.shippingLabelItem_viewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
+                    with(itemView.shippingLabelItem_viewMoreButtonTitle) {
                         text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
                     }
                 } else {
-                    viewBinding.shippingLabelItemMorePanel.collapse()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                    itemView.shippingLabelItem_morePanel.collapse()
+                    itemView.shippingLabelItem_viewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                    with(itemView.shippingLabelItem_viewMoreButtonTitle) {
                         text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
                     }
                 }
             }
 
             // Shipping label header
-            with(viewBinding.shippingLabelListLblPackage) {
+            with(itemView.shippingLabelList_lblPackage) {
                 text = context.getString(
                     R.string.orderdetail_shipping_label_item_header,
                     adapterPosition + 1
@@ -181,7 +177,7 @@ class OrderDetailShippingLabelsAdapter(
 
             // display origin address
             shippingLabel.originAddress?.let {
-                viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
+                itemView.shippingLabelItem_shipFrom.setShippingLabelValue(
                     it.getFullAddress(
                         it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
                     )
@@ -190,7 +186,7 @@ class OrderDetailShippingLabelsAdapter(
 
             // display destination address
             shippingLabel.destinationAddress?.let {
-                viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
+                itemView.shippingLabelItem_shipTo.setShippingLabelValue(
                     it.getFullAddress(
                         it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
                     )
@@ -198,10 +194,10 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             // Shipping label package info
-            with(viewBinding.shippingLabelItemPackageInfo) { setShippingLabelValue(shippingLabel.packageName) }
+            with(itemView.shippingLabelItem_packageInfo) { setShippingLabelValue(shippingLabel.packageName) }
 
             // Shipping label carrier info
-            with(viewBinding.shippingLabelItemCarrierInfo) {
+            with(itemView.shippingLabelItem_carrierInfo) {
                 setShippingLabelValue(
                     context.getString(
                         R.string.orderdetail_shipping_label_carrier_info,
@@ -216,7 +212,7 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel: ShippingLabel,
             listener: OnShippingLabelClickListener
         ) {
-            val popup = PopupMenu(itemView.context, viewBinding.shippingLabelListBtnMenu)
+            val popup = PopupMenu(itemView.context, itemView.shippingLabelList_btnMenu)
             popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
 
             popup.menu.findItem(R.id.menu_refund)?.setOnMenuItemClickListener {
