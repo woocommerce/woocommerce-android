@@ -15,10 +15,12 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippin
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -59,6 +61,13 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToAddOrderShipmentTrackingFragment(
                         target.orderIdentifier, target.orderTrackingProvider, target.isCustomProvider
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is ViewShipmentTrackingProviders -> {
+                val action = AddOrderShipmentTrackingFragmentDirections
+                    .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
+                        target.orderIdentifier, target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }

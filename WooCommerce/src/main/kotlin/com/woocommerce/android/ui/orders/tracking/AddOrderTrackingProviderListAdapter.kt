@@ -2,27 +2,25 @@ package com.woocommerce.android.ui.orders.tracking
 
 import android.content.Context
 import android.view.View
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_header.view.*
 import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.view.*
-import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 
 class AddOrderTrackingProviderListAdapter(
     private val context: Context?,
     private val storeCountry: String?,
     private val listener: OnProviderClickListener
-) : SectionedRecyclerViewAdapter(), Filterable {
-    private var providerList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
-    private var providerSearchList: ArrayList<WCOrderShipmentProviderModel> = ArrayList()
+) : SectionedRecyclerViewAdapter() {
+    private var providerList: ArrayList<OrderShipmentProvider> = ArrayList()
+    private var providerSearchList: ArrayList<OrderShipmentProvider> = ArrayList()
 
     var selectedCarrierName: String = ""
         set(value) {
@@ -33,10 +31,10 @@ class AddOrderTrackingProviderListAdapter(
         }
 
     interface OnProviderClickListener {
-        fun onProviderClick(providerName: String)
+        fun onProviderClick(provider: OrderShipmentProvider)
     }
 
-    fun setProviders(providers: List<WCOrderShipmentProviderModel>) {
+    fun setProviders(providers: List<OrderShipmentProvider>) {
         updateAdapter(providers)
         providerList.clear()
         providerList.addAll(providers)
@@ -68,12 +66,12 @@ class AddOrderTrackingProviderListAdapter(
         return 0
     }
 
-    private fun updateAdapter(providers: List<WCOrderShipmentProviderModel>) {
+    private fun updateAdapter(providers: List<OrderShipmentProvider>) {
         // clear all the current data from the adapter
         removeAllSections()
 
         /*
-         * Build a list of [WCOrderShipmentProviderModel] for each country section.
+         * Build a list of [OrderShipmentProvider] for each country section.
          * Order of provider list should be:
          * 1. Store country
          * 2. Custom
@@ -85,9 +83,9 @@ class AddOrderTrackingProviderListAdapter(
             .groupBy { it.country }
             .mapValues { entry -> entry.value.map { it } }
 
-        val finalMap = mutableMapOf<String, List<WCOrderShipmentProviderModel>>()
-        countryProvidersMap[storeCountry]?.let { wcOrderShipmentProviderModels ->
-            storeCountry?.let { finalMap.put(it, wcOrderShipmentProviderModels) }
+        val finalMap = mutableMapOf<String, List<OrderShipmentProvider>>()
+        countryProvidersMap[storeCountry]?.let { OrderShipmentProviders ->
+            storeCountry?.let { finalMap.put(it, OrderShipmentProviders) }
         }
 
         /*
@@ -107,10 +105,12 @@ class AddOrderTrackingProviderListAdapter(
      */
     private fun getCustomProviderSection(): ProviderListSection? {
         context?.let {
-            val customShipmentProviderModel: WCOrderShipmentProviderModel =
-                WCOrderShipmentProviderModel().apply {
-                    carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name)
-                }
+            val customShipmentProviderModel: OrderShipmentProvider =
+                OrderShipmentProvider(
+                    carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name),
+                    carrierLink = "",
+                    country = ""
+                )
             return ProviderListSection(
                 it.getString(R.string.order_shipment_tracking_custom_provider_section_title),
                 listOf(customShipmentProviderModel)
@@ -119,42 +119,14 @@ class AddOrderTrackingProviderListAdapter(
         return null
     }
 
-    override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString()
-                providerList = if (charString.isEmpty()) {
-                    providerSearchList
-                } else {
-                    val filteredList = ArrayList<WCOrderShipmentProviderModel>()
-                    for (row in providerSearchList) {
-                        if (row.carrierName.contains(charString) ||
-                            row.country.contains(charString) ||
-                            row.carrierLink.contains(charString)) {
-                            filteredList.add(row)
-                        }
-                    }
-                    filteredList
-                }
-                val filterResults = FilterResults()
-                filterResults.values = providerList
-                return filterResults
-            }
-            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                providerList = filterResults.values as ArrayList<WCOrderShipmentProviderModel>
-                updateAdapter(providerList)
-            }
-        }
-    }
-
     /**
-     * Custom class represents a single [WCOrderShipmentProviderModel.country]
-     * and it's assigned list of [WCOrderShipmentProviderModel].
+     * Custom class represents a single [OrderShipmentProvider.country]
+     * and it's assigned list of [OrderShipmentProvider].
      * Responsible for providing and populating the header and item view holders.
      */
     private inner class ProviderListSection(
         val country: String,
-        val list: List<WCOrderShipmentProviderModel>
+        val list: List<OrderShipmentProvider>
     ) : StatelessSection(
         SectionParameters.Builder(R.layout.dialog_order_tracking_provider_list_item)
             .headerResourceId(R.layout.dialog_order_tracking_provider_list_header)
@@ -171,16 +143,13 @@ class AddOrderTrackingProviderListAdapter(
             val itemHolder = holder as ItemViewHolder
 
             itemHolder.providerName.text = provider.carrierName
-            itemHolder.rootView.tag = provider
 
             val isChecked = provider.carrierName == selectedCarrierName
             itemHolder.selectedProviderRadioButton.isVisible = isChecked
             itemHolder.selectedProviderRadioButton.isChecked = isChecked
 
             itemHolder.rootView.setOnClickListener {
-                val providerItem = it.tag as WCOrderShipmentProviderModel
-                selectedCarrierName = providerItem.carrierName
-                listener.onProviderClick(selectedCarrierName)
+                listener.onProviderClick(provider)
             }
         }
 
