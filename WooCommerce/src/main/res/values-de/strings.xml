@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 09:54:05+0000
+Translation-Revision-Date: 2020-12-10 17:54:57+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Bestätigen</string>
+    <string name="product_images_drag_and_drop_description">Nutze Drag-and-Drop zum Umsortieren der Fotos</string>
     <string name="product_downloadable_files_download_settings">Download-Einstellungen</string>
     <string name="product_downloadable_files_name_invalid">Bitte gib einen gültigen Namen ein</string>
     <string name="product_downloadable_files_add_manually">Gib eine Datei-URL ein</string>
@@ -52,7 +54,7 @@ Language: de
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="my_store_stats_availability_contact_us">Kontaktiere uns</string>
     <string name="my_store_stats_availability_description">Achte darauf, dass auf deiner Website die neueste Version von WooComerce ausgeführt wird und WooCommerce Admin aktiviert ist.\n\nBrauchst du noch Hilfe? %1$s</string>
-    <string name="my_store_stats_availability_title">Die Analysen deines\n Stores können nicht angezeigt werden.</string>
+    <string name="my_store_stats_availability_title">Die Analysen deines\n Shops können nicht angezeigt werden.</string>
     <string name="login_get_link_by_email">Anmeldelink per E-Mail erhalten</string>
     <string name="email_not_registered_wpcom">Hmm, wir können kein WordPress.com-Konto finden, das mit dieser E-Mail-Adresse verknüpft ist.</string>
     <string name="settings_enable_product_adding_teaser_title">Produkte erstellen</string>
@@ -85,7 +87,7 @@ Language: de
     <string name="shipping_label_print_disclaimer">Wenn du das Etikett bereits auf einem Paket verwendet hast, ist das erneute Ausdrucken und Verwenden ein Verstoß gegen unsere Geschäftsbedingungen.</string>
     <string name="shipping_label_print_error_message">Sollte der Ausdruck beim Kauf des Etiketts fehlerhaft sein, kannst du es erneut ausdrucken.</string>
     <string name="order_begin_fulfillment">Bestellung als abgeschlossen markieren</string>
-    <string name="orderdetail_shipping_label_wip_message">Wir arbeiten daran, es dir einfacher zu machen, Versandetiketten direkt über den Gerät zu drucken! Vorerst haben wir in deiner Store-Administration mit WooCommerce Shipping Versandetiketten für diese Bestellung erstellt. Du kannst diese hier in deinen Bestelldetails drucken.</string>
+    <string name="orderdetail_shipping_label_wip_message">Wir arbeiten daran, es dir einfacher zu machen, Versandetiketten direkt über den Gerät zu drucken! Vorerst haben wir in deiner Shop-Administration mit WooCommerce Shipping Versandetiketten für diese Bestellung erstellt. Du kannst diese hier in deinen Bestelldetails drucken.</string>
     <string name="orderdetail_shipping_label_wip_title">Drucke Versandetiketten von deinem Gerät!</string>
     <string name="orderdetail_shipping_label_reprint">Versandetikett erneut drucken</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
@@ -142,10 +144,10 @@ Language: de
     <string name="product_add_photo">Foto hinzufügen</string>
     <string name="variation_detail_image_add">Bild für Variante hinzufügen</string>
     <string name="login_jetpack_view_instructions">Installieren und Verbinden von Jetpack</string>
-    <string name="login_jetpack_required_text">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin in deinem Store verbunden sein.</string>
+    <string name="login_jetpack_required_text">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin in deinem Shop verbunden sein.</string>
     <string name="login_try_another_account">Mit einem anderen Konto anmelden</string>
-    <string name="login_pick_store">Store zum Verbinden auswählen</string>
-    <string name="login_store_address">Store -Adresse eingeben</string>
+    <string name="login_pick_store">Shop zum Verbinden auswählen</string>
+    <string name="login_store_address">Shop -Adresse eingeben</string>
     <string name="login_wpcom">Weiter mit WordPress.com</string>
     <string name="product_type_variation_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
     <string name="product_selection_count_single">%d Produkt ausgewählt</string>
@@ -153,7 +155,7 @@ Language: de
     <string name="grouped_product_empty">Füge Produkte zur Gruppe hinzu</string>
     <string name="grouped_product_add">Produkt hinzufügen</string>
     <string name="product_visibility_password_protected_hint">Passwort eingeben</string>
-    <string name="feedback_completed_back_to_store_button_text">Zurück zum Store</string>
+    <string name="feedback_completed_back_to_store_button_text">Zurück zum Shop</string>
     <string name="feedback_completed_contact_us">Kontaktiere uns hier</string>
     <string name="feedback_completed_description">Bitte beachte, dass dies kein Support-Ticket ist und wir nicht auf jedes individuelle Feedback eingehen können.\n\nBrauchst du Hilfe? %1$s</string>
     <string name="feedback_completed_title_message">Vielen Dank für dein\n Feedback</string>
@@ -171,7 +173,7 @@ Language: de
     <string name="product_type_list_header">Wähle einen Produkttyp aus</string>
     <string name="send_feedback">Feedback senden</string>
     <string name="variation_detail_price_warning_title">Einige Varianten weisen keine Preise auf</string>
-    <string name="variation_detail_price_warning">Varianten ohne Preise werden in deinem Store nicht angezeigt</string>
+    <string name="variation_detail_price_warning">Varianten ohne Preise werden in deinem Shop nicht angezeigt</string>
     <string name="variation_detail_update_product_success">Variante aktualisiert</string>
     <string name="grouped_product_btn_delete">Das gruppierte Produkt löschen</string>
     <string name="grouped_products">Gruppierte Produkte</string>
@@ -789,7 +791,6 @@ Language: de
     <string name="order_shipment_tracking_delete_error">Fehler beim Löschen der Sendungsverfolgung</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Sendungsverfolgung gelöscht</string>
     <string name="order_shipment_tracking_add_button">Sendungsverfolgung hinzufügen</string>
-    <string name="order_shipment_tracking_add_label">Optionale Sendungsverfolgungsinformationen</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Sendung verfolgen oder Sendungsverfolgung löschen</string>
     <string name="orderdetail_delete_tracking">Verfolgung löschen</string>
     <string name="orderdetail_track_shipment">Sendung verfolgen</string>
@@ -848,7 +849,6 @@ Language: de
     <string name="product_name">Titel</string>
     <string name="product_detail_fetch_product_error">Fehler beim Abrufen des Produkts</string>
     <string name="add_order_note_invalid_order">Ungültige Bestellung</string>
-    <string name="order_shipment_tracking_shipped_date">Versendet am %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Sendungsverfolgungsnummer in Zwischenablage kopieren</string>
     <string name="order_shipment_tracking_section_cd">Sendungsverfolgung</string>
     <string name="order_shipment_tracking_button">Paket verfolgen</string>
@@ -908,7 +908,6 @@ Language: de
     <string name="review_moderation_undo">Bewertung als %1$s markiert</string>
     <string name="add_order_note_sublabel">Bei Deaktivierung wird der Hinweis privat</string>
     <string name="order_error_fetch_generic">Fehler beim Abrufen der Bestellung</string>
-    <string name="dashboard_fulfill_orders_msg">Diese ausstehenden Bestellungen prüfen, vorbereiten und versenden</string>
     <string name="back">Zurück</string>
     <string name="notification_channel_review_title">Benachrichtigungen zu Produktbewertungen</string>
     <string name="notification_channel_order_title">Benachrichtigungen bei neuer Bestellung</string>
@@ -1083,13 +1082,11 @@ Language: de
     <string name="order_error_update_general">Fehler beim Ändern der Bestellung</string>
     <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Fehlerhinweisen</string>
     <string name="order_fulfill_marked_complete">Bestellung als abgeschlossen markiert</string>
-    <string name="order_fulfill_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_addnote_contentdesc">Bestellhinweis hinzufügen</string>
     <string name="orderdetail_add_note">Hinweis hinzufügen</string>
     <string name="orderdetail_hide_billing">Abrechnung ausblenden</string>
     <string name="orderdetail_show_billing">Abrechnung einblenden</string>
     <string name="orderdetail_payment_cleared">Zahlung gelöscht</string>
-    <string name="orderdetail_order_fulfillment">Bestellung Nr. %s abschließen</string>
     <string name="orderdetail_order_notes">Bestellhinweise</string>
     <string name="orderdetail_note_private">Privat</string>
     <string name="orderdetail_note_hint">Bestellhinweis verfassen</string>
@@ -1114,8 +1111,6 @@ Language: de
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Keine Bestellungen</string>
-    <string name="dashboard_fulfill_order_title_multiple">Du musst %1$d Bestellungen abschließen</string>
-    <string name="dashboard_fulfill_order_title_single">Du musst 1 Bestellung abschließen</string>
     <string name="dashboard_action_view_orders">Bestellungen anzeigen</string>
     <string name="dashboard_action_view_order">Bestellung anzeigen</string>
     <string name="dashboard_top_performers_empty">Keine Aktivitäten in diesem Zeitraum</string>

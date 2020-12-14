@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-27 08:54:04+0000
+Translation-Revision-Date: 2020-12-10 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">验证</string>
+    <string name="product_images_drag_and_drop_description">通过拖放来排序照片</string>
     <string name="product_downloadable_files_download_settings">下载设置</string>
     <string name="product_downloadable_files_name_invalid">请输入有效的名称</string>
     <string name="product_downloadable_files_add_manually">输入文件 URL</string>
@@ -789,7 +791,6 @@ Language: zh_CN
     <string name="order_shipment_tracking_delete_error">删除跟踪时出错</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">已删除的配送跟踪</string>
     <string name="order_shipment_tracking_add_button">添加跟踪</string>
-    <string name="order_shipment_tracking_add_label">可选的跟踪信息</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">跟踪或删除配送跟踪</string>
     <string name="orderdetail_delete_tracking">删除跟踪</string>
     <string name="orderdetail_track_shipment">跟踪配送</string>
@@ -848,7 +849,6 @@ Language: zh_CN
     <string name="product_name">标题</string>
     <string name="product_detail_fetch_product_error">抓取产品时出错</string>
     <string name="add_order_note_invalid_order">订单无效</string>
-    <string name="order_shipment_tracking_shipped_date">配送日期：%s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">将跟踪编号复制到剪贴板</string>
     <string name="order_shipment_tracking_section_cd">配送跟踪</string>
     <string name="order_shipment_tracking_button">跟踪包裹</string>
@@ -908,7 +908,6 @@ Language: zh_CN
     <string name="review_moderation_undo">评论已标记为 %1$s</string>
     <string name="add_order_note_sublabel">如果禁用，备注将不会公开</string>
     <string name="order_error_fetch_generic">抓取订单时出错</string>
-    <string name="dashboard_fulfill_orders_msg">审核、准备和配送这些待处理订单</string>
     <string name="back">返回</string>
     <string name="notification_channel_review_title">产品评论提醒</string>
     <string name="notification_channel_order_title">新订单提醒</string>
@@ -1083,13 +1082,11 @@ Language: zh_CN
     <string name="order_error_update_general">更改订单时出错</string>
     <string name="order_error_fetch_notes_generic">抓取错误备注时出错</string>
     <string name="order_fulfill_marked_complete">订单已标记为完成</string>
-    <string name="order_fulfill_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_addnote_contentdesc">添加订单备注</string>
     <string name="orderdetail_add_note">添加备注</string>
     <string name="orderdetail_hide_billing">隐藏账单</string>
     <string name="orderdetail_show_billing">显示账单</string>
     <string name="orderdetail_payment_cleared">已付款</string>
-    <string name="orderdetail_order_fulfillment">完成订单号 %s</string>
     <string name="orderdetail_order_notes">订单备注</string>
     <string name="orderdetail_note_private">私人</string>
     <string name="orderdetail_note_hint">撰写订单备注</string>
@@ -1114,8 +1111,6 @@ Language: zh_CN
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">订单号 %s</string>
     <string name="orderlist_no_orders">无订单</string>
-    <string name="dashboard_fulfill_order_title_multiple">您有 %1$d 个订单待处理</string>
-    <string name="dashboard_fulfill_order_title_single">您有 1 个订单待处理</string>
     <string name="dashboard_action_view_orders">查看订单</string>
     <string name="dashboard_action_view_order">查看订单</string>
     <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
