@@ -73,7 +73,7 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
         val searchMenuItem = menu.findItem(R.id.menu_shipment_providers_search)
         searchView = searchMenuItem!!.actionView as SearchView
         searchView?.let {
-            val currentQuery = viewModel.TrackingProviderListViewStateData.liveData.value?.query ?: ""
+            val currentQuery = viewModel.trackingProviderListViewStateData.liveData.value?.query ?: ""
             it.setQuery(currentQuery, false)
             if (currentQuery.isNotEmpty()) it.isIconified = false
             it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
@@ -93,7 +93,7 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
     }
 
     private fun setupObservers(binding: DialogOrderTrackingProviderListBinding) {
-        viewModel.TrackingProviderListViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.trackingProviderListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.providersList.takeIfNotEqualTo(old?.providersList) {
                 providerListAdapter.setProviders(it)
             }

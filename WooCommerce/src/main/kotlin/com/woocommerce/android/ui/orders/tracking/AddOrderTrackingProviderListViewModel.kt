@@ -31,11 +31,11 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: AddOrderTrackingProviderListFragmentArgs by savedState.navArgs()
 
-    val TrackingProviderListViewStateData = LiveDataDelegate(
+    val trackingProviderListViewStateData = LiveDataDelegate(
         savedState = savedState,
         initialValue = ViewState()
     )
-    private var TrackingProviderListViewState by TrackingProviderListViewStateData
+    private var trackingProviderListViewState by trackingProviderListViewStateData
 
     private var providersList = emptyList<OrderShipmentProvider>()
 
@@ -53,10 +53,10 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
     }
 
     private fun fetchProviders() {
-        TrackingProviderListViewState = TrackingProviderListViewState.copy(showSkeleton = true)
+        trackingProviderListViewState = trackingProviderListViewState.copy(showSkeleton = true)
         launch {
             val shipmentProviders = shipmentProvidersRepository.fetchOrderShipmentProviders(orderId)
-            TrackingProviderListViewState = TrackingProviderListViewState.copy(showSkeleton = false)
+            trackingProviderListViewState = trackingProviderListViewState.copy(showSkeleton = false)
             when {
                 shipmentProviders == null -> {
                     triggerEvent(ShowSnackbar(R.string.order_shipment_tracking_provider_list_error_fetch_generic))
@@ -67,7 +67,7 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
                 else -> {
                     AnalyticsTracker.track(Stat.ORDER_TRACKING_PROVIDERS_LOADED)
                     providersList = shipmentProviders
-                    TrackingProviderListViewState = TrackingProviderListViewState.copy(
+                    trackingProviderListViewState = trackingProviderListViewState.copy(
                         providersList = shipmentProviders
                     )
                 }
@@ -76,7 +76,7 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
     }
 
     fun onSearchQueryChanged(query: String) {
-        TrackingProviderListViewState = TrackingProviderListViewState.copy(query = query)
+        trackingProviderListViewState = trackingProviderListViewState.copy(query = query)
         val filteredList = if (query.isEmpty()) {
             providersList
         } else {
@@ -86,7 +86,7 @@ class AddOrderTrackingProviderListViewModel @AssistedInject constructor(
                     it.carrierLink.contains(query)
             }
         }
-        TrackingProviderListViewState = TrackingProviderListViewState.copy(providersList = filteredList)
+        trackingProviderListViewState = trackingProviderListViewState.copy(providersList = filteredList)
     }
 
     fun onProviderSelected(provider: OrderShipmentProvider) {

@@ -70,7 +70,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
         setupViewModel()
         var state: ViewState? = null
-        viewModel.TrackingProviderListViewStateData.observeForever { _, viewState ->
+        viewModel.trackingProviderListViewStateData.observeForever { _, viewState ->
             state = viewState
         }
 
@@ -120,7 +120,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
         viewModel.onSearchQueryChanged("bbb")
 
         var state: ViewState? = null
-        viewModel.TrackingProviderListViewStateData.observeForever { _, viewState ->
+        viewModel.trackingProviderListViewStateData.observeForever { _, viewState ->
             state = viewState
         }
 
