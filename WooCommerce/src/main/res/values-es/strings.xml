@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 10:54:04+0000
+Translation-Revision-Date: 2020-12-10 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Validar</string>
+    <string name="product_images_drag_and_drop_description">Arrastrar y soltar para reordenar fotos</string>
     <string name="product_downloadable_files_download_settings">Ajustes de descarga</string>
     <string name="product_downloadable_files_name_invalid">Introduce un nombre válido</string>
     <string name="product_downloadable_files_add_manually">Introduce la URL del archivo</string>
@@ -789,7 +791,6 @@ Language: es
     <string name="order_shipment_tracking_delete_error">Error al eliminar el seguimiento</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Se ha eliminado el seguimiento de envíos</string>
     <string name="order_shipment_tracking_add_button">Añadir seguimiento</string>
-    <string name="order_shipment_tracking_add_label">Información de seguimiento opcional</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Hacer seguimiento o eliminar seguimiento de envíos</string>
     <string name="orderdetail_delete_tracking">Eliminar seguimiento</string>
     <string name="orderdetail_track_shipment">Hacer un seguimiento del envío</string>
@@ -848,7 +849,6 @@ Language: es
     <string name="product_name">Título</string>
     <string name="product_detail_fetch_product_error">Error al obtener el producto</string>
     <string name="add_order_note_invalid_order">Pedido no válido</string>
-    <string name="order_shipment_tracking_shipped_date">Enviado el %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copiar número de seguimiento en el portapapeles</string>
     <string name="order_shipment_tracking_section_cd">Seguimiento de envíos</string>
     <string name="order_shipment_tracking_button">Hacer seguimiento del paquete</string>
@@ -908,7 +908,6 @@ Language: es
     <string name="review_moderation_undo">La reseña se ha marcado como %1$s</string>
     <string name="add_order_note_sublabel">Si se desactiva, la nota será privada</string>
     <string name="order_error_fetch_generic">Error al recuperar el pedido</string>
-    <string name="dashboard_fulfill_orders_msg">Revisa, prepara y envía estos pedidos pendientes</string>
     <string name="back">Volver</string>
     <string name="notification_channel_review_title">Alertas de reseña de producto</string>
     <string name="notification_channel_order_title">Alertas de nuevo pedido</string>
@@ -1083,13 +1082,11 @@ Language: es
     <string name="order_error_update_general">Se ha producido un error al cambiar el pedido</string>
     <string name="order_error_fetch_notes_generic">Se ha producido un error al obtener las notas de error</string>
     <string name="order_fulfill_marked_complete">El pedido se ha marcado como completado.</string>
-    <string name="order_fulfill_mark_complete">Marcar el pedido como completado</string>
     <string name="orderdetail_addnote_contentdesc">Añadir una nota de pedido</string>
     <string name="orderdetail_add_note">Añadir una nota</string>
     <string name="orderdetail_hide_billing">Ocultar facturación</string>
     <string name="orderdetail_show_billing">Mostrar facturación</string>
     <string name="orderdetail_payment_cleared">Se ha abonado el pago</string>
-    <string name="orderdetail_order_fulfillment">Realizar el pedido núm. %s</string>
     <string name="orderdetail_order_notes">Notas del pedido</string>
     <string name="orderdetail_note_private">Privado</string>
     <string name="orderdetail_note_hint">Redactar una nota de pedido</string>
@@ -1114,8 +1111,6 @@ Language: es
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Núm. %s</string>
     <string name="orderlist_no_orders">No hay pedidos</string>
-    <string name="dashboard_fulfill_order_title_multiple">Tienes %1$d pedidos por realizar</string>
-    <string name="dashboard_fulfill_order_title_single">Tienes 1 pedido por realizar</string>
     <string name="dashboard_action_view_orders">Ver pedidos</string>
     <string name="dashboard_action_view_order">Ver pedido</string>
     <string name="dashboard_top_performers_empty">Sin actividad en este periodo</string>

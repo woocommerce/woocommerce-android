@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 16:54:04+0000
+Translation-Revision-Date: 2020-12-10 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Valideren</string>
+    <string name="product_images_drag_and_drop_description">Slepen om foto\'s opnieuw te ordenen</string>
     <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
     <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
     <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>
@@ -789,7 +791,6 @@ Language: nl
     <string name="order_shipment_tracking_delete_error">Fout bij verwijderen van tracking</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Tracking van verzending verwijderd</string>
     <string name="order_shipment_tracking_add_button">Tracking toevoegen</string>
-    <string name="order_shipment_tracking_add_label">Optionele tracking-informatie</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Verzending tracken of tracking van verzending verwijderen</string>
     <string name="orderdetail_delete_tracking">Tracking verwijderen</string>
     <string name="orderdetail_track_shipment">Verzending tracken</string>
@@ -848,7 +849,6 @@ Language: nl
     <string name="product_name">Titel</string>
     <string name="product_detail_fetch_product_error">Fout bij ophalen product</string>
     <string name="add_order_note_invalid_order">Ongeldige bestelling</string>
-    <string name="order_shipment_tracking_shipped_date">Verzonden op %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Volgnummer kopiëren naar klembord</string>
     <string name="order_shipment_tracking_section_cd">Verzending bijhouden</string>
     <string name="order_shipment_tracking_button">Pakket volgen</string>
@@ -908,7 +908,6 @@ Language: nl
     <string name="review_moderation_undo">Beoordeling gemarkeerd als %1$s</string>
     <string name="add_order_note_sublabel">Als deze functie is uitgeschakeld, is de opmerking privé</string>
     <string name="order_error_fetch_generic">Fout bij ophalen bestelling</string>
-    <string name="dashboard_fulfill_orders_msg">Controleer deze bestellingen in behandeling, bereid ze voor en verzend ze</string>
     <string name="back">Terug</string>
     <string name="notification_channel_review_title">Meldingen productbeoordeling</string>
     <string name="notification_channel_order_title">Meldingen nieuwe bestelling</string>
@@ -1083,13 +1082,11 @@ Language: nl
     <string name="order_error_update_general">Fout bij wijzigen bestelling</string>
     <string name="order_error_fetch_notes_generic">Fout bij ophalen foutberichten</string>
     <string name="order_fulfill_marked_complete">Bestelling gemarkeerd als voltooid</string>
-    <string name="order_fulfill_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_addnote_contentdesc">Een bericht van bestelling toevoegen</string>
     <string name="orderdetail_add_note">Een opmerking toevoegen</string>
     <string name="orderdetail_hide_billing">Facturen verbergen</string>
     <string name="orderdetail_show_billing">Facturen tonen</string>
     <string name="orderdetail_payment_cleared">Betaling gewist</string>
-    <string name="orderdetail_order_fulfillment">Bestelling %s voltooien</string>
     <string name="orderdetail_order_notes">Berichten van bestelling</string>
     <string name="orderdetail_note_private">Privé</string>
     <string name="orderdetail_note_hint">Een bericht van bestelling opstellen</string>
@@ -1114,8 +1111,6 @@ Language: nl
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">Nr. %s</string>
     <string name="orderlist_no_orders">Geen bestellingen</string>
-    <string name="dashboard_fulfill_order_title_multiple">Je moet nog %1$d bestellingen voltooien</string>
-    <string name="dashboard_fulfill_order_title_single">Je moet nog 1 bestelling voltooien</string>
     <string name="dashboard_action_view_orders">Bestellingen weergeven</string>
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>

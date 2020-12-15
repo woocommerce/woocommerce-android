@@ -1,0 +1,4 @@
+5.6:
+Anda meminta, kami menyediakannya! Sekarang Anda dapat membuat produk sederhana, dikelompokkan, dan eksternal untuk toko langsung dari perangkat seluler Android favorit Anda. Ubah ide Anda jadi produk nyata, bahkan tanpa mesti duduk di depan komputer.
+
+Kami juga telah memperbarui UI dengan desain yang lebih tajam dan rapi, serta memperbaiki bug pada detail pesanan yang akan memudahkan pelacakan pengiriman.

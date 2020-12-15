@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 16:54:04+0000
+Translation-Revision-Date: 2020-12-10 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Convalida</string>
+    <string name="product_images_drag_and_drop_description">Trascina e rilascia per riordinare le foto</string>
     <string name="product_downloadable_files_download_settings">Impostazioni download</string>
     <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
     <string name="product_downloadable_files_add_manually">Inserisci URL file</string>
@@ -789,7 +791,6 @@ Language: it
     <string name="order_shipment_tracking_delete_error">Errore durante l\'eliminazione della tracciabilità</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Tracciabilità della spedizione eliminata</string>
     <string name="order_shipment_tracking_add_button">Aggiungi tracciabilità</string>
-    <string name="order_shipment_tracking_add_label">Informazioni di tracciabilità opzionali</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Traccia o elimina tracciabilità della spedizione</string>
     <string name="orderdetail_delete_tracking">Elimina tracciabilità</string>
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
@@ -848,7 +849,6 @@ Language: it
     <string name="product_name">Titolo</string>
     <string name="product_detail_fetch_product_error">Errore durante recupero prodotto</string>
     <string name="add_order_note_invalid_order">Ordine non valido</string>
-    <string name="order_shipment_tracking_shipped_date">Spedito il giorno %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copia il numero di tracciabilità negli appunti</string>
     <string name="order_shipment_tracking_section_cd">Tracciabilità della spedizione</string>
     <string name="order_shipment_tracking_button">Traccia pacchetto</string>
@@ -908,7 +908,6 @@ Language: it
     <string name="review_moderation_undo">Recensione contrassegnata come %1$s</string>
     <string name="add_order_note_sublabel">Se disabilitata, la nota diventerà privata</string>
     <string name="order_error_fetch_generic">Errore durante il recupero dell\'ordine</string>
-    <string name="dashboard_fulfill_orders_msg">Rivedi, prepara e invia questi ordini in attesa</string>
     <string name="back">Indietro</string>
     <string name="notification_channel_review_title">Avvisi delle recensioni del prodotto</string>
     <string name="notification_channel_order_title">Avvisi dei nuovi ordini</string>
@@ -1083,13 +1082,11 @@ Language: it
     <string name="order_error_update_general">Errore durante la modifica dell\'ordine</string>
     <string name="order_error_fetch_notes_generic">Errore durante il recupero delle note di errore</string>
     <string name="order_fulfill_marked_complete">Ordine contrassegnato come completo</string>
-    <string name="order_fulfill_mark_complete">Contrassegna ordine come completo</string>
     <string name="orderdetail_addnote_contentdesc">Aggiungi una nota dell\'ordine</string>
     <string name="orderdetail_add_note">Aggiungi una nota</string>
     <string name="orderdetail_hide_billing">Nascondi fatturazione</string>
     <string name="orderdetail_show_billing">Mostra fatturazione</string>
     <string name="orderdetail_payment_cleared">Pagamento cancellato</string>
-    <string name="orderdetail_order_fulfillment">Evadi ordine n. %s</string>
     <string name="orderdetail_order_notes">Note ordine</string>
     <string name="orderdetail_note_private">Privato</string>
     <string name="orderdetail_note_hint">Scrivi una nota dell\'ordine</string>
@@ -1114,8 +1111,6 @@ Language: it
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">N. %s</string>
     <string name="orderlist_no_orders">Nessun ordine</string>
-    <string name="dashboard_fulfill_order_title_multiple">Hai %1$d ordini da evadere</string>
-    <string name="dashboard_fulfill_order_title_single">Hai un ordine da evadere</string>
     <string name="dashboard_action_view_orders">Visualizza ordini</string>
     <string name="dashboard_action_view_order">Visualizza ordine</string>
     <string name="dashboard_top_performers_empty">Nessuna attività per questo periodo</string>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-25 10:54:05+0000
+Translation-Revision-Date: 2020-12-10 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">認証</string>
+    <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
@@ -787,7 +789,6 @@ Language: ja_JP
     <string name="order_shipment_tracking_delete_error">追跡の削除中にエラーが発生しました</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">配送状況の追跡を削除しました</string>
     <string name="order_shipment_tracking_add_button">追跡を追加</string>
-    <string name="order_shipment_tracking_add_label">オプションの追跡情報</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">配送状況の追跡を追加または削除</string>
     <string name="orderdetail_delete_tracking">追跡を削除</string>
     <string name="orderdetail_track_shipment">配送状況を追跡</string>
@@ -846,7 +847,6 @@ Language: ja_JP
     <string name="product_name">タイトル</string>
     <string name="product_detail_fetch_product_error">商品の取得中にエラーが発生しました</string>
     <string name="add_order_note_invalid_order">無効な注文</string>
-    <string name="order_shipment_tracking_shipped_date">出荷日: %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">追跡番号をクリップボードにコピー</string>
     <string name="order_shipment_tracking_section_cd">配送状況の追跡</string>
     <string name="order_shipment_tracking_button">荷物を追跡</string>
@@ -906,7 +906,6 @@ Language: ja_JP
     <string name="review_moderation_undo">レビューを%1$sとしてマークする</string>
     <string name="add_order_note_sublabel">無効にするとメモは公開されません</string>
     <string name="order_error_fetch_generic">注文を取得する際にエラーが発生しました</string>
-    <string name="dashboard_fulfill_orders_msg">これらの保留中の注文を確認して準備し、配送してください</string>
     <string name="back">戻る</string>
     <string name="notification_channel_review_title">製品レビューアラート</string>
     <string name="notification_channel_order_title">新規注文アラート</string>
@@ -1081,13 +1080,11 @@ Language: ja_JP
     <string name="order_error_update_general">注文を変更する際にエラーが発生しました</string>
     <string name="order_error_fetch_notes_generic">エラー通知を取得する際にエラーが発生しました</string>
     <string name="order_fulfill_marked_complete">注文が完了としてマークされました</string>
-    <string name="order_fulfill_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_addnote_contentdesc">注文メモを追加します</string>
     <string name="orderdetail_add_note">メモを追加</string>
     <string name="orderdetail_hide_billing">課金を非表示</string>
     <string name="orderdetail_show_billing">課金を表示</string>
     <string name="orderdetail_payment_cleared">決済済み</string>
-    <string name="orderdetail_order_fulfillment">注文番号%sを履行</string>
     <string name="orderdetail_order_notes">注文メモ</string>
     <string name="orderdetail_note_private">非公開</string>
     <string name="orderdetail_note_hint">注文メモを作成します</string>
@@ -1112,8 +1109,6 @@ Language: ja_JP
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">番号%s</string>
     <string name="orderlist_no_orders">注文はありません</string>
-    <string name="dashboard_fulfill_order_title_multiple">履行する注文が%1$d件あります</string>
-    <string name="dashboard_fulfill_order_title_single">履行する注文が1件あります</string>
     <string name="dashboard_action_view_orders">注文を表示</string>
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
