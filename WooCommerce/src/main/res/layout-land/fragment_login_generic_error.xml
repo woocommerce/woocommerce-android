@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <include
+        layout="@layout/toolbar_login"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.TextView.Subtitle1"
+            android:id="@+id/login_error_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/line_spacing_extra_50"
+            android:text="@string/login_not_wordpress_site"
+            android:textStyle="bold"
+            android:visibility="visible"/>
+    </ScrollView>
+
+    <include layout="@layout/view_login_epilogue_button_bar" />
+
+</LinearLayout>

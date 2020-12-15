@@ -138,6 +138,7 @@
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
+    <string name="login_not_wordpress_site">The website %1$s is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
