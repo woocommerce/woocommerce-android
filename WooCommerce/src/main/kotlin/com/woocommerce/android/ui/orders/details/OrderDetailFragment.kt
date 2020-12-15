@@ -151,9 +151,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
-            new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
-                showOrderNotesSkeleton(it)
-            }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 showAddShipmentTracking(it)
             }
@@ -243,10 +240,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             true -> skeletonView.show(orderDetail_container, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
-    }
-
-    private fun showOrderNotesSkeleton(show: Boolean) {
-        orderDetail_noteList.showSkeleton(show)
     }
 
     private fun refreshProduct(remoteProductId: Long) {

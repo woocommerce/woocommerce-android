@@ -82,7 +82,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderWithParameters = ViewState(
         order = order,
         isRefreshing = false,
-        isOrderNotesSkeletonShown = false,
         isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
