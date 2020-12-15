@@ -678,11 +678,11 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // show the "not WordPress error" screen
-            val genericErrorFragment = LoginGenericErrorFragment.newInstance(siteAddressClean, errorMessage)
+            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
             slideInFragment(
                 fragment = genericErrorFragment,
                 shouldAddToBackStack = true,
-                tag = LoginGenericErrorFragment.TAG)
+                tag = LoginSiteCheckErrorFragment.TAG)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")

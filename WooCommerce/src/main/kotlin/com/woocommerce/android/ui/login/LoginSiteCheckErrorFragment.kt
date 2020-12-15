@@ -16,14 +16,14 @@ import kotlinx.android.synthetic.main.fragment_login_generic_error.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 
-class LoginGenericErrorFragment : Fragment() {
+class LoginSiteCheckErrorFragment : Fragment() {
     companion object {
         const val TAG = "LoginGenericErrorFragment"
         const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
         const val ARG_ERROR_MESSAGE = "ERROR-MESSAGE"
 
-        fun newInstance(siteAddress: String, errorMsg: String): LoginGenericErrorFragment {
-            val fragment = LoginGenericErrorFragment()
+        fun newInstance(siteAddress: String, errorMsg: String): LoginSiteCheckErrorFragment {
+            val fragment = LoginSiteCheckErrorFragment()
             val args = Bundle()
             args.putString(ARG_SITE_ADDRESS, siteAddress)
             args.putString(ARG_ERROR_MESSAGE, errorMsg)
@@ -69,7 +69,7 @@ class LoginGenericErrorFragment : Fragment() {
             setOnClickListener {
                 // TODO AMANDA : track event
 
-                // TODO AMANDA - route back to the site address screen
+                requireActivity().onBackPressed()
             }
         }
 
