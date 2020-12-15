@@ -127,15 +127,21 @@ class OrderDetailViewModel @AssistedInject constructor(
                 orderInDb?.let {
                     order = orderInDb
                     displayOrderDetails()
+                    fetchAndDisplayOrderDetails()
                 }
             }
         }
     }
 
+    private suspend fun fetchAndDisplayOrderDetails() {
+        fetchOrderNotes()
+        fetchProductAndShippingDetails()
+        displayOrderDetails()
+    }
+
     private fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
-
         displayProductAndShippingDetails()
     }
 
@@ -147,9 +153,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
             if (fetchedOrder != null) {
                 order = fetchedOrder
-
-                fetchProductAndShippingDetails()
-                displayOrderDetails()
+                fetchAndDisplayOrderDetails()
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
