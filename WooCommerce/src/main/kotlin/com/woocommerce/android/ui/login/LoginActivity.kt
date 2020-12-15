@@ -664,7 +664,28 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
     }
 
-    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload?) {
-        TODO("Not yet implemented")
+    /**
+     * Allows for special handling of errors that come up during the login by address: check site address.
+     */
+    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
+        if (!siteInfo.isWordPress) {
+            // The url entered is not a WordPress site.
+            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
+            val errorMessage = getString(R.string.login_not_wordpress_site, siteAddressClean)
+
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // show the "not WordPress error" screen
+            val genericErrorFragment = LoginGenericErrorFragment.newInstance(siteAddressClean, errorMessage)
+            slideInFragment(
+                fragment = genericErrorFragment,
+                shouldAddToBackStack = true,
+                tag = LoginGenericErrorFragment.TAG)
+        } else {
+            // Just in case we use this method for a different scenario in the future
+            TODO("Handle a new error scenario")
+        }
     }
 }
