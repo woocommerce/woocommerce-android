@@ -153,13 +153,19 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // order notes
         val orderNotes = ArrayList<OrderNote>()
         viewModel.orderNotes.observeForever {
-            it?.let { orderNotes.addAll(it) }
+            it?.let {
+                orderNotes.clear()
+                orderNotes.addAll(it)
+            }
         }
 
         // order shipment Trackings
         val shipmentTrackings = ArrayList<OrderShipmentTracking>()
         viewModel.shipmentTrackings.observeForever {
-            it?.let { shipmentTrackings.addAll(it) }
+            it?.let {
+                shipmentTrackings.clear()
+                shipmentTrackings.addAll(it)
+            }
         }
 
         // product list should not be empty when shipping labels are not available and products are not refunded
