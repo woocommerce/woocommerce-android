@@ -12,9 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login_generic_error.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
+import javax.inject.Inject
 
 class LoginSiteCheckErrorFragment : Fragment() {
     companion object {
@@ -32,6 +36,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
         }
     }
 
+    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var loginListener: LoginListener? = null
     private var siteAddress: String? = null
     private var errorMsg: String? = null
@@ -67,7 +72,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
-                // TODO AMANDA : track event
+                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_STORE)
 
                 requireActivity().onBackPressed()
             }
@@ -77,7 +82,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
-                // TODO AMANDA : track event
+                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 
                 loginListener?.startOver()
             }
@@ -91,7 +96,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
-            // TODO AMANDA : track event
+            unifiedLoginTracker.trackClick(Click.SHOW_HELP)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -100,6 +105,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
 
         // this will throw if parent activity doesn't implement the login listener interface
@@ -114,6 +120,6 @@ class LoginSiteCheckErrorFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        // TODO AMANDA: add tracks event
+        unifiedLoginTracker.track(step = Step.NOT_WORDPRESS_SITE)
     }
 }
