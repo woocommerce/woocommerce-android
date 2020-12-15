@@ -8,6 +8,7 @@
 * [*] Fixed a bug where variable products was not displayed when shipping labels were purchased for an order. [https://github.com/woocommerce/woocommerce-android/pull/3283]
 * [**] Fixed an issue where the app could not open the email client on Android 11 during the magic link login process. [https://github.com/woocommerce/woocommerce-android/pull/3291]
 * [***] Now it's possible to remove an image from a Product Variation if the WC version 4.7+. [https://github.com/woocommerce/woocommerce-android/pull/3312]
+* [*] New descriptive error screen displayed during log in with site address [https://github.com/woocommerce/woocommerce-android/pull/3331]
 
 5.6
 ----
