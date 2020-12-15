@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-27 09:54:09+0000
+Translation-Revision-Date: 2020-12-10 14:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">تحقق</string>
+    <string name="product_images_drag_and_drop_description">السحب والإفلات لإعادة ترتيب الصور</string>
     <string name="product_downloadable_files_download_settings">تنزيل الإعدادات</string>
     <string name="product_downloadable_files_name_invalid">يرجى إدخال اسم صالح</string>
     <string name="product_downloadable_files_add_manually">إدخال عنوان URL للملف</string>
@@ -789,7 +791,6 @@ Language: ar
     <string name="order_shipment_tracking_delete_error">حدث خطأ أثناء حذف التعقب</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">تم حذف تعقب الشحنة</string>
     <string name="order_shipment_tracking_add_button">إضافة التعقب</string>
-    <string name="order_shipment_tracking_add_label">معلومات التعقب الاختيارية</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">التعقب أو حذف تعقب الشحنة</string>
     <string name="orderdetail_delete_tracking">حذف التعقب</string>
     <string name="orderdetail_track_shipment">تعقب الشحنة</string>
@@ -848,7 +849,6 @@ Language: ar
     <string name="product_name">العنوان</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="add_order_note_invalid_order">طب غير صالح</string>
-    <string name="order_shipment_tracking_shipped_date">Shipped %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
     <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
     <string name="order_shipment_tracking_button">تعقب الحزمة</string>
@@ -908,7 +908,6 @@ Language: ar
     <string name="review_moderation_undo">تم وسم المراجعة كـ %1$s</string>
     <string name="add_order_note_sublabel">في حالة تعطيلها، فستكون الملاحظة خاصة</string>
     <string name="order_error_fetch_generic">حدث خطأ أثناء إحضار الطلب</string>
-    <string name="dashboard_fulfill_orders_msg">مراجعة هذه الطلبات المُعلّقة وإعدادها وشحنها</string>
     <string name="back">رجوع</string>
     <string name="notification_channel_review_title">تنبيهات مراجعة المنتجات</string>
     <string name="notification_channel_order_title">تنبيهات الطلب الجديد</string>
@@ -1083,13 +1082,11 @@ Language: ar
     <string name="order_error_update_general">حدث خطأ أثناء تغيير الطلب</string>
     <string name="order_error_fetch_notes_generic">حدث خطأ أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
-    <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>
     <string name="orderdetail_add_note">إضافة ملاحظة</string>
     <string name="orderdetail_hide_billing">إخفاء الفوترة</string>
     <string name="orderdetail_show_billing">إظهار الفوترة</string>
     <string name="orderdetail_payment_cleared">تم مسح الدفع</string>
-    <string name="orderdetail_order_fulfillment">إتمام الطلب رقم #%s</string>
     <string name="orderdetail_order_notes">ملاحظات الطلب</string>
     <string name="orderdetail_note_private">خاص</string>
     <string name="orderdetail_note_hint">إنشاء ملاحظة طلب</string>
@@ -1114,8 +1111,6 @@ Language: ar
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">لا توجد طلبات</string>
-    <string name="dashboard_fulfill_order_title_multiple">لديك %1$d من الطلبات لإتمامها</string>
-    <string name="dashboard_fulfill_order_title_single">لديك طلب واحد لإتمامه</string>
     <string name="dashboard_action_view_orders">عرض الطلبات</string>
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>

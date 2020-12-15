@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-25 10:54:05+0000
+Translation-Revision-Date: 2020-12-10 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">驗證</string>
+    <string name="product_images_drag_and_drop_description">拖曳相片來重新排序</string>
     <string name="product_downloadable_files_download_settings">下載設定</string>
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
@@ -789,7 +791,6 @@ Language: zh_TW
     <string name="order_shipment_tracking_delete_error">刪除追蹤時發生錯誤</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">刪除的貨件追蹤</string>
     <string name="order_shipment_tracking_add_button">新增追蹤</string>
-    <string name="order_shipment_tracking_add_label">選用追蹤資訊</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">追蹤或刪除貨件追蹤</string>
     <string name="orderdetail_delete_tracking">刪除追蹤</string>
     <string name="orderdetail_track_shipment">追蹤貨件</string>
@@ -848,7 +849,6 @@ Language: zh_TW
     <string name="product_name">標題</string>
     <string name="product_detail_fetch_product_error">擷取商品時發生錯誤</string>
     <string name="add_order_note_invalid_order">無效的訂單</string>
-    <string name="order_shipment_tracking_shipped_date">運送日期：%s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">將追蹤號碼複製到剪貼簿</string>
     <string name="order_shipment_tracking_section_cd">貨件追蹤</string>
     <string name="order_shipment_tracking_button">追蹤包裹</string>
@@ -908,7 +908,6 @@ Language: zh_TW
     <string name="review_moderation_undo">已將評論標記為 %1$s</string>
     <string name="add_order_note_sublabel">若停用，此備註將變成私人狀態</string>
     <string name="order_error_fetch_generic">擷取訂單時發生錯誤</string>
-    <string name="dashboard_fulfill_orders_msg">審查、準備和運送這些待處理訂單</string>
     <string name="back">上一步</string>
     <string name="notification_channel_review_title">產品評論提醒</string>
     <string name="notification_channel_order_title">新訂單提醒</string>
@@ -1083,13 +1082,11 @@ Language: zh_TW
     <string name="order_error_update_general">變更訂單時發生錯誤</string>
     <string name="order_error_fetch_notes_generic">擷取錯誤備註時發生錯誤</string>
     <string name="order_fulfill_marked_complete">標示為完成的訂單</string>
-    <string name="order_fulfill_mark_complete">將訂單標示為完成</string>
     <string name="orderdetail_addnote_contentdesc">新增訂單備註</string>
     <string name="orderdetail_add_note">新增備註</string>
     <string name="orderdetail_hide_billing">隱藏帳單</string>
     <string name="orderdetail_show_billing">顯示帳單</string>
     <string name="orderdetail_payment_cleared">款項已結清</string>
-    <string name="orderdetail_order_fulfillment">履行訂單編號%s</string>
     <string name="orderdetail_order_notes">訂單備註</string>
     <string name="orderdetail_note_private">私人</string>
     <string name="orderdetail_note_hint">撰寫訂單備註</string>
@@ -1114,8 +1111,6 @@ Language: zh_TW
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">編號%s</string>
     <string name="orderlist_no_orders">無訂單</string>
-    <string name="dashboard_fulfill_order_title_multiple">你有 %1$d 筆訂單尚未履行</string>
-    <string name="dashboard_fulfill_order_title_single">你有 1 筆訂單尚未履行</string>
     <string name="dashboard_action_view_orders">查看訂單</string>
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_performers_empty">此期間沒有任何活動</string>

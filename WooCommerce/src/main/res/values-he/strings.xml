@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-25 11:54:04+0000
+Translation-Revision-Date: 2020-12-10 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">אימות</string>
+    <string name="product_images_drag_and_drop_description">לגרור ולשחרר כדי לשנות את הסדר של התמונות</string>
     <string name="product_downloadable_files_download_settings">הגדרות הורדה</string>
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
@@ -789,7 +791,6 @@ Language: he_IL
     <string name="order_shipment_tracking_delete_error">שגיאה בעת מחיקת המעקב</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">המעקב אחר המשלוח נמחק</string>
     <string name="order_shipment_tracking_add_button">הוספת מעקב</string>
-    <string name="order_shipment_tracking_add_label">מידע אופציונלי על מעקב</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">לבצע מעקב אחר המשלוח או למחוק את המעקב</string>
     <string name="orderdetail_delete_tracking">מחיקת מעקב</string>
     <string name="orderdetail_track_shipment">מעקב אחר משלוח</string>
@@ -848,7 +849,6 @@ Language: he_IL
     <string name="product_name">כותרת</string>
     <string name="product_detail_fetch_product_error">שגיאה בהבאת המוצר</string>
     <string name="add_order_note_invalid_order">הזמנה לא תקפה</string>
-    <string name="order_shipment_tracking_shipped_date">הפריט %s נשלח</string>
     <string name="order_shipment_tracking_copy_to_clipboard">להעתיק את מספר המעקב ללוח</string>
     <string name="order_shipment_tracking_section_cd">מעקב משלוח</string>
     <string name="order_shipment_tracking_button">לבצע מעקב אחר החבילה</string>
@@ -908,7 +908,6 @@ Language: he_IL
     <string name="review_moderation_undo">הביקורת סומנה בתור \"%1$s\"</string>
     <string name="add_order_note_sublabel">אם האפשרות מושבתת, הפתק יהיה פרטי</string>
     <string name="order_error_fetch_generic">שגיאה בהבאת ההזמנה</string>
-    <string name="dashboard_fulfill_orders_msg">בדיקה, הכנה ומשלוח של ההזמנות שבהמתנה</string>
     <string name="back">חזרה</string>
     <string name="notification_channel_review_title">התראות לגבי ביקורות על המוצר</string>
     <string name="notification_channel_order_title">התראות על הזמנות חדשות</string>
@@ -1083,13 +1082,11 @@ Language: he_IL
     <string name="order_error_update_general">שגיאה בעת שינוי הזמנה</string>
     <string name="order_error_fetch_notes_generic">שגיאה בעת אחזור הערות שגיאה</string>
     <string name="order_fulfill_marked_complete">ההזמנה סומנה כ\'הושלמה\'</string>
-    <string name="order_fulfill_mark_complete">סימון הזמנה כ\'הושלמה\'</string>
     <string name="orderdetail_addnote_contentdesc">הוספת הערה להזמנה</string>
     <string name="orderdetail_add_note">הוספת הערה</string>
     <string name="orderdetail_hide_billing">הסתרת חיוב</string>
     <string name="orderdetail_show_billing">הצגת חיוב</string>
     <string name="orderdetail_payment_cleared">התשלום אושר</string>
-    <string name="orderdetail_order_fulfillment">השלמת הזמנה מספר %s</string>
     <string name="orderdetail_order_notes">הערות להזמנה</string>
     <string name="orderdetail_note_private">פרטי</string>
     <string name="orderdetail_note_hint">יצירת הערה להזמנה</string>
@@ -1114,8 +1111,6 @@ Language: he_IL
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">אין הזמנות</string>
-    <string name="dashboard_fulfill_order_title_multiple">יש לך %1$d הזמנות להשלמה</string>
-    <string name="dashboard_fulfill_order_title_single">יש לך הזמנה אחת להשלמה</string>
     <string name="dashboard_action_view_orders">הצגת הזמנות</string>
     <string name="dashboard_action_view_order">הצגת הזמנה</string>
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>

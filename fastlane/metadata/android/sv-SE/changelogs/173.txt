@@ -1,3 +1,0 @@
-5.5:
-Du önskade, vi lyssnade! Du kan nu skapa enkla, grupperade och externa produkter direkt från dina mobila Android-enheter. Förvandla idéer till produkter – även när du inte är vid skrivbordet.
-Övriga korrigeringar: Vi har åtgärdat ett fel som påverkade variationsnamnen när variationsalternativet var "open", samt ett stavfel på fraktetikettsskärmen.
