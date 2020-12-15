@@ -23,7 +23,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import java.io.File
 import javax.inject.Inject
 
-class PrintShippingLabelFragment : BaseFragment() {
+class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping_label) {
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -39,6 +39,7 @@ class PrintShippingLabelFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         _binding = FragmentPrintShippingLabelBinding.bind(view)
 
         setupObservers(viewModel)
