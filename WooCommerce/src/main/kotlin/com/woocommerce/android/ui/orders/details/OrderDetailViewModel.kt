@@ -458,7 +458,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         orderDetailRepository.getOrderShippingLabels(orderIdSet.remoteOrderId)
             .loadProducts(order.items)
             .whenNotNullNorEmpty {
-               return ListInfo(list = it)
+                return ListInfo(list = it)
             }
         return ListInfo(isVisible = false)
     }
@@ -520,7 +520,6 @@ class OrderDetailViewModel @AssistedInject constructor(
         val toolbarTitle: String? = null,
         val orderStatus: OrderStatus? = null,
         val isOrderDetailSkeletonShown: Boolean? = null,
-        val isOrderNotesSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isShipmentTrackingAvailable: Boolean? = null,
         val refreshedProductId: Long? = null,
