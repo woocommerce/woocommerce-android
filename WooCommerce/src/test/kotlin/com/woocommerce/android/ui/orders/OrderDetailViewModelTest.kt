@@ -149,7 +149,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
 
         var orderData: ViewState? = null
-        viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
+        viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
         val orderNotes = ArrayList<OrderNote>()
@@ -324,7 +324,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             var areProductsVisible: Boolean? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new ->
+            viewModel.viewStateData.observeForever { _, new ->
                 areProductsVisible = new.isProductListVisible
             }
 
@@ -357,7 +357,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             var areProductsVisible: Boolean? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new ->
+            viewModel.viewStateData.observeForever { _, new ->
                 areProductsVisible = new.isProductListVisible
             }
 
@@ -385,7 +385,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
             var orderData: ViewState? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -421,7 +421,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(null).whenever(repository).getOrder(any())
 
             val isSkeletonShown = ArrayList<Boolean>()
-            viewModel.orderDetailViewStateData.observeForever { old, new ->
+            viewModel.viewStateData.observeForever { old, new ->
                 new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) {
                     isSkeletonShown.add(it)
                 }
@@ -475,7 +475,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         val orderStatusList = ArrayList<OrderStatus>()
-        viewModel.orderDetailViewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { old, new ->
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { orderStatusList.add(it) }
         }
 
@@ -517,7 +517,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
         var newOrder: Order? = null
-        viewModel.orderDetailViewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { newOrder = it }
         }
 

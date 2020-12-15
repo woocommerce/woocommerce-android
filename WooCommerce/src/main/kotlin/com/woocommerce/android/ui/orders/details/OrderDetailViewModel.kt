@@ -83,8 +83,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val orderDetailViewStateData = LiveDataDelegate(savedState, ViewState())
-    private var orderDetailViewState by orderDetailViewStateData
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
     val orderNotes: LiveData<List<OrderNote>> = _orderNotes
@@ -147,7 +147,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
         if (networkStatus.isConnected()) {
-            orderDetailViewState = orderDetailViewState.copy(
+            viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
             val fetchedOrder = orderDetailRepository.fetchOrder(navArgs.orderId)
@@ -166,14 +166,14 @@ class OrderDetailViewModel @AssistedInject constructor(
             } else {
                 triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
             }
-            orderDetailViewState = orderDetailViewState.copy(
+            viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            orderDetailViewState = orderDetailViewState.copy(isOrderDetailSkeletonShown = false)
-            orderDetailViewState = orderDetailViewState.copy(
+            viewState = viewState.copy(isOrderDetailSkeletonShown = false)
+            viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
             )
@@ -188,7 +188,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     fun onRefreshRequested() {
         AnalyticsTracker.track(Stat.ORDER_DETAIL_PULLED_TO_REFRESH)
-        orderDetailViewState = orderDetailViewState.copy(isRefreshing = true)
+        viewState = viewState.copy(isRefreshing = true)
         launch { fetchOrder(false) }
     }
 
@@ -201,7 +201,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onEditOrderStatusSelected() {
-        orderDetailViewState.orderStatus?.let { orderStatus ->
+        viewState.orderStatus?.let { orderStatus ->
             triggerEvent(
                 ViewOrderStatusSelector(
                     currentStatus = orderStatus.statusKey,
@@ -282,7 +282,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
         // change the order status
         val newOrderStatus = orderDetailRepository.getOrderStatus(newStatus)
-        orderDetailViewState = orderDetailViewState.copy(
+        viewState = viewState.copy(
             orderStatus = newOrderStatus
         )
     }
@@ -349,7 +349,7 @@ class OrderDetailViewModel @AssistedInject constructor(
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = CoreOrderStatus.fromValue(newStatus) ?: order.status)
-                    orderDetailViewState = orderDetailViewState.copy(order = order)
+                    viewState = viewState.copy(order = order)
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -361,7 +361,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onOrderStatusChangeReverted() {
-        orderDetailViewState = orderDetailViewState.copy(
+        viewState = viewState.copy(
             orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         )
     }
@@ -382,7 +382,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private suspend fun updateOrderState() {
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
-        orderDetailViewState = orderDetailViewState.copy(
+        viewState = viewState.copy(
             order = order,
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
@@ -508,7 +508,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onProductImageChanged(event: OnProductImageChanged) {
-        orderDetailViewState = orderDetailViewState.copy(refreshedProductId = event.remoteProductId)
+        viewState = viewState.copy(refreshedProductId = event.remoteProductId)
     }
 
     @Parcelize

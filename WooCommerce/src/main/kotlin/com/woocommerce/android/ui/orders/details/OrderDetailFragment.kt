@@ -131,7 +131,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
-        viewModel.orderDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
