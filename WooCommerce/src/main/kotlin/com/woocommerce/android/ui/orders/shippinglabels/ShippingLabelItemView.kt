@@ -14,7 +14,7 @@ class ShippingLabelItemView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private val binding = ViewShippingLabelItemBinding.inflate(LayoutInflater.from(context))
+    private val binding = ViewShippingLabelItemBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
         if (attrs != null) {
