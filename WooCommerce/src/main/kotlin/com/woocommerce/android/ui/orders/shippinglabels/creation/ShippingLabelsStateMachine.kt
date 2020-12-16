@@ -76,6 +76,9 @@ DataLoadingFailed |                  (OpenAddressEditor)    |    |              
                                                                      AddressEditFinished
                                                                       (UpdateViewState)
 
+This diagram was created using ASCIIFlow (asciiflow.com). If you want to modify it, you can just copy the text and
+import it.
+
  */
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
