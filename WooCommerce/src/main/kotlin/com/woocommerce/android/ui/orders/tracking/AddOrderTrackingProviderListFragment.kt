@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list.*
 import javax.inject.Inject
 
 class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_tracking_provider_list),
@@ -100,7 +99,7 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
 
             new.showSkeleton.takeIfNotEqualTo(old?.showSkeleton) { show ->
                 if (show) {
-                    skeletonView.show(providersView, R.layout.skeleton_tracking_provider_list, delayed = true)
+                    skeletonView.show(binding.providersView, R.layout.skeleton_tracking_provider_list, delayed = true)
                 } else {
                     skeletonView.hide()
                 }
