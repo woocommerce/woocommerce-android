@@ -112,7 +112,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         val fragment = LoginPrologueFragment.newInstance()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-            .addToBackStack(null)
+            .addToBackStack(LoginPrologueFragment.TAG)
             .commitAllowingStateLoss()
     }
 
@@ -206,7 +206,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
 
-        showPrologueFragment()
+        // Pop all the fragments from the backstack until we get to the Prologue fragment
+        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
     }
 
     override fun onPrimaryButtonClicked() {
