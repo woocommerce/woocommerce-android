@@ -41,7 +41,7 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         productInfo_name.maxLines = maxLinesInName
 
         val productPrice = formatCurrencyForDisplay(item.price)
-        val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u00B7 " } ?: StringUtils.EMPTY
+        val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
 
         productInfo_attributes.text = context.getString(
             R.string.orderdetail_product_lineitem_attributes,
