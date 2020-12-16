@@ -480,12 +480,6 @@ class OrderDetailViewModel @AssistedInject constructor(
 
         if (shippingLabels.isVisible) {
             _shippingLabels.value = shippingLabels.list
-
-            viewState = viewState.copy(
-                isShipmentTrackingAvailable = false,
-                isProductListVisible = _productList.value?.isNotEmpty(),
-                areShippingLabelsVisible = shippingLabels.isVisible
-            )
         }
 
         if (orderProducts.isVisible) {

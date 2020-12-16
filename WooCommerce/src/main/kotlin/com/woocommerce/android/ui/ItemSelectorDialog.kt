@@ -7,7 +7,6 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ItemSelectorDialogArgs
 
 class ItemSelectorDialog : DialogFragment() {
     companion object {
@@ -21,11 +20,10 @@ class ItemSelectorDialog : DialogFragment() {
 
         val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(args.title)
-                .setSingleChoiceItems(args.values, selectedIndex) { dialog, which ->
-                    val item = args.keys[which]
-                    navigateBackWithResult(args.requestKey, item)
-                    dialog.dismiss()
-                }
+            .setSingleChoiceItems(args.keys, selectedIndex) { dialog, which ->
+                navigateBackWithResult(args.requestKey, args.values[which])
+                dialog.dismiss()
+            }
         return builder.create()
     }
 
