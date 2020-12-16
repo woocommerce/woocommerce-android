@@ -52,6 +52,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        activity?.title = getString(R.string.log_in)
         return inflater.inflate(R.layout.fragment_login_site_check_error, container, false)
     }
 
@@ -63,7 +64,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
 
         (activity as AppCompatActivity).supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.setDisplayShowTitleEnabled(false)
+            it.setDisplayShowTitleEnabled(true)
         }
 
         login_error_msg.text = errorMsg
