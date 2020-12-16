@@ -371,12 +371,14 @@
     <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
     <string name="shipping_label_edit_address_validation_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
-    <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View on Google Maps or try contacting the customer to make sure the address is correct.</string>
+    <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
     <string name="shipping_label_error_address_not_found">Address was not found</string>
     <string name="shipping_label_error_address_house_number_missing">House number missing</string>
     <string name="shipping_label_error_address_invalid_street">Invalid street</string>
     <string name="shipping_label_error_required_field">Required field</string>
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_contact_customer">Contact Customer</string>
+    <string name="shipping_label_validation_view_map">View Map</string>
 
     <!--
         Refunds
