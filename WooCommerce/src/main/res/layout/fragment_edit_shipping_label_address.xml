@@ -15,10 +15,12 @@
             android:id="@+id/errorBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/major_100"
+            android:visibility="gone"
             android:background="@color/warning_background_color"
+            android:animateLayoutChanges="true"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/errorBannerIcon"
@@ -28,12 +30,23 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:contentDescription="@string/shipping_label_edit_address_validation_error"
                 android:src="@drawable/ic_info_outline_24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/errorBannerMessage"
                 app:layout_constraintVertical_bias="0.0"
                 app:tint="@color/warning_foreground_color"
                 tools:visibility="visible" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/openMapButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping_label_validation_view_map"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/errorBannerMessage"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/errorBannerMessage"
@@ -42,13 +55,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_200"
                 android:layout_marginTop="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_100"
                 android:text="@string/shipping_label_edit_address_error_warning"
-                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
+                app:layout_constraintBottom_toTopOf="@id/openMapButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/contactCustomerButton"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping_label_validation_contact_customer"
+                app:layout_constraintEnd_toStartOf="@id/openMapButton"
+                app:layout_constraintTop_toBottomOf="@id/errorBannerMessage"
+                app:layout_constraintBottom_toTopOf="@id/errorBannerDivider" />
 
             <View
                 android:id="@+id/errorBannerDivider"
@@ -63,6 +85,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nameLayout"
             style="@style/Woo.TextInputLayout"
+            android:layout_marginTop="@dimen/major_100"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/shipping_label_edit_address_name"
