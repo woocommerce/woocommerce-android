@@ -1,18 +1,18 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.RadioButton
-import android.widget.TextView
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.DialogOrderTrackingProviderListHeaderBinding
+import com.woocommerce.android.databinding.DialogOrderTrackingProviderListItemBinding
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
-import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_header.view.*
-import kotlinx.android.synthetic.main.dialog_order_tracking_provider_list_item.view.*
 
 class AddOrderTrackingProviderListAdapter(
     private val context: Context?,
@@ -105,7 +105,7 @@ class AddOrderTrackingProviderListAdapter(
      */
     private fun getCustomProviderSection(): ProviderListSection? {
         context?.let {
-            val customShipmentProviderModel: OrderShipmentProvider =
+            val customShipmentProviderModel =
                 OrderShipmentProvider(
                     carrierName = it.getString(R.string.order_shipment_tracking_custom_provider_section_name),
                     carrierLink = "",
@@ -135,41 +135,54 @@ class AddOrderTrackingProviderListAdapter(
         override fun getContentItemsTotal() = list.size
 
         override fun getItemViewHolder(view: View): RecyclerView.ViewHolder {
-            return ItemViewHolder(view)
+            val viewBinding = DialogOrderTrackingProviderListItemBinding.inflate(
+                LayoutInflater.from(view.context),
+                view as ViewGroup,
+                false
+            )
+            return ItemViewHolder(viewBinding)
         }
 
         override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val provider = list[position]
             val itemHolder = holder as ItemViewHolder
-
-            itemHolder.providerName.text = provider.carrierName
-
-            val isChecked = provider.carrierName == selectedCarrierName
-            itemHolder.selectedProviderRadioButton.isVisible = isChecked
-            itemHolder.selectedProviderRadioButton.isChecked = isChecked
-
-            itemHolder.rootView.setOnClickListener {
-                listener.onProviderClick(provider)
-            }
+            itemHolder.bind(provider)
         }
 
         override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
-            return HeaderViewHolder(view)
+            val viewBinding = DialogOrderTrackingProviderListHeaderBinding.inflate(
+                LayoutInflater.from(view.context),
+                view as ViewGroup,
+                false
+            )
+            return HeaderViewHolder(viewBinding)
         }
 
         override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder) {
             val headerViewHolder = holder as HeaderViewHolder
-            headerViewHolder.title.text = country
+            headerViewHolder.bind(country)
         }
     }
 
-    private class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var providerName: TextView = view.addShipmentTrackingProviderListItem_name
-        var selectedProviderRadioButton: RadioButton = view.addShipmentTrackingProviderListItem_tick
-        var rootView = view
+    private inner class ItemViewHolder(private var viewBinding: DialogOrderTrackingProviderListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(provider: OrderShipmentProvider) {
+            viewBinding.addShipmentTrackingProviderListItemName.text = provider.carrierName
+
+            val isChecked = provider.carrierName == selectedCarrierName
+            viewBinding.addShipmentTrackingProviderListItemTick.isVisible = isChecked
+            viewBinding.addShipmentTrackingProviderListItemTick.isChecked = isChecked
+
+            viewBinding.root.setOnClickListener {
+                listener.onProviderClick(provider)
+            }
+        }
     }
 
-    private class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.providerListHeader
+    private class HeaderViewHolder(private var viewBinding: DialogOrderTrackingProviderListHeaderBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(country: String) {
+            viewBinding.providerListHeader.text = country
+        }
     }
 }
