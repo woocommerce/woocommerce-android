@@ -1,3 +1,0 @@
-5.5:
-Anda meminta, kami menyediakannya! Sekarang Anda dapat membuat produk sederhana, dikelompokkan, dan eksternal langsung dari perangkat seluler Android favorit Anda. Ubah ide jadi produk nyata – bahkan tanpa mesti duduk di depan komputer.
-Perbaikan lainnya: Kami memperbaiki bug yang memengaruhi nama variasi produk ketika opsi variasi "dibuka", serta salah ketik pada layar label pengiriman.

@@ -140,7 +140,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
@@ -568,7 +567,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         isSearching = true
         checkOrientation()
         removeTabLayoutFromAppBar()
-        expandMainToolbar(false, animate = true)
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
@@ -583,8 +582,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
-        restoreMainToolbar()
         addTabLayoutToAppBar()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 

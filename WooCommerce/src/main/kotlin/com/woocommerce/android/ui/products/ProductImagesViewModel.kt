@@ -53,7 +53,7 @@ class ProductImagesViewModel @AssistedInject constructor(
         ViewState(
             isDoneButtonVisible = false,
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
-            isImageDeletingAllowed = isMultiSelectionAllowed,
+            isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
             isWarningVisible = !isMultiSelectionAllowed,
             isDragDropDescriptionVisible = isMultiSelectionAllowed

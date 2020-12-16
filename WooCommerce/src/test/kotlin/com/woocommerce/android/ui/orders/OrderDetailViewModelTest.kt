@@ -44,6 +44,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -81,7 +82,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderWithParameters = ViewState(
         order = order,
         isRefreshing = false,
-        isOrderNotesSkeletonShown = false,
         isOrderDetailSkeletonShown = false,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
@@ -148,18 +148,24 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
 
         var orderData: ViewState? = null
-        viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
+        viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
         val orderNotes = ArrayList<OrderNote>()
         viewModel.orderNotes.observeForever {
-            it?.let { orderNotes.addAll(it) }
+            it?.let {
+                orderNotes.clear()
+                orderNotes.addAll(it)
+            }
         }
 
         // order shipment Trackings
         val shipmentTrackings = ArrayList<OrderShipmentTracking>()
         viewModel.shipmentTrackings.observeForever {
-            it?.let { shipmentTrackings.addAll(it) }
+            it?.let {
+                shipmentTrackings.clear()
+                shipmentTrackings.addAll(it)
+            }
         }
 
         // product list should not be empty when shipping labels are not available and products are not refunded
@@ -323,7 +329,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             var areProductsVisible: Boolean? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new ->
+            viewModel.viewStateData.observeForever { _, new ->
                 areProductsVisible = new.isProductListVisible
             }
 
@@ -356,7 +362,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             var areProductsVisible: Boolean? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new ->
+            viewModel.viewStateData.observeForever { _, new ->
                 areProductsVisible = new.isProductListVisible
             }
 
@@ -384,7 +390,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
 
             var orderData: ViewState? = null
-            viewModel.orderDetailViewStateData.observeForever { _, new -> orderData = new }
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()
             viewModel.shippingLabels.observeForever {
@@ -420,10 +426,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(null).whenever(repository).getOrder(any())
 
             val isSkeletonShown = ArrayList<Boolean>()
-            viewModel.orderDetailViewStateData.observeForever { old, new ->
+            viewModel.viewStateData.observeForever { old, new ->
                 new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) {
                     isSkeletonShown.add(it)
-                } }
+                }
+            }
 
             viewModel.start()
             assertThat(isSkeletonShown).containsExactly(false, true, false)
@@ -473,7 +480,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         val orderStatusList = ArrayList<OrderStatus>()
-        viewModel.orderDetailViewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { old, new ->
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { orderStatusList.add(it) }
         }
 
@@ -515,7 +522,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
         var newOrder: Order? = null
-        viewModel.orderDetailViewStateData.observeForever { old, new ->
+        viewModel.viewStateData.observeForever { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { newOrder = it }
         }
 
@@ -545,68 +552,36 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not add shipment tracking when not connected`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(order).whenever(repository).getOrder(any())
-        doReturn(false).whenever(networkStatus).isConnected()
+    fun `refresh shipping tracking items when an item is added`() = runBlockingTest {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
 
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+        doReturn(order).whenever(repository).getOrder(any())
+        doReturn(order).whenever(repository).fetchOrder(any())
+
+        doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
+
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
+        doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
+            .whenever(repository).getOrderShipmentTrackings(any())
+
+        doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
+
+        var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
+        viewModel.shipmentTrackings.observeForever {
+            it?.let { orderShipmentTrackings = it }
         }
 
         viewModel.start()
-
-        val shipmentTracking = testOrderShipmentTrackings[0].copy(isCustomProvider = false)
         viewModel.onNewShipmentTrackingAdded(shipmentTracking)
 
-        verify(repository, times(0)).addOrderShipmentTracking(any(), any(), any(), any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
+        verify(repository, times(2)).getOrderShipmentTrackings(any())
+        assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
     }
-
-    @Test
-    fun `Add shipment tracking - Displays add shipment tracking snackbar correctly`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
-            val shipmentTracking = OrderShipmentTracking(
-                trackingNumber = "12345",
-                trackingProvider = "test",
-                dateShipped = "132434323",
-                isCustomProvider = true
-            )
-
-            doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
-
-            doReturn(order).whenever(repository).getOrder(any())
-            doReturn(order).whenever(repository).fetchOrder(any())
-
-            doReturn(false).whenever(repository).fetchOrderNotes(any(), any())
-            doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())
-
-            val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
-            addedShipmentTrackings.add(shipmentTracking)
-
-            doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings).whenever(repository)
-                .getOrderShipmentTrackings(any())
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderShipmentTrackingList(any(), any())
-            doReturn(true).whenever(repository).addOrderShipmentTracking(any(), any(), any(), any())
-
-            doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
-
-            var snackbar: ShowSnackbar? = null
-            viewModel.event.observeForever {
-                if (it is ShowSnackbar) snackbar = it
-            }
-
-            var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
-            viewModel.shipmentTrackings.observeForever {
-                it?.let { orderShipmentTrackings = it }
-            }
-
-            viewModel.start()
-            viewModel.onNewShipmentTrackingAdded(shipmentTracking)
-
-            verify(repository, times(1)).addOrderShipmentTracking(any(), any(), any(), any())
-            assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_shipment_tracking_added))
-            assertThat(orderShipmentTrackings.size).isEqualTo(addedShipmentTrackings.size)
-        }
 }

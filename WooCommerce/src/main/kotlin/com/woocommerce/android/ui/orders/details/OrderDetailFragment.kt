@@ -16,6 +16,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -40,7 +41,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.orders.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -123,7 +124,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
-        viewModel.orderDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) { showOrderDetail(it) }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -143,9 +144,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
-            new.isOrderNotesSkeletonShown?.takeIfNotEqualTo(old?.isOrderNotesSkeletonShown) {
-                showOrderNotesSkeleton(it)
-            }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 showAddShipmentTracking(it)
             }
@@ -184,7 +182,7 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
-        handleResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT) {
+        handleDialogResult<String>(OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT, R.id.orderDetailFragment) {
             viewModel.onOrderStatusChanged(it)
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
@@ -235,10 +233,6 @@ class OrderDetailFragment : BaseFragment(), NavigationResult, OrderProductAction
             true -> skeletonView.show(orderDetail_container, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
-    }
-
-    private fun showOrderNotesSkeleton(show: Boolean) {
-        orderDetail_noteList.showSkeleton(show)
     }
 
     private fun refreshProduct(remoteProductId: Long) {

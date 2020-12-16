@@ -278,7 +278,7 @@
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label refund requested</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
@@ -314,7 +314,7 @@
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
     <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
-    <string name="shipping_label_refund_success">Refund was successfully submitted</string>
+    <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
@@ -478,6 +478,9 @@
     <string name="order_shipment_tracking_empty_custom_provider_name">Please enter a carrier name</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Custom</string>
     <string name="order_shipment_tracking_custom_provider_section_name">Custom Carrier</string>
+    <string name="order_shipment_tracking_progress_title">Adding tracking</string>
+    <string name="order_shipment_tracking_progress_message">Please wait</string>
+
     <!--
         Notifications
     -->
@@ -736,6 +739,7 @@
     -->
     <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
     <string name="variation_detail_update_variation_error">Error updating variation</string>
+    <string name="variation_detail_update_variation_image_error">Sorry, image removal on product variations is supported in WooCommerce 4.7 or greater.</string>
     <string name="variation_detail_update_product_success">Variation updated</string>
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>

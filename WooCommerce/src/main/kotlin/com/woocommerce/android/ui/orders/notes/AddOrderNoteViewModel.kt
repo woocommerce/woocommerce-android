@@ -118,6 +118,11 @@ class AddOrderNoteViewModel @AssistedInject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        orderDetailRepository.onCleanup()
+    }
+
     @Parcelize
     data class ViewState(
         val draftNote: OrderNote = OrderNote(note = "", isCustomerNote = false),

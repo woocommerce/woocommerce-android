@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-27 10:54:04+0000
+Translation-Revision-Date: 2020-12-10 17:54:56+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Validasi</string>
+    <string name="product_images_drag_and_drop_description">Tarik dan lepas untuk mengurutkan foto</string>
     <string name="product_downloadable_files_download_settings">Pengaturan Unduh</string>
     <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
     <string name="product_downloadable_files_add_manually">Masukkan URL file</string>
@@ -789,7 +791,6 @@ Language: id
     <string name="order_shipment_tracking_delete_error">Terjadi error saat menghapus pelacakan</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Pelacakan pengiriman dihapus</string>
     <string name="order_shipment_tracking_add_button">Tambahkan pelacakan</string>
-    <string name="order_shipment_tracking_add_label">Informasi pelacakan opsional</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Lacak atau hapus pelacakan pengiriman</string>
     <string name="orderdetail_delete_tracking">Hapus pelacakan</string>
     <string name="orderdetail_track_shipment">Lacak pengiriman</string>
@@ -848,7 +849,6 @@ Language: id
     <string name="product_name">Judul</string>
     <string name="product_detail_fetch_product_error">Terjadi error saat mengambil produk</string>
     <string name="add_order_note_invalid_order">Pesanan tidak valid</string>
-    <string name="order_shipment_tracking_shipped_date">Dikirimkan %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Salin nomor pelacakan ke clipboard</string>
     <string name="order_shipment_tracking_section_cd">Pelacakan pengiriman</string>
     <string name="order_shipment_tracking_button">Lacak paket</string>
@@ -908,7 +908,6 @@ Language: id
     <string name="review_moderation_undo">Ulasan ditandai %1$s</string>
     <string name="add_order_note_sublabel">Jika dinonaktifkan, catatan akan diatur sebagai pribadi</string>
     <string name="order_error_fetch_generic">Terjadi error saat mengambil pesanan</string>
-    <string name="dashboard_fulfill_orders_msg">Tinjau, siapkan, dan kirimkan pesanan yang tertunda ini</string>
     <string name="back">Kembali</string>
     <string name="notification_channel_review_title">Pemberitahuan ulasan produk</string>
     <string name="notification_channel_order_title">Pemberitahuan pesanan baru</string>
@@ -1083,13 +1082,11 @@ Language: id
     <string name="order_error_update_general">Error saat mengubah pesanan</string>
     <string name="order_error_fetch_notes_generic">Error saat mengambil catatan error</string>
     <string name="order_fulfill_marked_complete">Pesanan Ditandai Selesai</string>
-    <string name="order_fulfill_mark_complete">Tandai Pesanan Selesai</string>
     <string name="orderdetail_addnote_contentdesc">Tambahkan catatan pesanan</string>
     <string name="orderdetail_add_note">Tambahkan catatan</string>
     <string name="orderdetail_hide_billing">Sembunyikan Tagihan</string>
     <string name="orderdetail_show_billing">Tampilkan Tagihan</string>
     <string name="orderdetail_payment_cleared">Pembayaran Beres</string>
-    <string name="orderdetail_order_fulfillment">Penuhi Pesanan #%s</string>
     <string name="orderdetail_order_notes">Catatan Pesanan</string>
     <string name="orderdetail_note_private">Pribadi</string>
     <string name="orderdetail_note_hint">Tulis catatan pesanan</string>
@@ -1114,8 +1111,6 @@ Language: id
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Tidak Ada Pesanan</string>
-    <string name="dashboard_fulfill_order_title_multiple">Anda memiliki %1$d pesanan untuk dipenuhi</string>
-    <string name="dashboard_fulfill_order_title_single">Anda memiliki 1 pesanan untuk dipenuhi</string>
     <string name="dashboard_action_view_orders">Lihat Pesanan</string>
     <string name="dashboard_action_view_order">Lihat Pesanan</string>
     <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 16:54:04+0000
+Translation-Revision-Date: 2020-12-14 17:08:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Doğrula</string>
+    <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
     <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
     <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
     <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>
@@ -40,6 +42,7 @@ Language: tr
     <string name="product_wip_message_m4">Artık hareket halindeyken Woo uygulamasından basit, bağlantılı ve gruplandırılmış ürünler oluşturmak mümkün. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
     <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b>doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b> Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
     <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b>aynı WiFi ağlarına&lt;/b> bağlı olduğundan emin olun</string>
+    <string name="settings_enable_product_adding_teaser_message">Yayına hazırlanırken yeni, basit, bağlantılı ve gruplandırılmış ürün oluşturma özelliğini deneyin</string>
     <string name="bottom_sheet_linked_products_desc">Yukarı satış ve çapraz satış ile satışları artırın</string>
     <string name="edit_products_button">Ürünleri düzenle</string>
     <string name="add_products_button">Ürünleri ekle</string>
@@ -215,6 +218,7 @@ Language: tr
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_refund_title">%1$s etiket iade edildi</string>
     <string name="orderdetail_shipping_label_tracking_info">Gönderimi takip et</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Gönderi ayrıntılarını gizle</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Gönderi ayrıntılarını göster</string>
     <string name="orderdetail_shipping_label_item_payment_type">Kredi kartı</string>
@@ -788,7 +792,6 @@ Language: tr
     <string name="order_shipment_tracking_delete_error">Takip silinirken hata oluştu</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Silinen gönderim takibi</string>
     <string name="order_shipment_tracking_add_button">Takip ekle</string>
-    <string name="order_shipment_tracking_add_label">İsteğe bağlı takip bilgileri</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Gönderim takibini takip et veya sil</string>
     <string name="orderdetail_delete_tracking">Takibi sil</string>
     <string name="orderdetail_track_shipment">Gönderimi takip et</string>
@@ -847,7 +850,6 @@ Language: tr
     <string name="product_name">Başlık</string>
     <string name="product_detail_fetch_product_error">Ürün alınırken hata</string>
     <string name="add_order_note_invalid_order">Geçersiz sipariş</string>
-    <string name="order_shipment_tracking_shipped_date">Gönderim tarihi: %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">İzleme numarasını panoya kopyala</string>
     <string name="order_shipment_tracking_section_cd">Gönderim takibi</string>
     <string name="order_shipment_tracking_button">Paketi izle</string>
@@ -907,7 +909,6 @@ Language: tr
     <string name="review_moderation_undo">İnceleme %1$s olarak işaretlendi</string>
     <string name="add_order_note_sublabel">Devre dışıysa not gizli olur</string>
     <string name="order_error_fetch_generic">Sipariş alınırken hata oluştu</string>
-    <string name="dashboard_fulfill_orders_msg">Bu bekleyen siparişleri inceleyin, hazırlayın ve gönderin</string>
     <string name="back">Geri</string>
     <string name="notification_channel_review_title">Ürün incelemesi uyarıları</string>
     <string name="notification_channel_order_title">Yeni sipariş uyarıları</string>
@@ -1082,13 +1083,11 @@ Language: tr
     <string name="order_error_update_general">Sipariş değişikliği hatası</string>
     <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
-    <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
     <string name="orderdetail_show_billing">Faturayı Gösterin</string>
     <string name="orderdetail_payment_cleared">Ödeme Tamamlandı</string>
-    <string name="orderdetail_order_fulfillment">%s Numaralı Siparişi Yerine Getirin</string>
     <string name="orderdetail_order_notes">Sipariş Notları</string>
     <string name="orderdetail_note_private">Özel</string>
     <string name="orderdetail_note_hint">Sipariş notu oluşturun</string>
@@ -1113,8 +1112,6 @@ Language: tr
     <string name="orderlist_item_order_name">%1$s %2$s</string>
     <string name="orderlist_item_order_num">#%s</string>
     <string name="orderlist_no_orders">Sipariş Yok</string>
-    <string name="dashboard_fulfill_order_title_multiple">%1$d sipariş yerine getirilmeyi bekliyor</string>
-    <string name="dashboard_fulfill_order_title_single">1 sipariş yerine getirilmeyi bekliyor</string>
     <string name="dashboard_action_view_orders">Siparişleri Görüntüle</string>
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
     <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
