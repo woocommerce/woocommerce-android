@@ -10,6 +10,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -40,11 +41,19 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address, isStateFieldSpinner = false))
     private var viewState by viewStateData
 
-    private val countries: List<WCLocationModel>
-        get() = dataStore.getCountries()
+    private val countries: List<WCLocationModel> by lazy {
+        dataStore.getCountries()
+    }
+
+    private val states: List<WCLocationModel> by lazy {
+        viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
+    }
 
     private val selectedCountry: String?
         get() = countries.firstOrNull { it.code == viewState.address?.country }?.name
+
+    private val selectedState: String?
+        get() = states.firstOrNull { it.code == viewState.address?.state }?.name
 
     init {
         viewState = viewState.copy(
@@ -80,7 +89,12 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 viewState = viewState.copy(isProgressDialogVisible = true)
                 dataStore.fetchCountriesAndStates(site.get())
             }
-            viewState = viewState.copy(isProgressDialogVisible = false, selectedCountryName = selectedCountry)
+            viewState = viewState.copy(
+                isProgressDialogVisible = false,
+                selectedCountryName = selectedCountry,
+                selectedStateName = selectedState,
+                isStateFieldSpinner = states.isNotEmpty()
+            )
         }
     }
 
@@ -145,9 +159,18 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
     }
 
+    fun onStateSpinnerTapped() {
+        triggerEvent(ShowStateSelector(states, viewState.address?.state))
+    }
+
     fun onCountrySelected(country: String) {
         viewState = viewState.copy(address = viewState.address?.copy(country = country))
         viewState = viewState.copy(selectedCountryName = selectedCountry)
+    }
+
+    fun onStateSelected(state: String) {
+        viewState = viewState.copy(address = viewState.address?.copy(state = state))
+        viewState = viewState.copy(selectedStateName = selectedState)
     }
 
     fun onExit() {
@@ -171,6 +194,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         val isProgressDialogVisible: Boolean? = null,
         val isStateFieldSpinner: Boolean? = null,
         val selectedCountryName: String? = null,
+        val selectedStateName: String? = null,
         @StringRes val nameError: Int? = null,
         @StringRes val addressError: Int? = null,
         @StringRes val cityError: Int? = null,

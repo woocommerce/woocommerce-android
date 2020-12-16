@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -102,6 +103,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             viewModel.onCountrySelected(it)
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
+            viewModel.onStateSelected(it)
         }
     }
 
@@ -135,9 +137,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                 binding.address2.setText(it.address2)
                 binding.zip.setText(it.postcode)
                 binding.state.setText(it.state)
-                binding.stateSpinner.setText(it.state)
                 binding.city.setText(it.city)
                 binding.countrySpinner.tag = it.country
+                binding.stateSpinner.tag = it.state
             }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
@@ -172,6 +174,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             new.selectedCountryName?.takeIfNotEqualTo(old?.selectedCountryName) {
                 binding.countrySpinner.setText(it)
             }
+            new.selectedStateName?.takeIfNotEqualTo(old?.selectedStateName) {
+                binding.stateSpinner.setText(it)
+            }
             new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
                 binding.stateSpinner.isVisible = isSpinner
                 binding.stateLayout.isVisible = !isSpinner
@@ -199,6 +204,17 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                             event.locations.map { it.code }.toTypedArray(),
                             SELECT_COUNTRY_REQUEST,
                             getString(R.string.shipping_label_edit_address_country)
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowStateSelector -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                            event.currentState,
+                            event.locations.map { it.name }.toTypedArray(),
+                            event.locations.map { it.code }.toTypedArray(),
+                            SELECT_STATE_REQUEST,
+                            getString(R.string.shipping_label_edit_address_state)
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -235,6 +251,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
         binding.countrySpinner.setClickListener {
             viewModel.onCountrySpinnerTapped()
+        }
+        binding.stateSpinner.setClickListener {
+            viewModel.onStateSpinnerTapped()
         }
     }
 
