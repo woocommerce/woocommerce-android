@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_generic_error.*
+import kotlinx.android.synthetic.main.fragment_login_site_check_error.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_login_generic_error, container, false)
+        return inflater.inflate(R.layout.fragment_login_site_check_error, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
