@@ -11,7 +11,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -38,7 +37,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address, isStateFieldSpinner = false))
+    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
     private val countries: List<WCLocationModel> by lazy {
@@ -65,7 +64,16 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         )
 
         arguments.validationResult?.let {
-            handleValidationResult(arguments.address, it)
+            if (it is ValidationResult.Invalid) {
+                viewState = viewState.copy(
+                    addressError = getAddressErrorStringRes(it.message),
+                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
+                )
+            } else if (it is ValidationResult.NotFound) {
+                viewState = viewState.copy(
+                    bannerMessage = resourceProvider.getString(R.string.shipping_label_edit_address_error_warning)
+                )
+            }
         }
 
         loadCountriesAndStates()
@@ -74,9 +82,9 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     fun onDoneButtonClicked(address: Address) {
         if (areRequiredFieldsValid(address)) {
             launch {
-                viewState = viewState.copy(isProgressDialogVisible = true)
-                clearErrors()
+                viewState = viewState.copy(address = address, isProgressDialogVisible = true)
                 val result = addressValidator.validateAddress(address, arguments.addressType)
+                clearErrors()
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isProgressDialogVisible = false)
             }
@@ -101,16 +109,18 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun handleValidationResult(address: Address, result: ValidationResult) {
         when (result) {
             ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
-            is ValidationResult.Invalid -> viewState = viewState.copy(addressError = getStringResource(result.message))
-            is ValidationResult.SuggestedChanges -> triggerEvent(ShowSuggestedAddress(address, result.suggested))
+            is ValidationResult.Invalid -> viewState = viewState.copy(addressError = getAddressErrorStringRes(result.message))
+            is ValidationResult.SuggestedChanges -> {
+                triggerEvent(ExitWithResult(address)) // triggerEvent(ShowSuggestedAddress(address, result.suggested))
+            }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
                     bannerMessage = resourceProvider.getString(
                         R.string.shipping_label_validation_error_template,
-                        resourceProvider.getString(getStringResource(result.message))
+                        resourceProvider.getString(getAddressErrorStringRes(result.message))
                     )
                 )
-                triggerEvent(ShowSnackbar(getStringResource(result.message)))
+                triggerEvent(ShowSnackbar(getAddressErrorStringRes(result.message)))
             }
             is ValidationResult.Error -> triggerEvent(
                 ShowSnackbar(R.string.shipping_label_edit_address_validation_error)
@@ -178,7 +188,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     // errors are returned as hardcoded strings :facepalm:
-    private fun getStringResource(message: String): Int {
+    private fun getAddressErrorStringRes(message: String): Int {
         return when (message) {
             "House number is missing" -> R.string.shipping_label_error_address_house_number_missing
             "Street is invalid" -> R.string.shipping_label_error_address_invalid_street
