@@ -1,0 +1,4 @@
+5.6:
+Hemos respondido a tus peticiones. Ahora, puedes crear productos simples, agrupados y externos para tu tienda directamente desde tus dispositivos móviles Android favoritos. Convierte tus ideas en productos, incluso cuando no estés usando tu computadora.
+
+También hemos actualizado la interfaz de usuario con un diseño más limpio y nítido, y hemos corregido un error en los detalles del pedido que hará que el seguimiento de los envíos sea pan comido.
