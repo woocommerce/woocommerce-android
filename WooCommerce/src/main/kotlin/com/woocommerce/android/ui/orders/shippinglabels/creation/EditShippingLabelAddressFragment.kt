@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -16,9 +17,11 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditShippingLabelAddressBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
@@ -26,6 +29,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -38,6 +42,10 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val SELECT_COUNTRY_REQUEST = "select_country_request"
+        const val SELECT_STATE_REQUEST = "select_state_request"
+    }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
@@ -80,8 +88,21 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        subscribeObservers()
+        initializeViewModel()
         initializeViews()
+    }
+
+    private fun initializeViewModel() {
+        subscribeObservers()
+        setupResultHandlers()
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<String>(SELECT_COUNTRY_REQUEST) {
+            viewModel.onCountrySelected(it)
+        }
+        handleResult<String>(SELECT_STATE_REQUEST) {
+        }
     }
 
     override fun getFragmentTitle() = screenTitle
@@ -114,8 +135,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                 binding.address2.setText(it.address2)
                 binding.zip.setText(it.postcode)
                 binding.state.setText(it.state)
+                binding.stateSpinner.setText(it.state)
                 binding.city.setText(it.city)
-                binding.country.setText(it.country)
+                binding.countrySpinner.tag = it.country
             }
             new.title?.takeIfNotEqualTo(old?.title) {
                 screenTitle = getString(it)
@@ -147,20 +169,38 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                     hideProgressDialog()
                 }
             }
+            new.selectedCountryName?.takeIfNotEqualTo(old?.selectedCountryName) {
+                binding.countrySpinner.setText(it)
+            }
+            new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
+                binding.stateSpinner.isVisible = isSpinner
+                binding.stateLayout.isVisible = !isSpinner
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_DIALOG_RESULT,
+                    CreateShippingLabelFragment.EDIT_ADDRESS_RESULT,
                     event.data
                 )
                 is CancelAddressEditing -> navigateBackWithNotice(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_DIALOG_CLOSED
+                    CreateShippingLabelFragment.EDIT_ADDRESS_CLOSED
                 )
                 is Exit -> findNavController().navigateUp()
                 is ShowSuggestedAddress -> {
+                }
+                is ShowCountrySelector -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
+                            event.currentCountry,
+                            event.locations.map { it.name }.toTypedArray(),
+                            event.locations.map { it.code }.toTypedArray(),
+                            SELECT_COUNTRY_REQUEST,
+                            getString(R.string.shipping_label_edit_address_country)
+                        )
+                    findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false
             }
@@ -193,6 +233,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         binding.btnUsAddressAsIs.setOnClickListener {
             viewModel.onUseAddressAsIsButtonClicked(gatherData())
         }
+        binding.countrySpinner.setClickListener {
+            viewModel.onCountrySpinnerTapped()
+        }
     }
 
     private fun gatherData(): Address {
@@ -206,7 +249,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             postcode = binding.zip.text.toString(),
             state = binding.state.text.toString(),
             city = binding.city.text.toString(),
-            country = binding.country.text.toString(),
+            country = binding.countrySpinner.tag as String,
             email = ""
         )
     }

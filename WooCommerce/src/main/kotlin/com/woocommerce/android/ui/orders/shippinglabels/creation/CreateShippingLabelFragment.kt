@@ -35,8 +35,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class CreateShippingLabelFragment : BaseFragment() {
     companion object {
-        const val EDIT_ADDRESS_DIALOG_RESULT = "key_edit_address_dialog_result"
-        const val EDIT_ADDRESS_DIALOG_CLOSED = "key_edit_address_dialog_closed"
+        const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
+        const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -74,10 +74,10 @@ class CreateShippingLabelFragment : BaseFragment() {
     }
 
     private fun setupResultHandlers() {
-        handleResult<Address>(EDIT_ADDRESS_DIALOG_RESULT) {
+        handleResult<Address>(EDIT_ADDRESS_RESULT) {
             viewModel.onAddressEditConfirmed(it)
         }
-        handleNotice(EDIT_ADDRESS_DIALOG_CLOSED) {
+        handleNotice(EDIT_ADDRESS_CLOSED) {
             viewModel.onAddressEditCanceled()
         }
     }

@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import org.wordpress.android.fluxc.model.data.WCLocationModel
 
 sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class ShowAddressEditor(
@@ -18,4 +19,9 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     ) : CreateShippingLabelEvent()
 
     object CancelAddressEditing : CreateShippingLabelEvent()
+
+    data class ShowCountrySelector(
+        val locations: List<WCLocationModel>,
+        val currentCountry: String?
+    ) : CreateShippingLabelEvent()
 }

@@ -193,6 +193,19 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/stateSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/major_100"
+            android:textAppearance="@style/TextAppearance.Woo.Caption"
+            android:hint="@string/shipping_label_edit_address_state"
+            android:nextFocusForward="@+id/zip" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/zipLayout"
             style="@style/Woo.TextInputLayout"
@@ -208,28 +221,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:nextFocusForward="@+id/country" />
+                android:nextFocusForward="@+id/countrySpinner" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/countryLayout"
-            style="@style/Woo.TextInputLayout"
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/countrySpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/major_100"
+            android:textAppearance="@style/TextAppearance.Woo.Caption"
             android:hint="@string/shipping_label_edit_address_country"
-            tools:visibility="visible"
-            app:errorEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/country"
-                style="@style/Woo.TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:nextFocusForward="@+id/btnUsAddressAsIs" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:nextFocusForward="@+id/btnUsAddressAsIs" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUsAddressAsIs"

@@ -7,7 +7,9 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -21,18 +23,28 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.store.WCDataStore
 
 @ExperimentalCoroutinesApi
 class EditShippingLabelAddressViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val addressValidator: ShippingLabelAddressValidator,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val dataStore: WCDataStore,
+    private val site: SelectedSite
 ) : ScopedViewModel(savedState, dispatchers) {
     private val arguments: EditShippingLabelAddressFragmentArgs by savedState.navArgs()
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
+    val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address, isStateFieldSpinner = false))
     private var viewState by viewStateData
+
+    private val countries: List<WCLocationModel>
+        get() = dataStore.getCountries()
+
+    private val selectedCountry: String?
+        get() = countries.firstOrNull { it.code == viewState.address?.country }?.name
 
     init {
         viewState = viewState.copy(
@@ -46,6 +58,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         arguments.validationResult?.let {
             handleValidationResult(arguments.address, it)
         }
+
+        loadCountriesAndStates()
     }
 
     fun onDoneButtonClicked(address: Address) {
@@ -57,6 +71,16 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isProgressDialogVisible = false)
             }
+        }
+    }
+
+    private fun loadCountriesAndStates() {
+        launch {
+            if (countries.isEmpty()) {
+                viewState = viewState.copy(isProgressDialogVisible = true)
+                dataStore.fetchCountriesAndStates(site.get())
+            }
+            viewState = viewState.copy(isProgressDialogVisible = false, selectedCountryName = selectedCountry)
         }
     }
 
@@ -117,6 +141,15 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         }
     }
 
+    fun onCountrySpinnerTapped() {
+        triggerEvent(ShowCountrySelector(countries, viewState.address?.country))
+    }
+
+    fun onCountrySelected(country: String) {
+        viewState = viewState.copy(address = viewState.address?.copy(country = country))
+        viewState = viewState.copy(selectedCountryName = selectedCountry)
+    }
+
     fun onExit() {
         triggerEvent(CancelAddressEditing)
     }
@@ -136,6 +169,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         val address: Address? = null,
         val bannerMessage: String? = null,
         val isProgressDialogVisible: Boolean? = null,
+        val isStateFieldSpinner: Boolean? = null,
+        val selectedCountryName: String? = null,
         @StringRes val nameError: Int? = null,
         @StringRes val addressError: Int? = null,
         @StringRes val cityError: Int? = null,
