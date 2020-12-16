@@ -139,6 +139,7 @@ class MyStoreFragment : TopLevelFragment(),
                 tab.select()
             }
         }
+        tabLayout.setId(R.id.stats_tab_layout)
 
         my_store_date_bar.initView()
         my_store_stats.initView(
@@ -468,4 +469,6 @@ class MyStoreFragment : TopLevelFragment(),
     }
 
     private fun isEmptyViewShowing() = empty_view.visibility == View.VISIBLE
+
+    override fun isScrolledToTop() = stats_scroll_view.scrollY == 0
 }

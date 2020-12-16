@@ -1,4 +1,0 @@
-5.5:
-Ürünler: Artık basit, gruplanmış ve harici ürünler ekleyebilir ve ürünleri taslak olarak kaydedebilirsiniz. Yakında deneyebileceğiniz daha fazla yeni özellik sunacağız.
-
-Diğer düzeltmeler: Varyasyon seçeneği "açık" olduğunda ürün varyasyon adlarını etkileyen bir hata ve gönderim etiketi ekranındaki bir yazım hatası düzeltilmiştir.

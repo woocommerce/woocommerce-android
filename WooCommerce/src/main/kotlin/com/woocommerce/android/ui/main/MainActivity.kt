@@ -8,15 +8,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -53,6 +55,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
+import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import com.woocommerce.android.widgets.WCPromoDialog
 import com.woocommerce.android.widgets.WCPromoDialog.PromoButton
 import com.woocommerce.android.widgets.WCPromoTooltip
@@ -62,6 +65,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -76,7 +80,8 @@ class MainActivity : AppUpgradeActivity(),
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
     NavController.OnDestinationChangedListener,
-    WCPromoDialog.PromoDialogListener {
+    WCPromoDialog.PromoDialogListener,
+    ViewGroup.OnHierarchyChangeListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -117,6 +122,11 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
+    private var isToolbarExpanded = true
+    private var restoreToolbarHeight = 0
+
+    private val toolbarEnabledBehavior = AppBarLayout.Behavior()
+    private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
 
     private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
@@ -146,9 +156,8 @@ class MainActivity : AppUpgradeActivity(),
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-
-        // Set the toolbar
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(toolbar)
+        toolbar.navigationIcon = null
 
         presenter.takeView(this)
 
@@ -192,6 +201,16 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        // detect when the collapsible toolbar if fully expanded
+        app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            if (isAtNavigationRoot()) {
+                isToolbarExpanded = (verticalOffset == 0)
+            }
+        })
+
+        // see overridden onChildViewAdded() and onChildViewRemoved() below
+        app_bar_layout.setOnHierarchyChangeListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -231,10 +250,6 @@ class MainActivity : AppUpgradeActivity(),
         updateOrderBadge(false)
 
         checkConnection()
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -368,13 +383,12 @@ class MainActivity : AppUpgradeActivity(),
             container.visibility = View.INVISIBLE
         }
 
-        val showUpIcon: Boolean
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            showUpIcon = false
+            app_bar_layout.elevation = 0f
             showCrossIcon = false
         } else {
-            showUpIcon = true
+            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
@@ -399,22 +413,30 @@ class MainActivity : AppUpgradeActivity(),
                 }
             }
         }
-        supportActionBar?.let { actionBar ->
-            actionBar.setDisplayHomeAsUpEnabled(showUpIcon)
-            @DrawableRes val icon = if (showCrossIcon) {
-                R.drawable.ic_gridicons_cross_white_24dp
-            } else {
-                R.drawable.ic_back_white_24dp
-            }
-            actionBar.setHomeAsUpIndicator(icon)
 
+        if (isAtRoot) {
+            toolbar.navigationIcon = null
+        } else if (showCrossIcon) {
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
+        } else {
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_back_24dp)
+        }
+
+        val isFullScreenFragment = destination.id == R.id.productImageViewerFragment ||
+            destination.id == R.id.wpMediaViewerFragment
+
+        supportActionBar?.let { actionBar ->
             // the image viewers should be shown full screen
-            if (destination.id == R.id.productImageViewerFragment || destination.id == R.id.wpMediaViewerFragment) {
+            if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                actionBar.hide()
+                restoreToolbarHeight = collapsing_toolbar.layoutParams.height
+                collapsing_toolbar.layoutParams.height = 0
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                actionBar.show()
+                if (restoreToolbarHeight > 0) {
+                    collapsing_toolbar.layoutParams.height = restoreToolbarHeight
+                    restoreToolbarHeight = 0
+                }
             }
         }
 
@@ -434,7 +456,42 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
+        if (!isFullScreenFragment) {
+            // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+            if (isAtRoot && isToolbarExpanded) {
+                expandToolbar(expand = true, animate = true)
+            } else if (!isAtRoot) {
+                expandToolbar(expand = false, animate = false)
+            }
+
+            // collapsible toolbar should only be able to expand for top-level fragments
+            enableToolbarExpansion(isAtRoot)
+        }
+
         previousDestinationId = destination.id
+    }
+
+    override fun setTitle(title: CharSequence?) {
+        super.setTitle(title)
+        collapsing_toolbar.title = title
+    }
+
+    fun expandToolbar(expand: Boolean, animate: Boolean) {
+        app_bar_layout.setExpanded(expand, animate)
+    }
+
+    fun enableToolbarExpansion(enable: Boolean) {
+        if (!enable) {
+            toolbar.title = title
+        }
+        collapsing_toolbar.isTitleEnabled = enable
+
+        val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
+        params.behavior = if (enable) {
+            toolbarEnabledBehavior
+        } else {
+            toolbarDisabledBehavior
+        }
     }
 
     /**
@@ -446,7 +503,6 @@ class MainActivity : AppUpgradeActivity(),
      * @param isAtRoot The value that tells if root fragment is in the current destination
      * @param destination The object for the next navigation destination
      */
-
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
@@ -622,6 +678,10 @@ class MainActivity : AppUpgradeActivity(),
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
             NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
+        }
+
+        getActiveTopLevelFragment()?.let {
+            expandToolbar(it.isScrolledToTop(), animate = false)
         }
     }
 
@@ -893,5 +953,20 @@ class MainActivity : AppUpgradeActivity(),
             actionListener = actionListener
         )
             .show()
+    }
+
+    /**
+     * These two are called from app_bar_layout when the dashboard and order list fragments add/remove the tabLayout,
+     * enabling us to set the elevation when added so there's a shadow under it. Note that we delay adding the
+     * elevation because setting it immediately after the tabLayout is added has no effect.
+     */
+    override fun onChildViewAdded(parent: View?, child: View?) {
+        parent?.postDelayed({
+            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+        }, 100L)
+    }
+
+    override fun onChildViewRemoved(parent: View?, child: View?) {
+        app_bar_layout.elevation = 0f
     }
 }

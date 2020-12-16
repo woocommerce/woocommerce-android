@@ -3,6 +3,7 @@ package com.woocommerce.android.screenshots
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.ui.main.MainActivity
@@ -14,7 +15,7 @@ import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @RunWith(AndroidJUnit4::class)
-class ScreenshotTest {
+class ScreenshotTest : TestBase() {
     @Rule @JvmField
     val localeTestRule = LocaleTestRule()
 

@@ -280,12 +280,14 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
 
     override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
         viewModel.onSearchOpened()
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
@@ -524,4 +526,6 @@ class ProductListFragment : TopLevelFragment(), OnProductClickListener, ProductS
         FeatureFeedbackSettings(PRODUCTS_M3.name, state)
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
+
+    override fun isScrolledToTop() = productsRecycler.computeVerticalScrollOffset() == 0
 }

@@ -1,3 +1,3 @@
-Products: You can now add simple, grouped, and external products and save products as drafts. We’ll have more new features for you to try out soon!
+You asked, and we listened! You can now create simple, grouped, and external products for your store directly from your favorite Android mobile devices. Turn your ideas into products, even when you’re away from your computer.
 
-Other fixes: We fixed a bug affecting product variation names when the variation option was “open,” and a typo on the shipping label screen.
+We’ve also updated our UI to a crisper, cleaner design, and we fixed a bug in order details that will make shipment tracking a breeze.

@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_TRACKING_ADD
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -124,7 +125,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         return orderDetailViewState.order?.items?.let { lineItems ->
             if (lineItems.isNotEmpty()) {
                 val remoteProductIds = lineItems.map { it.productId }
-                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).any { it.virtual }
+                orderDetailRepository.getProductsByRemoteIds(remoteProductIds).all { it.virtual }
             } else false
         } ?: false
     }
@@ -178,6 +179,13 @@ class OrderDetailViewModel @AssistedInject constructor(
 
             triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
             launch {
+                AnalyticsTracker.track(
+                    ORDER_TRACKING_ADD,
+                    mapOf(AnalyticsTracker.KEY_ID to order?.remoteId,
+                        AnalyticsTracker.KEY_STATUS to order?.status,
+                        AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider)
+                )
+
                 val addedShipmentTracking = orderDetailRepository.addOrderShipmentTracking(
                     orderIdSet.id,
                     orderIdSet.remoteOrderId,
@@ -367,7 +375,9 @@ class OrderDetailViewModel @AssistedInject constructor(
                 string.orderdetail_orderstatus_ordernum, order.number
             )
         )
-        loadOrderProducts()
+        launch {
+            loadOrderProducts()
+        }
     }
 
     private fun loadOrderNotes() {
@@ -388,13 +398,20 @@ class OrderDetailViewModel @AssistedInject constructor(
             if (networkStatus.isConnected()) {
                 _orderRefunds.value = orderDetailRepository.fetchOrderRefunds(orderIdSet.remoteOrderId)
             }
-        }
 
-        // display products only if there are some non refunded items in the list
-        loadOrderProducts()
+            // display products only if there are some non refunded items in the list
+            loadOrderProducts()
+        }
     }
 
-    private fun loadOrderProducts() {
+    private suspend fun loadOrderProducts() {
+        // local DB might be missing some products, which need to be fetched
+        val productIds = order?.items?.map { it.productId } ?: emptyList()
+        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
+        if (numLocalProducts != order?.items?.size) {
+            orderDetailRepository.fetchProductsByRemoteIds(productIds)
+        }
+
         _productList.value = order?.let { order ->
             _orderRefunds.value?.let { refunds ->
                 if (refunds.hasNonRefundedProducts(order.items)) {

@@ -1,16 +1,25 @@
 package com.woocommerce.android.widgets
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnClickListener
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
 import android.widget.ProgressBar
+import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -21,6 +30,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.downloads.DraggableItemTouchHelper
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -43,14 +53,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private const val NUM_GRID_MARGINS = 3
     }
 
-    interface OnGalleryImageClickListener {
+    interface OnGalleryImageInteractionListener {
         fun onGalleryImageClicked(image: Product.Image)
         fun onGalleryAddImageClicked() { }
+        fun onGalleryImageDragStarted() { }
+        fun onGalleryImageMoved(from: Int, to: Int) { }
+        fun onGalleryImageDeleteIconClicked(image: Product.Image) { }
     }
 
     private var imageSize = 0
     private var isGridView = false
     private var showAddImageIcon = false
+    private var isDraggingEnabled = false
 
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
@@ -58,7 +72,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val glideRequest: GlideRequest<Drawable>
     private val glideTransform: RequestOptions
 
-    private lateinit var listener: OnGalleryImageClickListener
+    private lateinit var listener: OnGalleryImageInteractionListener
+
+    private val draggableItemTouchHelper = DraggableItemTouchHelper(
+            dragDirs = ItemTouchHelper.START or
+                    ItemTouchHelper.END or
+                    ItemTouchHelper.UP or
+                    ItemTouchHelper.DOWN,
+            onDragStarted = {
+                listener.onGalleryImageDragStarted()
+            },
+            onMove = this::onProductImagesPositionChanged
+    )
 
     init {
         attrs?.let {
@@ -69,6 +94,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                         R.styleable.WCProductImageGalleryView_showAddImageIcon,
                         false
                 )
+                isDraggingEnabled = attrArray.getBoolean(R.styleable.WCProductImageGalleryView_isDraggingEnabled, false)
             } finally {
                 attrArray.recycle()
             }
@@ -111,7 +137,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         imageSize = if (isGridView) {
             val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            (screenWidth - margin * NUM_GRID_MARGINS) / 2
+            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
@@ -130,14 +157,28 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         )
     }
 
-    fun showProductImages(images: List<Product.Image>, listener: OnGalleryImageClickListener) {
+    fun showProductImages(
+        images: List<Product.Image>,
+        listener: OnGalleryImageInteractionListener
+    ) {
         this.listener = listener
         adapter.showImages(images)
+
+        updateDraggingItemTouchHelper(images)
     }
 
-    fun showProductImage(images: Product.Image, listener: OnGalleryImageClickListener) {
-        this.listener = listener
-        adapter.showImages(listOf(images))
+    fun showProductImage(image: Product.Image, listener: OnGalleryImageInteractionListener) {
+        showProductImages(listOf(image), listener)
+    }
+
+    private fun updateDraggingItemTouchHelper(images: List<Product.Image>) {
+        draggableItemTouchHelper.attachToRecyclerView(
+                if (isDraggingEnabled && images.size > 1) this else null
+        )
+    }
+
+    private fun onProductImagesPositionChanged(from: Int, to: Int) {
+        listener.onGalleryImageMoved(from, to)
     }
 
     fun clearImages() {
@@ -179,8 +220,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
     }
 
+    fun setDraggingState(isDragging: Boolean) {
+        adapter.setDraggingState(isDragging)
+    }
+
     private inner class ImageGalleryAdapter : RecyclerView.Adapter<ImageViewHolder>() {
         private val imageList = mutableListOf<Product.Image>()
+
+        val isDragging = MutableLiveData<Boolean>(false)
 
         fun clearImages() {
             imageList.clear()
@@ -211,6 +258,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (placeholders.isNotEmpty()) {
                 setPlaceholderImages(placeholders)
             }
+        }
+
+        fun setDraggingState(isDragging: Boolean) {
+            this.isDragging.value = isDragging
         }
 
         /**
@@ -288,9 +339,14 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             }
         }
 
+        override fun onViewAttachedToWindow(holder: ImageViewHolder) {
+            holder.onViewAttached()
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val holder = ImageViewHolder(
-                    layoutInflater.inflate(R.layout.image_gallery_item, parent, false)
+                    layoutInflater.inflate(R.layout.image_gallery_item, parent, false),
+                    isDragging
             )
 
             when (viewType) {
@@ -317,21 +373,50 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-            val src = getImage(position).source
+            val image = getImage(position)
+            val src = image.source
             val viewType = getItemViewType(position)
             if (viewType == VIEW_TYPE_PLACEHOLDER) {
                 glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
             } else if (viewType == VIEW_TYPE_IMAGE) {
                 val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
                 glideRequest.load(photonUrl).apply(glideTransform).into(holder.productImageView)
+                holder.bind(image)
             }
+        }
+
+        override fun onViewDetachedFromWindow(holder: ImageViewHolder) {
+            holder.onViewDetached()
         }
     }
 
-    private inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private inner class ImageViewHolder(
+        private val view: View,
+        private val isDraggingEnabled: LiveData<Boolean>
+    ) : RecyclerView.ViewHolder(view) {
         val productImageView: BorderedImageView = view.productImage
         val uploadProgress: ProgressBar = view.uploadProgess
         val addImageContainer: ViewGroup = view.addImageContainer
+
+        @SuppressLint("ClickableViewAccessibility")
+        private val dragOnTouchListener = OnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                draggableItemTouchHelper.startDrag(this@ImageViewHolder)
+            }
+            return@OnTouchListener false
+        }
+
+        private val onClickListener = OnClickListener {
+            if (adapterPosition > NO_POSITION) {
+                onImageClicked(adapterPosition)
+            }
+        }
+
+        private val onDraggingEnabledChanged: (Boolean) -> Unit = { enabled ->
+            itemView.setOnClickListener(if (enabled) null else onClickListener)
+            view.deleteImageButton.isVisible = enabled
+            itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
+        }
 
         init {
             productImageView.layoutParams.height = imageSize
@@ -340,10 +425,33 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             addImageContainer.layoutParams.height = imageSize
             addImageContainer.layoutParams.width = imageSize
 
-            itemView.setOnClickListener {
-                if (adapterPosition > NO_POSITION) {
-                    onImageClicked(adapterPosition)
+            setMargins()
+        }
+
+        fun onViewAttached() {
+            isDraggingEnabled.observeForever(onDraggingEnabledChanged)
+        }
+
+        fun onViewDetached() {
+            isDraggingEnabled.removeObserver(onDraggingEnabledChanged)
+        }
+
+        fun bind(image: Product.Image) {
+            view.deleteImageButton.setOnClickListener {
+                listener.onGalleryImageDeleteIconClicked(image)
+            }
+        }
+
+        private fun setMargins() {
+            (productImageView.layoutParams as FrameLayout.LayoutParams).apply {
+                val margin = if (isGridView) {
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(dimen.margin_medium)
+                    additionalMarginToFitDeleteIcon
+                } else {
+                    0
                 }
+
+                setMargins(margin, margin, margin, margin)
             }
         }
     }

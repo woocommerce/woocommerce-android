@@ -11,7 +11,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -20,7 +19,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.viewpager.widget.ViewPager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -94,7 +92,7 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
             }
         }
 
-        showToolbar(true)
+        fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -137,17 +135,13 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
      */
     private fun confirmRemoveProductImage() {
         isConfirmationShowing = true
-        confirmationDialog = MaterialAlertDialogBuilder(ContextThemeWrapper(
-                requireActivity(), R.style.Theme_Woo_Dialog))
-                .setMessage(R.string.product_image_remove_confirmation)
-                .setCancelable(true)
-                .setPositiveButton(R.string.remove) { _, _ ->
-                    removeCurrentImage()
-                }
-                .setNegativeButton(R.string.cancel) { _, _ ->
+        confirmationDialog = ConfirmRemoveProductImageDialog(
+                requireActivity(),
+                onPositiveButton = this::removeCurrentImage,
+                onNegativeButton = {
                     isConfirmationShowing = false
                 }
-                .show()
+        ).show()
     }
 
     private fun removeCurrentImage() {

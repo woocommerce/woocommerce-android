@@ -224,7 +224,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.downloads(): ProductProperty? {
-        if (!this.isDownloadable || this.downloads.isEmpty()) return null
+        if (!FeatureFlag.PRODUCT_RELEASE_M5.isEnabled() || !this.isDownloadable || this.downloads.isEmpty()) return null
         return ComplexProperty(
             title = R.string.product_downloadable_files,
             value = StringUtils.getQuantityString(

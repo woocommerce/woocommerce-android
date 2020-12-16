@@ -48,7 +48,7 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment() {
             it.title = getString(R.string.feedback_completed_title)
             (it as? AppCompatActivity)
                 ?.supportActionBar
-                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_white_24dp)
+                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
         }
 
         val contactUsText = getString(R.string.feedback_completed_contact_us)

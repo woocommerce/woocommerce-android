@@ -1,0 +1,4 @@
+5.6:
+Jij vraagt, wij draaien! Je kan nu rechtstreeks vanaf je favoriete mobiele Android-apparaten eenvoudige, gegroepeerde en externe producten voor je winkel aanmaken. Maak meteen werk van je ingevingen, zelfs als je onderweg bent.
+
+Daarnaast hebben we onze UI scherper en duidelijker gemaakt, en we hebben een bug bij bestelgegevens opgelost zodat het volgen van verzendingen een fluitje van een cent is.

@@ -359,7 +359,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun onDownloadLimitChanged(value: Int) {
+    fun onDownloadLimitChanged(value: Long) {
         viewState.productDraft?.let {
             updateProductDraft(
                 downloadLimit = value
@@ -588,6 +588,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
+            is ExitProductTags -> isProductDetailUpdated || !_addedProductTags.isEmpty()
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {
@@ -636,7 +637,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             return false
         } else {
             if (event is ExitProductTags) {
-                clearProductTagFilter()
+                clearProductTagsState()
             }
             return true
         }
@@ -701,7 +702,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         upsellProductIds: List<Long>? = null,
         crossSellProductIds: List<Long>? = null,
         downloads: List<ProductFile>? = null,
-        downloadLimit: Int? = null,
+        downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null
     ) {
@@ -800,6 +801,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     private fun discardEditChanges() {
         viewState = viewState.copy(productDraft = viewState.productBeforeEnteringFragment)
+        _addedProductTags.clearList()
 
         // updates the UPDATE menu button in the product detail screen i.e. the UPDATE menu button
         // will only be displayed if there are changes made to the Product model.
@@ -1390,11 +1392,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when user exits the product tag fragment to clear the stored filter (otherwise it
-     * will be retained when the user returns to the tag fragment)
+     * Called when user exits the product tag fragment to clear the stored filter and the done button state
+     * (otherwise it will be retained when the user returns to the tag fragment)
      */
-    fun clearProductTagFilter() {
-        productTagsViewState = productTagsViewState.copy(currentFilter = "")
+    fun clearProductTagsState() {
+        productTagsViewState = productTagsViewState.copy(currentFilter = "", shouldDisplayDoneMenuButton = false)
     }
 
     /**

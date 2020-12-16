@@ -466,6 +466,16 @@ class OrderListFragment : TopLevelFragment(),
             AnalyticsTracker.KEY_STATUS to orderStatus)
         )
 
+        // if a search is active, we need to collapse the search view so order detail can show it's title and then
+        // remember the user was searching (since both searchQuery and isSearching will be reset)
+        if (isSearching) {
+            val savedSearch = searchQuery
+            clearSearchResults()
+            updateActivityTitle()
+            searchQuery = savedSearch
+            isSearching = true
+        }
+
         showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
     }
@@ -572,6 +582,7 @@ class OrderListFragment : TopLevelFragment(),
         showTabs(false)
         isSearching = true
         checkOrientation()
+        onSearchViewActiveChanged(isActive = true)
         return true
     }
 
@@ -586,6 +597,7 @@ class OrderListFragment : TopLevelFragment(),
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
+        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
@@ -773,4 +785,6 @@ class OrderListFragment : TopLevelFragment(),
     private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
+
+    override fun isScrolledToTop() = order_list_view.getCurrentPosition() == 0
 }

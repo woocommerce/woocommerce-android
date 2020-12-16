@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-11-26 16:54:04+0000
+Translation-Revision-Date: 2020-12-10 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_images_validate_drag_and_drop">Valider</string>
+    <string name="product_images_drag_and_drop_description">Glisser-déposer pour réorganiser les photos</string>
     <string name="product_downloadable_files_download_settings">Réglages du téléchargement</string>
     <string name="product_downloadable_files_name_invalid">Veuillez saisir un nom valide</string>
     <string name="product_downloadable_files_add_manually">Saisir l’URL du fichier</string>
@@ -789,7 +791,6 @@ Language: fr
     <string name="order_shipment_tracking_delete_error">Erreur lors de la suppression du suivi</string>
     <string name="order_shipment_tracking_delete_snackbar_msg">Suivi de l\'expédition supprimé</string>
     <string name="order_shipment_tracking_add_button">Ajouter le suivi</string>
-    <string name="order_shipment_tracking_add_label">Informations de suivi facultatives</string>
     <string name="order_detail_shipment_tracking_button_contentdesc">Suivre ou supprimer le suivi de l\'expédition</string>
     <string name="orderdetail_delete_tracking">Supprimer le suivi</string>
     <string name="orderdetail_track_shipment">Suivre l\'expédition</string>
@@ -848,7 +849,6 @@ Language: fr
     <string name="product_name">Titre</string>
     <string name="product_detail_fetch_product_error">Erreur lors de l\'extraction du produit</string>
     <string name="add_order_note_invalid_order">Commande non valide</string>
-    <string name="order_shipment_tracking_shipped_date">Expédié le %s</string>
     <string name="order_shipment_tracking_copy_to_clipboard">Copier le numéro de suivi dans le presse-papier</string>
     <string name="order_shipment_tracking_section_cd">Suivi de l\'expédition</string>
     <string name="order_shipment_tracking_button">Suivre le colis</string>
@@ -908,7 +908,6 @@ Language: fr
     <string name="review_moderation_undo">Avis marqué comme %1$s</string>
     <string name="add_order_note_sublabel">Si cette option est désactivée, la note sera privée</string>
     <string name="order_error_fetch_generic">Erreur lors de l’extraction de la commande</string>
-    <string name="dashboard_fulfill_orders_msg">Contrôler, préparer et livrer ces commandes en attente</string>
     <string name="back">Retour</string>
     <string name="notification_channel_review_title">Alertes d’avis sur le produit</string>
     <string name="notification_channel_order_title">Alertes de nouvelle commande</string>
@@ -1083,13 +1082,11 @@ Language: fr
     <string name="order_error_update_general">Erreur lors de la modification de la commande</string>
     <string name="order_error_fetch_notes_generic">Erreur lors de l’extraction des notes</string>
     <string name="order_fulfill_marked_complete">Commande marquée comme terminée</string>
-    <string name="order_fulfill_mark_complete">Marquer la commande comme terminée</string>
     <string name="orderdetail_addnote_contentdesc">Ajouter une note à la commande</string>
     <string name="orderdetail_add_note">Ajouter une note</string>
     <string name="orderdetail_hide_billing">Masquer la facturation</string>
     <string name="orderdetail_show_billing">Afficher la facturation</string>
     <string name="orderdetail_payment_cleared">Paiement supprimé</string>
-    <string name="orderdetail_order_fulfillment">Exécuter la commande n° %s</string>
     <string name="orderdetail_order_notes">Notes de commande</string>
     <string name="orderdetail_note_private">Privé</string>
     <string name="orderdetail_note_hint">Rédiger une note de commande</string>
@@ -1114,8 +1111,6 @@ Language: fr
     <string name="orderlist_item_order_name">%2$s %1$s</string>
     <string name="orderlist_item_order_num">N° %s</string>
     <string name="orderlist_no_orders">Aucune commande</string>
-    <string name="dashboard_fulfill_order_title_multiple">Vous avez %1$d commandes à exécuter</string>
-    <string name="dashboard_fulfill_order_title_single">Vous avez 1 commande à exécuter</string>
     <string name="dashboard_action_view_orders">Voir les commandes</string>
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_performers_empty">Aucune activité sur cette période</string>

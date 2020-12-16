@@ -21,7 +21,10 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -52,11 +55,13 @@ class ProductImagesViewModel @AssistedInject constructor(
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
             isImageDeletingAllowed = isMultiSelectionAllowed,
             images = navArgs.images.toList(),
-            isWarningVisible = !isMultiSelectionAllowed
+            isWarningVisible = !isMultiSelectionAllowed,
+            isDragDropDescriptionVisible = isMultiSelectionAllowed
         )
     ) { old, new ->
         if (old != new) {
             updateButtonStates()
+            updateDragAndDropDescriptionStates()
         }
     }
     private var viewState by viewStateData
@@ -140,16 +145,34 @@ class ProductImagesViewModel @AssistedInject constructor(
         triggerEvent(ShowImageDetail(image))
     }
 
+    fun onValidateButtonClicked() {
+        viewState = viewState.copy(productImagesState = Browsing)
+    }
+
     fun onDoneButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+                Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
         )
 
         triggerEvent(ExitWithResult(images))
     }
 
-    fun onExit() {
+    fun onNavigateBackButtonClicked() {
+        when (val productImagesState = viewState.productImagesState) {
+            is Dragging -> {
+                viewState = viewState.copy(
+                        productImagesState = Browsing,
+                        images = productImagesState.initialState
+                )
+            }
+            Browsing -> {
+                onExit()
+            }
+        }
+    }
+
+    private fun onExit() {
         when {
             ProductImagesService.isUploadingForProduct(navArgs.remoteId) -> {
                 triggerEvent(ShowDialog(
@@ -185,6 +208,12 @@ class ProductImagesViewModel @AssistedInject constructor(
                 numImages > 0 -> string.product_replace_photo
                 else -> string.product_add_photo
             }
+        )
+    }
+
+    private fun updateDragAndDropDescriptionStates() {
+        viewState = viewState.copy(
+                isDragDropDescriptionVisible = viewState.productImagesState is Dragging || images.size > 1
         )
     }
 
@@ -249,6 +278,26 @@ class ProductImagesViewModel @AssistedInject constructor(
         checkImageUploads(navArgs.remoteId)
     }
 
+    fun onGalleryImageDragStarted() {
+        when (viewState.productImagesState) {
+            is Dragging -> { /* no-op*/ }
+            Browsing -> viewState = viewState.copy(productImagesState = Dragging(images))
+        }
+    }
+
+    fun onGalleryImageDeleteIconClicked(image: Image) {
+        triggerEvent(ShowDeleteImageConfirmation(image))
+    }
+
+    fun onDeleteImageConfirmed(image: Image) {
+        viewState = viewState.copy(images = images - image)
+    }
+
+    fun onGalleryImageMoved(from: Int, to: Int) {
+        val reorderedImages = images.swap(from, to)
+        viewState = viewState.copy(images = reorderedImages)
+    }
+
     @Parcelize
     data class ViewState(
         val uploadingImageUris: List<Uri>? = null,
@@ -256,14 +305,24 @@ class ProductImagesViewModel @AssistedInject constructor(
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,
-        val isWarningVisible: Boolean? = null
+        val isWarningVisible: Boolean? = null,
+        val isDragDropDescriptionVisible: Boolean? = null,
+        val productImagesState: ProductImagesState = Browsing
     ) : Parcelable
 
     object ShowImageSourceDialog : Event()
     object ShowStorageChooser : Event()
     object ShowCamera : Event()
     object ShowWPMediaPicker : Event()
+    data class ShowDeleteImageConfirmation(val image: Image) : Event()
     data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
+
+    sealed class ProductImagesState : Parcelable {
+        @Parcelize
+        data class Dragging(val initialState: List<Image>) : ProductImagesState()
+        @Parcelize
+        object Browsing : ProductImagesState()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ProductImagesViewModel>
