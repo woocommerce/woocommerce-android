@@ -11,7 +11,6 @@ import com.woocommerce.android.util.StringUtils
 class PrintShippingLabelInfoFragment : Fragment(R.layout.fragment_print_shipping_label_info) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         val binding = FragmentPrintShippingLabelInfoBinding.bind(view)
         binding.printShippingLabelInfoStep1.text =
             StringUtils.fromHtml(getString(R.string.print_shipping_label_info_step_1))
