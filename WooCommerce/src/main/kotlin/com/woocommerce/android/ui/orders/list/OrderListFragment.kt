@@ -161,7 +161,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         _binding = FragmentOrderListBinding.bind(view)
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         binding.orderStatusListView.init(listener = this)
-        binding.orderRefreshLayout?.apply {
+        binding.orderRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
