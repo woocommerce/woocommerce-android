@@ -93,6 +93,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
