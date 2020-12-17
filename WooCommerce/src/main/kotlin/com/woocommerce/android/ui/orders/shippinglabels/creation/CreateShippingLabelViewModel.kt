@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -40,6 +41,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingLabelAddressValidator
 ) : ScopedViewModel(savedState, dispatchers) {
+    companion object {
+        private const val STATE_KEY = "state"
+    }
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -51,33 +55,44 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun initializeStateMachine() {
         launch {
-            stateMachine.effects.collect { sideEffect ->
-                when (sideEffect) {
-                    SideEffect.NoOp -> { }
-                    is SideEffect.ShowError -> showError(sideEffect.error)
-                    is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
-                    is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
-                    is SideEffect.ValidateAddress -> handleResult {
-                        validateAddress(sideEffect.address, sideEffect.type)
-                    }
-                    is SideEffect.OpenAddressEditor -> triggerEvent(
-                        ShowAddressEditor(
-                            sideEffect.address,
-                            sideEffect.type,
-                            sideEffect.validationResult
+            stateMachine.transitions.collect { transition ->
+                transition.sideEffect?.let { sideEffect ->
+                    when (sideEffect) {
+                        SideEffect.NoOp -> {
+                        }
+                        is SideEffect.ShowError -> showError(sideEffect.error)
+                        is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
+                        is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
+                        is SideEffect.ValidateAddress -> handleResult {
+                            validateAddress(sideEffect.address, sideEffect.type)
+                        }
+                        is SideEffect.OpenAddressEditor -> triggerEvent(
+                            ShowAddressEditor(
+                                sideEffect.address,
+                                sideEffect.type,
+                                sideEffect.validationResult
+                            )
                         )
-                    )
-                    is SideEffect.ShowAddressSuggestion -> handleResult {
-                        Event.SuggestedAddressSelected(sideEffect.suggested)
+                        is SideEffect.ShowAddressSuggestion -> handleResult {
+                            Event.SuggestedAddressSelected(sideEffect.suggested)
+                        }
+                        is SideEffect.ShowPackageOptions -> Event.PackagesSelected
+                        is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
+                        is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
+                        is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
                     }
-                    is SideEffect.ShowPackageOptions -> Event.PackagesSelected
-                    is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
-                    is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
-                    is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
                 }
+                // save the current state
+                savedState[STATE_KEY] = transition.state
             }
         }
-        stateMachine.start(arguments.orderIdentifier)
+
+        val state = savedState.get<State>(STATE_KEY)
+        if (state != null) {
+            stateMachine.initialize(state)
+        } else {
+            stateMachine.start(arguments.orderIdentifier)
+        }
     }
 
     private suspend fun handleResult(action: suspend () -> Event) {

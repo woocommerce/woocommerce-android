@@ -9,6 +9,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
@@ -110,9 +111,13 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun handleValidationResult(address: Address, result: ValidationResult) {
         when (result) {
             ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
-            is ValidationResult.Invalid -> viewState = viewState.copy(addressError = getAddressErrorStringRes(result.message))
+            is ValidationResult.Invalid -> viewState = viewState.copy(
+                addressError = getAddressErrorStringRes(result.message)
+            )
             is ValidationResult.SuggestedChanges -> {
-                triggerEvent(ExitWithResult(address)) // triggerEvent(ShowSuggestedAddress(address, result.suggested))
+                // Temporary until suggestions are implemented
+                // triggerEvent(ShowSuggestedAddress(address, result.suggested))
+                triggerEvent(ExitWithResult(address))
             }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(

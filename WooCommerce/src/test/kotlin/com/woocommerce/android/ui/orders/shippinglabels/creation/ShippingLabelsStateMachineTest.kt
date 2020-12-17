@@ -39,7 +39,7 @@ class ShippingLabelsStateMachineTest {
         val expectedSideEffectCount = 3 // necessary to terminate the flow
         var sideEffect: SideEffect? = null
         launch {
-            stateMachine.effects.take(expectedSideEffectCount).collect {
+            stateMachine.transitions.take(expectedSideEffectCount).collect {
                 sideEffect = it
             }
         }
@@ -60,7 +60,7 @@ class ShippingLabelsStateMachineTest {
         val expectedSideEffectCount = 5 // necessary to terminate the flow
         var sideEffect: SideEffect? = null
         launch {
-            stateMachine.effects.take(expectedSideEffectCount).collect {
+            stateMachine.transitions.take(expectedSideEffectCount).collect {
                 sideEffect = it
             }
         }

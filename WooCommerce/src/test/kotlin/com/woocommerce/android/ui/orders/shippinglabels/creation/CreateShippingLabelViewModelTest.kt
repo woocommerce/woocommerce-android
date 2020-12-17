@@ -115,7 +115,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         stateFlow = MutableStateFlow(SideEffect.NoOp)
-        whenever(stateMachine.effects).thenReturn(stateFlow)
+        whenever(stateMachine.transitions).thenReturn(stateFlow)
 
         viewModel = spy(
             CreateShippingLabelViewModel(
