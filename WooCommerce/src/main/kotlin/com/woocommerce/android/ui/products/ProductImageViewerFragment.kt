@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -22,6 +21,7 @@ import androidx.viewpager.widget.ViewPager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -29,11 +29,12 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_product_image_viewer.*
-import javax.inject.Inject
 import dagger.Lazy
+import javax.inject.Inject
 
-class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPressListener {
+class ProductImageViewerFragment : BaseFragment(R.layout.fragment_product_image_viewer),
+    ImageViewerListener,
+    BackPressListener {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -55,6 +56,9 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
 
+    private var _binding: FragmentProductImageViewerBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,27 +67,24 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
         setHasOptionsMenu(false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_image_viewer, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentProductImageViewerBinding.bind(view)
 
         setupViewPager()
 
-        iconBack.setOnClickListener {
+        binding.iconBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
         if (navArgs.isDeletingAllowed) {
-            iconTrash.setOnClickListener {
+            binding.iconTrash.setOnClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
                 confirmRemoveProductImage()
             }
-            iconTrash.isVisible = true
+            binding.iconTrash.isVisible = true
         } else {
-            iconTrash.isVisible = false
+            binding.iconTrash.isVisible = false
         }
 
         savedInstanceState?.let { bundle ->
@@ -93,6 +94,11 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
         }
 
         fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -105,9 +111,9 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
     private fun setupViewPager() {
         resetAdapter()
 
-        viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
+        binding.viewPager.pageMargin = resources.getDimensionPixelSize(R.dimen.margin_large)
 
-        viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
@@ -122,11 +128,11 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
         images.addAll(viewModel.images)
 
         pagerAdapter = ImageViewerAdapter(childFragmentManager, images)
-        viewPager.adapter = pagerAdapter
+        binding.viewPager.adapter = pagerAdapter
 
         val position = pagerAdapter.indexOfImageId(remoteMediaId)
         if (position > -1) {
-            viewPager.currentItem = position
+            binding.viewPager.currentItem = position
         }
     }
 
@@ -153,24 +159,24 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
             newImageCount == 0 -> {
                 0
             }
-            viewPager.currentItem > 0 -> {
-                pagerAdapter.images[viewPager.currentItem - 1].id
+            binding.viewPager.currentItem > 0 -> {
+                pagerAdapter.images[binding.viewPager.currentItem - 1].id
             }
             else -> {
-                pagerAdapter.images[viewPager.currentItem + 1].id
+                pagerAdapter.images[binding.viewPager.currentItem + 1].id
             }
         }
 
         // animate the viewPager out, then remove the image and animate it back in - this gives
         // the appearance of the removed image being tossed away
-        with(WooAnimUtils.getScaleOutAnim(viewPager)) {
+        with(WooAnimUtils.getScaleOutAnim(binding.viewPager)) {
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     remoteMediaId = newMediaId
                     viewModel.onImageRemoved(currentMediaId)
                     // animate it back in if there are any images left, others return to the previous fragment
                     if (newImageCount > 0) {
-                        WooAnimUtils.scaleIn(viewPager)
+                        WooAnimUtils.scaleIn(binding.viewPager)
                         resetAdapter()
                         showToolbar(true)
                     } else {
@@ -184,7 +190,8 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
 
     private fun showToolbar(show: Boolean) {
         if (isAdded) {
-            if ((show && fakeToolbar.visibility == View.VISIBLE) || (!show && fakeToolbar.visibility != View.VISIBLE)) {
+            if ((show && binding.fakeToolbar.visibility == View.VISIBLE) ||
+                (!show && binding.fakeToolbar.visibility != View.VISIBLE)) {
                 return
             }
 
@@ -202,10 +209,10 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
 
             val listener = object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {
-                    if (show) fakeToolbar.visibility = View.VISIBLE
+                    if (show) binding.fakeToolbar.visibility = View.VISIBLE
                 }
                 override fun onAnimationEnd(animation: Animation) {
-                    if (!show) fakeToolbar.visibility = View.GONE
+                    if (!show) binding.fakeToolbar.visibility = View.GONE
                 }
                 override fun onAnimationRepeat(animation: Animation) {
                     // noop
@@ -214,7 +221,7 @@ class ProductImageViewerFragment : BaseFragment(), ImageViewerListener, BackPres
 
             AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
                 anim.setAnimationListener(listener)
-                fakeToolbar.startAnimation(anim)
+                binding.fakeToolbar.startAnimation(anim)
             }
         }
     }
