@@ -75,8 +75,11 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val orderIdSet: OrderIdSet
         get() = navArgs.orderId.toIdSet()
 
-    final lateinit var order: Order
-        private set
+    final var order: Order
+        get() = requireNotNull(viewState.order)
+        set(value) {
+            viewState = viewState.copy(order = value)
+        }
 
     // Keep track of the deleted shipment tracking number in case
     // the request to server fails, we need to display an error message
@@ -340,7 +343,6 @@ class OrderDetailViewModel @AssistedInject constructor(
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
                     order = order.copy(status = CoreOrderStatus.fromValue(newStatus) ?: order.status)
-                    viewState = viewState.copy(order = order)
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
