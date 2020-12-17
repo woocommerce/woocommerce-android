@@ -85,9 +85,7 @@ import it.
 
  */
 @ExperimentalCoroutinesApi
-class ShippingLabelsStateMachine @Inject constructor(
-
-) {
+class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
     // the view states based on the triggered states and side-effects
     private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
@@ -123,14 +121,14 @@ class ShippingLabelsStateMachine @Inject constructor(
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(State.
-                    OriginAddressValidation(data),
+                transitionTo(
+                    State.OriginAddressValidation(data),
                     SideEffect.ValidateAddress(data.originAddress, ORIGIN)
                 )
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(State.
-                    ShippingAddressValidation(data),
+                transitionTo(
+                    State.ShippingAddressValidation(data),
                     SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
                 )
             }
@@ -150,8 +148,8 @@ class ShippingLabelsStateMachine @Inject constructor(
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
             on<Event.EditShippingAddressRequested> {
-                transitionTo(State.
-                    ShippingAddressEditing(data),
+                transitionTo(
+                    State.ShippingAddressEditing(data),
                     SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
                 )
             }
@@ -178,14 +176,12 @@ class ShippingLabelsStateMachine @Inject constructor(
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.AddressChangeSuggested> { event ->
-                transitionTo(State.
-                    OriginAddressSuggestion(data),
+                transitionTo(State.OriginAddressSuggestion(data),
                     SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, ORIGIN)
                 )
             }
             on<Event.AddressInvalid> { event ->
-                transitionTo(State.
-                    OriginAddressEditing(data),
+                transitionTo(State.OriginAddressEditing(data),
                     SideEffect.OpenAddressEditor(data.originAddress, ORIGIN, event.validationResult)
                 )
             }
@@ -203,10 +199,7 @@ class ShippingLabelsStateMachine @Inject constructor(
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.EditOriginAddressRequested> {
-                transitionTo(State.
-                    OriginAddressEditing(data),
-                    SideEffect.OpenAddressEditor(data.originAddress, ORIGIN)
-                )
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
         }
 
@@ -232,14 +225,14 @@ class ShippingLabelsStateMachine @Inject constructor(
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.AddressChangeSuggested> { event ->
-                transitionTo(State.
-                    ShippingAddressSuggestion(data),
+                transitionTo(
+                    State.ShippingAddressSuggestion(data),
                     SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, DESTINATION)
                 )
             }
             on<Event.AddressInvalid> { event ->
-                transitionTo(State.
-                    ShippingAddressEditing(data),
+                transitionTo(
+                    State.ShippingAddressEditing(data),
                     SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION, event.validationResult)
                 )
             }
@@ -257,8 +250,8 @@ class ShippingLabelsStateMachine @Inject constructor(
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.EditShippingAddressRequested> {
-                transitionTo(State.
-                    ShippingAddressEditing(data),
+                transitionTo(
+                    State.ShippingAddressEditing(data),
                     SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
                 )
             }
