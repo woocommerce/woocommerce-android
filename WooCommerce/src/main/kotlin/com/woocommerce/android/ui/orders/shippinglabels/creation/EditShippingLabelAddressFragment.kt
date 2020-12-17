@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
@@ -42,6 +44,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -184,6 +187,9 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                 binding.stateSpinner.isVisible = isSpinner
                 binding.stateLayout.isVisible = !isSpinner
             }
+            new.isContactCustomerButtonVisible.takeIfNotEqualTo(old?.isContactCustomerButtonVisible) { isVisible ->
+                binding.contactCustomerButton.isVisible = isVisible
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -222,6 +228,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                     findNavController().navigateSafely(action)
                 }
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
+                is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
                 else -> event.isHandled = false
             }
         })
@@ -259,7 +266,22 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         val gmmIntentUri: Uri = Uri.parse("geo:0,0?q=$cleanAddress")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
-        startActivity(mapIntent)
+
+        try {
+            startActivity(mapIntent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_gmaps_app)
+        }
+    }
+
+    private fun dialPhoneNumber(phone: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phone")
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            ToastUtils.showToast(context, R.string.error_no_phone_app)
+        }
     }
 
     private fun initializeViews() {

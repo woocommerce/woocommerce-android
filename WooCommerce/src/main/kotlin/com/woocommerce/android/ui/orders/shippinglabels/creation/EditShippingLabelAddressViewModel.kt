@@ -181,7 +181,9 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onContactCustomerTapped() {
-        triggerEvent(ShowStateSelector(states, viewState.address?.state))
+        viewState.address?.phone?.let {
+            triggerEvent(DialPhoneNumber(it))
+        }
     }
 
     fun onCountrySelected(country: String) {
@@ -221,7 +223,9 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         @StringRes val cityError: Int? = null,
         @StringRes val zipError: Int? = null,
         @StringRes val title: Int? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val isContactCustomerButtonVisible = !address?.phone.isNullOrBlank()
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<EditShippingLabelAddressViewModel>

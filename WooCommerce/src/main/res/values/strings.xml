@@ -105,6 +105,7 @@
     <string name="error_cant_open_url">Unable to open the link</string>
     <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
     <string name="error_no_phone_app">No phone app was found</string>
+    <string name="error_no_gmaps_app">Google Maps app was found</string>
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
     <!--

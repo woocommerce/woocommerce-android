@@ -33,4 +33,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class OpenMapWithAddress(
         val address: Address
     ) : CreateShippingLabelEvent()
+
+    data class DialPhoneNumber(
+        val phoneNumber: String
+    ) : CreateShippingLabelEvent()
 }
