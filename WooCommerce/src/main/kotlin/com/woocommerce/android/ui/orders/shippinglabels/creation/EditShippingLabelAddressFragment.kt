@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -29,6 +31,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
@@ -218,6 +221,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                         )
                     findNavController().navigateSafely(action)
                 }
+                is OpenMapWithAddress -> launchMapsWithAddress(event.address)
                 else -> event.isHandled = false
             }
         })
@@ -245,8 +249,21 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         progressDialog = null
     }
 
+    private fun launchMapsWithAddress(address: Address) {
+        val cleanAddress = address.copy(
+            firstName = "",
+            lastName = "",
+            phone = "",
+            email = ""
+        ).toString().replace("\n", ", ")
+        val gmmIntentUri: Uri = Uri.parse("geo:0,0?q=$cleanAddress")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        startActivity(mapIntent)
+    }
+
     private fun initializeViews() {
-        binding.btnUsAddressAsIs.setOnClickListener {
+        binding.useAddressAsIsButton.setOnClickListener {
             viewModel.onUseAddressAsIsButtonClicked(gatherData())
         }
         binding.countrySpinner.setClickListener {
@@ -254,6 +271,12 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
         binding.stateSpinner.setClickListener {
             viewModel.onStateSpinnerTapped()
+        }
+        binding.openMapButton.setOnClickListener {
+            viewModel.onOpenMapTapped()
+        }
+        binding.contactCustomerButton.setOnClickListener {
+            viewModel.onContactCustomerTapped()
         }
     }
 

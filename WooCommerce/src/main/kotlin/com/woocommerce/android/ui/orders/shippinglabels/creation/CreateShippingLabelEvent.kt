@@ -29,4 +29,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val locations: List<WCLocationModel>,
         val currentState: String?
     ) : CreateShippingLabelEvent()
+
+    data class OpenMapWithAddress(
+        val address: Address
+    ) : CreateShippingLabelEvent()
 }

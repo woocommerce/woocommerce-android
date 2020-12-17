@@ -9,6 +9,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -170,6 +171,16 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onStateSpinnerTapped() {
+        triggerEvent(ShowStateSelector(states, viewState.address?.state))
+    }
+
+    fun onOpenMapTapped() {
+        viewState.address?.let {
+            triggerEvent(OpenMapWithAddress(it))
+        }
+    }
+
+    fun onContactCustomerTapped() {
         triggerEvent(ShowStateSelector(states, viewState.address?.state))
     }
 
