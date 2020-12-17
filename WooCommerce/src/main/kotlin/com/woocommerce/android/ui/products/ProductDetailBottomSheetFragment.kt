@@ -11,6 +11,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -18,7 +19,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.dialog_product_detail_bottom_sheet_list.*
 import javax.inject.Inject
 
 class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroidInjector {
@@ -29,23 +29,23 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_product_detail_bottom_sheet_list, container, false)
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         AndroidSupportInjection.inject(this)
         return super.onCreateDialog(savedInstanceState)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers()
-        viewModel.fetchBottomSheetList()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return DialogProductDetailBottomSheetListBinding.inflate(inflater, container, false).root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val binding = DialogProductDetailBottomSheetListBinding.bind(view)
 
         productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter {
             // Navigate up before navigating to the next destination, this is useful if the next destination
@@ -53,10 +53,13 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
             findNavController().navigateUp()
             viewModel.onProductDetailBottomSheetItemSelected(it)
         }
-        with(productDetailInfo_optionsList) {
+        with(binding.productDetailInfoOptionsList) {
             adapter = productDetailBottomSheetAdapter
             layoutManager = LinearLayoutManager(activity)
         }
+
+        setupObservers()
+        viewModel.fetchBottomSheetList()
     }
 
     private fun setupObservers() {
