@@ -25,7 +25,6 @@ fun Fragment.navigateBackWithNotice(key: String) {
     findNavController().navigateUp()
 }
 
-
 /**
  * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
  * with the supplied key.
