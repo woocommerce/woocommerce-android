@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
+import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -29,6 +30,9 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 
+    private var _binding: DialogProductDetailBottomSheetListBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         AndroidSupportInjection.inject(this)
         return super.onCreateDialog(savedInstanceState)
@@ -39,13 +43,17 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment(), HasAndroid
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return DialogProductDetailBottomSheetListBinding.inflate(inflater, container, false).root
+        _binding = DialogProductDetailBottomSheetListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val binding = DialogProductDetailBottomSheetListBinding.bind(view)
 
         productDetailBottomSheetAdapter = ProductDetailBottomSheetAdapter {
             // Navigate up before navigating to the next destination, this is useful if the next destination
