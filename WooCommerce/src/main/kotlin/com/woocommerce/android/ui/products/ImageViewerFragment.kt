@@ -2,23 +2,22 @@ package com.woocommerce.android.ui.products
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentImageViewerBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
-import kotlinx.android.synthetic.main.fragment_image_viewer.*
 
 /**
  * Single image viewer used by the ViewPager in [ProductImagesFragment]
  */
-class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
+class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestListener<Drawable> {
     companion object {
         private const val KEY_IMAGE_URL = "image_url"
 
@@ -41,21 +40,28 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
     private lateinit var imageUrl: String
     private var imageListener: ImageViewerListener? = null
 
+    private var _binding: FragmentImageViewerBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         imageUrl = arguments?.getString(KEY_IMAGE_URL) ?: ""
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_image_viewer, container, false)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        _binding = FragmentImageViewerBinding.bind(view)
+
         loadImage()
-        photoView.setOnPhotoTapListener { _, _, _ ->
+        binding.photoView.setOnPhotoTapListener { _, _, _ ->
             imageListener?.onImageTapped()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -78,11 +84,11 @@ class ImageViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Dr
         GlideApp.with(this)
                 .load(imageUrl)
                 .listener(this)
-                .into(photoView)
+                .into(binding.photoView)
     }
 
     private fun showProgress(show: Boolean) {
-        progressBar.isVisible = show
+        binding.progressBar.isVisible = show
     }
 
     /**

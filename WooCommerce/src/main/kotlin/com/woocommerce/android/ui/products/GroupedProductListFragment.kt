@@ -48,15 +48,6 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     override fun getFragmentTitle() = resources.getString(viewModel.groupedProductListType.titleId)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_grouped_product_list, container, false)
-    }
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
@@ -95,14 +86,8 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
         setupObservers()
         setupResultHandlers()
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val activity = requireActivity()
-
-        binding.productsRecycler.layoutManager = LinearLayoutManager(activity)
+        binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productListAdapter
         binding.productsRecycler.isMotionEventSplittingEnabled = false
     }
