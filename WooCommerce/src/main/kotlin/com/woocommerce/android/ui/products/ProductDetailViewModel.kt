@@ -80,6 +80,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -1512,7 +1513,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             ProductExitEvent(shouldShowDiscardDialog)
     }
 
-    data class LaunchUrlInChromeTab(val url: String) : Event()
     object RefreshMenu : Event()
 
     /**
