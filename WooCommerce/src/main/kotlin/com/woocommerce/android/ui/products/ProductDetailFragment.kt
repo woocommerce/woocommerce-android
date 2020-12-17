@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
@@ -22,6 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -51,10 +50,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
-import kotlinx.android.synthetic.main.fragment_product_detail.*
 import org.wordpress.android.util.ActivityUtils
 
-class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionListener, NavigationResult {
+class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail), OnGalleryImageInteractionListener, NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
@@ -79,9 +77,17 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var _binding: FragmentProductDetailBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductDetailBinding.bind(view)
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_detail, container, false)
+
+        initializeViews(savedInstanceState)
+        initializeViewModel()
     }
 
     override fun onDestroyView() {
@@ -104,12 +110,6 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
         WooDialog.onCleared()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initializeViews(savedInstanceState)
-        initializeViewModel()
-    }
-
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -117,8 +117,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
-        cardsRecyclerView.layoutManager = layoutManager
-        cardsRecyclerView.itemAnimator = null
+        binding.cardsRecyclerView.layoutManager = layoutManager
+        binding.cardsRecyclerView.itemAnimator = null
     }
 
     private fun initializeViewModel() {
@@ -195,10 +195,10 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
                 }
             }
             new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
-                imageGallery.setPlaceholderImageUris(it)
+                binding.imageGallery.setPlaceholderImageUris(it)
             }
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
-                productDetail_addMoreContainer.isVisible = isVisible
+                binding.productDetailAddMoreContainer.isVisible = isVisible
             }
             new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
                 if (it) {
@@ -237,23 +237,23 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
         productId = product.remoteId
 
         if (product.images.isEmpty() && !viewModel.isUploadingImages(product.remoteId)) {
-            imageGallery.hide()
+            binding.imageGallery.hide()
             startAddImageContainer()
         } else {
-            addImageContainer.hide()
-            imageGallery.show()
-            imageGallery.showProductImages(product.images, this)
+            binding.addImageContainer.hide()
+            binding.imageGallery.show()
+            binding.imageGallery.showProductImages(product.images, this)
         }
 
         // show status badge for unpublished products
         product.status?.let { status ->
             if (status != ProductStatus.PUBLISH) {
-                frameStatusBadge.show()
-                textStatusBadge.text = status.toLocalizedString(requireActivity())
+                binding.frameStatusBadge.show()
+                binding.textStatusBadge.text = status.toLocalizedString(requireActivity())
             }
         }
 
-        productDetail_addMoreContainer.setOnClickListener {
+        binding.productDetailAddMoreContainer.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
                 ViewProductDetailBottomSheet(product.productType)
@@ -270,8 +270,8 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
     }
 
     private fun startAddImageContainer() {
-        addImageContainer.show()
-        addImageContainer.setOnClickListener {
+        binding.addImageContainer.show()
+        binding.addImageContainer.setOnClickListener {
             AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageButtonClicked()
         }
@@ -366,7 +366,7 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_product_detail, delayed = true)
+            skeletonView.show(binding.appBarLayout, R.layout.skeleton_product_detail, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -408,16 +408,16 @@ class ProductDetailFragment : BaseProductFragment(), OnGalleryImageInteractionLi
 
     private fun showProductCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
-        if (cardsRecyclerView.adapter == null) {
+        if (binding.cardsRecyclerView.adapter == null) {
             adapter = ProductPropertyCardsAdapter()
-            cardsRecyclerView.adapter = adapter
+            binding.cardsRecyclerView.adapter = adapter
         } else {
-            adapter = cardsRecyclerView.adapter as ProductPropertyCardsAdapter
+            adapter = binding.cardsRecyclerView.adapter as ProductPropertyCardsAdapter
         }
 
-        val recyclerViewState = cardsRecyclerView.layoutManager?.onSaveInstanceState()
+        val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
-        cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
