@@ -28,4 +28,8 @@ internal abstract class WooLoginFragmentModule {
     @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun loginNoWPcomAccountFoundFragment(): LoginNoWPcomAccountFoundFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    internal abstract fun loginSiteCheckErrorFragment(): LoginSiteCheckErrorFragment
 }
