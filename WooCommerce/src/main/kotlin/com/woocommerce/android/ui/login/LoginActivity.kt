@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -112,7 +113,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         val fragment = LoginPrologueFragment.newInstance()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-            .addToBackStack(null)
+            .addToBackStack(LoginPrologueFragment.TAG)
             .commitAllowingStateLoss()
     }
 
@@ -206,7 +207,8 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
 
-        showPrologueFragment()
+        // Pop all the fragments from the backstack until we get to the Prologue fragment
+        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
     }
 
     override fun onPrimaryButtonClicked() {
@@ -661,5 +663,30 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
         showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
+    }
+
+    /**
+     * Allows for special handling of errors that come up during the login by address: check site address.
+     */
+    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
+        if (!siteInfo.isWordPress) {
+            // The url entered is not a WordPress site.
+            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
+            val errorMessage = getString(R.string.login_not_wordpress_site, siteAddressClean)
+
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // show the "not WordPress error" screen
+            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
+            slideInFragment(
+                fragment = genericErrorFragment,
+                shouldAddToBackStack = true,
+                tag = LoginSiteCheckErrorFragment.TAG)
+        } else {
+            // Just in case we use this method for a different scenario in the future
+            TODO("Handle a new error scenario")
+        }
     }
 }
