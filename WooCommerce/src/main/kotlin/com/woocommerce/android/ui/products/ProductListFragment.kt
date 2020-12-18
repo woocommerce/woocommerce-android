@@ -319,7 +319,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(show = isVisible)
+                showAddProductButton(
+                    show = isVisible &&
+                        (requireActivity() as? MainNavigationRouter)?.isAtNavigationRoot() == true
+                )
             }
         }
 
