@@ -50,7 +50,7 @@ android {
         } else {
             versionName "5.7-rc-1"
         }
-        versionCode 180
+        versionCode 181
 
         minSdkVersion 21
         targetSdkVersion 30
