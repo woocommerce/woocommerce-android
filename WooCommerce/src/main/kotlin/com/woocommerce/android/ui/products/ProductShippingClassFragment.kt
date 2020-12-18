@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -11,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductShippingClassListBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
@@ -19,13 +18,12 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_product_shipping_class_list.*
 import javax.inject.Inject
 
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list), ShippingClassAdapterListener {
     companion object {
         const val TAG = "ProductShippingClassFragment"
         const val ARG_SELECTED_SHIPPING_CLASS_SLUG = "selected-shipping-class-slug"
@@ -39,36 +37,33 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
 
     private var shippingClassAdapter: ProductShippingClassAdapter? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_shipping_class_list, container, false)
-    }
+    private var _binding: FragmentProductShippingClassListBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductShippingClassListBinding.bind(view)
+        setupObservers()
 
         shippingClassAdapter = ProductShippingClassAdapter(
-                requireActivity(),
-                this,
-                navArgs.productShippingClassSlug
+            requireActivity(),
+            this,
+            navArgs.productShippingClassSlug
         )
 
-        with(recycler) {
+        with(binding.recycler) {
             addItemDecoration(
-                    DividerItemDecoration(
-                            requireActivity(),
-                            DividerItemDecoration.VERTICAL
-                    )
+                DividerItemDecoration(
+                    requireActivity(),
+                    DividerItemDecoration.VERTICAL
+                )
             )
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = shippingClassAdapter
         }
 
         viewModel.loadShippingClasses()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers()
     }
 
     override fun onResume() {
@@ -110,17 +105,17 @@ class ProductShippingClassFragment : BaseFragment(), ShippingClassAdapterListene
 
     private fun showLoadingProgress(show: Boolean) {
         if (show) {
-            loadingProgress.show()
+            binding.loadingProgress.show()
         } else {
-            loadingProgress.hide()
+            binding.loadingProgress.hide()
         }
     }
 
     private fun showLoadingMoreProgress(show: Boolean) {
         if (show) {
-            loadingMoreProgress.show()
+            binding.loadingMoreProgress.show()
         } else {
-            loadingMoreProgress.hide()
+            binding.loadingMoreProgress.hide()
         }
     }
 }

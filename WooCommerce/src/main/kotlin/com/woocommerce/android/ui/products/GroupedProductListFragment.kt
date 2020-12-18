@@ -27,7 +27,7 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class GroupedProductListFragment : BaseFragment(), BackPressListener {
+class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -45,6 +45,20 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     private val binding get() = _binding!!
 
     override fun getFragmentTitle() = resources.getString(viewModel.groupedProductListType.titleId)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentGroupedProductListBinding.bind(view)
+        setHasOptionsMenu(true)
+
+        setupObservers()
+        setupResultHandlers()
+
+        binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        binding.productsRecycler.adapter = productListAdapter
+        binding.productsRecycler.isMotionEventSplittingEnabled = false
+    }
 
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
@@ -74,20 +88,6 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        _binding = FragmentGroupedProductListBinding.bind(view)
-        setHasOptionsMenu(true)
-
-        setupObservers()
-        setupResultHandlers()
-
-        binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
-        binding.productsRecycler.adapter = productListAdapter
-        binding.productsRecycler.isMotionEventSplittingEnabled = false
     }
 
     private fun setupObservers() {
