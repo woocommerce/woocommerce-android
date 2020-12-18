@@ -3,13 +3,11 @@ package com.woocommerce.android.ui.products
 import android.content.Context
 import android.os.Bundle
 import android.view.ActionMode
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
@@ -21,6 +19,7 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -33,10 +32,9 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_product_list.*
 import javax.inject.Inject
 
-class ProductSelectionListFragment : BaseFragment(),
+class ProductSelectionListFragment : BaseFragment(R.layout.fragment_product_list),
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
@@ -61,6 +59,9 @@ class ProductSelectionListFragment : BaseFragment(),
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
+    private var _binding: FragmentProductListBinding? = null
+    private val binding get() = _binding!!
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -71,6 +72,7 @@ class ProductSelectionListFragment : BaseFragment(),
         disableSearchListeners()
         searchView = null
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
@@ -78,37 +80,25 @@ class ProductSelectionListFragment : BaseFragment(),
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_list, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentProductListBinding.bind(view)
+        setHasOptionsMenu(true)
+
         setupObservers(viewModel)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val activity = requireActivity()
-
-        with(productsRecycler) {
-            layoutManager = LinearLayoutManager(activity)
+        with(binding.productsRecycler) {
+            layoutManager = LinearLayoutManager(requireActivity())
             adapter = productSelectionListAdapter
             isMotionEventSplittingEnabled = false
         }
 
         tracker = SelectionTracker.Builder(
             "mySelection", // a string to identity our selection in the context of this fragment
-            productsRecycler, // the RecyclerView where we will apply the tracker
-            ProductSelectionItemKeyProvider(productsRecycler), // the source of selection keys
-            ProductSelectionListItemLookup(productsRecycler), // the source of information about RecyclerView items
+            binding.productsRecycler, // the RecyclerView where we will apply the tracker
+            ProductSelectionItemKeyProvider(binding.productsRecycler), // the source of selection keys
+            ProductSelectionListItemLookup(binding.productsRecycler), // the source of information about RecyclerView items
             StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
         ).withSelectionPredicate(
             SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
@@ -120,8 +110,8 @@ class ProductSelectionListFragment : BaseFragment(),
 
         productSelectionListAdapter.tracker = tracker
 
-        productsRefreshLayout?.apply {
-            scrollUpChild = productsRecycler
+        binding.productsRefreshLayout.apply {
+            scrollUpChild = binding.productsRecycler
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
@@ -139,7 +129,7 @@ class ProductSelectionListFragment : BaseFragment(),
                     when (selectionCount) {
                         0 -> {
                             actionMode?.finish()
-                            activity.title = getString(R.string.grouped_product_add)
+                            activity?.title = getString(R.string.grouped_product_add)
                         }
                         else -> {
                             actionMode?.title = StringUtils.getQuantityString(
@@ -182,21 +172,21 @@ class ProductSelectionListFragment : BaseFragment(),
     private fun setupObservers(viewModel: ProductSelectionListViewModel) {
         viewModel.productSelectionListViewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadMoreProgress.isVisible = it }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productsRefreshLayout.isRefreshing = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.loadMoreProgress.isVisible = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.productsRefreshLayout.isRefreshing = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
                 if (isVisible) {
                     when {
                         new.isSearchActive == true -> {
-                            empty_view.show(
+                            binding.emptyView.show(
                                 EmptyViewType.SEARCH_RESULTS,
                                 searchQueryOrFilter = viewModel.searchQuery
                             )
                         }
-                        else -> empty_view.show(EmptyViewType.PRODUCT_LIST)
+                        else -> binding.emptyView.show(EmptyViewType.PRODUCT_LIST)
                     }
                 } else {
-                    empty_view.hide()
+                    binding.emptyView.hide()
                 }
             }
         }
@@ -220,7 +210,7 @@ class ProductSelectionListFragment : BaseFragment(),
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productsRecycler, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -231,7 +221,7 @@ class ProductSelectionListFragment : BaseFragment(),
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
-        productsRefreshLayout?.isEnabled = enable
+        binding.productsRefreshLayout.isEnabled = enable
     }
 
     private fun closeSearchView() {
