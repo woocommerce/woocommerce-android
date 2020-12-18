@@ -82,10 +82,20 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 binding.editProductStockStatus.isVisible = isVisible
             }
             new.inventoryData.backorderStatus?.takeIfNotEqualTo(old?.inventoryData?.backorderStatus) {
-                binding.editProductBackorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
+                binding.editProductBackorders.setText(
+                    ProductBackorderStatus.backordersToDisplayString(
+                        requireContext(),
+                        it
+                    )
+                )
             }
             new.inventoryData.stockStatus?.takeIfNotEqualTo(old?.inventoryData?.stockStatus) {
-                binding.editProductStockStatus.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
+                binding.editProductStockStatus.setText(
+                    ProductStockStatus.stockStatusToDisplayString(
+                        requireContext(),
+                        it
+                    )
+                )
             }
             new.inventoryData.isStockManaged?.takeIfNotEqualTo(old?.inventoryData?.isStockManaged) { isStockManaged ->
                 new.isStockManagementVisible?.let { isVisible ->

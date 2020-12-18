@@ -98,7 +98,11 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
-            binding.crossSellsCount.text = resources.getQuantityString(R.plurals.product_count, numCrossSells, numCrossSells)
+            binding.crossSellsCount.text = resources.getQuantityString(
+                R.plurals.product_count,
+                numCrossSells,
+                numCrossSells
+            )
             binding.crossSellsCount.show()
             binding.addCrossSellProducts.text = getString(R.string.edit_products_button)
         } else {

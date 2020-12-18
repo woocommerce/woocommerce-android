@@ -52,7 +52,9 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import org.wordpress.android.util.ActivityUtils
 
-class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail), OnGalleryImageInteractionListener, NavigationResult {
+class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail),
+    OnGalleryImageInteractionListener,
+    NavigationResult {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
