@@ -12,7 +12,6 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.adapters.ProductPropertiesAdapter
 import com.woocommerce.android.ui.products.models.ProductProperty
-import kotlinx.android.synthetic.main.product_property_cardview_layout.view.*
 
 /**
  * CardView with an optional caption (title), used for product detail properties
@@ -34,9 +33,9 @@ class WCProductPropertyCardView @JvmOverloads constructor(
             viewBinding.cardCaptionDivider.show()
         }
 
-        if (propertiesRecyclerView.layoutManager == null) {
-            propertiesRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-            propertiesRecyclerView.itemAnimator = null
+        if (viewBinding.propertiesRecyclerView.layoutManager == null) {
+            viewBinding.propertiesRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            viewBinding.propertiesRecyclerView.itemAnimator = null
         }
 
         loadData(properties)
@@ -44,15 +43,15 @@ class WCProductPropertyCardView @JvmOverloads constructor(
 
     private fun loadData(data: List<ProductProperty>) {
         val adapter: ProductPropertiesAdapter
-        if (propertiesRecyclerView.adapter == null) {
+        if (viewBinding.propertiesRecyclerView.adapter == null) {
             adapter = ProductPropertiesAdapter()
-            propertiesRecyclerView.adapter = adapter
+            viewBinding.propertiesRecyclerView.adapter = adapter
         } else {
-            adapter = propertiesRecyclerView.adapter as ProductPropertiesAdapter
+            adapter = viewBinding.propertiesRecyclerView.adapter as ProductPropertiesAdapter
         }
 
-        val recyclerViewState = propertiesRecyclerView.layoutManager?.onSaveInstanceState()
+        val recyclerViewState = viewBinding.propertiesRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(data)
-        propertiesRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        viewBinding.propertiesRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 }
