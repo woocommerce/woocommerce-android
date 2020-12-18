@@ -293,7 +293,7 @@
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
-    <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
+    <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
