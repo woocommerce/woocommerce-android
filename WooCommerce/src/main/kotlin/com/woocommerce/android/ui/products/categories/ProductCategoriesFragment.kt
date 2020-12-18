@@ -140,7 +140,11 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(binding.productCategoriesRecycler, R.layout.skeleton_product_categories_list, delayed = true)
+            skeletonView.show(
+                binding.productCategoriesRecycler,
+                R.layout.skeleton_product_categories_list,
+                delayed = true
+            )
         } else {
             skeletonView.hide()
         }

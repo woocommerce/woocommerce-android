@@ -118,7 +118,11 @@ class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_catego
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(binding.productCategoriesRecycler, R.layout.skeleton_product_categories_list, delayed = true)
+            skeletonView.show(
+                binding.productCategoriesRecycler,
+                R.layout.skeleton_product_categories_list,
+                delayed = true
+            )
         } else {
             skeletonView.hide()
         }
