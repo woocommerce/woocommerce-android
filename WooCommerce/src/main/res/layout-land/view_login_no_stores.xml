@@ -30,13 +30,14 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_secondary_action"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
-        android:layout_marginStart="@dimen/major_300"
-        android:layout_marginEnd="@dimen/major_300"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:text="@string/login_jetpack_what_is"
         android:textAllCaps="false"
+        android:textAlignment="center"
         android:visibility="gone" />
 </LinearLayout>
