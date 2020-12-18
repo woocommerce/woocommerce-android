@@ -30,7 +30,7 @@
         tools:visibility="visible"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_what_is_jetpack"
+        android:id="@+id/btn_secondary_action"
         style="@style/Woo.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,5 +39,5 @@
         android:layout_marginEnd="@dimen/major_300"
         android:text="@string/login_jetpack_what_is"
         android:textAllCaps="false"
-        android:visibility="gone" />
+        android:visibility="visible" />
 </LinearLayout>

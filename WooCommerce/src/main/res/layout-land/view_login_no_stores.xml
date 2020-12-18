@@ -29,7 +29,7 @@
         tools:visibility="visible"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_what_is_jetpack"
+        android:id="@+id/btn_secondary_action"
         style="@style/Woo.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
