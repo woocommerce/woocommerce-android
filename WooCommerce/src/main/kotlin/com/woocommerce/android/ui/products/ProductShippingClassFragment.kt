@@ -23,7 +23,8 @@ import javax.inject.Inject
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list), ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list),
+    ShippingClassAdapterListener {
     companion object {
         const val TAG = "ProductShippingClassFragment"
         const val ARG_SELECTED_SHIPPING_CLASS_SLUG = "selected-shipping-class-slug"
