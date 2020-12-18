@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -11,6 +9,7 @@ import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -21,10 +20,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import kotlinx.android.synthetic.main.fragment_product_categories_list.*
 import javax.inject.Inject
 
-class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProductCategoryClickListener {
+class ParentCategoryListFragment : BaseFragment(R.layout.fragment_product_categories_list),
+    OnLoadMoreListener,
+    OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -35,14 +35,8 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
 
     private val skeletonView = SkeletonView()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_categories_list, container, false)
-    }
+    private var _binding: FragmentProductCategoriesListBinding? = null
+    private val binding get() = _binding!!
 
     override fun onResume() {
         super.onResume()
@@ -52,10 +46,15 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductCategoriesListBinding.bind(view)
+
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
         viewModel.fetchParentCategories()
     }
@@ -70,13 +69,13 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
         parentCategoryListAdapter = ParentCategoryListAdapter(
             activity.baseContext, viewModel.getSelectedParentId(), this, this
         )
-        with(productCategoriesRecycler) {
+        with(binding.productCategoriesRecycler) {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
             adapter = parentCategoryListAdapter
         }
 
-        productCategoriesLayout?.apply {
-            scrollUpChild = productCategoriesRecycler
+        binding.productCategoriesLayout.apply {
+            scrollUpChild = binding.productCategoriesRecycler
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PARENT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshParentCategories()
@@ -87,15 +86,15 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {
         viewModel.parentCategoryListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { productCategoriesLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.productCategoriesLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    WooAnimUtils.fadeIn(empty_view)
-                    empty_view.show(EmptyViewType.PRODUCT_CATEGORY_LIST)
+                    WooAnimUtils.fadeIn(binding.emptyView)
+                    binding.emptyView.show(EmptyViewType.PRODUCT_CATEGORY_LIST)
                 } else {
-                    WooAnimUtils.fadeOut(empty_view)
-                    empty_view.hide()
+                    WooAnimUtils.fadeOut(binding.emptyView)
+                    binding.emptyView.hide()
                 }
             }
         }
@@ -119,14 +118,14 @@ class ParentCategoryListFragment : BaseFragment(), OnLoadMoreListener, OnProduct
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(productCategoriesRecycler, R.layout.skeleton_product_categories_list, delayed = true)
+            skeletonView.show(binding.productCategoriesRecycler, R.layout.skeleton_product_categories_list, delayed = true)
         } else {
             skeletonView.hide()
         }
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        loadMoreCategoriesProgress.isVisible = show
+        binding.loadMoreCategoriesProgress.isVisible = show
     }
 
     override fun onRequestLoadMore() {
