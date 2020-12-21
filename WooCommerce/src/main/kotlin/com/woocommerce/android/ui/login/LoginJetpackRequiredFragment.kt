@@ -89,7 +89,7 @@ class LoginJetpackRequiredFragment : Fragment() {
             }
         }
 
-        btn_what_is_jetpack.setOnClickListener {
+        btn_secondary_action.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
         }
