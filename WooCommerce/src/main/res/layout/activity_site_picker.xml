@@ -88,24 +88,6 @@
             <include
                 layout="@layout/view_login_no_stores"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_email_help"
-                style="@style/Woo.Button.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/major_150"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:textAllCaps="false"
-                android:text="@string/login_need_help_finding_email"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/no_stores_view"
-                app:layout_constraintVertical_bias="1.0"
-                tools:visibility="gone"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

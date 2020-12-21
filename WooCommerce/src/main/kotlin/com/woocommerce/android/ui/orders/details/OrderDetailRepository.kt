@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -264,8 +265,13 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun getProductsByRemoteIds(remoteIds: List<Long>) =
-        productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
+    fun getProductsByRemoteIds(remoteIds: List<Long>): List<WCProductModel> {
+        return if (remoteIds.isNotEmpty()) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
+        } else {
+            emptyList()
+        }
+    }
 
     fun getOrderRefunds(remoteOrderId: Long) = refundStore
         .getAllRefunds(selectedSite.get(), remoteOrderId)
