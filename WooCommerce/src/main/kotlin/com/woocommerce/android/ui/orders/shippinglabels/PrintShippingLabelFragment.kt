@@ -3,14 +3,13 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -21,11 +20,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSe
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_print_shipping_label.*
 import java.io.File
 import javax.inject.Inject
 
-class PrintShippingLabelFragment : BaseFragment() {
+class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping_label) {
     @Inject lateinit var navigator: OrderNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -34,34 +32,34 @@ class PrintShippingLabelFragment : BaseFragment() {
 
     private var progressDialog: CustomProgressDialog? = null
 
-    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_reprint)
+    private var _binding: FragmentPrintShippingLabelBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_print_shipping_label, container, false)
-    }
+    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_reprint)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentPrintShippingLabelBinding.bind(view)
+
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
+
+        binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
+        binding.shippingLabelPrintBtn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
+        binding.shippingLabelPrintInfoView.setOnClickListener { viewModel.onPrintShippingLabelInfoSelected() }
+        binding.shippingLabelPrintPageOptionsView.setOnClickListener { viewModel.onViewLabelFormatOptionsClicked() }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        shippingLabelPrint_paperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }
-        shippingLabelPrint_btn.setOnClickListener { viewModel.onPrintShippingLabelClicked() }
-        shippingLabelPrint_infoView.setOnClickListener { viewModel.onPrintShippingLabelInfoSelected() }
-        shippingLabelPrint_pageOptionsView.setOnClickListener { viewModel.onViewLabelFormatOptionsClicked() }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupObservers(viewModel: PrintShippingLabelViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.paperSize.takeIfNotEqualTo(old?.paperSize) {
-                shippingLabelPrint_paperSize.setText(getString(it.stringResource))
+                binding.shippingLabelPrintPaperSize.setText(getString(it.stringResource))
             }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
             new.previewShippingLabel?.takeIfNotEqualTo(old?.previewShippingLabel) {
