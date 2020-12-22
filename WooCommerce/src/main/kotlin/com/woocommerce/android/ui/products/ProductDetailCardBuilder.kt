@@ -580,9 +580,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.linkedProducts(): ProductProperty? {
-        if (!hasLinkedProducts()) {
-            return null
-        }
+        if (!hasLinkedProducts()) return null
 
         val upsellDesc = StringUtils.getPluralString(
             resources,
