@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentGroupedProductListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -26,10 +25,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_grouped_product_list.*
 import javax.inject.Inject
 
-class GroupedProductListFragment : BaseFragment(), BackPressListener {
+class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -43,21 +41,30 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
 
     private var doneMenuItem: MenuItem? = null
 
+    private var _binding: FragmentGroupedProductListBinding? = null
+    private val binding get() = _binding!!
+
     override fun getFragmentTitle() = resources.getString(viewModel.groupedProductListType.titleId)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentGroupedProductListBinding.bind(view)
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_grouped_product_list, container, false)
+
+        setupObservers()
+        setupResultHandlers()
+
+        binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        binding.productsRecycler.adapter = productListAdapter
+        binding.productsRecycler.isMotionEventSplittingEnabled = false
     }
 
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
@@ -83,26 +90,10 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers()
-        setupResultHandlers()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val activity = requireActivity()
-
-        productsRecycler.layoutManager = LinearLayoutManager(activity)
-        productsRecycler.adapter = productListAdapter
-        productsRecycler.isMotionEventSplittingEnabled = false
-    }
-
     private fun setupObservers() {
         viewModel.productListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadMoreProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.loadMoreProgress.isVisible = it }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) {
                 doneMenuItem?.isVisible = it
             }
@@ -142,7 +133,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     }
 
     private fun showAddProductButton(show: Boolean) {
-        with(addGroupedProductView) {
+        with(binding.addGroupedProductView) {
             isVisible = show
             initView { viewModel.onAddProductButtonClicked() }
         }
@@ -151,7 +142,7 @@ class GroupedProductListFragment : BaseFragment(), BackPressListener {
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> {
-                skeletonView.show(productsRecycler, R.layout.skeleton_product_list, delayed = true)
+                skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
             }
             false -> skeletonView.hide()
         }

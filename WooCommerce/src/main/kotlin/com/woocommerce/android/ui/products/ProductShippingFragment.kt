@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.databinding.FragmentProductShippingBinding
 import com.woocommerce.android.extensions.isFloat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -23,7 +24,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-import kotlinx.android.synthetic.main.fragment_product_shipping.*
 
 /**
  * Fragment which enables updating product shipping data.
@@ -37,11 +37,21 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     override val lastEvent: Event?
         get() = viewModel.event.value
 
+    private var _binding: FragmentProductShippingBinding? = null
+    private val binding get() = _binding!!
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentProductShippingBinding.bind(view)
+
         setupObservers(viewModel)
         setupViews()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
@@ -49,25 +59,25 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isShippingClassSectionVisible?.takeIfNotEqualTo(old?.isShippingClassSectionVisible) { isVisible ->
-                product_shipping_class_spinner.isVisible = isVisible
+                binding.productShippingClassSpinner.isVisible = isVisible
             }
             new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneButton?.isVisible = isVisible
             }
             new.shippingData.weight?.takeIfNotEqualTo(old?.shippingData?.weight) { weight ->
-                showValue(product_weight, R.string.product_weight, weight, viewModel.parameters.weightUnit)
+                showValue(binding.productWeight, R.string.product_weight, weight, viewModel.parameters.weightUnit)
             }
             new.shippingData.length?.takeIfNotEqualTo(old?.shippingData?.length) { length ->
-                showValue(product_length, R.string.product_length, length, viewModel.parameters.dimensionUnit)
+                showValue(binding.productLength, R.string.product_length, length, viewModel.parameters.dimensionUnit)
             }
             new.shippingData.width?.takeIfNotEqualTo(old?.shippingData?.width) { width ->
-                showValue(product_width, R.string.product_width, width, viewModel.parameters.dimensionUnit)
+                showValue(binding.productWidth, R.string.product_width, width, viewModel.parameters.dimensionUnit)
             }
             new.shippingData.height?.takeIfNotEqualTo(old?.shippingData?.height) { height ->
-                showValue(product_height, R.string.product_height, height, viewModel.parameters.dimensionUnit)
+                showValue(binding.productHeight, R.string.product_height, height, viewModel.parameters.dimensionUnit)
             }
             new.shippingData.shippingClassId?.takeIfNotEqualTo(old?.shippingData?.shippingClassId) { classId ->
-                product_shipping_class_spinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
+                binding.productShippingClassSpinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
             }
         }
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -82,19 +92,19 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     }
 
     private fun setupViews() {
-        product_weight.setOnTextChangedListener {
+        binding.productWeight.setOnTextChangedListener {
             viewModel.onDataChanged(weight = editableToFloat(it))
         }
-        product_length.setOnTextChangedListener {
+        binding.productLength.setOnTextChangedListener {
             viewModel.onDataChanged(length = editableToFloat(it))
         }
-        product_height.setOnTextChangedListener {
+        binding.productHeight.setOnTextChangedListener {
             viewModel.onDataChanged(height = editableToFloat(it))
         }
-        product_width.setOnTextChangedListener {
+        binding.productWidth.setOnTextChangedListener {
             viewModel.onDataChanged(width = editableToFloat(it))
         }
-        product_shipping_class_spinner.setClickListener {
+        binding.productShippingClassSpinner.setClickListener {
             showShippingClassFragment()
         }
     }
