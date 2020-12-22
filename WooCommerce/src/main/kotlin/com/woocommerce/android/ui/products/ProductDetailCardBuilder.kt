@@ -204,7 +204,6 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                null,
                 product.purchaseNote()
             ).filterNotEmpty()
         )
