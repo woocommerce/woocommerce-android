@@ -1,8 +1,6 @@
-* [*] Fixed a bug where a selection made in a dialog was ignored (for example the shipping labels reprint paper size)
-* [*] Minor style tweaks to the login screens
-* [*] Show fees in the payment details of orders [https://github.com/woocommerce/woocommerce-android/pull/3228]
-* [*] Added support for passwordless logins [https://github.com/woocommerce/woocommerce-android/pull/3268]
-* [*] Fixed a bug where variable products was not displayed when shipping labels were purchased for an order. [https://github.com/woocommerce/woocommerce-android/pull/3283]
-* [**] Fixed an issue where the app could not open the email client on Android 11 during the magic link login process. [https://github.com/woocommerce/woocommerce-android/pull/3291]
-* [***] Now it's possible to remove an image from a Product Variation if the WC version 4.7+. [https://github.com/woocommerce/woocommerce-android/pull/3312]
-
+- Remove images from product variations!
+- The app can open the email client on Android 11 during the magic link login process.
+- Bug fixes: variable products display when shipping labels are purchased; selections made in a dialog are honored.
+- Fees display on order payment details.
+- Passwordless logins supported.
+- Minor style improvements to the login screens.
