@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -51,6 +53,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -66,6 +69,7 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import kotlinx.android.synthetic.main.activity_main.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -174,6 +178,10 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigatorProvider.addNavigator(KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main))
         navController.setGraph(R.navigation.nav_graph_main)
         navController.addOnDestinationChangedListener(this)
+
+//        val appBarConfiguration = AppBarConfiguration(setOf(R.id.dashboard, R.id.orders, R.id.products, R.id.reviews))
+//        findViewById<Toolbar>(R.id.toolbar)
+//            .setupWithNavController(navController, appBarConfiguration)
 
         binding.bottomNav.also { it.init(navController, this) }
 
@@ -292,6 +300,10 @@ class MainActivity : AppUpgradeActivity(),
             }
             navController.navigateUp()
             return
+        } else if (binding.bottomNav.currentPosition != MY_STORE) {
+            navController.navigate(R.id.dashboard)
+        } else {
+            finish()
         }
     }
 
@@ -310,7 +322,11 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
-            navController.currentDestination?.id == R.id.dashboard
+            val currentDestinationId = navController.currentDestination?.id
+            currentDestinationId == R.id.dashboard
+                || currentDestinationId == R.id.orders
+                || currentDestinationId == R.id.products
+                || currentDestinationId == R.id.reviews
         } else {
             true
         }
@@ -357,13 +373,6 @@ class MainActivity : AppUpgradeActivity(),
         if (isAtRoot && previousDestinationId == null) {
             previousDestinationId = destination.id
             return
-        }
-
-        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
-        if (isTopLevelNavigation) {
-            binding.container.visibility = View.VISIBLE
-        } else {
-            binding.container.visibility = View.INVISIBLE
         }
 
         val showCrossIcon: Boolean
@@ -489,7 +498,7 @@ class MainActivity : AppUpgradeActivity(),
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
-        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        val activeChildIsRoot = activeChild is TopLevelFragment
         return (isDialogDestination && activeChildIsRoot) || isAtRoot
     }
 
@@ -736,8 +745,6 @@ class MainActivity : AppUpgradeActivity(),
                     navController.navigate(R.id.reviews)
                 }
             }
-        } else {
-            navController.navigate(R.id.dashboard)
         }
     }
     // endregion
@@ -847,7 +854,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
-        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
+        val action = OrderListFragmentDirections.actionOrdersToOrderDetailFragment(orderId, remoteNoteId, markComplete)
         navController.navigateSafely(action)
     }
 

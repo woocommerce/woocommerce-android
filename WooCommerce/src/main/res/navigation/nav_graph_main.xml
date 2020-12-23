@@ -214,11 +214,6 @@
             app:argType="string"
             app:nullable="true" />
     </action>
-    <action
-        android:id="@+id/action_global_orderDetailFragment"
-        app:destination="@id/orderDetailFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -377,22 +372,26 @@
             android:name="orderIdentifier"
             app:argType="string" />
     </fragment>
-    <keep_state_fragment
+    <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
         android:label="fragment_my_store"
         tools:layout="@layout/fragment_my_store" />
-    <keep_state_fragment
+    <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
-        tools:layout="@layout/fragment_order_list" />
-    <keep_state_fragment
+        tools:layout="@layout/fragment_order_list" >
+        <action
+            android:id="@+id/action_orders_to_orderDetailFragment"
+            app:destination="@id/orderDetailFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/products"
         android:name="com.woocommerce.android.ui.products.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list" />
-    <keep_state_fragment
+    <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
         android:label="fragment_reviews_list"

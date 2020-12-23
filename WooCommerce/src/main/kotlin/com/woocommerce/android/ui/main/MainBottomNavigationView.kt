@@ -4,25 +4,26 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.SparseArray
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.NavController.OnDestinationChangedListener
+import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.Builder
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
+import com.woocommerce.android.R.anim
 import org.wordpress.android.util.DisplayUtils
 import kotlin.math.min
 
@@ -30,7 +31,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : BottomNavigationView(context, attrs),
-        OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
+    OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
+    private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var reviewsBadge: BadgeDrawable
@@ -49,13 +51,30 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     fun init(navController: NavController, listener: MainNavigationListener) {
         this.listener = listener
+        this.navController = navController
 
         addTopDivider()
         createBadges()
 
         assignNavigationListeners(true)
-
-        setupWithNavController(navController)
+        navController.addOnDestinationChangedListener(
+            object : OnDestinationChangedListener {
+                override fun onDestinationChanged(
+                    controller: NavController,
+                    destination: NavDestination, arguments: Bundle?
+                ) {
+                    val menu = menu
+                    var h = 0
+                    val size = menu.size()
+                    while (h < size) {
+                        val item = menu.getItem(h)
+                        if (destination.id ==  item.itemId) {
+                            item.isChecked = true
+                        }
+                        h++
+                    }
+                }
+            })
     }
 
     /**
@@ -175,6 +194,23 @@ class MainBottomNavigationView @JvmOverloads constructor(
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPos = findNavigationPositionById(item.itemId)
         listener.onNavItemSelected(navPos)
+        val builder = Builder()
+            .setLaunchSingleTop(true)
+            .setEnterAnim(anim.nav_default_enter_anim)
+            .setExitAnim(anim.nav_default_exit_anim)
+            .setPopEnterAnim(anim.nav_default_pop_enter_anim)
+            .setPopExitAnim(anim.nav_default_pop_exit_anim)
+
+//        if (item.order and Menu.CATEGORY_SECONDARY == 0) {
+//            builder.setPopUpTo(R.id.dashboard, false)
+//        }
+        val options: NavOptions = builder.build()
+        return try {
+            navController.navigate(item.itemId, null, options)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
         return true
     }
 
@@ -182,7 +218,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         val navPos = findNavigationPositionById(item.itemId)
         listener.onNavItemReselected(navPos)
     }
-
 
     private fun assignNavigationListeners(assign: Boolean) {
         setOnNavigationItemSelectedListener(if (assign) this else null)

@@ -480,7 +480,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             isSearching = true
         }
 
-        showOptionsMenu(false)
+        // showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
     }
 
@@ -599,6 +599,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             searchView?.post { searchMenuItem?.expandActionView() }
         } else {
             clearSearchResults()
+            (activity as? MainActivity)?.showBottomNav()
             searchMenuItem?.isVisible = true
         }
         loadListForActiveTab()
@@ -682,7 +683,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
-        (activity as? MainActivity)?.showBottomNav()
 
         if (isFilterEnabled) closeFilteredList()
     }
@@ -701,7 +701,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
         displayOrderStatusListView()
-
         (activity as? MainActivity)?.hideBottomNav()
     }
 
