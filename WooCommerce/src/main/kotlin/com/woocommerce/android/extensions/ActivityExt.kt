@@ -27,24 +27,6 @@ fun FragmentActivity.navigateBackWithResult(requestCode: Int, result: Bundle, @I
 }
 
 /**
- * Used for passing back some result from a fragment using the Navigation component
- * to one of the top level activities.
- *
- * It reuses the logic from the above method but uses the getActiveTopLevelFragment()
- * from [MainActivity] to get the current active fragment
- */
-fun MainActivity.navigateBackWithResult(requestCode: Int, result: Bundle, @IdRes navHostId: Int, @IdRes dest: Int) {
-    val childFragmentManager = supportFragmentManager.findFragmentById(navHostId)?.childFragmentManager
-    var backStackListener: FragmentManager.OnBackStackChangedListener by Delegates.notNull()
-    backStackListener = FragmentManager.OnBackStackChangedListener {
-        (getActiveTopLevelFragment() as? NavigationResult)?.onNavigationResult(requestCode, result)
-        childFragmentManager?.removeOnBackStackChangedListener(backStackListener)
-    }
-    childFragmentManager?.addOnBackStackChangedListener(backStackListener)
-    findNavController(navHostId).popBackStack(dest, false)
-}
-
-/**
  * Used for starting the HelpActivity in a wrapped way whenever a troubleshooting URL click happens
  */
 fun FragmentActivity.startHelpActivity(origin: Origin) =

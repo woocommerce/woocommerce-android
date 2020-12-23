@@ -11,6 +11,8 @@ import androidx.core.view.children
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
@@ -24,6 +26,7 @@ import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -79,11 +82,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             } ?: DEFAULT_STATS_GRANULARITY
         }
 
-    private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
-            it.setId(R.id.stats_tab_layout)
-        }
-    }
+    private var _tabLayout: TabLayout? = null
+    private val tabLayout
+        get() = _tabLayout!!
 
     private val appBarLayout
         get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
@@ -94,6 +95,19 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     private val myStoreDateBar
         get() = binding.myStoreStats.myStoreDateBar
 
+    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            tabStatsPosition = tab.position
+            myStoreDateBar.clearDateRangeValues()
+            binding.myStoreStats.loadDashboardStats(activeGranularity)
+            binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+        override fun onTabReselected(tab: TabLayout.Tab) {}
+    }
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -102,7 +116,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
+            it.setId(R.id.stats_tab_layout)
+        }
 
+        addTabLayoutToAppBar(tabLayout)
         _binding = FragmentMyStoreBinding.bind(view)
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
@@ -162,18 +180,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
                 textField = binding.myStoreStatsAvailabilityMessage
             )
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                tabStatsPosition = tab.position
-                myStoreDateBar.clearDateRangeValues()
-                binding.myStoreStats.loadDashboardStats(activeGranularity)
-                binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
         if (isActive && !deferInit) {
             isStatsRefreshed = true
@@ -188,23 +195,23 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (!isHidden) {
-            if (!isStatsRefreshed) {
-                // silently refresh if this fragment is no longer hidden
-                refreshMyStoreStats(forced = false)
-            }
-            addTabLayoutToAppBar(tabLayout)
-            showChartSkeleton(true)
-            binding.myStoreRefreshLayout.visibility = View.VISIBLE
-            binding.statsErrorScrollView.visibility = View.GONE
-        } else {
-            isStatsRefreshed = false
-            removeTabLayoutFromAppBar(tabLayout)
-        }
-    }
+//    override fun onHiddenChanged(hidden: Boolean) {
+//        super.onHiddenChanged(hidden)
+//
+//        if (!isHidden) {
+//            if (!isStatsRefreshed) {
+//                // silently refresh if this fragment is no longer hidden
+//                refreshMyStoreStats(forced = false)
+//            }
+//            addTabLayoutToAppBar(tabLayout)
+//            showChartSkeleton(true)
+//            binding.myStoreRefreshLayout.visibility = View.VISIBLE
+//            binding.statsErrorScrollView.visibility = View.GONE
+//        } else {
+//            isStatsRefreshed = false
+//            removeTabLayoutFromAppBar(tabLayout)
+//        }
+//    }
 
     override fun onReturnedFromChildFragment() {
         // If this fragment is now visible and we've deferred loading stats due to it not
@@ -212,18 +219,20 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         if (!deferInit) {
             refreshMyStoreStats(forced = this.isRefreshPending)
         }
-        addTabLayoutToAppBar(tabLayout)
+        // addTabLayoutToAppBar(tabLayout)
     }
 
     override fun onStop() {
         errorSnackbar?.dismiss()
-        removeTabLayoutFromAppBar(tabLayout)
         super.onStop()
     }
 
     override fun onDestroyView() {
         binding.myStoreStats.removeListener()
         binding.myStoreTopPerformers.removeListener()
+        removeTabLayoutFromAppBar(tabLayout)
+        tabLayout.removeOnTabSelectedListener(tabSelectedListener)
+        _tabLayout = null
         presenter.dropView()
         super.onDestroyView()
         _binding = null

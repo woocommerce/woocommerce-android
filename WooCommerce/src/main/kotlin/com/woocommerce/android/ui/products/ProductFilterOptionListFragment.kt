@@ -70,12 +70,12 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
             bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
             bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
             bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
-            (requireActivity() as? MainActivity)?.navigateBackWithResult(
-                    RequestCodes.PRODUCT_LIST_FILTERS,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.rootFragment
-            )
+//            (requireActivity() as? MainActivity)?.navigateBackWithResult(
+//                    RequestCodes.PRODUCT_LIST_FILTERS,
+//                    bundle,
+//                    R.id.nav_host_fragment_main,
+//                    R.id.rootFragment
+//            )
         }
     }
 

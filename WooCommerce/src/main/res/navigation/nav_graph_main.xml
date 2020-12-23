@@ -3,11 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main"
-    app:startDestination="@id/rootFragment">
-    <fragment
-        android:id="@+id/rootFragment"
-        android:name="com.woocommerce.android.ui.main.RootFragment"
-        tools:layout="@layout/fragment_root" />
+    app:startDestination="@id/dashboard">
 
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -381,4 +377,24 @@
             android:name="orderIdentifier"
             app:argType="string" />
     </fragment>
+    <keep_state_fragment
+        android:id="@+id/dashboard"
+        android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
+        android:label="fragment_my_store"
+        tools:layout="@layout/fragment_my_store" />
+    <keep_state_fragment
+        android:id="@+id/orders"
+        android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
+        android:label="fragment_order_list"
+        tools:layout="@layout/fragment_order_list" />
+    <keep_state_fragment
+        android:id="@+id/products"
+        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:label="fragment_product_list"
+        tools:layout="@layout/fragment_product_list" />
+    <keep_state_fragment
+        android:id="@+id/reviews"
+        android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
+        android:label="fragment_reviews_list"
+        tools:layout="@layout/fragment_reviews_list" />
 </navigation>

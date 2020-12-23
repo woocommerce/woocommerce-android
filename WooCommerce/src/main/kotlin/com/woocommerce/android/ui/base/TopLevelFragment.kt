@@ -18,13 +18,7 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
     var deferInit: Boolean = false
 
     override var isActive: Boolean = false
-        get() {
-            return if (isAdded && !isHidden) {
-                (activity as? MainNavigationRouter)?.isAtNavigationRoot() ?: false
-            } else {
-                false
-            }
-        }
+        get() = true
 
     abstract fun isScrolledToTop(): Boolean
 

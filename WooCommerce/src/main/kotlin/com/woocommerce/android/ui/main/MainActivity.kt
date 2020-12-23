@@ -34,6 +34,7 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
@@ -161,17 +162,20 @@ class MainActivity : AppUpgradeActivity(),
         setContentView(binding.root)
 
         // we have to use findViewById rather than view binding for the toolbar since it's an included layout
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
         presenter.takeView(this)
 
-        binding.bottomNav.also { it.init(supportFragmentManager, this) }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
+        navController.navigatorProvider.addNavigator(KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main))
+        navController.setGraph(R.navigation.nav_graph_main)
         navController.addOnDestinationChangedListener(this)
+
+        binding.bottomNav.also { it.init(navController, this) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -289,13 +293,6 @@ class MainActivity : AppUpgradeActivity(),
             navController.navigateUp()
             return
         }
-
-        // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (binding.bottomNav.currentPosition != MY_STORE) {
-            binding.bottomNav.currentPosition = MY_STORE
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -313,7 +310,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
-            navController.currentDestination?.id == R.id.rootFragment
+            navController.currentDestination?.id == R.id.dashboard
         } else {
             true
         }
@@ -328,23 +325,6 @@ class MainActivity : AppUpgradeActivity(),
         } ?: run {
             !isAtNavigationRoot()
         }
-    }
-
-    /**
-     * Navigates to the root fragment so only the top level fragment is showing
-     */
-    private fun navigateToRoot() {
-        if (!isAtNavigationRoot()) {
-            navController.popBackStack(R.id.rootFragment, false)
-        }
-    }
-
-    /**
-     * Returns the current top level fragment (ie: the one showing in the bottom nav)
-     */
-    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
-        val tag = binding.bottomNav.currentPosition.getTag()
-        return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
 
     /**
@@ -450,14 +430,14 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
-        getActiveTopLevelFragment()?.let {
-            if (isTopLevelNavigation) {
-                it.updateActivityTitle()
-                it.onReturnedFromChildFragment()
-            } else {
-                it.onChildFragmentOpened()
-            }
-        }
+//        getActiveTopLevelFragment()?.let {
+//            if (isTopLevelNavigation) {
+//                it.updateActivityTitle()
+//                it.onReturnedFromChildFragment()
+//            } else {
+//                it.onChildFragmentOpened()
+//            }
+//        }
 
         if (!isFullScreenFragment) {
             // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
@@ -577,7 +557,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // Complete UI initialization
-        binding.bottomNav.init(supportFragmentManager, this)
+        binding.bottomNav.init(navController, this)
         initFragment(null)
     }
 
@@ -655,20 +635,15 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-        // if were not at the root, clear the nav controller's backstack
-        if (!isAtNavigationRoot()) {
-            navigateToRoot()
-        }
-
         if (navPos == REVIEWS) {
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
             NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
         }
 
-        getActiveTopLevelFragment()?.let {
-            expandToolbar(it.isScrolledToTop(), animate = false)
-        }
+//        getActiveTopLevelFragment()?.let {
+//            expandToolbar(it.isScrolledToTop(), animate = false)
+//        }
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -680,13 +655,13 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
-        if (isAtNavigationRoot()) {
-            getActiveTopLevelFragment()?.scrollToTop()
-            expandToolbar(expand = true, animate = true)
-        } else {
-            navigateToRoot()
-        }
+//        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+//        if (isAtNavigationRoot()) {
+//            getActiveTopLevelFragment()?.scrollToTop()
+//            expandToolbar(expand = true, animate = true)
+//        } else {
+//            navigateToRoot()
+//        }
     }
     // endregion
 
@@ -718,9 +693,9 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
                 } ?: NotificationChannelType.REVIEW
 
-                binding.bottomNav.currentPosition = when (notificationChannelType) {
-                    NotificationChannelType.NEW_ORDER -> ORDERS
-                    else -> REVIEWS
+                when (notificationChannelType) {
+                    NotificationChannelType.NEW_ORDER -> navController.navigate(R.id.orders)
+                    else -> navController.navigate(R.id.reviews)
                 }
             } else if (intent.getBooleanExtra(FIELD_OPENED_FROM_ZENDESK, false)) {
                 // Reset this flag now that it's being processed
@@ -735,7 +710,7 @@ class MainActivity : AppUpgradeActivity(),
 
                 // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
                 // the app is in the right section
-                binding.bottomNav.currentPosition = MY_STORE
+                navController.navigate(R.id.dashboard)
 
                 // launch 'Tickets' page of Zendesk
                 startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -758,21 +733,21 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
-                    binding.bottomNav.currentPosition = REVIEWS
+                    navController.navigate(R.id.reviews)
                 }
             }
         } else {
-            binding.bottomNav.currentPosition = MY_STORE
+            navController.navigate(R.id.dashboard)
         }
     }
     // endregion
 
     override fun showOrderList(orderStatusFilter: String?) {
-        showBottomNav()
-        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
-
-        val fragment = binding.bottomNav.getFragment(ORDERS)
-        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
+//        showBottomNav()
+//        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
+//
+//        val fragment = binding.bottomNav.getFragment(ORDERS)
+//        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
     }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
@@ -819,12 +794,12 @@ class MainActivity : AppUpgradeActivity(),
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-        // make sure the review tab is active if the user came here from a notification
-        if (launchedFromNotification) {
-            showBottomNav()
-            binding.bottomNav.currentPosition = REVIEWS
-            binding.bottomNav.active(REVIEWS.position)
-        }
+//        // make sure the review tab is active if the user came here from a notification
+//        if (launchedFromNotification) {
+//            showBottomNav()
+//            binding.bottomNav.currentPosition = REVIEWS
+//            binding.bottomNav.active(REVIEWS.position)
+//        }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
             remoteReviewId,
@@ -854,11 +829,11 @@ class MainActivity : AppUpgradeActivity(),
         remoteNoteId: Long,
         markComplete: Boolean
     ) {
-        if (binding.bottomNav.currentPosition != ORDERS) {
-            binding.bottomNav.currentPosition = ORDERS
-            val navPos = ORDERS.position
-            binding.bottomNav.active(navPos)
-        }
+//        if (binding.bottomNav.currentPosition != ORDERS) {
+//            binding.bottomNav.currentPosition = ORDERS
+//            val navPos = ORDERS.position
+//            binding.bottomNav.active(navPos)
+//        }
 
         if (markComplete) {
             // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
