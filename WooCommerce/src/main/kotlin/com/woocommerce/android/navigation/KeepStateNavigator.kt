@@ -2,6 +2,7 @@ package com.woocommerce.android.navigation
 
 import android.content.Context
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -19,6 +20,8 @@ class KeepStateNavigator(
 ) : FragmentNavigator(context, manager, containerId) {
 
     private var backStack: ArrayDeque<Int>
+
+    private var lastTopLevelFragment: Fragment? = null
 
     init {
         val field = FragmentNavigator::class.java.getDeclaredField("mBackStack")
@@ -40,9 +43,8 @@ class KeepStateNavigator(
         val tag = destination.id.toString()
         val transaction = manager.beginTransaction()
 
-        val currentFragment = manager.primaryNavigationFragment
-        if (currentFragment != null) {
-            transaction.detach(currentFragment)
+        (lastTopLevelFragment?:manager.primaryNavigationFragment)?.let {
+            transaction.detach(it)
         }
 
         var fragment = manager.findFragmentByTag(tag)
@@ -53,6 +55,7 @@ class KeepStateNavigator(
         } else {
             transaction.attach(fragment)
         }
+        lastTopLevelFragment = fragment
 
         backStack.clear()
         backStack.add(destination.id)

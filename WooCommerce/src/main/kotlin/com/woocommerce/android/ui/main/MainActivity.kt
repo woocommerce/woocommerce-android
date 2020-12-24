@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
+import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -801,14 +802,12 @@ class MainActivity : AppUpgradeActivity(),
         enableModeration: Boolean,
         tempStatus: String?
     ) {
-//        // make sure the review tab is active if the user came here from a notification
-//        if (launchedFromNotification) {
-//            showBottomNav()
-//            binding.bottomNav.currentPosition = REVIEWS
-//            binding.bottomNav.active(REVIEWS.position)
-//        }
+        // make sure the review tab is active if the user came here from a notification
+        if (launchedFromNotification) {
+            navController.navigate(R.id.reviews)
+        }
 
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+        val action = ReviewListFragmentDirections.actionReviewsToReviewDetailFragment(
             remoteReviewId,
             tempStatus,
             launchedFromNotification,

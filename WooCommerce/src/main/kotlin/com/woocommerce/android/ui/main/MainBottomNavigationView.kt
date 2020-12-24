@@ -201,9 +201,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
             .setPopEnterAnim(anim.nav_default_pop_enter_anim)
             .setPopExitAnim(anim.nav_default_pop_exit_anim)
 
-//        if (item.order and Menu.CATEGORY_SECONDARY == 0) {
-//            builder.setPopUpTo(R.id.dashboard, false)
-//        }
         val options: NavOptions = builder.build()
         return try {
             navController.navigate(item.itemId, null, options)
