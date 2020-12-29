@@ -408,7 +408,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Borderless button (i.e: text button)  -->
     <style name="Woo.Button" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/button_fg_selector</item>
-        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
@@ -641,6 +640,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Widget.Woo.Settings.Button" parent="Woo.Button">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
         <item name="android:textAlignment">textStart</item>
         <item name="android:paddingStart">@dimen/margin_app_title_aligned</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
