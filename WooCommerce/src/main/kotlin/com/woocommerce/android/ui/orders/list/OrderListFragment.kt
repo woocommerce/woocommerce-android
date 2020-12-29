@@ -252,7 +252,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(STATE_KEY_LIST, binding.orderListView.onFragmentSavedInstanceState())
+        //outState.putParcelable(STATE_KEY_LIST, binding.orderListView.onFragmentSavedInstanceState())
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putBoolean(STATE_KEY_IS_FILTER_ENABLED, isFilterEnabled)

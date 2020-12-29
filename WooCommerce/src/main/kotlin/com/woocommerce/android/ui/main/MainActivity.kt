@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -345,6 +346,14 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     /**
+     * Returns the current top level fragment (ie: the one showing in the bottom nav)
+     */
+    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
+        val tag = binding.bottomNav.currentPosition.getTag()
+        return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+    }
+
+    /**
      * Returns the fragment currently shown by the navigation component, or null if we're at the root
      */
     private fun getActiveChildFragment(): Fragment? {
@@ -439,15 +448,6 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             hideBottomNav()
         }
-
-//        getActiveTopLevelFragment()?.let {
-//            if (isTopLevelNavigation) {
-//                it.updateActivityTitle()
-//                it.onReturnedFromChildFragment()
-//            } else {
-//                it.onChildFragmentOpened()
-//            }
-//        }
 
         if (!isFullScreenFragment) {
             // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
@@ -651,9 +651,9 @@ class MainActivity : AppUpgradeActivity(),
             NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
         }
 
-//        getActiveTopLevelFragment()?.let {
-//            expandToolbar(it.isScrolledToTop(), animate = false)
-//        }
+        getActiveTopLevelFragment()?.let {
+            expandToolbar(it.isScrolledToTop(), animate = false)
+        }
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -665,13 +665,13 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-//        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
-//        if (isAtNavigationRoot()) {
-//            getActiveTopLevelFragment()?.scrollToTop()
-//            expandToolbar(expand = true, animate = true)
-//        } else {
-//            navigateToRoot()
-//        }
+        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        if (isAtNavigationRoot()) {
+            getActiveTopLevelFragment()?.scrollToTop()
+            expandToolbar(expand = true, animate = true)
+        } else {
+            navController.navigate(binding.bottomNav.currentPosition.id)
+        }
     }
     // endregion
 

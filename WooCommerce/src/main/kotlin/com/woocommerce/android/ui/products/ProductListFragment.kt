@@ -124,7 +124,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(KEY_LIST_STATE, binding.productsRecycler.layoutManager?.onSaveInstanceState())
+        //outState.putParcelable(KEY_LIST_STATE, binding.productsRecycler.layoutManager?.onSaveInstanceState())
         super.onSaveInstanceState(outState)
     }
 

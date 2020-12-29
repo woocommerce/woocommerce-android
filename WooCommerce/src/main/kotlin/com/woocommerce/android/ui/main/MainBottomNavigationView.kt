@@ -193,7 +193,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPos = findNavigationPositionById(item.itemId)
-        listener.onNavItemSelected(navPos)
         val builder = Builder()
             .setLaunchSingleTop(true)
             .setEnterAnim(anim.nav_default_enter_anim)
@@ -202,12 +201,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
             .setPopExitAnim(anim.nav_default_pop_exit_anim)
 
         val options: NavOptions = builder.build()
-        return try {
+        try {
             navController.navigate(item.itemId, null, options)
-            true
         } catch (e: IllegalArgumentException) {
-            false
+            return false
         }
+        listener.onNavItemSelected(navPos)
         return true
     }
 

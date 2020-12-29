@@ -22,16 +22,4 @@ fun findNavigationPositionById(id: Int): BottomNavigationPosition = when (id) {
     else -> BottomNavigationPosition.MY_STORE
 }
 
-fun BottomNavigationPosition.getTag(): String = when (this) {
-    BottomNavigationPosition.MY_STORE -> MyStoreFragment.TAG
-    BottomNavigationPosition.ORDERS -> OrderListFragment.TAG
-    BottomNavigationPosition.PRODUCTS -> ProductListFragment.TAG
-    BottomNavigationPosition.REVIEWS -> ReviewListFragment.TAG
-}
-
-fun BottomNavigationPosition.createFragment(): TopLevelFragment = when (this) {
-    BottomNavigationPosition.MY_STORE -> MyStoreFragment.newInstance()
-    BottomNavigationPosition.ORDERS -> OrderListFragment.newInstance()
-    BottomNavigationPosition.PRODUCTS -> ProductListFragment.newInstance()
-    BottomNavigationPosition.REVIEWS -> ReviewListFragment.newInstance()
-}
+fun BottomNavigationPosition.getTag(): String = id.toString()
