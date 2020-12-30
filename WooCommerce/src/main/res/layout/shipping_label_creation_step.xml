@@ -42,7 +42,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/editButton"
-        style="@style/Woo.Button.TextButton"
+        style="@style/Woo.Button.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/edit"

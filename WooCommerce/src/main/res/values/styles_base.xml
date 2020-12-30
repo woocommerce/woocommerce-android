@@ -413,10 +413,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="iconTint">@color/button_fg_selector</item>
     </style>
 
-    <style name="Woo.Button.TextButton">
-        <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
-    </style>
-
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.Secondary">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
