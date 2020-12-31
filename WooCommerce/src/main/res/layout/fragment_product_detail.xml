@@ -160,7 +160,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/productDetail_addMoreButton"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start|center_vertical"

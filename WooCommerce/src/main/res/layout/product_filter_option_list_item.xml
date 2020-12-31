@@ -23,7 +23,7 @@
 
     <com.google.android.material.radiobutton.MaterialRadioButton
         android:id="@+id/filterOptionItem_tick"
-        style="@style/Woo.Button.Toggle"
+        style="@style/Woo.Button.TextButton.Toggle"
         android:layout_width="@dimen/min_tap_target"
         android:layout_height="wrap_content"
         android:button="@null"
