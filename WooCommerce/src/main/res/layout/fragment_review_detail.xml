@@ -147,7 +147,7 @@
                 app:flow_verticalGap="@dimen/minor_100"
                 app:flow_verticalAlign="top"
                 app:flow_wrapMode="chain"
-                app:constraint_referenced_ids="review_approve,review_spam,review_trash"/>
+                app:constraint_referenced_ids="review_trash,review_spam,review_approve"/>
 
             <ToggleButton
                 android:id="@+id/review_approve"
@@ -157,9 +157,7 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
                 android:textOff="@string/wc_approve"
-                android:textOn="@string/wc_approved"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:textOn="@string/wc_approved" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_spam"
@@ -168,9 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_extra_large"
                 android:layout_marginBottom="@dimen/margin_medium"
-                android:text="@string/wc_spam"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/review_approve" />
+                android:text="@string/wc_spam" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_trash"
@@ -179,9 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
-                android:text="@string/wc_trash"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/review_spam" />
+                android:text="@string/wc_trash" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
