@@ -52,7 +52,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/info_link"
-            style="@style/Woo.Button"
+            style="@style/Woo.Button.TextButton"
             android:layout_width="@dimen/minor_00"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_300"

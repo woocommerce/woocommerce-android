@@ -134,7 +134,7 @@
 
             <ToggleButton
                 android:id="@+id/review_approve"
-                style="@style/Woo.Button.Toggle"
+                style="@style/Woo.Button.TextButton.Toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/major_100"
@@ -146,7 +146,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_spam"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_extra_large"
@@ -157,7 +157,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_trash"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/major_100"

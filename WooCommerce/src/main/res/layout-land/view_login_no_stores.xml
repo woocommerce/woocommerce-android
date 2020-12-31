@@ -30,7 +30,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_secondary_action"
-        style="@style/Woo.Button.Secondary"
+        style="@style/Woo.Button.TextButton.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"

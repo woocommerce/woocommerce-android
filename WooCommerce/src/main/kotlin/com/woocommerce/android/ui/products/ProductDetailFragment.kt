@@ -256,7 +256,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             }
         }
 
-        binding.productDetailAddMoreContainer.setOnClickListener {
+        binding.productDetailAddMoreButton.setOnClickListener {
             // TODO: add tracking events here
             viewModel.onEditProductCardClicked(
                 ViewProductDetailBottomSheet(product.productType)
