@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PRODUCT_DELETED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
@@ -242,6 +243,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        AnalyticsTracker.track(PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
                             triggerEvent(ExitWithResult(product.remoteId))
