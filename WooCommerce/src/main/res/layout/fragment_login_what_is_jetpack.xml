@@ -8,7 +8,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_learn_more"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
@@ -23,7 +23,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_ok"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_50"

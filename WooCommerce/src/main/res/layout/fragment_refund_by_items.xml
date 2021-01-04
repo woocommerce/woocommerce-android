@@ -38,7 +38,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/issueRefund_selectButton"
-                        style="@style/Woo.Button"
+                        style="@style/Woo.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/order_refunds_items_select_all"

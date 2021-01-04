@@ -67,6 +67,11 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
         viewModel.loadShippingClasses()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)

@@ -171,7 +171,6 @@ class AddOrderTrackingProviderListAdapter(
 
             val isChecked = provider.carrierName == selectedCarrierName
             viewBinding.addShipmentTrackingProviderListItemTick.isVisible = isChecked
-            viewBinding.addShipmentTrackingProviderListItemTick.isChecked = isChecked
 
             viewBinding.root.setOnClickListener {
                 listener.onProviderClick(provider)
