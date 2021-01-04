@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -15,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -27,12 +26,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_add_product_category.*
-import org.wordpress.android.util.ActivityUtils
 import dagger.Lazy
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class AddProductCategoryFragment : BaseFragment(), BackPressListener {
+class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_category), BackPressListener {
     companion object {
         const val ARG_ADDED_CATEGORY = "arg-added-category"
     }
@@ -44,17 +42,11 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
 
+    private var _binding: FragmentAddProductCategoryBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: AddProductCategoryViewModel
         by navGraphViewModels(R.id.nav_graph_add_product_category) { viewModelFactory.get() }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_add_product_category, container, false)
-    }
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 
@@ -88,19 +80,19 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentAddProductCategoryBinding.bind(view)
+
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        product_category_name.setOnTextChangedListener {
-            if (product_category_name.hasFocus()) {
+        binding.productCategoryName.setOnTextChangedListener {
+            if (binding.productCategoryName.hasFocus()) {
                 viewModel.onCategoryNameChanged(it.toString())
             }
         }
 
-        with(product_category_parent) {
+        with(binding.productCategoryParent) {
             viewModel.getSelectedParentCategoryName()?.let { post { setText(it) } }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
@@ -112,8 +104,13 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(getCategoryName(), product_category_parent.getText())
+        return viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())
     }
 
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {
@@ -146,10 +143,10 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
 
     private fun displayCategoryNameError(messageId: Int) {
         if (messageId != 0) {
-            product_category_name.error = getString(messageId)
+            binding.productCategoryName.error = getString(messageId)
             showDoneMenuItem(false)
         } else {
-            product_category_name.clearError()
+            binding.productCategoryName.clearError()
             showDoneMenuItem(true)
         }
     }
@@ -176,5 +173,5 @@ class AddProductCategoryFragment : BaseFragment(), BackPressListener {
         progressDialog = null
     }
 
-    private fun getCategoryName() = product_category_name.getText()
+    private fun getCategoryName() = binding.productCategoryName.getText()
 }
