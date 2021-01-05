@@ -82,7 +82,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
         initializeViewModel()
     }
 
-
     override fun onDestroyView() {
         // hide the skeleton view if fragment is destroyed
         skeletonView.hide()

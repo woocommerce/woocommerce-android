@@ -54,6 +54,7 @@ class VariationListFragment : BaseFragment(),
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
+    // this is an included layout
     private var _warningBinding: ProductPropertyWarningLayoutBinding? = null
     private val warningBinding get() = _warningBinding!!
 
