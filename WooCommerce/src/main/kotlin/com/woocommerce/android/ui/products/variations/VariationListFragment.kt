@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -17,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentVariationListBinding
+import com.woocommerce.android.databinding.ProductPropertyWarningLayoutBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -32,8 +32,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
-import kotlinx.android.synthetic.main.fragment_variation_list.*
-import kotlinx.android.synthetic.main.product_property_warning_layout.*
 import javax.inject.Inject
 
 class VariationListFragment : BaseFragment(),
@@ -53,19 +51,28 @@ class VariationListFragment : BaseFragment(),
 
     private val navArgs: VariationListFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    private var _binding: FragmentVariationListBinding? = null
+    private val binding get() = _binding!!
+
+    private var _warningBinding: ProductPropertyWarningLayoutBinding? = null
+    private val warningBinding get() = _warningBinding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentVariationListBinding.bind(view)
+        _warningBinding = binding.variationVisibilityWarning
+
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_variation_list, container, false)
+        initializeViews(savedInstanceState)
+        initializeViewModel()
     }
 
     override fun onDestroyView() {
-        // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
+        _warningBinding = null
     }
 
     override fun onResume() {
@@ -79,12 +86,6 @@ class VariationListFragment : BaseFragment(),
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initializeViews(savedInstanceState)
-        initializeViewModel()
-    }
-
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -93,14 +94,14 @@ class VariationListFragment : BaseFragment(),
             layoutManager.onRestoreInstanceState(it)
         }
 
-        variationList.layoutManager = layoutManager
-        variationList.itemAnimator = null
-        variationList.addItemDecoration(AlignedDividerDecoration(
+        binding.variationList.layoutManager = layoutManager
+        binding.variationList.itemAnimator = null
+        binding.variationList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
-        variationListRefreshLayout?.apply {
-            scrollUpChild = variationList
+        binding.variationListRefreshLayout.apply {
+            scrollUpChild = binding.variationList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
                 viewModel.refreshVariations(navArgs.remoteProductId)
@@ -116,15 +117,19 @@ class VariationListFragment : BaseFragment(),
     private fun setupObservers(viewModel: VariationListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { variationListRefreshLayout.isRefreshing = it }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadMoreProgress.isVisible = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                binding.variationListRefreshLayout.isRefreshing = it
+            }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
+                binding.loadMoreProgress.isVisible = it
+            }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
-                    WooAnimUtils.fadeIn(empty_view)
-                    empty_view?.button?.visibility = View.GONE
+                    WooAnimUtils.fadeIn(binding.emptyView)
+                    binding.emptyView.button.visibility = View.GONE
                 } else {
-                    WooAnimUtils.fadeOut(empty_view)
+                    WooAnimUtils.fadeOut(binding.emptyView)
                 }
             }
         }
@@ -143,9 +148,7 @@ class VariationListFragment : BaseFragment(),
     }
 
     private fun showWarning(isVisible: Boolean) {
-        variationVisibilityWarning.isVisible = isVisible
-        warningTitle.isVisible = isVisible
-        warningDivider.isVisible = isVisible
+        warningBinding.root.isVisible = isVisible
     }
 
     private fun openVariationDetail(variation: ProductVariation) {
@@ -163,7 +166,7 @@ class VariationListFragment : BaseFragment(),
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(variationList, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(binding.variationList, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -171,7 +174,7 @@ class VariationListFragment : BaseFragment(),
 
     private fun showVariations(variations: List<ProductVariation>, parentProduct: Product?) {
         val adapter: VariationListAdapter
-        if (variationList.adapter == null) {
+        if (binding.variationList.adapter == null) {
             adapter = VariationListAdapter(
                 requireContext(),
                 GlideApp.with(this),
@@ -179,9 +182,9 @@ class VariationListFragment : BaseFragment(),
                 parentProduct,
                 viewModel::onItemClick
             )
-            variationList.adapter = adapter
+            binding.variationList.adapter = adapter
         } else {
-            adapter = variationList.adapter as VariationListAdapter
+            adapter = binding.variationList.adapter as VariationListAdapter
         }
 
         adapter.setVariationList(variations)
