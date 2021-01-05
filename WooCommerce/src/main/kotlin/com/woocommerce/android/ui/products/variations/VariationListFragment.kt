@@ -34,7 +34,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class VariationListFragment : BaseFragment(),
+class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"

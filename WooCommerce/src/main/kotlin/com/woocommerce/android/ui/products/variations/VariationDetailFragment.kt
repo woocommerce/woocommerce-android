@@ -46,7 +46,10 @@ import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageInteractionListener {
+class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
+    BackPressListener,
+    NavigationResult,
+    OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
