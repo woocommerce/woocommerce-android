@@ -149,6 +149,7 @@
                 app:flow_wrapMode="chain"
                 app:constraint_referenced_ids="review_trash,review_spam,review_approve"/>
 
+            <!-- Buttons below are using the above flow for layout. -->
             <ToggleButton
                 android:id="@+id/review_approve"
                 style="@style/Woo.Button.Toggle"
@@ -157,7 +158,8 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
                 android:textOff="@string/wc_approve"
-                android:textOn="@string/wc_approved" />
+                android:textOn="@string/wc_approved"
+                tools:ignore="MissingConstraints" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_spam"
@@ -166,7 +168,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_extra_large"
                 android:layout_marginBottom="@dimen/margin_medium"
-                android:text="@string/wc_spam" />
+                android:text="@string/wc_spam"
+                tools:ignore="MissingConstraints" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_trash"
@@ -175,7 +178,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
-                android:text="@string/wc_trash" />
+                android:text="@string/wc_trash"
+                tools:ignore="MissingConstraints" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
