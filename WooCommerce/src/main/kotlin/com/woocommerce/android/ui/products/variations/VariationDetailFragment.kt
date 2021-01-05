@@ -86,7 +86,6 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
     }
 
     override fun onDestroyView() {
-        // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
         _binding = null
