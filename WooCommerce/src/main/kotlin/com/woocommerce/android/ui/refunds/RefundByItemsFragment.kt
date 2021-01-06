@@ -115,6 +115,9 @@ class RefundByItemsFragment : BaseFragment() {
             new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
                 issueRefund_shippingTotal.text = it
             }
+            new.feesTotal?.takeIfNotEqualTo(old?.feesTotal) {
+                issueRefund_feesTotal.text = it
+            }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
                 issueRefund_taxesTotal.text = it
             }
@@ -139,6 +142,13 @@ class RefundByItemsFragment : BaseFragment() {
                     issueRefund_shippingRefundNotice.show()
                 } else {
                     issueRefund_shippingRefundNotice.hide()
+                }
+            }
+            new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
+                if (isVisible) {
+                    issueRefund_feesGroup.show()
+                } else {
+                    issueRefund_feesGroup.hide()
                 }
             }
             // TODO: Temporarily disabled, this will be used in a future release - do not remove
