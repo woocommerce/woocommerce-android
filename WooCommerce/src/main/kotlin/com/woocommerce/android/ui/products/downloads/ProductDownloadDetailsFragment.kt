@@ -118,6 +118,10 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 }
                 is DeleteFileEvent -> {
                     parentViewModel.deleteDownloadableFile(event.file)
+
+                    AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value))
+
                     findNavController().navigateUp()
                 }
             }
