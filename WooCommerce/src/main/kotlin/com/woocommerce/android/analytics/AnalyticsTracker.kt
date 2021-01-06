@@ -322,6 +322,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Downloadable Files
         PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED,
+        PRODUCTS_DOWNLOADABLE_FILE,
 
         // -- Grouped products
         GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
@@ -631,6 +632,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
         const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
+
+        // -- Downloadable Files
+        const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
+
+        enum class DownloadableFileAction(val value: String) {
+            ADDED("added"),
+            UPDATED("updated"),
+            DELETED("deleted")
+        }
 
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"
