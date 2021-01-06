@@ -234,7 +234,8 @@ class ProductDetailCardBuilder(
             icon = R.drawable.ic_gridicons_cloud,
             onClick = {
                 viewModel.onEditProductCardClicked(
-                    ViewProductDownloads
+                    ViewProductDownloads,
+                    Stat.PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED
                 )
             }
         )
