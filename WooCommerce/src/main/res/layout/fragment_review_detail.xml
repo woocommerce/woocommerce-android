@@ -126,12 +126,30 @@
                 android:layout_width="@dimen/minor_00"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/major_100"
-                app:layout_constraintBottom_toTopOf="@+id/review_trash"
+                app:layout_constraintBottom_toTopOf="@+id/flow_buttons"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_rating_bar"
                 tools:text="Great product! Definitely what I was looking for. Great quality, and looks exactly like the product image on the website. Would highly recommend to anyone who is looking for something like this!" />
 
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/flow_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/minor_100"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/review_description"
+                app:flow_horizontalStyle="packed"
+                app:flow_horizontalBias="1"
+                app:flow_horizontalGap="@dimen/minor_100"
+                app:flow_verticalGap="@dimen/minor_100"
+                app:flow_verticalAlign="top"
+                app:flow_wrapMode="chain"
+                app:constraint_referenced_ids="review_trash,review_spam,review_approve"/>
+
+            <!-- Buttons below are using the above flow for layout. -->
             <ToggleButton
                 android:id="@+id/review_approve"
                 style="@style/Woo.Button.TextButton.Toggle"
@@ -141,8 +159,7 @@
                 android:layout_marginBottom="@dimen/minor_100"
                 android:textOff="@string/wc_approve"
                 android:textOn="@string/wc_approved"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                tools:ignore="MissingConstraints" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_spam"
@@ -152,8 +169,7 @@
                 android:layout_marginEnd="@dimen/margin_extra_large"
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:text="@string/wc_spam"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/review_approve" />
+                tools:ignore="MissingConstraints" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/review_trash"
@@ -163,8 +179,7 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/minor_100"
                 android:text="@string/wc_trash"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/review_spam" />
+                tools:ignore="MissingConstraints" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,17 +2,14 @@ package com.woocommerce.android.ui.products.categories
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductCategoryListItemBinding
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolder
-import kotlinx.android.synthetic.main.product_category_list_item.view.*
 import org.wordpress.android.util.HtmlUtils
 
 class ProductCategoriesAdapter(
@@ -31,35 +28,18 @@ class ProductCategoriesAdapter(
     override fun getItemCount() = productCategoryList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductCategoryViewHolder {
-        return ProductCategoryViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.product_category_list_item, parent, false))
+        return ProductCategoryViewHolder(
+            ProductCategoryListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ProductCategoryViewHolder, position: Int) {
         val productCategory = productCategoryList[position]
-
-        holder.apply {
-            txtCategoryName.text = if (productCategory.category.name.isEmpty()) {
-                context.getString(R.string.untitled)
-            } else {
-                HtmlUtils.fastStripHtml(productCategory.category.name)
-            }
-
-            val newLayoutParams = txtCategoryName.layoutParams as LayoutParams
-            newLayoutParams.marginStart = productCategory.margin
-            txtCategoryName.layoutParams = newLayoutParams
-
-            checkBox.isChecked = productCategory.isSelected
-
-            checkBox.setOnClickListener {
-                handleCategoryClick(this, productCategory)
-            }
-
-            itemView.setOnClickListener {
-                checkBox.isChecked = !checkBox.isChecked
-                handleCategoryClick(this, productCategory)
-            }
-        }
+        holder.bind(productCategory)
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
@@ -67,10 +47,10 @@ class ProductCategoriesAdapter(
     }
 
     private fun handleCategoryClick(
-        holder: ProductCategoryViewHolder,
-        productCategory: ProductCategoryItemUiModel
+        productCategory: ProductCategoryItemUiModel,
+        isChecked: Boolean
     ) {
-        productCategory.isSelected = holder.checkBox.isChecked
+        productCategory.isSelected = isChecked
         clickListener.onProductCategoryClick(productCategory)
     }
 
@@ -87,9 +67,32 @@ class ProductCategoriesAdapter(
         }
     }
 
-    class ProductCategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtCategoryName: TextView = view.categoryName
-        val checkBox: CheckBox = view.categorySelected
+    inner class ProductCategoryViewHolder(private val viewBinder: ProductCategoryListItemBinding) :
+        RecyclerView.ViewHolder(viewBinder.root) {
+        fun bind(productCategory: ProductCategoryItemUiModel) {
+            viewBinder.categoryName.apply {
+                text = if (productCategory.category.name.isEmpty()) {
+                    context.getString(R.string.untitled)
+                } else {
+                    HtmlUtils.fastStripHtml(productCategory.category.name)
+                }
+
+                val newLayoutParams = layoutParams as LayoutParams
+                newLayoutParams.marginStart = productCategory.margin
+                layoutParams = newLayoutParams
+            }
+
+            viewBinder.categorySelected.isChecked = productCategory.isSelected
+
+            viewBinder.categorySelected.setOnClickListener {
+                handleCategoryClick(productCategory, viewBinder.categorySelected.isChecked)
+            }
+
+            itemView.setOnClickListener {
+                viewBinder.categorySelected.isChecked = !viewBinder.categorySelected.isChecked
+                handleCategoryClick(productCategory, viewBinder.categorySelected.isChecked)
+            }
+        }
     }
 
     private class ProductCategoryItemDiffUtil(

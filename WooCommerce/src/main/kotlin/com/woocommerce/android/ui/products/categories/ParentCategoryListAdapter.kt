@@ -2,15 +2,12 @@ package com.woocommerce.android.ui.products.categories
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckedTextView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ParentCategoryListItemBinding
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ParentCategoryListAdapter.ParentCategoryListViewHolder
-import kotlinx.android.synthetic.main.parent_category_list_item.view.*
 
 class ParentCategoryListAdapter(
     private val context: Context,
@@ -35,22 +32,17 @@ class ParentCategoryListAdapter(
     override fun getItemCount() = parentCategoryList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentCategoryListViewHolder {
-        return ParentCategoryListViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.parent_category_list_item, parent, false))
+        return ParentCategoryListViewHolder(
+            ParentCategoryListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false)
+        )
     }
 
     override fun onBindViewHolder(holder: ParentCategoryListViewHolder, position: Int) {
         val parentCategory = parentCategoryList[position]
-
-        holder.apply {
-            txtCategoryName.text = parentCategory.category.name
-
-            val newLayoutParams = txtCategoryName.layoutParams as LayoutParams
-            newLayoutParams.marginStart = parentCategory.margin
-            txtCategoryName.layoutParams = newLayoutParams
-
-            txtCategoryName.isChecked = selectedCategoryId == parentCategory.category.remoteCategoryId
-        }
+        holder.bind(parentCategory)
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
@@ -82,10 +74,10 @@ class ParentCategoryListAdapter(
         return false
     }
 
-    inner class ParentCategoryListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtCategoryName: CheckedTextView = view.parentCategoryName
+    inner class ParentCategoryListViewHolder(private val viewBinder: ParentCategoryListItemBinding) :
+        RecyclerView.ViewHolder(viewBinder.root) {
         init {
-            itemView.setOnClickListener {
+            viewBinder.root.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
                     getParentCategoryAtPosition(position).let {
@@ -93,6 +85,18 @@ class ParentCategoryListAdapter(
                         clickListener.onProductCategoryClick(it)
                     }
                 }
+            }
+        }
+
+        fun bind(parentCategory: ProductCategoryItemUiModel) {
+            viewBinder.parentCategoryName.apply {
+                text = parentCategory.category.name
+
+                val newLayoutParams = viewBinder.parentCategoryName.layoutParams as LayoutParams
+                newLayoutParams.marginStart = parentCategory.margin
+                layoutParams = newLayoutParams
+
+                isChecked = selectedCategoryId == parentCategory.category.remoteCategoryId
             }
         }
     }

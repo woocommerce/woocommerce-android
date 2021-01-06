@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +16,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
+import com.woocommerce.android.databinding.FragmentVariationDetailBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
@@ -43,15 +42,14 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
-import kotlinx.android.synthetic.main.fragment_variation_detail.addImageContainer
-import kotlinx.android.synthetic.main.fragment_variation_detail.app_bar_layout
-import kotlinx.android.synthetic.main.fragment_variation_detail.cardsRecyclerView
-import kotlinx.android.synthetic.main.fragment_variation_detail.imageGallery
 import org.wordpress.android.util.ActivityUtils
 import java.util.Date
 import javax.inject.Inject
 
-class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationResult, OnGalleryImageInteractionListener {
+class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
+    BackPressListener,
+    NavigationResult,
+    OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
     }
@@ -74,15 +72,23 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private val viewModel: VariationDetailViewModel by viewModels { viewModelFactory }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var _binding: FragmentVariationDetailBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentVariationDetailBinding.bind(view)
+
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_variation_detail, container, false)
+        initializeViews(savedInstanceState)
+        initializeViewModel()
     }
 
     override fun onDestroyView() {
-        // hide the skeleton view if fragment is destroyed
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
@@ -114,12 +120,6 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initializeViews(savedInstanceState)
-        initializeViewModel()
-    }
-
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -127,8 +127,8 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
-        cardsRecyclerView.layoutManager = layoutManager
-        cardsRecyclerView.itemAnimator = null
+        binding.cardsRecyclerView.layoutManager = layoutManager
+        binding.cardsRecyclerView.itemAnimator = null
     }
 
     private fun initializeViewModel() {
@@ -183,10 +183,10 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
             }
             new.uploadingImageUri?.takeIfNotEqualTo(old?.uploadingImageUri) {
                 if (it.value != null) {
-                    imageGallery.clearImages()
-                    imageGallery.setPlaceholderImageUris(listOf(it.value))
+                    binding.imageGallery.clearImages()
+                    binding.imageGallery.setPlaceholderImageUris(listOf(it.value))
                 } else {
-                    imageGallery.clearPlaceholders()
+                    binding.imageGallery.clearPlaceholders()
                 }
             }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -218,17 +218,17 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private fun showVariationDetails(variation: ProductVariation) {
         if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
-            imageGallery.hide()
-            addImageContainer.show()
-            addImageContainer.setOnClickListener {
+            binding.imageGallery.hide()
+            binding.addImageContainer.show()
+            binding.addImageContainer.setOnClickListener {
                 AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
                 viewModel.onAddImageButtonClicked()
             }
         } else {
-            addImageContainer.hide()
-            imageGallery.show()
+            binding.addImageContainer.hide()
+            binding.imageGallery.show()
             variation.image?.let {
-                imageGallery.showProductImage(it, this)
+                binding.imageGallery.showProductImage(it, this)
             }
         }
     }
@@ -239,7 +239,7 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(app_bar_layout, R.layout.skeleton_variation_detail, delayed = true)
+            skeletonView.show(binding.appBarLayout, R.layout.skeleton_variation_detail, delayed = true)
         } else {
             skeletonView.hide()
         }
@@ -265,16 +265,16 @@ class VariationDetailFragment : BaseFragment(), BackPressListener, NavigationRes
 
     private fun showVariationCards(cards: List<ProductPropertyCard>) {
         val adapter: ProductPropertyCardsAdapter
-        if (cardsRecyclerView.adapter == null) {
+        if (binding.cardsRecyclerView.adapter == null) {
             adapter = ProductPropertyCardsAdapter()
-            cardsRecyclerView.adapter = adapter
+            binding.cardsRecyclerView.adapter = adapter
         } else {
-            adapter = cardsRecyclerView.adapter as ProductPropertyCardsAdapter
+            adapter = binding.cardsRecyclerView.adapter as ProductPropertyCardsAdapter
         }
 
-        val recyclerViewState = cardsRecyclerView.layoutManager?.onSaveInstanceState()
+        val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
-        cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
