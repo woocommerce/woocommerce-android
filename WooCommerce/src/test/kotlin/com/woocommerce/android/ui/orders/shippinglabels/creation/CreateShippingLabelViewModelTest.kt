@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
@@ -227,25 +226,5 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
 
         verify(addressValidator).validateAddress(originAddress, ORIGIN)
-    }
-
-    @Test
-    fun `Edit click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val newData = data.copy(
-            originAddress = originAddressValidated,
-            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
-        )
-        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
-
-        viewModel.onEditButtonTapped(ORIGIN_ADDRESS)
-
-        verify(stateMachine).handleEvent(Event.EditOriginAddressRequested)
-
-        stateFlow.value = Transition(
-            State.OriginAddressValidation(newData),
-            SideEffect.ValidateAddress(originAddress, ORIGIN)
-        )
-
-        verify(stateMachine).handleEvent(Event.AddressValidated(originAddress))
     }
 }
