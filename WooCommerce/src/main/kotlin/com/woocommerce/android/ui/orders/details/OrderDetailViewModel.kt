@@ -437,7 +437,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-        return if (shippingLabels.isVisible || hasVirtualProductsOnly() || trackingList.isEmpty()) {
+        return if (shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)
@@ -482,12 +482,6 @@ class OrderDetailViewModel @AssistedInject constructor(
 
         if (shippingLabels.isVisible) {
             _shippingLabels.value = shippingLabels.list
-
-            viewState = viewState.copy(
-                isShipmentTrackingAvailable = false,
-                isProductListVisible = _productList.value?.isNotEmpty(),
-                areShippingLabelsVisible = shippingLabels.isVisible
-            )
         }
 
         if (orderProducts.isVisible) {
