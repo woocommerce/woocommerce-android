@@ -65,7 +65,8 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 viewModel.onDoneOrUpdateClicked()
 
                 val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
-                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE, mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
+                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
 
                 true
             }
