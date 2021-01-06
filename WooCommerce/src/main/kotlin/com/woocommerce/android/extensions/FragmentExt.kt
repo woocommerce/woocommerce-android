@@ -156,8 +156,10 @@ fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit
         saveState.getLiveData<String>(key).observe(
             this.viewLifecycleOwner,
             Observer {
-                saveState.remove<String>(key)
-                handler()
+                it?.let {
+                    handler()
+                    saveState.set(key, null)
+                }
             }
         )
     }
