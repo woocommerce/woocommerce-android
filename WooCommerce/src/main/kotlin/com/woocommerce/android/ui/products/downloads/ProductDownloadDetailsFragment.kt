@@ -98,7 +98,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             }
         })
 
-        viewModel.event.observe(viewLifecycleOwner, { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
@@ -121,7 +121,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                     findNavController().navigateUp()
                 }
             }
-        })
+        }
 
         initListeners()
     }
