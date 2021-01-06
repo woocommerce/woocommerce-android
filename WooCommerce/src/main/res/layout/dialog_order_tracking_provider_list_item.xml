@@ -22,18 +22,17 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Canada Post" />
 
-        <com.google.android.material.radiobutton.MaterialRadioButton
+        <ImageView
             android:id="@+id/addShipmentTrackingProviderListItem_tick"
-            style="@style/Woo.Button.Toggle"
-            android:layout_width="@dimen/min_tap_target"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/image_minor_60"
+            android:layout_height="@dimen/image_minor_60"
             android:contentDescription="@string/order_shipment_tracking_provider_list_item"
-            android:button="@null"
-            android:drawableEnd="@drawable/ic_done_secondary"
+            android:src="@drawable/ic_done_secondary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="@dimen/major_100"
             tools:visibility="visible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

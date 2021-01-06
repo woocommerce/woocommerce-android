@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.content.Context
 import android.graphics.PorterDuff.Mode.SRC_IN
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -11,16 +11,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.shipping_label_creation_step.view.*
+import com.woocommerce.android.databinding.ShippingLabelCreationStepBinding
 
 class ShippingLabelCreationStepView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    init {
-        View.inflate(context, R.layout.shipping_label_creation_step, this)
+    private val binding = ShippingLabelCreationStepBinding.inflate(LayoutInflater.from(context), this, true)
 
+    init {
         context.obtainStyledAttributes(attrs, R.styleable.ShippingLabelCreationStepView, 0, 0).use { typedArray ->
             val captionText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_caption)
             val detailsText = typedArray.getString(R.styleable.ShippingLabelCreationStepView_details)
@@ -73,51 +73,51 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
     var isDividerVisible: Boolean = false
         set(value) {
             field = value
-            divider.isVisible = value
+            binding.divider.isVisible = value
         }
 
     var isContinueButtonVisible: Boolean = false
         set(value) {
             field = value
-            continueButton.isVisible = value
+            binding.continueButton.isVisible = value
         }
 
     var isEditButtonVisible: Boolean = false
         set(value) {
             field = value
-            editButton.isVisible = value
+            binding.editButton.isVisible = value
         }
 
     var caption: String = ""
         set(value) {
             field = value
-            captionTextView?.text = value
+            binding.captionTextView.text = value
         }
 
     var details: String = ""
         set(value) {
             field = value
-            detailsTextView?.text = value
+            binding.detailsTextView.text = value
         }
 
     @DrawableRes var icon: Int = 0
         set(value) {
             field = value
             if (icon != 0) {
-                this.iconImageView?.setImageDrawable(ContextCompat.getDrawable(context, value))
+                binding.iconImageView.setImageDrawable(ContextCompat.getDrawable(context, value))
             }
         }
 
     var continueButtonClickListener: (() -> Unit) = {}
         set(value) {
             field = value
-            continueButton.setOnClickListener { value() }
+            binding.continueButton.setOnClickListener { value() }
         }
 
     var editButtonClickListener: (() -> Unit) = {}
         set(value) {
             field = value
-            editButton.setOnClickListener { value() }
+            binding.editButton.setOnClickListener { value() }
         }
 
     private fun setForegroundColor(@ColorInt color: Int) {
@@ -126,20 +126,20 @@ class ShippingLabelCreationStepView @JvmOverloads constructor(
     }
 
     private fun setIconColor(color: Int) {
-        iconImageView?.setColorFilter(color, SRC_IN)
+        binding.iconImageView.setColorFilter(color, SRC_IN)
     }
 
     private fun setTextColor(color: Int) {
-        detailsTextView?.tag = detailsTextView?.currentTextColor
-        detailsTextView?.setTextColor(color)
+        binding.detailsTextView.tag = binding.detailsTextView.currentTextColor
+        binding.detailsTextView.setTextColor(color)
 
-        captionTextView?.tag = captionTextView?.currentTextColor
-        captionTextView?.setTextColor(color)
+        binding.captionTextView.tag = binding.captionTextView.currentTextColor
+        binding.captionTextView.setTextColor(color)
     }
 
     private fun resetColors() {
-        (detailsTextView?.tag as? Int)?.let { detailsTextView?.setTextColor(it) }
-        (captionTextView?.tag as? Int)?.let { captionTextView?.setTextColor(it) }
-        iconImageView?.clearColorFilter()
+        (binding.detailsTextView.tag as? Int)?.let { binding.detailsTextView.setTextColor(it) }
+        (binding.captionTextView.tag as? Int)?.let { binding.captionTextView.setTextColor(it) }
+        binding.iconImageView.clearColorFilter()
     }
 }

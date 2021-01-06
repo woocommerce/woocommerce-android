@@ -2,14 +2,12 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckedTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductShippingClassItemBinding
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
-import kotlinx.android.synthetic.main.product_shipping_class_item.view.*
 
 /**
  * RecyclerView adapter which shows a list of product shipping classes, the first of which will
@@ -66,19 +64,17 @@ class ProductShippingClassAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(inflater.inflate(R.layout.product_shipping_class_item, parent, false))
+        return ViewHolder(
+            ProductShippingClassItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
-            holder.text.text = noShippingClassText
-            holder.text.isChecked = shippingClassSlug.isNullOrEmpty()
-        } else {
-            getShippingClassAtPosition(position)?.let {
-                holder.text.text = it.name
-                holder.text.isChecked = it.slug == shippingClassSlug
-            }
-        }
+        holder.bind(position)
 
         if (position > 0 && position == itemCount - 1) {
             listener.onRequestLoadMore()
@@ -116,9 +112,8 @@ class ProductShippingClassAdapter(
         }
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val text: CheckedTextView = view.text
-
+    inner class ViewHolder(val viewBinding: ProductShippingClassItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
         init {
             itemView.setOnClickListener {
                 val position = adapterPosition
@@ -127,6 +122,18 @@ class ProductShippingClassAdapter(
                         shippingClassSlug = it.slug
                         listener.onShippingClassClicked(it)
                     } ?: listener.onShippingClassClicked(null)
+                }
+            }
+        }
+
+        fun bind(position: Int) {
+            if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
+                viewBinding.text.text = noShippingClassText
+                viewBinding.text.isChecked = shippingClassSlug.isNullOrEmpty()
+            } else {
+                getShippingClassAtPosition(position)?.let {
+                    viewBinding.text.text = it.name
+                    viewBinding.text.isChecked = it.slug == shippingClassSlug
                 }
             }
         }

@@ -1,15 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductDetailBottomSheetListItemBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetAdapter.ProductDetailBottomSheetViewHolder
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import kotlinx.android.synthetic.main.product_detail_bottom_sheet_list_item.view.*
 
 class ProductDetailBottomSheetAdapter(
     private val onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
@@ -22,8 +19,11 @@ class ProductDetailBottomSheetAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductDetailBottomSheetViewHolder {
         return ProductDetailBottomSheetViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.product_detail_bottom_sheet_list_item, parent, false))
+            ProductDetailBottomSheetListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false)
+        )
     }
 
     override fun onBindViewHolder(holder: ProductDetailBottomSheetViewHolder, position: Int) {
@@ -49,17 +49,15 @@ class ProductDetailBottomSheetAdapter(
         }
     }
 
-    class ProductDetailBottomSheetViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
-        private val txtDetailInfoName: TextView = view.productDetailInfoItem_name
-        private val txtDetailInfoDesc: TextView = view.productDetailInfoItem_desc
-
+    class ProductDetailBottomSheetViewHolder(private val viewBinding: ProductDetailBottomSheetListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(
             item: ProductDetailBottomSheetUiItem,
             onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
         ) {
-            txtDetailInfoName.text = view.context.getString(item.type.titleResource)
-            txtDetailInfoDesc.text = view.context.getString(item.type.descResource)
-            view.setOnClickListener {
+            viewBinding.productDetailInfoItemName.text = viewBinding.root.context.getString(item.type.titleResource)
+            viewBinding.productDetailInfoItemDesc.text = viewBinding.root.context.getString(item.type.descResource)
+            viewBinding.root.setOnClickListener {
                 onItemClicked(item)
             }
         }

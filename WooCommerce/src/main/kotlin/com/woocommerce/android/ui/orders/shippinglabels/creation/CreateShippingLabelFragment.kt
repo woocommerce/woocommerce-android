@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -28,12 +27,11 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_create_shipping_label.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class CreateShippingLabelFragment : BaseFragment() {
+class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
     companion object {
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
@@ -46,18 +44,15 @@ class CreateShippingLabelFragment : BaseFragment() {
 
     val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
 
-    override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
+    private var _binding: FragmentCreateShippingLabelBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_create_shipping_label, container, false)
-    }
+    override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentCreateShippingLabelBinding.bind(view)
 
         initializeViewModel()
         initializeViews()
@@ -82,25 +77,30 @@ class CreateShippingLabelFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun subscribeObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.originAddressStep?.takeIfNotEqualTo(old?.originAddressStep) {
-                originStep.update(it)
+                binding.originStep.update(it)
             }
             new.shippingAddressStep?.takeIfNotEqualTo(old?.shippingAddressStep) {
-                shippingStep.update(it)
+                binding.shippingStep.update(it)
             }
             new.packagingDetailsStep?.takeIfNotEqualTo(old?.packagingDetailsStep) {
-                packagingStep.update(it)
+                binding.packagingStep.update(it)
             }
             new.customsStep?.takeIfNotEqualTo(old?.customsStep) {
-                customsStep.update(it)
+                binding.customsStep.update(it)
             }
             new.carrierStep?.takeIfNotEqualTo(old?.carrierStep) {
-                carrierStep.update(it)
+                binding.carrierStep.update(it)
             }
             new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
-                paymentStep.update(it)
+                binding.paymentStep.update(it)
             }
             new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
                 if (isVisible) {
@@ -147,19 +147,19 @@ class CreateShippingLabelFragment : BaseFragment() {
     }
 
     private fun initializeViews() {
-        originStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(ORIGIN_ADDRESS) }
-        shippingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(SHIPPING_ADDRESS) }
-        packagingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PACKAGING) }
-        customsStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(CUSTOMS) }
-        carrierStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(CARRIER) }
-        paymentStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PAYMENT) }
+        binding.originStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(ORIGIN_ADDRESS) }
+        binding.shippingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(SHIPPING_ADDRESS) }
+        binding.packagingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PACKAGING) }
+        binding.customsStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(CUSTOMS) }
+        binding.carrierStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(CARRIER) }
+        binding.paymentStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PAYMENT) }
 
-        originStep.editButtonClickListener = { viewModel.onEditButtonTapped(ORIGIN_ADDRESS) }
-        shippingStep.editButtonClickListener = { viewModel.onEditButtonTapped(SHIPPING_ADDRESS) }
-        packagingStep.editButtonClickListener = { viewModel.onEditButtonTapped(PACKAGING) }
-        customsStep.editButtonClickListener = { viewModel.onEditButtonTapped(CUSTOMS) }
-        carrierStep.editButtonClickListener = { viewModel.onEditButtonTapped(CARRIER) }
-        paymentStep.editButtonClickListener = { viewModel.onEditButtonTapped(PAYMENT) }
+        binding.originStep.editButtonClickListener = { viewModel.onEditButtonTapped(ORIGIN_ADDRESS) }
+        binding.shippingStep.editButtonClickListener = { viewModel.onEditButtonTapped(SHIPPING_ADDRESS) }
+        binding.packagingStep.editButtonClickListener = { viewModel.onEditButtonTapped(PACKAGING) }
+        binding.customsStep.editButtonClickListener = { viewModel.onEditButtonTapped(CUSTOMS) }
+        binding.carrierStep.editButtonClickListener = { viewModel.onEditButtonTapped(CARRIER) }
+        binding.paymentStep.editButtonClickListener = { viewModel.onEditButtonTapped(PAYMENT) }
     }
 
     private fun ShippingLabelCreationStepView.update(data: Step) {

@@ -53,7 +53,7 @@
                 app:srcCompat="@drawable/ic_add"/>
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:paddingStart="@dimen/minor_00"
                 android:paddingEnd="@dimen/minor_00"
                 android:layout_width="wrap_content"

@@ -11,19 +11,23 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_057"
+msgid ""
+"5.7:\n"
+"- Remove images from product variations!\n"
+"- The app can open the email client on Android 11 during the magic link login process.\n"
+"- Bug fixes: variable products display when shipping labels are purchased; selections made in a dialog are honored.\n"
+"- Fees display on order payment details.\n"
+"- Passwordless logins supported.\n"
+"- Minor style improvements to the login screens.\n"
+msgstr ""
+
 msgctxt "release_note_056"
 msgid ""
 "5.6:\n"
 "You asked, and we listened! You can now create simple, grouped, and external products for your store directly from your favorite Android mobile devices. Turn your ideas into products, even when you’re away from your computer.\n"
 "\n"
 "We’ve also updated our UI to a crisper, cleaner design, and we fixed a bug in order details that will make shipment tracking a breeze.\n"
-msgstr ""
-
-msgctxt "release_note_055"
-msgid ""
-"5.5:\n"
-"You asked, and we listened! Now you can create simple, grouped, and external products directly from your favorite Android mobile devices. Turn ideas into products – even when you’re away from your desktop.\n"
-"Other fixes: We fixed a bug affecting product variation names when the variation option was “open,” and a typo on the shipping label screen.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCH
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -205,7 +204,6 @@ class ProductDetailCardBuilder(
             resources.getString(R.string.product_purchase_details),
             listOf(
                 product.readOnlyShipping(),
-                if (FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) null else product.downloadsLegacy(),
                 product.purchaseNote()
             ).filterNotEmpty()
         )
@@ -224,7 +222,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.downloads(): ProductProperty? {
-        if (!FeatureFlag.PRODUCT_RELEASE_M5.isEnabled() || !this.isDownloadable || this.downloads.isEmpty()) return null
+        if (!this.isDownloadable || this.downloads.isEmpty()) return null
         return ComplexProperty(
             title = R.string.product_downloadable_files,
             value = StringUtils.getQuantityString(
@@ -581,9 +579,7 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.linkedProducts(): ProductProperty? {
-        if (!hasLinkedProducts() || !FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
-            return null
-        }
+        if (!hasLinkedProducts()) return null
 
         val upsellDesc = StringUtils.getPluralString(
             resources,

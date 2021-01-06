@@ -5,12 +5,10 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -22,6 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductImagesBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -46,7 +45,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
-import kotlinx.android.synthetic.main.fragment_product_images.*
 
 class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_product_images),
         OnGalleryImageInteractionListener {
@@ -59,6 +57,9 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         viewModelFactory.get()
     }
 
+    private var _binding: FragmentProductImagesBinding? = null
+    private val binding get() = _binding!!
+
     override val isDoneButtonVisible: Boolean
         get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
 
@@ -69,11 +70,23 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     private var imageSourceDialog: AlertDialog? = null
     private var capturedPhotoUri: Uri? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductImagesBinding.bind(view)
+
         savedInstanceState?.let { bundle ->
             capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
         }
-        return super.onCreateView(inflater, container, savedInstanceState)
+
+        setupObservers(viewModel)
+        setupResultHandlers(viewModel)
+        setupViews()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,14 +97,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     override fun onPause() {
         super.onPause()
         imageSourceDialog?.dismiss()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupObservers(viewModel)
-        setupResultHandlers(viewModel)
-        setupViews()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -131,7 +136,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     private fun setupViews() {
-        addImageButton.setOnClickListener {
+        binding.addImageButton.setOnClickListener {
             viewModel.onImageSourceButtonClicked()
         }
     }
@@ -152,26 +157,26 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 doneButton?.isVisible = isVisible
             }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
-                textWarning.isVisible = isVisible
+                binding.textWarning.isVisible = isVisible
             }
             new.chooserButtonButtonTitleRes?.takeIfNotEqualTo(old?.chooserButtonButtonTitleRes) { titleRes ->
-                addImageButton.setText(titleRes)
+                binding.addImageButton.setText(titleRes)
             }
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
                 requireActivity().invalidateOptionsMenu()
                 when (new.productImagesState) {
                     Browsing -> {
-                        addImageButton.isEnabled = true
-                        imageGallery.setDraggingState(isDragging = false)
+                        binding.addImageButton.isEnabled = true
+                        binding.imageGallery.setDraggingState(isDragging = false)
                     }
                     is Dragging -> {
-                        addImageButton.isEnabled = false
-                        imageGallery.setDraggingState(isDragging = true)
+                        binding.addImageButton.isEnabled = false
+                        binding.imageGallery.setDraggingState(isDragging = true)
                     }
                 }
             }
             new.isDragDropDescriptionVisible?.takeIfNotEqualTo(old?.isDragDropDescriptionVisible) { isVisible ->
-                dragAndDropDescription.isVisible = isVisible
+                binding.dragAndDropDescription.isVisible = isVisible
             }
         }
 
@@ -200,8 +205,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     }
 
     private fun updateImages(images: List<Image>, uris: List<Uri>?) {
-        imageGallery.showProductImages(images, this)
-        imageGallery.setPlaceholderImageUris(uris)
+        binding.imageGallery.showProductImages(images, this)
+        binding.imageGallery.setPlaceholderImageUris(uris)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_images_title)
@@ -227,7 +232,7 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
 
     private fun showImageSourceDialog() {
         val inflater = requireActivity().layoutInflater
-        val contentView = inflater.inflate(R.layout.dialog_product_image_source, imageGallery, false)
+        val contentView = inflater.inflate(R.layout.dialog_product_image_source, binding.imageGallery, false)
             .also {
                 it.findViewById<View>(R.id.textChooser)?.setOnClickListener {
                     viewModel.onShowStorageChooserButtonClicked()

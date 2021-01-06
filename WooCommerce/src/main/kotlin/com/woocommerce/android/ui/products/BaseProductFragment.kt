@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
@@ -24,10 +25,13 @@ import javax.inject.Inject
  * All product related fragments should extend this class to provide a consistent method
  * of displaying snackbar, handling navigation and discard dialogs
  */
-abstract class BaseProductFragment : BaseFragment(), BackPressListener {
+abstract class BaseProductFragment : BaseFragment, BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
+
+    constructor() : super()
+    constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
         viewModelFactory.get()
