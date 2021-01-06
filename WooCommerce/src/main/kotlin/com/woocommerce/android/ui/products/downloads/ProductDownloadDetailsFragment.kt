@@ -63,8 +63,10 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneOrUpdateClicked()
-                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
-                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.ADDED.value))
+
+                val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
+                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE, mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
+
                 true
             }
             R.id.menu_delete -> {
