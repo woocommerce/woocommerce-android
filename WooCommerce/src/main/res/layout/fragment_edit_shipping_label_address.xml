@@ -37,7 +37,6 @@
                 app:tint="@color/warning_foreground_color"
                 tools:visibility="visible" />
 
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/contactCustomerButton"
                 style="@style/Woo.Button.TextButton"
@@ -57,7 +56,7 @@
                 android:layout_marginStart="@dimen/major_200"
                 android:layout_marginTop="@dimen/major_100"
                 android:text="@string/shipping_label_edit_address_error_warning"
-                app:layout_constraintBottom_toTopOf="@id/contactCustomerButton"
+                app:layout_constraintBottom_toTopOf="@id/openMapButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
                 app:layout_constraintTop_toTopOf="parent"
