@@ -380,7 +380,7 @@
     <string name="shipping_label_error_required_field">Required field</string>
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
-    <string name="shipping_label_validation_view_map">View Map</string>
+    <string name="shipping_label_validation_view_map">Open Map</string>
 
     <!--
         Refunds
