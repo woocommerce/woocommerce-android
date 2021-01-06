@@ -39,12 +39,13 @@
 
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/openMapButton"
+                android:id="@+id/contactCustomerButton"
                 style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_validation_view_map"
+                android:text="@string/shipping_label_validation_contact_customer"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/color_on_surface_high"
                 app:layout_constraintTop_toBottomOf="@id/errorBannerMessage"
                 app:layout_constraintBottom_toTopOf="@id/errorBannerDivider" />
 
@@ -56,19 +57,20 @@
                 android:layout_marginStart="@dimen/major_200"
                 android:layout_marginTop="@dimen/major_100"
                 android:text="@string/shipping_label_edit_address_error_warning"
-                app:layout_constraintBottom_toTopOf="@id/openMapButton"
+                app:layout_constraintBottom_toTopOf="@id/contactCustomerButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/contactCustomerButton"
+                android:id="@+id/openMapButton"
                 style="@style/Woo.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_validation_contact_customer"
-                app:layout_constraintEnd_toStartOf="@id/openMapButton"
+                android:text="@string/shipping_label_validation_view_map"
+                android:textColor="@color/color_on_surface_high"
+                app:layout_constraintEnd_toStartOf="@id/contactCustomerButton"
                 app:layout_constraintTop_toBottomOf="@id/errorBannerMessage"
                 app:layout_constraintBottom_toTopOf="@id/errorBannerDivider" />
 
