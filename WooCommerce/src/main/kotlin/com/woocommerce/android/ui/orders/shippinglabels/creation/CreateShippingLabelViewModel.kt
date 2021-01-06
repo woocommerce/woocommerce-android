@@ -58,8 +58,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             stateMachine.transitions.collect { transition ->
                 transition.sideEffect?.let { sideEffect ->
                     when (sideEffect) {
-                        SideEffect.NoOp -> {
-                        }
+                        SideEffect.NoOp -> {}
                         is SideEffect.ShowError -> showError(sideEffect.error)
                         is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
                         is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }

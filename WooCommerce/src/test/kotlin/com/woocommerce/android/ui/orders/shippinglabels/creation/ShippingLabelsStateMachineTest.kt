@@ -40,7 +40,7 @@ class ShippingLabelsStateMachineTest {
         var sideEffect: SideEffect? = null
         launch {
             stateMachine.transitions.take(expectedSideEffectCount).collect {
-                sideEffect = it
+                sideEffect = it.sideEffect
             }
         }
 
@@ -61,7 +61,7 @@ class ShippingLabelsStateMachineTest {
         var sideEffect: SideEffect? = null
         launch {
             stateMachine.transitions.take(expectedSideEffectCount).collect {
-                sideEffect = it
+                sideEffect = it.sideEffect
             }
         }
 

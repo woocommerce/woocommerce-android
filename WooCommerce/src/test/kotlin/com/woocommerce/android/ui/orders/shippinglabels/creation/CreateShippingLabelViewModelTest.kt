@@ -16,6 +16,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -36,7 +40,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
     private val addressValidator: ShippingLabelAddressValidator = mock()
-    private lateinit var stateFlow: MutableStateFlow<SideEffect>
+    private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val originAddressValidated = originAddress.copy(city = "DONE")
@@ -114,7 +118,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        stateFlow = MutableStateFlow(SideEffect.NoOp)
+        stateFlow = MutableStateFlow(Transition(Idle, NoOp))
         whenever(stateMachine.transitions).thenReturn(stateFlow)
 
         viewModel = spy(
@@ -157,7 +161,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        stateFlow.value = SideEffect.UpdateViewState(data)
+        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -180,7 +184,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddress = originAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
+        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -204,20 +208,23 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             shippingAddress = shippingAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS + FlowStep.PACKAGING
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
+        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
     fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        stateFlow.value = SideEffect.UpdateViewState(data)
+        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
 
         viewModel.onContinueButtonTapped(ORIGIN_ADDRESS)
 
         verify(stateMachine).handleEvent(OriginAddressValidationStarted)
 
-        stateFlow.value = SideEffect.ValidateAddress(originAddress, ORIGIN)
+        stateFlow.value = Transition(
+            State.OriginAddressValidation(data),
+            SideEffect.ValidateAddress(originAddress, ORIGIN)
+        )
 
         verify(addressValidator).validateAddress(originAddress, ORIGIN)
     }
@@ -228,13 +235,16 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddress = originAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
+        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
 
         viewModel.onEditButtonTapped(ORIGIN_ADDRESS)
 
         verify(stateMachine).handleEvent(Event.EditOriginAddressRequested)
 
-        stateFlow.value = SideEffect.OpenAddressEditor(originAddress, ORIGIN)
+        stateFlow.value = Transition(
+            State.OriginAddressValidation(newData),
+            SideEffect.ValidateAddress(originAddress, ORIGIN)
+        )
 
         verify(stateMachine).handleEvent(Event.AddressValidated(originAddress))
     }
