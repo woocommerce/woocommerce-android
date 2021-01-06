@@ -20,6 +20,14 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
     findNavController().navigateUp()
 }
 
+/**
+ * A helper function that returns a notification in the Fragment's SavedStateHandle. Its purpose is to notify the caller
+ * without returning any value. The notice can be observed as a LiveData using the same key - see the
+ * Fragment.handleNotice() extension function.
+ *
+ * @param [key] A unique string that is the same as the one used in [handleNotice]
+ *
+ */
 fun Fragment.navigateBackWithNotice(key: String) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(key, key)
     findNavController().navigateUp()
@@ -59,8 +67,9 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
 }
 
 /**
- * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
- * with the supplied key. This method *must* be used for handling results from dialogs because the entry ID is required.
+ * A helper function that subscribes a supplied handler function to the dialog Fragment's SavedStateHandle LiveData
+ * associated with the supplied key. This method *must* be used for handling results from dialogs because the entry ID
+ * is required.
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleResult]
@@ -68,8 +77,8 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
  * @param [handler] A result handler
  *
  * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
- * called, the boolean value is updated. This puts a limit on the number of observers for a particular key-result pair
- * to 1.
+ * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
+ * a particular key-result pair to 1.
  */
 fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> Unit) {
     handleResult(key, entryId, handler)
