@@ -235,7 +235,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddress = originAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
-        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
 
         viewModel.onEditButtonTapped(ORIGIN_ADDRESS)
 
