@@ -86,8 +86,8 @@ fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> U
 
 /**
  * A helper function that subscribes a supplied notice handler function to the dialog Fragment's SavedStateHandle
- * LiveData associated with the supplied key. This method *must* be used for handling notices from dialogs because the
- * entry ID is required.
+ * LiveData associated with the supplied key. Its purpose is to handle a notice without any value.
+ * This method *must* be used for handling notices from dialogs because the entry ID is required.
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
@@ -119,7 +119,8 @@ fun <T> TopLevelFragment.handleResult(key: String, handler: (T) -> Unit) {
 
 /**
  * A helper function that subscribes a supplied noice handler function to the [TopLevelFragment]'s SavedStateHandle
- * LiveData associated with the supplied key. The `rootFragment` entry ID must be used to deliver the result.
+ * LiveData associated with the supplied key. Its purpose is to handle a notice without any value.
+ * The `rootFragment` entry ID must be used to deliver the result.
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [handler] A result handler
@@ -134,7 +135,7 @@ fun TopLevelFragment.handleNotice(key: String, handler: () -> Unit) {
 
 /**
  * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
- * with the supplied key.
+ * with the supplied key. Its purpose is to handle a notice without any value.
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
