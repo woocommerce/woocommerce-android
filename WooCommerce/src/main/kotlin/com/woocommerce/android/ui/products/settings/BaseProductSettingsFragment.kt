@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -20,10 +21,13 @@ import org.wordpress.android.util.ActivityUtils
  * communication with the shared product ViewModel. Fragments which extend this are
  * expected to be lightweight.
  */
-abstract class BaseProductSettingsFragment : BaseFragment(), BackPressListener {
+abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     companion object {
         private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
     }
+
+    constructor() : super()
+    constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     private var isConfirmingDiscard = false
 
