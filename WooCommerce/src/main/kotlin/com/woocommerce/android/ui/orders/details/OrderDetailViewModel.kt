@@ -22,6 +22,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
@@ -85,6 +86,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     // the request to server fails, we need to display an error message
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
+    private var isShipmentTrackingAvailable = false
 
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -437,7 +439,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-        return if (shippingLabels.isVisible || hasVirtualProductsOnly()) {
+        return if (isShipmentTrackingAvailable && shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)
@@ -449,7 +451,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        isShipmentTrackingAvailable = result == SUCCESS
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
