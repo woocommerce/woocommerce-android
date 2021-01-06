@@ -320,6 +320,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_REVIEWS_LOAD_FAILED,
         PRODUCT_REVIEWS_PULLED_TO_REFRESH,
 
+        // -- Downloadable Files
+        PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED,
+
         // -- Grouped products
         GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
