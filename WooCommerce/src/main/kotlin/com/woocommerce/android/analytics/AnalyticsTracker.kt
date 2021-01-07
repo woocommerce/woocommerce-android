@@ -329,7 +329,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Connected Products (Grouped products, Upsells, Cross-sells)
         CONNECTED_PRODUCTS_LIST,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
 

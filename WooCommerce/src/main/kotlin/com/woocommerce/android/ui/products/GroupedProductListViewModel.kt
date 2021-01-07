@@ -80,12 +80,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
-        AnalyticsTracker.track(
-            Stat.CONNECTED_PRODUCTS_LIST,
-            mapOf(
-                KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
-                KEY_CONNECTED_PRODUCTS_LIST_ACTION to ConnectedProductsListAction.ADDED.value
-            ))
+        track(ConnectedProductsListAction.ADDED)
         updateProductList()
     }
 
@@ -94,7 +89,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED)
+        track(ConnectedProductsListAction.DELETE_TAPPED)
         updateProductList()
     }
 
@@ -171,6 +166,15 @@ class GroupedProductListViewModel @AssistedInject constructor(
             isSkeletonShown = false,
             isLoadingMore = false
         )
+    }
+
+    private fun track(action: ConnectedProductsListAction) {
+        AnalyticsTracker.track(
+            Stat.CONNECTED_PRODUCTS_LIST,
+            mapOf(
+                KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
+                KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value
+            ))
     }
 
     @Parcelize
