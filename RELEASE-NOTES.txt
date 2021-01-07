@@ -2,9 +2,7 @@
 
 5.8
 -----
-* [*] Milestone 5: Product downloadable files feature is now available. [https://github.com/woocommerce/woocommerce-android/pull/2750]
-* [*] Milestone 5: Added ability to manage linked products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
-* [*] Milestone 5: Added product deletion. [https://github.com/woocommerce/woocommerce-android/pull/2935]
+* [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
 * [*] Fixed a bug where the moderation buttons in the product review detail would be partially hidden for some locales [https://github.com/woocommerce/woocommerce-android/pull/3382]
  
 5.7
