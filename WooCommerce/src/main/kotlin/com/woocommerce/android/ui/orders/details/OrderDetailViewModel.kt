@@ -22,6 +22,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
@@ -437,7 +438,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-        return if (shippingLabels.isVisible || hasVirtualProductsOnly() || trackingList.isEmpty()) {
+        return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)
@@ -449,7 +450,8 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        val result = orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
+        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {

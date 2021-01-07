@@ -474,7 +474,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
-        binding.orderListRoot.visibility = View.VISIBLE
+        binding.orderListViewRoot.visibility = View.VISIBLE
         binding.orderStatusListView.updateOrderStatusListView(orderStatusList.values.toList())
     }
 
@@ -665,7 +665,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
-        binding.orderListRoot.visibility = View.VISIBLE
+        binding.orderListViewRoot.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
