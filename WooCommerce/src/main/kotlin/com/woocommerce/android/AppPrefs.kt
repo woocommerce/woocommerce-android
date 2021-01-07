@@ -44,7 +44,8 @@ object AppPrefs {
         SELECTED_APP_THEME,
         SELECTED_PRODUCT_TYPE,
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
-        UNIFIED_LOGIN_LAST_ACTIVE_FLOW
+        UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
+        TRACKING_EXTENSION_AVAILABLE
     }
 
     /**
@@ -324,6 +325,14 @@ object AppPrefs {
 
     fun setUnifiedLoginLastFlow(flow: String) {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
+    }
+
+    fun isTrackingExtensionAvailable(): Boolean {
+        return getBoolean(DeletablePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
+    }
+
+    fun setTrackingExtensionAvailable(isAvailable: Boolean) {
+        setBoolean(DeletablePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
     /**
