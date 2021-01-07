@@ -110,9 +110,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED, mapOf(
-            AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges
-        ))
+        track(ConnectedProductsListAction.DONE_TAPPED)
         triggerEvent(ExitWithResult(selectedProductIds))
     }
 
