@@ -1,34 +1,35 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
-import android.view.ViewGroup
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductStatusBinding
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStatus.TRASH
-import kotlinx.android.synthetic.main.fragment_product_status.*
 
 /**
  * Settings screen which enables choosing a product status
  */
-class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
+class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_product_status), OnClickListener {
     companion object {
         const val ARG_SELECTED_STATUS = "selected_status"
     }
 
     private val navArgs: ProductStatusFragmentArgs by navArgs()
     private var selectedStatus: String? = null
+
+    private var _binding: FragmentProductStatusBinding? = null
+    private val binding get() = _binding!!
 
     override val requestCode = RequestCodes.PRODUCT_SETTINGS_STATUS
 
@@ -37,18 +38,16 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
         selectedStatus = savedInstanceState?.getString(ARG_SELECTED_STATUS) ?: navArgs.status
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_status, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnPublished.setOnClickListener(this)
-        btnPublishedPrivately.setOnClickListener(this)
-        btnDraft.setOnClickListener(this)
-        btnPending.setOnClickListener(this)
-        btnTrashed.setOnClickListener(this)
+        _binding = FragmentProductStatusBinding.bind(view)
+
+        binding.btnPublished.setOnClickListener(this)
+        binding.btnPublishedPrivately.setOnClickListener(this)
+        binding.btnDraft.setOnClickListener(this)
+        binding.btnPending.setOnClickListener(this)
+        binding.btnTrashed.setOnClickListener(this)
 
         selectedStatus?.let { status ->
             getButtonForStatus(status)?.isChecked = true
@@ -56,13 +55,18 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
             // if the post is private, we hide the "Published" button and show "Privately published."
             // making a product private is done on the product visibility screen
             if (status == PRIVATE.toString()) {
-                btnPublishedPrivately.visibility = View.VISIBLE
-                btnPublished.visibility = View.GONE
+                binding.btnPublishedPrivately.visibility = View.VISIBLE
+                binding.btnPublished.visibility = View.GONE
             } else {
-                btnPublishedPrivately.visibility = View.GONE
-                btnPublished.visibility = View.VISIBLE
+                binding.btnPublishedPrivately.visibility = View.GONE
+                binding.btnPublished.visibility = View.VISIBLE
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -72,11 +76,11 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
 
     override fun onClick(view: View?) {
         (view as? CheckedTextView)?.let {
-            btnPublished.isChecked = it == btnPublished
-            btnPublishedPrivately.isChecked = it == btnPublishedPrivately
-            btnDraft.isChecked = it == btnDraft
-            btnPending.isChecked = it == btnPending
-            btnTrashed.isChecked = it == btnTrashed
+            binding.btnPublished.isChecked = it == binding.btnPublished
+            binding.btnPublishedPrivately.isChecked = it == binding.btnPublishedPrivately
+            binding.btnDraft.isChecked = it == binding.btnDraft
+            binding.btnPending.isChecked = it == binding.btnPending
+            binding.btnTrashed.isChecked = it == binding.btnTrashed
             selectedStatus = getStatusForButtonId(it.id)
 
             changesMade()
@@ -102,11 +106,11 @@ class ProductStatusFragment : BaseProductSettingsFragment(), OnClickListener {
 
     private fun getButtonForStatus(status: String): CheckedTextView? {
         return when (ProductStatus.fromString(status)) {
-            PUBLISH -> btnPublished
-            DRAFT -> btnDraft
-            PENDING -> btnPending
-            PRIVATE -> btnPublishedPrivately
-            TRASH -> btnTrashed
+            PUBLISH -> binding.btnPublished
+            DRAFT -> binding.btnDraft
+            PENDING -> binding.btnPending
+            PRIVATE -> binding.btnPublishedPrivately
+            TRASH -> binding.btnTrashed
             else -> null
         }
     }
