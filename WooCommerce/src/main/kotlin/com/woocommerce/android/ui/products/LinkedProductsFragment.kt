@@ -61,6 +61,8 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
+                AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
+                    mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.DONE.value))
                 true
             }
             else -> super.onOptionsItemSelected(item)
