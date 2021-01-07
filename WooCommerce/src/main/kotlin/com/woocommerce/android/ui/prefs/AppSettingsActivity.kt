@@ -42,6 +42,7 @@ class AppSettingsActivity : AppCompatActivity(),
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: AppSettingsContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var prefs: AppPrefs
 
     private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
     private var siteChanged = false
@@ -123,6 +124,8 @@ class AppSettingsActivity : AppCompatActivity(),
                     BaseTransientBottomBar.LENGTH_LONG
             ).show()
         }
+
+        prefs.resetSitePreferences()
     }
 
     override fun onRequestLogout() {
