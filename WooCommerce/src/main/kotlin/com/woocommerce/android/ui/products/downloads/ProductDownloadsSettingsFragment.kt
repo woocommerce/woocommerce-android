@@ -11,6 +11,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
@@ -43,6 +44,7 @@ class ProductDownloadsSettingsFragment : BaseProductFragment() {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
+                AnalyticsTracker.track(Stat.PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED)
                 true
             }
             else -> super.onOptionsItemSelected(item)

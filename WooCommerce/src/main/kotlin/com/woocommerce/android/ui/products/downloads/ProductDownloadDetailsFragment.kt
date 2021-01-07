@@ -13,6 +13,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.DownloadableFileAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOADABLE_FILE_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -59,6 +63,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneOrUpdateClicked()
+
+                val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
+                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
+
                 true
             }
             R.id.menu_delete -> {
@@ -90,7 +99,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             }
         })
 
-        viewModel.event.observe(viewLifecycleOwner, { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
@@ -110,10 +119,14 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 }
                 is DeleteFileEvent -> {
                     parentViewModel.deleteDownloadableFile(event.file)
+
+                    AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value))
+
                     findNavController().navigateUp()
                 }
             }
-        })
+        }
 
         initListeners()
     }
