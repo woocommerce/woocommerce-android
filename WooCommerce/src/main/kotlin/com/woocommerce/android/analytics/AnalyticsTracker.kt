@@ -327,7 +327,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Linked Products
         LINKED_PRODUCTS,
 
-        // -- Grouped products
+        // -- Connected Products (Grouped products, Upsells, Cross-sells)
+        CONNECTED_PRODUCTS_LIST,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
@@ -651,6 +652,23 @@ class AnalyticsTracker private constructor(private val context: Context) {
         enum class LinkedProductsAction(val value: String) {
             SHOWN("shown"),
             DONE("done")
+        }
+
+        // -- Connected Products
+        const val KEY_CONNECTED_PRODUCTS_LIST_CONTEXT = "context"
+        const val KEY_CONNECTED_PRODUCTS_LIST_ACTION = "action"
+
+        enum class ConnectedProductsListContext(val value: String) {
+            GROUPED_PRODUCTS("grouped_products"),
+            UPSELLS("upsells"),
+            CROSS_SELLS("cross_sells")
+        }
+
+        enum class ConnectedProductsListAction(val value: String) {
+            ADD_TAPPED("add_tapped"),
+            ADDED("added"),
+            DONE_TAPPED("done_tapped"),
+            DELETE_TAPPED("delete_tapped")
         }
 
         const val IMAGE_SOURCE_CAMERA = "camera"
