@@ -44,7 +44,13 @@ object AppPrefs {
         SELECTED_APP_THEME,
         SELECTED_PRODUCT_TYPE,
         UNIFIED_LOGIN_LAST_ACTIVE_SOURCE,
-        UNIFIED_LOGIN_LAST_ACTIVE_FLOW,
+        UNIFIED_LOGIN_LAST_ACTIVE_FLOW
+    }
+
+    /**
+     * Application related preferences. When the user changes a site, these preferences are erased.
+     */
+    private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE
     }
 
@@ -328,20 +334,31 @@ object AppPrefs {
     }
 
     fun isTrackingExtensionAvailable(): Boolean {
-        return getBoolean(DeletablePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
+        return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
     }
 
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
-        setBoolean(DeletablePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+        setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
     /**
-     * Remove all user-related preferences.
+     * Remove all user and site-related preferences.
      */
-    fun reset() {
+    fun resetUserPreferences() {
         val editor = getPreferences().edit()
-        DeletablePrefKey.values().forEach { editor.remove(it.name) }
+        DeletablePrefKey.values().forEach { a -> editor.remove(a.name) }
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
+        editor.apply()
+
+        resetSitePreferences()
+    }
+
+    /**
+     * Remove all site-related preferences.
+     */
+    fun resetSitePreferences() {
+        val editor = getPreferences().edit()
+        DeletableSitePrefKey.values().forEach { editor.remove(it.name) }
         editor.apply()
     }
 
