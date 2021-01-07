@@ -88,6 +88,7 @@
     <string name="more_options">More options</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
+    <string name="please_wait">Please wait…</string>
     <!--
         Date/Time Labels
     -->
@@ -104,6 +105,7 @@
     <string name="error_cant_open_url">Unable to open the link</string>
     <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
     <string name="error_no_phone_app">No phone app was found</string>
+    <string name="error_no_gmaps_app">Google Maps app was found</string>
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
     <!--
@@ -358,6 +360,27 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_edit_address_name">Name</string>
+    <string name="shipping_label_edit_address_company">Company</string>
+    <string name="shipping_label_edit_address_phone">Phone</string>
+    <string name="shipping_label_edit_address_address">Address</string>
+    <string name="shipping_label_edit_address_city">City</string>
+    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
+    <string name="shipping_label_edit_address_country">Country</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
+    <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Please wait…</string>
+    <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
+    <string name="shipping_label_error_address_not_found">Address was not found</string>
+    <string name="shipping_label_error_address_house_number_missing">House number missing</string>
+    <string name="shipping_label_error_address_invalid_street">Invalid street</string>
+    <string name="shipping_label_error_required_field">Required field</string>
+    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_contact_customer">Contact Customer</string>
+    <string name="shipping_label_validation_view_map">Open Map</string>
 
     <!--
         Refunds

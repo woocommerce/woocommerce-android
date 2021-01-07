@@ -9,12 +9,16 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -34,8 +38,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     private val repository: OrderDetailRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
-    private val addressValidator: ShippingAddressValidator = mock()
-    private lateinit var stateFlow: MutableStateFlow<SideEffect>
+    private val addressValidator: ShippingLabelAddressValidator = mock()
+    private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val originAddressValidated = originAddress.copy(city = "DONE")
@@ -113,8 +117,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        stateFlow = MutableStateFlow(SideEffect.NoOp)
-        whenever(stateMachine.effects).thenReturn(stateFlow)
+        stateFlow = MutableStateFlow(Transition(Idle, NoOp))
+        whenever(stateMachine.transitions).thenReturn(stateFlow)
 
         viewModel = spy(
             CreateShippingLabelViewModel(
@@ -156,7 +160,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        stateFlow.value = SideEffect.UpdateViewState(data)
+        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -179,7 +183,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddress = originAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
+        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -203,38 +207,24 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             shippingAddress = shippingAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS + FlowStep.PACKAGING
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
+        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
     fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        stateFlow.value = SideEffect.UpdateViewState(data)
+        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
 
         viewModel.onContinueButtonTapped(ORIGIN_ADDRESS)
 
         verify(stateMachine).handleEvent(OriginAddressValidationStarted)
 
-        stateFlow.value = SideEffect.ValidateAddress(originAddress)
-
-        verify(addressValidator).validateAddress(originAddress)
-    }
-
-    @Test
-    fun `Edit click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val newData = data.copy(
-            originAddress = originAddressValidated,
-            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
+        stateFlow.value = Transition(
+            State.OriginAddressValidation(data),
+            SideEffect.ValidateAddress(originAddress, ORIGIN)
         )
-        stateFlow.value = SideEffect.UpdateViewState(newData)
 
-        viewModel.onEditButtonTapped(ORIGIN_ADDRESS)
-
-        verify(stateMachine).handleEvent(Event.EditOriginAddressRequested)
-
-        stateFlow.value = SideEffect.OpenAddressEditor(originAddress)
-
-        verify(stateMachine).handleEvent(Event.AddressEditFinished(originAddress))
+        verify(addressValidator).validateAddress(originAddress, ORIGIN)
     }
 }

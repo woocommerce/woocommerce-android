@@ -11,19 +11,21 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class CreateShippingLabelModule {
+abstract class EditShippingLabelAddressModule {
     companion object {
         @Provides
-        fun provideDefaultArgs(fragment: CreateShippingLabelFragment): Bundle? {
+        fun provideDefaultArgs(fragment: EditShippingLabelAddressFragment): Bundle? {
             return fragment.arguments
         }
     }
 
     @Binds
-    abstract fun bindSavedStateRegistryOwner(fragment: CreateShippingLabelFragment): SavedStateRegistryOwner
+    abstract fun bindSavedStateRegistryOwner(fragment: EditShippingLabelAddressFragment): SavedStateRegistryOwner
 
     @Binds
     @IntoMap
-    @ViewModelKey(CreateShippingLabelViewModel::class)
-    abstract fun bindFactory(factory: CreateShippingLabelViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(EditShippingLabelAddressViewModel::class)
+    abstract fun bindFactory(
+        factory: EditShippingLabelAddressViewModel.Factory
+    ): ViewModelAssistedFactory<out ViewModel>
 }

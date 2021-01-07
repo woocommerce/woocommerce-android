@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
-import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchUrlInChromeTab
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -47,6 +46,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener

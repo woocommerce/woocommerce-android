@@ -1,9 +1,17 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,22 +47,22 @@ DataLoadingFailed |                  (OpenAddressEditor)    |    |              
    (ShowError)    |            +----------------------------+    |                                  |          |   |
                   v            |                                 v                                  |          |   |
            +------+-------+    |                      +----------+----------+   AddressValidated    |          |   |
-           |              |    |   AddressEditFinished|                     |   (UpdateViewState)   |          |   |
-           | Data Loading |    |    (ValidateAddress) |    Origin Address   +-----------------------+          |   |
-           |   Failure    |    |  +------------------>+      Validation     |                                  |   |
-           |              |    |  |                   |                     |                                  |   |
-           +--------------+    |  |                   +----+----------+-----+                                  |   |
-                               |  |                        |          |                                        |   |
-                               |  |                        |          |                                        |   |
-                               |  |                        |          |                                        |   |
-                               |  |   AddressNotRecognized |          |      AddressInvalid                    |   |
-                               |  |   (OpenAddressEditor)  |          | (ShowAddressSuggestions)               |   |
-                               |  |                        |          |                                        |   |
-                               |  |                        |          |                                        |   |
-                               |  |                        |          |                                        |   |
-                               |  |                        v          v                                        |   |
-                               |  |     +------------------+-+      +-+-------------------+                    |   |
-                               |  +-----+                    |      |                     |                    |   |
+           |              |    |                      |                     |   (UpdateViewState)   |          |   |
+           | Data Loading |    |                      |    Origin Address   +-----------------------+          |   |
+           |   Failure    |    |                      |      Validation     |                                  |   |
+           |              |    |                      |                     |                                  |   |
+           +--------------+    |                      +----+----------+-----+                                  |   |
+                               |                           |          |                                        |   |
+                               |                           |          |                                        |   |
+                               |                           |          |                                        |   |
+                               |         AddressInvalid    |          |  AddressChangeSuggested                |   |
+                               |      (OpenAddressEditor)  |          | (ShowAddressSuggestions)               |   |
+                               |                           |          |                                        |   |
+                               |                           |          |                                        |   |
+                               |                           |          |                                        |   |
+                               |                           v          v                                        |   |
+                               |        +------------------+-+      +-+-------------------+                    |   |
+                               |        |                    |      |                     |                    |   |
                                |        |   Origin Address   |      |    Origin Address   +--------------------+   |
                                +------->+       Editing      |      |     Suggestions     |                        |
                                         |                    |      |                     |                        |
@@ -69,26 +77,31 @@ DataLoadingFailed |                  (OpenAddressEditor)    |    |              
                                            |                                                                       |
                                            |                                                                       |
                                            +-----------------------------------------------------------------------+
-                                                                       AddressUsedAsIs
+                                                                     AddressEditFinished
                                                                       (UpdateViewState)
+
+This diagram was created using ASCIIFlow (asciiflow.com). If you want to modify it, you can just copy the text and
+import it.
 
  */
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
-    // the view states based on the triggered side-effects
-    private val _effects = MutableStateFlow<SideEffect>(SideEffect.NoOp)
-    val effects: StateFlow<SideEffect> = _effects
+    // the view states based on the triggered states and side-effects
+    private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
+    val transitions: StateFlow<Transition> = _transitions
 
     // the actual state machine behavior is defined by a DSL using the following format:
     //
-    // state<STATE> {
-    //     on<EVENT> {
-    //         transitionTo(NEXT_STATE, SIDE_EFFECT)
+    // state<State.STATE> {
+    //     on<Event.EVENT> {
+    //         transitionTo(State.NEXT_STATE, SIDE_EFFECT)
     //     }
     // }
-    private val stateMachine = StateMachine.create<State, Event, SideEffect> {
-        initialState(State.Idle)
+    private var stateMachine = createStateMachine()
+
+    private fun createStateMachine(initialState: State = State.Idle) = StateMachine.create<State, Event, SideEffect> {
+        initialState(initialState)
 
         state<State.Idle> {
             on<Event.FlowStarted> { event ->
@@ -102,16 +115,22 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
             on<Event.DataLoadingFailed> {
-                transitionTo(State.DataLoadingFailure, SideEffect.ShowError(Error.DataLoadingError))
+                transitionTo(State.DataLoadingFailure, SideEffect.ShowError(DataLoadingError))
             }
         }
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(data.originAddress))
+                transitionTo(
+                    State.OriginAddressValidation(data),
+                    SideEffect.ValidateAddress(data.originAddress, ORIGIN)
+                )
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(data.shippingAddress))
+                transitionTo(
+                    State.ShippingAddressValidation(data),
+                    SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
+                )
             }
             on<Event.PackageSelectionStarted> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions)
@@ -126,10 +145,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentDetails)
             }
             on<Event.EditOriginAddressRequested> {
-                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
             on<Event.EditShippingAddressRequested> {
-                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
+                transitionTo(
+                    State.ShippingAddressEditing(data),
+                    SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
+                )
             }
             on<Event.EditPackagingRequested> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions)
@@ -153,14 +175,18 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
-            on<Event.AddressInvalid> { event ->
-                transitionTo(
-                    State.OriginAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
+            on<Event.AddressChangeSuggested> { event ->
+                transitionTo(State.OriginAddressSuggestion(data),
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, ORIGIN)
                 )
             }
-            on<Event.AddressNotRecognized> {
-                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
+            on<Event.AddressInvalid> { event ->
+                transitionTo(State.OriginAddressEditing(data),
+                    SideEffect.OpenAddressEditor(data.originAddress, ORIGIN, event.validationResult)
+                )
+            }
+            on<Event.AddressValidationFailed> {
+                transitionTo(State.OriginAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
             }
         }
 
@@ -173,20 +199,20 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.EditOriginAddressRequested> {
-                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress))
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
         }
 
         state<State.OriginAddressEditing> {
-            on<Event.AddressEditFinished> { event ->
-                transitionTo(State.OriginAddressValidation(data), SideEffect.ValidateAddress(event.address))
-            }
-            on<Event.AddressUsedAsIs> { event ->
+            on<Event.AddressValidated> { event ->
                 val newData = data.copy(
                     originAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+            }
+            on<Event.AddressEditCanceled> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
         }
 
@@ -198,18 +224,24 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
-            on<Event.AddressInvalid> { event ->
+            on<Event.AddressChangeSuggested> { event ->
                 transitionTo(
                     State.ShippingAddressSuggestion(data),
-                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested)
+                    SideEffect.ShowAddressSuggestion(data.originAddress, event.suggested, DESTINATION)
                 )
             }
-            on<Event.AddressNotRecognized> {
-                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
+            on<Event.AddressInvalid> { event ->
+                transitionTo(
+                    State.ShippingAddressEditing(data),
+                    SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION, event.validationResult)
+                )
+            }
+            on<Event.AddressValidationFailed> {
+                transitionTo(State.ShippingAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
             }
         }
 
-        state<State.OriginAddressSuggestion> {
+        state<State.ShippingAddressSuggestion> {
             on<Event.SuggestedAddressSelected> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
@@ -218,20 +250,23 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
             on<Event.EditShippingAddressRequested> {
-                transitionTo(State.ShippingAddressEditing(data), SideEffect.OpenAddressEditor(data.shippingAddress))
+                transitionTo(
+                    State.ShippingAddressEditing(data),
+                    SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
+                )
             }
         }
 
         state<State.ShippingAddressEditing> {
-            on<Event.AddressEditFinished> { event ->
-                transitionTo(State.ShippingAddressValidation(data), SideEffect.ValidateAddress(event.address))
-            }
-            on<Event.AddressUsedAsIs> { event ->
+            on<Event.AddressValidated> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+            }
+            on<Event.AddressEditCanceled> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
         }
 
@@ -267,9 +302,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         onTransition { transition ->
             if (transition is StateMachine.Transition.Valid) {
                 WooLog.d(T.ORDERS, transition.toState.toString())
-                transition.sideEffect?.let { sideEffect ->
-                    _effects.value = sideEffect
-                }
+                _transitions.value = Transition(transition.toState, transition.sideEffect)
             } else {
                 throw InvalidStateException("Unexpected event ${transition.event} passed from ${transition.fromState}")
             }
@@ -283,6 +316,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
         stateMachine.transition(Event.FlowStarted(orderId))
     }
 
+    fun initialize(state: State) {
+        stateMachine = createStateMachine(state)
+    }
+
     /**
      * Incoming external event that triggers a transition (such as user input)
      */
@@ -294,11 +331,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
     /**
      * Data passed around between states
      */
+    @Parcelize
     data class Data(
         val originAddress: Address,
         val shippingAddress: Address,
         val flowSteps: Set<FlowStep>
-    )
+    ) : Parcelable
 
     /**
      * The main shipping label creation steps
@@ -309,26 +347,29 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class Error {
         object DataLoadingError : Error()
+        object AddressValidationError : Error()
     }
 
-    sealed class State {
-        object Idle : State()
-        object DataLoadingFailure : State()
-        object DataLoading : State()
-        data class WaitingForInput(val data: Data) : State()
+    sealed class State : Parcelable {
+        @Parcelize object Idle : State()
+        @Parcelize object DataLoadingFailure : State()
+        @Parcelize object DataLoading : State()
+        @Parcelize data class WaitingForInput(val data: Data) : State()
 
-        data class OriginAddressValidation(val data: Data) : State()
-        data class OriginAddressSuggestion(val data: Data) : State()
-        data class OriginAddressEditing(val data: Data) : State()
+        @Parcelize data class OriginAddressValidation(val data: Data) : State()
+        @Parcelize data class OriginAddressSuggestion(val data: Data) : State()
+        @Parcelize data class OriginAddressEditing(val data: Data) : State()
+        @Parcelize object OriginAddressValidationFailure : State()
 
-        data class ShippingAddressValidation(val data: Data) : State()
-        data class ShippingAddressSuggestion(val data: Data) : State()
-        data class ShippingAddressEditing(val data: Data) : State()
+        @Parcelize data class ShippingAddressValidation(val data: Data) : State()
+        @Parcelize data class ShippingAddressSuggestion(val data: Data) : State()
+        @Parcelize data class ShippingAddressEditing(val data: Data) : State()
+        @Parcelize object ShippingAddressValidationFailure : State()
 
-        data class PackageSelection(val data: Data) : State()
-        data class CustomsDeclaration(val data: Data) : State()
-        data class ShippingCarrierSelection(val data: Data) : State()
-        data class PaymentSelection(val data: Data) : State()
+        @Parcelize data class PackageSelection(val data: Data) : State()
+        @Parcelize data class CustomsDeclaration(val data: Data) : State()
+        @Parcelize data class ShippingCarrierSelection(val data: Data) : State()
+        @Parcelize data class PaymentSelection(val data: Data) : State()
     }
 
     sealed class Event {
@@ -336,12 +377,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class DataLoaded(val originAddress: Address, val shippingAddress: Address) : Event()
         object DataLoadingFailed : Event()
 
-        object AddressNotRecognized : Event()
+        data class AddressInvalid(val address: Address, val validationResult: ValidationResult) : Event()
         data class AddressValidated(val address: Address) : Event()
-        data class AddressInvalid(val suggested: Address) : Event()
-        data class AddressUsedAsIs(val address: Address) : Event()
-        data class AddressEditFinished(val address: Address) : Event()
+        data class AddressChangeSuggested(val suggested: Address) : Event()
         data class SuggestedAddressSelected(val address: Address) : Event()
+        object AddressValidationFailed : Event()
+        object AddressEditCanceled : Event()
 
         object OriginAddressValidationStarted : Event()
         object EditOriginAddressRequested : Event()
@@ -372,9 +413,17 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class ShowError(val error: Error) : SideEffect()
         data class UpdateViewState(val data: Data) : SideEffect()
 
-        data class ValidateAddress(val address: Address) : SideEffect()
-        data class ShowAddressSuggestion(val entered: Address, val suggested: Address) : SideEffect()
-        data class OpenAddressEditor(val address: Address) : SideEffect()
+        data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
+        data class ShowAddressSuggestion(
+            val entered: Address,
+            val suggested: Address,
+            val type: AddressType
+        ) : SideEffect()
+        data class OpenAddressEditor(
+            val address: Address,
+            val type: AddressType,
+            val validationResult: ValidationResult? = null
+        ) : SideEffect()
 
         object ShowPackageOptions : SideEffect()
         object ShowCustomsForm : SideEffect()
@@ -383,4 +432,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
     }
 
     class InvalidStateException(message: String) : Exception(message)
+
+    data class Transition(val state: State, val sideEffect: SideEffect?)
 }
