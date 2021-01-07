@@ -80,20 +80,6 @@ class RefundByItemsFragment : BaseFragment() {
 //        issueRefund_productsTotal.setOnClickListener {
 //            viewModel.onProductRefundAmountTapped()
 //        }
-
-        val linkText = getString(R.string.order_refunds_store_admin_link_text)
-        val noticeText = getString(R.string.order_refunds_shipping_refund_notice, linkText)
-        val spannable = SpannableString(noticeText)
-        val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
-        span.useCustomStyle = false
-        spannable.setSpan(
-                span,
-                (noticeText.length - linkText.length),
-                noticeText.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        issueRefund_shippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
-        issueRefund_shippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setupObservers() {
@@ -147,8 +133,10 @@ class RefundByItemsFragment : BaseFragment() {
             new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
                 if (isVisible) {
                     issueRefund_feesGroup.show()
+                    updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice_fees))
                 } else {
                     issueRefund_feesGroup.hide()
+                    updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice))
                 }
             }
             // TODO: Temporarily disabled, this will be used in a future release - do not remove
@@ -193,5 +181,21 @@ class RefundByItemsFragment : BaseFragment() {
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun updateRefundNoticeView(refundNoticeText: String) {
+        val linkText = getString(R.string.order_refunds_store_admin_link_text)
+        val noticeText = String.format(refundNoticeText, linkText)
+        val spannable = SpannableString(noticeText)
+        val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
+        span.useCustomStyle = false
+        spannable.setSpan(
+            span,
+            (noticeText.length - linkText.length),
+            noticeText.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        issueRefund_shippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
+        issueRefund_shippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 }
