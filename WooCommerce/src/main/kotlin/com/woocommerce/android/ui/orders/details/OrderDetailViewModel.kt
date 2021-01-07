@@ -9,7 +9,6 @@ import com.google.android.material.snackbar.Snackbar.Callback
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.PrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -66,8 +65,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val orderDetailRepository: OrderDetailRepository,
-    private val preferences: PrefsWrapper
+    private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val US_COUNTRY_CODE = "US"
@@ -440,7 +438,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(orderIdSet.id)
-        return if (!preferences.isTrackingExtensionAvailable || shippingLabels.isVisible || hasVirtualProductsOnly()) {
+        return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)
@@ -453,7 +451,7 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     private fun fetchShipmentTrackingAsync() = async {
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(orderIdSet.id, orderIdSet.remoteOrderId)
-        preferences.isTrackingExtensionAvailable = result == SUCCESS
+        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
