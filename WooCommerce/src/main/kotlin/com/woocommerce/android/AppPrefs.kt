@@ -48,6 +48,13 @@ object AppPrefs {
     }
 
     /**
+     * Application related preferences. When the user changes a site, these preferences are erased.
+     */
+    private enum class DeletableSitePrefKey : PrefKey {
+        TRACKING_EXTENSION_AVAILABLE
+    }
+
+    /**
      * These preferences won't be deleted when the user disconnects.
      * They should be used for device specific or user-independent preferences.
      */
@@ -326,13 +333,32 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
+    fun isTrackingExtensionAvailable(): Boolean {
+        return getBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, false)
+    }
+
+    fun setTrackingExtensionAvailable(isAvailable: Boolean) {
+        setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
+    }
+
     /**
-     * Remove all user-related preferences.
+     * Remove all user and site-related preferences.
      */
-    fun reset() {
+    fun resetUserPreferences() {
         val editor = getPreferences().edit()
-        DeletablePrefKey.values().forEach { editor.remove(it.name) }
+        DeletablePrefKey.values().forEach { a -> editor.remove(a.name) }
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
+        editor.apply()
+
+        resetSitePreferences()
+    }
+
+    /**
+     * Remove all site-related preferences.
+     */
+    fun resetSitePreferences() {
+        val editor = getPreferences().edit()
+        DeletableSitePrefKey.values().forEach { editor.remove(it.name) }
         editor.apply()
     }
 

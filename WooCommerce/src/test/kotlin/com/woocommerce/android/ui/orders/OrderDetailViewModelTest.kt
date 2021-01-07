@@ -54,7 +54,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     private val networkStatus: NetworkStatus = mock()
-    private val appPrefsWrapper: AppPrefs = mock()
+    private val appPrefsWrapper: AppPrefs = mock {
+        on(it.isTrackingExtensionAvailable()).thenAnswer { true }
+    }
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock {
