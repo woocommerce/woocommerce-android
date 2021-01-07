@@ -324,6 +324,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED,
         PRODUCTS_DOWNLOADABLE_FILE,
 
+        // -- Linked Products
+        LINKED_PRODUCTS,
+
         // -- Grouped products
         GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
         GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
@@ -640,6 +643,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
             ADDED("added"),
             UPDATED("updated"),
             DELETED("deleted")
+        }
+
+        // -- Linked Products
+        const val KEY_LINKED_PRODUCTS_ACTION = "action"
+
+        enum class LinkedProductsAction(val value: String) {
+            SHOWN("shown"),
+            DONE("done")
         }
 
         const val IMAGE_SOURCE_CAMERA = "camera"
