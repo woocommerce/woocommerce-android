@@ -50,7 +50,7 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductTagsBinding.bind(view)
-        
+
         setHasOptionsMenu(true)
         setupObservers(viewModel)
         viewModel.loadProductTags()
@@ -61,7 +61,7 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
         super.onDestroyView()
         _binding = null
     }
-    
+
     override fun getFragmentTitle() = getString(R.string.product_tags)
 
     override fun onResume() {
@@ -135,7 +135,7 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
         viewModel.productTagsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.productTagsLayout.isRefreshing = it 
+                binding.productTagsLayout.isRefreshing = it
             }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
