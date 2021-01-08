@@ -15,7 +15,6 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
-import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
