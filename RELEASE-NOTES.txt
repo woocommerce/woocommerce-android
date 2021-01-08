@@ -2,6 +2,7 @@
 
 5.8
 -----
+* [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
 * [*] Fixed a bug where the moderation buttons in the product review detail would be partially hidden for some locales [https://github.com/woocommerce/woocommerce-android/pull/3382]
  
 5.7
