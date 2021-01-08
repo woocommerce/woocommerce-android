@@ -324,11 +324,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED,
         PRODUCTS_DOWNLOADABLE_FILE,
 
-        // -- Grouped products
-        GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED,
+        // -- Linked Products
+        LINKED_PRODUCTS,
+
+        // -- Connected Products (Grouped products, Upsells, Cross-sells)
+        CONNECTED_PRODUCTS_LIST,
 
         // -- Product external link
         PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED,
@@ -640,6 +640,31 @@ class AnalyticsTracker private constructor(private val context: Context) {
             ADDED("added"),
             UPDATED("updated"),
             DELETED("deleted")
+        }
+
+        // -- Linked Products
+        const val KEY_LINKED_PRODUCTS_ACTION = "action"
+
+        enum class LinkedProductsAction(val value: String) {
+            SHOWN("shown"),
+            DONE("done")
+        }
+
+        // -- Connected Products
+        const val KEY_CONNECTED_PRODUCTS_LIST_CONTEXT = "context"
+        const val KEY_CONNECTED_PRODUCTS_LIST_ACTION = "action"
+
+        enum class ConnectedProductsListContext(val value: String) {
+            GROUPED_PRODUCTS("grouped_products"),
+            UPSELLS("upsells"),
+            CROSS_SELLS("cross_sells")
+        }
+
+        enum class ConnectedProductsListAction(val value: String) {
+            ADD_TAPPED("add_tapped"),
+            ADDED("added"),
+            DONE_TAPPED("done_tapped"),
+            DELETE_TAPPED("delete_tapped")
         }
 
         const val IMAGE_SOURCE_CAMERA = "camera"
