@@ -15,6 +15,7 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
+import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
@@ -70,7 +71,6 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-        setupResultHandlers(viewModel)
         binding.addDownloadableFromWpmediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
         binding.addDownloadableFromDevice.setOnClickListener { viewModel.onDeviceClicked() }
         binding.addDownloadableManually.setOnClickListener { viewModel.onEnterURLClicked() }
