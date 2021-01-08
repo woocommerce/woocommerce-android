@@ -15,10 +15,13 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     data class ShowSuggestedAddress(
         val originalAddress: Address,
-        val suggestedAddress: Address
+        val suggestedAddress: Address,
+        val type: AddressType
     ) : CreateShippingLabelEvent()
 
     object CancelAddressEditing : CreateShippingLabelEvent()
+
+    object DiscardSuggestedAddress : CreateShippingLabelEvent()
 
     data class ShowCountrySelector(
         val locations: List<WCLocationModel>,

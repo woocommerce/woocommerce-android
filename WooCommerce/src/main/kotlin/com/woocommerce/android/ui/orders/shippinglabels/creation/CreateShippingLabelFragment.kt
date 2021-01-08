@@ -35,6 +35,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     companion object {
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
+        const val DISCARD_SUGGESTED_ADDRESS = "key_suggested_address_dialog_closed"
+        const val SUGGESTED_ADDRESS_SELECTED = "key_suggested_address_selected"
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -74,6 +76,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         }
         handleNotice(EDIT_ADDRESS_CLOSED) {
             viewModel.onAddressEditCanceled()
+        }
+        handleNotice(DISCARD_SUGGESTED_ADDRESS) {
+            viewModel.onSuggestedAddressDiscarded()
         }
     }
 
@@ -126,7 +131,15 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
-                is ShowSuggestedAddress -> {}
+                is ShowSuggestedAddress -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToShippingLabelAddressSuggestionFragment(
+                            event.originalAddress,
+                            event.suggestedAddress,
+                            event.type
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 else -> event.isHandled = false
             }
         })
