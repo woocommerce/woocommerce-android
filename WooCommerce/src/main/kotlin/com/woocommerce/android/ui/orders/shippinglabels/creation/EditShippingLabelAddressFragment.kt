@@ -290,20 +290,27 @@ class EditShippingLabelAddressFragment
     }
 
     private fun initializeViews() {
-        binding.useAddressAsIsButton.setOnClickListener {
-            viewModel.onUseAddressAsIsButtonClicked(gatherData())
+        binding.useAddressAsIsButton.onClick {
+            viewModel.onUseAddressAsIsButtonClicked()
         }
-        binding.countrySpinner.setClickListener {
+        binding.countrySpinner.onClick {
             viewModel.onCountrySpinnerTapped()
         }
-        binding.stateSpinner.setClickListener {
+        binding.stateSpinner.onClick {
             viewModel.onStateSpinnerTapped()
         }
-        binding.openMapButton.setOnClickListener {
+        binding.openMapButton.onClick {
             viewModel.onOpenMapTapped()
         }
-        binding.contactCustomerButton.setOnClickListener {
+        binding.contactCustomerButton.onClick {
             viewModel.onContactCustomerTapped()
+        }
+    }
+
+    private fun View.onClick(onButtonClick: () -> Unit) {
+        setOnClickListener {
+            viewModel.updateAddress(gatherData())
+            onButtonClick()
         }
     }
 

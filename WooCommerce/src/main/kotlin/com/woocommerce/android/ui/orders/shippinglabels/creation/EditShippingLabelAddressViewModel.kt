@@ -165,9 +165,15 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         return allOk
     }
 
-    fun onUseAddressAsIsButtonClicked(address: Address) {
-        if (areRequiredFieldsValid(address)) {
-            triggerEvent(ExitWithResult(address))
+    fun updateAddress(address: Address) {
+        viewState = viewState.copy(address = address)
+    }
+
+    fun onUseAddressAsIsButtonClicked() {
+        viewState.address?.let { address ->
+            if (areRequiredFieldsValid(address)) {
+                triggerEvent(ExitWithResult(address))
+            }
         }
     }
 
@@ -180,8 +186,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onOpenMapTapped() {
-        viewState.address?.let {
-            triggerEvent(OpenMapWithAddress(it))
+        viewState.address?.let { address ->
+            triggerEvent(OpenMapWithAddress(address))
         }
     }
 
