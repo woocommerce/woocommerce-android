@@ -1,4 +1,0 @@
-5.6:
-Vocês pediram e nós atendemos! Agora você pode criar produtos simples, agrupados e externos para sua loja diretamente dos dispositivos móveis Android de sua preferência. Transforme suas ideias em produtos mesmo estando longe do computador.
-
-Atualizamos nossa IU para um design mais limpo e organizado. Também resolvemos um problema nos detalhes do pedido para que o rastreamento do envio seja mais fácil.

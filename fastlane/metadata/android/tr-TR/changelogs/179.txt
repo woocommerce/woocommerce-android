@@ -1,4 +1,0 @@
-5.6:
-Siz istediniz, biz de sizi dinledik! Artık doğrudan en sevdiğiniz Android mobil cihazlarınızdan basit, gruplanmış ve harici ürünler oluşturabilirsiniz. Bilgisayarınızdan uzakta olsanız bile fikirlerinizi ürünlere dönüştürün.
-
-Ayrıca kullanıcı arayüzümüzü daha net, daha temiz bir tasarımla güncelledik ve sipariş ayrıntılarındaki bir hatayı düzelterek gönderi takibini çocuk oyuncağı haline getirdik.

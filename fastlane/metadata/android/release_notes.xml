@@ -1,102 +1,153 @@
 <ar>
-5.6:
-لقد طلبت واستمعنا! يمكنك الآن إنشاء منتجات بسيطة ومجمعة وخارجية لمخزنك مباشرةً من أجهزتك المحمولة المفضلة التي تعمل بنظام تشغيل Android. حول أفكارك إلى منتجات – حتى عندما تكون بعيدًا عن حاسوبك.
-
-قمنا أيضًا بتحديث واجهة المستخدم الخاصة بنا إلى تصميم أكثر وضوحًا وتنظيمًا، وأصلحنا الخطأ الموجود في تفاصيل الطلب، ما سيجعل تعقُّب الشحنة أمرًا سهلاً.
+5.7:
+- إزالة الصور من أنواع المنتج!
+- يمكن للتطبيق فتح برنامج البريد الإلكتروني على نظام تشغيل Android 11 في أثناء عملية تسجيل دخول الرابط السحري.
+- إصلاحات الأخطاء: يتم عرض المنتجات المتغيرة عند شراء ملصقات الشحن؛ يتم تكريم الاختيارات في مربع الحوار.
+- يتم عرض الرسوم في تفاصيل دفع الطلب.
+- تم دعم عمليات تسجيل الدخول من دون كلمة مرور.
+- تحسينات طفيفة في النمط لشاشات تسجيل الدخول.
 </ar>
 <de-DE>
-5.6:
-Dein Wunsch ist uns Befehl! Ab sofort kannst du einfache, gruppierte oder externe Produkte für deinen Store direkt über deine bevorzugten Android-Mobilgeräte erstellen. Wandle Ideen in Produkte um – auch wenn du nicht an deinem Computer sitzt.
-
-Außerdem haben wir unserer Benutzeroberfläche ein schickeres und übersichtlicheres Design verpasst und einen Fehler in den Bestelldetails behoben, um die Versandverfolgung so einfach wie möglich zu gestalten.
+5.7:
+- Bilder aus Produktvarianten entfernen!
+- Die App kann den E-Mail-Client während des Anmeldevorgangs per magischem Link auf Android 11 öffnen.
+- Fehlerkorrekturen: Beim Kauf von Versandetiketten werden Produktvarianten angezeigt. Im Dialogfeld vorgenommene Auswahlen werden berücksichtigt.
+- Auf dem Bildschirm mit den Zahlungsdetails für die Bestellung werden Gebühren angezeigt.
+- Passwortlose Anmeldungen werden unterstützt.
+- Kleine Stilverbesserungen an den Anmeldebildschirmen
 </de-DE>
 <es-ES>
-5.6:
-Hemos respondido a tus peticiones. Ahora, puedes crear productos simples, agrupados y externos para tu tienda directamente desde tus dispositivos móviles Android favoritos. Convierte tus ideas en productos, incluso cuando no estés usando tu computadora.
-
-También hemos actualizado la interfaz de usuario con un diseño más limpio y nítido, y hemos corregido un error en los detalles del pedido que hará que el seguimiento de los envíos sea pan comido.
+5.7:
+- Eliminar imágenes de las variaciones de producto.
+- La aplicación puede abrir el cliente de correo electrónico en Android 11 durante el proceso de acceso con enlace mágico.
+- Reparación de errores: al adquirir etiquetas de envío se muestran los productos variables; las selecciones en los diálogos se respetan.
+- Se muestran las tarifas en la información de pago del pedido.
+- Compatibilidad con el inicio de sesión sin contraseña.
+- Pequeñas mejoras de estilo en las pantallas de inicio de sesión.
 </es-ES>
 <fr-FR>
-5.6 :
-Vous l’avez demandé, nous vous avons écouté ! Vous pouvez désormais créer des produits simples, groupés et externes pour votre boutique directement depuis vos appareils mobiles Android préférés. Transformez vos idées en produits, même sans votre ordinateur sous la main.
-
-Nous avons également mis à jour notre interface utilisateur afin d’offrir un design plus précis et épuré. Nous avons résolu un bug concernant les détails de commande afin de faciliter le suivi des livraisons.
+5.7 :
+- Supprimez les images des variantes du produit !
+- L’application peut ouvrir le client de messagerie sur Android 11 pendant le processus de connexion au lien magique de connexion.
+- Résolutions de bugs : divers produits s’affichent lors de l’achat d’étiquettes de livraison ; les sélections effectuées dans une boîte de dialogue sont respectées.
+- Les frais apparaissent dans les détails de paiement de la commande.
+- Connexions sans mot de passe prises en charge.
+- Améliorations mineures du style des écrans de connexion.
 </fr-FR>
 <iw-IL>
-5.6:
-הקשבנו לבקשות מהמשתמשים! כעת אפשר ליצור מוצרים פשוטים, מקובצים או חיצוניים בחנות שלך ממכשיר ה-Android המועדף עליך. אפשר להפוך כל רעיון למוצר – גם אם לא נמצאים ליד המחשב השולחני.
-
-עדכנו גם את ממשק המשתמש עם עיצוב חד ונקי יותר ותיקנו באג בפרטי ההזמנה שיאפשר מעקב פשוט יותר אחר משלוחים.
+5.7: 
+- להסיר תמונות בסוגי מוצרים!
+- אפשר לפתוח את לקוח האימייל באפליקציה במערכת של Android 11 בתהליך ההתחברות דרך קישור ישיר.
+- תיקוני באגים: מוצרים עם סוגים מוצגים כאשר נרכשו תוויות משלוח וניתן לבצע בחירה בתיבת דו-שיח.
+- העמלות מוצגות בפרטי התשלום של ההזמנה.
+- יש תמיכה בהתחברות ללא סיסמה.
+- הוספנו שיפורים בסגנון של מסכי ההתחברות.
 </iw-IL>
 <id>
-5.6:
-Anda meminta, kami menyediakannya! Sekarang Anda dapat membuat produk sederhana, dikelompokkan, dan eksternal untuk toko langsung dari perangkat seluler Android favorit Anda. Ubah ide Anda jadi produk nyata, bahkan tanpa mesti duduk di depan komputer.
-
-Kami juga telah memperbarui UI dengan desain yang lebih tajam dan rapi, serta memperbaiki bug pada detail pesanan yang akan memudahkan pelacakan pengiriman.
+5.7:
+- Gambar dihapus dari variasi produk!
+- Di Android 11, aplikasi dapat membuka klien email saat proses login menggunakan magic link.
+- Perbaikan bug: produk variabel muncul saat label pengiriman dibeli; opsi yang dipilih di dialog disimpan.
+- Biaya ditampilkan di rincian pembayaran pesanan.
+- Dapat login tanpa kata sandi.
+- Perubahan kecil pada gaya di layar login.
 </id>
 <it-IT>
-5.6:
-Tu hai chiesto e noi abbiamo ascoltato. Ora puoi creare prodotti semplici, raggruppati ed esterni per il tuo negozio direttamente dai tuoi dispositivi mobili Android preferiti. Trasforma le tue idee in prodotti, anche quando sei lontano dal tuo computer.
-
-Abbiamo anche aggiornato la nostra interfaccia utente con un design più fresco e pulito e abbiamo corretto un bug nei dettagli dell'ordine che renderà il monitoraggio della spedizione più semplice.
+5.7:
+- Rimuovi le immagini dalle varianti del prodotto.
+- L'app può aprire il client di posta elettronica su Android 11 durante il processo di accesso tramite link.
+- Correzioni di bug: visualizzazione dei prodotti variabili quando vengono acquistate le etichette di spedizione; rispetto delle selezioni effettuate in una finestra di dialogo.
+- Visualizzazione delle tariffe nei dettagli di pagamento dell'ordine.
+- Accessi senza password supportati.
+- Miglioramenti minori alle schermate di accesso.
 </it-IT>
 <ja-JP>
-5.6:
- ご不明な点があればお知らせください。 ストア用のシンプルな商品、グループ化された商品、外部商品をお気に入りの Android モバイル端末から直接作成できるようになりました。 コンピューターから離れているときでも、アイデアを商品化できます。
-
-また、UI を見やすくすっきりとしたデザインに変更し、注文の詳細におけるバグを修正して出荷を追跡しやすくしました。
+5.7:
+- 商品バリエーションから画像を削除しました。
+- マジックリンクのログイン処理中に Android 11でメールクライアントを開けるようになりました。
+- バグ修正 : 配送ラベルの購入時に可変製品が表示されるようになりました。ダイアログでの選択が有効になりました。
+- 料金が、注文支払いの詳細に表示されるようになりました。
+- パスワードレスログインに対応しました。
+- ログイン画面のスタイルを微調整しました。
 </ja-JP>
 <ko-KR>
-5.6:
-질문을 경청했습니다! 이제 좋아하는 Android 모바일 장치에서 스토어에 대한 간단하고 그룹화된 외부 제품을 바로 생성할 수 있습니다. 컴퓨터에서 멀리 떨어져 있을 때도 아이디어를 제품으로 전환하세요.
-
-UI도 더 산뜻하고 더 깔끔한 디자인으로 업데이트했으며, 배송 추적이 간편하도록 주문 상세 정보의 버그도 수정했습니다.
+5.7:
+- 제품 변형에서 이미지를 제거하세요!
+- 매직 링크 로그인 프로세스 동안 Android 11의 이메일 클라이언트를 앱에서 열 수 있습니다.
+- 버그 수정: 배송 레이블을 구매할 때 변형 제품이 표시되며, 대화 상자에서 선택한 내용이 인식됩니다.
+- 주문 결제 상세 정보에 수수료가 표시됩니다.
+- 비밀번호 없는 로그인이 지원됩니다.
+- 로그인 화면의 스타일이 약간 개선되었습니다.
 </ko-KR>
 <nl-NL>
-5.6:
-Jij vraagt, wij draaien! Je kan nu rechtstreeks vanaf je favoriete mobiele Android-apparaten eenvoudige, gegroepeerde en externe producten voor je winkel aanmaken. Maak meteen werk van je ingevingen, zelfs als je onderweg bent.
-
-Daarnaast hebben we onze UI scherper en duidelijker gemaakt, en we hebben een bug bij bestelgegevens opgelost zodat het volgen van verzendingen een fluitje van een cent is.
+5.7:
+-Verwijder afbeeldingen van productvariaties!
+- De app kan de e-mailclient openen op Android 11 tijdens het inloggen via de magische link.
+- Bugfixes: variabele producten worden weergegeven bij het kopen van verzendlabels; producten die in een dialoogvenster worden geselecteerd, worden doorgevoerd.
+- Toeslagen worden weergegeven bij betalingsgegevens van de bestelling.
+- Log-ins zonder wachtwoord worden ondersteund.
+- Kleine stijlverbeteringen voor de inlogschermen.
 </nl-NL>
 <pt-BR>
-5.6:
-Vocês pediram e nós atendemos! Agora você pode criar produtos simples, agrupados e externos para sua loja diretamente dos dispositivos móveis Android de sua preferência. Transforme suas ideias em produtos mesmo estando longe do computador.
-
-Atualizamos nossa IU para um design mais limpo e organizado. Também resolvemos um problema nos detalhes do pedido para que o rastreamento do envio seja mais fácil.
+5.7:
+- Remoção das imagens das variações de produtos.
+- O aplicativo pode abrir o cliente de e-mail no Android 11 durante o processo de login via link.
+- Correções de bug: produtos variáveis são exibidos durante a compra de etiquetas de envio; as seleções feitas em uma caixa de diálogo são obedecidas.
+- Visualização das taxas nos detalhes de pagamento do pedido.
+- Suporte a login sem senha.
+- Pequenas melhorias de estilo nas telas de login.
 </pt-BR>
 <ru-RU>
-5.6.
-Вы просили — мы сделали! Теперь простые, сгруппированные и внешние товары можно создавать напрямую с мобильных устройств Android. Превращайте свои идеи в товары, даже если под рукой нет стационарного компьютера.
-
-Мы также сделали интерфейс более понятным и исправили ошибку в описании заказа — отслеживать доставку стало еще проще.
+5,7:
+— Удалить изображения из вариантов продуктов!
+— Приложение может открыть почтовый клиент в ОС Android 11 во время входа в систему по ссылке.
+— Исправления ошибок: при покупке транспортных этикеток отображаются продукты с вариантами; учитывается выбор, сделанный в диалоговом окне.
+— Сборы отображаются в сведениях об оплате заказа.
+— Поддерживается вход в систему без ввода пароля.
+— Небольшие усовершенствования стиля экранов входа в систему.
 </ru-RU>
 <sv-SE>
-5.6:
-Ni önskade, vi lyssnade! Du kan nu skapa enkla, grupperade och externa produkter för din butik direkt från dina mobila Android-enheter. Förvandla dina idéer till produkter, även när du inte är vid din dator.
-
-Vi har också uppdaterat vårt användargränssnitt till en skarpare, renare design, samt åtgärdat ett fel i beställningsdetaljerna som kommer att göra det lättare att spåra försändelser.
+5.7:
+- Ta bort bilder från produktvariationer!
+- Appen kan öppna e-postklienten i Android 11 under inloggningsprocessen med den magiska länken.
+- Felkorrigeringar: variabla produkter visas när fraktetiketter köps. De val som görs i en dialogruta respekteras.
+- Avgifter visas på beställningsbetalningsinformation.
+- Lösenordsfria inloggningar stöds.
+- Mindre stilförbättringar av inloggningsskärmarna.
 </sv-SE>
 <tr-TR>
-5.6:
-Siz istediniz, biz de sizi dinledik! Artık doğrudan en sevdiğiniz Android mobil cihazlarınızdan basit, gruplanmış ve harici ürünler oluşturabilirsiniz. Bilgisayarınızdan uzakta olsanız bile fikirlerinizi ürünlere dönüştürün.
-
-Ayrıca kullanıcı arayüzümüzü daha net, daha temiz bir tasarımla güncelledik ve sipariş ayrıntılarındaki bir hatayı düzelterek gönderi takibini çocuk oyuncağı haline getirdik.
+5.7:
+- Ürün çeşitlerinden resimleri kaldırın.
+- Uygulama, sihirli bağlantı giriş işlemi sırasında Android 11'de e-posta istemcisini açabilir.
+- Hata düzeltmeleri: Gönderi etiketleri satın alındığında değişken ürünler görüntülenir; bir iletişim kutusunda yapılan seçimler kabul edilir.
+- Ücretler, sipariş ödeme ayrıntılarında görüntülenir.
+- Şifresiz girişler desteklenir. 
+- Giriş ekranlarında küçük stil iyileştirmeleri.
 </tr-TR>
 <zh-CN>
-5.6：
-您提问，我们倾听！ 现在您可以直接通过喜欢的 Android 移动设备为商店创建简单产品、分类产品和外部产品。 将创意转变为产品，即使您不使用计算机，亦可创作。
-
-我们不仅更新了用户界面，使其更加简洁清楚，还修复了订单详情中的一个问题，让配送跟踪变得轻而易举。
+5.7：
+- 删除了产品变体中的图像！
+- 该应用程序可以在通过免密链接登录过程中在 Android 11 上打开电子邮件客户端。
+- 错误修复：购买配送标签时会显示可变产品；将遵循在对话框中选定的产品。
+- 订单付款详情中显示费用。
+- 支持免密登录。
+- 对登录屏幕的样式进行了一些细微改进。
 </zh-CN>
 <zh-TW>
-5.6：
-你的要求我們聽見了！ 你現在可直接使用常用 Android 行動裝置，為自己的商店建立簡單、組合和外部產品。 即使你人不在電腦前，也能將想法轉化為產品。
-
-我們也更新了 UI，提供更簡潔俐落的設計，並修正訂單詳細資料的錯誤，讓你輕鬆追蹤貨件。
+5.7：
+- 從商品款式移除圖片！
+- 應用程式可在神奇連結登入程序期間在 Android 11 上開啟電子郵件用戶端。
+- 錯誤修正：購買運輸標籤時顯示子類商品；接受在對話方塊中所做的選擇。
+- 費用顯示在訂單付款詳細資訊上。
+- 支援無密碼登入。
+- 對登入畫面的樣式稍做修改。
 </zh-TW>
 <en-US>
-5.6:
-You asked, and we listened! You can now create simple, grouped, and external products for your store directly from your favorite Android mobile devices. Turn your ideas into products, even when you’re away from your computer.
-
-We’ve also updated our UI to a crisper, cleaner design, and we fixed a bug in order details that will make shipment tracking a breeze.
+5.7:
+- Remove images from product variations!
+- The app can open the email client on Android 11 during the magic link login process.
+- Bug fixes: variable products display when shipping labels are purchased; selections made in a dialog are honored.
+- Fees display on order payment details.
+- Passwordless logins supported.
+- Minor style improvements to the login screens.
 </en-US>
