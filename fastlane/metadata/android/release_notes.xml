@@ -17,7 +17,6 @@
 - Kleine Stilverbesserungen an den Anmeldebildschirmen
 </de-DE>
 <es-ES>
-5.7:
 - Eliminar imágenes de las variaciones de producto.
 - La aplicación puede abrir el cliente de correo electrónico en Android 11 durante el proceso de acceso con enlace mágico.
 - Reparación de errores: al adquirir etiquetas de envío se muestran los productos variables; las selecciones en los diálogos se respetan.
@@ -26,9 +25,8 @@
 - Pequeñas mejoras de estilo en las pantallas de inicio de sesión.
 </es-ES>
 <fr-FR>
-5.7 :
 - Supprimez les images des variantes du produit !
-- L’application peut ouvrir le client de messagerie sur Android 11 pendant le processus de connexion au lien magique de connexion.
+- L’application peut ouvrir le client de messagerie sur Android 11 pendant la connexion via lien magique.
 - Résolutions de bugs : divers produits s’affichent lors de l’achat d’étiquettes de livraison ; les sélections effectuées dans une boîte de dialogue sont respectées.
 - Les frais apparaissent dans les détails de paiement de la commande.
 - Connexions sans mot de passe prises en charge.
