@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-09 09:54:39+0000
+Translation-Revision-Date: 2020-12-24 08:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">A remoção de imagens nas variações de produto só é permitida no WooCommerce 4.7 ou versões posteriores.</string>
+    <string name="order_shipment_tracking_progress_message">Aguarde</string>
+    <string name="order_shipment_tracking_progress_title">Adicionando rastreamento</string>
+    <string name="add_order_note_progress_message">Aguarde</string>
+    <string name="add_order_note_progress_title">Adicionando anotação</string>
+    <string name="shipping_label_create_payment_description">Adicionar novo cartão de crédito</string>
+    <string name="shipping_label_create_carrier_description">Selecione sua transportadora e as tarifas</string>
+    <string name="shipping_label_create_customs_description">Preencha a declaração aduaneira</string>
+    <string name="shipping_label_create_customs">Alfândega</string>
+    <string name="shipping_label_create_packaging_details_description">Selecione o tipo de embalagem em que você gostaria de enviar seus itens</string>
+    <string name="shipping_label_create_packaging_details">Detalhes do pacote</string>
+    <string name="shipping_label_create_title">Criar etiqueta de envio</string>
+    <string name="shipping_label_more_information_link">Saiba mais</string>
+    <string name="shipping_label_more_information_message">Pule a fila dos correios imprimindo as etiquetas de envio em casa pelo seu celular a preços com desconto!</string>
+    <string name="shipping_label_more_information_heading">Economize tempo e dinheiro com o WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Marcar pedido como concluído</string>
+    <string name="orderdetail_shipping_label_notice">Saiba mais sobre como criar etiquetas no seu celular</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Criar etiqueta de envio</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Agora você pode criar etiquetas de envio para todos os pedidos físicos diretamente do seu dispositivo com o plugin gratuito do WooCommerce Shipping. Toque em \"Criar etiqueta de envio\" para experimentar!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Crie etiquetas de envio pelo seu dispositivo!</string>
+    <string name="orderdetail_payment_fees">Taxas</string>
+    <string name="orderdetail_net">Pagamento líquido</string>
+    <string name="orderdetail_payment_paid_by_customer">Pagamento realizado</string>
+    <string name="login_jetpack_view_instructions_alt">Saiba mais sobre como conectar o Jetpack</string>
+    <string name="login_no_stores">Não há lojas do WooCommerce conectadas a esta conta. Você precisará instalar e conectar o plugin gratuito do Jetpack às suas lojas do WooCommerce para usar esse aplicativo.</string>
+    <string name="edit">Editar</string>
     <string name="product_images_validate_drag_and_drop">Validar</string>
     <string name="product_images_drag_and_drop_description">Arrastar e soltar para reorganizar as fotos</string>
     <string name="product_downloadable_files_download_settings">Configurações de download</string>
@@ -86,7 +113,6 @@ Language: pt_BR
     <string name="shipping_label_paper_size">Tamanho do papel</string>
     <string name="shipping_label_print_disclaimer">Se você já usou a etiqueta em um pacote, imprimi-la e usá-la novamente é uma violação dos nossos termos de serviço.</string>
     <string name="shipping_label_print_error_message">Caso tenha ocorrido um erro de impressão ao comprar a etiqueta, você pode imprimi-la novamente.</string>
-    <string name="order_begin_fulfillment">Marcar pedido como concluído</string>
     <string name="orderdetail_shipping_label_wip_message">Estamos trabalhando para que seja mais fácil imprimir etiquetas de envio diretamente do seu dispositivo! Por agora, se você criou etiquetas de envio para este pedido na página de administração da sua loja com o WooCommerce Shipping, você pode imprimi-las aqui em Detalhes do pedido.</string>
     <string name="orderdetail_shipping_label_wip_title">Imprima etiquetas de entrega no seu dispositivo!</string>
     <string name="orderdetail_shipping_label_reprint">Reimprimir etiqueta de entrega</string>
@@ -191,7 +217,7 @@ Language: pt_BR
     <string name="product_add_tag_error">Ocorreu um erro ao adicionar tags</string>
     <string name="product_add_tag_dialog_title">Adicionando tag</string>
     <string name="shipping_label_refund_progress_message">O reembolso está sendo processado. Aguarde…</string>
-    <string name="shipping_label_refund_success">O reembolso foi enviado com sucesso</string>
+    <string name="shipping_label_refund_success">O pedido de reembolso foi enviado com êxito</string>
     <string name="shipping_label_refund_button">Reembolsar etiqueta (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Valor elegível para reembolso</string>
     <string name="shipping_label_refund_purchase_date_title">Data da compra</string>
@@ -216,8 +242,9 @@ Language: pt_BR
     <string name="product_type_description">%s produto</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Produtos restantes</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s etiqueta reembolsada</string>
+    <string name="orderdetail_shipping_label_refund_title">Reembolso da etiqueta de %1$s solicitado</string>
     <string name="orderdetail_shipping_label_tracking_info">Rastrear envio</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Ocultar detalhes de envio</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Mostrar detalhes de envio</string>
     <string name="orderdetail_shipping_label_item_payment_type">Cartão de crédito</string>
@@ -489,8 +516,6 @@ Language: pt_BR
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Estatísticas aprimoradas</string>
     <string name="beta_features">Funcionalidades Beta</string>
-    <string name="orderdetail_net">Valor líquido</string>
-    <string name="orderdetail_payment_paid_by_customer">Pago pelo cliente</string>
     <string name="orderdetail_payment_summary_onhold">Aguardando pagamento via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Nenhuma receita para esse período</string>
@@ -1082,6 +1107,7 @@ Language: pt_BR
     <string name="order_error_update_general">Erro ao alterar o pedido</string>
     <string name="order_error_fetch_notes_generic">Erro ao buscar notas de erro</string>
     <string name="order_fulfill_marked_complete">Pedido marcado como concluído</string>
+    <string name="order_fulfill_mark_complete">Marcar pedido como concluído</string>
     <string name="orderdetail_addnote_contentdesc">Adicionar uma nota ao pedido</string>
     <string name="orderdetail_add_note">Adicionar nota</string>
     <string name="orderdetail_hide_billing">Ocultar cobrança</string>
@@ -1133,7 +1159,6 @@ Language: pt_BR
     <string name="dashboard_stats_granularity_months">Meses</string>
     <string name="dashboard_stats_granularity_weeks">Semanas</string>
     <string name="dashboard_stats_granularity_days">Dias</string>
-    <string name="login_no_stores">Não foi possível encontrar lojas WooCommerce\nvinculadas a esta conta</string>
     <string name="login_with_a_different_account">Fazer login com uma conta diferente</string>
     <string name="login_nostores_content_description">Não há lojas WooCommerce</string>
     <string name="login_avatar_content_description">Sua foto de perfil</string>

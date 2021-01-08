@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 17:54:56+0000
+Translation-Revision-Date: 2020-12-31 08:54:53+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Maaf, penghapusan gambar pada variasi produk baru bisa dilakukan di WooCommerce 4.7 atau yang lebih baru.</string>
+    <string name="order_shipment_tracking_progress_message">Harap tunggu…</string>
+    <string name="order_shipment_tracking_progress_title">Menambahkan pelacakan</string>
+    <string name="add_order_note_progress_message">Harap tunggu…</string>
+    <string name="add_order_note_progress_title">Menambahkan catatan</string>
+    <string name="shipping_label_create_payment_description">Tambahkan kartu kredit baru</string>
+    <string name="shipping_label_create_carrier_description">Pilih operator dan tarif pengiriman</string>
+    <string name="shipping_label_create_customs_description">Isi formulir bea cukai</string>
+    <string name="shipping_label_create_customs">Bea cukai</string>
+    <string name="shipping_label_create_packaging_details_description">Pilih jenis kemasan yang digunakan untuk mengirim item Anda</string>
+    <string name="shipping_label_create_packaging_details">Informasi kemasan</string>
+    <string name="shipping_label_create_title">Buat label pengiriman</string>
+    <string name="shipping_label_more_information_link">Pelajari lebih lanjut</string>
+    <string name="shipping_label_more_information_message">Tak perlu antre saat di kantor pos dengan mencetak label pengiriman di rumah dari ponsel dengan harga diskon!</string>
+    <string name="shipping_label_more_information_heading">Hemat waktu dan biaya dengan memproses pesanan menggunakan WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">Pengiriman WooCommerce</string>
+    <string name="order_mark_complete">Tandai pesanan selesai</string>
+    <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan ponsel</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Buat label pengiriman</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Sekarang Anda dapat membuat label pengiriman untuk semua pesanan fisik langsung dari perangkat Anda dengan plugin WooCommerce Shipping gratis. Ketuk \"Buat label pengiriman\" untuk mencoba!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Buat label pengiriman dari perangkat Anda!</string>
+    <string name="orderdetail_payment_fees">Biaya</string>
+    <string name="orderdetail_net">Pembayaran Bersih</string>
+    <string name="orderdetail_payment_paid_by_customer">Berbayar</string>
+    <string name="login_jetpack_view_instructions_alt">Pelajari selengkapnya tentang cara menghubungkan Jetpack</string>
+    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini. Anda perlu menginstal dan menghubungkan plugin gratis Jetpack dengan toko WooCommerce Anda untuk menggunakan aplikasi ini.</string>
+    <string name="edit">Sunting</string>
     <string name="product_images_validate_drag_and_drop">Validasi</string>
     <string name="product_images_drag_and_drop_description">Tarik dan lepas untuk mengurutkan foto</string>
     <string name="product_downloadable_files_download_settings">Pengaturan Unduh</string>
@@ -86,7 +113,6 @@ Language: id
     <string name="shipping_label_paper_size">Ukuran kertas</string>
     <string name="shipping_label_print_disclaimer">Jika Anda telah menggunakan label pada kemasan, mencetak dan menggunakannya kembali merupakan pelanggaran terhadap ketentuan layanan kami.</string>
     <string name="shipping_label_print_error_message">Jika terjadi kesalahan mencetak saat Anda membeli label, Anda dapat mencetaknya kembali.</string>
-    <string name="order_begin_fulfillment">Tandai pesanan selesai</string>
     <string name="orderdetail_shipping_label_wip_message">Kami berusaha mempermudah Anda agar dapat mencetak label pengiriman langsung dari perangkat Anda! Untuk saat ini, jika telah membuat label pengiriman untuk pesanan ini di admin toko Anda dengan Pengiriman WooCommerce, Anda dapat mencetaknya di Detail Pesanan di sini.</string>
     <string name="orderdetail_shipping_label_wip_title">Cetak label pengiriman dari perangkat Anda!</string>
     <string name="orderdetail_shipping_label_reprint">Cetak ulang label pengiriman</string>
@@ -191,7 +217,7 @@ Language: id
     <string name="product_add_tag_error">Terjadi error saat menambahkan tag</string>
     <string name="product_add_tag_dialog_title">Menambahkan tag</string>
     <string name="shipping_label_refund_progress_message">Pengembalian dana Anda sedang diproses. Harap tunggu…</string>
-    <string name="shipping_label_refund_success">Pengembalian dana berhasil dikirim.</string>
+    <string name="shipping_label_refund_success">Permintaan pengembalian dana berhasil dikirim</string>
     <string name="shipping_label_refund_button">Kembalikan dana label (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Jumlah yang memenuhi syarat pengembalian dana</string>
     <string name="shipping_label_refund_purchase_date_title">Tanggal pembelian</string>
@@ -216,8 +242,9 @@ Language: id
     <string name="product_type_description">%s produk</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Produk yang tersisa</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s label dikembalikan</string>
+    <string name="orderdetail_shipping_label_refund_title">Label %1$s diminta pengembalian dananya</string>
     <string name="orderdetail_shipping_label_tracking_info">Lacak pengiriman</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Sembunyikan detail pengiriman</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Tampilkan detail pengiriman</string>
     <string name="orderdetail_shipping_label_item_payment_type">Kartu Kredit</string>
@@ -489,8 +516,6 @@ Language: id
     <string name="orderdetail_refund_detail">%1$s melalui %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistik yang disempurnakan</string>
     <string name="beta_features">Fitur-fitur Beta</string>
-    <string name="orderdetail_net">Net</string>
-    <string name="orderdetail_payment_paid_by_customer">Dibayar oleh pelanggan</string>
     <string name="orderdetail_payment_summary_onhold">Menunggu pembayaran melalui %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s melalui %2$s</string>
     <string name="dashboard_state_no_data">Tidak ada pendapatan dalam periode ini</string>
@@ -1082,6 +1107,7 @@ Language: id
     <string name="order_error_update_general">Error saat mengubah pesanan</string>
     <string name="order_error_fetch_notes_generic">Error saat mengambil catatan error</string>
     <string name="order_fulfill_marked_complete">Pesanan Ditandai Selesai</string>
+    <string name="order_fulfill_mark_complete">Tandai Pesanan Selesai</string>
     <string name="orderdetail_addnote_contentdesc">Tambahkan catatan pesanan</string>
     <string name="orderdetail_add_note">Tambahkan catatan</string>
     <string name="orderdetail_hide_billing">Sembunyikan Tagihan</string>
@@ -1133,7 +1159,6 @@ Language: id
     <string name="dashboard_stats_granularity_months">Bulan</string>
     <string name="dashboard_stats_granularity_weeks">Minggu</string>
     <string name="dashboard_stats_granularity_days">Hari</string>
-    <string name="login_no_stores">Tidak dapat menemukan toko WooCommerce\nterhubung ke akun ini</string>
     <string name="login_with_a_different_account">Login dengan akun lain</string>
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-14 17:08:02+0000
+Translation-Revision-Date: 2020-12-24 10:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Maalesef ürün varyasyonlarında resim kaldırma işlevi WooCommerce 4.7 veya sonraki sürümlerde desteklenmektedir.</string>
+    <string name="order_shipment_tracking_progress_message">Lütfen bekleyin</string>
+    <string name="order_shipment_tracking_progress_title">Takip ekleniyor</string>
+    <string name="add_order_note_progress_message">Lütfen bekleyin</string>
+    <string name="add_order_note_progress_title">Not ekleniyor</string>
+    <string name="shipping_label_create_payment_description">Yeni bir kredi kartı ekle</string>
+    <string name="shipping_label_create_carrier_description">Kargo şirketinizi ve ücretlerinizi seçin</string>
+    <string name="shipping_label_create_customs_description">Gümrük formunu doldurun</string>
+    <string name="shipping_label_create_customs">Gümrük</string>
+    <string name="shipping_label_create_packaging_details_description">Ürünlerinizi göndermek istediğiniz ambalaj türünü seçin</string>
+    <string name="shipping_label_create_packaging_details">Paketleme ayrıntıları</string>
+    <string name="shipping_label_create_title">Gönderim etiketi oluşturun</string>
+    <string name="shipping_label_more_information_link">Daha fazla bilgi</string>
+    <string name="shipping_label_more_information_message">Telefonunuzla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
+    <string name="shipping_label_more_information_heading">İşinizi WooCommerce Shipping ile yaparak zamandan ve paradan tasarruf edin</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
+    <string name="orderdetail_shipping_label_notice">Telefonunuzla etiket oluşturma hakkında daha fazla bilgi edinin</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
+    <string name="orderdetail_payment_fees">Masraflar</string>
+    <string name="orderdetail_net">Net ödeme</string>
+    <string name="orderdetail_payment_paid_by_customer">Ödendi</string>
+    <string name="login_jetpack_view_instructions_alt">Jetpack\'i bağlama hakkında daha fazla bilgi edinin</string>
+    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık. Bu uygulamayı kullanmak için WooCommerce mağazalarınıza ücretsiz Jetpack eklentisini kurmanız ve bağlamanız gerekir.</string>
+    <string name="edit">Düzenle</string>
     <string name="product_images_validate_drag_and_drop">Doğrula</string>
     <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
     <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
@@ -86,7 +113,6 @@ Language: tr
     <string name="shipping_label_paper_size">Kağıt boyutu</string>
     <string name="shipping_label_print_disclaimer">Etiketi bir pakette zaten kullandıysanız onu tekrar yazdırıp kullanmak hizmet şartlarımızın ihlali anlamına gelir.</string>
     <string name="shipping_label_print_error_message">Etiketi satın aldığınızda bir yazdırma hatası olduysa tekrar yazdırabilirsiniz.</string>
-    <string name="order_begin_fulfillment">Siparişi tamamlandı olarak işaretle</string>
     <string name="orderdetail_shipping_label_wip_message">Kargo etiketlerini doğrudan cihazınızdan yazdırmayı kolaylaştırmak için çalışıyoruz! Mağaza yöneticinizde WooCommerce Shipping ile bu sipariş için kargo etiketleri oluşturduysanız, şimdilik bunları burada, yani Sipariş Detayları bölümünüzde yazdırabilirsiniz.</string>
     <string name="orderdetail_shipping_label_wip_title">Cihazınızdan kargo etiketleri yazdırın!</string>
     <string name="orderdetail_shipping_label_reprint">Kargo etiketini tekrar yazdır</string>
@@ -191,7 +217,7 @@ Language: tr
     <string name="product_add_tag_error">Etiketler eklenirken hata oluştu</string>
     <string name="product_add_tag_dialog_title">Etiket ekleniyor</string>
     <string name="shipping_label_refund_progress_message">Geri ödemeniz işleniyor. Lütfen bekleyin…</string>
-    <string name="shipping_label_refund_success">Geri ödeme başarıyla gönderildi</string>
+    <string name="shipping_label_refund_success">Geri ödeme isteği başarıyla gönderildi</string>
     <string name="shipping_label_refund_button">Geri ödeme etiketi (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Geri ödenebilecek tutar</string>
     <string name="shipping_label_refund_purchase_date_title">Satın alma tarihi</string>
@@ -216,7 +242,7 @@ Language: tr
     <string name="product_type_description">%s ürün</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Geri kalan ürünler</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s etiket iade edildi</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s etiket geri ödemesi istendi</string>
     <string name="orderdetail_shipping_label_tracking_info">Gönderimi takip et</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Gönderi ayrıntılarını gizle</string>
@@ -490,8 +516,6 @@ Language: tr
     <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
-    <string name="orderdetail_net">Net</string>
-    <string name="orderdetail_payment_paid_by_customer">Müşteri tarafından ödenen</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
@@ -1083,6 +1107,7 @@ Language: tr
     <string name="order_error_update_general">Sipariş değişikliği hatası</string>
     <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
+    <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
@@ -1134,7 +1159,6 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
-    <string name="login_no_stores">WooCommerce mağazası bulunamadı\nbu hesaba bağlanıldı</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>

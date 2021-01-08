@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 13:54:03+0000
+Translation-Revision-Date: 2020-12-24 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">抱歉，WooCommerce 4.7 或高更版本才支持删除产品变体的图片。</string>
+    <string name="order_shipment_tracking_progress_message">请稍候</string>
+    <string name="order_shipment_tracking_progress_title">正在添加跟踪</string>
+    <string name="add_order_note_progress_message">请稍候</string>
+    <string name="add_order_note_progress_title">正在添加备注</string>
+    <string name="shipping_label_create_payment_description">添加新信用卡</string>
+    <string name="shipping_label_create_carrier_description">选择您的承运商和收费标准</string>
+    <string name="shipping_label_create_customs_description">填写自定义表单</string>
+    <string name="shipping_label_create_customs">自定义</string>
+    <string name="shipping_label_create_packaging_details_description">选择您想用来配送商品的包装类型</string>
+    <string name="shipping_label_create_packaging_details">包装详细信息</string>
+    <string name="shipping_label_create_title">创建配送标签</string>
+    <string name="shipping_label_more_information_link">了解更多</string>
+    <string name="shipping_label_more_information_message">在家中使用手机以折扣价打印配送标签，节省在邮局处理的时间！</string>
+    <string name="shipping_label_more_information_heading">利用 WooCommerce Shipping 节省时间和资金</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">将订单标记为完成</string>
+    <string name="orderdetail_shipping_label_notice">详细了解如何使用手机创建配送标签</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">创建配送标签</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">现在，您可以利用免费的 WooCommerce Shipping 插件，直接通过您的设备为所有实体订单创建配送标签。 轻按“创建配送标签”试试看！</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">通过您的设备创建配送标签！！</string>
+    <string name="orderdetail_payment_fees">费用</string>
+    <string name="orderdetail_net">净付款</string>
+    <string name="orderdetail_payment_paid_by_customer">已付</string>
+    <string name="login_jetpack_view_instructions_alt">详细了解如何连接 Jetpack</string>
+    <string name="login_no_stores">我们找不到与此帐户连接的 WooCommerce 商店。 您需要在您的 WooCommerce 商店中安装和连接免费的 Jetpack 插件才能使用此应用程序。</string>
+    <string name="edit">编辑</string>
     <string name="product_images_validate_drag_and_drop">验证</string>
     <string name="product_images_drag_and_drop_description">通过拖放来排序照片</string>
     <string name="product_downloadable_files_download_settings">下载设置</string>
@@ -86,7 +113,6 @@ Language: zh_CN
     <string name="shipping_label_paper_size">纸张尺寸</string>
     <string name="shipping_label_print_disclaimer">如果您已在包装中使用过该标签，再次打印和使用此标签会违反我们的服务条款。</string>
     <string name="shipping_label_print_error_message">如果您已经购买了标签，但遇到打印错误，则可以再次打印。</string>
-    <string name="order_begin_fulfillment">将订单标记为完成</string>
     <string name="orderdetail_shipping_label_wip_message">我们正竭力让您可以更轻松地直接通过设备打印配送标签！ 现在，如果您使用 WooCommerce Shipping 在商店管理中为此订单创建了配送标签，则可以在此处的“订单详情”中打印标签。</string>
     <string name="orderdetail_shipping_label_wip_title">通过您的设备打印配送标签！</string>
     <string name="orderdetail_shipping_label_reprint">重新打印配送标签</string>
@@ -191,7 +217,7 @@ Language: zh_CN
     <string name="product_add_tag_error">添加标签时出错</string>
     <string name="product_add_tag_dialog_title">添加标签</string>
     <string name="shipping_label_refund_progress_message">正在处理您的退款。 请稍候…</string>
-    <string name="shipping_label_refund_success">已成功提交退款</string>
+    <string name="shipping_label_refund_success">已成功提交退款请求</string>
     <string name="shipping_label_refund_button">标签退款 (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">符合退款条件的金额</string>
     <string name="shipping_label_refund_purchase_date_title">购买日期</string>
@@ -216,8 +242,9 @@ Language: zh_CN
     <string name="product_type_description">%s 个产品</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">其余产品</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s 已退款标签</string>
+    <string name="orderdetail_shipping_label_refund_title">已申请 %1$s 标签退款</string>
     <string name="orderdetail_shipping_label_tracking_info">跟踪配送</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">隐藏配送详细信息</string>
     <string name="orderdetail_shipping_label_item_show_shipping">显示配送详细信息</string>
     <string name="orderdetail_shipping_label_item_payment_type">信用卡</string>
@@ -489,8 +516,6 @@ Language: zh_CN
     <string name="orderdetail_refund_detail">%1$s（通过 %2$s）</string>
     <string name="settings_enable_v4_stats_title">经改进的统计页面</string>
     <string name="beta_features">测试版功能</string>
-    <string name="orderdetail_net">净额</string>
-    <string name="orderdetail_payment_paid_by_customer">客户支付</string>
     <string name="orderdetail_payment_summary_onhold">等待通过 %s支付</string>
     <string name="orderdetail_payment_summary_completed">%1$s（通过 %2$s）</string>
     <string name="dashboard_state_no_data">此时间段内没有收入</string>
@@ -1082,6 +1107,7 @@ Language: zh_CN
     <string name="order_error_update_general">更改订单时出错</string>
     <string name="order_error_fetch_notes_generic">抓取错误备注时出错</string>
     <string name="order_fulfill_marked_complete">订单已标记为完成</string>
+    <string name="order_fulfill_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_addnote_contentdesc">添加订单备注</string>
     <string name="orderdetail_add_note">添加备注</string>
     <string name="orderdetail_hide_billing">隐藏账单</string>
@@ -1133,7 +1159,6 @@ Language: zh_CN
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">周</string>
     <string name="dashboard_stats_granularity_days">日</string>
-    <string name="login_no_stores">找不到已关联此帐户的\nWooCommerce 商店</string>
     <string name="login_with_a_different_account">使用其他帐户登录</string>
     <string name="login_nostores_content_description">无 WooCommerce 商店</string>
     <string name="login_avatar_content_description">您的个人资料照片</string>
