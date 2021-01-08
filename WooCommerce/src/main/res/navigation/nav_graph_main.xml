@@ -385,6 +385,9 @@
             app:destination="@id/editShippingLabelAddressFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelAddressFragment"
@@ -405,6 +408,9 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out"
             app:destination="@id/itemSelectorDialog" />
+        <action
+            android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment" />
     </fragment>
     <dialog
         android:id="@+id/itemSelectorDialog"
@@ -429,4 +435,18 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </dialog>
+    <fragment
+        android:id="@+id/shippingLabelAddressSuggestionFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment"
+        android:label="ShippingLabelAddressSuggestionFragment" >
+        <argument
+            android:name="enteredAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="suggestedAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="addressType"
+            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
+    </fragment>
 </navigation>
