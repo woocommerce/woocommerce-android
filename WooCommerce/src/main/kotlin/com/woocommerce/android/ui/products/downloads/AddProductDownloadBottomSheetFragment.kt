@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
@@ -33,7 +34,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.dialog_product_add_downloadable_file.*
 import javax.inject.Inject
 
 private const val CHOOSE_FILE_REQUEST_CODE = 1
@@ -51,6 +51,9 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
     }
     private var capturedPhotoUri: Uri? = null
 
+    private var _binding: DialogProductAddDownloadableFileBinding? = null
+    private val binding get() = _binding!!
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -60,16 +63,22 @@ class AddProductDownloadBottomSheetFragment : BottomSheetDialogFragment(), HasAn
         savedInstanceState?.let { bundle ->
             capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
         }
-        return inflater.inflate(R.layout.dialog_product_add_downloadable_file, container, false)
+        _binding = DialogProductAddDownloadableFileBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-        add_downloadable_from_wpmedia_library.setOnClickListener { viewModel.onMediaGalleryClicked() }
-        add_downloadable_from_device.setOnClickListener { viewModel.onDeviceClicked() }
-        add_downloadable_manually.setOnClickListener { viewModel.onEnterURLClicked() }
+        binding.addDownloadableFromWpmediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
+        binding.addDownloadableFromDevice.setOnClickListener { viewModel.onDeviceClicked() }
+        binding.addDownloadableManually.setOnClickListener { viewModel.onEnterURLClicked() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
