@@ -1,32 +1,37 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductDownloadsSettingsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
-import kotlinx.android.synthetic.main.fragment_product_downloads_settings.*
 
-class ProductDownloadsSettingsFragment : BaseProductFragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_downloads_settings, container, false)
-    }
+class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_product_downloads_settings) {
+    private var _binding: FragmentProductDownloadsSettingsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductDownloadsSettingsBinding.bind(view)
+
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
@@ -66,17 +71,17 @@ class ProductDownloadsSettingsFragment : BaseProductFragment() {
     private fun initFromProductDraft() {
         fun Number.formatLimitAndExpiry(): String = if (this == -1) "" else this.toString()
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        product_download_limit.setText(product.downloadLimit.formatLimitAndExpiry())
-        product_download_expiry.setText(product.downloadExpiry.formatLimitAndExpiry())
+        binding.productDownloadLimit.setText(product.downloadLimit.formatLimitAndExpiry())
+        binding.productDownloadExpiry.setText(product.downloadExpiry.formatLimitAndExpiry())
     }
 
     private fun setupListeners() {
-        product_download_expiry.setOnTextChangedListener {
+        binding.productDownloadExpiry.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadExpiryChanged(value)
             changesMade()
         }
-        product_download_limit.setOnTextChangedListener {
+        binding.productDownloadLimit.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toLong()
             viewModel.onDownloadLimitChanged(value)
             changesMade()
