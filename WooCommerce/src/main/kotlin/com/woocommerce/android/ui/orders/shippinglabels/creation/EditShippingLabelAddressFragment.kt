@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -40,6 +41,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
@@ -208,8 +210,10 @@ class EditShippingLabelAddressFragment
                     CreateShippingLabelFragment.EDIT_ADDRESS_CLOSED
                 )
                 is Exit -> findNavController().navigateUp()
-                is ShowSuggestedAddress -> {
-                }
+                is ShowSuggestedAddress -> navigateBackWithResult(
+                    CreateShippingLabelFragment.SUGGESTED_ADDRESS_SELECTED,
+                    event.data
+                )
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections
                         .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
@@ -307,7 +311,14 @@ class EditShippingLabelAddressFragment
         }
     }
 
-    private fun View.onClick(onButtonClick: () -> Unit) {
+    private fun WCMaterialOutlinedSpinnerView.onClick(onClick: () -> Unit) {
+        this.setClickListener {
+            viewModel.updateAddress(gatherData())
+            onClick()
+        }
+    }
+
+    private fun Button.onClick(onButtonClick: () -> Unit) {
         setOnClickListener {
             viewModel.updateAddress(gatherData())
             onButtonClick()
