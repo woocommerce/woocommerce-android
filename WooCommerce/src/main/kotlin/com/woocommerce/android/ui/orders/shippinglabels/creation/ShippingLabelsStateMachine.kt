@@ -201,6 +201,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditOriginAddressRequested> {
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
             }
+            on<Event.SuggestedAddressDiscarded> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+            }
         }
 
         state<State.OriginAddressEditing> {
@@ -254,6 +257,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     State.ShippingAddressEditing(data),
                     SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
                 )
+            }
+            on<Event.SuggestedAddressDiscarded> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
         }
 
@@ -383,6 +389,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class SuggestedAddressSelected(val address: Address) : Event()
         object AddressValidationFailed : Event()
         object AddressEditCanceled : Event()
+        object SuggestedAddressDiscarded : Event()
 
         object OriginAddressValidationStarted : Event()
         object EditOriginAddressRequested : Event()
