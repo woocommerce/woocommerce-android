@@ -5,12 +5,10 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -48,7 +46,8 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
+class EditShippingLabelAddressFragment
+    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -68,11 +67,10 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             updateActivityTitle()
         }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setHasOptionsMenu(true)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        _binding = FragmentEditShippingLabelAddressBinding.inflate(inflater, container, false)
-        return binding.root
+        setHasOptionsMenu(true)
     }
 
     override fun onResume() {
@@ -92,8 +90,15 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
         initializeViewModel()
         initializeViews()
