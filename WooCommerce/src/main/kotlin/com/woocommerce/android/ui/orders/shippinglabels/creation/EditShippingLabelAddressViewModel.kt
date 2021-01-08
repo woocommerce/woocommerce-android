@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -115,9 +116,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 addressError = getAddressErrorStringRes(result.message)
             )
             is ValidationResult.SuggestedChanges -> {
-                // Temporary until suggestions are implemented
-                // triggerEvent(ShowSuggestedAddress(address, result.suggested))
-                triggerEvent(ExitWithResult(address))
+                triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
             }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
