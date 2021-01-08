@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-09 08:54:04+0000
+Translation-Revision-Date: 2020-12-24 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Удаление изображений вариантов продуктов поддерживается в версии WooCommerce 4.7 и более поздних.</string>
+    <string name="order_shipment_tracking_progress_message">Подождите немного</string>
+    <string name="order_shipment_tracking_progress_title">Добавление отслеживания</string>
+    <string name="add_order_note_progress_message">Подождите немного</string>
+    <string name="add_order_note_progress_title">Добавление примечания</string>
+    <string name="shipping_label_create_payment_description">Добавить новую кредитную карту</string>
+    <string name="shipping_label_create_carrier_description">Выберите перевозчика и тарифы</string>
+    <string name="shipping_label_create_customs_description">Заполните таможенную форму</string>
+    <string name="shipping_label_create_customs">Таможня</string>
+    <string name="shipping_label_create_packaging_details_description">Выберите тип упаковки, в которой хотите отправить товары</string>
+    <string name="shipping_label_create_packaging_details">Сведения об упаковке</string>
+    <string name="shipping_label_create_title">Создание почтового бланка</string>
+    <string name="shipping_label_more_information_link">Узнать больше</string>
+    <string name="shipping_label_more_information_message">Сократите очередь на почте, распечатывая транспортные этикетки дома с телефона со скидкой!</string>
+    <string name="shipping_label_more_information_heading">Экономьте время и деньги, выполняя заказы с помощью WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Отметить заказ как выполненный</string>
+    <string name="orderdetail_shipping_label_notice">Подробнее о распечатке этикеток с телефона</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Создание почтового бланка</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Теперь вы можете создавать транспортные этикетки для всех физических заказов прямо со своего устройства с помощью бесплатного плагина WooCommerce Shipping. Нажмите \"Создать транспортную этикетку\" и попробуйте!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Создавайте транспортные этикетки со своего устройства!</string>
+    <string name="orderdetail_payment_fees">Сборы</string>
+    <string name="orderdetail_net">Чистая выплата</string>
+    <string name="orderdetail_payment_paid_by_customer">Платно</string>
+    <string name="login_jetpack_view_instructions_alt">Дополнительные сведения о подключении Jetpack</string>
+    <string name="login_no_stores">Нам не удалось найти магазины WooCommerce, подключенные к этой учётной записи. Чтобы использовать это приложение, нужно установить и подключить бесплатный плагин Jetpack в магазинах WooCommerce.</string>
+    <string name="edit">Правка</string>
     <string name="product_images_validate_drag_and_drop">Подтвердить</string>
     <string name="product_images_drag_and_drop_description">Перетащите фотографии, чтобы изменить их порядок</string>
     <string name="product_downloadable_files_download_settings">Настройки загрузки</string>
@@ -86,7 +113,6 @@ Language: ru
     <string name="shipping_label_paper_size">Размер бумаги</string>
     <string name="shipping_label_print_disclaimer">Если вы уже использовали этикетку в посылке, ее распечатка и повторное использование является нарушением наших условий предоставления услуг.</string>
     <string name="shipping_label_print_error_message">Если при печати купленной этикетки произошла ошибка, можно распечатать ее еще раз.</string>
-    <string name="order_begin_fulfillment">Отметить заказ как выполненный</string>
     <string name="orderdetail_shipping_label_wip_message">Мы стараемся упростить процедуру печати этикеток с устройства. Сейчас, если вы создали этикетки для этого заказа в разделе администрирования магазина с помощью WooCommerce Shipping, их можно распечатать из описания заказа (здесь).</string>
     <string name="orderdetail_shipping_label_wip_title">Печатайте транспортные этикетки со своего устройства!</string>
     <string name="orderdetail_shipping_label_reprint">Напечатать транспортную этикетку повторно</string>
@@ -191,7 +217,7 @@ Language: ru
     <string name="product_add_tag_error">При добавлении метки произошла ошибка</string>
     <string name="product_add_tag_dialog_title">Добавление метки</string>
     <string name="shipping_label_refund_progress_message">Запрос на возврат средств обрабатывается. Пожалуйста, подождите…</string>
-    <string name="shipping_label_refund_success">Средства возвращены заказчику</string>
+    <string name="shipping_label_refund_success">Запрос на возврат средств отправлен</string>
     <string name="shipping_label_refund_button">Вернуть оплату почтового бланка (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Сумма, доступная для возврата</string>
     <string name="shipping_label_refund_purchase_date_title">Дата покупки</string>
@@ -216,8 +242,9 @@ Language: ru
     <string name="product_type_description">%s товар</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Оставшиеся товары</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s оплата возвращена</string>
+    <string name="orderdetail_shipping_label_refund_title">Запрошен возврат оплаты транспортной этикетки %1$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Отследить посылку</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Скрыть сведения о доставке</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Показать сведения о доставке</string>
     <string name="orderdetail_shipping_label_item_payment_type">Банковская карта</string>
@@ -489,8 +516,6 @@ Language: ru
     <string name="orderdetail_refund_detail">%1$s с помощью %2$s</string>
     <string name="settings_enable_v4_stats_title">Улучшенная статистика</string>
     <string name="beta_features">Функции в бета-режиме</string>
-    <string name="orderdetail_net">Итог</string>
-    <string name="orderdetail_payment_paid_by_customer">Оплачивается заказчиком</string>
     <string name="orderdetail_payment_summary_onhold">Ожидание оплаты через %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s через %2$s</string>
     <string name="dashboard_state_no_data">Нет доходов за указанный период</string>
@@ -1082,6 +1107,7 @@ Language: ru
     <string name="order_error_update_general">Ошибка при изменении заказа</string>
     <string name="order_error_fetch_notes_generic">Ошибка при получении примечаний об ошибках</string>
     <string name="order_fulfill_marked_complete">Заказ отмечен как выполненный</string>
+    <string name="order_fulfill_mark_complete">Отметить заказ как выполненный</string>
     <string name="orderdetail_addnote_contentdesc">Добавить примечание к заказу</string>
     <string name="orderdetail_add_note">Добавить примечание</string>
     <string name="orderdetail_hide_billing">Скрыть платёжные сведения</string>
@@ -1133,7 +1159,6 @@ Language: ru
     <string name="dashboard_stats_granularity_months">Мес.</string>
     <string name="dashboard_stats_granularity_weeks">Нед.</string>
     <string name="dashboard_stats_granularity_days">Дн.</string>
-    <string name="login_no_stores">Не удалось найти магазины WooCommerce\nподключено к этой учётной записи</string>
     <string name="login_with_a_different_account">Войти под другой учётной записью</string>
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>

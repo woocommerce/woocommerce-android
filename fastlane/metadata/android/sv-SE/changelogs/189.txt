@@ -1,0 +1,7 @@
+5.7:
+- Ta bort bilder från produktvariationer!
+- Appen kan öppna e-postklienten i Android 11 under inloggningsprocessen med den magiska länken.
+- Felkorrigeringar: variabla produkter visas när fraktetiketter köps. De val som görs i en dialogruta respekteras.
+- Avgifter visas på beställningsbetalningsinformation.
+- Lösenordsfria inloggningar stöds.
+- Mindre stilförbättringar av inloggningsskärmarna.

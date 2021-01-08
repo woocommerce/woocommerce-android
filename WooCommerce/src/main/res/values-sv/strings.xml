@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-01 13:42:24+0000
+Translation-Revision-Date: 2020-12-23 14:54:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Bildborttagning på produktvarianter stöds i WooCommerce 4.7 eller senare.</string>
+    <string name="order_shipment_tracking_progress_message">Vänta</string>
+    <string name="order_shipment_tracking_progress_title">Lägger till spårning</string>
+    <string name="add_order_note_progress_message">Vänta</string>
+    <string name="add_order_note_progress_title">Lägger till anteckning</string>
+    <string name="shipping_label_create_payment_description">Lägg till ett nytt kreditkort</string>
+    <string name="shipping_label_create_carrier_description">Välj ditt transportföretag och avgifter</string>
+    <string name="shipping_label_create_customs_description">Fyll i tullformulär</string>
+    <string name="shipping_label_create_customs">Anpassade</string>
+    <string name="shipping_label_create_packaging_details_description">Välj i vilken typ av förpackning du vill skicka dina varor</string>
+    <string name="shipping_label_create_packaging_details">Förpackningsinformation</string>
+    <string name="shipping_label_create_title">Skapa fraktetikett</string>
+    <string name="shipping_label_more_information_link">Läs mer</string>
+    <string name="shipping_label_more_information_message">Skippa kön på postkontoret genom att skriva ut fraktetiketter till rabatterade priser hemma med din telefon!</string>
+    <string name="shipping_label_more_information_heading">Spara tid och pengar genom att fullfölja med WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Markera ordern som slutförd</string>
+    <string name="orderdetail_shipping_label_notice">Läs mer om att skapa etiketter med hjälp av din telefon</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Skapa fraktetikett</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Du kan nu skapa fraktetiketter för alla fysiska beställningar direkt från din enhet med hjälp av gratistillägget WooCommerce Shipping. Tryck på \"Skapa fraktetikett\" för att prova!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Skapa fraktetiketter från din enhet!</string>
+    <string name="orderdetail_payment_fees">Avgifter</string>
+    <string name="orderdetail_net">Nettobetalning</string>
+    <string name="orderdetail_payment_paid_by_customer">Betald</string>
+    <string name="login_jetpack_view_instructions_alt">Läs mer om att ansluta Jetpack</string>
+    <string name="login_no_stores">Vi kunde inte hitta några WooCommerce-butiker anslutna till det här kontot. Du måste installera och ansluta gratistillägget Jetpack på dina WooCommerce-butiker för att använda den här appen.</string>
+    <string name="edit">Redigera</string>
     <string name="product_images_validate_drag_and_drop">Validera</string>
     <string name="product_images_drag_and_drop_description">Dra och släpp för att ändra ordning på foton</string>
     <string name="product_downloadable_files_download_settings">Inställningar för nedladdning</string>
@@ -87,7 +114,6 @@ Language: sv_SE
     <string name="shipping_label_paper_size">Pappersstorlek</string>
     <string name="shipping_label_print_disclaimer">Om du redan har använt etiketten på ett paket är det ett brott mot våra användarvillkor att skriva ut och använda den igen.</string>
     <string name="shipping_label_print_error_message">Om det inträffade ett utskriftsfel när du köpte etiketten kan du skriva ut den igen.</string>
-    <string name="order_begin_fulfillment">Markera ordern som slutförd</string>
     <string name="orderdetail_shipping_label_wip_message">Vi arbetar för att göra det enklare för dig att skriva ut fraktetiketter direkt från din enhet! Om du har skapat fraktetiketter för den här ordern i butiksadmin i WooCommerce Shopping kan du nu skriva ut dem under Beställningsinformation här.</string>
     <string name="orderdetail_shipping_label_wip_title">Skriv ut fraktetiketter från din enhet!</string>
     <string name="orderdetail_shipping_label_reprint">Skriv ut fraktetikett igen</string>
@@ -192,7 +218,7 @@ Language: sv_SE
     <string name="product_add_tag_error">Fel uppstod när etiketter lades till</string>
     <string name="product_add_tag_dialog_title">Lägger till etiketter</string>
     <string name="shipping_label_refund_progress_message">Din återbetalning bearbetas. Vänta …</string>
-    <string name="shipping_label_refund_success">Återbetalningen har skickats utan problem</string>
+    <string name="shipping_label_refund_success">Begäran om återbetalning har skickats</string>
     <string name="shipping_label_refund_button">Återbetalningsetikett (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Belopp berättigat för återbetalning</string>
     <string name="shipping_label_refund_purchase_date_title">Inköpsdatum</string>
@@ -217,7 +243,7 @@ Language: sv_SE
     <string name="product_type_description">%s produkt</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Återstående produkter</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s returetikett</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s etikettåterbetalning begärd</string>
     <string name="orderdetail_shipping_label_tracking_info">Spåra försändelse</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Dölj information om försändelse</string>
@@ -491,8 +517,6 @@ Language: sv_SE
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
-    <string name="orderdetail_net">Netto</string>
-    <string name="orderdetail_payment_paid_by_customer">Betald av kund</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Inga inkomster denna period</string>
@@ -1084,6 +1108,7 @@ Language: sv_SE
     <string name="order_error_update_general">Det gick inte att ändra ordern</string>
     <string name="order_error_fetch_notes_generic">Det gick inte att hämta ordernoteringar</string>
     <string name="order_fulfill_marked_complete">Ordern har markerats som slutförd</string>
+    <string name="order_fulfill_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_addnote_contentdesc">Lägg till en ordernotering</string>
     <string name="orderdetail_add_note">Lägg till en notering</string>
     <string name="orderdetail_hide_billing">Dölj fakturering</string>
@@ -1135,7 +1160,6 @@ Language: sv_SE
     <string name="dashboard_stats_granularity_months">Månader</string>
     <string name="dashboard_stats_granularity_weeks">Veckor</string>
     <string name="dashboard_stats_granularity_days">Dagar</string>
-    <string name="login_no_stores">Kunde inte hitta WooCommerce-butiker\nanslutna till det här kontot</string>
     <string name="login_with_a_different_account">Logga in med ett annat konto</string>
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>

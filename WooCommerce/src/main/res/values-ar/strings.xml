@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 14:54:03+0000
+Translation-Revision-Date: 2020-12-24 09:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">عذرًا، إنَّ إزالة الصورة بشأن مجموعات المنتج المتنوعة مدعومة في WooCommerce الإصدار 4.7 أو أحدث.</string>
+    <string name="order_shipment_tracking_progress_message">يُرجى الانتظار</string>
+    <string name="order_shipment_tracking_progress_title">إضافة التعقب</string>
+    <string name="add_order_note_progress_message">يُرجى الانتظار</string>
+    <string name="add_order_note_progress_title">إضافة ملاحظة</string>
+    <string name="shipping_label_create_payment_description">إضافة بطاقة ائتمان جديدة</string>
+    <string name="shipping_label_create_carrier_description">تحديد شركة شحنك وأسعارها</string>
+    <string name="shipping_label_create_customs_description">ملء نموذج الجمارك</string>
+    <string name="shipping_label_create_customs">الجمارك</string>
+    <string name="shipping_label_create_packaging_details_description">تحديد نوع التعبئة التي ترغب في شحن عناصرك بها</string>
+    <string name="shipping_label_create_packaging_details">تفاصيل التعبئة</string>
+    <string name="shipping_label_create_title">إنشاء ملصق الشحن</string>
+    <string name="shipping_label_more_information_link">تعلم المزيد</string>
+    <string name="shipping_label_more_information_message">توقف عن الذهاب إلى مكتب البريد عن طريق طباعة ملصقات الشحن في المنزل باستخدام هاتفك بأسعار مخفضة!</string>
+    <string name="shipping_label_more_information_heading">ادخر الوقت والمال عن طريق الالتزام بالشحن عبر WooCommerce</string>
+    <string name="shipping_label_more_information_title">الشحن عبر WooCommerce</string>
+    <string name="order_mark_complete">وسم الطلب بأنه مكتمل</string>
+    <string name="orderdetail_shipping_label_notice">معرفة المزيد عن إنشاء ملصقات باستخدام هاتفك</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">إنشاء ملصق الشحن</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">يمكنك الآن إنشاء ملصقات شحن لجميع الطلبات المادية مباشرةً من جهازك باستخدام إضافة الشحن المجانية عبر WooCommerce. اضغط على \"إنشاء ملصق شحن\" لتجربته!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">قم بإنشاء ملصقات الشحن من جهازك!!</string>
+    <string name="orderdetail_payment_fees">الرسوم</string>
+    <string name="orderdetail_net">الدفع الصافي</string>
+    <string name="orderdetail_payment_paid_by_customer">مدفوع</string>
+    <string name="login_jetpack_view_instructions_alt">معرفة المزيد حول ربط Jetpack</string>
+    <string name="login_no_stores">لم نعثر على مخازن WooCommerce مرتبطة بهذا الحساب. ستحتاج إلى تثبيت إضافة Jetpack المجانية وتوصيلها في مخازن WooCommerce الخاصة بك لاستخدام هذا التطبيق.</string>
+    <string name="edit">تحرير</string>
     <string name="product_images_validate_drag_and_drop">تحقق</string>
     <string name="product_images_drag_and_drop_description">السحب والإفلات لإعادة ترتيب الصور</string>
     <string name="product_downloadable_files_download_settings">تنزيل الإعدادات</string>
@@ -86,7 +113,6 @@ Language: ar
     <string name="shipping_label_paper_size">مقاس الورقة</string>
     <string name="shipping_label_print_disclaimer">إذا كنتَ تستخدم الملصق بالفعل في حزمة ما، فإنَّ طباعته واستخدامه مجددًا يُعد انتهاكًا لشروط الخدمات لدينا.</string>
     <string name="shipping_label_print_error_message">إذا كان ثمَّة خطأ في الطباعة عند شراء الملصق، فيمكنك طباعته مجددًا.</string>
-    <string name="order_begin_fulfillment">وسم الطلب بأنه مكتمل</string>
     <string name="orderdetail_shipping_label_wip_message">إننا نعمل على تسهيل طباعة ملصقات الشحن مباشرة من جهازك!  في الوقت الحالي، إذا أنشأتَ ملصقات الشحن لهذا الطلب في مسؤول مخزنك باستخدام WooCommerce Shipping، فيمكنك طباعتها في تفاصيل طلبك هنا.</string>
     <string name="orderdetail_shipping_label_wip_title">طباعة ملصقات الشحن من جهازك!</string>
     <string name="orderdetail_shipping_label_reprint">إعادة طباعة ملصق الشحن</string>
@@ -191,7 +217,7 @@ Language: ar
     <string name="product_add_tag_error">حدث خطأ عند إضافة وسوم</string>
     <string name="product_add_tag_dialog_title">إضافة وسم</string>
     <string name="shipping_label_refund_progress_message">تتم معالجة عملية استرداد أموالك. يُرجى الانتظار…</string>
-    <string name="shipping_label_refund_success">تم إرسال عملية استرداد الأموال بنجاح</string>
+    <string name="shipping_label_refund_success">تم إرسال طلب استرداد الأموال بنجاح</string>
     <string name="shipping_label_refund_button">بطاقة عملية استرداد الأموال (-⁦%1$s⁩)</string>
     <string name="shipping_label_refund_amount_title">المبلغ الذي يستحق الاسترداد</string>
     <string name="shipping_label_refund_purchase_date_title">تاريخ الشراء</string>
@@ -216,8 +242,9 @@ Language: ar
     <string name="product_type_description">%s المنتج</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">المنتجات المتبقية</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">⁦%1$s⁩ تم استرداد البطاقة</string>
+    <string name="orderdetail_shipping_label_refund_title">تم طلب استرداد أموال ملصق ⁦%1$s⁩</string>
     <string name="orderdetail_shipping_label_tracking_info">تعقب الشحنة</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">إخفاء تفاصيل الشحن</string>
     <string name="orderdetail_shipping_label_item_show_shipping">عرض تفاصيل الشحن</string>
     <string name="orderdetail_shipping_label_item_payment_type">بطاقة إئتمان</string>
@@ -489,8 +516,6 @@ Language: ar
     <string name="orderdetail_refund_detail">%1$s عبر %2$s</string>
     <string name="settings_enable_v4_stats_title">إحصاءات مُحسَّنة</string>
     <string name="beta_features">ميزات بيتا</string>
-    <string name="orderdetail_net">صافٍ</string>
-    <string name="orderdetail_payment_paid_by_customer">يدفعه العميل</string>
     <string name="orderdetail_payment_summary_onhold">انتظار الدفع بواسطة %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s عبر %2$s</string>
     <string name="dashboard_state_no_data">لا توجد أي إيرادات في هذه الفترة</string>
@@ -1082,6 +1107,7 @@ Language: ar
     <string name="order_error_update_general">حدث خطأ أثناء تغيير الطلب</string>
     <string name="order_error_fetch_notes_generic">حدث خطأ أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
+    <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>
     <string name="orderdetail_add_note">إضافة ملاحظة</string>
     <string name="orderdetail_hide_billing">إخفاء الفوترة</string>
@@ -1133,7 +1159,6 @@ Language: ar
     <string name="dashboard_stats_granularity_months">شهور</string>
     <string name="dashboard_stats_granularity_weeks">أسابيع</string>
     <string name="dashboard_stats_granularity_days">أيام</string>
-    <string name="login_no_stores">لا يمكن العثور على متاجر WooCommerce\nتم الاتصال بهذا الحساب</string>
     <string name="login_with_a_different_account">تسجيل الدخول بحساب مختلف</string>
     <string name="login_nostores_content_description">لا توجد متاجر WooCommerce</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
