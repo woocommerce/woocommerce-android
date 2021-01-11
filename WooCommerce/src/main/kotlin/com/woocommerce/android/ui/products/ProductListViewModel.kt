@@ -372,12 +372,12 @@ class ProductListViewModel @AssistedInject constructor(
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
         object ShowAddProductBottomSheet : ProductListEvent()
-        object ShowProductSortingBottomSheet : Event()
+        object ShowProductSortingBottomSheet : ProductListEvent()
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
             val productStatusFilter: String?
-        ) : Event()
+        ) : ProductListEvent()
     }
 
     @AssistedInject.Factory
