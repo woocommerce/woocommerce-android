@@ -285,9 +285,7 @@ class ProductListViewModel @AssistedInject constructor(
             isLoading = true,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
-            displaySortAndFilterCard = (
-                productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-                )
+            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
         )
 
         viewState = viewState.copy(
