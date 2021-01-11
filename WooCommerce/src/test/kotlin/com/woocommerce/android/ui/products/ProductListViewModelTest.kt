@@ -56,8 +56,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                         savedState,
                         coroutineDispatchers,
                         productRepository,
-                        networkStatus,
-                        prefs
+                        networkStatus
                 )
         )
     }
