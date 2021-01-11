@@ -88,6 +88,7 @@
     <string name="more_options">More options</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
+    <string name="please_wait">Please wait…</string>
     <!--
         Date/Time Labels
     -->
@@ -104,6 +105,7 @@
     <string name="error_cant_open_url">Unable to open the link</string>
     <string name="error_please_choose_browser">Error opening the default web browser. Please choose another app:</string>
     <string name="error_no_phone_app">No phone app was found</string>
+    <string name="error_no_gmaps_app">Google Maps app was found</string>
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
     <!--
@@ -138,6 +140,7 @@
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then %2$s</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, %2$s</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
+    <string name="login_not_wordpress_site">The website %1$s is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_refresh_app">refresh the app</string>
     <string name="login_refresh_app_continue">refresh the app to continue</string>
     <string name="login_refresh_app_progress">Checking for WooCommerce…</string>
@@ -292,7 +295,7 @@
     <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
-    <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
+    <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
@@ -357,6 +360,27 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_edit_address_name">Name</string>
+    <string name="shipping_label_edit_address_company">Company</string>
+    <string name="shipping_label_edit_address_phone">Phone</string>
+    <string name="shipping_label_edit_address_address">Address</string>
+    <string name="shipping_label_edit_address_city">City</string>
+    <string name="shipping_label_edit_address_state">State</string>
+    <string name="shipping_label_edit_address_zip">Zip / Postal Code</string>
+    <string name="shipping_label_edit_address_country">Country</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
+    <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Please wait…</string>
+    <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
+    <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
+    <string name="shipping_label_error_address_not_found">Address was not found</string>
+    <string name="shipping_label_error_address_house_number_missing">House number missing</string>
+    <string name="shipping_label_error_address_invalid_street">Invalid street</string>
+    <string name="shipping_label_error_required_field">Required field</string>
+    <string name="shipping_label_validation_error_template">Validation failed: %s</string>
+    <string name="shipping_label_validation_contact_customer">Contact Customer</string>
+    <string name="shipping_label_validation_view_map">Open Map</string>
 
     <!--
         Refunds
@@ -400,6 +424,7 @@
     </plurals>
     <string name="order_refunds_refund_info_title">Refunded products</string>
     <string name="order_refunds_shipping_refund_notice">You can refund shipping and tax amounts %s</string>
+    <string name="order_refunds_shipping_refund_notice_fees">You can refund fees, shipping and tax amounts %s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
         Add Order Note
@@ -934,7 +959,8 @@
     <string name="signup_with_email_button">Sign Up with Email</string>
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
-    
+
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
     <string name="send_verification_email">Send verification email</string>
@@ -1426,7 +1452,7 @@
     <string name="login_get_link_by_email">Get a login link by email</string>
     <string name="signup_magic_link_message">We’ve emailed you a signup link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
     <string name="signup_confirmation_magic_link_message">We’ll email you a signup link to create your new WordPress.com account.</string>
-    
+    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="login_site_address_help_title">What\'s my site address?</string>
     <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_find_your_site_adress">Find your site address</string>
@@ -1462,6 +1488,4 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
 </resources>
