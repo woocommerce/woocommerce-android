@@ -142,8 +142,18 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
-        triggerEvent(ShowAddProductBottomSheet)
+        launch {
+            cancelSearch()
+            
+            AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            triggerEvent(ShowAddProductBottomSheet)
+        }
+    }
+
+    private suspend fun cancelSearch() {
+        searchJob?.cancelAndJoin()
+        viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+        _productList.value = productRepository.getProductList()
     }
 
     fun onSearchOpened() {
