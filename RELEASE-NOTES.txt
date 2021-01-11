@@ -1,10 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+5.9
+-----
+ 
 5.8
 -----
 * [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
 * [*] Fixed a bug where the moderation buttons in the product review detail would be partially hidden for some locales [https://github.com/woocommerce/woocommerce-android/pull/3382]
- 
+
 5.7
 -----
 * [*] Fixed a bug where a selection made in a dialog was ignored (for example the shipping labels reprint paper size)

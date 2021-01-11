@@ -1,6 +1,3 @@
-- Remove images from product variations!
-- The app can open the email client on Android 11 during the magic link login process.
-- Bug fixes: variable products display when shipping labels are purchased; selections made in a dialog are honored.
-- Fees display on order payment details.
-- Passwordless logins supported.
-- Minor style improvements to the login screens.
+* [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
+* [*] Fixed a bug where the moderation buttons in the product review detail would be partially hidden for some locales [https://github.com/woocommerce/woocommerce-android/pull/3382]
+ 
