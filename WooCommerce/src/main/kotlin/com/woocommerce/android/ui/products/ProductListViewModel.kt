@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -43,8 +42,7 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus,
-    private val prefs: AppPrefs
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
