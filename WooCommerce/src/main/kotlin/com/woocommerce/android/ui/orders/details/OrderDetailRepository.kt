@@ -8,10 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -29,9 +31,9 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderNoteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -47,6 +49,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -57,7 +60,8 @@ class OrderDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
         private const val ACTION_TIMEOUT = 10L * 1000
@@ -174,16 +178,22 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderNote(
-        localOrderId: Int,
+        orderIdentifier: OrderIdentifier,
         remoteOrderId: Long,
-        noteModel: WCOrderNoteModel
+        noteModel: OrderNote
     ): Boolean {
         return try {
             continuationAddOrderNote?.cancel()
+            val order = orderStore.getOrderByIdentifier(orderIdentifier)
+            if (order == null) {
+                WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
+                return false
+            }
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationAddOrderNote = it
 
-                val payload = PostOrderNotePayload(localOrderId, remoteOrderId, selectedSite.get(), noteModel)
+                val dataModel = noteModel.toDataModel()
+                val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
                 dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
             } ?: false
         } catch (e: CancellationException) {
@@ -193,11 +203,10 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun addOrderShipmentTracking(
-        localOrderId: Int,
-        remoteOrderId: Long,
-        shipmentTrackingModel: WCOrderShipmentTrackingModel,
-        isCustomProvider: Boolean
+        orderIdentifier: OrderIdentifier,
+        shipmentTrackingModel: OrderShipmentTracking
     ): Boolean {
+        val orderIdSet = orderIdentifier.toIdSet()
         return try {
             continuationAddShipmentTracking?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
@@ -205,15 +214,15 @@ class OrderDetailRepository @Inject constructor(
 
                 val payload = AddOrderShipmentTrackingPayload(
                     selectedSite.get(),
-                    localOrderId,
-                    remoteOrderId,
-                    shipmentTrackingModel,
-                    isCustomProvider
+                    orderIdSet.id,
+                    orderIdSet.remoteOrderId,
+                    shipmentTrackingModel.toDataModel(),
+                    shipmentTrackingModel.isCustomProvider
                 )
                 dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
             } ?: false
         } catch (e: CancellationException) {
-            WooLog.e(ORDERS, "CancellationException while adding shipment tracking $remoteOrderId")
+            WooLog.e(ORDERS, "CancellationException while adding shipment tracking ${orderIdSet.remoteOrderId}")
             false
         }
     }
@@ -256,8 +265,13 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun getProductsByRemoteIds(remoteIds: List<Long>) =
-        productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
+    fun getProductsByRemoteIds(remoteIds: List<Long>): List<WCProductModel> {
+        return if (remoteIds.isNotEmpty()) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
+        } else {
+            emptyList()
+        }
+    }
 
     fun getOrderRefunds(remoteOrderId: Long) = refundStore
         .getAllRefunds(selectedSite.get(), remoteOrderId)
@@ -277,6 +291,15 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId).map { it.toAppModel() }
+
+    fun getWooServicesPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getWooCommerceServicesPluginInfo(selectedSite.get())
+        return WooPlugin(info != null, info?.active ?: false)
+    }
+
+    fun getStoreCountryCode(): String? {
+        return wooCommerceStore.getStoreCountryCode(selectedSite.get())
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)

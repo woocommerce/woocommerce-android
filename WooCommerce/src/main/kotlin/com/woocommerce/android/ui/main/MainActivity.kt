@@ -5,13 +5,13 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +26,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.extensions.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.extensions.active
@@ -64,8 +65,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.view_toolbar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -88,6 +87,7 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
+        private const val KEY_IS_TOOLBAR_EXPANDED = "is-toolbar-expanded"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
 
@@ -128,8 +128,10 @@ class MainActivity : AppUpgradeActivity(),
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
     private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
 
-    private lateinit var bottomNavView: MainBottomNavigationView
     private lateinit var navController: NavController
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var toolbar: Toolbar
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
@@ -155,13 +157,17 @@ class MainActivity : AppUpgradeActivity(),
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // we have to use findViewById rather than view binding for the toolbar since it's an included layout
+        toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
         presenter.takeView(this)
 
-        bottomNavView = bottom_nav.also { it.init(supportFragmentManager, this) }
+        binding.bottomNav.also { it.init(supportFragmentManager, this) }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -203,14 +209,14 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // detect when the collapsible toolbar if fully expanded
-        app_bar_layout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+        binding.appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             if (isAtNavigationRoot()) {
                 isToolbarExpanded = (verticalOffset == 0)
             }
         })
 
         // see overridden onChildViewAdded() and onChildViewRemoved() below
-        app_bar_layout.setOnHierarchyChangeListener(this)
+        binding.appBarLayout.setOnHierarchyChangeListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -224,22 +230,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun showProgressDialog(@StringRes stringId: Int) {
         hideProgressDialog()
         progressDialog = ProgressDialog.show(this, "", getString(stringId), true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // don't show the options menu unless we're at the root
-        if (isAtNavigationRoot()) {
-            menuInflater.inflate(R.menu.menu_action_bar, menu)
-            return true
-        } else {
-            return false
-        }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        // settings icon only appears on the dashboard
-        menu?.findItem(R.id.menu_settings)?.isVisible = bottomNavView.currentPosition == MY_STORE
-        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onResume() {
@@ -265,20 +255,23 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_BOTTOM_NAV_POSITION, bottomNavView.currentPosition.id)
+        outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
+        outState.putBoolean(KEY_IS_TOOLBAR_EXPANDED, isToolbarExpanded)
         super.onSaveInstanceState(outState)
     }
 
     private fun restoreSavedInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.also {
             val id = it.getInt(KEY_BOTTOM_NAV_POSITION, MY_STORE.id)
-            bottomNavView.restoreSelectedItemState(id)
+            binding.bottomNav.restoreSelectedItemState(id)
 
             val count = it.getInt(KEY_UNFILLED_ORDER_COUNT)
             if (count > 0) {
                 showOrderBadge(count)
             }
+
+            isToolbarExpanded = it.getBoolean(KEY_IS_TOOLBAR_EXPANDED)
         }
     }
 
@@ -298,10 +291,20 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (bottomNavView.currentPosition != MY_STORE) {
-            bottomNavView.currentPosition = MY_STORE
+        if (binding.bottomNav.currentPosition != MY_STORE) {
+            binding.bottomNav.currentPosition = MY_STORE
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -340,7 +343,7 @@ class MainActivity : AppUpgradeActivity(),
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
     internal fun getActiveTopLevelFragment(): TopLevelFragment? {
-        val tag = bottomNavView.currentPosition.getTag()
+        val tag = binding.bottomNav.currentPosition.getTag()
         return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
 
@@ -378,17 +381,17 @@ class MainActivity : AppUpgradeActivity(),
 
         // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
         if (isTopLevelNavigation) {
-            container.visibility = View.VISIBLE
+            binding.container.visibility = View.VISIBLE
         } else {
-            container.visibility = View.INVISIBLE
+            binding.container.visibility = View.INVISIBLE
         }
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            app_bar_layout.elevation = 0f
+            binding.appBarLayout.elevation = 0f
             showCrossIcon = false
         } else {
-            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
                 R.id.productShippingClassFragment,
@@ -406,7 +409,7 @@ class MainActivity : AppUpgradeActivity(),
                 }
                 R.id.productDetailFragment -> {
                     // show Cross icon only when product detail isn't opened from the product list
-                    bottomNavView.currentPosition != PRODUCTS
+                    binding.bottomNav.currentPosition != PRODUCTS
                 }
                 else -> {
                     false
@@ -429,12 +432,12 @@ class MainActivity : AppUpgradeActivity(),
             // the image viewers should be shown full screen
             if (isFullScreenFragment) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                restoreToolbarHeight = collapsing_toolbar.layoutParams.height
-                collapsing_toolbar.layoutParams.height = 0
+                restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
+                binding.collapsingToolbar.layoutParams.height = 0
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 if (restoreToolbarHeight > 0) {
-                    collapsing_toolbar.layoutParams.height = restoreToolbarHeight
+                    binding.collapsingToolbar.layoutParams.height = restoreToolbarHeight
                     restoreToolbarHeight = 0
                 }
             }
@@ -458,9 +461,9 @@ class MainActivity : AppUpgradeActivity(),
 
         if (!isFullScreenFragment) {
             // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-            if (isAtRoot && isToolbarExpanded) {
-                expandToolbar(expand = true, animate = true)
-            } else if (!isAtRoot) {
+            if (isAtRoot) {
+                expandToolbar(expand = isToolbarExpanded, animate = false)
+            } else {
                 expandToolbar(expand = false, animate = false)
             }
 
@@ -473,20 +476,20 @@ class MainActivity : AppUpgradeActivity(),
 
     override fun setTitle(title: CharSequence?) {
         super.setTitle(title)
-        collapsing_toolbar.title = title
+        binding.collapsingToolbar.title = title
     }
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
-        app_bar_layout.setExpanded(expand, animate)
+        binding.appBarLayout.setExpanded(expand, animate)
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
         if (!enable) {
             toolbar.title = title
         }
-        collapsing_toolbar.isTitleEnabled = enable
+        binding.collapsingToolbar.isTitleEnabled = enable
 
-        val params = (app_bar_layout.layoutParams as CoordinatorLayout.LayoutParams)
+        val params = (binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams)
         params.behavior = if (enable) {
             toolbarEnabledBehavior
         } else {
@@ -508,23 +511,6 @@ class MainActivity : AppUpgradeActivity(),
         val activeChild = getHostChildFragment()
         val activeChildIsRoot = activeChild != null && activeChild is RootFragment
         return (isDialogDestination && activeChildIsRoot) || isAtRoot
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            // User clicked the "up" button in the action bar
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            // User selected the settings menu option
-            R.id.menu_settings -> {
-                showSettingsScreen()
-                AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
@@ -577,6 +563,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showSettingsScreen() {
+        AnalyticsTracker.track(Stat.MAIN_MENU_SETTINGS_TAPPED)
         val intent = Intent(this, AppSettingsActivity::class.java)
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
@@ -590,8 +577,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // Complete UI initialization
-
-        bottomNavView.init(supportFragmentManager, this)
+        binding.bottomNav.init(supportFragmentManager, this)
         initFragment(null)
     }
 
@@ -631,29 +617,29 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun hideReviewsBadge() {
-        bottomNavView.showReviewsBadge(false)
+        binding.bottomNav.showReviewsBadge(false)
         NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
     }
 
     override fun showReviewsBadge() {
-        bottomNavView.showReviewsBadge(true)
+        binding.bottomNav.showReviewsBadge(true)
     }
 
     override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
         if (hideCountUntilComplete) {
-            bottomNavView.clearOrderBadgeCount()
+            binding.bottomNav.clearOrderBadgeCount()
         }
         presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {
         unfilledOrderCount = count
-        bottomNavView.setOrderBadgeCount(count)
+        binding.bottomNav.setOrderBadgeCount(count)
     }
 
     override fun hideOrderBadge() {
         unfilledOrderCount = 0
-        bottomNavView.setOrderBadgeCount(0)
+        binding.bottomNav.setOrderBadgeCount(0)
     }
 
     override fun fetchRevenueStatsAvailability(site: SiteModel) {
@@ -697,6 +683,7 @@ class MainActivity : AppUpgradeActivity(),
         // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
         if (isAtNavigationRoot()) {
             getActiveTopLevelFragment()?.scrollToTop()
+            expandToolbar(expand = true, animate = true)
         } else {
             navigateToRoot()
         }
@@ -731,7 +718,7 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationChannelType.valueOf(it.toUpperCase(Locale.US))
                 } ?: NotificationChannelType.REVIEW
 
-                bottomNavView.currentPosition = when (notificationChannelType) {
+                binding.bottomNav.currentPosition = when (notificationChannelType) {
                     NotificationChannelType.NEW_ORDER -> ORDERS
                     else -> REVIEWS
                 }
@@ -748,7 +735,7 @@ class MainActivity : AppUpgradeActivity(),
 
                 // leave the Main activity showing the Dashboard tab, so when the user comes back from Help & Support,
                 // the app is in the right section
-                bottomNavView.currentPosition = MY_STORE
+                binding.bottomNav.currentPosition = MY_STORE
 
                 // launch 'Tickets' page of Zendesk
                 startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
@@ -771,20 +758,20 @@ class MainActivity : AppUpgradeActivity(),
                     NotificationHandler.removeAllNotificationsFromSystemBar(this)
 
                     // Just open the notifications tab
-                    bottomNavView.currentPosition = REVIEWS
+                    binding.bottomNav.currentPosition = REVIEWS
                 }
             }
         } else {
-            bottomNavView.currentPosition = MY_STORE
+            binding.bottomNav.currentPosition = MY_STORE
         }
     }
     // endregion
 
     override fun showOrderList(orderStatusFilter: String?) {
         showBottomNav()
-        bottomNavView.updatePositionAndDeferInit(ORDERS)
+        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
 
-        val fragment = bottomNavView.getFragment(ORDERS)
+        val fragment = binding.bottomNav.getFragment(ORDERS)
         (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
     }
 
@@ -835,8 +822,8 @@ class MainActivity : AppUpgradeActivity(),
         // make sure the review tab is active if the user came here from a notification
         if (launchedFromNotification) {
             showBottomNav()
-            bottomNavView.currentPosition = REVIEWS
-            bottom_nav.active(REVIEWS.position)
+            binding.bottomNav.currentPosition = REVIEWS
+            binding.bottomNav.active(REVIEWS.position)
         }
 
         val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
@@ -867,10 +854,10 @@ class MainActivity : AppUpgradeActivity(),
         remoteNoteId: Long,
         markComplete: Boolean
     ) {
-        if (bottomNavView.currentPosition != ORDERS) {
-            bottomNavView.currentPosition = ORDERS
+        if (binding.bottomNav.currentPosition != ORDERS) {
+            binding.bottomNav.currentPosition = ORDERS
             val navPos = ORDERS.position
-            bottom_nav.active(navPos)
+            binding.bottomNav.active(navPos)
         }
 
         if (markComplete) {
@@ -896,7 +883,7 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun updateOfflineStatusBar(isConnected: Boolean) {
-        if (isConnected) offline_bar.hide() else offline_bar.show()
+        if (isConnected) binding.offlineBar.hide() else binding.offlineBar.show()
     }
 
     private fun checkConnection() {
@@ -906,14 +893,14 @@ class MainActivity : AppUpgradeActivity(),
     override fun hideBottomNav() {
         if (isBottomNavShowing) {
             isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(bottom_nav, false, Duration.MEDIUM)
+            WooAnimUtils.animateBottomBar(binding.bottomNav, false, Duration.MEDIUM)
         }
     }
 
     override fun showBottomNav() {
         if (!isBottomNavShowing) {
             isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(bottom_nav, true, Duration.SHORT)
+            WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
         }
     }
 
@@ -962,11 +949,13 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun onChildViewAdded(parent: View?, child: View?) {
         parent?.postDelayed({
-            app_bar_layout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
         }, 100L)
     }
 
     override fun onChildViewRemoved(parent: View?, child: View?) {
-        app_bar_layout.elevation = 0f
+        parent?.postDelayed({
+            binding.appBarLayout.elevation = 0f
+        }, 100L)
     }
 }

@@ -8,10 +8,9 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -31,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_PRIVACY_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_SELECTED_SITE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SETTING_CHANGE
+import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
@@ -44,10 +44,9 @@ import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_settings_main.*
 import javax.inject.Inject
 
-class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContract.View {
+class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
     companion object {
         const val TAG = "main-settings"
         private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
@@ -56,6 +55,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
+
+    private var _binding: FragmentSettingsMainBinding? = null
+    private val binding get() = _binding!!
 
     interface AppSettingsListener {
         fun onRequestLogout()
@@ -70,31 +72,25 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         super.onAttach(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_settings_main, container, false)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        _binding = FragmentSettingsMainBinding.bind(view)
 
         if (activity is AppSettingsListener) {
             settingsListener = activity as AppSettingsListener
         } else {
             throw ClassCastException(context.toString() + " must implement AppSettingsListener")
         }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
 
         updateStoreViews()
 
-        btn_option_logout.setOnClickListener {
+        binding.btnOptionLogout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_LOGOUT_BUTTON_TAPPED)
             settingsListener.onRequestLogout()
         }
 
-        with(settingsHiring) {
+        with(binding.settingsHiring) {
             val hiringText = getString(R.string.settings_hiring)
             val settingsFooterText = getString(R.string.settings_footer, hiringText)
             val spannable = SpannableString(settingsFooterText)
@@ -111,9 +107,9 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        option_image_optimization.visibility = View.VISIBLE
-        option_image_optimization.isChecked = AppPrefs.getImageOptimizationEnabled()
-        option_image_optimization.setOnCheckedChangeListener { _, isChecked ->
+        binding.optionImageOptimization.visibility = View.VISIBLE
+        binding.optionImageOptimization.isChecked = AppPrefs.getImageOptimizationEnabled()
+        binding.optionImageOptimization.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     SETTINGS_IMAGE_OPTIMIZATION_TOGGLED,
                     mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
@@ -121,86 +117,86 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
-        option_help_and_support.setOnClickListener {
+        binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(Stat.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
             startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            container_notifs_old.visibility = View.GONE
-            container_notifs_new.visibility = View.VISIBLE
-            option_notifications.setOnClickListener {
+            binding.containerNotifsOld.visibility = View.GONE
+            binding.containerNotifsNew.visibility = View.VISIBLE
+            binding.optionNotifications.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
                 showDeviceAppNotificationSettings()
             }
         } else {
-            container_notifs_old.visibility = View.VISIBLE
-            container_notifs_new.visibility = View.GONE
+            binding.containerNotifsOld.visibility = View.VISIBLE
+            binding.containerNotifsNew.visibility = View.GONE
 
-            option_notifs_orders.isChecked = AppPrefs.isOrderNotificationsEnabled()
-            option_notifs_orders.setOnCheckedChangeListener { _, isChecked ->
+            binding.optionNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
+            binding.optionNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
                 AppPrefs.setOrderNotificationsEnabled(isChecked)
-                option_notifs_tone.isEnabled = isChecked
+                binding.optionNotifsTone.isEnabled = isChecked
             }
 
-            option_notifs_reviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
-            option_notifs_reviews.setOnCheckedChangeListener { _, isChecked ->
+            binding.optionNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
+            binding.optionNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
                 AppPrefs.setReviewNotificationsEnabled(isChecked)
             }
 
-            option_notifs_tone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
-            option_notifs_tone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
-            option_notifs_tone.setOnCheckedChangeListener { _, isChecked ->
+            binding.optionNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
+            binding.optionNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
+            binding.optionNotifsTone.setOnCheckedChangeListener { _, isChecked ->
                 trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
                 AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
             }
         }
 
-        option_beta_features.setOnClickListener {
+        binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_betaFeaturesFragment)
         }
 
-        option_beta_features.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
+        binding.optionBetaFeatures.optionValue = getString(R.string.settings_enable_product_adding_teaser_title)
 
         // No beta features currently available
-        option_beta_features.hide()
+        binding.optionBetaFeatures.hide()
 
-        option_privacy.setOnClickListener {
+        binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
         }
 
-        option_send_feedback.setOnClickListener {
+        binding.optionSendFeedback.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_feedbackSurveyFragment)
         }
 
-        option_about.setOnClickListener {
+        binding.optionAbout.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_aboutFragment)
         }
 
-        option_licenses.setOnClickListener {
+        binding.optionLicenses.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED)
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
         if (presenter.hasMultipleStores()) {
-            option_store.setOnClickListener {
+            binding.optionStore.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_SELECTED_SITE_TAPPED)
                 SitePickerActivity.showSitePickerForResult(this)
             }
 
             // advertise the site switcher if we haven't already
-            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, option_store)
+            WCPromoTooltip.showIfNeeded(Feature.SITE_SWITCHER, binding.optionStore)
         }
 
-        option_theme.optionValue = getString(AppPrefs.getAppTheme().label)
-        option_theme.setOnClickListener {
+        binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
+        binding.optionTheme.setOnClickListener {
             // FIXME AMANDA tracks event
             showThemeChooser()
         }
@@ -211,6 +207,11 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
         AnalyticsTracker.trackViewShown(this)
 
         activity?.setTitle(R.string.settings)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -238,8 +239,8 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
     }
 
     private fun updateStoreViews() {
-        option_store.optionTitle = presenter.getStoreDomainName()
-        option_store.optionValue = presenter.getUserDisplayName()
+        binding.optionStore.optionTitle = presenter.getStoreDomainName()
+        binding.optionStore.optionValue = presenter.getUserDisplayName()
     }
 
     /**
@@ -262,7 +263,7 @@ class MainSettingsFragment : androidx.fragment.app.Fragment(), MainSettingsContr
                 .setSingleChoiceItems(valuesArray, currentTheme.ordinal) { dialog, which ->
                     val selectedTheme = ThemeOption.values()[which]
                     AppThemeUtils.setAppTheme(selectedTheme)
-                    option_theme?.optionValue = getString(selectedTheme.label)
+                    binding.optionTheme.optionValue = getString(selectedTheme.label)
                     dialog.dismiss()
                 }
                 .show()

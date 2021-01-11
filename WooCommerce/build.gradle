@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "5.6.3"
+            versionName "5.7"
         }
-        versionCode 185
+        versionCode 189
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -59,6 +59,10 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     compileOptions {
@@ -276,6 +280,8 @@ dependencies {
 
     implementation "org.apache.commons:commons-lang3:3.9"
     implementation "org.apache.commons:commons-text:1.8"
+
+    implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

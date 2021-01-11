@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.extensions.areSameProductsAs
 import com.woocommerce.android.model.Product
 
@@ -19,7 +21,15 @@ class GroupedProductListAdapter(
 
     override fun getItemCount() = productList.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ProductItemViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemViewHolder {
+        return ProductItemViewHolder(
+            ProductListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
 
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = productList[position]

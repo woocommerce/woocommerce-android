@@ -2,57 +2,54 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentAboutBinding
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.android.synthetic.main.fragment_about.*
 import org.wordpress.android.util.DisplayUtils
 import java.util.Calendar
 
-class AboutFragment : androidx.fragment.app.Fragment() {
+class AboutFragment : Fragment(R.layout.fragment_about) {
     companion object {
         const val TAG = "about"
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_about, container, false)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        val binding = FragmentAboutBinding.bind(view)
 
         val isLandscape = DisplayUtils.isLandscape(activity)
-        about_image.visibility = if (isLandscape) {
+        binding.aboutImage.visibility = if (isLandscape) {
             View.GONE
         } else {
             View.VISIBLE
         }
 
         val version = String.format(getString(R.string.about_version), BuildConfig.VERSION_NAME)
-        about_version.text = version
+        binding.aboutVersion.text = version
 
         val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
-        about_copyright.text = copyright
+        binding.aboutCopyright.text = copyright
 
-        about_url.setOnClickListener {
+        binding.aboutUrl.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_HOME)
         }
 
-        about_privacy.setOnClickListener {
+        binding.aboutPrivacy.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
         }
 
-        about_privacy_ca.setOnClickListener {
+        binding.aboutPrivacyCa.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY_CA)
         }
 
-        about_tos.setOnClickListener {
+        binding.aboutTos.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_TOS)
         }
     }

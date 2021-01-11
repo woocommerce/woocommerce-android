@@ -27,6 +27,7 @@
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="order_total">Order total</string>
     <string name="shipping">Shipping</string>
+    <string name="edit">Edit</string>
     <string name="payment">Payment</string>
     <string name="taxes">Taxes</string>
     <string name="subtotal">Subtotal</string>
@@ -130,7 +131,7 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">Unable to find WooCommerce stores\nconnected to this account</string>
+    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account. You\'ll need to install and connect the free Jetpack plugin on your WooCommerce stores to use this app.</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
@@ -144,6 +145,7 @@
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_required_text">To use this app for %1$s you\'ll need to have the Jetpack plugin connected on your store.</string>
     <string name="login_jetpack_view_instructions">Learn how to install and connect Jetpack</string>
+    <string name="login_jetpack_view_instructions_alt">Learn more about connecting Jetpack</string>
     <string name="login_jetpack_view_setup_instructions">View setup instructions</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -236,13 +238,14 @@
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
-    <string name="orderdetail_payment_paid_by_customer">Paid by customer</string>
+    <string name="orderdetail_payment_paid_by_customer">Paid</string>
     <string name="orderdetail_refunded">Refunded</string>
     <string name="orderdetail_refunded_products">Refunded products</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
-    <string name="orderdetail_net">Net</string>
+    <string name="orderdetail_net">Net Payment</string>
     <string name="orderdetail_discount_items">(%1$s)</string>
     <string name="orderdetail_refund_amount" translatable="false">-%1$s</string>
+    <string name="orderdetail_payment_fees">Fees</string>
     <string name="orderdetail_customer_provided_note">Customer provided note</string>
     <string name="orderdetail_customer_image_contentdesc">Customer profile image</string>
     <string name="orderdetail_note_hint">Compose an order note</string>
@@ -274,17 +277,22 @@
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Track shipment</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s label refunded</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label refund requested</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
     <string name="orderdetail_shipping_label_request_refund">Request a refund</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Remaining products</string>
     <string name="orderdetail_shipping_label_reprint">Reprint shipping label</string>
     <string name="orderdetail_shipping_label_wip_title">Print shipping labels from your device!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Create shipping labels from your device!!</string>
     <string name="orderdetail_shipping_label_wip_message">We are working on making it easier for you to print shipping labels directly from you device! For now, if you have created shipping labels for this order in your store admin with WooCommerce Shipping, you can print them in your Order Details here.</string>
-    <string name="order_begin_fulfillment">Mark order complete</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">You can now create shipping labels for all physical orders directly from your device with the free WooCommerce Shipping plugin. Tap on “Create shipping label” to try it!</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
+    <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your phone</string>
+    <string name="order_mark_complete">Mark order complete</string>
+    <string name="order_fulfill_mark_complete">Mark Order Complete</string>
     <string name="order_fulfill_marked_complete">Order Marked Complete</string>
     <string name="order_status_changed_to">Order status changed to %s</string>
-    <string name="order_error_fetch_notes_generic">Error fetching error notes</string>
+    <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_fetch_generic">Error fetching order</string>
     <string name="order_shipment_tracking">Tracking</string>
@@ -305,7 +313,7 @@
     <string name="shipping_label_refund_purchase_date_title">Purchase date</string>
     <string name="shipping_label_refund_amount_title">Amount eligible for refund</string>
     <string name="shipping_label_refund_button">Refund label (-%1$s)</string>
-    <string name="shipping_label_refund_success">Refund was successfully submitted</string>
+    <string name="shipping_label_refund_success">Refund request was successfully submitted</string>
     <string name="shipping_label_refund_progress_message">Your refund is being processed. Please wait…</string>
 
     <!--
@@ -334,6 +342,21 @@
     <string name="print_shipping_label_info_step_3">You can select your device\'s &lt;b&gt;default print service&lt;/b&gt; or install your &lt;b&gt;printer\'s brand app&lt;/b&gt; (this should appear as a recommended option)</string>
     <string name="print_shipping_label_info_step_4">You might have to &lt;b&gt;configure WiFi printing directly on the printer itself.&lt;/b&gt; Make sure the printer firmware is updated and see your printer documentation for instructions.</string>
     <string name="print_shipping_label_info_step_5">If you are still experiencing issues printing from your device, you can &lt;b&gt;save your label as PDF&lt;/b&gt; and send it by email to print it from another device.</string>
+
+    <!--
+        Create shipping labels
+    -->
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_heading">Save time and money by fulfilling with WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_message">Cut the post office line by printing shipping labels at home with your phone at discounted rates!</string>
+    <string name="shipping_label_more_information_link">Learn more</string>
+    <string name="shipping_label_create_title">Create shipping label</string>
+    <string name="shipping_label_create_packaging_details">Packaging details</string>
+    <string name="shipping_label_create_packaging_details_description">Select the type of packaging you\’d like to ship your items in</string>
+    <string name="shipping_label_create_customs">Customs</string>
+    <string name="shipping_label_create_customs_description">Fill out customs form</string>
+    <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
+    <string name="shipping_label_create_payment_description">Add a new credit card</string>
 
     <!--
         Refunds
@@ -387,6 +410,8 @@
     <string name="add_order_note_added">Order note added</string>
     <string name="add_order_note_error">Unable to add note</string>
     <string name="add_order_note_invalid_order">Invalid order</string>
+    <string name="add_order_note_progress_title">Adding note</string>
+    <string name="add_order_note_progress_message">Please wait</string>
 
     <!--
     Order List Tab Labels
@@ -433,6 +458,9 @@
     <string name="order_shipment_tracking_empty_custom_provider_name">Please enter a carrier name</string>
     <string name="order_shipment_tracking_custom_provider_section_title">Custom</string>
     <string name="order_shipment_tracking_custom_provider_section_name">Custom Carrier</string>
+    <string name="order_shipment_tracking_progress_title">Adding tracking</string>
+    <string name="order_shipment_tracking_progress_message">Please wait</string>
+
     <!--
         Notifications
     -->
@@ -691,6 +719,7 @@
     -->
     <string name="variation_detail_fetch_variation_error">Error fetching variation</string>
     <string name="variation_detail_update_variation_error">Error updating variation</string>
+    <string name="variation_detail_update_variation_image_error">Sorry, image removal on product variations is supported in WooCommerce 4.7 or greater.</string>
     <string name="variation_detail_update_product_success">Variation updated</string>
     <string name="variation_detail_price_warning">Variations without price won\'t be shown in your store</string>
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
@@ -906,7 +935,7 @@
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
 
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to %1$s</string>
+    <string name="enter_email_for_site">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
     <string name="send_verification_email">Send verification email</string>
@@ -1398,7 +1427,7 @@
     <string name="login_get_link_by_email">Get a login link by email</string>
     <string name="signup_magic_link_message">We’ve emailed you a signup link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
     <string name="signup_confirmation_magic_link_message">We’ll email you a signup link to create your new WordPress.com account.</string>
-    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
+    
     <string name="login_site_address_help_title">What\'s my site address?</string>
     <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_find_your_site_adress">Find your site address</string>
@@ -1434,4 +1463,5 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
+    <string name="enter_email_wordpress_com">Log in to WordPress.com using an email address to manage all your WordPress sites.</string>
 </resources>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 13:54:03+0000
+Translation-Revision-Date: 2020-12-24 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Lo sentimos, la eliminación de imágenes en las variaciones de productos solo es compatible con WooCommerce 4.7 o versiones superiores.</string>
+    <string name="order_shipment_tracking_progress_message">Espera</string>
+    <string name="order_shipment_tracking_progress_title">Añadiendo el seguimiento</string>
+    <string name="add_order_note_progress_message">Espera</string>
+    <string name="add_order_note_progress_title">Añadiendo la nota</string>
+    <string name="shipping_label_create_payment_description">Añadir una nueva tarjeta de crédito</string>
+    <string name="shipping_label_create_carrier_description">Selecciona la empresa de transporte y las tarifas</string>
+    <string name="shipping_label_create_customs_description">Rellena los formularios de aduanas</string>
+    <string name="shipping_label_create_customs">Aduanas</string>
+    <string name="shipping_label_create_packaging_details_description">Selecciona el tipo de paquete que usarás para enviar tus artículos</string>
+    <string name="shipping_label_create_packaging_details">Detalles del paquete</string>
+    <string name="shipping_label_create_title">Crear etiqueta de envío</string>
+    <string name="shipping_label_more_information_link">Más información</string>
+    <string name="shipping_label_more_information_message">Acorta la espera en la oficina de correos imprimiendo las etiquetas de envío en casa con tu teléfono por un precio más bajo.</string>
+    <string name="shipping_label_more_information_heading">Ahorra tiempo y dinero con los envíos de WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Marcar el pedido como completado</string>
+    <string name="orderdetail_shipping_label_notice">Obtén más información sobre la creación de etiquetas con tu teléfono</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Crear etiqueta de envío</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Ahora puedes crear etiquetas de envío para todos los pedidos físicos directamente desde tu dispositivo con el plugin gratuito de WooCommerce Shipping. ¡Toca \"Crear etiqueta de envío\" para probarlo!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">¡Crea etiquetas de envío desde tu dispositivo!</string>
+    <string name="orderdetail_payment_fees">Tasas</string>
+    <string name="orderdetail_net">Pago neto</string>
+    <string name="orderdetail_payment_paid_by_customer">Pagado</string>
+    <string name="login_jetpack_view_instructions_alt">Más información sobre la conexión con Jetpack</string>
+    <string name="login_no_stores">No hemos encontrado tiendas WooCommerce conectadas a esta cuenta. Para utilizar esta aplicación necesitarás instalar y conectar el plugin gratuito de Jetpack en tus tiendas de WooCommerce.</string>
+    <string name="edit">Editar</string>
     <string name="product_images_validate_drag_and_drop">Validar</string>
     <string name="product_images_drag_and_drop_description">Arrastrar y soltar para reordenar fotos</string>
     <string name="product_downloadable_files_download_settings">Ajustes de descarga</string>
@@ -86,7 +113,6 @@ Language: es
     <string name="shipping_label_paper_size">Tamaño del papel</string>
     <string name="shipping_label_print_disclaimer">Si ya has usado la etiqueta en un paquete, imprimirla y usarla de nuevo es una violación de nuestros términos y condiciones.</string>
     <string name="shipping_label_print_error_message">Si hay un problema de impresión cuando compres la etiqueta puedes imprimirla de nuevo.</string>
-    <string name="order_begin_fulfillment">Marcar el pedido como completado</string>
     <string name="orderdetail_shipping_label_wip_message">Estamos trabajando para que sea más sencillo imprimir etiquetas directamente con tu dispositivo. Por ahora, si has creado etiquetas de envío para este pedido en la administración de tu tienda con WooCommerce Shipping, puedes imprimirlas desde Detalles del pedido.</string>
     <string name="orderdetail_shipping_label_wip_title">¡Imprime etiquetas de envío desde tu dispositivo!</string>
     <string name="orderdetail_shipping_label_reprint">Volver a imprimir la etiqueta de envío</string>
@@ -191,7 +217,7 @@ Language: es
     <string name="product_add_tag_error">Se ha producido un error al añadir etiquetas</string>
     <string name="product_add_tag_dialog_title">Añadiendo etiqueta</string>
     <string name="shipping_label_refund_progress_message">Tu reembolso se está procesando Por favor, espera…</string>
-    <string name="shipping_label_refund_success">El reembolso se ha enviado correctamente</string>
+    <string name="shipping_label_refund_success">La solicitud de reembolso se ha enviado correctamente</string>
     <string name="shipping_label_refund_button">Etiqueta de reembolso (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Cantidad elegible para el reembolso</string>
     <string name="shipping_label_refund_purchase_date_title">Fecha de compra</string>
@@ -216,8 +242,9 @@ Language: es
     <string name="product_type_description">%s producto</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Productos restantes</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s etiqueta reembolsada</string>
+    <string name="orderdetail_shipping_label_refund_title">Se ha solicitado la etiqueta de reembolso a %1$s</string>
     <string name="orderdetail_shipping_label_tracking_info">Hacer un seguimiento del envío</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Esconder los detalles del envío</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Mostrar los detalles del envío</string>
     <string name="orderdetail_shipping_label_item_payment_type">Tarjeta de crédito</string>
@@ -489,8 +516,6 @@ Language: es
     <string name="orderdetail_refund_detail">%1$s a través de %2$s</string>
     <string name="settings_enable_v4_stats_title">Mejora de las estadísticas</string>
     <string name="beta_features">Funciones beta</string>
-    <string name="orderdetail_net">Red</string>
-    <string name="orderdetail_payment_paid_by_customer">Pagado por el cliente</string>
     <string name="orderdetail_payment_summary_onhold">Pago pendiente a través de %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s a través de %2$s</string>
     <string name="dashboard_state_no_data">Sin ingresos durante este periodo</string>
@@ -1082,6 +1107,7 @@ Language: es
     <string name="order_error_update_general">Se ha producido un error al cambiar el pedido</string>
     <string name="order_error_fetch_notes_generic">Se ha producido un error al obtener las notas de error</string>
     <string name="order_fulfill_marked_complete">El pedido se ha marcado como completado.</string>
+    <string name="order_fulfill_mark_complete">Marcar el pedido como completado</string>
     <string name="orderdetail_addnote_contentdesc">Añadir una nota de pedido</string>
     <string name="orderdetail_add_note">Añadir una nota</string>
     <string name="orderdetail_hide_billing">Ocultar facturación</string>
@@ -1133,7 +1159,6 @@ Language: es
     <string name="dashboard_stats_granularity_months">Meses</string>
     <string name="dashboard_stats_granularity_weeks">Semanas</string>
     <string name="dashboard_stats_granularity_days">Días</string>
-    <string name="login_no_stores">No se han podido encontrar tiendas WooCommerce.\nse ha conectado a esta cuenta</string>
     <string name="login_with_a_different_account">Acceder con otra cuenta</string>
     <string name="login_nostores_content_description">No hay tiendas WooCommerce</string>
     <string name="login_avatar_content_description">Tu foto de perfil</string>

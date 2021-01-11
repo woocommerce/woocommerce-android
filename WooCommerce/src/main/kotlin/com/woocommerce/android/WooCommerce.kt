@@ -298,7 +298,7 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             zendeskHelper.reset()
 
             // Wipe user-specific preferences
-            prefs.reset()
+            prefs.resetUserPreferences()
         } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             // make sure local usage tracking matches the account setting
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats

@@ -190,8 +190,10 @@
             android:id="@+id/imageHeart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_vertical"
             android:importantForAccessibility="no"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="0dp"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_gridicons_heart_outline" />
 
@@ -200,11 +202,12 @@
             style="@style/Woo.TextView.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/minor_00"
             android:gravity="center_vertical"
-            android:paddingStart="@dimen/major_200"
+            android:paddingStart="@dimen/major_100"
             android:paddingEnd="@dimen/major_100"
             android:text="@string/settings_hiring"
-            tools:text="Made for love by Automattic. We're hiring!" />
+            tools:text="Made with love by Automattic. We're hiring!" />
     </LinearLayout>
 </LinearLayout>

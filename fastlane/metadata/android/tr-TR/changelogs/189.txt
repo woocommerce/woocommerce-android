@@ -1,0 +1,7 @@
+5.7:
+- Ürün çeşitlerinden resimleri kaldırın.
+- Uygulama, sihirli bağlantı giriş işlemi sırasında Android 11'de e-posta istemcisini açabilir.
+- Hata düzeltmeleri: Gönderi etiketleri satın alındığında değişken ürünler görüntülenir; bir iletişim kutusunda yapılan seçimler kabul edilir.
+- Ücretler, sipariş ödeme ayrıntılarında görüntülenir.
+- Şifresiz girişler desteklenir. 
+- Giriş ekranlarında küçük stil iyileştirmeleri.

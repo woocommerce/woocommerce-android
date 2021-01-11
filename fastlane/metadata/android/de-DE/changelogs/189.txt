@@ -1,0 +1,7 @@
+5.7:
+- Bilder aus Produktvarianten entfernen!
+- Die App kann den E-Mail-Client während des Anmeldevorgangs per magischem Link auf Android 11 öffnen.
+- Fehlerkorrekturen: Beim Kauf von Versandetiketten werden Produktvarianten angezeigt. Im Dialogfeld vorgenommene Auswahlen werden berücksichtigt.
+- Auf dem Bildschirm mit den Zahlungsdetails für die Bestellung werden Gebühren angezeigt.
+- Passwortlose Anmeldungen werden unterstützt.
+- Kleine Stilverbesserungen an den Anmeldebildschirmen

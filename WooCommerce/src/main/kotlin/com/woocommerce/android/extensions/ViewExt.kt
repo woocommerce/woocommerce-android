@@ -7,6 +7,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
 import android.view.View.MeasureSpec
+import androidx.core.view.isVisible
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -17,52 +18,58 @@ fun View.hide() {
 }
 
 fun View.expand() {
-    this.visibility = View.VISIBLE
-    this.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
-    val targetHeight = this.measuredHeight
-    val view = this
+    if (!this.isVisible) {
+        this.visibility = View.VISIBLE
+        this.measure(
+            MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
+        val targetHeight = this.measuredHeight
+        val view = this
 
-    this.layoutParams.height = 1
-    val a = object : Animation() {
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-            view.layoutParams.height = if (interpolatedTime == 1f)
-                LayoutParams.WRAP_CONTENT
-            else
-                (targetHeight * interpolatedTime).toInt()
-            view.requestLayout()
-        }
-
-        override fun willChangeBounds(): Boolean {
-            return true
-        }
-    }
-
-    a.duration = 300
-    this.startAnimation(a)
-}
-
-fun View.collapse() {
-    val initialHeight = this.measuredHeight
-    val view = this
-
-    val a = object : Animation() {
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-            if (interpolatedTime == 1f) {
-                view.visibility = View.GONE
-            } else {
-                view.layoutParams.height = initialHeight - (initialHeight * interpolatedTime).toInt()
+        this.layoutParams.height = 1
+        val a = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+                view.layoutParams.height = if (interpolatedTime == 1f)
+                    LayoutParams.WRAP_CONTENT
+                else
+                    (targetHeight * interpolatedTime).toInt()
                 view.requestLayout()
+            }
+
+            override fun willChangeBounds(): Boolean {
+                return true
             }
         }
 
-        override fun willChangeBounds(): Boolean {
-            return true
-        }
+        a.duration = 300
+        this.startAnimation(a)
     }
+}
 
-    a.duration = 300
-    this.startAnimation(a)
+fun View.collapse() {
+    if (this.isVisible) {
+        val initialHeight = this.measuredHeight
+        val view = this
+
+        val a = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+                if (interpolatedTime == 1f) {
+                    view.visibility = View.GONE
+                } else {
+                    view.layoutParams.height = initialHeight - (initialHeight * interpolatedTime).toInt()
+                    view.requestLayout()
+                }
+            }
+
+            override fun willChangeBounds(): Boolean {
+                return true
+            }
+        }
+
+        a.duration = 300
+        this.startAnimation(a)
+    }
 }
 
 fun View.expandHitArea(horizontal: Int, vertical: Int) {

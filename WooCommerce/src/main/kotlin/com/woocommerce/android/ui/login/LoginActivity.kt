@@ -34,7 +34,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
-import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
@@ -119,7 +119,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     private fun hasMagicLinkLoginIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
-        val host = uri?.host?.let { it } ?: ""
+        val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
     }
 
@@ -238,17 +238,42 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
         showEmailLoginScreen()
     }
 
-    //  -- BEGIN: LoginListener implementation methods
-
     override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
-        if (getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT) {
-            val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment.newInstance(email,
-                    AuthEmailPayloadScheme.WOOCOMMERCE, false, null, verifyEmail)
-            slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
+        val isMagicLinkEnabled =
+            getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT
+
+        if (authOptions != null) {
+            if (authOptions.isPasswordless) {
+                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
+            } else {
+                showEmailPasswordScreen(email, verifyEmail, isMagicLinkEnabled)
+            }
         } else {
-            val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
-            slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+            if (isMagicLinkEnabled) {
+                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = true, forceRequestAtStart = false)
+            } else {
+                showEmailPasswordScreen(email, verifyEmail, false)
+            }
         }
+    }
+
+    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
+        val loginEmailPasswordFragment = LoginEmailPasswordFragment
+            .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
+        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+    }
+
+    private fun showMagicLinkRequestScreen(
+        email: String?,
+        verifyEmail: Boolean,
+        allowPassword: Boolean,
+        forceRequestAtStart: Boolean
+    ) {
+        val scheme = WOOCOMMERCE
+        val loginMagicLinkRequestFragment = LoginMagicLinkRequestFragment
+            .newInstance(
+                email, scheme, false, null, verifyEmail, allowPassword, forceRequestAtStart)
+        slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
     }
 
     override fun loginViaSiteAddress() {
@@ -635,6 +660,6 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
-        TODO("Not yet implemented")
+        showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
     }
 }

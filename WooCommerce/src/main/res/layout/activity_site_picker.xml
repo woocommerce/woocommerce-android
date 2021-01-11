@@ -78,8 +78,10 @@
                 layout="@layout/view_login_user_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/major_100"
-                app:layout_constraintEnd_toStartOf="@+id/button_help"
+                android:layout_marginTop="@dimen/major_200"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

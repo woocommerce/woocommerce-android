@@ -71,27 +71,29 @@ class OrderDetailShippingLabelsAdapter(
         LayoutInflater.from(parent.context).inflate(R.layout.order_detail_shipping_label_list_item, parent, false)
     ) {
         fun bind(shippingLabel: ShippingLabel) {
-            // display product list
-            with(itemView.shippingLabelList_products) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = OrderDetailProductListAdapter(
-                    shippingLabel.products,
-                    productImageMap,
-                    formatCurrencyForDisplay,
-                    productClickListener
-                )
-
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        AlignedDividerDecoration(
-                            context,
-                            DividerItemDecoration.VERTICAL,
-                            R.id.productInfo_name,
-                            padding = context.resources.getDimensionPixelSize(dimen.major_100)
-                        )
+            // display product list if product list is not empty
+            if (shippingLabel.products.isNotEmpty()) {
+                with(itemView.shippingLabelList_products) {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = OrderDetailProductListAdapter(
+                        shippingLabel.products,
+                        productImageMap,
+                        formatCurrencyForDisplay,
+                        productClickListener
                     )
+
+                    if (itemDecorationCount == 0) {
+                        addItemDecoration(
+                            AlignedDividerDecoration(
+                                context,
+                                DividerItemDecoration.VERTICAL,
+                                R.id.productInfo_name,
+                                padding = context.resources.getDimensionPixelSize(dimen.major_100)
+                            )
+                        )
+                    }
+                    setRecycledViewPool(viewPool)
                 }
-                setRecycledViewPool(viewPool)
             }
 
             if (shippingLabel.id == 0L) {
@@ -107,6 +109,7 @@ class OrderDetailShippingLabelsAdapter(
             val isRefunded = shippingLabel.refund == null
             itemView.shippingLabelList_btnMenu.isVisible = isRefunded
             itemView.shippingLabelList_printBtn.isVisible = isRefunded
+            itemView.shippingLabelList_products.isVisible = isRefunded
             with(itemView.shippingLabelItem_trackingNumber) {
                 if (shippingLabel.refund != null) {
                     setShippingLabelTitle(

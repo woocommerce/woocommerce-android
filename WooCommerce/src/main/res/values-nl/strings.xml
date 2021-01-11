@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 15:54:04+0000
+Translation-Revision-Date: 2020-12-24 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Verwijderen van afbeeldingen bij productvariaties wordt helaas alleen ondersteund in WooCommerce 4.7 of nieuwer.</string>
+    <string name="order_shipment_tracking_progress_message">Een moment geduld</string>
+    <string name="order_shipment_tracking_progress_title">Tracking wordt toegevoegd</string>
+    <string name="add_order_note_progress_message">Een moment geduld</string>
+    <string name="add_order_note_progress_title">Opmerking wordt toegevoegd</string>
+    <string name="shipping_label_create_payment_description">Een nieuwe creditcard toevoegen</string>
+    <string name="shipping_label_create_carrier_description">Selecteer je bezorgservice en tarieven</string>
+    <string name="shipping_label_create_customs_description">Douane-formulier invullen</string>
+    <string name="shipping_label_create_customs">Douane</string>
+    <string name="shipping_label_create_packaging_details_description">Selecteer het type verpakking waarin je je artikelen wil verzenden</string>
+    <string name="shipping_label_create_packaging_details">Verpakkingsgegevens</string>
+    <string name="shipping_label_create_title">Verzendlabel aanmaken</string>
+    <string name="shipping_label_more_information_link">Meer informatie</string>
+    <string name="shipping_label_more_information_message">Vermijd wachttijden bij het postkantoor door verzendlabels thuis af te drukken, tegen afgeprijsde tarieven!</string>
+    <string name="shipping_label_more_information_heading">Bespaar tijd en geld door gebruik te maken van WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Bestelling markeren als voltooid</string>
+    <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je telefoon aanmaken</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Je kan nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \'Verzendlabel aanmaken\' om te proberen!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
+    <string name="orderdetail_payment_fees">Toeslagen</string>
+    <string name="orderdetail_net">Netto betaling</string>
+    <string name="orderdetail_payment_paid_by_customer">Betaald</string>
+    <string name="login_jetpack_view_instructions_alt">Meer informatie over Jetpack verbinden</string>
+    <string name="login_no_stores">We konden geen WooCommerce-winkels vinden die aan dit account zijn gekoppeld. Je moet de gratis Jetpack-plugin installeren en koppelen aan je WooCommerce-winkels om deze app te gebruiken.</string>
+    <string name="edit">Bewerken</string>
     <string name="product_images_validate_drag_and_drop">Valideren</string>
     <string name="product_images_drag_and_drop_description">Slepen om foto\'s opnieuw te ordenen</string>
     <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
@@ -86,7 +113,6 @@ Language: nl
     <string name="shipping_label_paper_size">Papierformaat</string>
     <string name="shipping_label_print_disclaimer">Als je het label al voor een pakket hebt gebruikt, is het afdrukken en hergebruiken een overtreding van onze servicevoorwaarden.</string>
     <string name="shipping_label_print_error_message">Als er een afdrukfout heeft plaatsgevonden toen je het label hebt aangeschaft, dan kan je het opnieuw afdrukken.</string>
-    <string name="order_begin_fulfillment">Bestelling markeren als voltooid</string>
     <string name="orderdetail_shipping_label_wip_message">We zijn bezig om het eenvoudiger voor je te maken om verzendlabels rechtstreeks vanaf je apparaat af te drukken! Als je met WooCommerce Shipping verzendlabels voor deze bestelling hebt aangemaakt bij je winkelbeheer, kan je ze voorlopig hier, bij je bestelgegevens, afdrukken.</string>
     <string name="orderdetail_shipping_label_wip_title">Verzendlabels afdrukken vanaf je apparaat!</string>
     <string name="orderdetail_shipping_label_reprint">Verzendlabel opnieuw afdrukken</string>
@@ -191,7 +217,7 @@ Language: nl
     <string name="product_add_tag_error">Toevoegen tags mislukt</string>
     <string name="product_add_tag_dialog_title">Tag wordt toegevoegd</string>
     <string name="shipping_label_refund_progress_message">Je restitutie wordt verwerkt. Een moment geduld …</string>
-    <string name="shipping_label_refund_success">De restitutie is ingediend</string>
+    <string name="shipping_label_refund_success">Het terugbetalingsverzoek is ingediend</string>
     <string name="shipping_label_refund_button">Restitutielabel (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Bedrag dat wordt terugbetaald</string>
     <string name="shipping_label_refund_purchase_date_title">Datum van aanschaf</string>
@@ -216,8 +242,9 @@ Language: nl
     <string name="product_type_description">%s product</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Resterende producten</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s label gerestitueerd</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s label-terugbetaling aangevraagd</string>
     <string name="orderdetail_shipping_label_tracking_info">Verzending tracken</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Verzendingsgegevens verbergen</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Verzendingsgegevens tonen</string>
     <string name="orderdetail_shipping_label_item_payment_type">Creditcard</string>
@@ -489,8 +516,6 @@ Language: nl
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbeterde statistieken</string>
     <string name="beta_features">Bèta-functies</string>
-    <string name="orderdetail_net">Netto</string>
-    <string name="orderdetail_payment_paid_by_customer">Betaald door klant</string>
     <string name="orderdetail_payment_summary_onhold">Wachten op betaling via %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="dashboard_state_no_data">Geen omzet deze periode</string>
@@ -1082,6 +1107,7 @@ Language: nl
     <string name="order_error_update_general">Fout bij wijzigen bestelling</string>
     <string name="order_error_fetch_notes_generic">Fout bij ophalen foutberichten</string>
     <string name="order_fulfill_marked_complete">Bestelling gemarkeerd als voltooid</string>
+    <string name="order_fulfill_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_addnote_contentdesc">Een bericht van bestelling toevoegen</string>
     <string name="orderdetail_add_note">Een opmerking toevoegen</string>
     <string name="orderdetail_hide_billing">Facturen verbergen</string>
@@ -1133,7 +1159,6 @@ Language: nl
     <string name="dashboard_stats_granularity_months">Maanden</string>
     <string name="dashboard_stats_granularity_weeks">Weken</string>
     <string name="dashboard_stats_granularity_days">Dagen</string>
-    <string name="login_no_stores">WooCommerce-winkels zoeken mislukt\ngekoppeld aan dit account</string>
     <string name="login_with_a_different_account">Log in met een ander account</string>
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>

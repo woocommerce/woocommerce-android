@@ -2,9 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -13,57 +12,58 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
+import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_settings_privacy.*
 import javax.inject.Inject
 
-class PrivacySettingsFragment : androidx.fragment.app.Fragment(), PrivacySettingsContract.View {
+class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), PrivacySettingsContract.View {
     companion object {
         const val TAG = "privacy-settings"
     }
 
     @Inject lateinit var presenter: PrivacySettingsContract.Presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_settings_privacy, container, false)
-    }
-
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         presenter.takeView(this)
 
-        switchSendStats.isChecked = presenter.getSendUsageStats()
-        switchSendStats.setOnCheckedChangeListener { _, isChecked ->
+        val binding = FragmentSettingsPrivacyBinding.bind(view)
+
+        binding.switchSendStats.isChecked = presenter.getSendUsageStats()
+        binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchSendStats.isChecked)))
+                    AnalyticsTracker.KEY_STATE to
+                        AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)))
             presenter.setSendUsageStats(isChecked)
         }
 
-        buttonLearnMore.setOnClickListener {
+        binding.buttonLearnMore.setOnClickListener {
             AnalyticsTracker.track(PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
             showCookiePolicy()
         }
-        buttonPrivacyPolicy.setOnClickListener {
+        binding.buttonPrivacyPolicy.setOnClickListener {
             AnalyticsTracker.track(PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
             showPrivacyPolicy()
         }
-        buttonTracking.setOnClickListener {
+        binding.buttonTracking.setOnClickListener {
             AnalyticsTracker.track(PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
             showCookiePolicy()
         }
 
-        switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
-        switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
+        binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                     PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED, mapOf(
-                    AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(switchCrashReporting.isChecked)))
+                    AnalyticsTracker.KEY_STATE to
+                        AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)))
             presenter.setCrashReportingEnabled(requireActivity(), isChecked)
         }
     }

@@ -1,3 +1,6 @@
-You asked, and we listened! You can now create simple, grouped, and external products for your store directly from your favorite Android mobile devices. Turn your ideas into products, even when you’re away from your computer.
-
-We’ve also updated our UI to a crisper, cleaner design, and we fixed a bug in order details that will make shipment tracking a breeze.
+- Remove images from product variations!
+- The app can open the email client on Android 11 during the magic link login process.
+- Bug fixes: variable products display when shipping labels are purchased; selections made in a dialog are honored.
+- Fees display on order payment details.
+- Passwordless logins supported.
+- Minor style improvements to the login screens.

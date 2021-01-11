@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 15:54:03+0000
+Translation-Revision-Date: 2020-12-24 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">죄송합니다. 제품 변형의 이미지 제거는 WooCommerce 4.7 이상에서 지원됩니다.</string>
+    <string name="order_shipment_tracking_progress_message">기다려 주세요.</string>
+    <string name="order_shipment_tracking_progress_title">추적 추가 중</string>
+    <string name="add_order_note_progress_message">기다려 주세요.</string>
+    <string name="add_order_note_progress_title">메모 추가 중</string>
+    <string name="shipping_label_create_payment_description">새 신용카드 추가</string>
+    <string name="shipping_label_create_carrier_description">운송업체 및 요금 선택</string>
+    <string name="shipping_label_create_customs_description">세관 양식 작성</string>
+    <string name="shipping_label_create_customs">세관</string>
+    <string name="shipping_label_create_packaging_details_description">아이템을 배송할 포장 유형 선택</string>
+    <string name="shipping_label_create_packaging_details">포장 상세 정보</string>
+    <string name="shipping_label_create_title">배송 레이블 만들기</string>
+    <string name="shipping_label_more_information_link">추가 정보</string>
+    <string name="shipping_label_more_information_message">집에서 휴대폰으로 배송 레이블을 할인된 요금으로 인쇄하여 우체국에 가는 시간을 줄이세요!</string>
+    <string name="shipping_label_more_information_heading">WooCommerce 배송으로 처리하여 시간과 비용 절약</string>
+    <string name="shipping_label_more_information_title">WooCommerce 배송</string>
+    <string name="order_mark_complete">주문을 완료로 표시</string>
+    <string name="orderdetail_shipping_label_notice">휴대폰으로 레이블 만들기에 대해 자세히 알아보기</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 사용해 보세요!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
+    <string name="orderdetail_payment_fees">수수료</string>
+    <string name="orderdetail_net">순 결제</string>
+    <string name="orderdetail_payment_paid_by_customer">유료</string>
+    <string name="login_jetpack_view_instructions_alt">Jetpack 연결에 대해 자세히 알아보기</string>
+    <string name="login_no_stores">이 계정에 연결된 WooCommerce 스토어를 찾을 수 없습니다. 이 앱을 사용하려면 WooCommerce 스토어에 무료 Jetpack 플러그인을 설치하고 연결해야 합니다.</string>
+    <string name="edit">편집</string>
     <string name="product_images_validate_drag_and_drop">확인</string>
     <string name="product_images_drag_and_drop_description">끌어 놓아서 사진 순서 변경</string>
     <string name="product_downloadable_files_download_settings">설정 다운로드</string>
@@ -86,7 +113,6 @@ Language: ko_KR
     <string name="shipping_label_paper_size">용지 크기</string>
     <string name="shipping_label_print_disclaimer">패키지의 레이블을 이미 사용한 경우 다시 인쇄하고 사용하는 것은 서비스 약관 위반입니다.</string>
     <string name="shipping_label_print_error_message">레이블을 구매할 때 인쇄 오류가 발생한 경우 다시 인쇄할 수 있습니다.</string>
-    <string name="order_begin_fulfillment">주문을 완료로 표시</string>
     <string name="orderdetail_shipping_label_wip_message">기기에서 바로 더 쉽게 배송 레이블을 인쇄할 수 있도록 기능을 개선하고 있습니다. 지금은 WooCommerce 배송으로 스토어 관리자에서 이 주문의 배송 레이블을 만든 경우 여기 주문 상세 정보에서 레이블을 인쇄할 수 있습니다.</string>
     <string name="orderdetail_shipping_label_wip_title">기기에서 배송 레이블을 인쇄하세요!</string>
     <string name="orderdetail_shipping_label_reprint">배송 레이블 다시 인쇄</string>
@@ -191,7 +217,7 @@ Language: ko_KR
     <string name="product_add_tag_error">태그를 추가하던 중 오류 발생</string>
     <string name="product_add_tag_dialog_title">태그 추가 중</string>
     <string name="shipping_label_refund_progress_message">환불을 처리하는 중입니다. 기다려주세요…</string>
-    <string name="shipping_label_refund_success">환불이 제출되었습니다.</string>
+    <string name="shipping_label_refund_success">환불 요청이 제출되었음</string>
     <string name="shipping_label_refund_button">환불 레이블(-%1$s)</string>
     <string name="shipping_label_refund_amount_title">환불 가능 금액</string>
     <string name="shipping_label_refund_purchase_date_title">구매 날짜</string>
@@ -216,8 +242,9 @@ Language: ko_KR
     <string name="product_type_description">%s 제품</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">남은 제품</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s 레이블 환불됨</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s 레이블 환불 요청됨</string>
     <string name="orderdetail_shipping_label_tracking_info">배송 추적</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">배송 상세 정보 숨기기</string>
     <string name="orderdetail_shipping_label_item_show_shipping">배송 상세 정보 표시</string>
     <string name="orderdetail_shipping_label_item_payment_type">신용카드</string>
@@ -489,8 +516,6 @@ Language: ko_KR
     <string name="orderdetail_refund_detail">%2$s을(를) 통한 %1$s</string>
     <string name="settings_enable_v4_stats_title">향상된 통계</string>
     <string name="beta_features">베타 기능</string>
-    <string name="orderdetail_net">최종 금액</string>
-    <string name="orderdetail_payment_paid_by_customer">고객 결제</string>
     <string name="orderdetail_payment_summary_onhold">%s을(를) 통한 결제 대기 중</string>
     <string name="orderdetail_payment_summary_completed">%2$s을(를) 통한 %1$s</string>
     <string name="dashboard_state_no_data">이 기간에 해당하는 수익이 없습니다.</string>
@@ -1082,6 +1107,7 @@ Language: ko_KR
     <string name="order_error_update_general">주문을 변경하는 중 오류 발생</string>
     <string name="order_error_fetch_notes_generic">오류 메모를 가져오는 중 오류 발생</string>
     <string name="order_fulfill_marked_complete">주문이 완료로 표시됨</string>
+    <string name="order_fulfill_mark_complete">주문을 완료로 표시</string>
     <string name="orderdetail_addnote_contentdesc">주문 메모 추가</string>
     <string name="orderdetail_add_note">메모 추가</string>
     <string name="orderdetail_hide_billing">청구 숨기기</string>
@@ -1133,7 +1159,6 @@ Language: ko_KR
     <string name="dashboard_stats_granularity_months">개월</string>
     <string name="dashboard_stats_granularity_weeks">주</string>
     <string name="dashboard_stats_granularity_days">일</string>
-    <string name="login_no_stores">우커머스 스토어를 찾을 수 없음\n이 계정에 연결됨</string>
     <string name="login_with_a_different_account">다른 계정으로 로그인</string>
     <string name="login_nostores_content_description">우커머스 스토어 없음</string>
     <string name="login_avatar_content_description">프로필 사진</string>
