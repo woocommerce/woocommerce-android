@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
@@ -14,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductDownloadsListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
@@ -22,9 +21,8 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_product_downloads_list.*
 
-class ProductDownloadsFragment : BaseProductFragment() {
+class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_downloads_list) {
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
                 dragDirs = UP or DOWN,
@@ -35,6 +33,9 @@ class ProductDownloadsFragment : BaseProductFragment() {
         )
     }
 
+    private var _binding: FragmentProductDownloadsListBinding? = null
+    private val binding get() = _binding!!
+
     private val productDownloadsAdapter: ProductDownloadsAdapter by lazy {
         ProductDownloadsAdapter(
             viewModel::onProductDownloadClicked,
@@ -44,11 +45,6 @@ class ProductDownloadsFragment : BaseProductFragment() {
 
     private var progressDialog: CustomProgressDialog? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_downloads_list, container, false)
-    }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -56,13 +52,23 @@ class ProductDownloadsFragment : BaseProductFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductDownloadsListBinding.bind(view)
+
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-        with(productDownloadsRecycler) {
+
+        with(binding.productDownloadsRecycler) {
             adapter = productDownloadsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             itemTouchHelper.attachToRecyclerView(this)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -111,7 +117,7 @@ class ProductDownloadsFragment : BaseProductFragment() {
             }
         }
 
-        addProductDownloadsView.initView { viewModel.onAddDownloadableFileClicked() }
+        binding.addProductDownloadsView.initView { viewModel.onAddDownloadableFileClicked() }
 
         updateFilesFromProductDraft()
     }
