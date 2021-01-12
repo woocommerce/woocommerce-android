@@ -376,13 +376,6 @@ class MainActivity : AppUpgradeActivity(),
             return
         }
 
-        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
-        if (isTopLevelNavigation) {
-            binding.container.visibility = View.VISIBLE
-        } else {
-            binding.container.visibility = View.INVISIBLE
-        }
-
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
             binding.appBarLayout.elevation = 0f
@@ -496,7 +489,6 @@ class MainActivity : AppUpgradeActivity(),
 
     /**
      * Returns a Boolean value in order to set the behaviour from a root navigation type in terms of:
-     * .container visibility
      * .menu items visibility
      * .top nav bar titles
      *
