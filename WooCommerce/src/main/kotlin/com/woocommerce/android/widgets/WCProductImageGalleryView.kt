@@ -302,7 +302,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             // add the new ones to the top of the list
             if (placeholders.isNotEmpty()) {
-                imageList.addAll(0, placeholders)
+                val list = placeholders + imageList
+                imageList.clear()
+                imageList.addAll(list)
                 didChange = true
             }
 
