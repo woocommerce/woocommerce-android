@@ -5,15 +5,15 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.text.Editable
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.AddProductTagViewBinding
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
-import kotlinx.android.synthetic.main.add_product_tag_view.view.*
 import java.util.ArrayList
 
 class AddProductTagView @JvmOverloads constructor(
@@ -21,8 +21,9 @@ class AddProductTagView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
+    private val binding: AddProductTagViewBinding
     init {
-        View.inflate(context, R.layout.add_product_tag_view, this)
+        binding = AddProductTagViewBinding.inflate(LayoutInflater.from(ctx), this)
     }
 
     fun addSelectedTags(
@@ -35,11 +36,11 @@ class AddProductTagView @JvmOverloads constructor(
     fun removeSelectedTag(
         selectedTag: ProductTag
     ) {
-        selectedTagsGroup.getSelectedChip(selectedTag.name)?.let { chip ->
+        binding.selectedTagsGroup.getSelectedChip(selectedTag.name)?.let { chip ->
             val anim = WooAnimUtils.getScaleOutAnim(chip)
             anim.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    selectedTagsGroup.removeView(chip)
+                    binding.selectedTagsGroup.removeView(chip)
                 }
             })
             anim.start()
@@ -47,20 +48,20 @@ class AddProductTagView @JvmOverloads constructor(
     }
 
     fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
-        addTagsEditText.setOnEditorActionListener(cb)
+        binding.addTagsEditText.setOnEditorActionListener(cb)
     }
 
     fun setOnEditorTextChangedListener(cb: (text: Editable?) -> Unit) {
-        addTagsEditText.setOnTextChangedListener(cb)
+        binding.addTagsEditText.setOnTextChangedListener(cb)
     }
 
-    fun getEnteredTag() = addTagsEditText.getText()
+    fun getEnteredTag() = binding.addTagsEditText.getText()
 
     private fun addTag(
         tag: ProductTag,
         listener: OnProductTagClickListener
     ) {
-        val selectedChipIds = selectedTagsGroup.getSelectedChipIds()
+        val selectedChipIds = binding.selectedTagsGroup.getSelectedChipIds()
         if (!selectedChipIds.contains(tag.name)) {
             val chip = Chip(context).apply {
                 text = tag.name
@@ -72,7 +73,7 @@ class AddProductTagView @JvmOverloads constructor(
                 setOnCloseIconClickListener { listener.onProductTagRemoved(tag) }
             }
 
-            selectedTagsGroup.addView(chip)
+            binding.selectedTagsGroup.addView(chip)
             WooAnimUtils.scaleIn(chip)
         }
     }
