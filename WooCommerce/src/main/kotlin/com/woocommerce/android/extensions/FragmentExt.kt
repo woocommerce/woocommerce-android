@@ -103,37 +103,6 @@ fun <T> Fragment.handleDialogNotice(key: String, entryId: Int, handler: (T) -> U
 }
 
 /**
- * A helper function that subscribes a supplied handler function to the [TopLevelFragment]'s SavedStateHandle LiveData
- * associated with the supplied key. The `rootFragment` entry ID must be used to deliver the result.
- *
- * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
- * @param [handler] A result handler
- *
- * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
- * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
- * a particular key-result pair to 1.
- */
-fun <T> TopLevelFragment.handleResult(key: String, handler: (T) -> Unit) {
-    (this as Fragment).handleResult(key, entryId = R.id.rootFragment, handler = handler)
-}
-
-/**
- * A helper function that subscribes a supplied noice handler function to the [TopLevelFragment]'s SavedStateHandle
- * LiveData associated with the supplied key. Its purpose is to handle a notice without any value.
- * The `rootFragment` entry ID must be used to deliver the result.
- *
- * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
- * @param [handler] A result handler
- *
- * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
- * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
- * a particular key-result pair to 1.
- */
-fun TopLevelFragment.handleNotice(key: String, handler: () -> Unit) {
-    (this as Fragment).handleNotice(key, entryId = R.id.rootFragment, handler = handler)
-}
-
-/**
  * A helper function that subscribes a supplied handler function to the Fragment's SavedStateHandle LiveData associated
  * with the supplied key. Its purpose is to handle a notice without any value.
  *

@@ -34,6 +34,7 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
@@ -49,7 +50,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -167,11 +167,16 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
-        binding.bottomNav.also { it.init(supportFragmentManager, this) }
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main)
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener(this)
+        with(navController) {
+            navigatorProvider.addNavigator(navigator)
+            setGraph(R.navigation.nav_graph_main)
+            addOnDestinationChangedListener(this@MainActivity)
+        }
+
+        binding.bottomNav.init(navController, this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -288,13 +293,10 @@ class MainActivity : AppUpgradeActivity(),
             }
             navController.navigateUp()
             return
-        }
-
-        // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (binding.bottomNav.currentPosition != MY_STORE) {
-            binding.bottomNav.currentPosition = MY_STORE
+        } else if (binding.bottomNav.currentPosition != MY_STORE) {
+            navController.navigate(R.id.dashboard)
         } else {
-            super.onBackPressed()
+            finish()
         }
     }
 
@@ -313,7 +315,11 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
-            navController.currentDestination?.id == R.id.rootFragment
+            val currentDestinationId = navController.currentDestination?.id
+            currentDestinationId == R.id.dashboard
+                || currentDestinationId == R.id.orders
+                || currentDestinationId == R.id.products
+                || currentDestinationId == R.id.reviews
         } else {
             true
         }
@@ -327,15 +333,6 @@ class MainActivity : AppUpgradeActivity(),
             !isAtTopLevelNavigation(isAtRoot = isAtNavigationRoot(), destination = it)
         } ?: run {
             !isAtNavigationRoot()
-        }
-    }
-
-    /**
-     * Navigates to the root fragment so only the top level fragment is showing
-     */
-    private fun navigateToRoot() {
-        if (!isAtNavigationRoot()) {
-            navController.popBackStack(R.id.rootFragment, false)
         }
     }
 
@@ -577,7 +574,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // Complete UI initialization
-        binding.bottomNav.init(supportFragmentManager, this)
+        binding.bottomNav.init(navController, this)
         initFragment(null)
     }
 
@@ -655,11 +652,6 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-        // if were not at the root, clear the nav controller's backstack
-        if (!isAtNavigationRoot()) {
-            navigateToRoot()
-        }
-
         if (navPos == REVIEWS) {
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
@@ -685,7 +677,7 @@ class MainActivity : AppUpgradeActivity(),
             getActiveTopLevelFragment()?.scrollToTop()
             expandToolbar(expand = true, animate = true)
         } else {
-            navigateToRoot()
+            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
@@ -766,14 +758,6 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
     // endregion
-
-    override fun showOrderList(orderStatusFilter: String?) {
-        showBottomNav()
-        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
-
-        val fragment = binding.bottomNav.getFragment(ORDERS)
-        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
-    }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
