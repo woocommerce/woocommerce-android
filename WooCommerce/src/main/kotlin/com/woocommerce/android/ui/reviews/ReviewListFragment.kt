@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -47,7 +46,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     ReviewListAdapter.OnReviewClickListener {
     companion object {
         const val TAG = "ReviewListFragment"
-        const val KEY_LIST_STATE = "list-state"
         const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
 
         fun newInstance() = ReviewListFragment()
@@ -65,7 +63,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     private var menuMarkAllRead: MenuItem? = null
 
     private var newDataAvailable = false // New reviews are available in cache
-    private var listState: Parcelable? = null // Save the state of the recycler view
 
     private var pendingModerationRequest: ProductReviewModerationRequest? = null
     private var pendingModerationRemoteReviewId: Long? = null
@@ -79,7 +76,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(KEY_LIST_STATE)
             newDataAvailable = bundle.getBoolean(KEY_NEW_DATA_AVAILABLE, false)
         }
     }
@@ -186,9 +182,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        val listState = binding.reviewsList.layoutManager?.onSaveInstanceState()
-        outState.putParcelable(KEY_LIST_STATE, listState)
-
         outState.putBoolean(KEY_NEW_DATA_AVAILABLE, newDataAvailable)
         super.onSaveInstanceState(outState)
     }
@@ -254,10 +247,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     private fun showReviewList(reviews: List<ProductReview>) {
         if (isActive) {
             reviewsAdapter.setReviews(reviews)
-            listState?.let {
-                binding.reviewsList.layoutManager?.onRestoreInstanceState(listState)
-                listState = null
-            }
             showEmptyView(reviews.isEmpty())
         } else {
             newDataAvailable = true
