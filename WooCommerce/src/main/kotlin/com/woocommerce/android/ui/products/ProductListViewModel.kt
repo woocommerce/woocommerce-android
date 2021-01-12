@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -43,8 +42,7 @@ class ProductListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus,
-    private val prefs: AppPrefs
+    private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val SEARCH_TYPING_DELAY_MS = 500L
@@ -144,8 +142,18 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
-        triggerEvent(ShowAddProductBottomSheet)
+        launch {
+            cancelSearch()
+
+            AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            triggerEvent(ShowAddProductBottomSheet)
+        }
+    }
+
+    private suspend fun cancelSearch() {
+        searchJob?.cancelAndJoin()
+        viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+        _productList.value = productRepository.getProductList()
     }
 
     fun onSearchOpened() {
@@ -287,9 +295,7 @@ class ProductListViewModel @AssistedInject constructor(
             isLoading = true,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
-            displaySortAndFilterCard = (
-                productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-                )
+            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
         )
 
         viewState = viewState.copy(
@@ -372,12 +378,12 @@ class ProductListViewModel @AssistedInject constructor(
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
         object ShowAddProductBottomSheet : ProductListEvent()
-        object ShowProductSortingBottomSheet : Event()
+        object ShowProductSortingBottomSheet : ProductListEvent()
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
             val productStatusFilter: String?
-        ) : Event()
+        ) : ProductListEvent()
     }
 
     @AssistedInject.Factory
