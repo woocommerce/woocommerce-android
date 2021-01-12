@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.tags
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -30,7 +31,6 @@ class ProductTagsRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_TAGS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_TAGS_PAGE_SIZE
     }
 
@@ -55,7 +55,7 @@ class ProductTagsRepository @Inject constructor(
     suspend fun fetchProductTags(loadMore: Boolean = false, searchQuery: String? = null): List<ProductTag> {
         try {
             loadContinuation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_TAGS_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = FetchProductTagsPayload(
@@ -88,7 +88,7 @@ class ProductTagsRepository @Inject constructor(
      */
     suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 addProductTagsContinuation = it
 
                 val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
