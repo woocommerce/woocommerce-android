@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -50,7 +49,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
     companion object {
         const val TAG: String = "OrderListFragment"
-        const val STATE_KEY_LIST = "list-state"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
@@ -78,7 +76,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
-    private var listState: Parcelable? = null // Save the state of the recycler view
 
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
     // identical to the real value on the UI side.
@@ -112,9 +109,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
      */
     private var isFilterEnabled: Boolean = false
 
-    private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.tabStyle)
-    }
+    private var _tabLayout: TabLayout? = null
+    private val tabLayout
+        get() = _tabLayout!!
 
     private val emptyView
         get() = binding.orderListView.emptyView
@@ -129,7 +126,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
         setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
-            listState = bundle.getParcelable(STATE_KEY_LIST)
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, StringUtils.EMPTY)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             isFilterEnabled = bundle.getBoolean(STATE_KEY_IS_FILTER_ENABLED)
@@ -158,6 +154,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
+        addTabLayoutToAppBar()
+
         _binding = FragmentOrderListBinding.bind(view)
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         binding.orderStatusListView.init(listener = this)
@@ -172,11 +171,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
         initializeViewModel()
         initializeTabs()
-
-        listState?.let {
-            binding.orderListView.onFragmentRestoreInstanceState(it)
-            listState = null
-        }
 
         val filterOrSearchEnabled = isFilterEnabled || isSearching
         showTabs(!filterOrSearchEnabled)
@@ -239,12 +233,10 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     override fun onResume() {
         super.onResume()
-        addTabLayoutToAppBar()
         AnalyticsTracker.trackViewShown(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(STATE_KEY_LIST, binding.orderListView.onFragmentSavedInstanceState())
         outState.putString(STATE_KEY_ACTIVE_FILTER, orderStatusFilter)
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putBoolean(STATE_KEY_IS_FILTER_ENABLED, isFilterEnabled)
@@ -255,6 +247,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     override fun onDestroyView() {
         disableSearchListeners()
+        removeTabLayoutFromAppBar()
+        _tabLayout = null
         searchView = null
         orderListMenu = null
         searchMenuItem = null
