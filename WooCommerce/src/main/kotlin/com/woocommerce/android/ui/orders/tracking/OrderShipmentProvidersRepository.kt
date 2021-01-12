@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.tracking
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.RequesResult
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.RequesResult.EMPTY
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.RequesResult.ERROR
 import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.RequesResult.SUCCESS
@@ -29,10 +29,6 @@ class OrderShipmentProvidersRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val dispatcher: Dispatcher
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10_000L
-    }
-
     init {
         dispatcher.register(this)
     }
@@ -61,7 +57,7 @@ class OrderShipmentProvidersRepository @Inject constructor(
             return null
         }
         try {
-            val result = suspendCancellableCoroutineWithTimeout<RequesResult>(ACTION_TIMEOUT) {
+            val result = suspendCancellableCoroutineWithTimeout<RequesResult>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchTrackingProviders = it
 
                 val payload = FetchOrderShipmentProvidersPayload(selectedSite.get(), order)
