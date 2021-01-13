@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
@@ -811,14 +812,16 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
-        val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
             stockStatus, productStatus, productType
         )
         navController.navigateSafely(action)
     }
 
     override fun showProductAddBottomSheet() {
-        val action = NavGraphMainDirections.actionGlobalProductTypeBottomSheetFragment(isAddProduct = true)
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+            isAddProduct = true
+        )
         navController.navigateSafely(action)
     }
 
