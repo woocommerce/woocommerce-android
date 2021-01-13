@@ -145,6 +145,7 @@ class MainActivity : AppUpgradeActivity(),
             if (!isFullScreenFragment) {
                 // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
                 if (f is TopLevelFragment) {
+                    // We need to post this to the view handler to make sure isScrolledToTop returns the correct value
                     f.view?.post {
                         expandToolbar(expand = f.isScrolledToTop(), animate = false)
                     }
