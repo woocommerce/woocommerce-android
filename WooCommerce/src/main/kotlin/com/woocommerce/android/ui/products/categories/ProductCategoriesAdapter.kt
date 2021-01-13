@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductCategoryListItemBinding
+import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.ProductCategoryViewHolder
-import org.wordpress.android.util.HtmlUtils
 
 class ProductCategoriesAdapter(
     private val context: Context,
@@ -71,11 +71,11 @@ class ProductCategoriesAdapter(
         RecyclerView.ViewHolder(viewBinder.root) {
         fun bind(productCategory: ProductCategoryItemUiModel) {
             viewBinder.categoryName.apply {
-                text = if (productCategory.category.name.isEmpty()) {
+                setHtmlText(if (productCategory.category.name.isEmpty()) {
                     context.getString(R.string.untitled)
                 } else {
-                    HtmlUtils.fastStripHtml(productCategory.category.name)
-                }
+                    productCategory.category.name
+                })
 
                 val newLayoutParams = layoutParams as LayoutParams
                 newLayoutParams.marginStart = productCategory.margin

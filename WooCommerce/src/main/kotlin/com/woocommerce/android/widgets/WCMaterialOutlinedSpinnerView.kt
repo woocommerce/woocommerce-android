@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.AttrRes
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.setHtmlText
 import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 
 /**
@@ -47,6 +48,10 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
 
     fun setText(selectedText: String) {
         spinner_edit_text.setText(selectedText)
+    }
+
+    fun setHtmlText(selectedText: String) {
+        spinner_edit_text.setHtmlText(selectedText)
     }
 
     fun getText() = spinner_edit_text.text.toString()

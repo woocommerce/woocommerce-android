@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -93,7 +94,7 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
         }
 
         with(binding.productCategoryParent) {
-            viewModel.getSelectedParentCategoryName()?.let { post { setText(it) } }
+            viewModel.getSelectedParentCategoryName()?.let { post { setHtmlText(it) } }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
                     .actionAddProductCategoryFragmentToParentCategoryListFragment(

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ParentCategoryListItemBinding
+import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.categories.ParentCategoryListAdapter.ParentCategoryListViewHolder
 
@@ -90,7 +91,7 @@ class ParentCategoryListAdapter(
 
         fun bind(parentCategory: ProductCategoryItemUiModel) {
             viewBinder.parentCategoryName.apply {
-                text = parentCategory.category.name
+                setHtmlText(parentCategory.category.name)
 
                 val newLayoutParams = viewBinder.parentCategoryName.layoutParams as LayoutParams
                 newLayoutParams.marginStart = parentCategory.margin
