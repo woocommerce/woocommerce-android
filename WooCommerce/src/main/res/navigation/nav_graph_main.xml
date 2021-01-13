@@ -39,144 +39,6 @@
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
 
-    <fragment
-        android:id="@+id/orderDetailFragment"
-        android:name="com.woocommerce.android.ui.orders.details.OrderDetailFragment"
-        tools:layout="@layout/fragment_order_detail">
-        <argument
-            android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="remoteNoteId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="markComplete"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
-            app:destination="@id/addOrderNoteFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_addOrderShipmentTrackingFragment"
-            app:destination="@id/addOrderShipmentTrackingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
-            app:destination="@id/shippingLabelRefundFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_printShippingLabelFragment"
-            app:destination="@id/printShippingLabelFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_issue_refund"
-            app:destination="@id/nav_graph_refunds"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
-            <argument
-                android:name="orderId"
-                android:defaultValue="0L"
-                app:argType="long" />
-        </action>
-        <action
-            android:id="@+id/action_orderDetailFragment_to_refundDetailFragment"
-            app:destination="@id/refundDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_orderStatusSelectorDialog"
-            app:destination="@id/orderStatusSelectorDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderDetailFragment_to_createShippingLabelFragment"
-            app:destination="@id/createShippingLabelFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
-    <dialog
-        android:id="@+id/orderStatusSelectorDialog"
-        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
-        <argument
-            android:name="currentStatus"
-            app:argType="string"
-            app:nullable="false" />
-        <argument
-            android:name="orderStatusList"
-            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
-    </dialog>
-    <fragment
-        android:id="@+id/addOrderNoteFragment"
-        android:name="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment"
-        tools:layout="@layout/fragment_add_order_note">
-        <argument
-            android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="orderNumber"
-            android:defaultValue='""'
-            app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/addOrderShipmentTrackingFragment"
-        android:name="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment"
-        tools:layout="@layout/fragment_add_shipment_tracking">
-        <argument
-            android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="orderTrackingProvider"
-            android:defaultValue="null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="isCustomProvider"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
-            app:destination="@id/addOrderTrackingProviderListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/addOrderTrackingProviderListFragment"
-        android:name="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment"
-        tools:layout="@layout/dialog_order_tracking_provider_list">
-        <argument
-            android:name="orderId"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="selectedProvider"
-            android:defaultValue=""
-            app:argType="string"/>
-    </fragment>
     <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
@@ -214,11 +76,6 @@
             app:argType="string"
             app:nullable="true" />
     </action>
-    <action
-        android:id="@+id/action_global_orderDetailFragment"
-        app:destination="@id/orderDetailFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -244,82 +101,9 @@
         app:destination="@id/reviewDetailFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
-    <include app:graph="@navigation/nav_graph_refunds" />
+    <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
-    <fragment
-        android:id="@+id/refundDetailFragment"
-        android:name="com.woocommerce.android.ui.refunds.RefundDetailFragment"
-        android:label="RefundDetailFragment">
-        <argument
-            android:name="orderId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="refundId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/shippingLabelRefundFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment"
-        android:label="ShippingLabelRefundFragment"
-        tools:layout="@layout/fragment_shipping_label_refund">
-        <argument
-            android:name="orderId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="shippingLabelId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/printShippingLabelFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment"
-        android:label="PrintShippingLabelFragment"
-        tools:layout="@layout/fragment_print_shipping_label">
-        <argument
-            android:name="orderId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="shippingLabelId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <action
-            android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
-            app:destination="@id/shippingLabelPaperSizeSelectorDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_printShippingLabelFragment_to_printShippingLabelInfoFragment"
-            app:destination="@id/printShippingLabelInfoFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
-            android:id="@+id/action_printShippingLabelFragment_to_labelFormatOptionsFragment"
-            app:destination="@id/shippingLabelFormatOptionsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
-    <dialog
-        android:id="@+id/shippingLabelPaperSizeSelectorDialog"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog">
-        <argument
-            android:name="currentPaperSize"
-            app:argType="com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog$ShippingLabelPaperSize" />
-    </dialog>
-    <fragment
-        android:id="@+id/printShippingLabelInfoFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelInfoFragment" />
-    <fragment
-        android:id="@+id/shippingLabelFormatOptionsFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.LabelFormatOptionsFragment" />
 
     <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <action
@@ -338,93 +122,36 @@
         android:label="InfoScreenFragment">
         <argument
             android:name="screenTitle"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="heading"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="message"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="linkTitle"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="imageResource"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="linkAction"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.common.InfoScreenFragment$InfoScreenLinkAction"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </fragment>
 
     <action
         android:id="@+id/action_global_infoScreenFragment"
         app:destination="@id/infoScreenFragment"
         app:enterAnim="@anim/activity_fade_in"
-        app:popExitAnim="@anim/activity_fade_out">
-    </action>
-    <fragment
-        android:id="@+id/createShippingLabelFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelFragment"
-        android:label="CreateShippingLabelFragment" >
-        <argument
-            android:name="orderIdentifier"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelAddressFragment"
-            app:destination="@id/editShippingLabelAddressFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/editShippingLabelAddressFragment"
-        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment"
-        android:label="EditShippingLabelAddressFragment">
-        <argument
-            android:name="address"
-            app:argType="com.woocommerce.android.model.Address" />
-        <argument
-            android:name="addressType"
-            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
-        <argument
-            android:name="validationResult"
-            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_editShippingLabelAddressFragment_to_itemSelectorDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out"
-            app:destination="@id/itemSelectorDialog" />
-    </fragment>
-    <dialog
-        android:id="@+id/itemSelectorDialog"
-        android:name="com.woocommerce.android.ui.ItemSelectorDialog"
-        android:label="ItemSelectorDialog" >
-        <argument
-            android:name="selectedItem"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="keys"
-            app:argType="string[]" />
-        <argument
-            android:name="values"
-            app:argType="string[]" />
-        <argument
-            android:name="requestKey"
-            app:argType="string" />
-        <argument
-            android:name="title"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
-    </dialog>
+        app:popExitAnim="@anim/activity_fade_out"/>
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
@@ -434,7 +161,26 @@
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
-        tools:layout="@layout/fragment_order_list" />
+        tools:layout="@layout/fragment_order_list">
+        <action
+            android:id="@+id/action_orderListFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="orderId"
+                android:defaultValue='""'
+                app:argType="string" />
+            <argument
+                android:name="remoteNoteId"
+                android:defaultValue="0L"
+                app:argType="long" />
+            <argument
+                android:name="markComplete"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/products"
         android:name="com.woocommerce.android.ui.products.ProductListFragment"
