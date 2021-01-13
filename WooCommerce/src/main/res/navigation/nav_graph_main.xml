@@ -175,10 +175,6 @@
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
                 app:argType="long" />
-            <argument
-                android:name="markComplete"
-                android:defaultValue="false"
-                app:argType="boolean" />
         </action>
     </fragment>
     <fragment
