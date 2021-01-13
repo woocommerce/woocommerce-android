@@ -116,7 +116,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
+        _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
         addTabLayoutToAppBar()
 
         _binding = FragmentMyStoreBinding.bind(view)
