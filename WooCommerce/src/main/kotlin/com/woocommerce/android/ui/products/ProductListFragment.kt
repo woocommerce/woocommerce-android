@@ -122,6 +122,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
+        showAddProductButton(false)
         super.onDestroyView()
         _binding = null
     }
