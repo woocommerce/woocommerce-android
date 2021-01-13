@@ -89,7 +89,6 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
-        private const val KEY_IS_TOOLBAR_EXPANDED = "is-toolbar-expanded"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
 
