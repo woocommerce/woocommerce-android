@@ -54,8 +54,6 @@ import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
-import com.woocommerce.android.ui.reviews.ReviewDetailFragment
-import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
