@@ -330,10 +330,10 @@ class MainActivity : AppUpgradeActivity(),
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
             val currentDestinationId = navController.currentDestination?.id
-            currentDestinationId == R.id.dashboard
-                || currentDestinationId == R.id.orders
-                || currentDestinationId == R.id.products
-                || currentDestinationId == R.id.reviews
+            currentDestinationId == R.id.dashboard ||
+                currentDestinationId == R.id.orders ||
+                currentDestinationId == R.id.products ||
+                currentDestinationId == R.id.reviews
         } else {
             true
         }

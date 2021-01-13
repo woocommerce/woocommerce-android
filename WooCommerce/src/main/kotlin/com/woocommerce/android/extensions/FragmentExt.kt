@@ -3,8 +3,6 @@ package com.woocommerce.android.extensions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.TopLevelFragment
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be

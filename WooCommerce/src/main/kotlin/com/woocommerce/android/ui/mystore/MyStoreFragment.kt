@@ -254,7 +254,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
         outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
-         outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewVisible)
+        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewVisible)
     }
 
     override fun showStats(

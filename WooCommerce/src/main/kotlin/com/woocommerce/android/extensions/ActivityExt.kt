@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import kotlin.properties.Delegates
 
