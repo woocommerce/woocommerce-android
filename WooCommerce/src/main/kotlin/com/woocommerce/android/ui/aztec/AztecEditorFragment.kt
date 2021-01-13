@@ -197,12 +197,7 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     }
 
     private fun editorHasChanges(): Boolean {
-        val hasChanges = if (isHtmlEditorEnabled) {
-            aztec.sourceEditor?.hasChanges()
-        } else {
-            aztec.visualEditor.hasChanges()
-        }
-        return hasChanges != NO_CHANGES
+        return aztec.sourceEditor?.hasChanges() != NO_CHANGES || aztec.visualEditor.hasChanges() != NO_CHANGES
     }
 
     private fun navigateBackWithResult(hasChanges: Boolean) {
