@@ -4,7 +4,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main"
     app:startDestination="@id/dashboard">
-
+    <fragment
+        android:id="@+id/dashboard"
+        android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
+        android:label="fragment_my_store"
+        tools:layout="@layout/fragment_my_store" />
+    <fragment
+        android:id="@+id/orders"
+        android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
+        android:label="fragment_order_list"
+        tools:layout="@layout/fragment_order_list">
+        <action
+            android:id="@+id/action_orderListFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="orderId"
+                android:defaultValue='""'
+                app:argType="string" />
+            <argument
+                android:name="remoteNoteId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/products"
+        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:label="fragment_product_list"
+        tools:layout="@layout/fragment_product_list">
+        <action
+            android:id="@+id/action_productListFragment_to_productFilterListFragment"
+            app:destination="@id/nav_graph_product_filters"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="selectedStockStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductType"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+        <action
+            android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/reviews"
+        android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
+        android:label="fragment_reviews_list"
+        tools:layout="@layout/fragment_reviews_list" >
+        <action
+            android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
+            app:destination="@id/reviewDetailFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+    </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"
@@ -118,76 +187,6 @@
         app:destination="@id/infoScreenFragment"
         app:enterAnim="@anim/activity_fade_in"
         app:popExitAnim="@anim/activity_fade_out" />
-    <fragment
-        android:id="@+id/dashboard"
-        android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
-        android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store" />
-    <fragment
-        android:id="@+id/orders"
-        android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
-        android:label="fragment_order_list"
-        tools:layout="@layout/fragment_order_list">
-        <action
-            android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
-            <argument
-                android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
-            <argument
-                android:name="remoteNoteId"
-                android:defaultValue="0L"
-                app:argType="long" />
-        </action>
-    </fragment>
-    <fragment
-        android:id="@+id/products"
-        android:name="com.woocommerce.android.ui.products.ProductListFragment"
-        android:label="fragment_product_list"
-        tools:layout="@layout/fragment_product_list">
-        <action
-            android:id="@+id/action_productListFragment_to_productFilterListFragment"
-            app:destination="@id/nav_graph_product_filters"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="selectedStockStatus"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductStatus"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductType"
-                app:argType="string"
-                app:nullable="true" />
-        </action>
-        <action
-            android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
-            app:destination="@id/productTypesBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="isAddProduct"
-                android:defaultValue="false"
-                app:argType="boolean" />
-        </action>
-    </fragment>
-    <fragment
-        android:id="@+id/reviews"
-        android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
-        android:label="fragment_reviews_list"
-        tools:layout="@layout/fragment_reviews_list" >
-        <action
-            android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
-    </fragment>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
