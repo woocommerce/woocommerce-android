@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
@@ -50,7 +51,6 @@ class ReviewListRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
@@ -131,7 +131,7 @@ class ReviewListRepository @Inject constructor(
                     site = selectedSite.get(),
                     filterBySubtype = listOf(STORE_REVIEW.toString()))
             try {
-                suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
                     continuationMarkAllRead = it
 
                     val payload = MarkNotificationsReadPayload(unreadProductReviews)
@@ -196,7 +196,7 @@ class ReviewListRepository @Inject constructor(
      */
     private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationProduct = it
 
                 val payload = FetchProductsPayload(
@@ -214,7 +214,7 @@ class ReviewListRepository @Inject constructor(
      */
     private suspend fun fetchNotifications(): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationNotification = it
 
                 val payload = FetchNotificationsPayload()
@@ -228,7 +228,7 @@ class ReviewListRepository @Inject constructor(
 
     private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PAGE_SIZE else 0
                 isFetchingProductReviews = true
                 continuationReview = it

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.categories
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductCategory
@@ -31,7 +32,6 @@ class ProductCategoriesRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_CATEGORIES_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_CATEGORY_PAGE_SIZE
     }
 
@@ -55,7 +55,7 @@ class ProductCategoriesRepository @Inject constructor(
      */
     suspend fun fetchProductCategories(loadMore: Boolean = false): List<ProductCategory> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = WCProductStore.FetchProductCategoriesPayload(
@@ -94,7 +94,7 @@ class ProductCategoriesRepository @Inject constructor(
      */
     suspend fun addProductCategory(categoryName: String, parentId: Long): RequestResult {
         return try {
-            suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
                 addProductCategoryContinuation = it
 
                 val productCategoryModel = WCProductCategoryModel().apply {

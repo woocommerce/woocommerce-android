@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
@@ -33,7 +34,6 @@ class ProductListRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
         private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
@@ -79,7 +79,7 @@ class ProductListRepository @Inject constructor(
         excludedProductIds: List<Long>? = null
     ): List<Product> {
         try {
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 loadContinuation = it
                 lastSearchQuery = null
@@ -115,7 +115,7 @@ class ProductListRepository @Inject constructor(
         searchContinuation?.cancel()
 
         try {
-            val products = suspendCancellableCoroutineWithTimeout<List<Product>>(ACTION_TIMEOUT) {
+            val products = suspendCancellableCoroutineWithTimeout<List<Product>>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 searchContinuation = it
                 lastSearchQuery = searchQuery
@@ -142,7 +142,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun trashProduct(remoteProductId: Long): Boolean {
         return try {
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 trashContinuation = it
 
                 val payload = WCProductStore.DeleteProductPayload(

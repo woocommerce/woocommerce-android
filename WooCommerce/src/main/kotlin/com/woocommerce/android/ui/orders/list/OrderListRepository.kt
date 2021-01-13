@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -30,7 +31,6 @@ class OrderListRepository @Inject constructor(
 ) {
     companion object {
         private const val TAG = "OrderListRepository"
-        private const val ACTION_TIMEOUT = 10L * 1000
     }
 
     private var isFetchingOrderStatusOptions = false
@@ -48,7 +48,7 @@ class OrderListRepository @Inject constructor(
     suspend fun fetchOrderStatusOptionsFromApi(): RequestResult {
         return if (!isFetchingOrderStatusOptions) {
             try {
-                suspendCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+                suspendCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
                     isFetchingOrderStatusOptions = true
                     continuationOrderStatus = it
 

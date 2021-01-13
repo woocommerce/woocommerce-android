@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_ERROR
@@ -35,10 +36,6 @@ class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var continuationUpdateVariation: Continuation<Boolean>? = null
     private var continuationFetchVariation: CancellableContinuation<Boolean>? = null
 
@@ -60,7 +57,7 @@ class VariationDetailRepository @Inject constructor(
             this.remoteProductId = remoteProductId
             this.remoteVariationId = remoteVariationId
             continuationFetchVariation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchVariation = it
 
                 val payload = WCProductStore.FetchSingleVariationPayload(
@@ -85,7 +82,7 @@ class VariationDetailRepository @Inject constructor(
      */
     suspend fun updateVariation(updatedVariation: ProductVariation): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateVariation = it
 
                 val variation = updatedVariation.toDataModel(

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
@@ -63,10 +64,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
@@ -87,7 +84,7 @@ class OrderDetailRepository @Inject constructor(
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
         try {
             continuationFetchOrder?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrder = it
 
                 val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
@@ -107,7 +104,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationFetchOrderNotes?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrderNotes = it
 
                 val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
@@ -125,7 +122,7 @@ class OrderDetailRepository @Inject constructor(
     ): RequestResult {
         return try {
             continuationFetchOrderShipmentTrackingList?.cancel()
-            suspendCancellableCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrderShipmentTrackingList = it
 
                 val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
@@ -163,7 +160,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationUpdateOrderStatus?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateOrderStatus = it
 
                 val payload = UpdateOrderStatusPayload(
@@ -189,7 +186,7 @@ class OrderDetailRepository @Inject constructor(
                 WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
                 return false
             }
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddOrderNote = it
 
                 val dataModel = noteModel.toDataModel()
@@ -209,7 +206,7 @@ class OrderDetailRepository @Inject constructor(
         val orderIdSet = orderIdentifier.toIdSet()
         return try {
             continuationAddShipmentTracking?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddShipmentTracking = it
 
                 val payload = AddOrderShipmentTrackingPayload(
@@ -234,7 +231,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationDeleteShipmentTracking?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationDeleteShipmentTracking = it
 
                 val payload = DeleteOrderShipmentTrackingPayload(
