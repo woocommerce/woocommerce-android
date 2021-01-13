@@ -78,11 +78,6 @@
             android:name="enableModeration"
             app:argType="boolean" />
     </fragment>
-    <action
-        android:id="@+id/action_global_reviewDetailFragment"
-        app:destination="@id/reviewDetailFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
@@ -186,7 +181,13 @@
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
         android:label="fragment_reviews_list"
-        tools:layout="@layout/fragment_reviews_list" />
+        tools:layout="@layout/fragment_reviews_list" >
+        <action
+            android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
+            app:destination="@id/reviewDetailFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+    </fragment>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
