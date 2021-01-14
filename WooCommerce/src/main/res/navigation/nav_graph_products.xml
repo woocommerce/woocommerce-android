@@ -485,4 +485,5 @@
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>
