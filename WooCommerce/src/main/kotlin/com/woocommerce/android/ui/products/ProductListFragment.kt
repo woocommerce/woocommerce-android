@@ -490,7 +490,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
-    override fun shouldExpandToolbar() :Boolean {
+    override fun shouldExpandToolbar(): Boolean {
         return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
     }
 }
