@@ -417,7 +417,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        if (isAtRoot) {
+        if (isAtRoot || destination.id == R.id.productTypesBottomSheetFragment) {
             toolbar.navigationIcon = null
         } else if (showCrossIcon) {
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
