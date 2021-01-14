@@ -456,15 +456,6 @@ class MainActivity : AppUpgradeActivity(),
             hideBottomNav()
         }
 
-        getActiveTopLevelFragment()?.let {
-            if (isTopLevelNavigation) {
-                it.updateActivityTitle()
-                it.onReturnedFromChildFragment()
-            } else {
-                it.onChildFragmentOpened()
-            }
-        }
-
         previousDestinationId = destination.id
     }
 

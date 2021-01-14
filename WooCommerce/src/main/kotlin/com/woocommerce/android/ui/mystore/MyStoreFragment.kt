@@ -302,11 +302,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
-    override fun refreshFragmentState() {
-        MyStorePresenter.resetForceRefresh()
-        refreshMyStoreStats(forced = false)
-    }
-
     override fun refreshMyStoreStats(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active

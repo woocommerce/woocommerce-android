@@ -142,10 +142,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         trashProductUndoSnack?.dismiss()
     }
 
-    override fun onChildFragmentOpened() {
-        showAddProductButton(false)
-    }
-
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
         when (requestCode) {
             RequestCodes.PRODUCT_LIST_FILTERS -> {
