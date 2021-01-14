@@ -184,7 +184,13 @@ class ProductListViewModel @AssistedInject constructor(
         val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
             ArrayList<Long>().also { it.add(id) }
         }
-        _productList.value = productRepository.getProductList(productFilterOptions, excludedProductIds)
+        val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
+        _productList.value = products
+
+        viewState = viewState.copy(
+            isEmptyViewVisible = products.isEmpty(),
+            displaySortAndFilterCard = products.isNotEmpty()
+        )
     }
 
     final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
