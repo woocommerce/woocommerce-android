@@ -46,7 +46,7 @@ import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
-        OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
+    OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
@@ -69,13 +69,17 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     // Alias for interacting with [viewModel.orderStatusFilter] so the value is always
     // identical to the real value on the UI side.
     private var orderStatusFilter: String
-        private set(value) { viewModel.orderStatusFilter = value }
+        private set(value) {
+            viewModel.orderStatusFilter = value
+        }
         get() = viewModel.orderStatusFilter
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
     // to the real value on the UI side.
     private var isSearching: Boolean
-        private set(value) { viewModel.isSearching = value }
+        private set(value) {
+            viewModel.isSearching = value
+        }
         get() = viewModel.isSearching
 
     private var orderListMenu: Menu? = null
@@ -89,7 +93,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     // Alias for interacting with [viewModel.searchQuery] so the value is always identical
     // to the real value on the UI side.
     private var searchQuery: String
-        private set(value) { viewModel.searchQuery = value }
+        private set(value) {
+            viewModel.searchQuery = value
+        }
         get() = viewModel.searchQuery
 
     /**
@@ -395,7 +401,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         AnalyticsTracker.track(
             Stat.ORDER_OPEN, mapOf(
             AnalyticsTracker.KEY_ID to remoteOrderId,
-            AnalyticsTracker.KEY_STATUS to orderStatus)
+            AnalyticsTracker.KEY_STATUS to orderStatus
+        )
         )
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
@@ -421,8 +428,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         orderStatusFilter = orderStatus ?: StringUtils.EMPTY
         if (isAdded) {
             AnalyticsTracker.track(
-                    Stat.ORDERS_LIST_FILTER,
-                    mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty()))
+                Stat.ORDERS_LIST_FILTER,
+                mapOf(AnalyticsTracker.KEY_STATUS to orderStatus.orEmpty())
+            )
 
             // Display the filtered list view
             displayFilteredList()
@@ -573,8 +581,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
      */
     private fun handleNewSearchRequest(query: String) {
         AnalyticsTracker.track(
-                Stat.ORDERS_LIST_FILTER,
-                mapOf(AnalyticsTracker.KEY_SEARCH to query))
+            Stat.ORDERS_LIST_FILTER,
+            mapOf(AnalyticsTracker.KEY_SEARCH to query)
+        )
 
         searchQuery = query
         submitSearchQuery(searchQuery)
@@ -646,10 +655,10 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         isFilterEnabled = true
         hideOrderStatusListView()
         searchView?.queryHint = getString(R.string.orders)
-                .plus(orderStatusFilter.let { filter ->
-                    val orderStatusLabel = getOrderStatusOptions()[filter]?.label
-                    getString(R.string.orderlist_filtered, orderStatusLabel)
-                })
+            .plus(orderStatusFilter.let { filter ->
+                val orderStatusLabel = getOrderStatusOptions()[filter]?.label
+                getString(R.string.orderlist_filtered, orderStatusLabel)
+            })
 
         searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
             it.setHintTextColor(Color.WHITE)
@@ -718,5 +727,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
     }
 
-    override fun isScrolledToTop() = binding.orderListView.ordersList.computeVerticalScrollOffset() == 0
+    override fun shouldExpandToolbar(): Boolean {
+        return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+    }
 }

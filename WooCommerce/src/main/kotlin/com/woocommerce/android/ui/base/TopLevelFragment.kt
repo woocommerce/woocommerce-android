@@ -10,7 +10,7 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    abstract fun isScrolledToTop(): Boolean
+    abstract fun shouldExpandToolbar(): Boolean
 
     /**
      * Called when the fragment shows or hides a search view so we can properly disable the collapsing

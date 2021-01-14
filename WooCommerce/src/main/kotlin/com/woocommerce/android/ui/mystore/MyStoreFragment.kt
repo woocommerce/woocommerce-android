@@ -443,5 +443,5 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         appBarLayout?.removeView(tabLayout)
     }
 
-    override fun isScrolledToTop() = binding.statsScrollView.scrollY == 0
+    override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
 }

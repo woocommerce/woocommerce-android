@@ -148,7 +148,7 @@ class MainActivity : AppUpgradeActivity(),
                 if (f is TopLevelFragment) {
                     // We need to post this to the view handler to make sure isScrolledToTop returns the correct value
                     f.view?.post {
-                        expandToolbar(expand = f.isScrolledToTop(), animate = false)
+                        expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
                     }
                 } else {
                     expandToolbar(expand = false, animate = false)

@@ -361,5 +361,5 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         openReviewDetail(review)
     }
 
-    override fun isScrolledToTop() = binding.reviewsList.computeVerticalScrollOffset() == 0
+    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
 }
