@@ -67,10 +67,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
-    // If false, the fragment will refresh its data when it's visible on onHiddenChanged
-    // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
-    private var isStatsRefreshed: Boolean = false
-
     private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
     private val activeGranularity: StatsGranularity
         get() {
@@ -180,43 +176,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-        if (isActive && !deferInit) {
-            isStatsRefreshed = true
-            refreshMyStoreStats(forced = this.isRefreshPending)
-        }
+        refreshMyStoreStats(forced = this.isRefreshPending)
     }
 
     override fun onResume() {
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (!isHidden) {
-            if (!isStatsRefreshed) {
-                // silently refresh if this fragment is no longer hidden
-                refreshMyStoreStats(forced = false)
-            }
-            addTabLayoutToAppBar()
-            showChartSkeleton(true)
-            binding.myStoreRefreshLayout.visibility = View.VISIBLE
-            binding.statsErrorScrollView.visibility = View.GONE
-        } else {
-            isStatsRefreshed = false
-            removeTabLayoutFromAppBar()
-        }
-    }
-
-    override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading stats due to it not
-        // being visible - go ahead and load the stats.
-        if (!deferInit) {
-            refreshMyStoreStats(forced = this.isRefreshPending)
-        }
-        addTabLayoutToAppBar()
     }
 
     override fun onStop() {
@@ -344,21 +310,15 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun refreshMyStoreStats(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
-        when {
-            isActive -> {
-                isRefreshPending = false
-                if (forced) {
-                    binding.myStoreStats.clearLabelValues()
-                    binding.myStoreStats.clearChartData()
-                    myStoreDateBar.clearDateRangeValues()
-                }
-                presenter.run {
-                    loadStats(activeGranularity, forced)
-                    coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
-                    fetchHasOrders()
-                }
-            }
-            else -> isRefreshPending = true
+        if (forced) {
+            binding.myStoreStats.clearLabelValues()
+            binding.myStoreStats.clearChartData()
+            myStoreDateBar.clearDateRangeValues()
+        }
+        presenter.run {
+            loadStats(activeGranularity, forced)
+            coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
+            fetchHasOrders()
         }
     }
 

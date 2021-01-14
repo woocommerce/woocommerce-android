@@ -19,7 +19,9 @@ interface TopLevelFragmentView : BaseFragmentView {
     /**
      * User returned to this top level fragment from a nav component fragment
      */
-    fun onReturnedFromChildFragment()
+    fun onReturnedFromChildFragment() {
+
+    }
 
     /**
      * A child fragment for the active tab has been opened.
