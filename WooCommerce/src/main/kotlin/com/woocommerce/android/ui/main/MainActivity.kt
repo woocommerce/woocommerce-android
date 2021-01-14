@@ -51,9 +51,10 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
-import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
+import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
-import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
+import com.woocommerce.android.ui.products.ProductListFragmentDirections
+import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -801,7 +802,7 @@ class MainActivity : AppUpgradeActivity(),
             binding.bottomNav.active(REVIEWS.position)
         }
 
-        val action = ReviewDetailFragmentDirections.actionGlobalReviewDetailFragment(
+        val action = ReviewListFragmentDirections.actionReviewListFragmentToReviewDetailFragment(
             remoteReviewId,
             tempStatus,
             launchedFromNotification,
@@ -811,14 +812,16 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     override fun showProductFilters(stockStatus: String?, productType: String?, productStatus: String?) {
-        val action = NavGraphMainDirections.actionGlobalProductFilterListFragment(
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductFilterListFragment(
             stockStatus, productStatus, productType
         )
         navController.navigateSafely(action)
     }
 
     override fun showProductAddBottomSheet() {
-        val action = NavGraphMainDirections.actionGlobalProductTypeBottomSheetFragment(isAddProduct = true)
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+            isAddProduct = true
+        )
         navController.navigateSafely(action)
     }
 
@@ -826,8 +829,7 @@ class MainActivity : AppUpgradeActivity(),
         localSiteId: Int,
         localOrderId: Int,
         remoteOrderId: Long,
-        remoteNoteId: Long,
-        markComplete: Boolean
+        remoteNoteId: Long
     ) {
         if (binding.bottomNav.currentPosition != ORDERS) {
             binding.bottomNav.currentPosition = ORDERS
@@ -835,19 +837,8 @@ class MainActivity : AppUpgradeActivity(),
             binding.bottomNav.active(navPos)
         }
 
-        if (markComplete) {
-            // if we're marking the order as complete, we need to inclusively pop the backstack to the existing order
-            // detail fragment and then show a new one
-            navController.popBackStack(R.id.orderDetailFragment, true)
-
-            // immediately update the order badge to reflect the change
-            if (unfilledOrderCount > 0) {
-                showOrderBadge(unfilledOrderCount - 1)
-            }
-        }
-
         val orderId = OrderIdentifier(localOrderId, localSiteId, remoteOrderId)
-        val action = OrderDetailFragmentDirections.actionGlobalOrderDetailFragment(orderId, remoteNoteId, markComplete)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
         navController.navigateSafely(action)
     }
 
