@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -65,7 +64,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     NavigationResult {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        const val KEY_LIST_STATE = "list-state"
         fun newInstance() = ProductListFragment()
     }
 
@@ -73,7 +71,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var productAdapter: ProductListAdapter
-    private var listState: Parcelable? = null
 
     private val viewModel: ProductListViewModel by viewModels { viewModelFactory }
 
@@ -99,8 +96,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         setupResultHandlers()
         setHasOptionsMenu(true)
 
-        listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
-
         productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
@@ -123,15 +118,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         super.onAttach(context)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(KEY_LIST_STATE, binding.productsRecycler.layoutManager?.onSaveInstanceState())
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onDestroyView() {
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
+        showAddProductButton(false)
         super.onDestroyView()
         _binding = null
     }
@@ -416,10 +407,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     private fun showProductList(products: List<Product>) {
         productAdapter.setProductList(products)
-        listState?.let {
-            binding.productsRecycler.layoutManager?.onRestoreInstanceState(it)
-            listState = null
-        }
 
         showProductWIPNoticeCard(true)
     }

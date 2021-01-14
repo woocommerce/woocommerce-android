@@ -15,6 +15,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -34,6 +36,7 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.extensions.getRemoteOrderId
 import com.woocommerce.android.extensions.getWooType
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.navigation.KeepStateNavigator
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
@@ -49,7 +52,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.REVIEWS
 import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.reviews.ReviewDetailFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerActivity
@@ -87,7 +89,6 @@ class MainActivity : AppUpgradeActivity(),
 
         private const val KEY_BOTTOM_NAV_POSITION = "key-bottom-nav-position"
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
-        private const val KEY_IS_TOOLBAR_EXPANDED = "is-toolbar-expanded"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
 
@@ -122,7 +123,6 @@ class MainActivity : AppUpgradeActivity(),
     private var previousDestinationId: Int? = null
     private var unfilledOrderCount: Int = 0
     private var isMainThemeApplied = false
-    private var isToolbarExpanded = true
     private var restoreToolbarHeight = 0
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -135,6 +135,29 @@ class MainActivity : AppUpgradeActivity(),
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     private var progressDialog: ProgressDialog? = null
+
+    private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            val currentDestination = navController.currentDestination!!
+            val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment ||
+                currentDestination.id == R.id.wpMediaViewerFragment
+
+            if (!isFullScreenFragment) {
+                // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
+                if (f is TopLevelFragment) {
+                    // We need to post this to the view handler to make sure isScrolledToTop returns the correct value
+                    f.view?.post {
+                        expandToolbar(expand = f.isScrolledToTop(), animate = false)
+                    }
+                } else {
+                    expandToolbar(expand = false, animate = false)
+                }
+
+                // collapsible toolbar should only be able to expand for top-level fragments
+                enableToolbarExpansion(f is TopLevelFragment)
+            }
+        }
+    }
 
     /**
      * Manually set the theme here so the splash screen will be visible while this activity
@@ -167,11 +190,17 @@ class MainActivity : AppUpgradeActivity(),
 
         presenter.takeView(this)
 
-        binding.bottomNav.also { it.init(supportFragmentManager, this) }
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment_main)
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener(this)
+        with(navController) {
+            navigatorProvider.addNavigator(navigator)
+            setGraph(R.navigation.nav_graph_main)
+            addOnDestinationChangedListener(this@MainActivity)
+        }
+        navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
+
+        binding.bottomNav.init(navController, this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -207,13 +236,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
-
-        // detect when the collapsible toolbar if fully expanded
-        binding.appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-            if (isAtNavigationRoot()) {
-                isToolbarExpanded = (verticalOffset == 0)
-            }
-        })
 
         // see overridden onChildViewAdded() and onChildViewRemoved() below
         binding.appBarLayout.setOnHierarchyChangeListener(this)
@@ -257,7 +279,6 @@ class MainActivity : AppUpgradeActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt(KEY_BOTTOM_NAV_POSITION, binding.bottomNav.currentPosition.id)
         outState.putInt(KEY_UNFILLED_ORDER_COUNT, unfilledOrderCount)
-        outState.putBoolean(KEY_IS_TOOLBAR_EXPANDED, isToolbarExpanded)
         super.onSaveInstanceState(outState)
     }
 
@@ -270,8 +291,6 @@ class MainActivity : AppUpgradeActivity(),
             if (count > 0) {
                 showOrderBadge(count)
             }
-
-            isToolbarExpanded = it.getBoolean(KEY_IS_TOOLBAR_EXPANDED)
         }
     }
 
@@ -288,13 +307,10 @@ class MainActivity : AppUpgradeActivity(),
             }
             navController.navigateUp()
             return
-        }
-
-        // if we're not on the dashboard make it active, otherwise allow the OS to leave the app
-        if (binding.bottomNav.currentPosition != MY_STORE) {
-            binding.bottomNav.currentPosition = MY_STORE
+        } else if (binding.bottomNav.currentPosition != MY_STORE) {
+            navController.navigate(R.id.dashboard)
         } else {
-            super.onBackPressed()
+            finish()
         }
     }
 
@@ -313,7 +329,11 @@ class MainActivity : AppUpgradeActivity(),
      */
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
-            navController.currentDestination?.id == R.id.rootFragment
+            val currentDestinationId = navController.currentDestination?.id
+            currentDestinationId == R.id.dashboard ||
+                currentDestinationId == R.id.orders ||
+                currentDestinationId == R.id.products ||
+                currentDestinationId == R.id.reviews
         } else {
             true
         }
@@ -331,20 +351,12 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     /**
-     * Navigates to the root fragment so only the top level fragment is showing
-     */
-    private fun navigateToRoot() {
-        if (!isAtNavigationRoot()) {
-            navController.popBackStack(R.id.rootFragment, false)
-        }
-    }
-
-    /**
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
-    internal fun getActiveTopLevelFragment(): TopLevelFragment? {
+    private fun getActiveTopLevelFragment(): TopLevelFragment? {
         val tag = binding.bottomNav.currentPosition.getTag()
-        return supportFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        return navHostFragment.childFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
     }
 
     /**
@@ -377,13 +389,6 @@ class MainActivity : AppUpgradeActivity(),
         if (isAtRoot && previousDestinationId == null) {
             previousDestinationId = destination.id
             return
-        }
-
-        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
-        if (isTopLevelNavigation) {
-            binding.container.visibility = View.VISIBLE
-        } else {
-            binding.container.visibility = View.INVISIBLE
         }
 
         val showCrossIcon: Boolean
@@ -459,18 +464,6 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        if (!isFullScreenFragment) {
-            // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
-            if (isAtRoot) {
-                expandToolbar(expand = isToolbarExpanded, animate = false)
-            } else {
-                expandToolbar(expand = false, animate = false)
-            }
-
-            // collapsible toolbar should only be able to expand for top-level fragments
-            enableToolbarExpansion(isAtRoot)
-        }
-
         previousDestinationId = destination.id
     }
 
@@ -499,7 +492,6 @@ class MainActivity : AppUpgradeActivity(),
 
     /**
      * Returns a Boolean value in order to set the behaviour from a root navigation type in terms of:
-     * .container visibility
      * .menu items visibility
      * .top nav bar titles
      *
@@ -577,7 +569,7 @@ class MainActivity : AppUpgradeActivity(),
         }
 
         // Complete UI initialization
-        binding.bottomNav.init(supportFragmentManager, this)
+        binding.bottomNav.init(navController, this)
         initFragment(null)
     }
 
@@ -655,19 +647,10 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-        // if were not at the root, clear the nav controller's backstack
-        if (!isAtNavigationRoot()) {
-            navigateToRoot()
-        }
-
         if (navPos == REVIEWS) {
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
             NotificationHandler.removeAllOrderNotifsFromSystemBar(this)
-        }
-
-        getActiveTopLevelFragment()?.let {
-            expandToolbar(it.isScrolledToTop(), animate = false)
         }
     }
 
@@ -685,7 +668,7 @@ class MainActivity : AppUpgradeActivity(),
             getActiveTopLevelFragment()?.scrollToTop()
             expandToolbar(expand = true, animate = true)
         } else {
-            navigateToRoot()
+            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
@@ -766,14 +749,6 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
     // endregion
-
-    override fun showOrderList(orderStatusFilter: String?) {
-        showBottomNav()
-        binding.bottomNav.updatePositionAndDeferInit(ORDERS)
-
-        val fragment = binding.bottomNav.getFragment(ORDERS)
-        (fragment as OrderListFragment).onOrderStatusSelected(orderStatusFilter)
-    }
 
     override fun showNotificationDetail(remoteNoteId: Long) {
         showBottomNav()
