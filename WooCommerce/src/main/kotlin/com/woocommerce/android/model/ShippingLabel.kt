@@ -47,7 +47,7 @@ fun WCShippingLabelModel.toAppModel(): ShippingLabel {
         carrierId,
         serviceName,
         status,
-        Date(dateCreated.toLong()),
+        dateCreated.toLongOrNull()?.let { Date(it) },
         packageName,
         rate.toBigDecimal(),
         refundableAmount.toBigDecimal(),
