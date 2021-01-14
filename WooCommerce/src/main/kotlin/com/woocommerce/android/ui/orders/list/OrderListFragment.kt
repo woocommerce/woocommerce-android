@@ -53,21 +53,10 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val STATE_KEY_IS_FILTER_ENABLED = "is_filter_enabled"
-        const val ARG_ORDER_STATUS_FILTER = "args-order-status-filter"
 
         private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val TAB_INDEX_PROCESSING = 0
         private const val TAB_INDEX_ALL = 1
-
-        fun newInstance(orderStatus: String? = null): OrderListFragment {
-            val fragment = OrderListFragment()
-            orderStatus?.let {
-                val args = Bundle()
-                args.putString(ARG_ORDER_STATUS_FILTER, orderStatus)
-                fragment.arguments = args
-            }
-            return fragment
-        }
     }
 
     @Inject internal lateinit var viewModelFactory: ViewModelFactory
@@ -124,14 +113,11 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setHasOptionsMenu(true)
         savedInstanceState?.let { bundle ->
             orderStatusFilter = bundle.getString(STATE_KEY_ACTIVE_FILTER, StringUtils.EMPTY)
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             isFilterEnabled = bundle.getBoolean(STATE_KEY_IS_FILTER_ENABLED)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-        } ?: arguments?.let {
-            orderStatusFilter = it.getString(ARG_ORDER_STATUS_FILTER, StringUtils.EMPTY)
         }
     }
 
@@ -153,6 +139,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
 
         _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
         addTabLayoutToAppBar()
@@ -257,46 +245,15 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     /**
-     * Gets called when moving between TopLevelFragments
-     */
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (isActive) {
-            showOptionsMenu(true)
-            addTabLayoutToAppBar()
-
-            if (isSearching) {
-                clearSearchResults()
-            }
-        } else {
-            removeTabLayoutFromAppBar()
-        }
-    }
-
-    override fun onReturnedFromChildFragment() {
-        showOptionsMenu(true)
-        addTabLayoutToAppBar()
-
-        if (isOrderStatusFilterEnabled()) {
-            viewModel.reloadListFromCache()
-        } else {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 20)
-        }
-    }
-
-    override fun onChildFragmentOpened() {
-        removeTabLayoutFromAppBar()
-    }
-
-    /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
      */
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
             enableSearchListeners()
+            val savedSearchQuery = searchQuery
             searchMenuItem?.expandActionView()
+            searchQuery = savedSearchQuery
             if (isFilterEnabled) displayFilteredList()
         } else {
             val showSearch = shouldShowSearchMenuItem()
@@ -332,18 +289,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     private fun getOrderStatusOptions() = viewModel.orderStatusOptions.value.orEmpty()
 
     override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
-
-    override fun refreshFragmentState() {
-        if (isActive) {
-            binding.orderListView.clearAdapterData()
-            refreshOrders() // reload the active list from scratch
-        } else {
-            // refresh order status options in the background even when order list is hidden
-            // This is so that when an order status change takes place, we need to refresh the order
-            // status count in the local cache
-            viewModel.fetchOrderStatusOptions()
-        }
-    }
 
     override fun scrollToTop() {
         binding.orderListView.scrollToTop()
@@ -596,6 +541,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             disableSearchListeners()
             updateActivityTitle()
             searchMenuItem?.collapseActionView()
+            (activity as? MainActivity)?.showBottomNav()
         }
     }
 
@@ -663,7 +609,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
-        (activity as? MainActivity)?.showBottomNav()
 
         if (isFilterEnabled) closeFilteredList()
     }
@@ -763,7 +708,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     private fun addTabLayoutToAppBar() {
         (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
-            if (isActive && !appBar.children.contains(tabLayout)) {
+            if (!appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
         }

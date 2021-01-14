@@ -436,7 +436,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
 
     private fun addTabLayoutToAppBar() {
         appBarLayout
-            ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.takeIf { !it.children.containsInstanceOf(tabLayout) }
             ?.takeIf { AppPrefs.isV4StatsSupported() }
             ?.addView(
                 tabLayout,
