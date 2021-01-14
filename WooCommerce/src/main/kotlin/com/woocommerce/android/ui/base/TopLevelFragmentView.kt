@@ -9,7 +9,7 @@ interface TopLevelFragmentView : BaseFragmentView {
     /**
      * Refresh this top-level fragment data and reset its state.
      */
-    fun refreshFragmentState()
+    fun refreshFragmentState() { }
 
     /**
      * Scroll to the top of this view

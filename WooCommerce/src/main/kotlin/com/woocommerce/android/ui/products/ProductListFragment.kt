@@ -91,10 +91,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setHasOptionsMenu(true)
+
         _binding = FragmentProductListBinding.bind(view)
         setupObservers(viewModel)
         setupResultHandlers()
-        setHasOptionsMenu(true)
 
         productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
@@ -110,6 +111,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
+        }
+
+        if (!viewModel.isSearching()) {
+            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
 
@@ -137,32 +142,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         trashProductUndoSnack?.dismiss()
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (hidden) {
-            disableSearchListeners()
-            trashProductUndoSnack?.dismiss()
-            showAddProductButton(false)
-        } else {
-            enableSearchListeners()
-            if (!viewModel.isSearching()) {
-                showAddProductButton(true)
-            }
-        }
-    }
-
     override fun onChildFragmentOpened() {
         showAddProductButton(false)
-    }
-
-    override fun onReturnedFromChildFragment() {
-        showOptionsMenu(true)
-
-        if (!viewModel.isSearching()) {
-            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
-            showAddProductButton(true)
-        }
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
@@ -190,13 +171,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onPrepareOptionsMenu(menu: Menu) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
-    }
-
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            refreshOptionsMenu()
-        }
     }
 
     /**
@@ -382,12 +356,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     override fun getFragmentTitle() = getString(R.string.products)
 
-    override fun refreshFragmentState() {
-        if (isActive) {
-            viewModel.refreshProducts()
-        }
-    }
-
     override fun scrollToTop() {
         binding.productsRecycler.smoothScrollToPosition(0)
     }
@@ -473,8 +441,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
 
     private fun showProductDetails(remoteProductId: Long) {
-        disableSearchListeners()
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
 
@@ -485,8 +451,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
-        disableSearchListeners()
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
     }
 
