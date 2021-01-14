@@ -143,12 +143,14 @@ class MainActivity : AppUpgradeActivity(),
             val isFullScreenFragment = currentDestination.id == R.id.productImageViewerFragment ||
                 currentDestination.id == R.id.wpMediaViewerFragment
 
-            if (!isFullScreenFragment) {
+            val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
+
+            if (!isFullScreenFragment && !isDialogDestination) {
                 // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
                 if (f is TopLevelFragment) {
                     // We need to post this to the view handler to make sure isScrolledToTop returns the correct value
                     f.view?.post {
-                        expandToolbar(expand = f.isScrolledToTop(), animate = false)
+                        expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
                     }
                 } else {
                     expandToolbar(expand = false, animate = false)
@@ -454,15 +456,6 @@ class MainActivity : AppUpgradeActivity(),
             showBottomNav()
         } else {
             hideBottomNav()
-        }
-
-        getActiveTopLevelFragment()?.let {
-            if (isTopLevelNavigation) {
-                it.updateActivityTitle()
-                it.onReturnedFromChildFragment()
-            } else {
-                it.onChildFragmentOpened()
-            }
         }
 
         previousDestinationId = destination.id

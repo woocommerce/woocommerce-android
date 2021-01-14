@@ -62,8 +62,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    private var newDataAvailable = false // New reviews are available in cache
-
     private var pendingModerationRequest: ProductReviewModerationRequest? = null
     private var pendingModerationRemoteReviewId: Long? = null
     private var pendingModerationNewStatus: String? = null
@@ -75,13 +73,12 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        savedInstanceState?.let { bundle ->
-            newDataAvailable = bundle.getBoolean(KEY_NEW_DATA_AVAILABLE, false)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
 
         _binding = FragmentReviewsListBinding.bind(view)
 
@@ -169,23 +166,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         changeReviewStatusSnackbar?.dismiss()
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        // If this fragment is no longer visible dismiss the pending review moderation
-        // s it can be processed immediately, otherwise silently refresh
-        if (hidden) {
-            changeReviewStatusSnackbar?.dismiss()
-        } else {
-            checkForNewDataAvailable()
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_NEW_DATA_AVAILABLE, newDataAvailable)
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
@@ -197,8 +177,7 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                if (isActive)
-                    binding.notifsRefreshLayout.isRefreshing = it
+                binding.notifsRefreshLayout.isRefreshing = it
             }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
@@ -240,17 +219,14 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
                 context?.let { NotificationHandler.removeAllReviewNotifsFromSystemBar(it) }
             }
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
-            else -> {}
+            else -> {
+            }
         }
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
-        if (isActive) {
-            reviewsAdapter.setReviews(reviews)
-            showEmptyView(reviews.isEmpty())
-        } else {
-            newDataAvailable = true
-        }
+        reviewsAdapter.setReviews(reviews)
+        showEmptyView(reviews.isEmpty())
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -274,29 +250,16 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     }
 
     private fun showMarkAllReadMenuItem(show: Boolean) {
-        val showMarkAllRead = isActive && show
-        menuMarkAllRead?.let { if (it.isVisible != showMarkAllRead) it.isVisible = showMarkAllRead }
+        menuMarkAllRead?.let { if (it.isVisible != show) it.isVisible = show }
     }
 
     private fun openReviewDetail(review: ProductReview) {
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showReviewDetail(
-                review.remoteId,
-                launchedFromNotification = false,
-                enableModeration = true,
-                tempStatus = pendingModerationNewStatus
+            review.remoteId,
+            launchedFromNotification = false,
+            enableModeration = true,
+            tempStatus = pendingModerationNewStatus
         )
-    }
-
-    /**
-     * We use this to clear the options menu when navigating to a child destination - otherwise this
-     * fragment's menu will continue to appear when the child is shown
-     */
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            activity?.invalidateOptionsMenu()
-        }
     }
 
     private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
@@ -307,7 +270,8 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
                 resetPendingModerationVariables()
             }
             ActionStatus.ERROR -> revertPendingModerationState()
-            else -> { /* do nothing */ }
+            else -> { /* do nothing */
+            }
         }
     }
 
@@ -339,15 +303,15 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             }
 
             changeReviewStatusSnackbar = uiMessageResolver
-                    .getUndoSnack(
-                            R.string.review_moderation_undo,
-                            ProductReviewStatus.getLocalizedLabel(context, newStatus)
-                                    .toLowerCase(Locale.getDefault()),
-                            actionListener = actionListener
-                    ).also {
-                        it.addCallback(callback)
-                        it.show()
-                    }
+                .getUndoSnack(
+                    R.string.review_moderation_undo,
+                    ProductReviewStatus.getLocalizedLabel(context, newStatus)
+                        .toLowerCase(Locale.getDefault()),
+                    actionListener = actionListener
+                ).also {
+                    it.addCallback(callback)
+                    it.show()
+                }
 
             // Manually remove the product review from the list if it's new
             // status will be spam or trash
@@ -387,27 +351,8 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)
 
-    override fun refreshFragmentState() {
-        if (isActive) {
-            viewModel.forceRefreshReviews()
-        }
-    }
-
     override fun scrollToTop() {
         binding.reviewsList.smoothScrollToPosition(0)
-    }
-
-    override fun onReturnedFromChildFragment() {
-        checkForNewDataAvailable()
-        showOptionsMenu(true)
-    }
-
-    private fun checkForNewDataAvailable() {
-        if (newDataAvailable && isActive) {
-            viewModel.reloadReviewsFromCache()
-            viewModel.checkForUnreadReviews()
-            newDataAvailable = false
-        }
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
@@ -416,5 +361,5 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         openReviewDetail(review)
     }
 
-    override fun isScrolledToTop() = binding.reviewsList.computeVerticalScrollOffset() == 0
+    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
 }
