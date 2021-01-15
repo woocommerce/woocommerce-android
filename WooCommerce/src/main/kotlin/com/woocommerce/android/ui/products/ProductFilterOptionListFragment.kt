@@ -76,8 +76,8 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
             showProductFilterList(it)
         })
 
-        viewModel.event.observe(viewLifecycleOwner) {event ->
-            when(event) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
                 }

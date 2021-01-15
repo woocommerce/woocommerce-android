@@ -133,7 +133,7 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
     }
 
     private fun setupResultHandlers() {
-        handleResult<ProductCategory>(ARG_ADDED_CATEGORY) {category ->
+        handleResult<ProductCategory>(ARG_ADDED_CATEGORY) { category ->
             viewModel.onProductCategoryAdded(category)
             changesMade()
         }

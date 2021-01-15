@@ -23,7 +23,7 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
     }
     entry?.savedStateHandle?.set(key, result)
 
-    if(destinationId != null) {
+    if (destinationId != null) {
         findNavController().popBackStack(destinationId, false)
     } else {
         findNavController().navigateUp()

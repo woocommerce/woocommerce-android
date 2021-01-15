@@ -92,7 +92,7 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     }
 
     private fun setupResultHandlers() {
-        handleResult<ShippingClass>(SELECTED_SHIPPING_CLASS_RESULT) {shippingClass ->
+        handleResult<ShippingClass>(SELECTED_SHIPPING_CLASS_RESULT) { shippingClass ->
             viewModel.onDataChanged(
                 shippingClassSlug = shippingClass.slug,
                 shippingClassId = shippingClass.remoteShippingClassId

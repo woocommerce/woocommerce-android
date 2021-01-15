@@ -85,7 +85,7 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
 
     override fun hasChanges(): Boolean {
         return navArgs.featured != binding.btnFeatured.isChecked ||
-                navArgs.catalogVisibility != selectedCatalogVisibility
+            navArgs.catalogVisibility != selectedCatalogVisibility
     }
 
     override fun validateChanges() = true
@@ -119,4 +119,7 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
 }
 
 @Parcelize
-data class ProductCatalogVisibilityResult(val catalogVisibility: ProductCatalogVisibility, val isFeatured: Boolean) : Parcelable
+data class ProductCatalogVisibilityResult(
+    val catalogVisibility: ProductCatalogVisibility,
+    val isFeatured: Boolean
+) : Parcelable

@@ -91,7 +91,7 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
-            when(event) {
+            when (event) {
                 is ExitWithResult<*> -> navigateBackWithResult(SELECTED_SHIPPING_CLASS_RESULT, event.data)
                 else -> event.isHandled = false
             }

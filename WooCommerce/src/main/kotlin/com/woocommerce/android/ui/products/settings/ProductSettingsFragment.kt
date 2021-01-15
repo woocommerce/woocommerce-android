@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings) {
     private var _binding: FragmentProductSettingsBinding? = null
@@ -120,8 +121,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             viewModel.updateProductDraft(productStatus = status)
             updateProductView()
         }
-        handleResult<ProductCatalogVisibilityResult>(ProductCatalogVisibilityFragment.ARG_CATALOG_VISIBILITY)
-        { result ->
+        handleResult<ProductCatalogVisibilityResult>(ARG_CATALOG_VISIBILITY) { result ->
             viewModel.updateProductDraft(
                 catalogVisibility = result.catalogVisibility,
                 isFeatured = result.isFeatured
