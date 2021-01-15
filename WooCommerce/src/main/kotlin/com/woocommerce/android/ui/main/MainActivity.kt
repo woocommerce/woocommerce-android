@@ -109,10 +109,6 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    interface NavigationResult {
-        fun onNavigationResult(requestCode: Int, result: Bundle)
-    }
-
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject lateinit var presenter: MainContract.Presenter
     @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener

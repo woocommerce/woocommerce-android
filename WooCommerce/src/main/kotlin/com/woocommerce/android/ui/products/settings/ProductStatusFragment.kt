@@ -82,12 +82,6 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         }
     }
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putString(ARG_SELECTED_STATUS, selectedStatus)
-        }
-    }
-
     override fun getChangesResult() = ARG_SELECTED_STATUS to ProductStatus.fromString(selectedStatus)!!
 
     override fun hasChanges() = navArgs.status != selectedStatus
