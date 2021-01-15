@@ -24,8 +24,6 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
@@ -108,7 +106,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) {result ->
+        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                 viewModel.updateProductDraft(
                     purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
@@ -124,6 +122,14 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         }
         handleResult<ProductStatus>(ProductStatusFragment.ARG_SELECTED_STATUS) { status ->
             viewModel.updateProductDraft(productStatus = status)
+            updateProductView()
+        }
+        handleResult<ProductCatalogVisibilityResult>(ProductCatalogVisibilityFragment.ARG_CATALOG_VISIBILITY)
+        { result ->
+            viewModel.updateProductDraft(
+                catalogVisibility = result.catalogVisibility,
+                isFeatured = result.isFeatured
+            )
             updateProductView()
         }
     }
@@ -156,15 +162,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
-            (result.getString(ARG_CATALOG_VISIBILITY))?.let {
-                val catalogVisibility = ProductCatalogVisibility.fromString(it)
-                viewModel.updateProductDraft(
-                        catalogVisibility = catalogVisibility,
-                        isFeatured = result.getBoolean(ARG_IS_FEATURED)
-                )
-            }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
+        if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
             viewModel.updateProductDraft(

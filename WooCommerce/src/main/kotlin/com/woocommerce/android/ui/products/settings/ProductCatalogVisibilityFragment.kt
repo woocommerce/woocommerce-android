@@ -1,19 +1,20 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductCatalogVisibilityBinding
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.CATALOG
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HIDDEN
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.SEARCH
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Settings screen which enables choosing a product's catalog visibility
@@ -25,10 +26,8 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
         const val ARG_IS_FEATURED = "is_featured"
     }
 
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY
-
     private val navArgs: ProductCatalogVisibilityFragmentArgs by navArgs()
-    private var selectedCatalogVisibility: String? = null
+    private lateinit var selectedCatalogVisibility: String
 
     private var _binding: FragmentProductCatalogVisibilityBinding? = null
     private val binding get() = _binding!!
@@ -42,9 +41,7 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
         selectedCatalogVisibility = savedInstanceState?.getString(ARG_CATALOG_VISIBILITY) ?: navArgs.catalogVisibility
         binding.btnFeatured.isChecked = savedInstanceState?.getBoolean(ARG_IS_FEATURED) ?: navArgs.featured
 
-        selectedCatalogVisibility?.let {
-            getButtonForVisibility(it)?.isChecked = true
-        }
+        getButtonForVisibility(selectedCatalogVisibility).isChecked = true
 
         binding.btnVisibilityVisible.setOnClickListener(this)
         binding.btnVisibilityCatalog.setOnClickListener(this)
@@ -79,11 +76,11 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
         }
     }
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putString(ARG_CATALOG_VISIBILITY, selectedCatalogVisibility)
-            it.putBoolean(ARG_IS_FEATURED, binding.btnFeatured.isChecked)
-        }
+    override fun getChangesResult(): Pair<String, Any> {
+        return ARG_CATALOG_VISIBILITY to ProductCatalogVisibilityResult(
+            catalogVisibility = ProductCatalogVisibility.fromString(selectedCatalogVisibility)!!,
+            isFeatured = binding.btnFeatured.isChecked
+        )
     }
 
     override fun hasChanges(): Boolean {
@@ -100,23 +97,26 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
 
     override fun getFragmentTitle() = getString(R.string.product_catalog_visibility)
 
-    private fun getButtonForVisibility(visibility: String): CheckedTextView? {
+    private fun getButtonForVisibility(visibility: String): CheckedTextView {
         return when (ProductCatalogVisibility.fromString(visibility)) {
             VISIBLE -> binding.btnVisibilityVisible
             CATALOG -> binding.btnVisibilityCatalog
             SEARCH -> binding.btnVisibilitySearch
             HIDDEN -> binding.btnVisibilityHidden
-            else -> null
+            else -> throw IllegalArgumentException()
         }
     }
 
-    private fun getVisibilityForButtonId(@IdRes buttonId: Int): String? {
+    private fun getVisibilityForButtonId(@IdRes buttonId: Int): String {
         return when (buttonId) {
             R.id.btnVisibilityVisible -> VISIBLE.toString()
             R.id.btnVisibilityCatalog -> CATALOG.toString()
             R.id.btnVisibilitySearch -> SEARCH.toString()
             R.id.btnVisibilityHidden -> HIDDEN.toString()
-            else -> null
+            else -> throw IllegalArgumentException()
         }
     }
 }
+
+@Parcelize
+data class ProductCatalogVisibilityResult(val catalogVisibility: ProductCatalogVisibility, val isFeatured: Boolean) : Parcelable
