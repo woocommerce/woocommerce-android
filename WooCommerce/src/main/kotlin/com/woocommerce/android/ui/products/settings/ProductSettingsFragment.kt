@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
-import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
 
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
     private var _binding: FragmentProductSettingsBinding? = null
@@ -123,6 +122,10 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
                 updateProductView()
             }
         }
+        handleResult<ProductStatus>(ProductStatusFragment.ARG_SELECTED_STATUS) { status ->
+            viewModel.updateProductDraft(productStatus = status)
+            updateProductView()
+        }
     }
 
     override fun onDestroyView() {
@@ -153,12 +156,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
-            (result.getString(ARG_SELECTED_STATUS))?.let {
-                val status = ProductStatus.fromString(it)
-                viewModel.updateProductDraft(productStatus = status)
-            }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
+        if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
             (result.getString(ARG_CATALOG_VISIBILITY))?.let {
                 val catalogVisibility = ProductCatalogVisibility.fromString(it)
                 viewModel.updateProductDraft(
