@@ -373,13 +373,14 @@ class MainActivity : AppUpgradeActivity(),
         val isAtRoot = isAtNavigationRoot()
         val isTopLevelNavigation = isAtTopLevelNavigation(isAtRoot = isAtRoot, destination = destination)
 
-        // go no further if this is the initial navigation to the root fragment
-        if (isAtRoot && previousDestinationId == null) {
+        // go no further if this is the initial navigation to the root fragment, or if the destination is
+        // a dialog (since we don't need to change anything for dialogs)
+        if ((isAtRoot && previousDestinationId == null) || isDialogDestination(destination)) {
             previousDestinationId = destination.id
             return
         }
 
-        // show/hide the top level fragment container if this is a dialog destination from root or, just root itself
+        // only show the top level fragment container for top level fragments
         if (isTopLevelNavigation) {
             binding.container.visibility = View.VISIBLE
         } else {
@@ -417,7 +418,7 @@ class MainActivity : AppUpgradeActivity(),
             }
         }
 
-        if (isAtRoot || destination.id == R.id.productTypesBottomSheetFragment) {
+        if (isAtRoot) {
             toolbar.navigationIcon = null
         } else if (showCrossIcon) {
             toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_gridicons_cross_24dp)
@@ -507,11 +508,12 @@ class MainActivity : AppUpgradeActivity(),
      * @param destination The object for the next navigation destination
      */
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
-        val isDialogDestination = destination.navigatorName == DIALOG_NAVIGATOR_NAME
         val activeChild = getHostChildFragment()
         val activeChildIsRoot = activeChild != null && activeChild is RootFragment
-        return (isDialogDestination && activeChildIsRoot) || isAtRoot
+        return (isDialogDestination(destination) && activeChildIsRoot) || isAtRoot
     }
+
+    private fun isDialogDestination(destination: NavDestination) = destination.navigatorName == DIALOG_NAVIGATOR_NAME
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
