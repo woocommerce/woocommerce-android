@@ -12,12 +12,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductSettingsBinding
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -107,6 +107,19 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
                     )
             )
         }
+
+        setupResultHandlers()
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) {result ->
+            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                viewModel.updateProductDraft(
+                    purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
+                updateProductView()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -152,12 +165,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             }
         } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
             viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
-        } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
-            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                viewModel.updateProductDraft(
-                        purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
-                )
-            }
         } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
             viewModel.updateProductDraft(
                         menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
