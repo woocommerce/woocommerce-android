@@ -9,6 +9,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -80,6 +81,10 @@ class ProductShippingClassViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    fun onShippingClassClicked(shippingClass: ShippingClass) {
+        triggerEvent(ExitWithResult(shippingClass))
     }
 
     @Parcelize
