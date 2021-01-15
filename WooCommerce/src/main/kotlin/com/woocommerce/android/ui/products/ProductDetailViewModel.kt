@@ -370,7 +370,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onDownloadsSettingsClicked() {
-        discardEditChanges()
         triggerEvent(ViewProductDownloadsSettings)
     }
 
