@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -24,7 +23,6 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
     private var _binding: FragmentProductSettingsBinding? = null
@@ -132,6 +130,11 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             )
             updateProductView()
         }
+
+        handleResult<String>(ProductSlugFragment.ARG_SLUG) { slug ->
+            viewModel.updateProductDraft(slug = slug)
+            updateProductView()
+        }
     }
 
     override fun onDestroyView() {
@@ -162,9 +165,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
-            viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
-        } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
+        if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
             viewModel.updateProductDraft(
                         menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
             )
