@@ -10,21 +10,19 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductSettingsBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 
-class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
+class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings) {
     private var _binding: FragmentProductSettingsBinding? = null
     private val binding get() = _binding!!
 
@@ -130,9 +128,12 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             )
             updateProductView()
         }
-
         handleResult<String>(ProductSlugFragment.ARG_SLUG) { slug ->
             viewModel.updateProductDraft(slug = slug)
+            updateProductView()
+        }
+        handleResult<Int>(ProductMenuOrderFragment.ARG_MENU_ORDER) { menuOrder ->
+            viewModel.updateProductDraft(menuOrder = menuOrder)
             updateProductView()
         }
     }
@@ -162,17 +163,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
-            viewModel.updateProductDraft(
-                        menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
-            )
-        }
-
-        updateProductView()
-        activity?.invalidateOptionsMenu()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
