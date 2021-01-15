@@ -12,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductSettingsBinding
@@ -29,8 +28,6 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFrag
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
 import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
 import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
 
 class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
     private var _binding: FragmentProductSettingsBinding? = null
@@ -120,6 +117,12 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
                 updateProductView()
             }
         }
+        handleResult<ProductVisibilityResult>(ProductVisibilityFragment.PRODUCT_VISIBILITY_RESULT) { result ->
+            ProductVisibility.fromString(result.selectedVisiblity)?.let { visibility ->
+                viewModel.updateProductVisibility(visibility, result.password)
+                updateProductView()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -169,11 +172,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             viewModel.updateProductDraft(
                         menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
             )
-        } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
-            ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
-                val password = result.getString(ARG_PASSWORD) ?: ""
-                viewModel.updateProductVisibility(visibility, password)
-            }
         }
 
         updateProductView()
