@@ -66,10 +66,8 @@ class AddOrderTrackingProviderListFragment : BaseFragment(R.layout.dialog_order_
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        // We don't use the menu R.menu.menu_search as it's being used in [OrderListFragment]
-        // and it's onPrepareOptionsMenu unassign our listeners after screen rotation
-        inflater.inflate(R.menu.menu_shipment_tracking_providers, menu)
-        val searchMenuItem = menu.findItem(R.id.menu_shipment_providers_search)
+        inflater.inflate(R.menu.menu_search, menu)
+        val searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem!!.actionView as SearchView
         searchView?.let {
             val currentQuery = viewModel.trackingProviderListViewStateData.liveData.value?.query ?: ""
