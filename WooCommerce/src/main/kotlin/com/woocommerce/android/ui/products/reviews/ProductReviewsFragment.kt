@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products.reviews
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -13,6 +11,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentReviewsListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
@@ -24,11 +23,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import kotlinx.android.synthetic.main.fragment_reviews_list.*
-import kotlinx.android.synthetic.main.fragment_reviews_list.view.*
 import javax.inject.Inject
 
-class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickListener {
+class ProductReviewsFragment : BaseFragment(R.layout.fragment_reviews_list),
+    ReviewListAdapter.OnReviewClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -38,19 +36,21 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
 
     private val skeletonView = SkeletonView()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_reviews_list, container, false)
-    }
+    private var _binding: FragmentReviewsListBinding? = null
+    private val binding get() = _binding!!
 
     override fun getFragmentTitle() = getString(R.string.product_reviews)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentReviewsListBinding.bind(view)
         setupObservers()
+    }
+
+    override fun onDestroyView() {
+        skeletonView.hide()
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -59,7 +59,7 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
         val activity = requireActivity()
         reviewsAdapter = ReviewListAdapter(activity, this)
 
-        reviewsList.apply {
+        binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
@@ -77,9 +77,9 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
             })
         }
 
-        notifsRefreshLayout?.apply {
+        binding.notifsRefreshLayout.apply {
             // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = reviewsList
+            scrollUpChild = binding.reviewsList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
                 viewModel.refreshProductReviews()
@@ -90,7 +90,7 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
     private fun setupObservers() {
         viewModel.productReviewsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { notifsRefreshLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.notifsRefreshLayout.isRefreshing = it }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
@@ -112,13 +112,13 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        binding.notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> {
-                skeletonView.show(notifsView, R.layout.skeleton_notif_list, delayed = true)
+                skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
             false -> skeletonView.hide()
@@ -127,17 +127,12 @@ class ProductReviewsFragment : BaseFragment(), ReviewListAdapter.OnReviewClickLi
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            empty_view.show(EmptyViewType.REVIEW_LIST) {
+            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
                 ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
             }
         } else {
-            empty_view.hide()
+            binding.emptyView.hide()
         }
-    }
-
-    override fun onDestroyView() {
-        skeletonView.hide()
-        super.onDestroyView()
     }
 
     override fun onReviewClick(review: ProductReview) {

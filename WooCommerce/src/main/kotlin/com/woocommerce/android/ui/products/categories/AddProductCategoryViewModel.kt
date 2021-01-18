@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.categories
 
 import android.content.DialogInterface
 import android.os.Parcelable
+import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
@@ -82,7 +83,7 @@ class AddProductCategoryViewModel @AssistedInject constructor(
         addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = true)
         launch {
             if (networkStatus.isConnected()) {
-                val categoryNameTrimmed = categoryName.trim()
+                val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
                 val requestResult = productCategoriesRepository.addProductCategory(categoryNameTrimmed, parentId)
                 // hide progress dialog
                 addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)

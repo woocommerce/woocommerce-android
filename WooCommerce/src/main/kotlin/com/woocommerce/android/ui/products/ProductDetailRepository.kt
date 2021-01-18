@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_ERROR
@@ -53,10 +54,6 @@ class ProductDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProduct: CancellableContinuation<Boolean>? = null
     private var continuationFetchProductPassword: CancellableContinuation<String?>? = null
@@ -84,7 +81,7 @@ class ProductDetailRepository @Inject constructor(
         try {
             this.remoteProductId = remoteProductId
             continuationFetchProduct?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchProduct = it
 
                 val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
@@ -102,7 +99,7 @@ class ProductDetailRepository @Inject constructor(
         var password: String? = null
         try {
             continuationFetchProductPassword?.cancel()
-            password = suspendCancellableCoroutineWithTimeout<String?>(ACTION_TIMEOUT) {
+            password = suspendCancellableCoroutineWithTimeout<String?>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchProductPassword = it
 
                 val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
@@ -123,7 +120,7 @@ class ProductDetailRepository @Inject constructor(
      */
     suspend fun updateProduct(updatedProduct: Product): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
                 val product = updatedProduct.toDataModel(getCachedWCProductModel(updatedProduct.remoteId))
@@ -143,7 +140,7 @@ class ProductDetailRepository @Inject constructor(
      */
     suspend fun addProduct(product: Product): Pair<Boolean, Long> {
         return try {
-            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Pair<Boolean, Long>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddProduct = it
                 val model = product.toDataModel(null)
                 val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
@@ -163,7 +160,7 @@ class ProductDetailRepository @Inject constructor(
     suspend fun updateProductPassword(remoteProductId: Long, password: String?): Boolean {
         return try {
             continuationUpdateProductPassword?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProductPassword = it
 
                 val payload = WCProductStore.UpdateProductPasswordPayload(
@@ -187,7 +184,7 @@ class ProductDetailRepository @Inject constructor(
     suspend fun isSkuAvailableRemotely(sku: String): Boolean? {
         continuationVerifySku?.cancel()
         return try {
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationVerifySku = it
 
                 val payload = FetchProductSkuAvailabilityPayload(selectedSite.get(), sku)
@@ -207,7 +204,7 @@ class ProductDetailRepository @Inject constructor(
     suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {
         try {
             continuationFetchProductShippingClass?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchProduct = it
 
                 val payload = WCProductStore.FetchSingleProductShippingClassPayload(

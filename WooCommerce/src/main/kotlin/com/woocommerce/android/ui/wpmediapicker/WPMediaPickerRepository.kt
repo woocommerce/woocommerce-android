@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.wpmediapicker
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -23,7 +24,6 @@ class WPMediaPickerRepository @Inject constructor(
     private val mediaStore: MediaStore
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
 
         // according to the docs, use this to return only images (passing "image/*" doesn't work)
@@ -49,7 +49,7 @@ class WPMediaPickerRepository @Inject constructor(
     suspend fun fetchSiteMediaList(loadMore: Boolean = false): List<Product.Image> {
         try {
             loadContinuation?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 loadContinuation = it
                 val payload = MediaStore.FetchMediaListPayload(
                         selectedSite.get(),
