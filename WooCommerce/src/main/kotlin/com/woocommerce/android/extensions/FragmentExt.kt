@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -11,11 +12,22 @@ import androidx.navigation.fragment.findNavController
  *
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
+ * @param [destinationId] an optional destinationId, that can be used to navigating up to a specified destination
  *
  */
-fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
-    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, result)
-    findNavController().navigateUp()
+fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinationId: Int? = null) {
+    val entry = if (destinationId != null) {
+        findNavController().getBackStackEntry(destinationId)
+    } else {
+        findNavController().previousBackStackEntry
+    }
+    entry?.savedStateHandle?.set(key, result)
+
+    if (destinationId != null) {
+        findNavController().popBackStack(destinationId, false)
+    } else {
+        findNavController().navigateUp()
+    }
 }
 
 /**
@@ -24,11 +36,10 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T) {
  * Fragment.handleNotice() extension function.
  *
  * @param [key] A unique string that is the same as the one used in [handleNotice]
- *
+ * @param [destinationId] an optional destinationId, that can be used to navigating up to a specified destination
  */
-fun Fragment.navigateBackWithNotice(key: String) {
-    findNavController().previousBackStackEntry?.savedStateHandle?.set(key, key)
-    findNavController().navigateUp()
+fun Fragment.navigateBackWithNotice(key: String, @IdRes destinationId: Int? = null) {
+    navigateBackWithResult(key, key, destinationId)
 }
 
 /**

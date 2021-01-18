@@ -8,10 +8,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -31,6 +29,8 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener, IHistoryListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
+        const val AZTEC_EDITOR_RESULT = "aztec_editor_result"
+        const val ARG_AZTEC_REQUEST_CODE = "aztec-request-code"
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
 
@@ -207,21 +207,11 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
 
     private fun navigateBackWithResult(hasChanges: Boolean) {
         val bundle = Bundle().also {
+            it.putInt(ARG_AZTEC_REQUEST_CODE, navArgs.requestCode)
             it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
             it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
         }
-        @IdRes val destinationId = when (navArgs.requestCode) {
-            RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE -> R.id.productSettingsFragment
-            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> R.id.variationDetailFragment
-            else -> R.id.productDetailFragment
-        }
-
-        requireActivity().navigateBackWithResult(
-                navArgs.requestCode,
-                bundle,
-                R.id.nav_host_fragment_main,
-                destinationId
-        )
+        navigateBackWithResult(AZTEC_EDITOR_RESULT, bundle)
     }
 
     override fun onRedo() {

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductMenuOrderBinding
 import org.wordpress.android.util.StringUtils
@@ -17,7 +16,6 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
         const val ARG_MENU_ORDER = "menu_order"
     }
 
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
     private val navArgs: ProductMenuOrderFragmentArgs by navArgs()
 
     private var _binding: FragmentProductMenuOrderBinding? = null
@@ -43,11 +41,7 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
 
     override fun validateChanges() = true
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putInt(ARG_MENU_ORDER, getMenuOrder())
-        }
-    }
+    override fun getChangesResult(): Pair<String, Any> = ARG_MENU_ORDER to getMenuOrder()
 
     private fun getMenuOrder() = StringUtils.stringToInt(binding.productMenuOrder.getText())
 

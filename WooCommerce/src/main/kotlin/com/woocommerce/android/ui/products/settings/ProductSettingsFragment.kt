@@ -10,29 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
-import com.woocommerce.android.RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductSettingsBinding
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
-import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_IS_FEATURED
-import com.woocommerce.android.ui.products.settings.ProductSlugFragment.Companion.ARG_SLUG
-import com.woocommerce.android.ui.products.settings.ProductStatusFragment.Companion.ARG_SELECTED_STATUS
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_PASSWORD
-import com.woocommerce.android.ui.products.settings.ProductVisibilityFragment.Companion.ARG_VISIBILITY
 
-class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings), NavigationResult {
+class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_settings) {
     private var _binding: FragmentProductSettingsBinding? = null
     private val binding get() = _binding!!
 
@@ -107,6 +98,44 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
                     )
             )
         }
+
+        setupResultHandlers()
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
+            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                viewModel.updateProductDraft(
+                    purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
+                updateProductView()
+            }
+        }
+        handleResult<ProductVisibilityResult>(ProductVisibilityFragment.PRODUCT_VISIBILITY_RESULT) { result ->
+            ProductVisibility.fromString(result.selectedVisiblity)?.let { visibility ->
+                viewModel.updateProductVisibility(visibility, result.password)
+                updateProductView()
+            }
+        }
+        handleResult<ProductStatus>(ProductStatusFragment.ARG_SELECTED_STATUS) { status ->
+            viewModel.updateProductDraft(productStatus = status)
+            updateProductView()
+        }
+        handleResult<ProductCatalogVisibilityResult>(ARG_CATALOG_VISIBILITY) { result ->
+            viewModel.updateProductDraft(
+                catalogVisibility = result.catalogVisibility,
+                isFeatured = result.isFeatured
+            )
+            updateProductView()
+        }
+        handleResult<String>(ProductSlugFragment.ARG_SLUG) { slug ->
+            viewModel.updateProductDraft(slug = slug)
+            updateProductView()
+        }
+        handleResult<Int>(ProductMenuOrderFragment.ARG_MENU_ORDER) { menuOrder ->
+            viewModel.updateProductDraft(menuOrder = menuOrder)
+            updateProductView()
+        }
     }
 
     override fun onDestroyView() {
@@ -134,43 +163,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        if (requestCode == RequestCodes.PRODUCT_SETTINGS_STATUS) {
-            (result.getString(ARG_SELECTED_STATUS))?.let {
-                val status = ProductStatus.fromString(it)
-                viewModel.updateProductDraft(productStatus = status)
-            }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_CATALOG_VISIBLITY) {
-            (result.getString(ARG_CATALOG_VISIBILITY))?.let {
-                val catalogVisibility = ProductCatalogVisibility.fromString(it)
-                viewModel.updateProductDraft(
-                        catalogVisibility = catalogVisibility,
-                        isFeatured = result.getBoolean(ARG_IS_FEATURED)
-                )
-            }
-        } else if (requestCode == RequestCodes.PRODUCT_SETTINGS_SLUG) {
-            viewModel.updateProductDraft(slug = result.getString(ARG_SLUG))
-        } else if (requestCode == PRODUCT_SETTINGS_PURCHASE_NOTE) {
-            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                viewModel.updateProductDraft(
-                        purchaseNote = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
-                )
-            }
-        } else if (requestCode == PRODUCT_SETTINGS_MENU_ORDER) {
-            viewModel.updateProductDraft(
-                        menuOrder = result.getInt(ProductMenuOrderFragment.ARG_MENU_ORDER, 0)
-            )
-        } else if (requestCode == PRODUCT_SETTINGS_VISIBLITY) {
-            ProductVisibility.fromString(result.getString(ARG_VISIBILITY) ?: "")?.let { visibility ->
-                val password = result.getString(ARG_PASSWORD) ?: ""
-                viewModel.updateProductVisibility(visibility, password)
-            }
-        }
-
-        updateProductView()
-        activity?.invalidateOptionsMenu()
     }
 
     override fun onRequestAllowBackPress(): Boolean {

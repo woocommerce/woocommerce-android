@@ -11,7 +11,6 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterListBinding
@@ -21,11 +20,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -40,7 +37,7 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
-            R.id.nav_graph_product_filters
+        R.id.nav_graph_product_filters
     ) { viewModelFactory }
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
@@ -58,11 +55,11 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
         productFilterListAdapter = ProductFilterListAdapter(this)
         with(binding.filterList) {
             addItemDecoration(
-                    AlignedDividerDecoration(
-                            requireActivity(),
-                            DividerItemDecoration.VERTICAL,
-                            alignStartToStartOf = R.id.filterItemName
-                    )
+                AlignedDividerDecoration(
+                    requireActivity(),
+                    DividerItemDecoration.VERTICAL,
+                    alignStartToStartOf = R.id.filterItemName
+                )
             )
             layoutManager = LinearLayoutManager(activity)
             adapter = productFilterListAdapter
@@ -74,18 +71,11 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
         }
 
         binding.filterListBtnShowProducts.setOnClickListener {
-            AnalyticsTracker.track(Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString()))
-            val bundle = Bundle()
-            bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
-            bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
-            bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
-            requireActivity().navigateBackWithResult(
-                    RequestCodes.PRODUCT_LIST_FILTERS,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.products
+            AnalyticsTracker.track(
+                Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
             )
+            viewModel.onShowProductsClicked()
         }
     }
 
@@ -119,6 +109,9 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 is ShowDialog -> event.showDialog()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                }
                 else -> event.isHandled = false
             }
         })
@@ -136,7 +129,7 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
 
     override fun onProductFilterClick(selectedFilterPosition: Int) {
         val action = ProductFilterListFragmentDirections
-                .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
+            .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
         findNavController().navigateSafely(action)
     }
 

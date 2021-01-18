@@ -19,7 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
@@ -37,11 +36,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
@@ -60,11 +55,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener,
-    NavigationResult {
+    OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        fun newInstance() = ProductListFragment()
+        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -140,18 +134,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.PRODUCT_LIST_FILTERS -> {
-                viewModel.onFiltersChanged(
-                    stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
-                    productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
-                    productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
-                )
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -316,6 +298,13 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 trashProduct(remoteProductId)
             }
         }
+        handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
+            viewModel.onFiltersChanged(
+                stockStatus = result.stockStatus,
+                productStatus = result.productStatus,
+                productType = result.productType
+            )
+        }
     }
 
     private fun trashProduct(remoteProductId: Long) {
@@ -343,7 +332,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
         trashProductUndoSnack = uiMessageResolver.getUndoSnack(
             R.string.product_trash_undo_snackbar_message,
-            actionListener = actionListener)
+            actionListener = actionListener
+        )
             .also {
                 it.addCallback(callback)
                 it.show()
@@ -414,6 +404,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 addProductButton.show()
             }
         }
+
         fun hideButton() = run {
             if (addProductButton.isVisible) {
                 addProductButton.hide()
@@ -468,7 +459,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        ))
+        )
+        )
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
@@ -480,7 +472,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        ))
+        )
+        )
         registerFeedbackSetting(DISMISSED)
         showProductWIPNoticeCard(false)
     }

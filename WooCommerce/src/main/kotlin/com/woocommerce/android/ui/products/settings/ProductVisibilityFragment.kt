@@ -1,18 +1,19 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductVisibilityBinding
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.util.ActivityUtils
 
 /**
@@ -22,12 +23,11 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
     companion object {
         const val ARG_VISIBILITY = "visibility"
         const val ARG_PASSWORD = "password"
+        const val PRODUCT_VISIBILITY_RESULT = "product-visibility"
     }
 
     private var _binding: FragmentProductVisibilityBinding? = null
     private val binding get() = _binding!!
-
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 
     private val navArgs: ProductVisibilityFragmentArgs by navArgs()
     private var selectedVisibility: String? = null
@@ -51,7 +51,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
             (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
                 binding.editPassword.setText(password)
-                showPassword(if (password.isNotBlank()) true else false)
+                showPassword(password.isNotBlank())
             }
         }
 
@@ -97,13 +97,13 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         }
     }
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putString(ARG_VISIBILITY, selectedVisibility)
-            if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
-                it.putString(ARG_PASSWORD, getPassword())
-            }
+    override fun getChangesResult(): Pair<String, Any> {
+        val password = if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
+            getPassword()
+        } else {
+            ""
         }
+        return PRODUCT_VISIBILITY_RESULT to ProductVisibilityResult(selectedVisibility ?: "", password)
     }
 
     override fun hasChanges(): Boolean {
@@ -146,3 +146,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
     private fun getPassword() = binding.editPassword.getText()
 }
+
+@Parcelize
+data class ProductVisibilityResult(val selectedVisiblity: String, val password: String) : Parcelable

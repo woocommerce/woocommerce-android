@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
@@ -27,7 +26,6 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -48,7 +46,6 @@ import javax.inject.Inject
 
 class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
-    NavigationResult,
     OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
@@ -173,6 +170,13 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 image = updatedImage
             )
         }
+        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
+            if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
+                viewModel.onVariationChanged(
+                    description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
+            }
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
@@ -289,18 +293,6 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
         } else {
             viewModel.onExit()
             false
-        }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION -> {
-                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.onVariationChanged(
-                        description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
-                    )
-                }
-            }
         }
     }
 
