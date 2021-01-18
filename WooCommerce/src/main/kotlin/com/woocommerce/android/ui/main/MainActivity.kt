@@ -7,7 +7,6 @@ import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -82,8 +81,7 @@ class MainActivity : AppUpgradeActivity(),
     MainNavigationRouter,
     MainBottomNavigationView.MainNavigationListener,
     NavController.OnDestinationChangedListener,
-    WCPromoDialog.PromoDialogListener,
-    ViewGroup.OnHierarchyChangeListener {
+    WCPromoDialog.PromoDialogListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
@@ -235,9 +233,6 @@ class MainActivity : AppUpgradeActivity(),
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
-
-        // see overridden onChildViewAdded() and onChildViewRemoved() below
-        binding.appBarLayout.setOnHierarchyChangeListener(this)
     }
 
     override fun hideProgressDialog() {
@@ -393,7 +388,10 @@ class MainActivity : AppUpgradeActivity(),
 
         val showCrossIcon: Boolean
         if (isTopLevelNavigation) {
-            binding.appBarLayout.elevation = 0f
+            if (destination.id != R.id.dashboard && destination.id != R.id.orders) {
+                // MyStoreFragment and OrderListFragment handle the elevation by themselves
+                binding.appBarLayout.elevation = 0f
+            }
             showCrossIcon = false
         } else {
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
@@ -897,22 +895,5 @@ class MainActivity : AppUpgradeActivity(),
             actionListener = actionListener
         )
             .show()
-    }
-
-    /**
-     * These two are called from app_bar_layout when the dashboard and order list fragments add/remove the tabLayout,
-     * enabling us to set the elevation when added so there's a shadow under it. Note that we delay adding the
-     * elevation because setting it immediately after the tabLayout is added has no effect.
-     */
-    override fun onChildViewAdded(parent: View?, child: View?) {
-        parent?.postDelayed({
-            binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-        }, 100L)
-    }
-
-    override fun onChildViewRemoved(parent: View?, child: View?) {
-        parent?.postDelayed({
-            binding.appBarLayout.elevation = 0f
-        }, 100L)
     }
 }

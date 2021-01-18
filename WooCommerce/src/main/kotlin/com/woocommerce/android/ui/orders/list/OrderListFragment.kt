@@ -720,11 +720,17 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             if (!appBar.children.contains(tabLayout)) {
                 appBar.addView(tabLayout)
             }
+            appBar.post {
+                appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+            }
         }
     }
 
     private fun removeTabLayoutFromAppBar() {
-        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.removeView(tabLayout)
+        (activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout)?.let { appBar ->
+            appBar.removeView(tabLayout)
+            appBar.elevation = 0f
+        }
     }
 
     override fun shouldExpandToolbar(): Boolean {

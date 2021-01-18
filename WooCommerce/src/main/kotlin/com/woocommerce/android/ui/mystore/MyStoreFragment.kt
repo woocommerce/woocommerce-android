@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.configureStringClick
-import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -431,16 +430,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
 
     private fun addTabLayoutToAppBar() {
         appBarLayout
-            ?.takeIf { !it.children.containsInstanceOf(tabLayout) }
+            ?.takeIf { !it.children.contains(tabLayout) }
             ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.addView(
-                tabLayout,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            )
+            ?.let { appBar ->
+                appBar.addView(tabLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+                appBar.post {
+                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                }
+            }
     }
 
     private fun removeTabLayoutFromAppBar() {
-        appBarLayout?.removeView(tabLayout)
+        appBarLayout?.let { appBar ->
+            appBar.removeView(tabLayout)
+            appBar.elevation = 0f
+        }
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
