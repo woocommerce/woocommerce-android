@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -124,6 +125,7 @@ class MainActivity : AppUpgradeActivity(),
     private var isMainThemeApplied = false
     private var isToolbarExpanded = true
     private var restoreToolbarHeight = 0
+    private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
     private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
@@ -151,6 +153,11 @@ class MainActivity : AppUpgradeActivity(),
                 isMainThemeApplied = true
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        this.menu = menu
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -703,6 +710,8 @@ class MainActivity : AppUpgradeActivity(),
             //
             // Reset this flag now that it's being processed
             intent.removeExtra(FIELD_OPENED_FROM_PUSH)
+
+            menu?.close()
 
             if (intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH_GROUP, false)) {
                 // Reset this flag now that it's being processed
