@@ -3,24 +3,21 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.Lazy
@@ -66,16 +63,7 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
                     Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
                     mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
             )
-            val bundle = Bundle()
-            bundle.putString(ARG_PRODUCT_FILTER_STOCK_STATUS, viewModel.getFilterByStockStatus())
-            bundle.putString(ARG_PRODUCT_FILTER_STATUS, viewModel.getFilterByProductStatus())
-            bundle.putString(ARG_PRODUCT_FILTER_TYPE_STATUS, viewModel.getFilterByProductType())
-            (requireActivity() as? MainActivity)?.navigateBackWithResult(
-                    RequestCodes.PRODUCT_LIST_FILTERS,
-                    bundle,
-                    R.id.nav_host_fragment_main,
-                    R.id.rootFragment
-            )
+            viewModel.onShowProductsClicked()
         }
     }
 
@@ -87,6 +75,15 @@ class ProductFilterOptionListFragment : BaseFragment(R.layout.fragment_product_f
         viewModel.filterOptionListItems.observe(viewLifecycleOwner, Observer {
             showProductFilterList(it)
         })
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                }
+                else -> event.isHandled = false
+            }
+        }
 
         viewModel.loadFilterOptions(arguments.selectedFilterItemPosition)
     }

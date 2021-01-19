@@ -57,7 +57,7 @@
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
-            app:destination="@id/nav_graph_product_type_bottom_sheet"
+            app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -257,6 +257,19 @@
         <argument
             android:name="productType"
             app:argType="com.woocommerce.android.ui.products.ProductType" />
+    </dialog>
+    <dialog
+        android:id="@+id/productTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
+        tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="isAddProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/productReviewsFragment"
@@ -472,6 +485,5 @@
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
         app:popExitAnim="@anim/activity_slide_out_to_right" />
-    <include app:graph="@navigation/nav_graph_product_type_bottom_sheet" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
 </navigation>

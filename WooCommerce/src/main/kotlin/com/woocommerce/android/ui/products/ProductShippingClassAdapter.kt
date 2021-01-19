@@ -24,7 +24,7 @@ class ProductShippingClassAdapter(
     }
 
     interface ShippingClassAdapterListener {
-        fun onShippingClassClicked(shippingClass: ShippingClass?)
+        fun onShippingClassClicked(shippingClass: ShippingClass)
         fun onRequestLoadMore()
     }
 
@@ -104,9 +104,9 @@ class ProductShippingClassAdapter(
         return false
     }
 
-    private fun getShippingClassAtPosition(position: Int): ShippingClass? {
+    private fun getShippingClassAtPosition(position: Int): ShippingClass {
         return if (getItemViewType(position) == VT_NO_SHIPPING_CLASS) {
-            null
+            ShippingClass(slug = "", remoteShippingClassId = 0)
         } else {
             shippingClassList[position - 1]
         }
@@ -118,10 +118,10 @@ class ProductShippingClassAdapter(
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position > -1) {
-                    getShippingClassAtPosition(position)?.let {
+                    getShippingClassAtPosition(position).let {
                         shippingClassSlug = it.slug
                         listener.onShippingClassClicked(it)
-                    } ?: listener.onShippingClassClicked(null)
+                    }
                 }
             }
         }

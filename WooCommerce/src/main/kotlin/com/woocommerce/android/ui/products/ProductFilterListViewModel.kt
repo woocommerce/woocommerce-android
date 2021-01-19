@@ -6,23 +6,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
+import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
-import com.woocommerce.android.ui.products.ProductType.OTHER
-import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 
 class ProductFilterListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -31,9 +32,6 @@ class ProductFilterListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
-        const val ARG_PRODUCT_FILTER_STOCK_STATUS = "arg_product_filter_stock_status"
-        const val ARG_PRODUCT_FILTER_STATUS = "arg_product_filter_status"
-        const val ARG_PRODUCT_FILTER_TYPE_STATUS = "arg_product_type"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
@@ -141,6 +139,15 @@ class ProductFilterListViewModel @AssistedInject constructor(
                 productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
             }
         }
+    }
+
+    fun onShowProductsClicked() {
+        val result = ProductFilterResult(
+            productStatus = getFilterByProductStatus(),
+            stockStatus = getFilterByStockStatus(),
+            productType = getFilterByProductType()
+        )
+        triggerEvent(ExitWithResult(result))
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {

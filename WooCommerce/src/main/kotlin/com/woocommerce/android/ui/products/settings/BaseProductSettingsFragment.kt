@@ -31,9 +31,6 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
 
     private var isConfirmingDiscard = false
 
-    // descendants should override this with a unique request code
-    protected abstract val requestCode: Int
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -110,12 +107,8 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
      * settings fragment and passes it a bundle containing the changes.
      */
     private fun navigateBackWithResult() {
-        requireActivity().navigateBackWithResult(
-                requestCode,
-                getChangesBundle(),
-                R.id.nav_host_fragment_main,
-                R.id.productSettingsFragment
-        )
+        val (key, result) = getChangesResult()
+        navigateBackWithResult(key, result)
     }
 
     /**
@@ -126,9 +119,9 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     }
 
     /**
-     * Descendants should override this to return changes as a bundle
+     * Descendants should override this to return a Pair with a key and the result to pass
      */
-    abstract fun getChangesBundle(): Bundle
+    abstract fun getChangesResult(): Pair<String, Any>
 
     /**
      * Descendants should override this to return true if changes have been made

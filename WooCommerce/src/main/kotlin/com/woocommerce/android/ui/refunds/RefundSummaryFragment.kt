@@ -10,10 +10,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -29,6 +28,9 @@ import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
 class RefundSummaryFragment : BaseFragment(), BackPressListener {
+    companion object {
+        const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
+    }
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
@@ -57,14 +59,7 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
-                is Exit -> {
-                    requireActivity().navigateBackWithResult(
-                            RequestCodes.ORDER_REFUND,
-                            Bundle(),
-                            R.id.nav_host_fragment_main,
-                            R.id.orderDetailFragment
-                    )
-                }
+                is Exit -> navigateBackWithNotice(REFUND_ORDER_NOTICE_KEY, R.id.orderDetailFragment)
                 is ShowRefundConfirmation -> {
                     val action = RefundSummaryFragmentDirections.actionRefundSummaryFragmentToRefundConfirmationDialog(
                             event.title, event.message, event.confirmButtonTitle

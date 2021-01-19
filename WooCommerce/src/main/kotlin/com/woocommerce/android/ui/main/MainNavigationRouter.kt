@@ -9,8 +9,7 @@ interface MainNavigationRouter {
         localSiteId: Int,
         localOrderId: Int = 0,
         remoteOrderId: Long,
-        remoteNoteId: Long = 0,
-        markComplete: Boolean = false
+        remoteNoteId: Long = 0
     )
     fun showAddProduct()
     fun showReviewDetail(

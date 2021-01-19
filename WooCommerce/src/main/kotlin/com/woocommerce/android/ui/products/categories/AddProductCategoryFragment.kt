@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
@@ -127,16 +125,7 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressed()
                 is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> {
-                    val bundle = Bundle()
-                    bundle.putParcelable(ARG_ADDED_CATEGORY, event.data as Parcelable)
-                    requireActivity().navigateBackWithResult(
-                        RequestCodes.PRODUCT_ADD_CATEGORY,
-                        bundle,
-                        R.id.nav_host_fragment_main,
-                        R.id.productCategoriesFragment
-                    )
-                }
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
                 else -> event.isHandled = false
             }
         })
