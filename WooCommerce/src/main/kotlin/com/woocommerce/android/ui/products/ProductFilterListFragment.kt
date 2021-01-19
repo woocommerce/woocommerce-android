@@ -30,6 +30,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import dagger.Lazy
 import javax.inject.Inject
 
 class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_list),
@@ -39,10 +40,10 @@ class ProductFilterListFragment : BaseFragment(R.layout.fragment_product_filter_
         const val TAG = "ProductFilterListFragment"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     private val viewModel: ProductFilterListViewModel by navGraphViewModels(
             R.id.nav_graph_product_filters
-    ) { viewModelFactory }
+    ) { viewModelFactory.get() }
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
