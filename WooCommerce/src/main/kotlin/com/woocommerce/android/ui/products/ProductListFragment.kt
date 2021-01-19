@@ -262,10 +262,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(
-                    show = isVisible &&
-                        (requireActivity() as? MainNavigationRouter)?.isAtNavigationRoot() == true
-                )
+                showAddProductButton(show = isVisible)
             }
         }
 
@@ -367,8 +364,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
-            val wipCardTitleId = R.string.product_adding_wip_title
-            val wipCardMessageId = R.string.product_wip_message_m4
+            val wipCardTitleId = R.string.product_wip_title_m5
+            val wipCardMessageId = R.string.product_wip_message_m5
 
             binding.productsWipCard.visibility = View.VISIBLE
             binding.productsWipCard.initView(

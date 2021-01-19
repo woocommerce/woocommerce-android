@@ -296,7 +296,7 @@ class ProductSelectionListFragment : BaseFragment(R.layout.fragment_product_list
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             // display done menu button & disable PTR action
-            mode.menuInflater.inflate(R.menu.menu_done, menu)
+            mode.menuInflater.inflate(R.menu.menu_action_mode_check, menu)
             onActionModeEventListener.onActionModeCreated()
             return true
         }

@@ -303,10 +303,12 @@ class OrderDetailRepository @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             WCOrderAction.FETCH_SINGLE_ORDER -> {
-                if (event.isError) {
-                    continuationFetchOrder?.resume(false)
-                } else {
-                    continuationFetchOrder?.resume(true)
+                if (continuationFetchOrder?.isActive == true) {
+                    if (event.isError) {
+                        continuationFetchOrder?.resume(false)
+                    } else {
+                        continuationFetchOrder?.resume(true)
+                    }
                 }
             }
             WCOrderAction.FETCH_ORDER_NOTES -> {

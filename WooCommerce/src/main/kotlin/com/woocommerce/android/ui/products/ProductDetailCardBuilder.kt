@@ -36,11 +36,8 @@ import com.woocommerce.android.ui.products.models.ProductProperty.ComplexPropert
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
-import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRICING
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PURCHASE_DETAILS
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
@@ -72,8 +69,6 @@ class ProductDetailCardBuilder(
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
-
-        cards.addIfNotEmpty(getPurchaseDetailsCard(product))
 
         return cards
     }
@@ -172,53 +167,6 @@ class ProductDetailCardBuilder(
                 product.productType()
             ).filterNotEmpty()
         )
-    }
-
-    /**
-     * Existing product detail card UI which that will be replaced by the new design once
-     * Product Release 1 changes are completed.
-     */
-    private fun getPricingAndInventoryCard(product: Product): ProductPropertyCard {
-        // if we have pricing info this card is "Pricing and inventory" otherwise it's just "Inventory"
-        val hasPricingInfo = product.regularPrice != null || product.salePrice != null
-        val cardTitle = if (hasPricingInfo) {
-            resources.getString(R.string.product_pricing_and_inventory)
-        } else {
-            resources.getString(R.string.product_inventory)
-        }
-
-        return ProductPropertyCard(
-            PRICING,
-            cardTitle,
-            listOf(
-                product.variations(),
-                product.readOnlyPrice(),
-                product.readOnlyInventory()
-            ).filterNotEmpty()
-        )
-    }
-
-    private fun getPurchaseDetailsCard(product: Product): ProductPropertyCard {
-        return ProductPropertyCard(
-            PURCHASE_DETAILS,
-            resources.getString(R.string.product_purchase_details),
-            listOf(
-                product.readOnlyShipping(),
-                product.purchaseNote()
-            ).filterNotEmpty()
-        )
-    }
-
-    // if add/edit products is enabled, purchase note appears in product settings
-    private fun Product.purchaseNote(): ProductProperty? {
-        return if (this.purchaseNote.isNotBlank() && !isSimple(this)) {
-            ReadMore(
-                R.string.product_purchase_note,
-                this.purchaseNote
-            )
-        } else {
-            null
-        }
     }
 
     private fun Product.downloads(): ProductProperty? {
