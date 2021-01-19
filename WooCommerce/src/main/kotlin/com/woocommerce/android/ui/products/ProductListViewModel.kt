@@ -189,7 +189,7 @@ class ProductListViewModel @AssistedInject constructor(
 
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty(),
-            displaySortAndFilterCard = products.isNotEmpty()
+            displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
 
