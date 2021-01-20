@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductShippingClassItemBinding
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
@@ -16,16 +14,10 @@ import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolde
  * be "No shipping class" so the user can choose to clear this value.
  */
 class ProductShippingClassAdapter(
-    context: Context,
     private val onItemClicked: (ShippingClass) -> Unit = { },
     private val onLoadMoreRequested: () -> Unit = { }
 ) : RecyclerView.Adapter<ViewHolder>() {
-    private var items = mutableListOf<ShippingClass>()
-    private val noShippingClass = ShippingClass(
-        name = context.getString(R.string.product_no_shipping_class),
-        slug = "",
-        remoteShippingClassId = 0
-    )
+    private var items = listOf<ShippingClass>()
     private var selectedShippingClassId: Long = -1
 
     override fun getItemCount() = items.size
@@ -49,10 +41,9 @@ class ProductShippingClassAdapter(
     }
 
     fun update(newItems: List<ShippingClass>, selectedItemId: Long = -1) {
-        val newItemsPlusNone = mutableListOf(noShippingClass, *newItems.toTypedArray())
-        val diffResult = DiffUtil.calculateDiff(ShippingClassDiffCallback(items, newItemsPlusNone))
-        items = newItemsPlusNone
         selectedShippingClassId = selectedItemId
+        val diffResult = DiffUtil.calculateDiff(ShippingClassDiffCallback(items, newItems))
+        items = newItems
         diffResult.dispatchUpdatesTo(this)
     }
 

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -10,6 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -20,8 +22,14 @@ import kotlinx.coroutines.launch
 class ProductShippingClassViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val productRepository: ProductShippingClassRepository
+    private val productRepository: ProductShippingClassRepository,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
+    private val noShippingClass = ShippingClass(
+        name = resourceProvider.getString(R.string.product_no_shipping_class),
+        slug = "",
+        remoteShippingClassId = 0
+    )
     private var shippingClassLoadJob: Job? = null
 
     // view state for the shipping class screen
@@ -40,29 +48,36 @@ class ProductShippingClassViewModel @AssistedInject constructor(
 
         launch {
             waitForExistingShippingClassFetch()
-            shippingClassLoadJob = this.coroutineContext[Job]
+            shippingClassLoadJob = coroutineContext[Job]
 
-            viewState = if (loadMore) {
-                viewState.copy(isLoadingMoreProgressShown = true)
+            if (loadMore) {
+                viewState = viewState.copy(isLoadingMoreProgressShown = true)
             } else {
                 // get cached shipping classes and only show loading progress the list is empty, otherwise show
                 // them right away
                 val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
                 if (cachedShippingClasses.isEmpty()) {
-                    viewState.copy(isLoadingProgressShown = true)
+                    viewState = viewState.copy(isLoadingProgressShown = true)
                 } else {
-                    viewState.copy(shippingClassList = cachedShippingClasses)
+                    updateShippingClasses(cachedShippingClasses)
                 }
             }
 
             // fetch shipping classes from the backend
             val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
+            updateShippingClasses(shippingClasses)
+
             viewState = viewState.copy(
                 isLoadingProgressShown = false,
-                isLoadingMoreProgressShown = false,
-                shippingClassList = shippingClasses
+                isLoadingMoreProgressShown = false
             )
+        }
     }
+
+    private fun updateShippingClasses(shippingClasses: List<ShippingClass>) {
+        viewState = viewState.copy(
+            shippingClassList = listOf(noShippingClass) + shippingClasses
+        )
     }
 
     /**
@@ -75,8 +90,8 @@ class ProductShippingClassViewModel @AssistedInject constructor(
                 shippingClassLoadJob?.join()
             } catch (e: CancellationException) {
                 WooLog.d(
-                        T.PRODUCTS,
-                        "CancellationException while waiting for existing shipping class list fetch"
+                    T.PRODUCTS,
+                    "CancellationException while waiting for existing shipping class list fetch"
                 )
             }
         }

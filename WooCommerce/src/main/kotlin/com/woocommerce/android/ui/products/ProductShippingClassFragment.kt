@@ -46,7 +46,6 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
         setupObservers()
 
         shippingClassAdapter = ProductShippingClassAdapter(
-            requireActivity(),
             this::onShippingClassClicked,
             this::onLoadMoreRequested
         )
