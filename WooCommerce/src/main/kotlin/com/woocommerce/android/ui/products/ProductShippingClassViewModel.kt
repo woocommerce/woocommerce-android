@@ -38,9 +38,10 @@ class ProductShippingClassViewModel @AssistedInject constructor(
             return
         }
 
-        waitForExistingShippingClassFetch()
+        launch {
+            waitForExistingShippingClassFetch()
+            shippingClassLoadJob = this.coroutineContext[Job]
 
-        shippingClassLoadJob = launch {
             viewState = if (loadMore) {
                 viewState.copy(isLoadingMoreProgressShown = true)
             } else {
@@ -57,28 +58,26 @@ class ProductShippingClassViewModel @AssistedInject constructor(
             // fetch shipping classes from the backend
             val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
             viewState = viewState.copy(
-                    isLoadingProgressShown = false,
-                    isLoadingMoreProgressShown = false,
-                    shippingClassList = shippingClasses
+                isLoadingProgressShown = false,
+                isLoadingMoreProgressShown = false,
+                shippingClassList = shippingClasses
             )
-        }
+    }
     }
 
     /**
-     * If shipping classes are already being fetch, wait for the current fetch to complete - this is
+     * If shipping classes are already being fetched, wait for the current fetch to complete - this is
      * used above to avoid fetching multiple pages of shipping classes in unison
      */
-    private fun waitForExistingShippingClassFetch() {
+    private suspend fun waitForExistingShippingClassFetch() {
         if (shippingClassLoadJob?.isActive == true) {
-            launch {
-                try {
-                    shippingClassLoadJob?.join()
-                } catch (e: CancellationException) {
-                    WooLog.d(
-                            T.PRODUCTS,
-                            "CancellationException while waiting for existing shipping class list fetch"
-                    )
-                }
+            try {
+                shippingClassLoadJob?.join()
+            } catch (e: CancellationException) {
+                WooLog.d(
+                        T.PRODUCTS,
+                        "CancellationException while waiting for existing shipping class list fetch"
+                )
             }
         }
     }
