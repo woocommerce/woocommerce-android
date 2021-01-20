@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
@@ -24,8 +23,7 @@ import javax.inject.Inject
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list),
-    ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list) {
     companion object {
         const val TAG = "ProductShippingClassFragment"
         const val SELECTED_SHIPPING_CLASS_RESULT = "selected-shipping-class"
@@ -49,8 +47,8 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
 
         shippingClassAdapter = ProductShippingClassAdapter(
             requireActivity(),
-            this,
-            navArgs.productShippingClassSlug
+            this::onShippingClassClicked,
+            this::onLoadMoreRequested
         )
 
         with(binding.recycler) {
@@ -78,15 +76,15 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
     }
 
     private fun setupObservers() {
-        viewModel.productShippingClassViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isLoadingProgressShown.takeIfNotEqualTo(old?.isLoadingProgressShown) {
                 showLoadingProgress(new.isLoadingProgressShown)
             }
             new.isLoadingMoreProgressShown.takeIfNotEqualTo(old?.isLoadingMoreProgressShown) {
                 showLoadingMoreProgress(new.isLoadingMoreProgressShown)
             }
-            new.shippingClassList.takeIfNotEqualTo(old?.shippingClassList) {
-                shippingClassAdapter?.shippingClassList = it!!
+            new.shippingClassList?.takeIfNotEqualTo(old?.shippingClassList) {
+                shippingClassAdapter?.update(it, navArgs.productShippingClassId)
             }
         }
 
@@ -100,11 +98,11 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
-    override fun onShippingClassClicked(shippingClass: ShippingClass) {
+    private fun onShippingClassClicked(shippingClass: ShippingClass) {
         viewModel.onShippingClassClicked(shippingClass)
     }
 
-    override fun onRequestLoadMore() {
+    private fun onLoadMoreRequested() {
         viewModel.loadShippingClasses(loadMore = true)
     }
 
