@@ -25,8 +25,8 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     private var shippingClassLoadJob: Job? = null
 
     // view state for the shipping class screen
-    final val productShippingClassViewStateData = LiveDataDelegate(savedState, ProductShippingClassViewState())
-    private var productShippingClassViewState by productShippingClassViewStateData
+    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    private var viewState by viewStateData
 
     /**
      * Load & fetch the shipping classes for the current site, optionally performing a "load more" to
@@ -41,22 +41,22 @@ class ProductShippingClassViewModel @AssistedInject constructor(
         waitForExistingShippingClassFetch()
 
         shippingClassLoadJob = launch {
-            productShippingClassViewState = if (loadMore) {
-                productShippingClassViewState.copy(isLoadingMoreProgressShown = true)
+            viewState = if (loadMore) {
+                viewState.copy(isLoadingMoreProgressShown = true)
             } else {
                 // get cached shipping classes and only show loading progress the list is empty, otherwise show
                 // them right away
                 val cachedShippingClasses = productRepository.getProductShippingClassesForSite()
                 if (cachedShippingClasses.isEmpty()) {
-                    productShippingClassViewState.copy(isLoadingProgressShown = true)
+                    viewState.copy(isLoadingProgressShown = true)
                 } else {
-                    productShippingClassViewState.copy(shippingClassList = cachedShippingClasses)
+                    viewState.copy(shippingClassList = cachedShippingClasses)
                 }
             }
 
             // fetch shipping classes from the backend
             val shippingClasses = productRepository.fetchShippingClassesForSite(loadMore)
-            productShippingClassViewState = productShippingClassViewState.copy(
+            viewState = viewState.copy(
                     isLoadingProgressShown = false,
                     isLoadingMoreProgressShown = false,
                     shippingClassList = shippingClasses
@@ -88,7 +88,7 @@ class ProductShippingClassViewModel @AssistedInject constructor(
     }
 
     @Parcelize
-    data class ProductShippingClassViewState(
+    data class ViewState(
         val isLoadingProgressShown: Boolean = false,
         val isLoadingMoreProgressShown: Boolean = false,
         val shippingClassList: List<ShippingClass>? = null
