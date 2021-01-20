@@ -49,8 +49,9 @@ class ProductShippingClassAdapter(
     }
 
     fun update(newItems: List<ShippingClass>, selectedItemId: Long = -1) {
-        val diffResult = DiffUtil.calculateDiff(ShippingClassDiffCallback(items, newItems))
-        items = mutableListOf(noShippingClass, *newItems.toTypedArray())
+        val newItemsPlusNone = mutableListOf(noShippingClass, *newItems.toTypedArray())
+        val diffResult = DiffUtil.calculateDiff(ShippingClassDiffCallback(items, newItemsPlusNone))
+        items = newItemsPlusNone
         selectedShippingClassId = selectedItemId
         diffResult.dispatchUpdatesTo(this)
     }
