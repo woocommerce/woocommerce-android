@@ -213,7 +213,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
      *
      * return null if the argument is not a valid iso8601 date string.
      */
-    @Throws(IllegalArgumentException::class)
     fun getShortMonthYearString(iso8601Month: String): String? {
         return try {
             val (year, month) = iso8601Month.split("-")
