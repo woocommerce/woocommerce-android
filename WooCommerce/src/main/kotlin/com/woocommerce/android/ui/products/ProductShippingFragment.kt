@@ -144,7 +144,7 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     private fun showShippingClassFragment() {
         val action = ProductShippingFragmentDirections
                 .actionProductShippingFragmentToProductShippingClassFragment(
-                    productShippingClassSlug = viewModel.shippingData.shippingClassSlug ?: ""
+                    productShippingClassId = viewModel.shippingData.shippingClassId ?: -1
                 )
         findNavController().navigateSafely(action)
     }
