@@ -30,16 +30,19 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
     }
 
     fun updateOrder(order: Order) {
-        val dateStr = if (order.dateCreated.isToday()) {
-            order.dateCreated.getTimeString(context)
-        } else {
-            order.dateCreated.getMediumDate(context)
+        with(order.dateCreated) {
+            when(isToday()) {
+                true -> getTimeString(context)
+                false -> getMediumDate(context)
+                null -> ""
+            }.let { dateStr ->
+                binding.orderStatusDateAndOrderNum.text = context.getString(
+                    R.string.orderdetail_orderstatus_date_and_ordernum,
+                    dateStr,
+                    order.number
+                )
+            }
         }
-        binding.orderStatusDateAndOrderNum.text = context.getString(
-            R.string.orderdetail_orderstatus_date_and_ordernum,
-            dateStr,
-            order.number
-        )
 
         binding.orderStatusName.text =
             order.getBillingName(context.getString(R.string.orderdetail_customer_name_default))
