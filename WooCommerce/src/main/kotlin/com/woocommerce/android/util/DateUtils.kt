@@ -361,6 +361,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
 
     private fun String.reportAsError(e: Exception) {
         WooLog.e(UTILS, this)
-        CrashUtils.logException(e, UTILS, this)
+        CrashUtils.logException(e)
     }
 }
