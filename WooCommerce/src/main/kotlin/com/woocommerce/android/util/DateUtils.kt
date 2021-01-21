@@ -5,7 +5,7 @@ import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -60,7 +60,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val calendar = GregorianCalendar(year.toInt(), month.toInt() - 1, 1)
             calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         } catch (e: IndexOutOfBoundsException) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-MM-DD: $iso8601Date")
+            "Date string argument is not of format YYYY-MM-DD: $iso8601Date".reportAsError(e)
             return null
         }
     }
@@ -80,7 +80,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
             targetFormat.format(date)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-MM-DD hh: $iso8601Date")
+            "Date string argument is not of format YYYY-MM-DD hh: $iso8601Date".reportAsError(e)
             return null
         }
     }
@@ -98,7 +98,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
             friendlyMonthDayFormat.format(date)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-MM-DD: $iso8601Date")
+            "Date string argument is not of format YYYY-MM-DD: $iso8601Date".reportAsError(e)
             return null
         }
     }
@@ -114,7 +114,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
             DateFormat.getLongDateFormat(context).format(date)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-MM-DD: $dateString")
+            "Date string argument is not of format YYYY-MM-DD: $dateString".reportAsError(e)
             return null
         }
     }
@@ -143,7 +143,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
             friendlyMonthDayFormat.format(date!!)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-'W'WW: $iso8601Week")
+            "Date string argument is not of format YYYY-'W'WW: $iso8601Week".reportAsError(e)
             return null
         }
     }
@@ -160,7 +160,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
         return try {
             shortMonths[month.toInt() - 1]
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format YYYY-MM: $iso8601Month")
+            "Date string argument is not of format YYYY-MM: $iso8601Month".reportAsError(e)
             return null
         }
     }
@@ -177,7 +177,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = originalFormat.parse(dateString)
             targetFormat.format(date!!)
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format MMMM dd, yyyy: $dateString")
+            "Date string argument is not of format MMMM dd, yyyy: $dateString".reportAsError(e)
             return null
         }
     }
@@ -201,7 +201,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = originalFormat.parse(iso8601Date)
             targetFormat.format(date!!).toLowerCase(locale).trimStart('0')
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format yyyy-MM-dd H: $iso8601Date")
+            "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
             return null
         }
     }
@@ -219,7 +219,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val (year, month) = iso8601Month.split("-")
             "${shortMonths[month.toInt() - 1]} $year"
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format yyyy-MM: $iso8601Month")
+            "Date string argument is not of format yyyy-MM: $iso8601Month".reportAsError(e)
             return null
         }
     }
@@ -236,7 +236,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val (_, month, _) = iso8601Date.split("-")
             DateFormatSymbols(locale).months[month.toInt() - 1]
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format yyyy-MM-dd: $iso8601Date")
+            "Date string argument is not of format yyyy-MM-dd: $iso8601Date".reportAsError(e)
             return null
         }
     }
@@ -253,7 +253,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val (year, month) = iso8601Month.split("-")
             year
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format yyyy-MM: $iso8601Month")
+            "Date string argument is not of format yyyy-MM: $iso8601Month".reportAsError(e)
             return null
         }
     }
@@ -340,7 +340,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
                 timeAtStartOfDay = timeAtStartOfDay
             )
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format MMM dd, yyyy: $this")
+            "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
             return null
         }
     }
@@ -355,8 +355,13 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             val date = dateFormat.parse(dateString) ?: Date()
             date.formatToYYYYmmDD()
         } catch (e: Exception) {
-            WooLog.e(T.UTILS, "Date string argument is not of format MMM dd, yyyy: $this")
+            "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
             return null
         }
+    }
+
+    private fun String.reportAsError(e: Exception) {
+        WooLog.e(UTILS, this)
+        CrashUtils.logException(e, UTILS, this)
     }
 }

@@ -2,7 +2,11 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
+import com.woocommerce.android.util.CrashUtils
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import org.apache.commons.lang3.time.DateUtils.isSameDay
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -55,7 +59,16 @@ fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     return dateFormat.format(this)
 }
 
-fun Date.isToday() = org.apache.commons.lang3.time.DateUtils.isSameDay(Date(), this)
+fun Date.isToday() =
+    try {
+        isSameDay(Date(), this)
+    } catch (e: Exception) {
+        with("Unable to match dateString with today date. (current dateString value: $this)") {
+            WooLog.e(T.UTILS, this)
+            CrashUtils.logException(e, T.UTILS, this)
+        }
+        null
+    }
 
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
 
