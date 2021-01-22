@@ -402,7 +402,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         @SuppressLint("ClickableViewAccessibility")
         private val dragOnTouchListener = OnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
+            if (event.action == MotionEvent.ACTION_DOWN && draggableItemTouchHelper.isAttached) {
                 draggableItemTouchHelper.startDrag(this@ImageViewHolder)
             }
             return@OnTouchListener false

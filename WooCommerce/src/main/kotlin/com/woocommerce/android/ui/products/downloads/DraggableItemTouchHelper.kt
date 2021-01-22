@@ -37,4 +37,11 @@ class DraggableItemTouchHelper(
                 }
             }
         }
-)
+) {
+    var isAttached: Boolean = false
+
+    override fun attachToRecyclerView(recyclerView: RecyclerView?) {
+        super.attachToRecyclerView(recyclerView)
+        isAttached = recyclerView != null
+    }
+}
