@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.downloads
+package com.woocommerce.android.widgets
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView

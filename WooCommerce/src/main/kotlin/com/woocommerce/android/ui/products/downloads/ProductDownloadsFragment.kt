@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
 class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_downloads_list) {
     private val itemTouchHelper by lazy {
