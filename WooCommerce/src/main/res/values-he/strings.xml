@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 08:54:04+0000
+Translation-Revision-Date: 2021-01-20 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">אפשר להנפיק החזר כספי עבור סכומים של עמלות, משלוח ומיסים %s</string>
+    <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
+    <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
+    <string name="shipping_label_validation_error_template">האימות נכשל: %s</string>
+    <string name="shipping_label_error_required_field">שדה חובה</string>
+    <string name="shipping_label_error_address_invalid_street">רחוב לא חוקי</string>
+    <string name="shipping_label_error_address_house_number_missing">מספר הבית חסר</string>
+    <string name="shipping_label_error_address_not_found">הכתובת לא נמצאה</string>
+    <string name="shipping_label_edit_address_error_warning">לא הצלחנו לאמת באופן אוטומטי את הכתובת למשלוח. ניתן להציג אותה ב-Google Maps או לנסות ליצור קשר עם הלקוח כדי לוודא שהכתובת נכונה.</string>
+    <string name="shipping_label_edit_address_validation_error">אימות הכתובת נכשל</string>
+    <string name="shipping_label_edit_address_validation_progress_message">רק רגע…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">אימות הכתובת בתהליך</string>
+    <string name="shipping_label_edit_data_loading_error">אין אפשרות לטעון את נתוני הכתובת</string>
+    <string name="shipping_label_edit_address_use_address_as_is">להשתמש בכתובת כפי שהוזנה</string>
+    <string name="shipping_label_edit_address_country">ארץ</string>
+    <string name="shipping_label_edit_address_zip">מיקוד</string>
+    <string name="shipping_label_edit_address_state">מדינה</string>
+    <string name="shipping_label_edit_address_city">עיר</string>
+    <string name="shipping_label_edit_address_address">כתובת</string>
+    <string name="shipping_label_edit_address_phone">טלפון</string>
+    <string name="shipping_label_edit_address_company">חברה</string>
+    <string name="shipping_label_edit_address_name">שם</string>
+    <string name="login_not_wordpress_site">האתר ⁦%1$s⁩ אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
+    <string name="error_no_gmaps_app">האפליקציה של Google Maps נמצאה</string>
+    <string name="please_wait">רק רגע…</string>
     <string name="variation_detail_update_variation_image_error">מצטערים, הסרת תמונות מסוגי מוצר נתמכת ב-WooCommerce 4.7 ומעלה.</string>
     <string name="order_shipment_tracking_progress_message">רק רגע</string>
     <string name="order_shipment_tracking_progress_title">הוספת מעקב</string>
@@ -548,7 +573,7 @@ Language: he_IL
     <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
-    <string name="enter_email_for_site">עליך להתחבר אל WordPress.com כדי להתחבר אל %1$s</string>
+    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b>⁦%1$s⁩&lt;/b></string>
     <string name="country_mapping_ZW">זימבבואה</string>
     <string name="country_mapping_ZM">זמביה</string>
     <string name="country_mapping_YE">תימן</string>
@@ -1063,7 +1088,6 @@ Language: he_IL
     <string name="alternatively">לחלופין:</string>
     <string name="open_mail">פתיחת דואר</string>
     <string name="next">הבא</string>
-    <string name="enter_email_wordpress_com">התחברות ל-WordPress.com באמצעות כתובת אימייל כדי לנהל את האתרים שלך ב-WordPress.</string>
     <string name="login_promo_text_jetpack">ניהול אתרים שמופעלים על ידי Jetpack מכל מקום - השירות של WordPress תמיד בהישג יד.</string>
     <string name="login_promo_text_notifications">ההודעות שלך אתך בכל מקום - אפשר לראות תגובות ולייקים בזמן אמת.</string>
     <string name="login_promo_text_anytime">אפשר לבדוק את העדכונים באתרים המועדפים עליך ולהצטרף לשיחה בכל מקום ובכל זמן.</string>
@@ -1105,7 +1129,7 @@ Language: he_IL
     <string name="add_order_note_menu_item">הוספה</string>
     <string name="add_order_note_label">שליחת ההערה באימייל ללקוח</string>
     <string name="order_error_update_general">שגיאה בעת שינוי הזמנה</string>
-    <string name="order_error_fetch_notes_generic">שגיאה בעת אחזור הערות שגיאה</string>
+    <string name="order_error_fetch_notes_generic">שגיאה בעת הבאת הפתקים</string>
     <string name="order_fulfill_marked_complete">ההזמנה סומנה כ\'הושלמה\'</string>
     <string name="order_fulfill_mark_complete">סימון הזמנה כ\'הושלמה\'</string>
     <string name="orderdetail_addnote_contentdesc">הוספת הערה להזמנה</string>
@@ -1168,6 +1192,7 @@ Language: he_IL
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
     <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
+    <string name="enter_email_wordpress_com">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
     <string name="already_logged_in_wpcom">כבר התחברת לחשבון שלך ב-WordPress.com. אין באפשרותך להוסיף אתר WordPress.com שקשור לחשבון אחר.</string>
     <string name="cant_open_url">אי אפשר לפתוח את הקישור</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>

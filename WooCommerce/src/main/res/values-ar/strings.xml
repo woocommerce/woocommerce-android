@@ -548,7 +548,6 @@ Language: ar
     <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
-    <string name="enter_email_for_site">تسجيل الدخول باستخدام وردبرس.كوم للاتصال بـ %1$s</string>
     <string name="country_mapping_ZW">زيمبابوي</string>
     <string name="country_mapping_ZM">زامبيا</string>
     <string name="country_mapping_YE">اليمن</string>
@@ -1063,7 +1062,6 @@ Language: ar
     <string name="alternatively">بدلاً من ذلك:</string>
     <string name="open_mail">فتح البريد</string>
     <string name="next">التالي</string>
-    <string name="enter_email_wordpress_com">سجِّل الدخول إلى وردبرس. كوم باستخدام عنوان بريد إلكتروني لإدارة جميع مواقع وردبرس الخاصة بك.</string>
     <string name="login_promo_text_jetpack">إدارة موقعك المدعوم من Jetpack أثناء تنقلك — يكون لديك وردبرس في متناول يدك.</string>
     <string name="login_promo_text_notifications">تنتقل الإعلامات معك — راجع التعليقات والإعجابات عندما تحدث.</string>
     <string name="login_promo_text_anytime">حافظ على مواقعك المفضلة وانضم إلى المحادثة أينما كنت ووقتما تشاء.</string>
@@ -1105,7 +1103,6 @@ Language: ar
     <string name="add_order_note_menu_item">إضافة</string>
     <string name="add_order_note_label">إرسال الملاحظة عبر البريد الإلكتروني إلى العميل</string>
     <string name="order_error_update_general">حدث خطأ أثناء تغيير الطلب</string>
-    <string name="order_error_fetch_notes_generic">حدث خطأ أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
     <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>
@@ -1168,6 +1165,7 @@ Language: ar
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Enter the address of the WooCommerce store you\'d like to connect.</string>
+    <string name="enter_email_wordpress_com">قم بتسجيل الدخول باستخدام عنوان البريد الإلكتروني لحساب وردبرس.كوم الخاص بك لإدارة متاجر WooCommerce الخاصة بك.</string>
     <string name="already_logged_in_wpcom">أنت قيد تسجيل الدخول بالفعل إلى حساب وردبرس.كوم، ولا يمكنك إضافة موقع وردبرس.كوم مرتبط بحساب آخر.</string>
     <string name="cant_open_url">يتعذر فتح الرابط</string>
     <string name="error_no_sms_app">لم يتم العثور على تطبيق SMS</string>

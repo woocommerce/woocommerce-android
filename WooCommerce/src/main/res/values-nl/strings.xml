@@ -548,7 +548,6 @@ Language: nl
     <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
-    <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met %1$s</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1063,7 +1062,6 @@ Language: nl
     <string name="alternatively">Of:</string>
     <string name="open_mail">Open e-mail</string>
     <string name="next">Volgende</string>
-    <string name="enter_email_wordpress_com">Log in op WordPress.com met behulp van een e-mailadres om al je WordPress-sites te beheren.</string>
     <string name="login_promo_text_jetpack">Beheer je Jetpack-site waar je ook bent. Je draagt WordPress altijd met je mee.</string>
     <string name="login_promo_text_notifications">Je meldingen reizen met je mee. Bekijk reacties en likes wanneer ze binnenkomen.</string>
     <string name="login_promo_text_anytime">Volg je favoriete sites en neem altijd en overal deel aan het gesprek.</string>
@@ -1105,7 +1103,6 @@ Language: nl
     <string name="add_order_note_menu_item">Toevoegen</string>
     <string name="add_order_note_label">E-mailbericht aan klant</string>
     <string name="order_error_update_general">Fout bij wijzigen bestelling</string>
-    <string name="order_error_fetch_notes_generic">Fout bij ophalen foutberichten</string>
     <string name="order_fulfill_marked_complete">Bestelling gemarkeerd als voltooid</string>
     <string name="order_fulfill_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_addnote_contentdesc">Een bericht van bestelling toevoegen</string>
@@ -1168,6 +1165,7 @@ Language: nl
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>
+    <string name="enter_email_wordpress_com">Log in met het e-mailadres van je WordPress.com-account om je WooCommerce-winkels te beheren.</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
     <string name="cant_open_url">De link kan niet worden geopend</string>
     <string name="error_no_sms_app">Er is geen app voor sms gevonden</string>

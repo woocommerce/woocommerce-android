@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 10:54:04+0000
+Translation-Revision-Date: 2021-01-22 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
+    <string name="shipping_label_validation_view_map">マップを開く</string>
+    <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
+    <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
+    <string name="shipping_label_error_required_field">必須のフィールド</string>
+    <string name="shipping_label_error_address_invalid_street">無効な住所</string>
+    <string name="shipping_label_error_address_house_number_missing">番地が見つかりません</string>
+    <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
+    <string name="shipping_label_edit_address_error_warning">自動的に配送先住所を確認できませんでした。 Google マップで表示するか、顧客に連絡して住所が正しいことを確認してください。</string>
+    <string name="shipping_label_edit_address_validation_error">住所の確認に失敗しました</string>
+    <string name="shipping_label_edit_address_validation_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">住所の確認中です</string>
+    <string name="shipping_label_edit_data_loading_error">住所データを読み込むことができませんでした</string>
+    <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>
+    <string name="shipping_label_edit_address_country">国名</string>
+    <string name="shipping_label_edit_address_zip">郵便番号</string>
+    <string name="shipping_label_edit_address_state">都道府県</string>
+    <string name="shipping_label_edit_address_city">市区町村</string>
+    <string name="shipping_label_edit_address_address">アドレス</string>
+    <string name="shipping_label_edit_address_phone">電話</string>
+    <string name="shipping_label_edit_address_company">会社</string>
+    <string name="shipping_label_edit_address_name">名前</string>
+    <string name="login_not_wordpress_site">ウェブサイト %1$s は WordPress のサイトではありません。 接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
+    <string name="error_no_gmaps_app">Google マップアプリが見つかりました</string>
+    <string name="please_wait">しばらくお待ちください…</string>
     <string name="variation_detail_update_variation_image_error">商品バリエーションの画像削除は、WooCommerce 4.7以上が対象となっています。</string>
     <string name="order_shipment_tracking_progress_message">しばらくお待ちください</string>
     <string name="order_shipment_tracking_progress_title">トラッキングを追加中</string>
@@ -546,7 +571,7 @@ Language: ja_JP
     <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">WordPress.com でログインして、%1$s に接続してください</string>
+    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>
@@ -1061,7 +1086,6 @@ Language: ja_JP
     <string name="alternatively">もしくは、</string>
     <string name="open_mail">メールを開く</string>
     <string name="next">次へ</string>
-    <string name="enter_email_wordpress_com">メールアドレスを使用して WordPress.com にログインすると、自分のすべての WordPress サイトを管理できます。</string>
     <string name="login_promo_text_jetpack">Jetpack 搭載のサイトを外出先で管理 — WordPress をどこにでも持ち歩けます。</string>
     <string name="login_promo_text_notifications">通知がモバイルでも表示されます。コメントやいいねをリアルタイムで確認できます。</string>
     <string name="login_promo_text_anytime">お気に入りのサイトを常時チェックして、好きな時に好きな場所で会話に加わることができます。</string>
@@ -1103,7 +1127,7 @@ Language: ja_JP
     <string name="add_order_note_menu_item">追加</string>
     <string name="add_order_note_label">顧客にメールでメモを送信</string>
     <string name="order_error_update_general">注文を変更する際にエラーが発生しました</string>
-    <string name="order_error_fetch_notes_generic">エラー通知を取得する際にエラーが発生しました</string>
+    <string name="order_error_fetch_notes_generic">メモを取得できませんでした</string>
     <string name="order_fulfill_marked_complete">注文が完了としてマークされました</string>
     <string name="order_fulfill_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_addnote_contentdesc">注文メモを追加します</string>
@@ -1166,6 +1190,7 @@ Language: ja_JP
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
+    <string name="enter_email_wordpress_com">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>

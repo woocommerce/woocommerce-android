@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 08:54:04+0000
+Translation-Revision-Date: 2021-01-20 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Puedes reembolsar los importes de cuotas, envíos e impuestos %s</string>
+    <string name="shipping_label_validation_view_map">Abrir mapa</string>
+    <string name="shipping_label_validation_contact_customer">Contactar con el cliente</string>
+    <string name="shipping_label_validation_error_template">Error de validación: %s</string>
+    <string name="shipping_label_error_required_field">Campo obligatorio</string>
+    <string name="shipping_label_error_address_invalid_street">Calle no válida</string>
+    <string name="shipping_label_error_address_house_number_missing">Falta el número de la casa</string>
+    <string name="shipping_label_error_address_not_found">No se encuentra la dirección</string>
+    <string name="shipping_label_edit_address_error_warning">No hemos podido verificar automáticamente la dirección de envío. Puedes verlo en Google Maps o puedes contactar con el cliente para asegurarte de que la dirección es correcta.</string>
+    <string name="shipping_label_edit_address_validation_error">Error al validar la dirección</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Por favor, espera…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Validación de la dirección en curso</string>
+    <string name="shipping_label_edit_data_loading_error">No se han podido cargar los datos de la dirección</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Usar la dirección especificada</string>
+    <string name="shipping_label_edit_address_country">País</string>
+    <string name="shipping_label_edit_address_zip">Código postal</string>
+    <string name="shipping_label_edit_address_state">Provincia</string>
+    <string name="shipping_label_edit_address_city">Ciudad</string>
+    <string name="shipping_label_edit_address_address">Dirección</string>
+    <string name="shipping_label_edit_address_phone">Teléfono</string>
+    <string name="shipping_label_edit_address_company">Empresa</string>
+    <string name="shipping_label_edit_address_name">Nombre</string>
+    <string name="login_not_wordpress_site">El sitio web %1$s no es un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
+    <string name="error_no_gmaps_app">Se ha encontrado la app de Google Maps</string>
+    <string name="please_wait">Por favor, espera…</string>
     <string name="variation_detail_update_variation_image_error">Lo sentimos, la eliminación de imágenes en las variaciones de productos solo es compatible con WooCommerce 4.7 o versiones superiores.</string>
     <string name="order_shipment_tracking_progress_message">Espera</string>
     <string name="order_shipment_tracking_progress_title">Añadiendo el seguimiento</string>
@@ -548,7 +573,7 @@ Language: es
     <string name="orderdetail_empty_shipping_address">No se ha indicado ninguna dirección.</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
-    <string name="enter_email_for_site">Accede con WordPress.com para conectarte a %1$s</string>
+    <string name="enter_email_for_site">Iniciar sesión en WordPress.com para conectarse a &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabue</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1063,7 +1088,6 @@ Language: es
     <string name="alternatively">Alternativamente:</string>
     <string name="open_mail">Abrir correo electrónico</string>
     <string name="next">Siguiente</string>
-    <string name="enter_email_wordpress_com">Accede a WordPress.com usando una dirección de correo electrónico para gestionar todos tus sitios WordPress.</string>
     <string name="login_promo_text_jetpack">Gestiona tu sitio con Jetpack instalado sobre la marcha - tienes WordPress en tu bolsillo.</string>
     <string name="login_promo_text_notifications">Tus avisos viajan contigo - ve los comentarios y \"me gusta\" a medida que ocurran.</string>
     <string name="login_promo_text_anytime">Revisa tus sitios favoritos y únete a la conversación en cualquier sitio, en cualquier momento.</string>
@@ -1105,7 +1129,7 @@ Language: es
     <string name="add_order_note_menu_item">Añadir</string>
     <string name="add_order_note_label">Enviar la nota por correo electrónico al cliente</string>
     <string name="order_error_update_general">Se ha producido un error al cambiar el pedido</string>
-    <string name="order_error_fetch_notes_generic">Se ha producido un error al obtener las notas de error</string>
+    <string name="order_error_fetch_notes_generic">Se ha producido un error al obtener las notas</string>
     <string name="order_fulfill_marked_complete">El pedido se ha marcado como completado.</string>
     <string name="order_fulfill_mark_complete">Marcar el pedido como completado</string>
     <string name="orderdetail_addnote_contentdesc">Añadir una nota de pedido</string>
@@ -1168,6 +1192,7 @@ Language: es
     <string name="login_jetpack_required">Esta aplicación requiere que Jetpack esté conectado a tu tienda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Introduce la dirección de la tienda de WooCommerce que quieres conectar.</string>
+    <string name="enter_email_wordpress_com">Accede con la dirección de correo electrónico de tu cuenta de WordPress.com para gestionar tus tiendas WooCommerce.</string>
     <string name="already_logged_in_wpcom">Ya estás registrado en una cuenta de WordPress.com, no se puede agregar un sitio de WordPress.com a otra cuenta.</string>
     <string name="cant_open_url">No fue posible abrir el enlace</string>
     <string name="error_no_sms_app">No se ha encontrado ninguna aplicación de SMS.</string>
