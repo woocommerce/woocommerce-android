@@ -1,7 +1,0 @@
-5.7:
--Verwijder afbeeldingen van productvariaties!
-- De app kan de e-mailclient openen op Android 11 tijdens het inloggen via de magische link.
-- Bugfixes: variabele producten worden weergegeven bij het kopen van verzendlabels; producten die in een dialoogvenster worden geselecteerd, worden doorgevoerd.
-- Toeslagen worden weergegeven bij betalingsgegevens van de bestelling.
-- Log-ins zonder wachtwoord worden ondersteund.
-- Kleine stijlverbeteringen voor de inlogschermen.
