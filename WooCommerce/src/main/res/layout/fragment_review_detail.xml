@@ -5,7 +5,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:fillViewport="false"
     tools:context="com.woocommerce.android.ui.reviews.ReviewDetailFragment">
 
     <com.google.android.material.card.MaterialCardView
