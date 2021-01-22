@@ -1,7 +1,0 @@
-5.7:
-- Remoção das imagens das variações de produtos.
-- O aplicativo pode abrir o cliente de e-mail no Android 11 durante o processo de login via link.
-- Correções de bug: produtos variáveis são exibidos durante a compra de etiquetas de envio; as seleções feitas em uma caixa de diálogo são obedecidas.
-- Visualização das taxas nos detalhes de pagamento do pedido.
-- Suporte a login sem senha.
-- Pequenas melhorias de estilo nas telas de login.

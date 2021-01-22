@@ -1,7 +1,0 @@
-5.7:
-- Eliminar imágenes de las variaciones de producto.
-- La aplicación puede abrir el cliente de correo electrónico en Android 11 durante el proceso de acceso con enlace mágico.
-- Reparación de errores: al adquirir etiquetas de envío se muestran los productos variables; las selecciones en los diálogos se respetan.
-- Se muestran las tarifas en la información de pago del pedido.
-- Compatibilidad con el inicio de sesión sin contraseña.
-- Pequeñas mejoras de estilo en las pantallas de inicio de sesión.
