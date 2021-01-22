@@ -3,6 +3,7 @@
 5.9
 -----
 * [*] Fixed a rare crash when adding a new product category that includes symbols. [https://github.com/woocommerce/woocommerce-android/pull/3415]
+* [*] Fixed a crash in the product images gallery when re-ordering photos by drag and drop. [https://github.com/woocommerce/woocommerce-android/pull/3465]
  
 5.8
 -----
