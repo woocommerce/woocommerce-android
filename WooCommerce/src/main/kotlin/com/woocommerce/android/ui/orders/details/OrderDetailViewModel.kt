@@ -190,8 +190,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     fun hasVirtualProductsOnly(): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.items.map { it.productId }
-            val products = orderDetailRepository.getProductsByRemoteIds(remoteProductIds)
-            products.isNotEmpty() && products.all { it.virtual }
+            orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
         } else false
     }
 
@@ -430,7 +429,7 @@ class OrderDetailViewModel @AssistedInject constructor(
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private fun fetchOrderProductsAsync() = async {
         val productIds = order.items.map { it.productId }
-        val numLocalProducts = orderDetailRepository.getProductsByRemoteIds(productIds).count()
+        val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
             orderDetailRepository.fetchProductsByRemoteIds(productIds)
         }

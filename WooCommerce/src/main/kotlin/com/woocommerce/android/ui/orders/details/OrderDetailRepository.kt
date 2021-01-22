@@ -262,12 +262,16 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun getProductsByRemoteIds(remoteIds: List<Long>): List<WCProductModel> {
-        return if (remoteIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
-        } else {
-            emptyList()
-        }
+    fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.hasVirtualProductsOnly(selectedSite.get(), remoteProductIds) == remoteProductIds.size
+        } else false
+    }
+
+    fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+        } else 0
     }
 
     fun getOrderRefunds(remoteOrderId: Long) = refundStore
