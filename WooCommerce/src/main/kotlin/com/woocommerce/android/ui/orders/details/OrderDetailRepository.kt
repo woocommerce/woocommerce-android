@@ -263,7 +263,7 @@ class OrderDetailRepository @Inject constructor(
 
     fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
-            productStore.hasVirtualProductsOnly(selectedSite.get(), remoteProductIds) == remoteProductIds.size
+            productStore.getVirtualProductCountByRemoteIds(selectedSite.get(), remoteProductIds) == remoteProductIds.size
         } else false
     }
 
