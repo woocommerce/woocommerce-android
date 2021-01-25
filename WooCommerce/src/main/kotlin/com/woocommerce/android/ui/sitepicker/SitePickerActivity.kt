@@ -52,8 +52,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_site_picker.*
-import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -131,36 +129,36 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
 
         if (calledFromLogin) {
-            toolbar.visibility = View.GONE
-            button_help.setOnClickListener {
+            binding.toolbar.toolbar.visibility = View.GONE
+            binding.buttonHelp.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.SHOW_HELP)
                 }
             }
-            site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
+            binding.siteListContainer.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
             overridePendingTransition(R.anim.activity_slide_in_from_right, R.anim.activity_slide_out_to_left)
 
-            toolbar.visibility = View.VISIBLE
-            setSupportActionBar(toolbar as Toolbar)
+            binding.toolbar.toolbar.visibility = View.VISIBLE
+            setSupportActionBar(binding.toolbar.toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             title = getString(R.string.site_picker_title)
-            button_help.visibility = View.GONE
-            site_list_label.visibility = View.GONE
-            site_list_container.elevation = 0f
-            (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
-            (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
+            binding.buttonHelp.visibility = View.GONE
+            binding.siteListLabel.visibility = View.GONE
+            binding.siteListContainer.elevation = 0f
+            (binding.siteListContainer.layoutParams as MarginLayoutParams).topMargin = 0
+            (binding.siteListContainer.layoutParams as MarginLayoutParams).bottomMargin = 0
         }
 
         presenter.takeView(this)
 
-        sites_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.sitesRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         siteAdapter = SitePickerAdapter(this, this)
-        sites_recycler.adapter = siteAdapter
+        binding.sitesRecycler.adapter = siteAdapter
 
         loadUserInfo()
 
@@ -358,7 +356,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
         )
 
-        site_picker_root.visibility = View.VISIBLE
+        binding.sitePickerRoot.visibility = View.VISIBLE
 
         if (wcSites.isEmpty()) {
             showNoStoresView()
@@ -366,11 +364,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         binding.noStoresView.noStoresViewText.visibility = View.GONE
-        btn_secondary_action.visibility = View.GONE
-        site_list_container.visibility = View.VISIBLE
-        btn_secondary_action.visibility = View.GONE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
+        binding.siteListContainer.visibility = View.VISIBLE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
-        site_list_label.text = when {
+        binding.siteListLabel.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
             calledFromLogin -> getString(R.string.login_pick_store)
             else -> getString(R.string.site_picker_title)
@@ -474,7 +472,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
         Snackbar.make(
-                site_picker_root as ViewGroup,
+                binding.sitePickerRoot as ViewGroup,
                 getString(R.string.login_verifying_site_error, siteName),
                 BaseTransientBottomBar.LENGTH_LONG
         ).show()
@@ -490,11 +488,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
         binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
@@ -532,7 +530,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         when (show) {
-            true -> skeletonView.show(sites_recycler, R.layout.skeleton_site_picker, delayed = true)
+            true -> skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
             false -> skeletonView.hide()
         }
     }
@@ -606,13 +604,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
+        binding.sitePickerRoot.visibility = View.VISIBLE
         binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        binding.siteListContainer.visibility = View.GONE
 
         binding.noStoresView.noStoresViewText.text = getString(R.string.login_not_connected_to_account, url)
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_need_help_finding_email)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
@@ -663,9 +661,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
+        binding.sitePickerRoot.visibility = View.VISIBLE
         binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        binding.siteListContainer.visibility = View.GONE
 
         with(binding.noStoresView.noStoresViewText) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
@@ -698,7 +696,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
@@ -752,10 +750,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
-        btn_secondary_action.visibility = View.GONE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.noStoresView.noStoresView.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
         with(binding.noStoresView.noStoresViewText) {
             // Build and configure the error message and make part of the message
