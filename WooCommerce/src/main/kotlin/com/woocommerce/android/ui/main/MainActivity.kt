@@ -187,8 +187,7 @@ class MainActivity : AppUpgradeActivity(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // we have to use findViewById rather than view binding for the toolbar since it's an included layout
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = binding.toolbar.toolbar
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 

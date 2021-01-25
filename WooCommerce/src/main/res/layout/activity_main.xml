@@ -29,7 +29,9 @@
                 android:layout_height="@dimen/expanded_toolbar_height"
                 app:titleEnabled="true">
 
-                <include layout="@layout/view_toolbar" />
+                <include
+                    android:id="@+id/toolbar"
+                    layout="@layout/view_toolbar" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
