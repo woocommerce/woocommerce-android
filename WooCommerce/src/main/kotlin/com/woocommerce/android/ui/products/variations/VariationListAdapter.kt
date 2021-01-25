@@ -6,15 +6,13 @@ import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.VariationListItemBinding
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isSet
@@ -25,7 +23,6 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
-import kotlinx.android.synthetic.main.variation_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
 
 class VariationListAdapter(
@@ -47,39 +44,18 @@ class VariationListAdapter(
     override fun getItemCount() = variationList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VariationViewHolder {
-        val holder = VariationViewHolder(
-                LayoutInflater.from(context).inflate(R.layout.variation_list_item, parent, false)
+        return VariationViewHolder(
+            VariationListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         )
-        holder.imgVariationOption.clipToOutline = true
-        return holder
     }
 
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
         val variation = variationList[position]
-
-        holder.txtVariationOptionName.text = variation.getName(parentProduct)
-
-        val stockStatus = variation.getStockStatusText()
-        val bullet = context.getString(R.string.product_bullet)
-        holder.txtVariationOptionPriceAndStock.text = if (variation.isVisible) {
-            if (variation.isSaleInEffect || variation.regularPrice.isSet()) {
-                StringBuilder(stockStatus).appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
-            } else {
-                val highlightedText = highlightText(context.getString(R.string.product_variation_no_price_set))
-                TextUtils.concat(stockStatus, bullet, highlightedText)
-            }
-        } else {
-            StringBuilder(stockStatus)
-                .appendWithIfNotEmpty(context.getString(R.string.product_variation_disabled), bullet)
-                .appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
-        }
-
-        variation.image?.let {
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
-            glideRequest.load(imageUrl)
-                    .placeholder(R.drawable.ic_product)
-                    .into(holder.imgVariationOption)
-        } ?: holder.imgVariationOption.setImageResource(R.drawable.ic_product)
+        holder.bind(variation)
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
@@ -147,9 +123,34 @@ class VariationListAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class VariationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgVariationOption: ImageView = view.variationOptionImage
-        val txtVariationOptionName: TextView = view.variationOptionName
-        val txtVariationOptionPriceAndStock: TextView = view.variationOptionPriceAndStock
+    inner class VariationViewHolder(val viewBinding: VariationListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(variation: ProductVariation) {
+            viewBinding.variationOptionName.text = variation.getName(parentProduct)
+
+            val stockStatus = variation.getStockStatusText()
+            val bullet = context.getString(R.string.product_bullet)
+            viewBinding.variationOptionPriceAndStock.text = if (variation.isVisible) {
+                if (variation.isSaleInEffect || variation.regularPrice.isSet()) {
+                    StringBuilder(stockStatus).appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
+                } else {
+                    val highlightedText = highlightText(context.getString(R.string.product_variation_no_price_set))
+                    TextUtils.concat(stockStatus, bullet, highlightedText)
+                }
+            } else {
+                StringBuilder(stockStatus)
+                    .appendWithIfNotEmpty(context.getString(R.string.product_variation_disabled), bullet)
+                    .appendWithIfNotEmpty(variation.priceWithCurrency, bullet)
+            }
+
+            viewBinding.variationOptionImage.clipToOutline = true
+
+            variation.image?.let {
+                val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
+                glideRequest.load(imageUrl)
+                    .placeholder(R.drawable.ic_product)
+                    .into(viewBinding.variationOptionImage)
+            } ?: viewBinding.variationOptionImage.setImageResource(R.drawable.ic_product)
+        }
     }
 }

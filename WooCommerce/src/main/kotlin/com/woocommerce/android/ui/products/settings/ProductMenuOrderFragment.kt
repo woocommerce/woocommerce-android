@@ -1,20 +1,18 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
-import kotlinx.android.synthetic.main.fragment_product_menu_order.*
+import com.woocommerce.android.databinding.FragmentProductMenuOrderBinding
 import org.wordpress.android.util.StringUtils
 
 /**
  * Settings screen which enables editing a product's menu order
  */
-class ProductMenuOrderFragment : BaseProductSettingsFragment() {
+class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_product_menu_order) {
     companion object {
         const val ARG_MENU_ORDER = "menu_order"
     }
@@ -22,16 +20,23 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment() {
     override val requestCode = RequestCodes.PRODUCT_SETTINGS_MENU_ORDER
     private val navArgs: ProductMenuOrderFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_product_menu_order, container, false)
-    }
+    private var _binding: FragmentProductMenuOrderBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        product_menu_order.setText(navArgs.menuOrder.toString())
-        product_menu_order.setOnTextChangedListener {
+
+        _binding = FragmentProductMenuOrderBinding.bind(view)
+
+        binding.productMenuOrder.setText(navArgs.menuOrder.toString())
+        binding.productMenuOrder.setOnTextChangedListener {
             changesMade()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun hasChanges() = getMenuOrder() != navArgs.menuOrder
@@ -44,7 +49,7 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment() {
         }
     }
 
-    private fun getMenuOrder() = StringUtils.stringToInt(product_menu_order.getText())
+    private fun getMenuOrder() = StringUtils.stringToInt(binding.productMenuOrder.getText())
 
     override fun onResume() {
         super.onResume()

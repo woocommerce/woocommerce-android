@@ -1,66 +1,71 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
-import android.view.ViewGroup
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductVisibilityBinding
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
-import kotlinx.android.synthetic.main.fragment_product_visibility.*
 import org.wordpress.android.util.ActivityUtils
 
 /**
  * Settings screen which enables choosing a product's visibility
  */
-class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener {
+class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_product_visibility), OnClickListener {
     companion object {
         const val ARG_VISIBILITY = "visibility"
         const val ARG_PASSWORD = "password"
     }
+
+    private var _binding: FragmentProductVisibilityBinding? = null
+    private val binding get() = _binding!!
 
     override val requestCode = RequestCodes.PRODUCT_SETTINGS_VISIBLITY
 
     private val navArgs: ProductVisibilityFragmentArgs by navArgs()
     private var selectedVisibility: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_visibility, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductVisibilityBinding.bind(view)
+
+        setHasOptionsMenu(true)
 
         selectedVisibility = savedInstanceState?.getString(ARG_VISIBILITY) ?: navArgs.visibility
         selectedVisibility?.let {
             getButtonForVisibility(it)?.isChecked = true
         }
 
-        btnPublic.setOnClickListener(this)
-        btnPasswordProtected.setOnClickListener(this)
-        btnPrivate.setOnClickListener(this)
+        binding.btnPublic.setOnClickListener(this)
+        binding.btnPasswordProtected.setOnClickListener(this)
+        binding.btnPrivate.setOnClickListener(this)
 
         if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
             (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
-                editPassword.setText(password)
+                binding.editPassword.setText(password)
                 showPassword(if (password.isNotBlank()) true else false)
             }
         }
 
-        editPassword.setOnTextChangedListener {
+        binding.editPassword.setOnTextChangedListener {
             changesMade()
             if (it.toString().isNotBlank()) {
-                editPassword.clearError()
+                binding.editPassword.clearError()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -70,25 +75,25 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     override fun onClick(view: View?) {
         (view as? CheckedTextView)?.let {
-            btnPublic.isChecked = it == btnPublic
-            btnPrivate.isChecked = it == btnPrivate
-            btnPasswordProtected.isChecked = it == btnPasswordProtected
+            binding.btnPublic.isChecked = it == binding.btnPublic
+            binding.btnPrivate.isChecked = it == binding.btnPrivate
+            binding.btnPasswordProtected.isChecked = it == binding.btnPasswordProtected
 
             selectedVisibility = getVisibilityForButtonId(it.id)
-            showPassword(it == btnPasswordProtected)
+            showPassword(it == binding.btnPasswordProtected)
 
             changesMade()
         }
     }
 
     private fun showPassword(show: Boolean) {
-        if (show && editPassword.visibility != View.VISIBLE) {
-            editPassword.visibility = View.VISIBLE
-            editPassword.requestFocus()
-            ActivityUtils.showKeyboard(editPassword)
-        } else if (!show && editPassword.visibility == View.VISIBLE) {
-            editPassword.visibility = View.GONE
-            ActivityUtils.hideKeyboardForced(editPassword)
+        if (show && binding.editPassword.visibility != View.VISIBLE) {
+            binding.editPassword.visibility = View.VISIBLE
+            binding.editPassword.requestFocus()
+            ActivityUtils.showKeyboard(binding.editPassword)
+        } else if (!show && binding.editPassword.visibility == View.VISIBLE) {
+            binding.editPassword.visibility = View.GONE
+            ActivityUtils.hideKeyboardForced(binding.editPassword)
         }
     }
 
@@ -115,7 +120,7 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     override fun validateChanges(): Boolean {
         if (selectedVisibility == PASSWORD_PROTECTED.toString() && getPassword().isEmpty()) {
-            editPassword.error = getString(R.string.product_visibility_password_required)
+            binding.editPassword.error = getString(R.string.product_visibility_password_required)
             return false
         }
         return true
@@ -123,9 +128,9 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
 
     private fun getButtonForVisibility(visibility: String): CheckedTextView? {
         return when (ProductVisibility.fromString(visibility)) {
-            PUBLIC -> btnPublic
-            PRIVATE -> btnPrivate
-            PASSWORD_PROTECTED -> btnPasswordProtected
+            PUBLIC -> binding.btnPublic
+            PRIVATE -> binding.btnPrivate
+            PASSWORD_PROTECTED -> binding.btnPasswordProtected
             else -> null
         }
     }
@@ -139,5 +144,5 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(), OnClickListener
         }
     }
 
-    private fun getPassword() = editPassword.getText()
+    private fun getPassword() = binding.editPassword.getText()
 }

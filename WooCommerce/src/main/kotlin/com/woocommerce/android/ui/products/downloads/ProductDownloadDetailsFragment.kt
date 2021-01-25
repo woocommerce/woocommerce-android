@@ -1,18 +1,21 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.DownloadableFileAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOADABLE_FILE_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -25,11 +28,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_product_download_details.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
+class ProductDownloadDetailsFragment : BaseFragment(R.layout.fragment_product_download_details), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
@@ -38,9 +40,21 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
     private val navArgs by navArgs<ProductDownloadDetailsFragmentArgs>()
     private lateinit var doneOrUpdateMenuItem: MenuItem
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var _binding: FragmentProductDownloadDetailsBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductDownloadDetailsBinding.bind(view)
+
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_download_details, container, false)
+        setupObservers(viewModel)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -59,6 +73,11 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneOrUpdateClicked()
+
+                val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
+                AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value))
+
                 true
             }
             R.id.menu_delete -> {
@@ -69,18 +88,13 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers(viewModel)
-    }
-
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
         viewModel.productDownloadDetailsViewStateData.observe(owner = viewLifecycleOwner, observer = { old, new ->
-            new.fileDraft.url.takeIfNotEqualTo(product_download_url.getText()) {
-                product_download_url.setText(it)
+            new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.getText()) {
+                binding.productDownloadUrl.setText(it)
             }
-            new.fileDraft.name.takeIfNotEqualTo(product_download_name.getText()) {
-                product_download_name.setText(it)
+            new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.getText()) {
+                binding.productDownloadName.setText(it)
             }
             new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
                 showDoneMenuItem(it)
@@ -90,7 +104,7 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
             }
         })
 
-        viewModel.event.observe(viewLifecycleOwner, { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
@@ -110,26 +124,30 @@ class ProductDownloadDetailsFragment : BaseFragment(), BackPressListener {
                 }
                 is DeleteFileEvent -> {
                     parentViewModel.deleteDownloadableFile(event.file)
+
+                    AnalyticsTracker.track(Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value))
+
                     findNavController().navigateUp()
                 }
             }
-        })
+        }
 
         initListeners()
     }
 
     private fun initListeners() {
-        product_download_url.setOnTextChangedListener {
+        binding.productDownloadUrl.setOnTextChangedListener {
             viewModel.onFileUrlChanged(it.toString())
         }
-        product_download_name.setOnTextChangedListener {
+        binding.productDownloadName.setOnTextChangedListener {
             viewModel.onFileNameChanged(it.toString())
         }
     }
 
     private fun updateErrorMessages(urlErrorMessage: Int?, nameErrorMessage: Int?) {
-        product_download_url.error = if (urlErrorMessage != null) getString(urlErrorMessage) else null
-        product_download_name.error = if (nameErrorMessage != null) getString(nameErrorMessage) else null
+        binding.productDownloadUrl.error = if (urlErrorMessage != null) getString(urlErrorMessage) else null
+        binding.productDownloadName.error = if (nameErrorMessage != null) getString(nameErrorMessage) else null
         enableDoneButton(urlErrorMessage == null && nameErrorMessage == null)
     }
 

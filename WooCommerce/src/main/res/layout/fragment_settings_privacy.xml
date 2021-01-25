@@ -41,7 +41,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLearnMore"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_100"
@@ -77,7 +77,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonPrivacyPolicy"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_100"
@@ -112,7 +112,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonTracking"
-        style="@style/Woo.Button"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_100"

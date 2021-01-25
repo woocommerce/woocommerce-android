@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_PUBLI
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ADD_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_PRODUCT_DELETED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED
@@ -73,13 +74,13 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -199,7 +200,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * trash menu. Always returns false when we're in the add flow.
      */
     val isTrashEnabled: Boolean
-        get() = !isAddFlow && navArgs.isTrashEnabled && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()
+        get() = !isAddFlow && navArgs.isTrashEnabled
 
     init {
         start()
@@ -243,6 +244,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                        AnalyticsTracker.track(PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
                             triggerEvent(ExitWithResult(product.remoteId))
@@ -368,7 +370,6 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun onDownloadsSettingsClicked() {
-        discardEditChanges()
         triggerEvent(ViewProductDownloadsSettings)
     }
 
@@ -1512,7 +1513,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             ProductExitEvent(shouldShowDiscardDialog)
     }
 
-    data class LaunchUrlInChromeTab(val url: String) : Event()
     object RefreshMenu : Event()
 
     /**

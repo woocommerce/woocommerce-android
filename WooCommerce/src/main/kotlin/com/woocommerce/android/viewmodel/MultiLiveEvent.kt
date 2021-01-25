@@ -7,8 +7,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.woocommerce.android.R.string
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.R.string
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -110,6 +110,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         object Exit : Event()
 
         data class ExitWithResult<out T>(val data: T) : Event()
+
+        data class LaunchUrlInChromeTab(val url: String) : Event()
 
         data class ShowDialog(
             @StringRes val titleId: Int? = null,

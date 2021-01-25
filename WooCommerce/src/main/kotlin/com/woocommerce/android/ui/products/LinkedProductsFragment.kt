@@ -1,16 +1,18 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_LINKED_PRODUCTS_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -18,24 +20,34 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
 import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import kotlinx.android.synthetic.main.fragment_linked_products.*
 import org.wordpress.android.util.ActivityUtils
 
-class LinkedProductsFragment : BaseProductFragment() {
+class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_products) {
+    private var _binding: FragmentLinkedProductsBinding? = null
+    private val binding get() = _binding!!
+
     override fun getFragmentTitle() = getString(R.string.product_detail_linked_products)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentLinkedProductsBinding.bind(view)
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_linked_products, container, false)
+
+        setupObservers()
+        updateProductView()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
+            mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -49,16 +61,12 @@ class LinkedProductsFragment : BaseProductFragment() {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
+                AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
+                    mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.DONE.value))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers()
-        updateProductView()
     }
 
     private fun setupObservers() {
@@ -87,29 +95,33 @@ class LinkedProductsFragment : BaseProductFragment() {
 
         val numUpsells = viewModel.getProduct().productDraft?.upsellProductIds?.size ?: 0
         if (numUpsells > 0) {
-            upsells_count.text = resources.getQuantityString(R.plurals.product_count, numUpsells, numUpsells)
-            upsells_count.show()
-            add_upsell_products.text = getString(R.string.edit_products_button)
+            binding.upsellsCount.text = resources.getQuantityString(R.plurals.product_count, numUpsells, numUpsells)
+            binding.upsellsCount.show()
+            binding.addUpsellProducts.text = getString(R.string.edit_products_button)
         } else {
-            upsells_count.hide()
-            add_upsell_products.text = getString(R.string.add_products_button)
+            binding.upsellsCount.hide()
+            binding.addUpsellProducts.text = getString(R.string.add_products_button)
         }
 
         val numCrossSells = viewModel.getProduct().productDraft?.crossSellProductIds?.size ?: 0
         if (numCrossSells > 0) {
-            cross_sells_count.text = resources.getQuantityString(R.plurals.product_count, numCrossSells, numCrossSells)
-            cross_sells_count.show()
-            add_cross_sell_products.text = getString(R.string.edit_products_button)
+            binding.crossSellsCount.text = resources.getQuantityString(
+                R.plurals.product_count,
+                numCrossSells,
+                numCrossSells
+            )
+            binding.crossSellsCount.show()
+            binding.addCrossSellProducts.text = getString(R.string.edit_products_button)
         } else {
-            cross_sells_count.hide()
-            add_cross_sell_products.text = getString(R.string.add_products_button)
+            binding.crossSellsCount.hide()
+            binding.addCrossSellProducts.text = getString(R.string.add_products_button)
         }
 
-        add_upsell_products.setOnClickListener {
+        binding.addUpsellProducts.setOnClickListener {
             showGroupedProductFragment(UPSELLS)
         }
 
-        add_cross_sell_products.setOnClickListener {
+        binding.addCrossSellProducts.setOnClickListener {
             showGroupedProductFragment(CROSS_SELLS)
         }
     }

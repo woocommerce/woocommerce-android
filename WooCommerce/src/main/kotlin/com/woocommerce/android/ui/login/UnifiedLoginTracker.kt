@@ -161,7 +161,8 @@ class UnifiedLoginTracker
         SITE_LIST("site_list"),
         JETPACK_NOT_CONNECTED("jetpack_not_connected"),
         NOT_WOO_STORE("not_woo_store"),
-        NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found");
+        NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found"),
+        NOT_WORDPRESS_SITE("not_wordpress_site");
 
         companion object {
             private val valueMap = Step.values().associateBy(Step::value)
@@ -189,6 +190,7 @@ class UnifiedLoginTracker
         LOGIN_WITH_SITE_CREDS("login_with_site_creds"),
         VIEW_CONNECTED_STORES("view_connected_stores"),
         TRY_ANOTHER_ACCOUNT("try_another_account"),
+        TRY_ANOTHER_STORE("try_another_store"),
         HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
         REFRESH_APP("refresh_app"),
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),

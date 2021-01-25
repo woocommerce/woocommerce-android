@@ -57,7 +57,6 @@ class ProductFilterOptionListAdapter(
         fun bind(filter: FilterListOptionItemUiModel) {
             viewBinding.filterOptionItemName.text = filter.filterOptionItemName
             viewBinding.filterOptionItemTick.isVisible = filter.isSelected
-            viewBinding.filterOptionItemTick.isChecked = filter.isSelected
         }
     }
 }

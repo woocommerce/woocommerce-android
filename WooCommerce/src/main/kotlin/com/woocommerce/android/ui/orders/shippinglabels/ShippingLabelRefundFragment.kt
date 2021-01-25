@@ -1,15 +1,14 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentShippingLabelRefundBinding
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -21,10 +20,9 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_shipping_label_refund.*
 import javax.inject.Inject
 
-class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
+class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_label_refund), BackPressListener {
     companion object {
         const val KEY_REFUND_SHIPPING_LABEL_RESULT = "key_refund_shipping_label_result"
     }
@@ -35,13 +33,8 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_shipping_label_refund, container, false)
-    }
+    private var _binding: FragmentShippingLabelRefundBinding? = null
+    private val binding get() = _binding!!
 
     override fun onResume() {
         super.onResume()
@@ -50,7 +43,13 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentShippingLabelRefundBinding.bind(view)
         setupObservers(viewModel)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupObservers(viewModel: ShippingLabelRefundViewModel) {
@@ -69,14 +68,14 @@ class ShippingLabelRefundFragment : BaseFragment(), BackPressListener {
 
     private fun showShippingLabelDetails(shippingLabel: ShippingLabel) {
         val formattedAmount = currencyFormatter.buildBigDecimalFormatter(shippingLabel.currency)(shippingLabel.rate)
-        shippingLabelRefund_amount.text = formattedAmount
+        binding.shippingLabelRefundAmount.text = formattedAmount
 
-        with(shippingLabelRefund_btnRefund) {
+        with(binding.shippingLabelRefundBtnRefund) {
             text = getString(R.string.shipping_label_refund_button, formattedAmount)
             setOnClickListener { viewModel.onRefundShippingLabelButtonClicked() }
         }
 
-        shippingLabelRefund_purchaseDate.text = shippingLabel.createdDate?.formatToMMMddYYYYhhmm()
+        binding.shippingLabelRefundPurchaseDate.text = shippingLabel.createdDate?.formatToMMMddYYYYhhmm()
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_request_refund)

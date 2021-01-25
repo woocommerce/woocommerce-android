@@ -110,7 +110,7 @@
                 <!-- Remove End Date button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/scheduleSale_RemoveEndDateButton"
-                    style="@style/Woo.Button"
+                    style="@style/Woo.Button.TextButton"
                     android:textAllCaps="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

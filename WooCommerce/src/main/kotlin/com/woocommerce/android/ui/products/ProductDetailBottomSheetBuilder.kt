@@ -5,8 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -149,7 +148,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getLinkedProducts(): ProductDetailBottomSheetUiItem? {
-        return if (!hasLinkedProducts() && FeatureFlag.PRODUCT_RELEASE_M5.isEnabled()) {
+        return if (!hasLinkedProducts()) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.LINKED_PRODUCTS,
                 ViewLinkedProducts(remoteId),
@@ -161,7 +160,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private fun Product.getDownloadableFiles(): ProductDetailBottomSheetUiItem? {
-        if (!FeatureFlag.PRODUCT_RELEASE_M5.isEnabled() || (isDownloadable && downloads.isNotEmpty())) return null
+        if (isDownloadable && downloads.isNotEmpty()) return null
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_DOWNLOADS,
             AddProductDownloadableFile

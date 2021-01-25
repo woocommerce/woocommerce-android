@@ -548,7 +548,6 @@ Language: id
     <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
-    <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke %1$s</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yaman</string>
@@ -1063,7 +1062,6 @@ Language: id
     <string name="alternatively">Atau:</string>
     <string name="open_mail">Buka email</string>
     <string name="next">Selanjutnya</string>
-    <string name="enter_email_wordpress_com">Login ke WordPress.com dengan alamat email untuk mengelola semua situs WordPress Anda.</string>
     <string name="login_promo_text_jetpack">Kelola situs Anda yang didukung oleh Jetpack di mana saja — WordPress selalu ada di saku Anda.</string>
     <string name="login_promo_text_notifications">Bawa pemberitahuan ke mana pun Anda pergi — lihat komentar dan suka seketika.</string>
     <string name="login_promo_text_anytime">Dapatkan kabar terbaru dari situs favorit Anda dan bergabung dalam percakapan di mana pun, kapan pun.</string>
@@ -1105,7 +1103,6 @@ Language: id
     <string name="add_order_note_menu_item">Tambahkan</string>
     <string name="add_order_note_label">Kirim catatan kepada pelanggan lewat email</string>
     <string name="order_error_update_general">Error saat mengubah pesanan</string>
-    <string name="order_error_fetch_notes_generic">Error saat mengambil catatan error</string>
     <string name="order_fulfill_marked_complete">Pesanan Ditandai Selesai</string>
     <string name="order_fulfill_mark_complete">Tandai Pesanan Selesai</string>
     <string name="orderdetail_addnote_contentdesc">Tambahkan catatan pesanan</string>
@@ -1168,6 +1165,7 @@ Language: id
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
+    <string name="enter_email_wordpress_com">Login dengan alamat email akun WordPress.com Anda untuk mengelola toko WooCommerce.</string>
     <string name="already_logged_in_wpcom">Anda sudah login ke akun WordPress.com, Anda tidak dapat menambahkan situs WordPress.com yang terikat ke akun lain.</string>
     <string name="cant_open_url">Tidak bisa membuka tautan</string>
     <string name="error_no_sms_app">Tidak ada aplikasi SMS</string>

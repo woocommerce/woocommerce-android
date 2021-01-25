@@ -55,7 +55,7 @@ import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import kotlinx.android.synthetic.main.view_login_no_stores.*
-import kotlinx.android.synthetic.main.view_login_no_stores.btn_what_is_jetpack
+import kotlinx.android.synthetic.main.view_login_no_stores.btn_secondary_action
 import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
@@ -364,9 +364,9 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         no_stores_view.visibility = View.GONE
-        btn_what_is_jetpack.visibility = View.GONE
+        btn_secondary_action.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
-        button_email_help.visibility = View.GONE
+        btn_secondary_action.visibility = View.GONE
 
         site_list_label.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
@@ -492,7 +492,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_list_container.visibility = View.GONE
         no_stores_view.visibility = View.VISIBLE
 
-        with(btn_what_is_jetpack) {
+        with(btn_secondary_action) {
+            text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
                 LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
@@ -605,16 +606,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
-        button_email_help.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
 
         no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
 
-        button_email_help.setOnClickListener {
-            AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
-            unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
+        with(btn_secondary_action) {
+            text = getString(R.string.login_need_help_finding_email)
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+                unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
-            LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+                LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+            }
+            visibility = View.VISIBLE
         }
 
         with(button_primary) {
@@ -659,7 +663,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
-        button_email_help.visibility = View.GONE
         site_list_container.visibility = View.GONE
 
         with(no_stores_view) {
@@ -691,6 +694,15 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             setText(spannable, TextView.BufferType.SPANNABLE)
             movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        with(btn_secondary_action) {
+            text = getString(R.string.login_jetpack_what_is)
+            setOnClickListener {
+                AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
+                LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+            }
+            visibility = View.VISIBLE
         }
 
         with(button_primary) {
@@ -741,6 +753,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_picker_root.visibility = View.VISIBLE
         no_stores_view.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
+        btn_secondary_action.visibility = View.GONE
 
         with(no_stores_view) {
             // Build and configure the error message and make part of the message

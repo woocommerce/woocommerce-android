@@ -8,6 +8,9 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -77,7 +80,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED)
+        track(ConnectedProductsListAction.ADDED)
         updateProductList()
     }
 
@@ -86,7 +89,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED)
+        track(ConnectedProductsListAction.DELETE_TAPPED)
         updateProductList()
     }
 
@@ -98,7 +101,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onAddProductButtonClicked() {
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED)
+        track(ConnectedProductsListAction.ADD_TAPPED)
         triggerEvent(ViewProductSelectionList(
             navArgs.remoteProductId,
             navArgs.groupedProductListType,
@@ -107,9 +110,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED, mapOf(
-            AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges
-        ))
+        track(ConnectedProductsListAction.DONE_TAPPED)
         triggerEvent(ExitWithResult(selectedProductIds))
     }
 
@@ -163,6 +164,15 @@ class GroupedProductListViewModel @AssistedInject constructor(
             isSkeletonShown = false,
             isLoadingMore = false
         )
+    }
+
+    private fun track(action: ConnectedProductsListAction) {
+        AnalyticsTracker.track(
+            Stat.CONNECTED_PRODUCTS_LIST,
+            mapOf(
+                KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
+                KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value
+            ))
     }
 
     @Parcelize

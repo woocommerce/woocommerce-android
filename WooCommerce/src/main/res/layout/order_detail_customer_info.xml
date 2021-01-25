@@ -193,7 +193,7 @@
             <!-- Call or message button -->
             <ImageButton
                 android:id="@+id/customerInfo_callOrMessageBtn"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="@dimen/image_major_50"
                 android:layout_height="@dimen/image_major_50"
                 android:contentDescription="@string/orderdetail_call_or_message_contentdesc"
@@ -230,7 +230,7 @@
             <!-- Email Button -->
             <ImageButton
                 android:id="@+id/customerInfo_emailBtn"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="@dimen/min_tap_target"
                 android:layout_height="@dimen/min_tap_target"
                 android:clickable="true"
@@ -263,7 +263,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerInfo_viewMoreButtonTitle"
-                style="@style/Woo.Button"
+                style="@style/Woo.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

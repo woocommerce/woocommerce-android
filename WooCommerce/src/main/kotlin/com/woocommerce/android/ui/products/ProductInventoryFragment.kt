@@ -8,21 +8,20 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.databinding.FragmentProductInventoryBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import kotlinx.android.synthetic.main.fragment_product_inventory.*
 
 class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_product_inventory),
-    BackPressListener, ProductItemSelectorDialogListener {
+    ProductItemSelectorDialogListener {
     private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
@@ -35,6 +34,9 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
     private var productBackOrderSelectorDialog: ProductItemSelectorDialog? = null
     private var productStockStatusSelectorDialog: ProductItemSelectorDialog? = null
 
+    private var _binding: FragmentProductInventoryBinding? = null
+    private val binding get() = _binding!!
+
     override fun onPause() {
         super.onPause()
         productBackOrderSelectorDialog?.dismiss()
@@ -46,8 +48,16 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductInventoryBinding.bind(view)
+
         setupObservers(viewModel)
         setupViews()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun getFragmentTitle() = getString(R.string.product_inventory)
@@ -64,44 +74,54 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 doneButton?.isEnabled = isEnabled
             }
             new.isStockManagementVisible?.takeIfNotEqualTo(old?.isStockManagementVisible) { isVisible ->
-                stockManagementPanel.isVisible = isVisible
-                soldIndividually_switch.isVisible = isVisible && new.isIndividualSaleSwitchVisible == true
+                binding.stockManagementPanel.isVisible = isVisible
+                binding.soldIndividuallySwitch.isVisible = isVisible && new.isIndividualSaleSwitchVisible == true
             }
             new.isStockStatusVisible?.takeIfNotEqualTo(old?.isStockStatusVisible) { isVisible ->
-                edit_product_stock_status.isVisible = isVisible
+                binding.editProductStockStatus.isVisible = isVisible
             }
             new.inventoryData.backorderStatus?.takeIfNotEqualTo(old?.inventoryData?.backorderStatus) {
-                edit_product_backorders.setText(ProductBackorderStatus.backordersToDisplayString(requireContext(), it))
+                binding.editProductBackorders.setText(
+                    ProductBackorderStatus.backordersToDisplayString(
+                        requireContext(),
+                        it
+                    )
+                )
             }
             new.inventoryData.stockStatus?.takeIfNotEqualTo(old?.inventoryData?.stockStatus) {
-                edit_product_stock_status.setText(ProductStockStatus.stockStatusToDisplayString(requireContext(), it))
+                binding.editProductStockStatus.setText(
+                    ProductStockStatus.stockStatusToDisplayString(
+                        requireContext(),
+                        it
+                    )
+                )
             }
             new.inventoryData.isStockManaged?.takeIfNotEqualTo(old?.inventoryData?.isStockManaged) { isStockManaged ->
                 new.isStockManagementVisible?.let { isVisible ->
                     if (isVisible) {
                         enableManageStockStatus(
                             isStockManaged,
-                            new.isStockStatusVisible ?: edit_product_stock_status.isVisible
+                            new.isStockStatusVisible ?: binding.editProductStockStatus.isVisible
                         )
                     } else {
-                        manageStock_switch.isVisible = false
-                        edit_product_stock_status.isVisible = false
+                        binding.manageStockSwitch.isVisible = false
+                        binding.editProductStockStatus.isVisible = false
                     }
                 }
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
-                if (product_sku.getText() != it) {
-                    product_sku.setText(it)
+                if (binding.productSku.getText() != it) {
+                    binding.productSku.setText(it)
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
                 val quantity = it.toString()
-                if (product_stock_quantity.getText() != quantity) {
-                    product_stock_quantity.setText(quantity)
+                if (binding.productStockQuantity.getText() != quantity) {
+                    binding.productStockQuantity.setText(quantity)
                 }
             }
             new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
-                soldIndividually_switch.isChecked = it
+                binding.soldIndividuallySwitch.isChecked = it
             }
 
             viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -118,29 +138,29 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
 
     private fun displaySkuError(messageId: Int) {
         if (messageId != 0) {
-            product_sku.error = getString(messageId)
+            binding.productSku.error = getString(messageId)
         } else {
-            product_sku.helperText = getString(R.string.product_sku_summary)
+            binding.productSku.helperText = getString(R.string.product_sku_summary)
         }
     }
 
     private fun setupViews() {
         if (!isAdded) return
 
-        with(product_sku) {
+        with(binding.productSku) {
             setOnTextChangedListener {
                 viewModel.onSkuChanged(it.toString())
             }
         }
 
-        with(manageStock_switch) {
+        with(binding.manageStockSwitch) {
             setOnCheckedChangeListener { _, isChecked ->
-                enableManageStockStatus(isChecked, edit_product_stock_status.isVisible)
+                enableManageStockStatus(isChecked, binding.editProductStockStatus.isVisible)
                 viewModel.onDataChanged(isStockManaged = isChecked)
             }
         }
 
-        with(product_stock_quantity) {
+        with(binding.productStockQuantity) {
             setOnTextChangedListener {
                 it.toString().toIntOrNull()?.let { quantity ->
                     viewModel.onDataChanged(stockQuantity = quantity)
@@ -148,31 +168,31 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
             }
         }
 
-        with(edit_product_backorders) {
+        with(binding.editProductBackorders) {
             setClickListener {
                 productBackOrderSelectorDialog = ProductItemSelectorDialog.newInstance(
                     this@ProductInventoryFragment,
                     RequestCodes.PRODUCT_INVENTORY_BACKORDERS,
                     getString(R.string.product_backorders),
                     ProductBackorderStatus.toMap(requireContext()),
-                    edit_product_backorders.getText()
+                    binding.editProductBackorders.getText()
                 ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
         }
 
-        with(edit_product_stock_status) {
+        with(binding.editProductStockStatus) {
             setClickListener {
                 productStockStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                     this@ProductInventoryFragment,
                     RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
                     getString(R.string.product_stock_status),
                     ProductStockStatus.toMap(requireContext()),
-                    edit_product_stock_status.getText()
+                    binding.editProductStockStatus.getText()
                 ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
         }
 
-        with(soldIndividually_switch) {
+        with(binding.soldIndividuallySwitch) {
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.onDataChanged(isSoldIndividually = isChecked)
             }
@@ -180,14 +200,14 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
     }
 
     private fun enableManageStockStatus(isStockManaged: Boolean, isStockStatusVisible: Boolean) {
-        manageStock_switch.isChecked = isStockManaged
+        binding.manageStockSwitch.isChecked = isStockManaged
         if (isStockManaged) {
-            edit_product_stock_status.collapse()
-            manageStock_morePanel.expand()
+            binding.editProductStockStatus.collapse()
+            binding.manageStockMorePanel.expand()
         } else {
-            manageStock_morePanel.collapse()
+            binding.manageStockMorePanel.collapse()
             if (isStockStatusVisible) {
-                edit_product_stock_status.expand()
+                binding.editProductStockStatus.expand()
             }
         }
     }
@@ -196,13 +216,13 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
         when (resultCode) {
             RequestCodes.PRODUCT_INVENTORY_BACKORDERS -> {
                 selectedItem?.let {
-                    edit_product_backorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
+                    binding.editProductBackorders.setText(getString(ProductBackorderStatus.toStringResource(it)))
                     viewModel.onDataChanged(backorderStatus = ProductBackorderStatus.fromString(it))
                 }
             }
             RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS -> {
                 selectedItem?.let {
-                    edit_product_stock_status.setText(getString(ProductStockStatus.toStringResource(it)))
+                    binding.editProductStockStatus.setText(getString(ProductStockStatus.toStringResource(it)))
                     viewModel.onDataChanged(stockStatus = ProductStockStatus.fromString(it))
                 }
             }

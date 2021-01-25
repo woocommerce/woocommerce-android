@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.OrderDetailRefundPaymentItemBinding
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Refund
-import kotlinx.android.synthetic.main.order_detail_refund_payment_item.view.*
 import java.math.BigDecimal
 
 class OrderDetailRefundsAdapter(
@@ -30,7 +30,13 @@ class OrderDetailRefundsAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): ViewHolder {
-        return ViewHolder(parent, isCashPayment, paymentMethodTitle, formatCurrency)
+        return ViewHolder(
+            OrderDetailRefundPaymentItemBinding.inflate(
+                LayoutInflater.from(parent.context)
+            ),
+            isCashPayment,
+            paymentMethodTitle,
+            formatCurrency)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -40,29 +46,30 @@ class OrderDetailRefundsAdapter(
     override fun getItemCount(): Int = refundList.size
 
     class ViewHolder(
-        parent: ViewGroup,
+        private val viewBinding: OrderDetailRefundPaymentItemBinding,
         private val isCashPayment: Boolean,
         private val paymentMethodTitle: String,
         private val formatCurrency: (BigDecimal) -> String
     ) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.order_detail_refund_payment_item, parent, false)
+        viewBinding.root
     ) {
         fun bind(refund: Refund) {
-            with(itemView.refundsList_refundAmount) {
-                text = context.getString(R.string.orderdetail_refund_amount, formatCurrency(refund.amount))
-            }
-            with(itemView.refundsList_refundMethod) {
-                text = itemView.resources.getString(R.string.orderdetail_refund_detail).format(
-                    DateFormat.getMediumDateFormat(itemView.context).format(refund.dateCreated),
+            val context = viewBinding.root.context
+            viewBinding.refundsListRefundAmount.text = context.getString(
+                R.string.orderdetail_refund_amount,
+                formatCurrency(refund.amount)
+            )
+            viewBinding.refundsListRefundMethod.text =
+                itemView.resources.getString(R.string.orderdetail_refund_detail).format(
+                    DateFormat.getMediumDateFormat(context).format(refund.dateCreated),
                     refund.getRefundMethod(
                         paymentMethodTitle = paymentMethodTitle,
                         isCashPayment = isCashPayment,
                         defaultValue = itemView.context.getString(R.string.order_refunds_manual_refund)
                     )
                 )
-            }
 
-            itemView.refundsList_itemRoot.setOnClickListener {
+            viewBinding.refundsListItemRoot.setOnClickListener {
                 // TODO: open refund detail screen
             }
         }

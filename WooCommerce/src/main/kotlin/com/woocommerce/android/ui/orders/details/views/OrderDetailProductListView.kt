@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.details.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.databinding.OrderDetailProductListBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.order_detail_product_list.view.*
 import java.math.BigDecimal
 
 class OrderDetailProductListView @JvmOverloads constructor(
@@ -24,9 +24,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
-    init {
-        View.inflate(context, R.layout.order_detail_product_list, this)
-    }
+    private val binding = OrderDetailProductListBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun updateProductList(
         orderItems: List<Order.Item>,
@@ -34,14 +32,14 @@ class OrderDetailProductListView @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener
     ) {
-        productList_lblProduct.text = StringUtils.getQuantityString(
+        binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
             quantity = orderItems.size,
             default = R.string.orderdetail_product_multiple,
             one = R.string.orderdetail_product
         )
 
-        productList_products.apply {
+        binding.productListProducts.apply {
             setHasFixedSize(false)
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
@@ -68,7 +66,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     fun notifyProductChanged(remoteProductId: Long) {
-        with(productList_products.adapter as? OrderDetailProductListAdapter) {
+        with(binding.productListProducts.adapter as? OrderDetailProductListAdapter) {
             this?.notifyProductChanged(remoteProductId)
         }
     }
@@ -77,8 +75,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         isVisible: Boolean,
         onMarkOrderCompleteButtonTapped: () -> Unit
     ) {
-        productList_btnMarkOrderComplete.isVisible = isVisible
-        productList_btnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
+        binding.productListBtnMarkOrderComplete.isVisible = isVisible
+        binding.productListBtnMarkOrderComplete.setOnClickListener { onMarkOrderCompleteButtonTapped() }
     }
 
     fun showCreateShippingLabelButton(
@@ -86,10 +84,10 @@ class OrderDetailProductListView @JvmOverloads constructor(
         onCreateShippingLabelButtonTapped: () -> Unit,
         onShippingLabelNoticeTapped: () -> Unit
     ) {
-        productList_btnCreateShippingLabel.isVisible = isVisible
-        productList_btnCreateShippingLabel.setOnClickListener { onCreateShippingLabelButtonTapped() }
+        binding.productListBtnCreateShippingLabel.isVisible = isVisible
+        binding.productListBtnCreateShippingLabel.setOnClickListener { onCreateShippingLabelButtonTapped() }
 
-        productList_shippingLabelsNotice.isVisible = isVisible
-        productList_shippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
+        binding.productListShippingLabelsNotice.isVisible = isVisible
+        binding.productListShippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
     }
 }

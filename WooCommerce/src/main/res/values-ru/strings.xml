@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 16:54:04+0000
+Translation-Revision-Date: 2021-01-21 15:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Можно получить возврат оплаты товара, доставки и суммы налогов (%s)</string>
+    <string name="shipping_label_validation_view_map">Открыть карту</string>
+    <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
+    <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
+    <string name="shipping_label_error_required_field">Обязательное поле</string>
+    <string name="shipping_label_error_address_invalid_street">Недопустимая улица</string>
+    <string name="shipping_label_error_address_house_number_missing">Не указан номер дома</string>
+    <string name="shipping_label_error_address_not_found">Адрес не найден</string>
+    <string name="shipping_label_edit_address_error_warning">Не удалось автоматически проверить почтовый адрес. Укажите его на Google Картах или свяжитесь с клиентом и убедитесь, что адрес указан верно.</string>
+    <string name="shipping_label_edit_address_validation_error">Сбой проверки адреса</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Выполняется проверка адреса</string>
+    <string name="shipping_label_edit_data_loading_error">Не удалось загрузить данные адреса</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Использовать введённый адрес</string>
+    <string name="shipping_label_edit_address_country">Страна</string>
+    <string name="shipping_label_edit_address_zip">Почтовый индекс</string>
+    <string name="shipping_label_edit_address_state">Округ/Область</string>
+    <string name="shipping_label_edit_address_city">Город</string>
+    <string name="shipping_label_edit_address_address">Адрес</string>
+    <string name="shipping_label_edit_address_phone">Телефон</string>
+    <string name="shipping_label_edit_address_company">Компания</string>
+    <string name="shipping_label_edit_address_name">Имя</string>
+    <string name="login_not_wordpress_site">Веб-сайт %1$s не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
+    <string name="error_no_gmaps_app">Приложение \"Google Карты\" найдено</string>
+    <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="variation_detail_update_variation_image_error">Удаление изображений вариантов продуктов поддерживается в версии WooCommerce 4.7 и более поздних.</string>
     <string name="order_shipment_tracking_progress_message">Подождите немного</string>
     <string name="order_shipment_tracking_progress_title">Добавление отслеживания</string>
@@ -548,7 +573,7 @@ Language: ru
     <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
-    <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключить %1$s</string>
+    <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Зимбабве</string>
     <string name="country_mapping_ZM">Замбия</string>
     <string name="country_mapping_YE">Йемен</string>
@@ -1063,7 +1088,6 @@ Language: ru
     <string name="alternatively">Альтернативно:</string>
     <string name="open_mail">Открыть почту</string>
     <string name="next">Вперед</string>
-    <string name="enter_email_wordpress_com">Для управления всеми своими сайтами WordPress войдите в систему WordPress.com с помощью адреса электронной почты.</string>
     <string name="login_promo_text_jetpack">Управляйте сайтом, созданным с помощью Jetpack, где угодно — WordPress можно всегда носить с собой.</string>
     <string name="login_promo_text_notifications">Уведомления путешествуют вместе с вами — сразу же узнавайте о комментариях и отметках «Нравится».</string>
     <string name="login_promo_text_anytime">Следите за обновлениями любимых сайтов и присоединяйтесь к беседе в любом месте и в любое время.</string>
@@ -1105,7 +1129,7 @@ Language: ru
     <string name="add_order_note_menu_item">Добавить</string>
     <string name="add_order_note_label">Отправить примечание клиенту по электронной почте</string>
     <string name="order_error_update_general">Ошибка при изменении заказа</string>
-    <string name="order_error_fetch_notes_generic">Ошибка при получении примечаний об ошибках</string>
+    <string name="order_error_fetch_notes_generic">Ошибка при получении примечаний</string>
     <string name="order_fulfill_marked_complete">Заказ отмечен как выполненный</string>
     <string name="order_fulfill_mark_complete">Отметить заказ как выполненный</string>
     <string name="orderdetail_addnote_contentdesc">Добавить примечание к заказу</string>
@@ -1168,6 +1192,7 @@ Language: ru
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
+    <string name="enter_email_wordpress_com">Для управления магазинами WooCommerce выполните вход, указав адрес электронной почты своей учётной записи WordPress.com.</string>
     <string name="already_logged_in_wpcom">Вы уже вошли в учетную запись WordPress.com. Вы не можете добавить сайт WordPress.com, привязанный к другой учетной записи.</string>
     <string name="cant_open_url">Не удаётся открыть ссылку</string>
     <string name="error_no_sms_app">Не найдено приложение для отправки SMS</string>

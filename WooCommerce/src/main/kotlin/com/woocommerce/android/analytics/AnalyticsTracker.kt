@@ -282,6 +282,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED,
         PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED,
         PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED,
+        PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED,
         PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
         PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
@@ -295,6 +296,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         ADD_PRODUCT_SUCCESS,
         ADD_PRODUCT_FAILED,
         PRODUCT_IMAGE_UPLOAD_FAILED,
+        PRODUCT_DETAIL_PRODUCT_DELETED,
 
         // -- Product Categories
         PRODUCT_CATEGORIES_LOADED,
@@ -318,11 +320,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         PRODUCT_REVIEWS_LOAD_FAILED,
         PRODUCT_REVIEWS_PULLED_TO_REFRESH,
 
-        // -- Grouped products
-        GROUPED_PRODUCT_LINKED_PRODUCTS_DELETE_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_DONE_BUTTON_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_ADD_TAPPED,
-        GROUPED_PRODUCT_LINKED_PRODUCTS_ADDED,
+        // -- Downloadable Files
+        PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED,
+        PRODUCTS_DOWNLOADABLE_FILE,
+
+        // -- Linked Products
+        LINKED_PRODUCTS,
+
+        // -- Connected Products (Grouped products, Upsells, Cross-sells)
+        CONNECTED_PRODUCTS_LIST,
 
         // -- Product external link
         PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED,
@@ -626,6 +632,40 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCT_M3_FEEDBACK = "products_m3"
         const val VALUE_SHIPPING_LABELS_M1_FEEDBACK = "shipping_labels_m1"
         const val VALUE_SHIPPING_LABELS_M2_FEEDBACK = "shipping_labels_m2"
+
+        // -- Downloadable Files
+        const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
+
+        enum class DownloadableFileAction(val value: String) {
+            ADDED("added"),
+            UPDATED("updated"),
+            DELETED("deleted")
+        }
+
+        // -- Linked Products
+        const val KEY_LINKED_PRODUCTS_ACTION = "action"
+
+        enum class LinkedProductsAction(val value: String) {
+            SHOWN("shown"),
+            DONE("done")
+        }
+
+        // -- Connected Products
+        const val KEY_CONNECTED_PRODUCTS_LIST_CONTEXT = "context"
+        const val KEY_CONNECTED_PRODUCTS_LIST_ACTION = "action"
+
+        enum class ConnectedProductsListContext(val value: String) {
+            GROUPED_PRODUCTS("grouped_products"),
+            UPSELLS("upsells"),
+            CROSS_SELLS("cross_sells")
+        }
+
+        enum class ConnectedProductsListAction(val value: String) {
+            ADD_TAPPED("add_tapped"),
+            ADDED("added"),
+            DONE_TAPPED("done_tapped"),
+            DELETE_TAPPED("delete_tapped")
+        }
 
         const val IMAGE_SOURCE_CAMERA = "camera"
         const val IMAGE_SOURCE_DEVICE = "device"

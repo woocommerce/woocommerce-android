@@ -1,30 +1,22 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductExternalLinkBinding
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import kotlinx.android.synthetic.main.fragment_product_external_link.*
 import org.wordpress.android.util.ActivityUtils
 
-class ProductExternalLinkFragment : BaseProductFragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product_external_link, container, false)
-    }
+class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_product_external_link) {
+    private var _binding: FragmentProductExternalLinkBinding? = null
+    private val binding get() = _binding!!
 
     override fun onResume() {
         super.onResume()
@@ -40,16 +32,24 @@ class ProductExternalLinkFragment : BaseProductFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentProductExternalLinkBinding.bind(view)
+        setHasOptionsMenu(true)
         setupObservers(viewModel)
 
-        product_url.setOnTextChangedListener {
+        binding.productUrl.setOnTextChangedListener {
             viewModel.updateProductDraft(externalUrl = it.toString())
             changesMade()
         }
-        product_button_text.setOnTextChangedListener {
+        binding.productButtonText.setOnTextChangedListener {
             viewModel.updateProductDraft(buttonText = it.toString())
             changesMade()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun getFragmentTitle() = getString(R.string.product_external_link)
@@ -85,8 +85,8 @@ class ProductExternalLinkFragment : BaseProductFragment() {
         if (!isAdded) return
 
         val product = requireNotNull(productData.productDraft)
-        product_url.setText(product.externalUrl)
-        product_button_text.setText(product.buttonText)
+        binding.productUrl.setText(product.externalUrl)
+        binding.productButtonText.setText(product.buttonText)
     }
 
     override fun onRequestAllowBackPress(): Boolean {

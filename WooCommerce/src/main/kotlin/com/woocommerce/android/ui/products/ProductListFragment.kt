@@ -320,7 +320,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(
-                    show = isVisible &&
+                    show = isVisible && isActive &&
                         (requireActivity() as? MainNavigationRouter)?.isAtNavigationRoot() == true
                 )
             }

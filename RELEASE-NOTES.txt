@@ -1,8 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-5.8
+5.9
 -----
  
+5.8
+-----
+* [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
+* [*] Fixed a bug where the moderation buttons in the product review detail would be partially hidden for some locales [https://github.com/woocommerce/woocommerce-android/pull/3382]
+
 5.7
 -----
 * [*] Fixed a bug where a selection made in a dialog was ignored (for example the shipping labels reprint paper size)
@@ -12,6 +17,7 @@
 * [*] Fixed a bug where variable products was not displayed when shipping labels were purchased for an order. [https://github.com/woocommerce/woocommerce-android/pull/3283]
 * [**] Fixed an issue where the app could not open the email client on Android 11 during the magic link login process. [https://github.com/woocommerce/woocommerce-android/pull/3291]
 * [***] Now it's possible to remove an image from a Product Variation if the WC version 4.7+. [https://github.com/woocommerce/woocommerce-android/pull/3312]
+* [*] New descriptive error screen displayed during log in with site address [https://github.com/woocommerce/woocommerce-android/pull/3331]
 
 5.6
 ----
