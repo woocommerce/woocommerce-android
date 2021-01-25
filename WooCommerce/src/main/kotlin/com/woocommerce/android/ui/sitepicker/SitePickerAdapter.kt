@@ -97,7 +97,8 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         fun bind(site: SiteModel) {
             viewBinding.radio.isVisible = siteList.size > 1
             viewBinding.radio.isChecked = site.siteId == selectedSiteId
-            viewBinding.textSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
+            viewBinding.textSiteName.text =
+                if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
             viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(site)
             if (itemCount > 1) {
                 viewBinding.root.setOnClickListener {
