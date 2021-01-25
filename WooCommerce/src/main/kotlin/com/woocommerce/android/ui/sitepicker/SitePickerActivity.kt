@@ -288,16 +288,16 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun showUserInfo(centered: Boolean) {
         if (calledFromLogin) {
-            binding.loginUserInfo.userInfoGroup.visibility = View.VISIBLE
+            binding.loginUserInfo.loginUserInfo.visibility = View.VISIBLE
             if (centered) {
-                binding.loginUserInfo.userInfoGroup.gravity = Gravity.CENTER
+                binding.loginUserInfo.loginUserInfo.gravity = Gravity.CENTER
                 with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     requestLayout()
                 }
             } else {
-                binding.loginUserInfo.userInfoGroup.gravity = Gravity.START
+                binding.loginUserInfo.loginUserInfo.gravity = Gravity.START
                 with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_72)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_72)
@@ -305,7 +305,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 }
             }
         } else {
-            binding.loginUserInfo.userInfoGroup.visibility = View.GONE
+            binding.loginUserInfo.loginUserInfo.visibility = View.GONE
         }
     }
 

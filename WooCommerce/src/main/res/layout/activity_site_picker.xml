@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface"
-    android:orientation="vertical"
-    android:visibility="visible">
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -47,13 +46,11 @@
                 android:layout_marginTop="@dimen/major_75"
                 android:layout_marginBottom="@dimen/major_100"
                 android:orientation="vertical"
-                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/login_user_info"
-                app:layout_constraintVertical_bias="0.0"
-                tools:visibility="gone">
+                app:layout_constraintVertical_bias="0.0">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/site_list_label"

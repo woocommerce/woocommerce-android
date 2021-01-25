@@ -2,14 +2,13 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/no_stores_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/user_info_group"
+    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
     app:layout_constraintVertical_bias="0.0" >
 
     <com.google.android.material.textview.MaterialTextView
@@ -25,9 +24,7 @@
         android:drawablePadding="@dimen/major_100"
         android:lineSpacingExtra="@dimen/line_spacing_extra_50"
         android:text="@string/login_no_stores"
-        android:textStyle="bold"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_secondary_action"
@@ -39,6 +36,5 @@
         android:layout_marginEnd="@dimen/major_100"
         android:text="@string/login_jetpack_what_is"
         android:textAllCaps="false"
-        android:textAlignment="center"
-        android:visibility="gone" />
+        android:textAlignment="center" />
 </LinearLayout>
