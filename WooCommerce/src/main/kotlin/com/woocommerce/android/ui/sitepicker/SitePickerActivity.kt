@@ -54,7 +54,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -321,13 +320,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
-                button_secondary.visibility = View.VISIBLE
-                button_secondary.text = getString(R.string.login_view_connected_stores)
+                binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.VISIBLE
+                binding.loginEpilogueButtonBar.buttonSecondary.text = getString(R.string.login_view_connected_stores)
             } else {
                 hasConnectedStores = false
 
                 // Hide "show connected stores"
-                button_secondary.visibility = View.GONE
+                binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.GONE
             }
 
             loginSiteUrl?.let { processLoginSite(it) }
@@ -339,7 +338,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             // Show the 'try another account' button in case the user
             // doesn't see the store they want to log into.
-            with(button_secondary) {
+            with(binding.loginEpilogueButtonBar.buttonSecondary) {
                 visibility = View.VISIBLE
                 text = getString(R.string.login_try_another_account)
                 setOnClickListener {
@@ -351,7 +350,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         } else {
             // Called from settings. Hide the button.
-            button_secondary.isVisible = false
+            binding.loginEpilogueButtonBar.buttonSecondary.isVisible = false
         }
 
         AnalyticsTracker.track(
@@ -384,7 +383,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.done)
             isEnabled = true
             setOnClickListener {
@@ -399,7 +398,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun onSiteClick(siteId: Long) {
         clickedSiteId = siteId
-        button_primary.isEnabled = true
+        binding.loginEpilogueButtonBar.buttonPrimary.isEnabled = true
     }
 
     override fun siteSelected(site: SiteModel, isAutoLogin: Boolean) {
@@ -463,7 +462,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // re-select the previous site, if there was one
         siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
-        button_primary.isEnabled = siteAdapter.selectedSiteId != 0L
+        binding.loginEpilogueButtonBar.buttonPrimary.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
@@ -504,7 +503,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_instructions_alt)
             isEnabled = true
             setOnClickListener {
@@ -513,7 +512,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             isEnabled = true
@@ -624,7 +623,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
@@ -635,7 +634,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 
@@ -708,7 +707,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
@@ -719,7 +718,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 
@@ -786,7 +785,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_account)
 
             setOnClickListener {
@@ -798,7 +797,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 
