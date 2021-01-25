@@ -55,7 +55,6 @@ import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
-import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -268,11 +267,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * Load the user info view with user information and gravatar.
      */
     private fun loadUserInfo() {
-        text_displayname.text = presenter.getUserDisplayName()
+        binding.loginUserInfo.textDisplayname.text = presenter.getUserDisplayName()
 
         presenter.getUserName()?.let { userName ->
             if (userName.isNotEmpty()) {
-                text_username.text = String.format(getString(R.string.at_username), userName)
+                binding.loginUserInfo.textUsername.text = String.format(getString(R.string.at_username), userName)
             }
         }
 
@@ -280,7 +279,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             .load(presenter.getUserAvatarUrl())
             .placeholder(R.drawable.img_gravatar_placeholder)
             .circleCrop()
-            .into(image_avatar)
+            .into(binding.loginUserInfo.imageAvatar)
     }
 
     /**
@@ -292,24 +291,24 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun showUserInfo(centered: Boolean) {
         if (calledFromLogin) {
-            user_info_group.visibility = View.VISIBLE
+            binding.loginUserInfo.userInfoGroup.visibility = View.VISIBLE
             if (centered) {
-                user_info_group.gravity = Gravity.CENTER
-                with(image_avatar) {
+                binding.loginUserInfo.userInfoGroup.gravity = Gravity.CENTER
+                with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     requestLayout()
                 }
             } else {
-                user_info_group.gravity = Gravity.START
-                with(image_avatar) {
+                binding.loginUserInfo.userInfoGroup.gravity = Gravity.START
+                with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_72)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_72)
                     requestLayout()
                 }
             }
         } else {
-            user_info_group.visibility = View.GONE
+            binding.loginUserInfo.userInfoGroup.visibility = View.GONE
         }
     }
 
