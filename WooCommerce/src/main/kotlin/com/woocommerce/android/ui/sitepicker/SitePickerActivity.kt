@@ -27,6 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivitySitePickerBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
@@ -54,8 +55,6 @@ import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_site_picker.*
 import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
 import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
-import kotlinx.android.synthetic.main.view_login_no_stores.*
-import kotlinx.android.synthetic.main.view_login_no_stores.btn_secondary_action
 import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
@@ -116,12 +115,17 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private var hasConnectedStores: Boolean = false
 
+    private var _binding: ActivitySitePickerBinding? = null
+    private val binding get() = _binding!!
+
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_site_picker)
+
+        _binding = ActivitySitePickerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         currentSite = selectedSite.getIfExists()
 
@@ -363,7 +367,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
-        no_stores_view.visibility = View.GONE
+        binding.noStoresView.noStoresViewText.visibility = View.GONE
         btn_secondary_action.visibility = View.GONE
         site_list_container.visibility = View.VISIBLE
         btn_secondary_action.visibility = View.GONE
@@ -490,7 +494,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
-        no_stores_view.visibility = View.VISIBLE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
 
         with(btn_secondary_action) {
             text = getString(R.string.login_jetpack_what_is)
@@ -605,10 +609,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
 
-        no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
+        binding.noStoresView.noStoresViewText.text = getString(R.string.login_not_connected_to_account, url)
 
         with(btn_secondary_action) {
             text = getString(R.string.login_need_help_finding_email)
@@ -662,10 +666,10 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         showUserInfo(centered = true)
         site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
         site_list_container.visibility = View.GONE
 
-        with(no_stores_view) {
+        with(binding.noStoresView.noStoresViewText) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
                     R.string.login_not_connected_jetpack,
@@ -755,7 +759,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         site_list_container.visibility = View.GONE
         btn_secondary_action.visibility = View.GONE
 
-        with(no_stores_view) {
+        with(binding.noStoresView.noStoresViewText) {
             // Build and configure the error message and make part of the message
             // clickable. When clicked, we'll fetch a fresh copy of the active site from the API.
             val siteName = site.name.takeIf { !it.isNullOrEmpty() } ?: site.url
