@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 10:54:04+0000
+Translation-Revision-Date: 2021-01-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Ücretleri, gönderin ve vergi tutarlarını iade edebilirsiniz %s</string>
+    <string name="shipping_label_validation_view_map">Haritayı Aç</string>
+    <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
+    <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
+    <string name="shipping_label_error_required_field">Zorunlu alan</string>
+    <string name="shipping_label_error_address_invalid_street">Geçersiz sokak </string>
+    <string name="shipping_label_error_address_house_number_missing">Ev numarası eksik</string>
+    <string name="shipping_label_error_address_not_found">Adres bulunamadı</string>
+    <string name="shipping_label_edit_address_error_warning">Gönderim adresini otomatik olarak doğrulayamadık. Bunu Google Haritalar\'da görüntüleyin veya adresin doğru olduğundan emin olmak için müşteriyle iletişim kurmayı deneyin.</string>
+    <string name="shipping_label_edit_address_validation_error">Adres doğrulanamadı</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Adres doğrulama işlemi devam ediyor</string>
+    <string name="shipping_label_edit_data_loading_error">Adres verileri yüklenemiyor </string>
+    <string name="shipping_label_edit_address_use_address_as_is">Adresi girildiği gibi kullan</string>
+    <string name="shipping_label_edit_address_country">Ülke</string>
+    <string name="shipping_label_edit_address_zip">Posta Kodu</string>
+    <string name="shipping_label_edit_address_state">Eyalet</string>
+    <string name="shipping_label_edit_address_city">Şehir</string>
+    <string name="shipping_label_edit_address_address">Adres</string>
+    <string name="shipping_label_edit_address_phone">Telefon</string>
+    <string name="shipping_label_edit_address_company">Firma</string>
+    <string name="shipping_label_edit_address_name">İsim</string>
+    <string name="login_not_wordpress_site">%1$s web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
+    <string name="error_no_gmaps_app">Google Haritalar bulunamadı</string>
+    <string name="please_wait">Lütfen bekleyin…</string>
     <string name="variation_detail_update_variation_image_error">Maalesef ürün varyasyonlarında resim kaldırma işlevi WooCommerce 4.7 veya sonraki sürümlerde desteklenmektedir.</string>
     <string name="order_shipment_tracking_progress_message">Lütfen bekleyin</string>
     <string name="order_shipment_tracking_progress_title">Takip ekleniyor</string>
@@ -548,7 +573,7 @@ Language: tr
     <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
-    <string name="enter_email_for_site">%1$s ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
+    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
     <string name="country_mapping_ZW">Zimbabve</string>
     <string name="country_mapping_ZM">Zambiya</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1063,7 +1088,6 @@ Language: tr
     <string name="alternatively">Alternatif olarak:</string>
     <string name="open_mail">E-postayı aç</string>
     <string name="next">Sonraki</string>
-    <string name="enter_email_wordpress_com">Tüm WordPress sitelerinizi yönetmek için bir e-posta adresi kullanarak WordPress.com\'a oturum açın.</string>
     <string name="login_promo_text_jetpack">Jetpack ile güçlendirilmiş sitenizi iş başında yönetin. Cebinizde WordPress var.</string>
     <string name="login_promo_text_notifications">Bildirimleriniz sizinle dolaşır. Yorumları ve beğenileri anında görün.</string>
     <string name="login_promo_text_anytime">Beğendiğiniz sitelerden geri kalmayın ve her hangi bir zamanda, yerde sohbete katılın.</string>
@@ -1105,7 +1129,7 @@ Language: tr
     <string name="add_order_note_menu_item">Ekle</string>
     <string name="add_order_note_label">Notu müşteriye e-posta ile gönderin</string>
     <string name="order_error_update_general">Sipariş değişikliği hatası</string>
-    <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
+    <string name="order_error_fetch_notes_generic">Notlar alınırken hata oluştu</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
     <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
@@ -1168,6 +1192,7 @@ Language: tr
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>
+    <string name="enter_email_wordpress_com">WooCommerce mağazalarınızı yönetmek için WordPress.com hesabınızın e-posta adresi ile oturum açın.</string>
     <string name="already_logged_in_wpcom">Zaten WordPress.com hesabınıza giriş yapmış durumdasınız, başka bir hesapla ilişkişi WordPress.com hesabını ekleyemezsiniz.</string>
     <string name="cant_open_url">Bağlantı açılamıyor</string>
     <string name="error_no_sms_app">SMS uygulaması bulunmadı</string>

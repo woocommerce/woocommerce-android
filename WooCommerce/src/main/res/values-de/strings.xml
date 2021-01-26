@@ -548,7 +548,6 @@ Language: de
     <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
-    <string name="enter_email_for_site">Melde dich bei WordPress.com an, um dich mit %1$s zu verbinden.</string>
     <string name="country_mapping_ZW">Simbabwe</string>
     <string name="country_mapping_ZM">Sambia</string>
     <string name="country_mapping_YE">Jemen</string>
@@ -1063,7 +1062,6 @@ Language: de
     <string name="alternatively">Alternativ:</string>
     <string name="open_mail">E-Mail öffnen</string>
     <string name="next">Weiter</string>
-    <string name="enter_email_wordpress_com">Melde dich auf WordPress.com mit einer E-Mail-Adresse an, um alle deine WordPress-Websites zu verwalten.</string>
     <string name="login_promo_text_jetpack">Verwalte deine mit Jetpack betriebene Website unterwegs – du hast WordPress immer dabei.</string>
     <string name="login_promo_text_notifications">Deine Benachrichtigungen hast du immer dabei – zeige Kommentare und Likes in Echtzeit an.</string>
     <string name="login_promo_text_anytime">Du kannst überall und jederzeit deine bevorzugten Websites verfolgen und an der Unterhaltung teilnehmen.</string>
@@ -1105,7 +1103,6 @@ Language: de
     <string name="add_order_note_menu_item">Hinzufügen</string>
     <string name="add_order_note_label">Hinweis per E-Mail an Kunden senden</string>
     <string name="order_error_update_general">Fehler beim Ändern der Bestellung</string>
-    <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Fehlerhinweisen</string>
     <string name="order_fulfill_marked_complete">Bestellung als abgeschlossen markiert</string>
     <string name="order_fulfill_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_addnote_contentdesc">Bestellhinweis hinzufügen</string>
@@ -1168,6 +1165,7 @@ Language: de
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
+    <string name="enter_email_wordpress_com">Melde dich mit der E-Mail-Adresse deines WordPress.com-Kontos an, um deine WooCommerce-Shops zu verwalten.</string>
     <string name="already_logged_in_wpcom">Du bist bereits in einem WordPress.com-Konto angemeldet, du kannst keine WordPress.com-Website hinzufügen, die an ein anderes Konto gebunden ist.</string>
     <string name="cant_open_url">Link konnte nicht geöffnet werden</string>
     <string name="error_no_sms_app">Es wurde keine SMS-Anwendung gefunden</string>

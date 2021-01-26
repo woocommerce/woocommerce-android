@@ -1,7 +1,0 @@
-5.7 :
-- Supprimez les images des variantes du produit !
-- L’application peut ouvrir le client de messagerie sur Android 11 pendant le processus de connexion au lien magique de connexion.
-- Résolutions de bugs : divers produits s’affichent lors de l’achat d’étiquettes de livraison ; les sélections effectuées dans une boîte de dialogue sont respectées.
-- Les frais apparaissent dans les détails de paiement de la commande.
-- Connexions sans mot de passe prises en charge.
-- Améliorations mineures du style des écrans de connexion.

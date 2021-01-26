@@ -1,7 +1,0 @@
-5.7:
-- Gambar dihapus dari variasi produk!
-- Di Android 11, aplikasi dapat membuka klien email saat proses login menggunakan magic link.
-- Perbaikan bug: produk variabel muncul saat label pengiriman dibeli; opsi yang dipilih di dialog disimpan.
-- Biaya ditampilkan di rincian pembayaran pesanan.
-- Dapat login tanpa kata sandi.
-- Perubahan kecil pada gaya di layar login.

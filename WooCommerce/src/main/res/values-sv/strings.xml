@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-23 14:54:39+0000
+Translation-Revision-Date: 2021-01-20 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
+    <string name="shipping_label_validation_view_map">Öppna karta</string>
+    <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
+    <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
+    <string name="shipping_label_error_required_field">Obligatoriskt fält</string>
+    <string name="shipping_label_error_address_invalid_street">Ogiltig gata</string>
+    <string name="shipping_label_error_address_house_number_missing">Husnummer saknas</string>
+    <string name="shipping_label_error_address_not_found">Adress hittades inte</string>
+    <string name="shipping_label_edit_address_error_warning">Vi kunde inte verifiera leveransadressen automatiskt. Visa i Google Maps eller testa att kontakta kunden för att verifiera att adressen stämmer.</string>
+    <string name="shipping_label_edit_address_validation_error">Adressvalideringen misslyckades</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Vänta …</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Adressvalideringen pågår</string>
+    <string name="shipping_label_edit_data_loading_error">Det gick inte att läsa in adressdata</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Använd adressen som angavs</string>
+    <string name="shipping_label_edit_address_country">Land</string>
+    <string name="shipping_label_edit_address_zip">Postnummer</string>
+    <string name="shipping_label_edit_address_state">Delstat</string>
+    <string name="shipping_label_edit_address_city">Ort</string>
+    <string name="shipping_label_edit_address_address">Adress</string>
+    <string name="shipping_label_edit_address_phone">Telefon</string>
+    <string name="shipping_label_edit_address_company">Företag</string>
+    <string name="shipping_label_edit_address_name">Namn</string>
+    <string name="login_not_wordpress_site">Webbplatsen %1$s är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
+    <string name="error_no_gmaps_app">Google Maps-appen hittades</string>
+    <string name="please_wait">Vänta …</string>
     <string name="variation_detail_update_variation_image_error">Bildborttagning på produktvarianter stöds i WooCommerce 4.7 eller senare.</string>
     <string name="order_shipment_tracking_progress_message">Vänta</string>
     <string name="order_shipment_tracking_progress_title">Lägger till spårning</string>
@@ -549,7 +574,7 @@ Language: sv_SE
     <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
-    <string name="enter_email_for_site">Logga in på WordPress.com för att ansluta till %1$s</string>
+    <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1064,7 +1089,6 @@ Language: sv_SE
     <string name="alternatively">Alternativt:</string>
     <string name="open_mail">Öppna e-posten</string>
     <string name="next">Nästa</string>
-    <string name="enter_email_wordpress_com">Logga in på WordPress.com med hjälp av en e-postadress för att hantera alla dina WordPress-webbplatser.</string>
     <string name="login_promo_text_jetpack">Hantera din Jetpack-förstärkta webbplats när som helst – WordPress finns i din ficka.</string>
     <string name="login_promo_text_notifications">Dina notifieringar följer alltid med dig – ha koll på kommentarer och gillanden i realtid.</string>
     <string name="login_promo_text_anytime">Håll koll på dina favoritwebbplatser och delta i diskussion där och när det passar dig.</string>
@@ -1106,7 +1130,7 @@ Language: sv_SE
     <string name="add_order_note_menu_item">Lägg till</string>
     <string name="add_order_note_label">Skicka notering till kund via e-post</string>
     <string name="order_error_update_general">Det gick inte att ändra ordern</string>
-    <string name="order_error_fetch_notes_generic">Det gick inte att hämta ordernoteringar</string>
+    <string name="order_error_fetch_notes_generic">Det gick inte att hämta noteringar</string>
     <string name="order_fulfill_marked_complete">Ordern har markerats som slutförd</string>
     <string name="order_fulfill_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_addnote_contentdesc">Lägg till en ordernotering</string>
@@ -1169,6 +1193,7 @@ Language: sv_SE
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
+    <string name="enter_email_wordpress_com">Logga in med e-postadressen för ditt WordPress.com-konto för att hantera dina WooCommerce-butiker.</string>
     <string name="already_logged_in_wpcom">Du är redan inloggad till ditt konto hos WordPress.com. Du kan inte lägga till någon webbplats från WordPress.com som är kopplad till ett annat konto.</string>
     <string name="cant_open_url">Kan inte öppna länken</string>
     <string name="error_no_sms_app">Ingen SMS-app hittades</string>

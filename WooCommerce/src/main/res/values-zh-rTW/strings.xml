@@ -548,7 +548,6 @@ Language: zh_TW
     <string name="orderdetail_empty_shipping_address">指定任何地址</string>
     <string name="login_need_help_finding_connected_email">需要協助找出你連結的電子郵件嗎？</string>
     <string name="enter_wordpress_site">此地址的網站不是 WordPress 網站。若需要我們連結網站，網站必須安裝 WordPress。</string>
-    <string name="enter_email_for_site">透過 WordPress.com 登入以連結至 %1$s</string>
     <string name="country_mapping_ZW">辛巴威</string>
     <string name="country_mapping_ZM">尚比亞</string>
     <string name="country_mapping_YE">葉門</string>
@@ -1063,7 +1062,6 @@ Language: zh_TW
     <string name="alternatively">替代作法：</string>
     <string name="open_mail">開啟郵件</string>
     <string name="next">下一篇</string>
-    <string name="enter_email_wordpress_com">使用電子郵件地址登入 WordPress.com，即可管理你的所有 WordPress 網站。</string>
     <string name="login_promo_text_jetpack">隨時隨地管理以 Jetpack 建置的網站，就像把 WordPress 裝在口袋隨身帶著走。</string>
     <string name="login_promo_text_notifications">你走到哪，通知就到哪，第一時間查看留言和讚。</string>
     <string name="login_promo_text_anytime">隨時隨地掌握最愛網站的最新動態並加入討論。</string>
@@ -1105,7 +1103,6 @@ Language: zh_TW
     <string name="add_order_note_menu_item">新增</string>
     <string name="add_order_note_label">將備註透過電子郵件傳送給客戶</string>
     <string name="order_error_update_general">變更訂單時發生錯誤</string>
-    <string name="order_error_fetch_notes_generic">擷取錯誤備註時發生錯誤</string>
     <string name="order_fulfill_marked_complete">標示為完成的訂單</string>
     <string name="order_fulfill_mark_complete">將訂單標示為完成</string>
     <string name="orderdetail_addnote_contentdesc">新增訂單備註</string>
@@ -1168,6 +1165,7 @@ Language: zh_TW
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>
+    <string name="enter_email_wordpress_com">使用 WordPress.com 帳號電子郵件地址登入，即可管理 WooCommerce 商店。</string>
     <string name="already_logged_in_wpcom">你已登入 WordPress.com 帳號，無法新增連結至其他帳號的 WordPress.com 網站。</string>
     <string name="cant_open_url">無法開啟連結</string>
     <string name="error_no_sms_app">找不到簡訊應用程式</string>
