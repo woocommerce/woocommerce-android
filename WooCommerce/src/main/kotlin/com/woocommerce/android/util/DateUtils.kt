@@ -2,6 +2,7 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.text.format.DateFormat
+import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.TimeGroup
@@ -14,8 +15,12 @@ import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 
-class DateUtils(val locale: Locale = Locale.getDefault()) {
+class DateUtils(
+    val locale: Locale = Locale.getDefault(),
+    val crashLogger: CrashLoggingDataProvider = CrashUtils
+) {
     val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
+
     private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-'W'ww", locale).apply {
         calendar = Calendar.getInstance().apply {
             // Ensure the date formatter follows ISO8601 week standards:
@@ -25,6 +30,7 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
             minimalDaysInFirstWeek = 7
         }
     }
+
     private val shortMonths = DateFormatSymbols(locale).shortMonths
 
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
@@ -361,6 +367,6 @@ class DateUtils(val locale: Locale = Locale.getDefault()) {
 
     private fun String.reportAsError(e: Exception) {
         WooLog.e(UTILS, this)
-        CrashUtils.logException(e)
+        (crashLogger as? CrashUtils)?.logException(e)
     }
 }

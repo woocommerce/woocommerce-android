@@ -1,5 +1,7 @@
 package com.woocommerce.android.util
 
+import com.automattic.android.tracks.CrashLogging.CrashLoggingDataProvider
+import com.automattic.android.tracks.TracksUser
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
@@ -8,255 +10,208 @@ import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
+import org.junit.Before
 import org.junit.Test
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 class DateUtilsTest {
+    lateinit var dateUtilsUnderTest: DateUtils
+
+    @Before
+    fun setUp() {
+        dateUtilsUnderTest = DateUtils(
+            Locale.US,
+            object : CrashLoggingDataProvider {
+                override fun sentryDSN() = ""
+                override fun getUserHasOptedOut() = false
+                override fun buildType() = ""
+                override fun releaseName() = ""
+                override fun currentUser(): TracksUser? = null
+                override fun applicationContext() = emptyMap<String, Any>()
+                override fun userContext(): MutableMap<String, Any> = mutableMapOf()
+                override fun locale(): Locale? = null
+            }
+        )
+    }
+
     @Test
     fun `getNumberOfDaysInMonth() returns correct values`() {
         // General case
-        assertEquals(31, DateUtils(Locale.US).getNumberOfDaysInMonth("2018-05-22"))
+        assertEquals(31, dateUtilsUnderTest.getNumberOfDaysInMonth("2018-05-22"))
 
         // February
-        assertEquals(28, DateUtils(Locale.US).getNumberOfDaysInMonth("2018-02-23"))
+        assertEquals(28, dateUtilsUnderTest.getNumberOfDaysInMonth("2018-02-23"))
 
         // Leap year February
-        assertEquals(29, DateUtils(Locale.US).getNumberOfDaysInMonth("2020-02-07"))
+        assertEquals(29, dateUtilsUnderTest.getNumberOfDaysInMonth("2020-02-07"))
 
         // Year and month only
-        assertEquals(29, DateUtils(Locale.US).getNumberOfDaysInMonth("2020-02"))
+        assertEquals(29, dateUtilsUnderTest.getNumberOfDaysInMonth("2020-02"))
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `getNumberOfDaysInMonth() throws exception on invalid string`() {
-        assertEquals(29, DateUtils(Locale.US).getNumberOfDaysInMonth("invalid"))
+    @Test
+    fun `getNumberOfDaysInMonth() returns null on invalid string`() {
+        assertNull(dateUtilsUnderTest.getNumberOfDaysInMonth("invalid"))
     }
 
     @Test
     fun `getShortMonthDayString() returns correct values`() {
-        assertEquals("Jul 3", DateUtils(Locale.US).getShortMonthDayString("2018-07-03"))
-        assertEquals("Jul 28", DateUtils(Locale.US).getShortMonthDayString("2018-07-28"))
+        assertEquals("Jul 3", dateUtilsUnderTest.getShortMonthDayString("2018-07-03"))
+        assertEquals("Jul 28", dateUtilsUnderTest.getShortMonthDayString("2018-07-28"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("2018-22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("2018-22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("-07-41")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
     }
 
     @Test
     fun `getShortMonthDayStringForWeek() returns correct values`() {
-        assertEquals("Mar 12", DateUtils(Locale.US).getShortMonthDayStringForWeek("2018-W11"))
+        assertEquals("Mar 12", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-W11"))
         // Jan 1 2018 happened to be a Monday, so the first day of the first week happens to also be
         // the first day of the year
-        assertEquals("Jan 1", DateUtils(Locale.US).getShortMonthDayStringForWeek("2018-W1"))
-        assertEquals("Jan 2", DateUtils(Locale.US).getShortMonthDayStringForWeek("2017-W1"))
+        assertEquals("Jan 1", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-W1"))
+        assertEquals("Jan 2", dateUtilsUnderTest.getShortMonthDayStringForWeek("2017-W1"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("2018-22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("2018-22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("-07-41")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
     }
 
     @Test
     fun `getShortMonthString() returns correct values`() {
-        assertEquals("Jul", DateUtils(Locale.US).getShortMonthString("2018-07"))
-        assertEquals("Jan", DateUtils(Locale.US).getShortMonthString("2017-01"))
+        assertEquals("Jul", dateUtilsUnderTest.getShortMonthString("2018-07"))
+        assertEquals("Jan", dateUtilsUnderTest.getShortMonthString("2017-01"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("2018-22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("2018-22"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("-07-41")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthDayString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
     }
 
     @Test
     fun `getDateString() returns correct values`() {
-        assertEquals("2019-05-09", DateUtils(Locale.US).getDateString("May 9, 2019"))
-        assertEquals("2018-12-31", DateUtils(Locale.US).getDateString("Dec 31, 2018"))
-        assertEquals("2019-01-01", DateUtils(Locale.US).getDateString("Jan 01, 2019"))
-        assertEquals("2019-02-28", DateUtils(Locale.US).getDateString("Feb 28, 2019"))
+        assertEquals("2019-05-09", dateUtilsUnderTest.getDateString("May 9, 2019"))
+        assertEquals("2018-12-31", dateUtilsUnderTest.getDateString("Dec 31, 2018"))
+        assertEquals("2019-01-01", dateUtilsUnderTest.getDateString("Jan 01, 2019"))
+        assertEquals("2019-02-28", dateUtilsUnderTest.getDateString("Feb 28, 2019"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getDateString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getDateString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getDateString("2019-12-31")
-        }
+        assertNull(dateUtilsUnderTest.getDateString("2019-12-31"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getDateString("-07-41")
-        }
+        assertNull(dateUtilsUnderTest.getDateString("-07-41"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getDateString("")
-        }
+        assertNull(dateUtilsUnderTest.getDateString(""))
     }
 
     @Test
     fun `getShortHourString() returns correct values`() {
-        assertEquals("12am", DateUtils(Locale.US).getShortHourString("2019-05-09 00"))
-        assertEquals("12pm", DateUtils(Locale.US).getShortHourString("2019-05-09 12"))
-        assertEquals("1am", DateUtils(Locale.US).getShortHourString("2018-12-31 01"))
-        assertEquals("5am", DateUtils(Locale.US).getShortHourString("2019-07-15 05"))
-        assertEquals("2pm", DateUtils(Locale.US).getShortHourString("2019-01-01 14"))
-        assertEquals("11pm", DateUtils(Locale.US).getShortHourString("2019-02-28 23"))
-        assertEquals("4pm", DateUtils(Locale.US).getShortHourString("2019-02-28 16"))
-        assertEquals("9am", DateUtils(Locale.US).getShortHourString("2019-02-28 09"))
+        assertEquals("12am", dateUtilsUnderTest.getShortHourString("2019-05-09 00"))
+        assertEquals("12pm", dateUtilsUnderTest.getShortHourString("2019-05-09 12"))
+        assertEquals("1am", dateUtilsUnderTest.getShortHourString("2018-12-31 01"))
+        assertEquals("5am", dateUtilsUnderTest.getShortHourString("2019-07-15 05"))
+        assertEquals("2pm", dateUtilsUnderTest.getShortHourString("2019-01-01 14"))
+        assertEquals("11pm", dateUtilsUnderTest.getShortHourString("2019-02-28 23"))
+        assertEquals("4pm", dateUtilsUnderTest.getShortHourString("2019-02-28 16"))
+        assertEquals("9am", dateUtilsUnderTest.getShortHourString("2019-02-28 09"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortHourString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getShortHourString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortHourString("2019-12-31")
-        }
+        assertNull(dateUtilsUnderTest.getShortHourString("2019-12-31"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortHourString("-07-41")
-        }
+        assertNull(dateUtilsUnderTest.getShortHourString("-07-41"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortHourString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortHourString(""))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortHourString("5am")
-        }
+        assertNull(dateUtilsUnderTest.getShortHourString("5am"))
     }
 
     @Test
     fun `getShortMonthYearString() returns correct values`() {
-        assertEquals("May 2019", DateUtils(Locale.US).getShortMonthYearString("2019-05"))
-        assertEquals("Dec 2018", DateUtils(Locale.US).getShortMonthYearString("2018-12"))
-        assertEquals("Jan 2019", DateUtils(Locale.US).getShortMonthYearString("2019-01"))
-        assertEquals("Feb 2019", DateUtils(Locale.US).getShortMonthYearString("2019-02"))
+        assertEquals("May 2019", dateUtilsUnderTest.getShortMonthYearString("2019-05"))
+        assertEquals("Dec 2018", dateUtilsUnderTest.getShortMonthYearString("2018-12"))
+        assertEquals("Jan 2019", dateUtilsUnderTest.getShortMonthYearString("2019-01"))
+        assertEquals("Feb 2019", dateUtilsUnderTest.getShortMonthYearString("2019-02"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString(""))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString("22"))
     }
 
     @Test
     fun `getDayMonthDateString() returns correct values`() {
-        assertEquals("Wednesday, May 1", DateUtils(Locale.US).getDayMonthDateString("2019-05-01 12"))
-        assertEquals("Tuesday, Dec 4", DateUtils(Locale.US).getDayMonthDateString("2018-12-04 14"))
-        assertEquals("Tuesday, Jan 22", DateUtils(Locale.US).getDayMonthDateString("2019-01-22 00"))
-        assertEquals("Saturday, Feb 23", DateUtils(Locale.US).getDayMonthDateString("2019-02-23 23"))
+        assertEquals("Wednesday, May 1", dateUtilsUnderTest.getDayMonthDateString("2019-05-01 12"))
+        assertEquals("Tuesday, Dec 4", dateUtilsUnderTest.getDayMonthDateString("2018-12-04 14"))
+        assertEquals("Tuesday, Jan 22", dateUtilsUnderTest.getDayMonthDateString("2019-01-22 00"))
+        assertEquals("Saturday, Feb 23", dateUtilsUnderTest.getDayMonthDateString("2019-02-23 23"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString(""))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getShortMonthYearString("22")
-        }
+        assertNull(dateUtilsUnderTest.getShortMonthYearString("22"))
     }
 
     @Test
     fun `getMonthString() returns correct values`() {
-        assertEquals("May", DateUtils(Locale.US).getMonthString("2019-05-01"))
-        assertEquals("December", DateUtils(Locale.US).getMonthString("2018-12-04"))
-        assertEquals("January", DateUtils(Locale.US).getMonthString("2019-01-22"))
-        assertEquals("February", DateUtils(Locale.US).getMonthString("2019-02-23"))
+        assertEquals("May", dateUtilsUnderTest.getMonthString("2019-05-01"))
+        assertEquals("December", dateUtilsUnderTest.getMonthString("2018-12-04"))
+        assertEquals("January", dateUtilsUnderTest.getMonthString("2019-01-22"))
+        assertEquals("February", dateUtilsUnderTest.getMonthString("2019-02-23"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getMonthString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getMonthString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getMonthString("")
-        }
+        assertNull(dateUtilsUnderTest.getMonthString(""))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getMonthString("22")
-        }
+        assertNull(dateUtilsUnderTest.getMonthString("22"))
     }
 
     @Test
     fun `getYearString() returns correct values`() {
-        assertEquals("2019", DateUtils(Locale.US).getYearString("2019-05-01"))
-        assertEquals("2018", DateUtils(Locale.US).getYearString("2018-12-04"))
-        assertEquals("2019", DateUtils(Locale.US).getYearString("2019-01-22"))
-        assertEquals("2019", DateUtils(Locale.US).getYearString("2019-02-23"))
-        assertEquals("2017", DateUtils(Locale.US).getYearString("2017-10"))
+        assertEquals("2019", dateUtilsUnderTest.getYearString("2019-05-01"))
+        assertEquals("2018", dateUtilsUnderTest.getYearString("2018-12-04"))
+        assertEquals("2019", dateUtilsUnderTest.getYearString("2019-01-22"))
+        assertEquals("2019", dateUtilsUnderTest.getYearString("2019-02-23"))
+        assertEquals("2017", dateUtilsUnderTest.getYearString("2017-10"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getYearString("Dec 30 2018")
-        }
+        assertNull(dateUtilsUnderTest.getYearString("Dec 30 2018"))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getYearString("2019")
-        }
+        assertNull(dateUtilsUnderTest.getYearString("2019"))
 
         // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getYearString("")
-        }
+        assertNull(dateUtilsUnderTest.getYearString(""))
 
-        assertFailsWith(IllegalArgumentException::class) {
-            DateUtils(Locale.US).getYearString("22")
-        }
+        assertNull(dateUtilsUnderTest.getYearString("22"))
     }
 
     @Test
