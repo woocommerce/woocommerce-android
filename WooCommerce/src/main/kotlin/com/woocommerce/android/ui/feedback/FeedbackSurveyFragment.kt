@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.feedback
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -21,12 +19,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.SURVEY_SCREEN
+import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.android.synthetic.main.fragment_licenses.*
 
-class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
+class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_feedback_survey) {
     companion object {
         const val TAG = "feedback_survey"
         private const val QUERY_PARAMETER_MESSAGE = "msg"
@@ -42,17 +40,24 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
         else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_feedback_survey, container, false)
-    }
+    private var _binding: FragmentFeedbackSurveyBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+
+        _binding = FragmentFeedbackSurveyBinding.bind(view)
+
         configureWebView()
         savedInstanceState?.let {
-            webView.restoreState(it)
-        } ?: webView.loadUrl(arguments.surveyType.url)
+            binding.webView.restoreState(it)
+        } ?: binding.webView.loadUrl(arguments.surveyType.url)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
@@ -82,13 +87,13 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let {
-            webView.restoreState(it)
+            binding.webView.restoreState(it)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        webView.saveState(outState)
+        binding.webView.saveState(outState)
     }
 
     override fun onDestroy() {
@@ -113,7 +118,7 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun configureWebView() = webView.apply {
+    private fun configureWebView() = binding.webView.apply {
         showProgressDialog()
         settings.apply {
             javaScriptEnabled = true
