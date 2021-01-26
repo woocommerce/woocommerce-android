@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -40,6 +39,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.android.support.AndroidSupportInjection
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
+import org.wordpress.android.login.util.getColorFromAttribute
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import javax.inject.Inject
@@ -661,7 +661,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             })
 
         searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
-            it.setHintTextColor(Color.WHITE)
+            it.setHintTextColor(requireContext().getColorFromAttribute(R.attr.colorOnSurface))
             it.isEnabled = false
         }
         (activity as? MainActivity)?.showBottomNav()
@@ -677,6 +677,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         if (isFilterEnabled) {
             isFilterEnabled = false
             searchView?.findViewById<EditText>(R.id.search_src_text)?.also {
+                it.setHintTextColor(requireContext().getColorFromAttribute(android.R.attr.textColorHint))
                 it.isEnabled = true
             }
             searchView?.queryHint = getString(R.string.orderlist_search_hint)
