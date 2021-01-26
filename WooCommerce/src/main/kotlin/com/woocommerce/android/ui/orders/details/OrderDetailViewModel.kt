@@ -259,6 +259,11 @@ class OrderDetailViewModel @AssistedInject constructor(
             else -> resourceProvider.getString(string.order_status_changed_to, newStatus)
         }
 
+        AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE, mapOf(
+            AnalyticsTracker.KEY_ID to order.remoteId,
+            AnalyticsTracker.KEY_FROM to order.status.value,
+            AnalyticsTracker.KEY_TO to newStatus))
+
         // display undo snackbar
         triggerEvent(ShowUndoSnackbar(
             message = snackMessage,
