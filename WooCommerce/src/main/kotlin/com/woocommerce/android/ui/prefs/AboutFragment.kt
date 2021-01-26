@@ -37,10 +37,6 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
         val copyright = String.format(getString(R.string.about_copyright), Calendar.getInstance().get(Calendar.YEAR))
         binding.aboutCopyright.text = copyright
 
-        binding.aboutUrl.setOnClickListener {
-            ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_HOME)
-        }
-
         binding.aboutPrivacy.setOnClickListener {
             ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
         }
