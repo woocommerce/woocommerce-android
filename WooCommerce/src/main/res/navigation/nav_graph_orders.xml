@@ -242,6 +242,11 @@
             app:destination="@id/editShippingLabelAddressFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPackagesFragment"
+            app:destination="@id/editShippingLabelPackagesFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
@@ -267,5 +272,15 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/editShippingLabelPackagesFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment"
+        android:label="EditShippingLabelPackagesFragment"
+        tools:layout="@layout/fragment_edit_shipping_label_packages">
+        <argument
+            android:name="orderId"
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
 </navigation>

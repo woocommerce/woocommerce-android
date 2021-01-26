@@ -16,6 +16,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.CARRIER
@@ -75,6 +76,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleNotice(EDIT_ADDRESS_CLOSED) {
             viewModel.onAddressEditCanceled()
         }
+        handleNotice(EditShippingLabelPackagesFragment.EDIT_PACKAGES_CLOSED) {
+            viewModel.onPackagesEditCanceled()
+        }
     }
 
     override fun onDestroyView() {
@@ -123,6 +127,13 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.address,
                             event.type,
                             event.validationResult
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowPackageDetails -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
+                            event.orderIdentifier
                         )
                     findNavController().navigateSafely(action)
                 }
