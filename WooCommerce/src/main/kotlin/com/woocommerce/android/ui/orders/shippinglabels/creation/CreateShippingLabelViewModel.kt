@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressInvalid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
@@ -212,6 +213,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onSuggestedAddressDiscarded() {
         stateMachine.handleEvent(SuggestedAddressDiscarded)
+    }
+
+    fun onSuggestedAddressAccepted(address: Address) {
+        stateMachine.handleEvent(SuggestedAddressAccepted(address))
     }
 
     fun onEditButtonTapped(step: FlowStep) {

@@ -11,10 +11,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelAddressSuggestionBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DiscardSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -25,6 +28,12 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class ShippingLabelAddressSuggestionFragment
     : BaseFragment(R.layout.fragment_shipping_label_address_suggestion), BackPressListener {
+    companion object {
+        const val SUGGESTED_ADDRESS_DISCARDED = "key_suggested_address_dialog_closed"
+        const val SELECTED_ADDRESS_ACCEPTED = "key_selected_address_accepted"
+        const val SELECTED_ADDRESS_TO_BE_EDITED = "key_selected_address_to_be_edited"
+    }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
@@ -33,7 +42,7 @@ class ShippingLabelAddressSuggestionFragment
 
     val viewModel: ShippingLabelAddressSuggestionViewModel by viewModels { viewModelFactory }
 
-    private var screenTitle = ""
+    private var screenTitle = 0
         set(value) {
             field = value
             updateActivityTitle()
@@ -62,22 +71,43 @@ class ShippingLabelAddressSuggestionFragment
         subscribeObservers()
     }
 
-    override fun getFragmentTitle() = screenTitle
+    override fun getFragmentTitle() = getString(screenTitle)
 
     @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.enteredAddress?.takeIfNotEqualTo(old?.enteredAddress) {
+                binding.enteredAddressText.text = it.toString()
+            }
+            new.suggestedAddress?.takeIfNotEqualTo(old?.suggestedAddress) {
+                binding.suggestedAddressText.text = it.toString()
+            }
+            new.areButtonsEnabled.takeIfNotEqualTo(old?.areButtonsEnabled) {
+                binding.editAddressButton.isEnabled = it
+                binding.useSuggestedAddressButton.isEnabled = it
+            }
+            new.title?.takeIfNotEqualTo(old?.title) {
+                screenTitle = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(
-                    CreateShippingLabelFragment.SUGGESTED_ADDRESS_SELECTED,
+                    SELECTED_ADDRESS_ACCEPTED,
                     event.data
                 )
                 is DiscardSuggestedAddress -> navigateBackWithNotice(
-                    CreateShippingLabelFragment.DISCARD_SUGGESTED_ADDRESS
+                    SUGGESTED_ADDRESS_DISCARDED
+                )
+                is EditSelectedAddress -> navigateBackWithResult(
+                    SELECTED_ADDRESS_TO_BE_EDITED,
+                    event.address
+                )
+                is UseSelectedAddress -> navigateBackWithResult(
+                    SELECTED_ADDRESS_ACCEPTED,
+                    event.address
                 )
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -87,12 +117,16 @@ class ShippingLabelAddressSuggestionFragment
 
     private fun initializeViews() {
         binding.useSuggestedAddressButton.setOnClickListener {
+            viewModel.onUseSelectedAddressTapped()
         }
         binding.editAddressButton.setOnClickListener {
+            viewModel.onEditSelectedAddressTapped()
         }
         binding.enteredAddressOption.setOnClickListener {
+            viewModel.onSelectedAddressChanged(false)
         }
         binding.suggestedAddressOption.setOnClickListener {
+            viewModel.onSelectedAddressChanged(true)
         }
         binding.enteredAddressText.setOnClickListener {
             binding.enteredAddressOption.performClick()

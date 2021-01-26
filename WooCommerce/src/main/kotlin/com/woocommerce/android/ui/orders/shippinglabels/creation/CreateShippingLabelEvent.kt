@@ -23,6 +23,10 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     object DiscardSuggestedAddress : CreateShippingLabelEvent()
 
+    data class UseSelectedAddress(val address: Address) : CreateShippingLabelEvent()
+
+    data class EditSelectedAddress(val address: Address) : CreateShippingLabelEvent()
+
     data class ShowCountrySelector(
         val locations: List<WCLocationModel>,
         val currentCountry: String?

@@ -191,7 +191,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         state<State.OriginAddressSuggestion> {
-            on<Event.SuggestedAddressSelected> { event ->
+            on<Event.SuggestedAddressAccepted> { event ->
                 val newData = data.copy(
                     originAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
@@ -245,7 +245,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
 
         state<State.ShippingAddressSuggestion> {
-            on<Event.SuggestedAddressSelected> { event ->
+            on<Event.SuggestedAddressAccepted> { event ->
                 val newData = data.copy(
                     shippingAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.PACKAGING
@@ -386,7 +386,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class AddressInvalid(val address: Address, val validationResult: ValidationResult) : Event()
         data class AddressValidated(val address: Address) : Event()
         data class AddressChangeSuggested(val suggested: Address) : Event()
-        data class SuggestedAddressSelected(val address: Address) : Event()
+        data class SuggestedAddressAccepted(val address: Address) : Event()
         object AddressValidationFailed : Event()
         object AddressEditCanceled : Event()
         object SuggestedAddressDiscarded : Event()

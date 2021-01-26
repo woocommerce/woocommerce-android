@@ -206,6 +206,14 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         viewState = viewState.copy(selectedStateName = selectedState)
     }
 
+    fun onAddressSelected(address: Address) {
+        triggerEvent(ExitWithResult(address))
+    }
+
+    fun onEditRequested(address: Address) {
+        updateAddress(address)
+    }
+
     fun onExit() {
         triggerEvent(CancelAddressEditing)
     }

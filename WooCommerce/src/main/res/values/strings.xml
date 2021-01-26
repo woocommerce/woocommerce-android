@@ -381,8 +381,8 @@
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
     <string name="shipping_label_validation_view_map">Open Map</string>
-    <string name="shipping_label_address_suggestion_use_suggested_address">Use suggested address</string>
-    <string name="shipping_label_address_suggestion_edit_address">Edit address</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>

@@ -36,6 +36,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -53,6 +55,8 @@ class EditShippingLabelAddressFragment
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
+        const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
+        const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -117,6 +121,12 @@ class EditShippingLabelAddressFragment
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
             viewModel.onStateSelected(it)
+        }
+        handleResult<Address>(SELECTED_ADDRESS_ACCEPTED) {
+            viewModel.onAddressSelected(it)
+        }
+        handleResult<Address>(SELECTED_ADDRESS_TO_BE_EDITED) {
+            viewModel.onEditRequested(it)
         }
     }
 
@@ -202,18 +212,18 @@ class EditShippingLabelAddressFragment
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_RESULT,
-                    event.data
-                )
-                is CancelAddressEditing -> navigateBackWithNotice(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_CLOSED
-                )
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
+                is CancelAddressEditing -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
                 is Exit -> findNavController().navigateUp()
-                is ShowSuggestedAddress -> navigateBackWithResult(
-                    CreateShippingLabelFragment.SUGGESTED_ADDRESS_SELECTED,
-                    event.data
-                )
+                is ShowSuggestedAddress -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
+                            event.originalAddress,
+                            event.suggestedAddress,
+                            event.type
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections
                         .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
