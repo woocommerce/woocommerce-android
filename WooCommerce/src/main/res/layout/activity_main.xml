@@ -38,12 +38,6 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!-- container for top level fragments -->
-            <FrameLayout
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
             <!-- container for child fragments in the nav graph -->
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment_main"
@@ -51,7 +45,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph_main"
                 tools:layout="@layout/fragment_my_store" />
         </FrameLayout>
 

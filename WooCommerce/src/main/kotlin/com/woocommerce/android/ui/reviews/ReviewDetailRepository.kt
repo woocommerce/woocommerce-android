@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.extensions.getCommentId
@@ -45,7 +46,6 @@ class ReviewDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val TAG = "ReviewDetailRepository"
     }
 
@@ -98,7 +98,7 @@ class ReviewDetailRepository @Inject constructor(
             try {
                 localNoteId = notification.noteId
 
-                suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+                suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                     notification.read = true
                     val payload = MarkNotificationsReadPayload(listOf(notification))
                     dispatcher.dispatch(NotificationActionBuilder.newMarkNotificationsReadAction(payload))
@@ -116,7 +116,7 @@ class ReviewDetailRepository @Inject constructor(
     private suspend fun fetchProductByRemoteId(remoteProductId: Long): Boolean {
         this.remoteProductId = remoteProductId
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationProduct = it
 
                 val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
@@ -130,7 +130,7 @@ class ReviewDetailRepository @Inject constructor(
 
     private suspend fun fetchProductReviewFromApi(remoteId: Long): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationReview = it
 
                 val payload = WCProductStore.FetchSingleProductReviewPayload(selectedSite.get(), remoteId)

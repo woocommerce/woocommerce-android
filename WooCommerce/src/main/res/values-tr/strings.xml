@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-14 17:08:02+0000
+Translation-Revision-Date: 2021-01-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Ücretleri, gönderin ve vergi tutarlarını iade edebilirsiniz %s</string>
+    <string name="shipping_label_validation_view_map">Haritayı Aç</string>
+    <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
+    <string name="shipping_label_validation_error_template">Doğrulama başarısız: %s</string>
+    <string name="shipping_label_error_required_field">Zorunlu alan</string>
+    <string name="shipping_label_error_address_invalid_street">Geçersiz sokak </string>
+    <string name="shipping_label_error_address_house_number_missing">Ev numarası eksik</string>
+    <string name="shipping_label_error_address_not_found">Adres bulunamadı</string>
+    <string name="shipping_label_edit_address_error_warning">Gönderim adresini otomatik olarak doğrulayamadık. Bunu Google Haritalar\'da görüntüleyin veya adresin doğru olduğundan emin olmak için müşteriyle iletişim kurmayı deneyin.</string>
+    <string name="shipping_label_edit_address_validation_error">Adres doğrulanamadı</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Adres doğrulama işlemi devam ediyor</string>
+    <string name="shipping_label_edit_data_loading_error">Adres verileri yüklenemiyor </string>
+    <string name="shipping_label_edit_address_use_address_as_is">Adresi girildiği gibi kullan</string>
+    <string name="shipping_label_edit_address_country">Ülke</string>
+    <string name="shipping_label_edit_address_zip">Posta Kodu</string>
+    <string name="shipping_label_edit_address_state">Eyalet</string>
+    <string name="shipping_label_edit_address_city">Şehir</string>
+    <string name="shipping_label_edit_address_address">Adres</string>
+    <string name="shipping_label_edit_address_phone">Telefon</string>
+    <string name="shipping_label_edit_address_company">Firma</string>
+    <string name="shipping_label_edit_address_name">İsim</string>
+    <string name="login_not_wordpress_site">%1$s web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
+    <string name="error_no_gmaps_app">Google Haritalar bulunamadı</string>
+    <string name="please_wait">Lütfen bekleyin…</string>
+    <string name="variation_detail_update_variation_image_error">Maalesef ürün varyasyonlarında resim kaldırma işlevi WooCommerce 4.7 veya sonraki sürümlerde desteklenmektedir.</string>
+    <string name="order_shipment_tracking_progress_message">Lütfen bekleyin</string>
+    <string name="order_shipment_tracking_progress_title">Takip ekleniyor</string>
+    <string name="add_order_note_progress_message">Lütfen bekleyin</string>
+    <string name="add_order_note_progress_title">Not ekleniyor</string>
+    <string name="shipping_label_create_payment_description">Yeni bir kredi kartı ekle</string>
+    <string name="shipping_label_create_carrier_description">Kargo şirketinizi ve ücretlerinizi seçin</string>
+    <string name="shipping_label_create_customs_description">Gümrük formunu doldurun</string>
+    <string name="shipping_label_create_customs">Gümrük</string>
+    <string name="shipping_label_create_packaging_details_description">Ürünlerinizi göndermek istediğiniz ambalaj türünü seçin</string>
+    <string name="shipping_label_create_packaging_details">Paketleme ayrıntıları</string>
+    <string name="shipping_label_create_title">Gönderim etiketi oluşturun</string>
+    <string name="shipping_label_more_information_link">Daha fazla bilgi</string>
+    <string name="shipping_label_more_information_message">Telefonunuzla evde indirimli fiyatlara gönderim etiketleri yazdırarak postane ile olan bağınızı koparın.</string>
+    <string name="shipping_label_more_information_heading">İşinizi WooCommerce Shipping ile yaparak zamandan ve paradan tasarruf edin</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
+    <string name="orderdetail_shipping_label_notice">Telefonunuzla etiket oluşturma hakkında daha fazla bilgi edinin</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
+    <string name="orderdetail_payment_fees">Masraflar</string>
+    <string name="orderdetail_net">Net ödeme</string>
+    <string name="orderdetail_payment_paid_by_customer">Ödendi</string>
+    <string name="login_jetpack_view_instructions_alt">Jetpack\'i bağlama hakkında daha fazla bilgi edinin</string>
+    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık. Bu uygulamayı kullanmak için WooCommerce mağazalarınıza ücretsiz Jetpack eklentisini kurmanız ve bağlamanız gerekir.</string>
+    <string name="edit">Düzenle</string>
     <string name="product_images_validate_drag_and_drop">Doğrula</string>
     <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
     <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
@@ -86,7 +138,6 @@ Language: tr
     <string name="shipping_label_paper_size">Kağıt boyutu</string>
     <string name="shipping_label_print_disclaimer">Etiketi bir pakette zaten kullandıysanız onu tekrar yazdırıp kullanmak hizmet şartlarımızın ihlali anlamına gelir.</string>
     <string name="shipping_label_print_error_message">Etiketi satın aldığınızda bir yazdırma hatası olduysa tekrar yazdırabilirsiniz.</string>
-    <string name="order_begin_fulfillment">Siparişi tamamlandı olarak işaretle</string>
     <string name="orderdetail_shipping_label_wip_message">Kargo etiketlerini doğrudan cihazınızdan yazdırmayı kolaylaştırmak için çalışıyoruz! Mağaza yöneticinizde WooCommerce Shipping ile bu sipariş için kargo etiketleri oluşturduysanız, şimdilik bunları burada, yani Sipariş Detayları bölümünüzde yazdırabilirsiniz.</string>
     <string name="orderdetail_shipping_label_wip_title">Cihazınızdan kargo etiketleri yazdırın!</string>
     <string name="orderdetail_shipping_label_reprint">Kargo etiketini tekrar yazdır</string>
@@ -191,7 +242,7 @@ Language: tr
     <string name="product_add_tag_error">Etiketler eklenirken hata oluştu</string>
     <string name="product_add_tag_dialog_title">Etiket ekleniyor</string>
     <string name="shipping_label_refund_progress_message">Geri ödemeniz işleniyor. Lütfen bekleyin…</string>
-    <string name="shipping_label_refund_success">Geri ödeme başarıyla gönderildi</string>
+    <string name="shipping_label_refund_success">Geri ödeme isteği başarıyla gönderildi</string>
     <string name="shipping_label_refund_button">Geri ödeme etiketi (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Geri ödenebilecek tutar</string>
     <string name="shipping_label_refund_purchase_date_title">Satın alma tarihi</string>
@@ -216,7 +267,7 @@ Language: tr
     <string name="product_type_description">%s ürün</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Geri kalan ürünler</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s etiket iade edildi</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s etiket geri ödemesi istendi</string>
     <string name="orderdetail_shipping_label_tracking_info">Gönderimi takip et</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Gönderi ayrıntılarını gizle</string>
@@ -490,8 +541,6 @@ Language: tr
     <string name="orderdetail_refund_detail">%2$s üzerinden %1$s</string>
     <string name="settings_enable_v4_stats_title">İyileştirilmiş istatistikler</string>
     <string name="beta_features">Beta özellikler</string>
-    <string name="orderdetail_net">Net</string>
-    <string name="orderdetail_payment_paid_by_customer">Müşteri tarafından ödenen</string>
     <string name="orderdetail_payment_summary_onhold">%s üzerinden ödeme bekleniyor</string>
     <string name="orderdetail_payment_summary_completed">%2$s üzerinden %1$s</string>
     <string name="dashboard_state_no_data">Bu dönemde hiç gelir yok</string>
@@ -524,7 +573,7 @@ Language: tr
     <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
-    <string name="enter_email_for_site">%1$s ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
+    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
     <string name="country_mapping_ZW">Zimbabve</string>
     <string name="country_mapping_ZM">Zambiya</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1039,7 +1088,6 @@ Language: tr
     <string name="alternatively">Alternatif olarak:</string>
     <string name="open_mail">E-postayı aç</string>
     <string name="next">Sonraki</string>
-    <string name="enter_email_wordpress_com">Tüm WordPress sitelerinizi yönetmek için bir e-posta adresi kullanarak WordPress.com\'a oturum açın.</string>
     <string name="login_promo_text_jetpack">Jetpack ile güçlendirilmiş sitenizi iş başında yönetin. Cebinizde WordPress var.</string>
     <string name="login_promo_text_notifications">Bildirimleriniz sizinle dolaşır. Yorumları ve beğenileri anında görün.</string>
     <string name="login_promo_text_anytime">Beğendiğiniz sitelerden geri kalmayın ve her hangi bir zamanda, yerde sohbete katılın.</string>
@@ -1081,8 +1129,9 @@ Language: tr
     <string name="add_order_note_menu_item">Ekle</string>
     <string name="add_order_note_label">Notu müşteriye e-posta ile gönderin</string>
     <string name="order_error_update_general">Sipariş değişikliği hatası</string>
-    <string name="order_error_fetch_notes_generic">Hata notları alınırken hata</string>
+    <string name="order_error_fetch_notes_generic">Notlar alınırken hata oluştu</string>
     <string name="order_fulfill_marked_complete">Sipariş Tamamlanmış Olarak İşaretlendi</string>
+    <string name="order_fulfill_mark_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
     <string name="orderdetail_addnote_contentdesc">Sipariş notu ekleyin</string>
     <string name="orderdetail_add_note">Not ekleyin</string>
     <string name="orderdetail_hide_billing">Faturayı Saklayın</string>
@@ -1134,7 +1183,6 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
-    <string name="login_no_stores">WooCommerce mağazası bulunamadı\nbu hesaba bağlanıldı</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
@@ -1144,6 +1192,7 @@ Language: tr
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>
+    <string name="enter_email_wordpress_com">WooCommerce mağazalarınızı yönetmek için WordPress.com hesabınızın e-posta adresi ile oturum açın.</string>
     <string name="already_logged_in_wpcom">Zaten WordPress.com hesabınıza giriş yapmış durumdasınız, başka bir hesapla ilişkişi WordPress.com hesabını ekleyemezsiniz.</string>
     <string name="cant_open_url">Bağlantı açılamıyor</string>
     <string name="error_no_sms_app">SMS uygulaması bulunmadı</string>

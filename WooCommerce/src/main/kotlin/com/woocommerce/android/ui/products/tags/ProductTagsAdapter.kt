@@ -2,17 +2,14 @@ package com.woocommerce.android.ui.products.tags
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ProductTagListItemBinding
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.ProductTagViewHolder
-import kotlinx.android.synthetic.main.product_tag_list_item.view.*
 
 class ProductTagsAdapter(
     private val context: Context,
@@ -37,32 +34,12 @@ class ProductTagsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductTagViewHolder {
         return ProductTagViewHolder(
-            LayoutInflater.from(parent.context)
-            .inflate(R.layout.product_tag_list_item, parent, false)
+            ProductTagListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: ProductTagViewHolder, position: Int) {
-        val productTag = productTags[position]
-
-        holder.apply {
-            if (hasFilter()) {
-                // if there's a filter, highlight it in the tag name - note that the tag name should always
-                // match the filter, but we make sure the match is found (start > -1) as a precaution
-                val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
-                if (start > -1) {
-                    val sb = StringBuilder(productTag.name)
-                    sb.insert(start, "<b>")
-                    sb.insert(start + currentFilter.length + 3, "</b>")
-                    txtTagName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-                } else {
-                    txtTagName.text = productTag.name
-                }
-            } else {
-                txtTagName.text = productTag.name
-            }
-            itemView.setOnClickListener { clickListener.onProductTagAdded(productTag) }
-        }
+        holder.bind(productTags[position])
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
@@ -93,8 +70,26 @@ class ProductTagsAdapter(
         notifyDataSetChanged()
     }
 
-    class ProductTagViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtTagName: TextView = view.tagItemName
+    inner class ProductTagViewHolder(val viewBinding: ProductTagListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        fun bind(productTag: ProductTag) {
+            if (hasFilter()) {
+                // if there's a filter, highlight it in the tag name - note that the tag name should always
+                // match the filter, but we make sure the match is found (start > -1) as a precaution
+                val start = productTag.name.indexOf(currentFilter, ignoreCase = true)
+                if (start > -1) {
+                    val sb = StringBuilder(productTag.name)
+                    sb.insert(start, "<b>")
+                    sb.insert(start + currentFilter.length + 3, "</b>")
+                    viewBinding.tagItemName.text = HtmlCompat.fromHtml(sb.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                } else {
+                    viewBinding.tagItemName.text = productTag.name
+                }
+            } else {
+                viewBinding.tagItemName.text = productTag.name
+            }
+            itemView.setOnClickListener { clickListener.onProductTagAdded(productTag) }
+        }
     }
 
     private class ProductTagItemDiffUtil(

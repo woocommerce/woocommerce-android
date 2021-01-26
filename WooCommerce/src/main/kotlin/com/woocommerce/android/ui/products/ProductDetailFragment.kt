@@ -32,7 +32,6 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -53,8 +52,7 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import org.wordpress.android.util.ActivityUtils
 
 class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener,
-    NavigationResult {
+    OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
@@ -183,6 +181,19 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
             viewModel.showAddProductDownload(it.first().source)
             changesMade()
         }
+
+        handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
+            if (!result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) return@handleResult
+            when (result.getInt(AztecEditorFragment.ARG_AZTEC_REQUEST_CODE)) {
+                RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
+                    viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+                RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
+                    viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
+                }
+            }
+            changesMade()
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -207,7 +218,8 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
                 if (it) {
                     showProgressDialog(
                         title = R.string.product_downloadable_files_upload_dialog_title,
-                        message = R.string.product_downloadable_files_upload_dialog_message)
+                        message = R.string.product_downloadable_files_upload_dialog_message
+                    )
                 } else {
                     hideProgressDialog()
                 }
@@ -427,23 +439,6 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
-        }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
-                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
-                    changesMade()
-                }
-            }
-            RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
-                if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
-                    viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
-                    changesMade()
-                }
-            }
         }
     }
 

@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 14:54:03+0000
+Translation-Revision-Date: 2021-01-22 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
+    <string name="shipping_label_validation_view_map">マップを開く</string>
+    <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
+    <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
+    <string name="shipping_label_error_required_field">必須のフィールド</string>
+    <string name="shipping_label_error_address_invalid_street">無効な住所</string>
+    <string name="shipping_label_error_address_house_number_missing">番地が見つかりません</string>
+    <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
+    <string name="shipping_label_edit_address_error_warning">自動的に配送先住所を確認できませんでした。 Google マップで表示するか、顧客に連絡して住所が正しいことを確認してください。</string>
+    <string name="shipping_label_edit_address_validation_error">住所の確認に失敗しました</string>
+    <string name="shipping_label_edit_address_validation_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">住所の確認中です</string>
+    <string name="shipping_label_edit_data_loading_error">住所データを読み込むことができませんでした</string>
+    <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>
+    <string name="shipping_label_edit_address_country">国名</string>
+    <string name="shipping_label_edit_address_zip">郵便番号</string>
+    <string name="shipping_label_edit_address_state">都道府県</string>
+    <string name="shipping_label_edit_address_city">市区町村</string>
+    <string name="shipping_label_edit_address_address">アドレス</string>
+    <string name="shipping_label_edit_address_phone">電話</string>
+    <string name="shipping_label_edit_address_company">会社</string>
+    <string name="shipping_label_edit_address_name">名前</string>
+    <string name="login_not_wordpress_site">ウェブサイト %1$s は WordPress のサイトではありません。 接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
+    <string name="error_no_gmaps_app">Google マップアプリが見つかりました</string>
+    <string name="please_wait">しばらくお待ちください…</string>
+    <string name="variation_detail_update_variation_image_error">商品バリエーションの画像削除は、WooCommerce 4.7以上が対象となっています。</string>
+    <string name="order_shipment_tracking_progress_message">しばらくお待ちください</string>
+    <string name="order_shipment_tracking_progress_title">トラッキングを追加中</string>
+    <string name="add_order_note_progress_message">しばらくお待ちください</string>
+    <string name="add_order_note_progress_title">メモを追加中</string>
+    <string name="shipping_label_create_payment_description">新しいクレジットカードを追加</string>
+    <string name="shipping_label_create_carrier_description">配送業者と金額を選択</string>
+    <string name="shipping_label_create_customs_description">税関申告書を記入</string>
+    <string name="shipping_label_create_customs">税関</string>
+    <string name="shipping_label_create_packaging_details_description">商品を発送する際の梱包の種類を選択</string>
+    <string name="shipping_label_create_packaging_details">梱包の詳細</string>
+    <string name="shipping_label_create_title">配送ラベルを作成</string>
+    <string name="shipping_label_more_information_link">さらに詳しく</string>
+    <string name="shipping_label_more_information_message">自宅でスマートフォンを使い、割引料金で配送ラベルを印刷して、郵便局での待ち時間をカット !</string>
+    <string name="shipping_label_more_information_heading">WooCommerce Shipping を利用して、時間とお金を節約</string>
+    <string name="shipping_label_more_information_title">WooCommerce の送料</string>
+    <string name="order_mark_complete">注文を完了としてマーク</string>
+    <string name="orderdetail_shipping_label_notice">スマートフォンでのラベル作成に関する詳細はこちら</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてお試しください !</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
+    <string name="orderdetail_payment_fees">手数料</string>
+    <string name="orderdetail_net">支払額 (正味)</string>
+    <string name="orderdetail_payment_paid_by_customer">支払済み</string>
+    <string name="login_jetpack_view_instructions_alt">Jetpack の連携について詳しく読む</string>
+    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません このアプリを使用するには、無料の Jetpack プラグインを WooCommerce ストアにインストールして連携させる必要があります。</string>
+    <string name="edit">編集</string>
     <string name="product_images_validate_drag_and_drop">認証</string>
     <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
@@ -86,7 +138,6 @@ Language: ja_JP
     <string name="shipping_label_paper_size">用紙サイズ</string>
     <string name="shipping_label_print_disclaimer">荷物に一度使用したラベルを印刷して再度使用すると、弊社の利用規約違反となります。</string>
     <string name="shipping_label_print_error_message">購入したラベルで印刷エラーが発生した場合は、そのラベルをもう一度印刷できます。</string>
-    <string name="order_begin_fulfillment">注文を完了としてマーク</string>
     <string name="orderdetail_shipping_label_wip_message">お使いの端末から配送ラベルをより簡単に直接印刷できるよう、改善を重ねているところです ! 現時点では、WooCommerce Shipping のストア管理からこの注文用に配送ラベルを作成した場合、こちらの「注文詳細」から印刷できます。</string>
     <string name="orderdetail_shipping_label_wip_title">お手元の端末から配送ラベルを印刷しましょう !</string>
     <string name="orderdetail_shipping_label_reprint">配送ラベルを再印刷</string>
@@ -189,7 +240,7 @@ Language: ja_JP
     <string name="product_add_tag_error">タグを追加する際にエラーが発生しました</string>
     <string name="product_add_tag_dialog_title">タグを追加しています</string>
     <string name="shipping_label_refund_progress_message">返金処理を実行中です。 しばらくお待ちください…</string>
-    <string name="shipping_label_refund_success">返金処理を正常に送信しました。</string>
+    <string name="shipping_label_refund_success">返金処理リクエストを正常に送信しました</string>
     <string name="shipping_label_refund_button">返金ラベル (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">返金対象額</string>
     <string name="shipping_label_refund_purchase_date_title">購入日</string>
@@ -214,8 +265,9 @@ Language: ja_JP
     <string name="product_type_description">%s 商品</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">残りの商品</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s 返金したラベル</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s ラベルの返金がリクエストされました</string>
     <string name="orderdetail_shipping_label_tracking_info">配送状況を追跡</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">配送状況の詳細を非表示</string>
     <string name="orderdetail_shipping_label_item_show_shipping">配送状況の詳細を表示</string>
     <string name="orderdetail_shipping_label_item_payment_type">クレジットカード</string>
@@ -487,8 +539,6 @@ Language: ja_JP
     <string name="orderdetail_refund_detail">%2$s により %1$s</string>
     <string name="settings_enable_v4_stats_title">強化された統計</string>
     <string name="beta_features">ベータ版の機能</string>
-    <string name="orderdetail_net">純額</string>
-    <string name="orderdetail_payment_paid_by_customer">顧客から支払われた金額</string>
     <string name="orderdetail_payment_summary_onhold">%s による決済待ち</string>
     <string name="orderdetail_payment_summary_completed">%2$s により %1$s</string>
     <string name="dashboard_state_no_data">この期間には収益がありません</string>
@@ -521,7 +571,7 @@ Language: ja_JP
     <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">WordPress.com でログインして、%1$s に接続してください</string>
+    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>
@@ -1036,7 +1086,6 @@ Language: ja_JP
     <string name="alternatively">もしくは、</string>
     <string name="open_mail">メールを開く</string>
     <string name="next">次へ</string>
-    <string name="enter_email_wordpress_com">メールアドレスを使用して WordPress.com にログインすると、自分のすべての WordPress サイトを管理できます。</string>
     <string name="login_promo_text_jetpack">Jetpack 搭載のサイトを外出先で管理 — WordPress をどこにでも持ち歩けます。</string>
     <string name="login_promo_text_notifications">通知がモバイルでも表示されます。コメントやいいねをリアルタイムで確認できます。</string>
     <string name="login_promo_text_anytime">お気に入りのサイトを常時チェックして、好きな時に好きな場所で会話に加わることができます。</string>
@@ -1078,8 +1127,9 @@ Language: ja_JP
     <string name="add_order_note_menu_item">追加</string>
     <string name="add_order_note_label">顧客にメールでメモを送信</string>
     <string name="order_error_update_general">注文を変更する際にエラーが発生しました</string>
-    <string name="order_error_fetch_notes_generic">エラー通知を取得する際にエラーが発生しました</string>
+    <string name="order_error_fetch_notes_generic">メモを取得できませんでした</string>
     <string name="order_fulfill_marked_complete">注文が完了としてマークされました</string>
+    <string name="order_fulfill_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_addnote_contentdesc">注文メモを追加します</string>
     <string name="orderdetail_add_note">メモを追加</string>
     <string name="orderdetail_hide_billing">課金を非表示</string>
@@ -1131,7 +1181,6 @@ Language: ja_JP
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">日</string>
-    <string name="login_no_stores">このアカウントに連携している\nWooCommerce ストアが見つかりません</string>
     <string name="login_with_a_different_account">別のアカウントでログインします</string>
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
@@ -1141,6 +1190,7 @@ Language: ja_JP
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
+    <string name="enter_email_wordpress_com">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>

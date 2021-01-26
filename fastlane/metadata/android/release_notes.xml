@@ -1,102 +1,60 @@
-<ar>
-5.6:
-لقد طلبت واستمعنا! يمكنك الآن إنشاء منتجات بسيطة ومجمعة وخارجية لمخزنك مباشرةً من أجهزتك المحمولة المفضلة التي تعمل بنظام تشغيل Android. حول أفكارك إلى منتجات – حتى عندما تكون بعيدًا عن حاسوبك.
-
-قمنا أيضًا بتحديث واجهة المستخدم الخاصة بنا إلى تصميم أكثر وضوحًا وتنظيمًا، وأصلحنا الخطأ الموجود في تفاصيل الطلب، ما سيجعل تعقُّب الشحنة أمرًا سهلاً.
-</ar>
-<de-DE>
-5.6:
-Dein Wunsch ist uns Befehl! Ab sofort kannst du einfache, gruppierte oder externe Produkte für deinen Store direkt über deine bevorzugten Android-Mobilgeräte erstellen. Wandle Ideen in Produkte um – auch wenn du nicht an deinem Computer sitzt.
-
-Außerdem haben wir unserer Benutzeroberfläche ein schickeres und übersichtlicheres Design verpasst und einen Fehler in den Bestelldetails behoben, um die Versandverfolgung so einfach wie möglich zu gestalten.
-</de-DE>
 <es-ES>
-5.6:
-Hemos respondido a tus peticiones. Ahora, puedes crear productos simples, agrupados y externos para tu tienda directamente desde tus dispositivos móviles Android favoritos. Convierte tus ideas en productos, incluso cuando no estés usando tu computadora.
+5.8:
+Productos: Ahora, puedes añadir y editar archivos descargables, gestionar productos vinculados y eliminar productos.
 
-También hemos actualizado la interfaz de usuario con un diseño más limpio y nítido, y hemos corregido un error en los detalles del pedido que hará que el seguimiento de los envíos sea pan comido.
+Corrección de errores: Se resolvió un problema que a veces afectaba a los botones de moderación en las reseñas de productos.
 </es-ES>
 <fr-FR>
-5.6 :
-Vous l’avez demandé, nous vous avons écouté ! Vous pouvez désormais créer des produits simples, groupés et externes pour votre boutique directement depuis vos appareils mobiles Android préférés. Transformez vos idées en produits, même sans votre ordinateur sous la main.
+5.8 :
+Produits : vous pouvez désormais ajouter et modifier des fichiers téléchargeables, gérer des produits liés et supprimer des produits.
 
-Nous avons également mis à jour notre interface utilisateur afin d’offrir un design plus précis et épuré. Nous avons résolu un bug concernant les détails de commande afin de faciliter le suivi des livraisons.
+Résolutions de bogues : nous avons résolu un problème qui affectait parfois les boutons de modération dans les avis sur les produits.
 </fr-FR>
 <iw-IL>
-5.6:
-הקשבנו לבקשות מהמשתמשים! כעת אפשר ליצור מוצרים פשוטים, מקובצים או חיצוניים בחנות שלך ממכשיר ה-Android המועדף עליך. אפשר להפוך כל רעיון למוצר – גם אם לא נמצאים ליד המחשב השולחני.
+5.8:
+מוצרים: כעת אפשר להוסיף ולערוף קבצים שניתנים להורדה, לנהל מוצרים מקושרים ולמחוק מוצרים.
 
-עדכנו גם את ממשק המשתמש עם עיצוב חד ונקי יותר ותיקנו באג בפרטי ההזמנה שיאפשר מעקב פשוט יותר אחר משלוחים.
+תיקון באגים: פתרנו בעיה שלפעמים השפיעה על כפתורי הבקרה בביקורות של המוצר.
 </iw-IL>
-<id>
-5.6:
-Anda meminta, kami menyediakannya! Sekarang Anda dapat membuat produk sederhana, dikelompokkan, dan eksternal untuk toko langsung dari perangkat seluler Android favorit Anda. Ubah ide Anda jadi produk nyata, bahkan tanpa mesti duduk di depan komputer.
-
-Kami juga telah memperbarui UI dengan desain yang lebih tajam dan rapi, serta memperbaiki bug pada detail pesanan yang akan memudahkan pelacakan pengiriman.
-</id>
 <it-IT>
-5.6:
-Tu hai chiesto e noi abbiamo ascoltato. Ora puoi creare prodotti semplici, raggruppati ed esterni per il tuo negozio direttamente dai tuoi dispositivi mobili Android preferiti. Trasforma le tue idee in prodotti, anche quando sei lontano dal tuo computer.
+5.8:
+Prodotti: ora puoi aggiungere e modificare i file scaricabili, gestire i prodotti collegati ed eliminare i prodotti.
 
-Abbiamo anche aggiornato la nostra interfaccia utente con un design più fresco e pulito e abbiamo corretto un bug nei dettagli dell'ordine che renderà il monitoraggio della spedizione più semplice.
+Correzione di bug: abbiamo risolto un problema che interessava a volte i pulsanti per la moderazione nelle recensioni dei prodotti.
 </it-IT>
 <ja-JP>
-5.6:
- ご不明な点があればお知らせください。 ストア用のシンプルな商品、グループ化された商品、外部商品をお気に入りの Android モバイル端末から直接作成できるようになりました。 コンピューターから離れているときでも、アイデアを商品化できます。
+5.8:
+ 商品: ダウンロード可能なファイルの追加と編集、リンクされた商品の管理、商品の削除が可能になりました。
 
-また、UI を見やすくすっきりとしたデザインに変更し、注文の詳細におけるバグを修正して出荷を追跡しやすくしました。
+バグ修正: 商品レビューの承認ボタンに影響を与えることのあった問題を解決しました。
 </ja-JP>
-<ko-KR>
-5.6:
-질문을 경청했습니다! 이제 좋아하는 Android 모바일 장치에서 스토어에 대한 간단하고 그룹화된 외부 제품을 바로 생성할 수 있습니다. 컴퓨터에서 멀리 떨어져 있을 때도 아이디어를 제품으로 전환하세요.
-
-UI도 더 산뜻하고 더 깔끔한 디자인으로 업데이트했으며, 배송 추적이 간편하도록 주문 상세 정보의 버그도 수정했습니다.
-</ko-KR>
-<nl-NL>
-5.6:
-Jij vraagt, wij draaien! Je kan nu rechtstreeks vanaf je favoriete mobiele Android-apparaten eenvoudige, gegroepeerde en externe producten voor je winkel aanmaken. Maak meteen werk van je ingevingen, zelfs als je onderweg bent.
-
-Daarnaast hebben we onze UI scherper en duidelijker gemaakt, en we hebben een bug bij bestelgegevens opgelost zodat het volgen van verzendingen een fluitje van een cent is.
-</nl-NL>
 <pt-BR>
-5.6:
-Vocês pediram e nós atendemos! Agora você pode criar produtos simples, agrupados e externos para sua loja diretamente dos dispositivos móveis Android de sua preferência. Transforme suas ideias em produtos mesmo estando longe do computador.
+5.8:
+Produtos: agora você pode adicionar e editar arquivos para download, gerenciar produtos vinculados e excluir produtos no geral.
 
-Atualizamos nossa IU para um design mais limpo e organizado. Também resolvemos um problema nos detalhes do pedido para que o rastreamento do envio seja mais fácil.
+Correção de bugs: resolvemos um problema que, às vezes, afetava os botões de moderação nas avaliações de produtos.
 </pt-BR>
 <ru-RU>
-5.6.
-Вы просили — мы сделали! Теперь простые, сгруппированные и внешние товары можно создавать напрямую с мобильных устройств Android. Превращайте свои идеи в товары, даже если под рукой нет стационарного компьютера.
+5.8.
+Товары: теперь вы можете добавлять и изменять загружаемые файлы, управлять связанными товарами и удалять товары.
 
-Мы также сделали интерфейс более понятным и исправили ошибку в описании заказа — отслеживать доставку стало еще проще.
+Исправление ошибок: решена проблема с кнопками модерации в обзорах товаров.
 </ru-RU>
 <sv-SE>
-5.6:
-Ni önskade, vi lyssnade! Du kan nu skapa enkla, grupperade och externa produkter för din butik direkt från dina mobila Android-enheter. Förvandla dina idéer till produkter, även när du inte är vid din dator.
+5,8:
+Produkter: Du kan nu lägga till och redigera nedladdningsbara filer, hantera länkade produkter och ta bort produkter.
 
-Vi har också uppdaterat vårt användargränssnitt till en skarpare, renare design, samt åtgärdat ett fel i beställningsdetaljerna som kommer att göra det lättare att spåra försändelser.
+Buggkorrigeringar: Vi löste ett problem som ibland påverkade modereringsknapparna i produktrecensioner.
 </sv-SE>
 <tr-TR>
-5.6:
-Siz istediniz, biz de sizi dinledik! Artık doğrudan en sevdiğiniz Android mobil cihazlarınızdan basit, gruplanmış ve harici ürünler oluşturabilirsiniz. Bilgisayarınızdan uzakta olsanız bile fikirlerinizi ürünlere dönüştürün.
+5.8:
+Ürünler: Artık indirilebilir dosyalar ekleyebilir, düzenleyebilir, bağlantılı ürünleri yönetebilir ve ürünleri silebilirsiniz
 
-Ayrıca kullanıcı arayüzümüzü daha net, daha temiz bir tasarımla güncelledik ve sipariş ayrıntılarındaki bir hatayı düzelterek gönderi takibini çocuk oyuncağı haline getirdik.
+Hata düzeltmeleri: Ürün yorumlarındaki denetim düğmelerini bazen etkileyen bir sorun giderildi.
 </tr-TR>
-<zh-CN>
-5.6：
-您提问，我们倾听！ 现在您可以直接通过喜欢的 Android 移动设备为商店创建简单产品、分类产品和外部产品。 将创意转变为产品，即使您不使用计算机，亦可创作。
-
-我们不仅更新了用户界面，使其更加简洁清楚，还修复了订单详情中的一个问题，让配送跟踪变得轻而易举。
-</zh-CN>
-<zh-TW>
-5.6：
-你的要求我們聽見了！ 你現在可直接使用常用 Android 行動裝置，為自己的商店建立簡單、組合和外部產品。 即使你人不在電腦前，也能將想法轉化為產品。
-
-我們也更新了 UI，提供更簡潔俐落的設計，並修正訂單詳細資料的錯誤，讓你輕鬆追蹤貨件。
-</zh-TW>
 <en-US>
-5.6:
-You asked, and we listened! You can now create simple, grouped, and external products for your store directly from your favorite Android mobile devices. Turn your ideas into products, even when you’re away from your computer.
+5.8:
+Products: You can now add and edit downloadable files, manage linked products, and delete products.
 
-We’ve also updated our UI to a crisper, cleaner design, and we fixed a bug in order details that will make shipment tracking a breeze.
+Bug fixes: We resolved an issue that sometimes affected the moderation buttons in product reviews.
 </en-US>

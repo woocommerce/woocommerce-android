@@ -1,4 +1,0 @@
-5.6 :
-Vous l’avez demandé, nous vous avons écouté ! Vous pouvez désormais créer des produits simples, groupés et externes pour votre boutique directement depuis vos appareils mobiles Android préférés. Transformez vos idées en produits, même sans votre ordinateur sous la main.
-
-Nous avons également mis à jour notre interface utilisateur afin d’offrir un design plus précis et épuré. Nous avons résolu un bug concernant les détails de commande afin de faciliter le suivi des livraisons.

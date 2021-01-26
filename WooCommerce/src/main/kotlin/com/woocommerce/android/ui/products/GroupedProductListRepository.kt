@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +26,6 @@ class GroupedProductListRepository @Inject constructor(
     private val productStore: WCProductStore
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
     }
 
@@ -52,7 +52,7 @@ class GroupedProductListRepository @Inject constructor(
         loadMore: Boolean = false
     ): List<Product> {
         try {
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = FetchProductsPayload(

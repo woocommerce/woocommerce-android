@@ -9,6 +9,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_LINKED_PRODUCTS_ACTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -43,6 +46,8 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
+            mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -56,6 +61,8 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
+                AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
+                    mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.DONE.value))
                 true
             }
             else -> super.onOptionsItemSelected(item)

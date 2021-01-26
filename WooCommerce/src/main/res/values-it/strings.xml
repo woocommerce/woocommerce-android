@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 12:54:04+0000
+Translation-Revision-Date: 2021-01-21 10:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="order_refunds_shipping_refund_notice_fees">Puoi rimborsare gli importi di tariffe, spedizioni e tasse %s</string>
+    <string name="shipping_label_validation_view_map">Apri mappa</string>
+    <string name="shipping_label_validation_contact_customer">Contatta cliente</string>
+    <string name="shipping_label_validation_error_template">Convalida non riuscita: %s</string>
+    <string name="shipping_label_error_required_field">Campo obbligatorio</string>
+    <string name="shipping_label_error_address_invalid_street">Strada non valida</string>
+    <string name="shipping_label_error_address_house_number_missing">Numero civico mancante</string>
+    <string name="shipping_label_error_address_not_found">Indirizzo non trovato</string>
+    <string name="shipping_label_edit_address_error_warning">Impossibile verificare automaticamente l\'indirizzo di spedizione. Visualizzalo su Google Maps o prova a contattare il cliente per assicurarti che l\'indirizzo sia corretto.</string>
+    <string name="shipping_label_edit_address_validation_error">Convalida dell\'indirizzo non riuscita</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Attendi…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Convalida dell\'indirizzo in corso</string>
+    <string name="shipping_label_edit_data_loading_error">Impossibile caricare i dati dell\'indirizzo</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Usa l\'indirizzo inserito</string>
+    <string name="shipping_label_edit_address_country">Nazione</string>
+    <string name="shipping_label_edit_address_zip">CAP/Codice postale</string>
+    <string name="shipping_label_edit_address_state">Stato</string>
+    <string name="shipping_label_edit_address_city">Città</string>
+    <string name="shipping_label_edit_address_address">Indirizzo</string>
+    <string name="shipping_label_edit_address_phone">Telefono</string>
+    <string name="shipping_label_edit_address_company">Società</string>
+    <string name="shipping_label_edit_address_name">Nome</string>
+    <string name="login_not_wordpress_site">Il sito web %1$s non è un sito WordPress. Per permettere la connessione, il sito deve avere WordPress installato.</string>
+    <string name="error_no_gmaps_app">App di Google Maps trovata</string>
+    <string name="please_wait">Attendi…</string>
+    <string name="variation_detail_update_variation_image_error">Siamo spiacenti, la rimozione delle immagini sulle varianti dei prodotti è supportata in WooCommerce 4.7 o versione superiore.</string>
+    <string name="order_shipment_tracking_progress_message">Attendi</string>
+    <string name="order_shipment_tracking_progress_title">Aggiunta del tracciamento</string>
+    <string name="add_order_note_progress_message">Attendi</string>
+    <string name="add_order_note_progress_title">Aggiunta di una nota</string>
+    <string name="shipping_label_create_payment_description">Aggiungi una nuova carta di credito</string>
+    <string name="shipping_label_create_carrier_description">Seleziona corriere e tariffe di spedizione</string>
+    <string name="shipping_label_create_customs_description">Compila il modulo doganale</string>
+    <string name="shipping_label_create_customs">Dogana</string>
+    <string name="shipping_label_create_packaging_details_description">Seleziona il tipo di imballaggio in cui vorresti spedire i tuoi articoli</string>
+    <string name="shipping_label_create_packaging_details">Dettagli imballaggio</string>
+    <string name="shipping_label_create_title">Crea etichetta di spedizione</string>
+    <string name="shipping_label_more_information_link">Ulteriori informazioni</string>
+    <string name="shipping_label_more_information_message">Evita la fila all\'ufficio postale stampando le etichette di spedizione a casa dal tuo telefono a prezzi scontati.</string>
+    <string name="shipping_label_more_information_heading">Risparmia tempo e denaro con WooCommerce Shipping</string>
+    <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
+    <string name="order_mark_complete">Contrassegna ordine come completo</string>
+    <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal telefono</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Crea etichetta di spedizione</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Ora puoi creare etichette di spedizione per tutti gli ordini fisici direttamente dal tuo dispositivo con il plugin WooCommerce Shipping gratuito. Tocca \"Crea etichetta di spedizione\" per provarlo.</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Crea etichette di spedizione dal tuo dispositivo.</string>
+    <string name="orderdetail_payment_fees">Tariffe</string>
+    <string name="orderdetail_net">Importo di pagamento netto</string>
+    <string name="orderdetail_payment_paid_by_customer">Pagato</string>
+    <string name="login_jetpack_view_instructions_alt">Scopri di più su come connettere Jetpack</string>
+    <string name="login_no_stores">Non abbiamo trovato negozi WooCommerce connessi a questo account. Per usare quest\'app, dovrai installare e connettere il plugin Jetpack gratuito sui tuoi negozi WooCommerce.</string>
+    <string name="edit">Modifica</string>
     <string name="product_images_validate_drag_and_drop">Convalida</string>
     <string name="product_images_drag_and_drop_description">Trascina e rilascia per riordinare le foto</string>
     <string name="product_downloadable_files_download_settings">Impostazioni download</string>
@@ -86,7 +138,6 @@ Language: it
     <string name="shipping_label_paper_size">Dimensione carta</string>
     <string name="shipping_label_print_disclaimer">Se hai già utilizzato l\'etichetta in un pacchetto, stamparla e utilizzarla di nuovo è una violazione dei nostri termini di servizio.</string>
     <string name="shipping_label_print_error_message">Si è verificato un errore di stampa durante l\'acquisto dell\'etichetta, puoi stamparla nuovamente.</string>
-    <string name="order_begin_fulfillment">Contrassegna ordine come completo</string>
     <string name="orderdetail_shipping_label_wip_message">Stiamo lavorando per rendere più semplice per te stampare le etichette di spedizione direttamente dal dispositivo. Per ora, se hai creato etichette di spedizione per questo ordine nell\'amministrazione del negozio con WooCommerce Shipping, puoi stamparle nei Dettagli dell\'ordine qui.</string>
     <string name="orderdetail_shipping_label_wip_title">Stampa etichette di spedizione dal dispositivo.</string>
     <string name="orderdetail_shipping_label_reprint">Stampa nuovamente etichetta di spedizione</string>
@@ -191,7 +242,7 @@ Language: it
     <string name="product_add_tag_error">Si è verificato un errore durante l\'aggiunta di tag</string>
     <string name="product_add_tag_dialog_title">Aggiunta di tag</string>
     <string name="shipping_label_refund_progress_message">Il rimborso è in fase di elaborazione. Attendi…</string>
-    <string name="shipping_label_refund_success">Rimborso inviato correttamente</string>
+    <string name="shipping_label_refund_success">Richiesta di rimborso inviata correttamente</string>
     <string name="shipping_label_refund_button">Rimborsa etichetta (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Importo idoneo al rimborso</string>
     <string name="shipping_label_refund_purchase_date_title">Data di acquisto</string>
@@ -216,8 +267,9 @@ Language: it
     <string name="product_type_description">%s prodotto</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Prodotti rimanenti</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s etichetta relativa al rimborso</string>
+    <string name="orderdetail_shipping_label_refund_title">Rimborso dell\'etichetta %1$s richiesto</string>
     <string name="orderdetail_shipping_label_tracking_info">Traccia spedizione</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Nascondi dettagli spedizione</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Mostra dettagli spedizione</string>
     <string name="orderdetail_shipping_label_item_payment_type">Carta di credito</string>
@@ -489,8 +541,6 @@ Language: it
     <string name="orderdetail_refund_detail">%1$s tramite %2$s</string>
     <string name="settings_enable_v4_stats_title">Statistiche migliorate</string>
     <string name="beta_features">Funzionalità beta</string>
-    <string name="orderdetail_net">Netto</string>
-    <string name="orderdetail_payment_paid_by_customer">Pagato dal cliente</string>
     <string name="orderdetail_payment_summary_onhold">In attesa di pagamento tramite %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s tramite %2$s</string>
     <string name="dashboard_state_no_data">Nessuna entrata per questo periodo</string>
@@ -523,7 +573,7 @@ Language: it
     <string name="orderdetail_empty_shipping_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
-    <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a %1$s</string>
+    <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1038,7 +1088,6 @@ Language: it
     <string name="alternatively">In alternativa:</string>
     <string name="open_mail">Apri mail</string>
     <string name="next">Successivo</string>
-    <string name="enter_email_wordpress_com">Accedi a WordPress.com utilizzando un indirizzo e-mail per gestire tutti i tuoi siti WordPress.com.</string>
     <string name="login_promo_text_jetpack">Gestisci il tuo sito con Jetpack mentre sei in movimento: hai WordPress in tasca.</string>
     <string name="login_promo_text_notifications">Le tue notifiche viaggiano con te: vedi i commenti e i Mi piace in tempo reale.</string>
     <string name="login_promo_text_anytime">Tieni il passo con i tuoi siti preferiti e partecipa a una conversazione ovunque e in qualsiasi momento.</string>
@@ -1080,8 +1129,9 @@ Language: it
     <string name="add_order_note_menu_item">Aggiungi</string>
     <string name="add_order_note_label">Nota e-mail al cliente</string>
     <string name="order_error_update_general">Errore durante la modifica dell\'ordine</string>
-    <string name="order_error_fetch_notes_generic">Errore durante il recupero delle note di errore</string>
+    <string name="order_error_fetch_notes_generic">Errore durante il recupero delle note</string>
     <string name="order_fulfill_marked_complete">Ordine contrassegnato come completo</string>
+    <string name="order_fulfill_mark_complete">Contrassegna ordine come completo</string>
     <string name="orderdetail_addnote_contentdesc">Aggiungi una nota dell\'ordine</string>
     <string name="orderdetail_add_note">Aggiungi una nota</string>
     <string name="orderdetail_hide_billing">Nascondi fatturazione</string>
@@ -1133,7 +1183,6 @@ Language: it
     <string name="dashboard_stats_granularity_months">Mesi</string>
     <string name="dashboard_stats_granularity_weeks">Settimane</string>
     <string name="dashboard_stats_granularity_days">Giorni</string>
-    <string name="login_no_stores">Impossibile trovare negozi WooCommerce\nconnesso a questo account</string>
     <string name="login_with_a_different_account">Accedi con un account diverso</string>
     <string name="login_nostores_content_description">Nessun negozio WooCommerce</string>
     <string name="login_avatar_content_description">Foto del profilo</string>
@@ -1143,6 +1192,7 @@ Language: it
     <string name="login_jetpack_required">Questa app richiede che Jetpack sia connesso al tuo negozio.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>
+    <string name="enter_email_wordpress_com">Accedi con l\'indirizzo e-mail dell\'account WordPress.com per gestire i negozi WooCommerce.</string>
     <string name="already_logged_in_wpcom">Sei già connesso a un account WordPress.com, non puoi aggiungere un sito WordPress.com legato a un altro account.</string>
     <string name="cant_open_url">Impossibile aprire il link</string>
     <string name="error_no_sms_app">Nessuna app per SMS trovata</string>

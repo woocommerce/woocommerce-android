@@ -3,17 +3,13 @@ package com.woocommerce.android.ui.products.downloads
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R.layout
+import com.woocommerce.android.databinding.ProductDownloadsListItemBinding
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsAdapter.ProductDownloadableFileViewHolder
-import kotlinx.android.synthetic.main.product_downloads_list_item.view.*
 
 class ProductDownloadsAdapter(
     private val clickListener: (ProductFile) -> Unit,
@@ -31,32 +27,32 @@ class ProductDownloadsAdapter(
             diffResult.dispatchUpdatesTo(this)
         }
 
+    override fun getItemCount(): Int = filesList.size
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductDownloadableFileViewHolder {
         return ProductDownloadableFileViewHolder(
-            LayoutInflater.from(parent.context).inflate(layout.product_downloads_list_item, parent, false)
+            ProductDownloadsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
-    override fun getItemCount(): Int = filesList.size
-
-    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ProductDownloadableFileViewHolder, position: Int) {
-        val file = filesList[position]
-        holder.fileName.text = file.name
-        holder.fileUrl.text = file.url
-        holder.itemView.setOnClickListener { clickListener.invoke(file) }
-        holder.dragHandle.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                dragHelper.startDrag(holder)
-            }
-            false
-        }
+        holder.bind(filesList[position])
     }
 
-    class ProductDownloadableFileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val dragHandle: ImageView = view.product_download_item_drag_handle
-        val fileName: TextView = view.product_download_item_name
-        val fileUrl: TextView = view.product_download_item_url
+    inner class ProductDownloadableFileViewHolder(val viewBinding: ProductDownloadsListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        @SuppressLint("ClickableViewAccessibility")
+        fun bind(file: ProductFile) {
+            viewBinding.productDownloadItemName.text = file.name
+            viewBinding.productDownloadItemUrl.text = file.url
+            viewBinding.root.setOnClickListener { clickListener.invoke(file) }
+            viewBinding.productDownloadItemDragHandle.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    dragHelper.startDrag(this)
+                }
+                false
+            }
+        }
     }
 
     private class ProductFileDiffUtil(

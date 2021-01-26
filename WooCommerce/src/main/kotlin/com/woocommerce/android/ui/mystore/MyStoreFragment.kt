@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.configureStringClick
-import com.woocommerce.android.extensions.containsInstanceOf
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
@@ -67,10 +66,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
 
-    // If false, the fragment will refresh its data when it's visible on onHiddenChanged
-    // this is to prevent the stats getting refreshed twice when the fragment is loaded when app is closed and opened
-    private var isStatsRefreshed: Boolean = false
-
     private var tabStatsPosition: Int = 0 // Save the current position of stats tab view
     private val activeGranularity: StatsGranularity
         get() {
@@ -79,11 +74,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             } ?: DEFAULT_STATS_GRANULARITY
         }
 
-    private val tabLayout: TabLayout by lazy {
-        TabLayout(requireContext(), null, R.attr.scrollableTabStyle).also {
-            it.setId(R.id.stats_tab_layout)
-        }
-    }
+    private var _tabLayout: TabLayout? = null
+    private val tabLayout
+        get() = _tabLayout!!
 
     private val appBarLayout
         get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
@@ -94,6 +87,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     private val myStoreDateBar
         get() = binding.myStoreStats.myStoreDateBar
 
+    private var isEmptyViewVisible: Boolean = false
+
+    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            tabStatsPosition = tab.position
+            myStoreDateBar.clearDateRangeValues()
+            binding.myStoreStats.loadDashboardStats(activeGranularity)
+            binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+        override fun onTabReselected(tab: TabLayout.Tab) {}
+    }
+
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
@@ -102,6 +110,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+
+        _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
+        addTabLayoutToAppBar()
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -162,68 +173,28 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
                 textField = binding.myStoreStatsAvailabilityMessage
             )
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                tabStatsPosition = tab.position
-                myStoreDateBar.clearDateRangeValues()
-                binding.myStoreStats.loadDashboardStats(activeGranularity)
-                binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
-            }
+        tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
-
-        if (isActive && !deferInit) {
-            isStatsRefreshed = true
-            refreshMyStoreStats(forced = this.isRefreshPending)
-        }
+        refreshMyStoreStats(forced = this.isRefreshPending)
     }
 
     override fun onResume() {
         super.onResume()
-        addTabLayoutToAppBar(tabLayout)
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (!isHidden) {
-            if (!isStatsRefreshed) {
-                // silently refresh if this fragment is no longer hidden
-                refreshMyStoreStats(forced = false)
-            }
-            addTabLayoutToAppBar(tabLayout)
-            showChartSkeleton(true)
-            binding.myStoreRefreshLayout.visibility = View.VISIBLE
-            binding.statsErrorScrollView.visibility = View.GONE
-        } else {
-            isStatsRefreshed = false
-            removeTabLayoutFromAppBar(tabLayout)
-        }
-    }
-
-    override fun onReturnedFromChildFragment() {
-        // If this fragment is now visible and we've deferred loading stats due to it not
-        // being visible - go ahead and load the stats.
-        if (!deferInit) {
-            refreshMyStoreStats(forced = this.isRefreshPending)
-        }
-        addTabLayoutToAppBar(tabLayout)
-    }
-
     override fun onStop() {
         errorSnackbar?.dismiss()
-        removeTabLayoutFromAppBar(tabLayout)
         super.onStop()
     }
 
     override fun onDestroyView() {
         binding.myStoreStats.removeListener()
         binding.myStoreTopPerformers.removeListener()
+        removeTabLayoutFromAppBar()
+        tabLayout.removeOnTabSelectedListener(tabSelectedListener)
+        _tabLayout = null
         presenter.dropView()
         super.onDestroyView()
         _binding = null
@@ -247,15 +218,15 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_KEY_REFRESH_PENDING, isRefreshPending)
-        outState.putInt(STATE_KEY_TAB_POSITION, tabLayout.selectedTabPosition)
-        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewShowing())
+        outState.putInt(STATE_KEY_TAB_POSITION, tabStatsPosition)
+        outState.putBoolean(STATE_KEY_IS_EMPTY_VIEW_SHOWING, isEmptyViewVisible)
     }
 
     override fun showStats(
         revenueStatsModel: WCRevenueStatsModel?,
         granularity: StatsGranularity
     ) {
-        addTabLayoutToAppBar(tabLayout)
+        addTabLayoutToAppBar()
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (activeGranularity == granularity) {
             binding.myStoreStats.showErrorView(false)
@@ -275,7 +246,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-        removeTabLayoutFromAppBar(tabLayout)
+        removeTabLayoutFromAppBar()
     }
 
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
@@ -330,29 +301,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
-    override fun refreshFragmentState() {
-        MyStorePresenter.resetForceRefresh()
-        refreshMyStoreStats(forced = false)
-    }
-
     override fun refreshMyStoreStats(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
-        when {
-            isActive -> {
-                isRefreshPending = false
-                if (forced) {
-                    binding.myStoreStats.clearLabelValues()
-                    binding.myStoreStats.clearChartData()
-                    myStoreDateBar.clearDateRangeValues()
-                }
-                presenter.run {
-                    loadStats(activeGranularity, forced)
-                    coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
-                    fetchHasOrders()
-                }
-            }
-            else -> isRefreshPending = true
+        if (forced) {
+            binding.myStoreStats.clearLabelValues()
+            binding.myStoreStats.clearChartData()
+            myStoreDateBar.clearDateRangeValues()
+        }
+        presenter.run {
+            loadStats(activeGranularity, forced)
+            coroutineScope.launch { loadTopPerformersStats(activeGranularity, forced) }
+            fetchHasOrders()
         }
     }
 
@@ -377,7 +337,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun onTopPerformerClicked(topPerformer: WCTopPerformerProductModel) {
-        removeTabLayoutFromAppBar(tabLayout)
         mainNavigationRouter?.showProductDetail(topPerformer.product.remoteProductId)
     }
 
@@ -410,7 +369,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             mainNavigationRouter?.showFeedbackSurvey()
             binding.storeFeedbackRequestCard.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-            removeTabLayoutFromAppBar(tabLayout)
         }
         binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
@@ -467,23 +425,27 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         myStoreDateBar.visibility = dashboardVisibility
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
+        isEmptyViewVisible = show
     }
 
-    private fun addTabLayoutToAppBar(tabLayout: TabLayout) {
+    private fun addTabLayoutToAppBar() {
         appBarLayout
-            ?.takeIf { isActive && !it.children.containsInstanceOf(tabLayout) }
+            ?.takeIf { !it.children.contains(tabLayout) }
             ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.addView(
-                tabLayout,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            )
+            ?.let { appBar ->
+                appBar.addView(tabLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+                appBar.post {
+                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                }
+            }
     }
 
-    private fun removeTabLayoutFromAppBar(tabLayout: TabLayout) {
-        appBarLayout?.removeView(tabLayout)
+    private fun removeTabLayoutFromAppBar() {
+        appBarLayout?.let { appBar ->
+            appBar.removeView(tabLayout)
+            appBar.elevation = 0f
+        }
     }
 
-    private fun isEmptyViewShowing() = binding.emptyView.visibility == View.VISIBLE
-
-    override fun isScrolledToTop() = binding.statsScrollView.scrollY == 0
+    override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
 }

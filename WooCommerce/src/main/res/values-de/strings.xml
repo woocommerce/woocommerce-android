@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-10 17:54:57+0000
+Translation-Revision-Date: 2020-12-24 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="variation_detail_update_variation_image_error">Das Entfernen von Bildern für Produktvarianten wird leider nur in WooCommerce 4.7 oder höher unterstützt.</string>
+    <string name="order_shipment_tracking_progress_message">Bitte warten</string>
+    <string name="order_shipment_tracking_progress_title">Verfolgung wird hinzugefügt</string>
+    <string name="add_order_note_progress_message">Bitte warten</string>
+    <string name="add_order_note_progress_title">Notiz wird hinzugefügt</string>
+    <string name="shipping_label_create_payment_description">Neue Kreditkarte hinzufügen</string>
+    <string name="shipping_label_create_carrier_description">Versanddienstleister und -tarife auswählen</string>
+    <string name="shipping_label_create_customs_description">Zollformular ausfüllen</string>
+    <string name="shipping_label_create_customs">Zoll</string>
+    <string name="shipping_label_create_packaging_details_description">Wähle die Art von Verpackung aus, die für deine Artikel verwendet werden soll</string>
+    <string name="shipping_label_create_packaging_details">Verpackungsdetails</string>
+    <string name="shipping_label_create_title">Versandetikett erstellen</string>
+    <string name="shipping_label_more_information_link">Mehr erfahren</string>
+    <string name="shipping_label_more_information_message">Kein Schlangestehen mehr bei der Post! Drucke Versandetiketten zu reduzierten Preisen zu Hause über dein Mobiltelefon aus.</string>
+    <string name="shipping_label_more_information_heading">Spare durch die Ausführung mit WooCommerce Shipping Zeit und Geld </string>
+    <string name="shipping_label_more_information_title">WooCommerce Versand</string>
+    <string name="order_mark_complete">Bestellung als abgeschlossen markieren</string>
+    <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobiltelefon</string>
+    <string name="orderdetail_shipping_label_create_shipping_label">Versandetikett erstellen</string>
+    <string name="orderdetail_shipping_label_m2_wip_message">Mit dem kostenlosen WooCommerce Shipping-Plugin kannst du jetzt Versandetiketten für sämtliche Artikelbestellungen direkt über dein Gerät drucken. Tippe auf „Versandetikett erstellen“ und probiere es aus!</string>
+    <string name="orderdetail_shipping_label_m2_wip_title">Erstelle Versandetiketten über dein Gerät!</string>
+    <string name="orderdetail_payment_fees">Gebühren</string>
+    <string name="orderdetail_net">Nettozahlung</string>
+    <string name="orderdetail_payment_paid_by_customer">Bezahlt</string>
+    <string name="login_jetpack_view_instructions_alt">Weitere Informationen zum Verbinden von Jetpack</string>
+    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind. Du musst in deinen WooCommerce-Shops das kostenlose Jetpack-Plugin installieren und verbinden, um diese App zu verwenden.</string>
+    <string name="edit">Bearbeiten</string>
     <string name="product_images_validate_drag_and_drop">Bestätigen</string>
     <string name="product_images_drag_and_drop_description">Nutze Drag-and-Drop zum Umsortieren der Fotos</string>
     <string name="product_downloadable_files_download_settings">Download-Einstellungen</string>
@@ -86,7 +113,6 @@ Language: de
     <string name="shipping_label_paper_size">Papiergröße</string>
     <string name="shipping_label_print_disclaimer">Wenn du das Etikett bereits auf einem Paket verwendet hast, ist das erneute Ausdrucken und Verwenden ein Verstoß gegen unsere Geschäftsbedingungen.</string>
     <string name="shipping_label_print_error_message">Sollte der Ausdruck beim Kauf des Etiketts fehlerhaft sein, kannst du es erneut ausdrucken.</string>
-    <string name="order_begin_fulfillment">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_shipping_label_wip_message">Wir arbeiten daran, es dir einfacher zu machen, Versandetiketten direkt über den Gerät zu drucken! Vorerst haben wir in deiner Shop-Administration mit WooCommerce Shipping Versandetiketten für diese Bestellung erstellt. Du kannst diese hier in deinen Bestelldetails drucken.</string>
     <string name="orderdetail_shipping_label_wip_title">Drucke Versandetiketten von deinem Gerät!</string>
     <string name="orderdetail_shipping_label_reprint">Versandetikett erneut drucken</string>
@@ -191,7 +217,7 @@ Language: de
     <string name="product_add_tag_error">Beim Hinzufügen von Schlagwörtern ist ein Fehler aufgetreten</string>
     <string name="product_add_tag_dialog_title">Schlagwort wird hinzugefügt</string>
     <string name="shipping_label_refund_progress_message">Deine Rückerstattung wird berarbeitet. Bitte warten …</string>
-    <string name="shipping_label_refund_success">Rückerstattung wurde erfolgreich übermittelt</string>
+    <string name="shipping_label_refund_success">Rückerstattungsanforderung wurde erfolgreich übermittelt</string>
     <string name="shipping_label_refund_button">Etikett erstatten (-%1$s)</string>
     <string name="shipping_label_refund_amount_title">Rückerstattbarer Betrag</string>
     <string name="shipping_label_refund_purchase_date_title">Kaufdatum</string>
@@ -216,8 +242,9 @@ Language: de
     <string name="product_type_description">%s Produkt</string>
     <string name="orderdetail_shipping_label_unpackaged_products_header">Verbleibende Produkte</string>
     <string name="orderdetail_shipping_label_refund_subtitle">%1$s \u2022 %2$s</string>
-    <string name="orderdetail_shipping_label_refund_title">%1$s Etikett rückerstattet</string>
+    <string name="orderdetail_shipping_label_refund_title">%1$s Etikettrückerstattung angefordert</string>
     <string name="orderdetail_shipping_label_tracking_info">Sendung verfolgen</string>
+    <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Sendungsdetails ausblenden</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Sendungsdetails einblenden</string>
     <string name="orderdetail_shipping_label_item_payment_type">Kreditkarte</string>
@@ -489,8 +516,6 @@ Language: de
     <string name="orderdetail_refund_detail">%1$s per %2$s</string>
     <string name="settings_enable_v4_stats_title">Verbesserte Statistiken</string>
     <string name="beta_features">Betafunktionen</string>
-    <string name="orderdetail_net">Netto</string>
-    <string name="orderdetail_payment_paid_by_customer">Vom Kunden bezahlt</string>
     <string name="orderdetail_payment_summary_onhold">Warten auf Zahlung per %s</string>
     <string name="orderdetail_payment_summary_completed">%1$s per %2$s</string>
     <string name="dashboard_state_no_data">Keine Einnahmen in diesem Zeitraum</string>
@@ -523,7 +548,6 @@ Language: de
     <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
-    <string name="enter_email_for_site">Melde dich bei WordPress.com an, um dich mit %1$s zu verbinden.</string>
     <string name="country_mapping_ZW">Simbabwe</string>
     <string name="country_mapping_ZM">Sambia</string>
     <string name="country_mapping_YE">Jemen</string>
@@ -1038,7 +1062,6 @@ Language: de
     <string name="alternatively">Alternativ:</string>
     <string name="open_mail">E-Mail öffnen</string>
     <string name="next">Weiter</string>
-    <string name="enter_email_wordpress_com">Melde dich auf WordPress.com mit einer E-Mail-Adresse an, um alle deine WordPress-Websites zu verwalten.</string>
     <string name="login_promo_text_jetpack">Verwalte deine mit Jetpack betriebene Website unterwegs – du hast WordPress immer dabei.</string>
     <string name="login_promo_text_notifications">Deine Benachrichtigungen hast du immer dabei – zeige Kommentare und Likes in Echtzeit an.</string>
     <string name="login_promo_text_anytime">Du kannst überall und jederzeit deine bevorzugten Websites verfolgen und an der Unterhaltung teilnehmen.</string>
@@ -1080,8 +1103,8 @@ Language: de
     <string name="add_order_note_menu_item">Hinzufügen</string>
     <string name="add_order_note_label">Hinweis per E-Mail an Kunden senden</string>
     <string name="order_error_update_general">Fehler beim Ändern der Bestellung</string>
-    <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Fehlerhinweisen</string>
     <string name="order_fulfill_marked_complete">Bestellung als abgeschlossen markiert</string>
+    <string name="order_fulfill_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_addnote_contentdesc">Bestellhinweis hinzufügen</string>
     <string name="orderdetail_add_note">Hinweis hinzufügen</string>
     <string name="orderdetail_hide_billing">Abrechnung ausblenden</string>
@@ -1133,7 +1156,6 @@ Language: de
     <string name="dashboard_stats_granularity_months">Monate</string>
     <string name="dashboard_stats_granularity_weeks">Wochen</string>
     <string name="dashboard_stats_granularity_days">Tage</string>
-    <string name="login_no_stores">Es können keine WooCommerce-Shops gefunden werden,\ndie mit diesem Konto verbunden sind</string>
     <string name="login_with_a_different_account">Mit einem anderen Konto anmelden</string>
     <string name="login_nostores_content_description">Keine WooCommerce-Shops</string>
     <string name="login_avatar_content_description">Dein Profilfoto</string>
@@ -1143,6 +1165,7 @@ Language: de
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
+    <string name="enter_email_wordpress_com">Melde dich mit der E-Mail-Adresse deines WordPress.com-Kontos an, um deine WooCommerce-Shops zu verwalten.</string>
     <string name="already_logged_in_wpcom">Du bist bereits in einem WordPress.com-Konto angemeldet, du kannst keine WordPress.com-Website hinzufügen, die an ein anderes Konto gebunden ist.</string>
     <string name="cant_open_url">Link konnte nicht geöffnet werden</string>
     <string name="error_no_sms_app">Es wurde keine SMS-Anwendung gefunden</string>
