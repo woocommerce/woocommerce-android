@@ -13,7 +13,6 @@
             android:id="@+id/suggestionBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:background="@color/warning_background_color"
             android:animateLayoutChanges="true"
             app:layout_constraintTop_toTopOf="parent"
@@ -65,25 +64,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/suggestionBanner"
-            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_75"
             android:layout_marginBottom="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100">
 
             <RadioButton
                 android:id="@+id/enteredAddressOption"
                 style="@style/Woo.RadioButton"
-                android:paddingStart="@dimen/major_150"
-                android:paddingEnd="@dimen/major_150"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
-                android:text="@string/shipping_label_address_suggestion_entered_address"/>
+                android:paddingStart="@dimen/major_175"
+                android:paddingEnd="@dimen/major_150"
+                android:text="@string/shipping_label_address_suggestion_entered_address" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/enteredAddressText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_325"
+                android:layout_marginStart="@dimen/major_350"
                 android:lineSpacingExtra="@dimen/minor_50"
                 android:clickable="true"
                 android:focusable="true"
@@ -92,18 +91,18 @@
             <RadioButton
                 android:id="@+id/suggestedAddressOption"
                 style="@style/Woo.RadioButton"
-                android:paddingStart="@dimen/major_150"
-                android:paddingEnd="@dimen/major_150"
-                android:layout_marginTop="@dimen/major_100"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_suggested_address"/>
+                android:layout_marginTop="@dimen/major_100"
+                android:paddingStart="@dimen/major_175"
+                android:paddingEnd="@dimen/major_150"
+                android:text="@string/shipping_label_address_suggestion_suggested_address" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/suggestedAddressText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_325"
+                android:layout_marginStart="@dimen/major_350"
                 android:lineSpacingExtra="@dimen/minor_50"
                 android:clickable="true"
                 android:focusable="true"
