@@ -125,22 +125,22 @@ class ShippingLabelAddressSuggestionFragment
 
         val stringBuilder = StringBuilder().appendWithIfNotEmpty("$firstName $lastName".trim())
 
-        fun append(thisLine: String, otherLine: String, addNewline: Boolean = false) {
+        fun append(thisLine: String, otherLine: String, separator: String = "<br>") {
             if (thisLine.isNotEmpty()) {
                 if (thisLine != otherLine) {
-                    stringBuilder.append(if (addNewline) "<br>" else ", ", "<b>", thisLine, "</b>")
+                    stringBuilder.append(separator, "<b>", thisLine, "</b>")
                 } else {
-                    stringBuilder.append(if (addNewline) "<br>" else ", ", thisLine)
+                    stringBuilder.append(separator, thisLine)
                 }
             }
         }
 
-        append(this.address1, other.address1, true)
-        append(this.address2, other.address2, true)
-        append(this.city, other.city, true)
-        append(this.state, other.state)
-        append(this.postcode, other.postcode)
-        append(this.getCountryLabelByCountryCode(), other.getCountryLabelByCountryCode(), true)
+        append(this.address1, other.address1)
+        append(this.address2, other.address2)
+        append(this.city, other.city)
+        append(this.state, other.state, ", ")
+        append(this.postcode, other.postcode, " ")
+        append(this.getCountryLabelByCountryCode(), other.getCountryLabelByCountryCode())
 
         return stringBuilder.toString()
     }
