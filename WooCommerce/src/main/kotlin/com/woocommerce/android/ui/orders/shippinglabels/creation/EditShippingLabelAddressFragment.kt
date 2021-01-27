@@ -186,14 +186,15 @@ class EditShippingLabelAddressFragment
                     binding.errorBanner.show()
                 }
             }
-            new.isValidationProgressDialogVisible?.takeIfNotEqualTo(old?.isValidationProgressDialogVisible) { isVisible ->
-                if (isVisible) {
-                    showProgressDialog(
-                        getString(R.string.shipping_label_edit_address_validation_progress_title),
-                        getString(R.string.shipping_label_edit_address_validation_progress_message)
-                    )
-                } else {
-                    hideProgressDialog()
+            new.isValidationProgressDialogVisible
+                ?.takeIfNotEqualTo(old?.isValidationProgressDialogVisible) { isVisible ->
+                    if (isVisible) {
+                        showProgressDialog(
+                            getString(R.string.shipping_label_edit_address_validation_progress_title),
+                            getString(R.string.shipping_label_edit_address_validation_progress_message)
+                        )
+                    } else {
+                        hideProgressDialog()
                 }
             }
             new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
