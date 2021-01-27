@@ -13,7 +13,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginJetpackRequiredBinding
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 
 /**
@@ -50,6 +49,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentLoginJetpackRequiredBinding.bind(view)
+        val btnBinding = binding.epilogueButtonBar!!
 
         setHasOptionsMenu(true)
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
@@ -62,7 +62,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
 
         binding.jetpackRequiredMsg.text = getString(R.string.login_jetpack_required_text, siteAddress.orEmpty())
 
-        with(button_primary) {
+        with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_instructions)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
@@ -70,7 +70,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
             }
         }
 
-        with(button_secondary) {
+        with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
