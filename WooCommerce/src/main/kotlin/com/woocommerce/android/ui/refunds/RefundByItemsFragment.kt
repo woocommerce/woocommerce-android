@@ -56,7 +56,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
 
         _binding = FragmentRefundByItemsBinding.bind(view)
         _productsBinding = binding.issueRefundProductsList
-        
+
         initializeViews()
         setupObservers()
     }
@@ -71,11 +71,11 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
         productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
         productsBinding.issueRefundProducts.setHasFixedSize(true)
         productsBinding.issueRefundProducts.isMotionEventSplittingEnabled = false
-        
+
         binding.issueRefundSelectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
         }
-        
+
         binding.issueRefundBtnNextFromItems.setOnClickListener {
             viewModel.onNextButtonTappedFromItems()
         }

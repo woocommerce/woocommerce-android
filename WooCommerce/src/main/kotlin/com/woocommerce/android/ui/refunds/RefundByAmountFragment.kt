@@ -26,7 +26,7 @@ class RefundByAmountFragment : BaseFragment(R.layout.fragment_refund_by_amount) 
     private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
         viewModelFactory.get()
     }
-    
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
