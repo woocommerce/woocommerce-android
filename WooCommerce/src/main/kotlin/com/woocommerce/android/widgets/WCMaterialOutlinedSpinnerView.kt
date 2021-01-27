@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.AttrRes
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ViewMaterialOutlinedSpinnerBinding
 import com.woocommerce.android.extensions.setHtmlText
-import kotlinx.android.synthetic.main.view_material_outlined_spinner.view.*
 
 /**
  * Custom View that mimics a TextInputEditText with a spinner that opens a selector dialog it.
@@ -22,11 +23,13 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.wcMaterialOutlinedSpinnerViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleAttr) {
+    private val binding = ViewMaterialOutlinedSpinnerBinding.inflate(LayoutInflater.from(context), this)
+
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-SPINNER-VIEW-SUPER-STATE"
     }
+
     init {
-        View.inflate(context, R.layout.view_material_outlined_spinner, this)
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCMaterialOutlinedSpinnerView)
             try {
@@ -43,28 +46,28 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     }
 
     fun setClickListener(onClickListener: ((view: View) -> Unit)) {
-        spinner_edit_text.setOnClickListener(onClickListener)
+        binding.spinnerEditText.setOnClickListener(onClickListener)
     }
 
     fun setText(selectedText: String) {
-        spinner_edit_text.setText(selectedText)
+        binding.spinnerEditText.setText(selectedText)
     }
 
     fun setHtmlText(selectedText: String) {
-        spinner_edit_text.setHtmlText(selectedText)
+        binding.spinnerEditText.setHtmlText(selectedText)
     }
 
-    fun getText() = spinner_edit_text.text.toString()
+    fun getText() = binding.spinnerEditText.text.toString()
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        spinner_edit_text?.isEnabled = enabled
+        binding.spinnerEditText.isEnabled = enabled
     }
 
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
-        spinner_edit_text.onSaveInstanceState()?.let {
+        binding.spinnerEditText.onSaveInstanceState()?.let {
             bundle.putParcelable(KEY_SUPER_STATE, WCSavedState(super.onSaveInstanceState(), it))
         }
         return bundle
@@ -78,7 +81,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     }
 
     private fun restoreViewState(state: WCSavedState): Parcelable {
-        spinner_edit_text.onRestoreInstanceState(state.savedState)
+        binding.spinnerEditText.onRestoreInstanceState(state.savedState)
         return state.superState
     }
 
