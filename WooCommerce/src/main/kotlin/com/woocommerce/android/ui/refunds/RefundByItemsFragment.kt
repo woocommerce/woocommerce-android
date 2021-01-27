@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -14,6 +12,8 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentRefundByItemsBinding
+import com.woocommerce.android.databinding.RefundByItemsProductsBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
@@ -28,23 +28,22 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.Lazy
-import kotlinx.android.synthetic.main.fragment_refund_by_items.*
-import kotlinx.android.synthetic.main.refund_by_items_products.*
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class RefundByItemsFragment : BaseFragment() {
+class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
     @Inject lateinit var viewModelFactory: Lazy<ViewModelFactory>
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
+    private var _binding: FragmentRefundByItemsBinding? = null
+    private val binding get() = _binding!!
+
+    private var _productsBinding: RefundByItemsProductsBinding? = null
+    private val productsBinding get() = _productsBinding!!
+
     private val viewModel: IssueRefundViewModel by navGraphViewModels(R.id.nav_graph_refunds) {
         viewModelFactory.get()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
-        return inflater.inflate(R.layout.fragment_refund_by_items, container, false)
     }
 
     override fun onResume() {
@@ -55,20 +54,29 @@ class RefundByItemsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentRefundByItemsBinding.bind(view)
+        _productsBinding = binding.issueRefundProductsList
+        
         initializeViews()
         setupObservers()
     }
 
-    private fun initializeViews() {
-        issueRefund_products.layoutManager = LinearLayoutManager(context)
-        issueRefund_products.setHasFixedSize(true)
-        issueRefund_products.isMotionEventSplittingEnabled = false
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _productsBinding = null
+    }
 
-        issueRefund_selectButton.setOnClickListener {
+    private fun initializeViews() {
+        productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
+        productsBinding.issueRefundProducts.setHasFixedSize(true)
+        productsBinding.issueRefundProducts.isMotionEventSplittingEnabled = false
+        
+        binding.issueRefundSelectButton.setOnClickListener {
             viewModel.onSelectButtonTapped()
         }
-
-        issueRefund_btnNextFromItems.setOnClickListener {
+        
+        binding.issueRefundBtnNextFromItems.setOnClickListener {
             viewModel.onNextButtonTappedFromItems()
         }
 
@@ -85,7 +93,7 @@ class RefundByItemsFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.refundByItemsStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                issueRefund_products.adapter = RefundProductListAdapter(
+                productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
                         imageMap,
                         false,
@@ -93,49 +101,49 @@ class RefundByItemsFragment : BaseFragment() {
                 )
             }
             new.isNextButtonEnabled?.takeIfNotEqualTo(old?.isNextButtonEnabled) {
-                issueRefund_btnNextFromItems.isEnabled = it
+                binding.issueRefundBtnNextFromItems.isEnabled = it
             }
             new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                issueRefund_productsTotal.text = it
+                productsBinding.issueRefundProductsTotal.text = it
             }
             new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
-                issueRefund_shippingTotal.text = it
+                productsBinding.issueRefundShippingTotal.text = it
             }
             new.feesTotal?.takeIfNotEqualTo(old?.feesTotal) {
-                issueRefund_feesTotal.text = it
+                productsBinding.issueRefundFeesTotal.text = it
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
-                issueRefund_taxesTotal.text = it
+                productsBinding.issueRefundTaxesTotal.text = it
             }
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
-                issueRefund_subtotal.text = it
+                productsBinding.issueRefundSubtotal.text = it
             }
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
-                issueRefund_selectedItems.text = it
+                binding.issueRefundSelectedItems.text = it
             }
             new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
-                issueRefund_selectButton.text = it
+                binding.issueRefundSelectButton.text = it
             }
             new.isShippingRefundVisible?.takeIfNotEqualTo(old?.isShippingRefundVisible) { isVisible ->
                 if (isVisible) {
-                    issueRefund_shippingRefundGroup.show()
+                    productsBinding.issueRefundShippingRefundGroup.show()
                 } else {
-                    issueRefund_shippingRefundGroup.hide()
+                    productsBinding.issueRefundShippingRefundGroup.hide()
                 }
             }
             new.isShippingNoticeVisible?.takeIfNotEqualTo(old?.isShippingNoticeVisible) { isVisible ->
                 if (isVisible) {
-                    issueRefund_shippingRefundNotice.show()
+                    productsBinding.issueRefundShippingRefundNotice.show()
                 } else {
-                    issueRefund_shippingRefundNotice.hide()
+                    productsBinding.issueRefundShippingRefundNotice.hide()
                 }
             }
             new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
                 if (isVisible) {
-                    issueRefund_feesGroup.show()
+                    productsBinding.issueRefundFeesGroup.show()
                     updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice_fees))
                 } else {
-                    issueRefund_feesGroup.hide()
+                    productsBinding.issueRefundFeesGroup.hide()
                     updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice))
                 }
             }
@@ -150,7 +158,7 @@ class RefundByItemsFragment : BaseFragment() {
         }
 
         viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
-            val adapter = issueRefund_products.adapter as RefundProductListAdapter
+            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
             adapter.update(list)
         })
 
@@ -195,7 +203,7 @@ class RefundByItemsFragment : BaseFragment() {
             noticeText.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        issueRefund_shippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
-        issueRefund_shippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
+        productsBinding.issueRefundShippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
+        productsBinding.issueRefundShippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 }
