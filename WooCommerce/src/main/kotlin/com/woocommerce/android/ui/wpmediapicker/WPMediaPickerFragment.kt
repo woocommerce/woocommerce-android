@@ -54,7 +54,6 @@ class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
     private var _binding: FragmentWpmediaPickerBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
