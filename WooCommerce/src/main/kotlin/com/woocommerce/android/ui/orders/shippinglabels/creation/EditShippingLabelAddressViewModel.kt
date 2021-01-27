@@ -102,7 +102,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             viewState = viewState.copy(
                 isValidationProgressDialogVisible = false,
                 selectedCountryName = selectedCountry,
-                selectedStateName = selectedState,
+                selectedStateName = if (selectedState.isBlank()) viewState.address?.state else selectedState,
                 isStateFieldSpinner = states.isNotEmpty()
             )
         }
