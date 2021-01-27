@@ -88,7 +88,7 @@ data class Address(
             .appendWithIfNotEmpty(this.city, "\n")
             .appendWithIfNotEmpty(this.state)
             .appendWithIfNotEmpty(this.postcode)
-            .appendWithIfNotEmpty(this.country, "\n")
+            .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
     }
 }

@@ -140,7 +140,7 @@ class ShippingLabelAddressSuggestionFragment
         append(this.city, other.city,true)
         append(this.state, other.state)
         append(this.postcode, other.postcode)
-        append(this.country, other.country,true)
+        append(this.getCountryLabelByCountryCode(), other.getCountryLabelByCountryCode(),true)
 
         return stringBuilder.toString()
     }
