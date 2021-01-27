@@ -17,12 +17,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.databinding.ActivityLogviewerBinding
 import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import kotlinx.android.synthetic.main.activity_logviewer.*
 import org.wordpress.android.util.ToastUtils
 import java.lang.String.format
 import java.util.ArrayList
@@ -36,9 +36,11 @@ class WooLogViewerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_logviewer)
 
-        setSupportActionBar(toolbar as Toolbar)
+        val binding = ActivityLogviewerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val divider = AlignedDividerDecoration(this,
@@ -47,9 +49,9 @@ class WooLogViewerActivity : AppCompatActivity() {
             divider.setDrawable(drawable)
         }
 
-        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        recycler.addItemDecoration(divider)
-        recycler.adapter = LogAdapter(this)
+        binding.recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.recycler.addItemDecoration(divider)
+        binding.recycler.adapter = LogAdapter(this)
     }
 
     private fun shareAppLog() {
