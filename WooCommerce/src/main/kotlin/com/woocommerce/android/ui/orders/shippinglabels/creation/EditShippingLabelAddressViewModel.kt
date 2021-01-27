@@ -47,15 +47,14 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         dataStore.getCountries()
     }
 
-    private val states: List<WCLocationModel> by lazy {
-        viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
-    }
+    private val states: List<WCLocationModel>
+        get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
 
     private val selectedCountry: String?
         get() = countries.firstOrNull { it.code == viewState.address?.country }?.name
 
-    private val selectedState: String?
-        get() = states.firstOrNull { it.code == viewState.address?.state }?.name
+    private val selectedState: String
+        get() = states.firstOrNull { it.code == viewState.address?.state }?.name ?: ""
 
     init {
         viewState = viewState.copy(
@@ -85,11 +84,11 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     fun onDoneButtonClicked(address: Address) {
         if (areRequiredFieldsValid(address)) {
             launch {
-                viewState = viewState.copy(address = address, isProgressDialogVisible = true)
+                viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
                 val result = addressValidator.validateAddress(address, arguments.addressType)
                 clearErrors()
                 handleValidationResult(address, result)
-                viewState = viewState.copy(isProgressDialogVisible = false)
+                viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
         }
     }
@@ -198,7 +197,11 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 
     fun onCountrySelected(country: String) {
         viewState = viewState.copy(address = viewState.address?.copy(country = country))
-        viewState = viewState.copy(selectedCountryName = selectedCountry)
+        viewState = viewState.copy(
+            selectedCountryName = selectedCountry,
+            selectedStateName = selectedState,
+            isStateFieldSpinner = states.isNotEmpty()
+        )
     }
 
     fun onStateSelected(state: String) {

@@ -159,7 +159,6 @@ class EditShippingLabelAddressFragment
                 binding.address1.setText(it.address1)
                 binding.address2.setText(it.address2)
                 binding.zip.setText(it.postcode)
-                binding.state.setText(it.state)
                 binding.city.setText(it.city)
                 binding.countrySpinner.tag = it.country
                 binding.stateSpinner.tag = it.state
@@ -212,6 +211,7 @@ class EditShippingLabelAddressFragment
             }
             new.selectedStateName?.takeIfNotEqualTo(old?.selectedStateName) {
                 binding.stateSpinner.setText(it)
+                binding.state.setText(it)
             }
             new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
                 binding.stateSpinner.isVisible = isSpinner
