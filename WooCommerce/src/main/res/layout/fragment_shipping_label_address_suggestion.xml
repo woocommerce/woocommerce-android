@@ -65,15 +65,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/suggestionBanner"
             android:layout_marginStart="@dimen/major_75"
-            android:layout_marginBottom="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100">
+            android:layout_marginBottom="@dimen/major_100">
 
             <RadioButton
                 android:id="@+id/enteredAddressOption"
                 style="@style/Woo.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_75"
                 android:paddingStart="@dimen/major_175"
                 android:paddingEnd="@dimen/major_150"
                 android:text="@string/shipping_label_address_suggestion_entered_address" />
@@ -88,12 +87,22 @@
                 android:focusable="true"
                 tools:text="Carolle bruce 123 Main St\nSan Francisco CA, 78117\nUSA" />
 
+            <View
+                android:id="@+id/divider"
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_350"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintTop_toBottomOf="@id/editText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
             <RadioButton
                 android:id="@+id/suggestedAddressOption"
                 style="@style/Woo.RadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_50"
                 android:paddingStart="@dimen/major_175"
                 android:paddingEnd="@dimen/major_150"
                 android:text="@string/shipping_label_address_suggestion_suggested_address" />
