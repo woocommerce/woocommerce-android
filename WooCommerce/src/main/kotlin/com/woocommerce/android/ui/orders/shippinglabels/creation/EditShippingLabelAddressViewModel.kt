@@ -97,11 +97,11 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun loadCountriesAndStates() {
         launch {
             if (countries.isEmpty()) {
-                viewState = viewState.copy(isProgressDialogVisible = true)
+                viewState = viewState.copy(isValidationProgressDialogVisible = true)
                 dataStore.fetchCountriesAndStates(site.get())
             }
             viewState = viewState.copy(
-                isProgressDialogVisible = false,
+                isValidationProgressDialogVisible = false,
                 selectedCountryName = selectedCountry,
                 selectedStateName = selectedState,
                 isStateFieldSpinner = states.isNotEmpty()
@@ -232,7 +232,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     data class ViewState(
         val address: Address? = null,
         val bannerMessage: String? = null,
-        val isProgressDialogVisible: Boolean? = null,
+        val isValidationProgressDialogVisible: Boolean? = null,
+        val isLoadingProgressDialogVisible: Boolean? = null,
         val isStateFieldSpinner: Boolean? = null,
         val selectedCountryName: String? = null,
         val selectedStateName: String? = null,

@@ -187,9 +187,22 @@ class EditShippingLabelAddressFragment
                     binding.errorBanner.show()
                 }
             }
-            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
+            new.isValidationProgressDialogVisible?.takeIfNotEqualTo(old?.isValidationProgressDialogVisible) { isVisible ->
                 if (isVisible) {
-                    showProgressDialog()
+                    showProgressDialog(
+                        getString(R.string.shipping_label_edit_address_validation_progress_title),
+                        getString(R.string.shipping_label_edit_address_validation_progress_message)
+                    )
+                } else {
+                    hideProgressDialog()
+                }
+            }
+            new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
+                if (isVisible) {
+                    showProgressDialog(
+                        getString(R.string.shipping_label_edit_address_validation_progress_title),
+                        getString(R.string.shipping_label_edit_address_loading_progress_title)
+                    )
                 } else {
                     hideProgressDialog()
                 }
@@ -261,11 +274,11 @@ class EditShippingLabelAddressFragment
         }
     }
 
-    private fun showProgressDialog() {
+    private fun showProgressDialog(title: String, message: String) {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
-            title = getString(R.string.shipping_label_edit_address_validation_progress_title),
-            message = getString(R.string.shipping_label_edit_address_validation_progress_message)
+            title = title,
+            message = message
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }
