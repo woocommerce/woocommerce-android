@@ -154,7 +154,7 @@ class EditShippingLabelAddressFragment
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.address?.takeIfNotEqualTo(old?.address) {
                 binding.company.setText(it.company)
-                binding.name.setText("${it.firstName} ${it.lastName}")
+                binding.name.setText("${it.firstName} ${it.lastName}".trim())
                 binding.phone.setText(it.phone)
                 binding.address1.setText(it.address1)
                 binding.address2.setText(it.address2)
