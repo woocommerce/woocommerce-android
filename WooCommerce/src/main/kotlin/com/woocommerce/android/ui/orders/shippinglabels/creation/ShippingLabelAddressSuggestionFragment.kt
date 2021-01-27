@@ -9,9 +9,12 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelAddressSuggestionBinding
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.setHtmlText
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -80,7 +83,7 @@ class ShippingLabelAddressSuggestionFragment
                 binding.enteredAddressText.text = it.toString()
             }
             new.suggestedAddress?.takeIfNotEqualTo(old?.suggestedAddress) {
-                binding.suggestedAddressText.text = it.toString()
+                binding.suggestedAddressText.setHtmlText(it.toStringMarkingDifferences(new.enteredAddress))
             }
             new.areButtonsEnabled.takeIfNotEqualTo(old?.areButtonsEnabled) {
                 binding.editAddressButton.isEnabled = it
@@ -113,6 +116,33 @@ class ShippingLabelAddressSuggestionFragment
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun Address.toStringMarkingDifferences(other: Address?): String {
+        if (other == null) {
+            return this.toString()
+        }
+
+        val stringBuilder = StringBuilder().appendWithIfNotEmpty("$firstName $lastName".trim())
+
+        fun append(thisLine: String, otherLine: String, addNewline: Boolean = false) {
+            if (thisLine.isNotEmpty()) {
+                if (thisLine != otherLine) {
+                    stringBuilder.append(if (addNewline) "<br>" else ", ", "<b>", thisLine, "</b>")
+                } else {
+                    stringBuilder.append(if (addNewline) "<br>" else ", ", thisLine)
+                }
+            }
+        }
+
+        append(this.address1, other.address1, true)
+        append(this.address2, other.address2, true)
+        append(this.city, other.city,true)
+        append(this.state, other.state)
+        append(this.postcode, other.postcode)
+        append(this.country, other.country,true)
+
+        return stringBuilder.toString()
     }
 
     private fun initializeViews() {
