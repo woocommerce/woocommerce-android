@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.ActionableEmptyViewBinding
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {
-    private val binding = ActionableEmptyViewBinding.inflate(LayoutInflater.from(context))
+    private val binding = ActionableEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         initView(context, attrs)
