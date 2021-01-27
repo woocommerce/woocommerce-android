@@ -1490,4 +1490,10 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
+    <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
+    <string name="shipping_label_package_details_move_item">Move</string>
+    <string name="shipping_label_package_details_section_title">Package details</string>
+    <string name="shipping_label_package_details_selected_package_hint">Package selected</string>
+    <string name="shipping_label_package_details_weight_hint">Total package weight (oz)</string>
+    <string name="shipping_label_package_details_weight_info">Includes package weight</string>
 </resources>
