@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -15,7 +16,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProducts
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 
 class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
-    var packages: List<ShippingLabelPackage> = emptyList()
+    var shipplingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -28,7 +29,7 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
         )
     }
 
-    override fun getItemCount() = packages.count()
+    override fun getItemCount() = shipplingLabelPackages.count()
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
         holder.bind(position)
@@ -41,13 +42,16 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
             with(binding.itemsList) {
                 layoutManager =
                     LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-                adapter = PackageProductsAdapter()
+                val canMoveItems = shipplingLabelPackages.count() > 1 ||
+                    shipplingLabelPackages.firstOrNull()?.items?.count() ?: 0 > 1
+                adapter = PackageProductsAdapter(canMoveItems = canMoveItems)
             }
         }
 
-        @SuppressLint("SetTextI18n") fun bind(position: Int) {
+        @SuppressLint("SetTextI18n")
+        fun bind(position: Int) {
             val context = binding.root.context
-            val packageDetails = packages[position]
+            val packageDetails = shipplingLabelPackages[position]
             binding.packageName.text = context.getString(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
@@ -65,7 +69,7 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
     }
 }
 
-class PackageProductsAdapter : RecyclerView.Adapter<PackageProductViewHolder>() {
+class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<PackageProductViewHolder>() {
     var items: List<Order.Item> = emptyList()
         set(value) {
             field = value
@@ -83,8 +87,9 @@ class PackageProductsAdapter : RecyclerView.Adapter<PackageProductViewHolder>() 
 
     override fun onBindViewHolder(holder: PackageProductViewHolder, position: Int) = holder.bind(items[position])
 
-    class PackageProductViewHolder(val binding: PackageProductListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageProductViewHolder(val binding: PackageProductListItemBinding) : ViewHolder(binding.root) {
         fun bind(item: Order.Item) {
+            binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name
             // TODO fetch and add weight
             binding.productDetails.text = item.attributesList

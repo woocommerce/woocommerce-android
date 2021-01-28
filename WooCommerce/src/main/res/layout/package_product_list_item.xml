@@ -27,6 +27,7 @@
         tools:text="Grey • 0.5lbs" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/move_button"
         style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

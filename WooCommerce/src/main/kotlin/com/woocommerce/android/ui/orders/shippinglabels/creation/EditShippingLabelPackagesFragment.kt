@@ -45,7 +45,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     private fun setupObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.shippingLabelPackages.takeIfNotEqualTo(old?.shippingLabelPackages) {
-                packagesAdapter.packages = it
+                packagesAdapter.shipplingLabelPackages = it
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
