@@ -53,7 +53,6 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
 
         setHasOptionsMenu(true)
 
-        // TODO: use binding to get toolbar
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
