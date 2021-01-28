@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -26,9 +25,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <include
+                android:id="@+id/login_user_info"
                 layout="@layout/view_login_user_info"/>
 
             <include
+                android:id="@+id/login_no_stores"
                 layout="@layout/view_login_no_stores"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -40,5 +41,7 @@
         android:layout_height="@dimen/appbar_elevation"
         android:background="@drawable/shadow_top" />
 
-    <include layout="@layout/view_login_epilogue_button_bar" />
+    <include
+        android:id="@+id/login_epilogue_button_bar"
+        layout="@layout/view_login_epilogue_button_bar" />
 </LinearLayout>
