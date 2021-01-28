@@ -104,6 +104,17 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
+    private suspend fun handleResult(action: suspend () -> Event) {
+        val progressDialogState = ProgressDialogState(
+            isShown = true,
+            title = string.shipping_label_edit_address_validation_progress_title,
+            message = string.shipping_label_edit_address_validation_progress_message
+        )
+        viewState = viewState.copy(progressDialogState = progressDialogState)
+        stateMachine.handleEvent(action())
+        viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
+    }
+
     private suspend fun loadAndOpenPackagesDetails() {
         if (availablePackages.isEmpty()) {
             val progressDialogState = ProgressDialogState(
@@ -116,6 +127,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
             if (availablePackagesResult.isError) {
                 triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
+                stateMachine.handleEvent(EditPackagingCanceled)
                 return
             }
             availablePackages = availablePackagesResult.model!!
@@ -127,17 +139,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 availablePackages = availablePackages
             )
         )
-    }
-
-    private suspend fun handleResult(action: suspend () -> Event) {
-        val progressDialogState = ProgressDialogState(
-            isShown = true,
-            title = string.shipping_label_edit_address_validation_progress_title,
-            message = string.shipping_label_edit_address_validation_progress_message
-        )
-        viewState = viewState.copy(progressDialogState = progressDialogState)
-        stateMachine.handleEvent(action())
-        viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
     }
 
     private fun updateViewState(data: Data) {
