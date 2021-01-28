@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/color_surface"
     android:orientation="vertical">
 
@@ -129,8 +129,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_100"
         android:text="@string/shipping_label_package_details_weight_info"
         android:textAppearance="?attr/textAppearanceCaption"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/weight_edit_text"
         app:layout_constraintTop_toBottomOf="@id/weight_edit_text" />
 

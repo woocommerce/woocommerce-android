@@ -186,7 +186,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.AddressValidationFailed> {
-                transitionTo(State.OriginAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(AddressValidationError))
             }
         }
 

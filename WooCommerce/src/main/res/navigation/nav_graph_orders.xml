@@ -282,5 +282,8 @@
             android:name="orderId"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="packages"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
     </fragment>
 </navigation>
