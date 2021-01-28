@@ -371,12 +371,15 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    /***
+    /**
      * Get the actual primary navigation Fragment from the support manager
      */
     private fun getHostChildFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.primaryNavigationFragment
-        return navHostFragment?.childFragmentManager?.fragments?.get(0)
+        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
+            return navHostFragment.childFragmentManager.fragments[0]
+        }
+        return null
     }
 
     /**
@@ -496,7 +499,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val activeChild = getHostChildFragment()
-        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        val activeChildIsRoot = activeChild != null && activeChild is TopLevelFragment
         return (isDialogDestination(destination) && activeChildIsRoot) || isAtRoot
     }
 
