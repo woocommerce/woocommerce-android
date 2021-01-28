@@ -2,19 +2,17 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.PROLOGUE
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_prologue.*
 import javax.inject.Inject
 
-class LoginPrologueFragment : androidx.fragment.app.Fragment() {
+class LoginPrologueFragment : androidx.fragment.app.Fragment(R.layout.fragment_login_prologue) {
     companion object {
         const val TAG = "login-prologue-fragment"
 
@@ -31,12 +29,20 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_login_prologue, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val binding = FragmentLoginPrologueBinding.bind(view)
+
+        binding.buttonLoginStore.setOnClickListener {
+            // Login with site address
+            prologueFinishedListener?.onPrimaryButtonClicked()
+        }
+
+        binding.buttonLoginWpcom.setOnClickListener {
+            // Login with WordPress.com account
+            prologueFinishedListener?.onSecondaryButtonClicked()
+        }
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, PROLOGUE)
@@ -61,18 +67,5 @@ class LoginPrologueFragment : androidx.fragment.app.Fragment() {
     override fun onDetach() {
         super.onDetach()
         prologueFinishedListener = null
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        button_login_store.setOnClickListener {
-            // Login with site address
-            prologueFinishedListener?.onPrimaryButtonClicked()
-        }
-
-        button_login_wpcom.setOnClickListener {
-            // Login with WordPress.com account
-            prologueFinishedListener?.onSecondaryButtonClicked()
-        }
     }
 }
