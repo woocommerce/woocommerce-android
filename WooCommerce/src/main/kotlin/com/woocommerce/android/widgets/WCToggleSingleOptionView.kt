@@ -40,7 +40,8 @@ class WCToggleSingleOptionView @JvmOverloads constructor(
             val a = context.obtainStyledAttributes(attrs, R.styleable.WCToggleSingleOptionView)
             try {
                 // Set the view title
-                binding.switchSettingTitle.text = a.getString(R.styleable.WCToggleSingleOptionView_switchTitle).orEmpty()
+                binding.switchSettingTitle.text = a.getString(R.styleable.WCToggleSingleOptionView_switchTitle)
+                    .orEmpty()
 
                 // Set the summary and switch state
                 binding.switchSettingSwitch.isChecked =
