@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_shipping_label_packages),
@@ -27,7 +28,9 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
-    val packagesAdapter: ShippingLabelPackagesAdapter by lazy { ShippingLabelPackagesAdapter(viewModel.parameters) }
+    private val packagesAdapter: ShippingLabelPackagesAdapter by lazy { ShippingLabelPackagesAdapter(viewModel.parameters) }
+
+    private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 
@@ -39,19 +42,31 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
             adapter = packagesAdapter
         }
 
-        setupObservers()
+        setupObservers(binding)
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.shippingLabelPackages.takeIfNotEqualTo(old?.shippingLabelPackages) {
                 packagesAdapter.shipplingLabelPackages = it
+            }
+
+            new.showSkeletonView.takeIfNotEqualTo(old?.showSkeletonView) {
+                showSkeleton(it, binding)
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    fun showSkeleton(show: Boolean, binding: FragmentEditShippingLabelPackagesBinding) {
+        if (show) {
+            skeletonView.show(binding.packagesList, R.layout.skeleton_shipping_label_package_details, delayed = false)
+        } else {
+            skeletonView.hide()
         }
     }
 

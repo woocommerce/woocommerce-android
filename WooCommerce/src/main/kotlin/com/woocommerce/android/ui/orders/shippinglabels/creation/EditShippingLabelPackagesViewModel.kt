@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.launch
 
 class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -42,17 +43,34 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     private fun initState() {
         if (viewState.shippingLabelPackages.isNotEmpty()) return
-        val packagesList = arguments.shippingLabelPackages.toList().ifEmpty {
-            val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
-            listOf(
-                ShippingLabelPackage(
-                    selectedPackage = arguments.availablePackages.first(),
-                    weight = -1,
-                    items = order.items.map { it.toShippingItem() }
+        launch {
+            loadProductsWeightsIfNeeded()
+            val packagesList = arguments.shippingLabelPackages.toList().ifEmpty {
+                val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+                listOf(
+                    ShippingLabelPackage(
+                        selectedPackage = arguments.availablePackages.first(),
+                        weight = -1,
+                        items = order.items.map { it.toShippingItem() }
+                    )
                 )
-            )
+            }
+            viewState = ViewState(shippingLabelPackages = packagesList)
         }
-        viewState = ViewState(shippingLabelPackages = packagesList)
+    }
+
+    private suspend fun loadProductsWeightsIfNeeded() {
+        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        if (order.items.any { productDetailRepository.getProduct(it.productId) == null }) {
+            viewState = viewState.copy(showSkeletonView = true)
+            order.items.forEach {
+                if (productDetailRepository.getProduct(it.productId) == null) {
+                    // Ignore any errors, we will hide the weight if we can't fetch the product
+                    productDetailRepository.fetchProduct(it.productId)
+                }
+            }
+            viewState = viewState.copy(showSkeletonView = false)
+        }
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
@@ -67,7 +85,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
+        val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
+        val showSkeletonView: Boolean = false
     ) : Parcelable
 
     @AssistedInject.Factory

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="@dimen/skeleton_list_item_title_text_height_100"
+            android:layout_margin="@dimen/major_75"
+            android:background="@color/skeleton_color" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/image_minor_50"
+            android:layout_height="@dimen/image_minor_50"
+            android:layout_gravity="center"
+            android:layout_marginEnd="@dimen/major_100"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="@color/color_on_surface_high" />
+
+    </LinearLayout>
+
+    <View style="@style/Woo.Divider" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_300"
+        android:background="@color/default_window_background" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_75" />
+
+    <include layout="@layout/skeleton_shipping_label_package_product" />
+
+    <include layout="@layout/skeleton_shipping_label_package_product" />
+
+    <include layout="@layout/skeleton_shipping_label_package_product" />
+
+    <include layout="@layout/skeleton_shipping_label_package_product" />
+
+    <include layout="@layout/skeleton_shipping_label_package_product" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_75" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_300"
+        android:background="@color/default_window_background" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_75" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_325"
+        android:layout_margin="@dimen/major_75"
+        android:background="@drawable/skeleton_background" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_325"
+        android:layout_margin="@dimen/major_75"
+        android:background="@drawable/skeleton_background" />
+
+</LinearLayout>
