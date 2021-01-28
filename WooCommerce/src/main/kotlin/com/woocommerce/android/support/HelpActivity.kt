@@ -11,11 +11,11 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_help.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -29,6 +29,8 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var selectedSite: SelectedSite
 
+    private lateinit var binding: ActivityHelpBinding
+
     private val originFromExtras by lazy {
         (intent.extras?.get(ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
     }
@@ -41,19 +43,20 @@ class HelpActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_help)
+        binding = ActivityHelpBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        contactContainer.setOnClickListener { createNewZendeskTicket() }
-        identityContainer.setOnClickListener { showIdentityDialog() }
-        myTicketsContainer.setOnClickListener { showZendeskTickets() }
-        faqContainer.setOnClickListener { showZendeskFaq() }
-        appLogContainer.setOnClickListener { showApplicationLog() }
+        binding.contactContainer.setOnClickListener { createNewZendeskTicket() }
+        binding.identityContainer.setOnClickListener { showIdentityDialog() }
+        binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
+        binding.faqContainer.setOnClickListener { showZendeskFaq() }
+        binding.appLogContainer.setOnClickListener { showApplicationLog() }
 
-        textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
+        binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         /**
         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
@@ -117,7 +120,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun refreshContactEmailText() {
         val supportEmail = AppPrefs.getSupportEmail()
-        identityContainer.optionValue = if (supportEmail.isNotEmpty()) {
+        binding.identityContainer.optionValue = if (supportEmail.isNotEmpty()) {
             supportEmail
         } else {
             getString(R.string.support_contact_email_not_set)
