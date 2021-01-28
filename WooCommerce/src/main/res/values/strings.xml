@@ -381,7 +381,17 @@
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
     <string name="shipping_label_validation_view_map">Open Map</string>
-
+    <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
+    <string name="shipping_label_package_details_move_item">Move</string>
+    <string name="shipping_label_package_details_section_title">Package details</string>
+    <string name="shipping_label_package_details_selected_package_hint">Package selected</string>
+    <string name="shipping_label_package_details_weight_hint">Total package weight (oz)</string>
+    <string name="shipping_label_package_details_weight_info">Includes package weight</string>
+    <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
+    <string name="shipping_label_package_details_items_count">"%1$d items  "</string>
+    <string name="shipping_label_package_details_title_template">Package %1$d</string>
+    <string name="shipping_label_packages_loading_title">Loading Packages!</string>
+    <string name="shipping_label_packages_loading_message">Please wait…</string>
     <!--
         Refunds
     -->
@@ -1490,13 +1500,4 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
-    <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
-    <string name="shipping_label_package_details_move_item">Move</string>
-    <string name="shipping_label_package_details_section_title">Package details</string>
-    <string name="shipping_label_package_details_selected_package_hint">Package selected</string>
-    <string name="shipping_label_package_details_weight_hint">Total package weight (oz)</string>
-    <string name="shipping_label_package_details_weight_info">Includes package weight</string>
-    <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <string name="shipping_label_package_details_items_count">"%1$d items  "</string>
-    <string name="shipping_label_package_details_title_template">Package %1$d</string>
 </resources>

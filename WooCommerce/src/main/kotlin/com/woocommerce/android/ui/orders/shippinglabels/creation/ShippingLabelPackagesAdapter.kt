@@ -31,10 +31,12 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
     override fun getItemCount() = packages.count()
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
-        holder.bind(packages[position], position)
+        holder.bind(position)
     }
 
-    class ShippingLabelPackageViewHolder(val binding: ShippingLabelPackageDetailsListItemBinding) : ViewHolder(binding.root) {
+    inner class ShippingLabelPackageViewHolder(
+        val binding: ShippingLabelPackageDetailsListItemBinding
+    ) : ViewHolder(binding.root) {
         init {
             with(binding.itemsList) {
                 layoutManager =
@@ -43,8 +45,9 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
             }
         }
 
-        @SuppressLint("SetTextI18n") fun bind(packageDetails: ShippingLabelPackage, position: Int) {
+        @SuppressLint("SetTextI18n") fun bind(position: Int) {
             val context = binding.root.context
+            val packageDetails = packages[position]
             binding.packageName.text = context.getString(
                 R.string.shipping_label_package_details_title_template,
                 position + 1

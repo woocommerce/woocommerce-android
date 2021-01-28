@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -39,5 +41,9 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val phoneNumber: String
     ) : CreateShippingLabelEvent()
 
-    data class ShowPackageDetails(val orderIdentifier: OrderIdentifier) : CreateShippingLabelEvent()
+    data class ShowPackageDetails(
+        val orderIdentifier: OrderIdentifier,
+        val shippingLabelPackages: List<ShippingLabelPackage>,
+        val availablePackages: List<ShippingPackage>
+    ) : CreateShippingLabelEvent()
 }

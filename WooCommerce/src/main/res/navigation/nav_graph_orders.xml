@@ -283,7 +283,10 @@
             android:defaultValue='""'
             app:argType="string" />
         <argument
-            android:name="packages"
+            android:name="shippingLabelPackages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
+        <argument
+            android:name="availablePackages"
+            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
     </fragment>
 </navigation>

@@ -106,12 +106,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
                 binding.paymentStep.update(it)
             }
-            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
-                if (isVisible) {
-                    showProgressDialog(
-                        R.string.shipping_label_edit_address_validation_progress_title,
-                        R.string.shipping_label_edit_address_validation_progress_message
-                    )
+            new.progressDialogState.takeIfNotEqualTo(old?.progressDialogState) { state ->
+                if (state.isShown) {
+                    showProgressDialog(state.title, state.message)
                 } else {
                     hideProgressDialog()
                 }
@@ -133,8 +130,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                 is ShowPackageDetails -> {
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
-                            event.orderIdentifier,
-                            emptyArray()
+                            orderId = event.orderIdentifier,
+                            shippingLabelPackages = event.shippingLabelPackages.toTypedArray(),
+                            availablePackages = event.availablePackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }

@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
@@ -40,6 +43,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
+    private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingLabelAddressValidator
 ) : ScopedViewModel(savedState, dispatchers) {
@@ -51,6 +55,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    private var availablePackages: List<ShippingPackage> = emptyList()
 
     init {
         initializeStateMachine()
@@ -79,9 +85,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowAddressSuggestion -> handleResult {
                             Event.SuggestedAddressSelected(sideEffect.suggested)
                         }
-                        is SideEffect.ShowPackageOptions -> triggerEvent(
-                            ShowPackageDetails(arguments.orderIdentifier)
-                        )
+                        is SideEffect.ShowPackageOptions -> loadAndOpenPackagesDetails()
                         is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
                         is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
                         is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
@@ -100,10 +104,40 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
+    private suspend fun loadAndOpenPackagesDetails() {
+        if (availablePackages.isEmpty()) {
+            val progressDialogState = ProgressDialogState(
+                isShown = true,
+                title = string.shipping_label_packages_loading_title,
+                message = string.shipping_label_packages_loading_message
+            )
+            viewState = viewState.copy(progressDialogState = progressDialogState)
+            val availablePackagesResult = shippingLabelRepository.getShippingPackages()
+            viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
+            if (availablePackagesResult.isError) {
+                triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
+                return
+            }
+            availablePackages = availablePackagesResult.model!!
+        }
+        triggerEvent(
+            ShowPackageDetails(
+                orderIdentifier = arguments.orderIdentifier,
+                shippingLabelPackages = emptyList(),
+                availablePackages = availablePackages
+            )
+        )
+    }
+
     private suspend fun handleResult(action: suspend () -> Event) {
-        viewState = viewState.copy(isProgressDialogVisible = true)
+        val progressDialogState = ProgressDialogState(
+            isShown = true,
+            title = string.shipping_label_edit_address_validation_progress_title,
+            message = string.shipping_label_edit_address_validation_progress_message
+        )
+        viewState = viewState.copy(progressDialogState = progressDialogState)
         stateMachine.handleEvent(action())
-        viewState = viewState.copy(isProgressDialogVisible = false)
+        viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
     }
 
     private fun updateViewState(data: Data) {
@@ -252,7 +286,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val customsStep: Step? = null,
         val carrierStep: Step? = null,
         val paymentStep: Step? = null,
-        val isProgressDialogVisible: Boolean? = null
+        val progressDialogState: ProgressDialogState = ProgressDialogState()
+    ) : Parcelable
+
+    @Parcelize
+    data class ProgressDialogState(
+        val isShown: Boolean = false,
+        @StringRes val title: Int = 0,
+        @StringRes val message: Int = 0
     ) : Parcelable
 
     @Parcelize
