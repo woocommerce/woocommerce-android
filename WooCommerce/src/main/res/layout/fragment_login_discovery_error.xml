@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <include
+        android:id="@+id/toolbar_login"
         layout="@layout/toolbar_login" />
 
     <ScrollView

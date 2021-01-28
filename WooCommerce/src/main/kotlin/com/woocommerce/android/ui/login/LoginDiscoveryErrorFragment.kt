@@ -84,6 +84,8 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
         setHasOptionsMenu(true)
 
         val binding = FragmentLoginDiscoveryErrorBinding.bind(view)
+        // TODO: use binding to get toolbar
+        binding.toolbarLogin.toolbar
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
