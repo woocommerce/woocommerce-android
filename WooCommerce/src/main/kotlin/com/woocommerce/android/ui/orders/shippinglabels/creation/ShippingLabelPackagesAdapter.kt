@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.PackageProductListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
+import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
@@ -84,7 +84,7 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return PackageProductViewHolder(
-            PackageProductListItemBinding.inflate(layoutInflater, parent, false)
+            ShippingLabelPackageProductListItemBinding.inflate(layoutInflater, parent, false)
         )
     }
 
@@ -92,7 +92,7 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
 
     override fun onBindViewHolder(holder: PackageProductViewHolder, position: Int) = holder.bind(items[position])
 
-    inner class PackageProductViewHolder(val binding: PackageProductListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageProductViewHolder(val binding: ShippingLabelPackageProductListItemBinding) : ViewHolder(binding.root) {
         fun bind(item: ShippingLabelPackage.Item) {
             binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name
