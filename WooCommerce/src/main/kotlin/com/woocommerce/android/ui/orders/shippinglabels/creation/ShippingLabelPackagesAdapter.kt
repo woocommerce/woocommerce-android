@@ -13,9 +13,10 @@ import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBi
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 
-class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
+class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shipplingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
             field = value
@@ -46,6 +47,10 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
                     shipplingLabelPackages.firstOrNull()?.items?.count() ?: 0 > 1
                 adapter = PackageProductsAdapter(canMoveItems = canMoveItems)
             }
+            binding.weightEditText.hint = binding.root.context.getString(
+                R.string.shipping_label_package_details_weight_hint,
+                parameters.weightUnit
+            )
         }
 
         @SuppressLint("SetTextI18n")

@@ -27,7 +27,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
-    val packagesAdapter: ShippingLabelPackagesAdapter by lazy { ShippingLabelPackagesAdapter() }
+    val packagesAdapter: ShippingLabelPackagesAdapter by lazy { ShippingLabelPackagesAdapter(viewModel.parameters) }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 
