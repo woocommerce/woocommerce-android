@@ -28,7 +28,9 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
-    private val packagesAdapter: ShippingLabelPackagesAdapter by lazy { ShippingLabelPackagesAdapter(viewModel.parameters) }
+    private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
+        ShippingLabelPackagesAdapter(viewModel.parameters)
+    }
 
     private val skeletonView: SkeletonView = SkeletonView()
 

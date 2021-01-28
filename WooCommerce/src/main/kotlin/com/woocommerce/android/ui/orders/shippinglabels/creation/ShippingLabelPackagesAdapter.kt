@@ -16,7 +16,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPa
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 
-class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
+class ShippingLabelPackagesAdapter(
+    val parameters: SiteParameters
+) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
             field = value
@@ -92,7 +94,9 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
 
     override fun onBindViewHolder(holder: PackageProductViewHolder, position: Int) = holder.bind(items[position])
 
-    inner class PackageProductViewHolder(val binding: ShippingLabelPackageProductListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageProductViewHolder(
+        val binding: ShippingLabelPackageProductListItemBinding
+    ) : ViewHolder(binding.root) {
         fun bind(item: ShippingLabelPackage.Item) {
             binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name

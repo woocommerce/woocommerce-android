@@ -17,4 +17,3 @@ data class ShippingLabelPackage(
         val weight: String
     ) : Parcelable
 }
-
