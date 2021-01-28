@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -11,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentRefundSummaryBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
@@ -24,10 +23,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
-import kotlinx.android.synthetic.main.fragment_refund_summary.*
 import javax.inject.Inject
 
-class RefundSummaryFragment : BaseFragment(), BackPressListener {
+class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), BackPressListener {
     companion object {
         const val REFUND_ORDER_NOTICE_KEY = "refund_order_notice"
     }
@@ -38,10 +36,8 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
         viewModelFactory.get()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
-        return inflater.inflate(R.layout.fragment_refund_summary, container, false)
-    }
+    private var _binding: FragmentRefundSummaryBinding? = null
+    private val binding get() = _binding!!
 
     override fun onResume() {
         super.onResume()
@@ -51,8 +47,15 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentRefundSummaryBinding.bind(view)
+
         initializeViews()
         setupObservers()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupObservers() {
@@ -72,34 +75,38 @@ class RefundSummaryFragment : BaseFragment(), BackPressListener {
 
         viewModel.refundSummaryStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isFormEnabled?.takeIfNotEqualTo(old?.isFormEnabled) {
-                refundSummary_btnRefund.isEnabled = new.isFormEnabled
-                refundSummary_reason.isEnabled = new.isFormEnabled
+                binding.refundSummaryBtnRefund.isEnabled = new.isFormEnabled
+                binding.refundSummaryReason.isEnabled = new.isFormEnabled
             }
             new.isSubmitButtonEnabled?.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
-                refundSummary_btnRefund.isEnabled = new.isSubmitButtonEnabled
+                binding.refundSummaryBtnRefund.isEnabled = new.isSubmitButtonEnabled
             }
-            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) { refundSummary_refundAmount.text = it }
+            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {
+                binding.refundSummaryRefundAmount.text = it
+            }
             new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
-                refundSummary_previouslyRefunded.text = it
+                binding.refundSummaryPreviouslyRefunded.text = it
             }
-            new.refundMethod?.takeIfNotEqualTo(old?.refundMethod) { refundSummary_method.text = it }
+            new.refundMethod?.takeIfNotEqualTo(old?.refundMethod) {
+                binding.refundSummaryMethod.text = it
+            }
             new.isMethodDescriptionVisible?.takeIfNotEqualTo(old?.isMethodDescriptionVisible) { visible ->
                 if (visible)
-                    refundSummary_methodDescription.show()
+                    binding.refundSummaryMethodDescription.show()
                 else
-                    refundSummary_methodDescription.hide()
+                    binding.refundSummaryMethodDescription.hide()
             }
         }
     }
 
     private fun initializeViews() {
-        refundSummary_btnRefund.setOnClickListener {
-            viewModel.onRefundIssued(refundSummary_reason.text.toString())
+        binding.refundSummaryBtnRefund.setOnClickListener {
+            viewModel.onRefundIssued(binding.refundSummaryReason.text.toString())
         }
 
-        refundSummary_reason.doOnTextChanged { _, _, _, _ ->
-            val maxLength = refundSummary_reasonLayout.counterMaxLength
-            viewModel.onRefundSummaryTextChanged(maxLength, refundSummary_reason.length())
+        binding.refundSummaryReason.doOnTextChanged { _, _, _, _ ->
+            val maxLength = binding.refundSummaryReasonLayout.counterMaxLength
+            viewModel.onRefundSummaryTextChanged(maxLength, binding.refundSummaryReason.length())
         }
     }
 
