@@ -371,12 +371,15 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    /***
+    /**
      * Get the actual primary navigation Fragment from the support manager
      */
     private fun getHostChildFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.primaryNavigationFragment
-        return navHostFragment?.childFragmentManager?.fragments?.get(0)
+        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
+            return navHostFragment.childFragmentManager.fragments[0]
+        }
+        return null
     }
 
     /**
