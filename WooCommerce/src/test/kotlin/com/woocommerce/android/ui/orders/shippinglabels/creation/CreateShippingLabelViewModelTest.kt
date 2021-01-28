@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -36,7 +37,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         private const val ORDER_ID = "123"
     }
 
-    private val repository: OrderDetailRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
+    private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
     private val addressValidator: ShippingLabelAddressValidator = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
@@ -124,7 +126,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 coroutinesTestRule.testDispatchers,
-                repository,
+                orderDetailRepository,
+                shippingLabelRepository,
                 stateMachine,
                 addressValidator
             )
@@ -133,7 +136,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         clearInvocations(
             viewModel,
             savedState,
-            repository,
+            orderDetailRepository,
             stateMachine
         )
     }
