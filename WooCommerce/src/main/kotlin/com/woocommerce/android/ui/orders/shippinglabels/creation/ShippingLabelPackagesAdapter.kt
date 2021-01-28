@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.PackageProductListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
+import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shipplingLabelPackages: List<ShippingLabelPackage> = emptyList()
@@ -70,7 +70,7 @@ class ShippingLabelPackagesAdapter() : RecyclerView.Adapter<ShippingLabelPackage
 }
 
 class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<PackageProductViewHolder>() {
-    var items: List<Order.Item> = emptyList()
+    var items: List<ShippingLabelPackage.Item> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -88,11 +88,11 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
     override fun onBindViewHolder(holder: PackageProductViewHolder, position: Int) = holder.bind(items[position])
 
     inner class PackageProductViewHolder(val binding: PackageProductListItemBinding) : ViewHolder(binding.root) {
-        fun bind(item: Order.Item) {
+        fun bind(item: ShippingLabelPackage.Item) {
             binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name
-            // TODO fetch and add weight
-            binding.productDetails.text = item.attributesList
+            val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
+            binding.productDetails.text = "$attributes${item.weight}"
         }
     }
 }
