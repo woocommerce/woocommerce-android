@@ -499,7 +499,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val activeChild = getHostChildFragment()
-        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        val activeChildIsRoot = activeChild != null && activeChild is TopLevelFragment
         return (isDialogDestination(destination) && activeChildIsRoot) || isAtRoot
     }
 
