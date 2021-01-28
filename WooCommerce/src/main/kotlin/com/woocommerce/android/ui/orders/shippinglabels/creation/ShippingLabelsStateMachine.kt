@@ -198,8 +198,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
-            on<Event.EditOriginAddressRequested> {
-                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
+            on<Event.EditAddressRequested> { event ->
+                transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(event.address, ORIGIN))
             }
             on<Event.SuggestedAddressDiscarded> {
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
@@ -252,10 +252,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
-            on<Event.EditShippingAddressRequested> {
+            on<Event.EditAddressRequested> { event ->
                 transitionTo(
                     State.ShippingAddressEditing(data),
-                    SideEffect.OpenAddressEditor(data.shippingAddress, DESTINATION)
+                    SideEffect.OpenAddressEditor(event.address, DESTINATION)
                 )
             }
             on<Event.SuggestedAddressDiscarded> {
@@ -387,6 +387,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class AddressValidated(val address: Address) : Event()
         data class AddressChangeSuggested(val suggested: Address) : Event()
         data class SuggestedAddressAccepted(val address: Address) : Event()
+        data class EditAddressRequested(val address: Address) : Event()
         object AddressValidationFailed : Event()
         object AddressEditCanceled : Event()
         object SuggestedAddressDiscarded : Event()
