@@ -97,7 +97,13 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
             binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name
             val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
-            binding.productDetails.text = "$attributes${item.weight}"
+            val details = "$attributes${item.weight}"
+            if (details.isEmpty()) {
+                binding.productDetails.isVisible = false
+            } else {
+                binding.productDetails.isVisible = true
+                binding.productDetails.text = details
+            }
         }
     }
 }

@@ -74,12 +74,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
-        val weight = productDetailRepository.getProduct(productId)?.weight ?: 0f
+        val weight = productDetailRepository.getProduct(productId)?.weight?.let {
+            "$it ${parameters.weightUnit}"
+        } ?: ""
         return ShippingLabelPackage.Item(
             productId = productId,
             name = name,
             attributesList = attributesList,
-            weight = "$weight ${parameters.weightUnit}"
+            weight = weight
         )
     }
 
