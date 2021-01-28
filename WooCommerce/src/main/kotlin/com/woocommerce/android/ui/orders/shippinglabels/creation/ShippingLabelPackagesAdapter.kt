@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
-    var shipplingLabelPackages: List<ShippingLabelPackage> = emptyList()
+    var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -30,7 +30,7 @@ class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerVie
         )
     }
 
-    override fun getItemCount() = shipplingLabelPackages.count()
+    override fun getItemCount() = shippingLabelPackages.count()
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
         holder.bind(position)
@@ -43,8 +43,8 @@ class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerVie
             with(binding.itemsList) {
                 layoutManager =
                     LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-                val canMoveItems = shipplingLabelPackages.count() > 1 ||
-                    shipplingLabelPackages.firstOrNull()?.items?.count() ?: 0 > 1
+                val canMoveItems = shippingLabelPackages.count() > 1 ||
+                    shippingLabelPackages.firstOrNull()?.items?.count() ?: 0 > 1
                 adapter = PackageProductsAdapter(canMoveItems = canMoveItems)
             }
             binding.weightEditText.hint = binding.root.context.getString(
@@ -56,7 +56,7 @@ class ShippingLabelPackagesAdapter(val parameters: SiteParameters) : RecyclerVie
         @SuppressLint("SetTextI18n")
         fun bind(position: Int) {
             val context = binding.root.context
-            val packageDetails = shipplingLabelPackages[position]
+            val packageDetails = shippingLabelPackages[position]
             binding.packageName.text = context.getString(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
