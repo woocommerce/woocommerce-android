@@ -5,12 +5,11 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -37,21 +36,27 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
+class EditShippingLabelAddressFragment
+    : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
+        const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
+        const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -68,11 +73,10 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             updateActivityTitle()
         }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setHasOptionsMenu(true)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        _binding = FragmentEditShippingLabelAddressBinding.inflate(inflater, container, false)
-        return binding.root
+        setHasOptionsMenu(true)
     }
 
     override fun onResume() {
@@ -92,8 +96,15 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
         initializeViewModel()
         initializeViews()
@@ -110,6 +121,12 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
         handleResult<String>(SELECT_STATE_REQUEST) {
             viewModel.onStateSelected(it)
+        }
+        handleResult<Address>(SELECTED_ADDRESS_ACCEPTED) {
+            viewModel.onAddressSelected(it)
+        }
+        handleResult<Address>(SELECTED_ADDRESS_TO_BE_EDITED) {
+            viewModel.onEditRequested(it)
         }
     }
 
@@ -137,12 +154,11 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.address?.takeIfNotEqualTo(old?.address) {
                 binding.company.setText(it.company)
-                binding.name.setText("${it.firstName} ${it.lastName}")
+                binding.name.setText("${it.firstName} ${it.lastName}".trim())
                 binding.phone.setText(it.phone)
                 binding.address1.setText(it.address1)
                 binding.address2.setText(it.address2)
                 binding.zip.setText(it.postcode)
-                binding.state.setText(it.state)
                 binding.city.setText(it.city)
                 binding.countrySpinner.tag = it.country
                 binding.stateSpinner.tag = it.state
@@ -170,9 +186,23 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
                     binding.errorBanner.show()
                 }
             }
-            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
+            new.isValidationProgressDialogVisible
+                ?.takeIfNotEqualTo(old?.isValidationProgressDialogVisible) { isVisible ->
+                    if (isVisible) {
+                        showProgressDialog(
+                            getString(R.string.shipping_label_edit_address_validation_progress_title),
+                            getString(R.string.shipping_label_edit_address_validation_progress_message)
+                        )
+                    } else {
+                        hideProgressDialog()
+                }
+            }
+            new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
                 if (isVisible) {
-                    showProgressDialog()
+                    showProgressDialog(
+                        getString(R.string.shipping_label_edit_address_validation_progress_title),
+                        getString(R.string.shipping_label_edit_address_loading_progress_title)
+                    )
                 } else {
                     hideProgressDialog()
                 }
@@ -182,6 +212,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             }
             new.selectedStateName?.takeIfNotEqualTo(old?.selectedStateName) {
                 binding.stateSpinner.setText(it)
+                binding.state.setText(it)
             }
             new.isStateFieldSpinner?.takeIfNotEqualTo(old?.isStateFieldSpinner) { isSpinner ->
                 binding.stateSpinner.isVisible = isSpinner
@@ -195,15 +226,17 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_RESULT,
-                    event.data
-                )
-                is CancelAddressEditing -> navigateBackWithNotice(
-                    CreateShippingLabelFragment.EDIT_ADDRESS_CLOSED
-                )
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
+                is CancelAddressEditing -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
                 is Exit -> findNavController().navigateUp()
                 is ShowSuggestedAddress -> {
+                    val action = EditShippingLabelAddressFragmentDirections
+                        .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(
+                            event.originalAddress,
+                            event.suggestedAddress,
+                            event.type
+                        )
+                    findNavController().navigateSafely(action)
                 }
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections
@@ -242,11 +275,11 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
         }
     }
 
-    private fun showProgressDialog() {
+    private fun showProgressDialog(title: String, message: String) {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
-            title = getString(R.string.shipping_label_edit_address_validation_progress_title),
-            message = getString(R.string.shipping_label_edit_address_validation_progress_message)
+            title = title,
+            message = message
         ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }
@@ -285,20 +318,34 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
     }
 
     private fun initializeViews() {
-        binding.useAddressAsIsButton.setOnClickListener {
-            viewModel.onUseAddressAsIsButtonClicked(gatherData())
+        binding.useAddressAsIsButton.onClick {
+            viewModel.onUseAddressAsIsButtonClicked()
         }
-        binding.countrySpinner.setClickListener {
+        binding.countrySpinner.onClick {
             viewModel.onCountrySpinnerTapped()
         }
-        binding.stateSpinner.setClickListener {
+        binding.stateSpinner.onClick {
             viewModel.onStateSpinnerTapped()
         }
-        binding.openMapButton.setOnClickListener {
+        binding.openMapButton.onClick {
             viewModel.onOpenMapTapped()
         }
-        binding.contactCustomerButton.setOnClickListener {
+        binding.contactCustomerButton.onClick {
             viewModel.onContactCustomerTapped()
+        }
+    }
+
+    private fun WCMaterialOutlinedSpinnerView.onClick(onClick: () -> Unit) {
+        this.setClickListener {
+            viewModel.updateAddress(gatherData())
+            onClick()
+        }
+    }
+
+    private fun Button.onClick(onButtonClick: () -> Unit) {
+        setOnClickListener {
+            viewModel.updateAddress(gatherData())
+            onButtonClick()
         }
     }
 
@@ -311,7 +358,7 @@ class EditShippingLabelAddressFragment : BaseFragment(), BackPressListener {
             address1 = binding.address1.text.toString(),
             address2 = binding.address2.text.toString(),
             postcode = binding.zip.text.toString(),
-            state = binding.state.text.toString(),
+            state = binding.stateSpinner.tag as String,
             city = binding.city.text.toString(),
             country = binding.countrySpinner.tag as String,
             email = ""
