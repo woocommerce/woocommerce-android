@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ShippingLabelPackage(
     val selectedPackage: ShippingPackage,
-    val weight: Int,
+    val weight: Double,
     val items: List<Item>
 ) : Parcelable {
     @Parcelize

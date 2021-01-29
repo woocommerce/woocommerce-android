@@ -50,7 +50,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
                 listOf(
                     ShippingLabelPackage(
                         selectedPackage = arguments.availablePackages.first(),
-                        weight = -1,
+                        weight = Double.NaN,
                         items = order.items.map { it.toShippingItem() }
                     )
                 )
@@ -71,6 +71,12 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             }
             viewState = viewState.copy(showSkeletonView = false)
         }
+    }
+
+    fun onWeightEdited(position: Int, weight: Double) {
+        val packages = viewState.shippingLabelPackages.toMutableList()
+        packages[position] = packages[position].copy(weight = weight)
+        viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {

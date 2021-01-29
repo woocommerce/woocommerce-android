@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -17,12 +18,14 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
-    val parameters: SiteParameters
+    val parameters: SiteParameters,
+    val onWeightEdited: (Int, Double) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
+            val diff = DiffUtil.calculateDiff(ShippingLabelPackageDiffCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShippingLabelPackageViewHolder {
@@ -36,6 +39,15 @@ class ShippingLabelPackagesAdapter(
 
     override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int) {
         holder.bind(position)
+    }
+
+    override fun onBindViewHolder(holder: ShippingLabelPackageViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.size == 1 && payloads[0] == ChangePayload.Weight) {
+            // If the only change is weight, avoid updating the view, as it already has the last changes
+            return
+        } else {
+            onBindViewHolder(holder, position)
+        }
     }
 
     inner class ShippingLabelPackageViewHolder(
@@ -53,26 +65,65 @@ class ShippingLabelPackagesAdapter(
                 R.string.shipping_label_package_details_weight_hint,
                 parameters.weightUnit
             )
+            binding.weightEditText.setOnTextChangedListener {
+                onWeightEdited(
+                    adapterPosition,
+                    it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
+                )
+            }
         }
 
         @SuppressLint("SetTextI18n")
         fun bind(position: Int) {
             val context = binding.root.context
-            val packageDetails = shippingLabelPackages[position]
+            val shippingLabelPackage = shippingLabelPackages[position]
             binding.packageName.text = context.getString(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
             )
             binding.packageItemsCount.text = " - ${context.getString(
                 R.string.shipping_label_package_details_items_count,
-                packageDetails.items.count()
+                shippingLabelPackage.items.count()
             )}"
-            (binding.itemsList.adapter as PackageProductsAdapter).items = packageDetails.items
-            binding.selectedPackageSpinner.setText(packageDetails.selectedPackage.title)
-            if (packageDetails.weight != -1) {
-                binding.weightEditText.setText(packageDetails.weight.toString())
+            (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.items
+            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage.title)
+            if (!shippingLabelPackage.weight.isNaN()) {
+                binding.weightEditText.setText(shippingLabelPackage.weight.toString())
             }
         }
+    }
+
+    private class ShippingLabelPackageDiffCallback(
+        private val oldList: List<ShippingLabelPackage>,
+        private val newList: List<ShippingLabelPackage>
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].items == newList[newItemPosition].items
+        }
+
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            return if (oldList[oldItemPosition].items == newList[newItemPosition].items &&
+                oldList[oldItemPosition].selectedPackage == newList[newItemPosition].selectedPackage) {
+                ChangePayload.Weight
+            } else null
+        }
+    }
+
+    // TODO We will the ExpansionState to animate collapsing expanding later
+    enum class ChangePayload {
+        Weight, ExpansionState
     }
 }
 

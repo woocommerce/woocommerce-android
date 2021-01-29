@@ -121,6 +121,7 @@
         android:layout_marginTop="@dimen/major_175"
         android:layout_marginEnd="@dimen/major_100"
         android:hint="@string/shipping_label_package_details_weight_hint"
+        android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selected_package_spinner" />

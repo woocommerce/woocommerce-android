@@ -29,7 +29,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
 
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
-        ShippingLabelPackagesAdapter(viewModel.parameters)
+        ShippingLabelPackagesAdapter(viewModel.parameters, viewModel::onWeightEdited)
     }
 
     private val skeletonView: SkeletonView = SkeletonView()
