@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.lifecycle.LiveData
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ViewMaterialOutlinedCurrencyEdittextBinding
 import com.woocommerce.android.util.CurrencyFormatter
-import kotlinx.android.synthetic.main.view_material_outlined_currency_edittext.view.*
 import java.math.BigDecimal
 
 /**
@@ -32,6 +33,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleRes) {
+    private val binding = ViewMaterialOutlinedCurrencyEdittextBinding.inflate(LayoutInflater.from(context), this)
+
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
@@ -51,33 +54,33 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     val value: LiveData<BigDecimal>
-        get() = currency_edit_text.value
+        get() = binding.currencyEditText.value
 
     fun initView(
         currency: String,
         decimals: Int,
         currencyFormatter: CurrencyFormatter
     ) {
-        currency_edit_text.initView(currency, decimals, currencyFormatter)
+        binding.currencyEditText.initView(currency, decimals, currencyFormatter)
     }
 
-    fun getText() = currency_edit_text.text.toString()
+    fun getText() = binding.currencyEditText.text.toString()
 
     fun setValue(currentValue: BigDecimal) {
-        currency_edit_text.setValue(currentValue)
+        binding.currencyEditText.setValue(currentValue)
     }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
-        currency_edit_text?.isEnabled = enabled
+        binding.currencyEditText.isEnabled = enabled
     }
 
-    fun getCurrencyEditText(): CurrencyEditText = currency_edit_text
+    fun getCurrencyEditText(): CurrencyEditText = binding.currencyEditText
 
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
-        currency_edit_text.onSaveInstanceState()?.let {
+        binding.currencyEditText.onSaveInstanceState()?.let {
             bundle.putParcelable(KEY_SUPER_STATE, WCSavedState(super.onSaveInstanceState(), it))
         }
         return bundle
@@ -91,7 +94,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     private fun restoreViewState(state: WCSavedState): Parcelable {
-        currency_edit_text.onRestoreInstanceState(state.savedState)
+        binding.currencyEditText.onRestoreInstanceState(state.savedState)
         return state.superState
     }
 
