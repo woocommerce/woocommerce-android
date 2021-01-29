@@ -10,9 +10,13 @@ data class ShippingPackage(
     val id: String? = null,
     val title: String,
     val isLetter: Boolean,
-    val isCustom: Boolean,
+    val category: String,
     val dimensions: PackageDimensions
-) : Parcelable
+) : Parcelable {
+    companion object {
+        const val CUSTOM_PACKAGE_CATEGORY = "custom"
+    }
+}
 
 @Parcelize
 data class PackageDimensions(
@@ -31,7 +35,7 @@ fun CustomPackage.toAppModel(): ShippingPackage {
             width = dimensionsParts[0].trim().toDouble(),
             height = dimensionsParts[0].trim().toDouble()
         ),
-        isCustom = true
+        category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY
     )
 }
 
@@ -39,14 +43,14 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
     return predefinedPackages.map {
         val dimensionsParts = it.dimensions.split("x")
         ShippingPackage(
-            title = "$title - ${it.title}",
+            title = it.title,
             isLetter = it.isLetter,
             dimensions = PackageDimensions(
                 length = dimensionsParts[0].trim().toDouble(),
                 width = dimensionsParts[0].trim().toDouble(),
                 height = dimensionsParts[0].trim().toDouble()
             ),
-            isCustom = false
+            category = this.title
         )
     }
 }
