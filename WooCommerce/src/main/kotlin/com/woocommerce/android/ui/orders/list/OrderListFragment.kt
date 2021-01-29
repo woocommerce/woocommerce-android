@@ -721,7 +721,9 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                 appBar.addView(tabLayout)
             }
             appBar.post {
-                appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                if (context != null) {
+                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                }
             }
         }
     }
