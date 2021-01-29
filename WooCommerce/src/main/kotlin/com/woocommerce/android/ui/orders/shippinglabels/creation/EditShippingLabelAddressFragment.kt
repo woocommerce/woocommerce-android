@@ -358,7 +358,7 @@ class EditShippingLabelAddressFragment
             address1 = binding.address1.text.toString(),
             address2 = binding.address2.text.toString(),
             postcode = binding.zip.text.toString(),
-            state = binding.state.text.toString(),
+            state = binding.stateSpinner.tag as String,
             city = binding.city.text.toString(),
             country = binding.countrySpinner.tag as String,
             email = ""
