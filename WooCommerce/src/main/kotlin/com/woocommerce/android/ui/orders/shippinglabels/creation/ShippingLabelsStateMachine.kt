@@ -186,7 +186,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.AddressValidationFailed> {
-                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(AddressValidationError))
+                transitionTo(State.OriginAddressValidationFailure, SideEffect.ShowError(AddressValidationError))
             }
         }
 
@@ -279,6 +279,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditPackagingCanceled> {
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
+
+            on<Event.LoadPackagesFailed> {
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PackagesLoadingError))
+            }
         }
 
         state<State.CustomsDeclaration> {
@@ -352,6 +356,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     sealed class Error {
         object DataLoadingError : Error()
         object AddressValidationError : Error()
+        object PackagesLoadingError : Error()
     }
 
     sealed class State : Parcelable {
@@ -397,6 +402,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object PackageSelectionStarted : Event()
         object EditPackagingRequested : Event()
         object EditPackagingCanceled : Event()
+        object LoadPackagesFailed : Event()
         object PackagesSelected : Event()
 
         object CustomsDeclarationStarted : Event()

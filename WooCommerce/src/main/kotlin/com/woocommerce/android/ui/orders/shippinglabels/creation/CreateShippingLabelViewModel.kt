@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressChangeSuggested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditCanceled
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.LoadPackagesFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
@@ -126,8 +128,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             val availablePackagesResult = shippingLabelRepository.getShippingPackages()
             viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
             if (availablePackagesResult.isError) {
-                triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
-                stateMachine.handleEvent(EditPackagingCanceled)
+                stateMachine.handleEvent(LoadPackagesFailed)
                 return
             }
             availablePackages = availablePackagesResult.model!!
@@ -220,6 +221,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         when (error) {
             DataLoadingError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             AddressValidationError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
+            PackagesLoadingError -> triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
         }
     }
 
