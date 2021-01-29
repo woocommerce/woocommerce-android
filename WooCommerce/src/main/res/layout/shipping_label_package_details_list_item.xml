@@ -26,9 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_50"
         android:textAppearance="@style/TextAppearance.Woo.Body1"
-        app:layout_constraintBottom_toBottomOf="@id/package_name"
+        app:layout_constraintBaseline_toBaselineOf="@id/package_name"
         app:layout_constraintStart_toEndOf="@id/package_name"
-        app:layout_constraintTop_toTopOf="@id/package_name"
         tools:text="- 10 items" />
 
     <androidx.appcompat.widget.AppCompatImageView
