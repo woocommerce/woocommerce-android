@@ -1,3 +1,1 @@
-* [*] Fixed a rare crash when adding a new product category that includes symbols. [https://github.com/woocommerce/woocommerce-android/pull/3415]
-* [*] Fixed a crash in the product images gallery when re-ordering photos by drag and drop. [https://github.com/woocommerce/woocommerce-android/pull/3465]
- 
+This round of WooCommerce mobile app updates is all about fixes. We addressed rare crashes that occurred when adding a new product category, reordering photos, editing text, creating shipping labels, and filtering products. We also updated a timeout limit for server requests and removed the obsolete purchase details card from product details.
