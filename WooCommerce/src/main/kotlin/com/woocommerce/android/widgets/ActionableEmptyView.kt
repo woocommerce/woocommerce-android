@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActionableEmptyViewBinding
 import org.wordpress.android.util.DisplayUtils
@@ -68,7 +69,7 @@ class ActionableEmptyView : LinearLayout {
     }
 
     fun showButton(show: Boolean) {
-        binding.emptyViewButton.visibility = if (show) View.VISIBLE else View.GONE
+        binding.emptyViewButton.isVisible = show
     }
 
     /**

@@ -7,6 +7,23 @@
 -----
 * [*] Fixed a rare crash when adding a new product category that includes symbols. [https://github.com/woocommerce/woocommerce-android/pull/3415]
 * [*] Fixed a crash in the product images gallery when re-ordering photos by drag and drop. [https://github.com/woocommerce/woocommerce-android/pull/3465]
+* [*] Fixed a bug when the search view was incorrectly displayed in product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3410]
+* [**] Updated a timeout limit for server requests, which may resolve some loading issues. [https://github.com/woocommerce/woocommerce-android/pull/3413]
+* [*] Fixed an small issue of a missing placeholder during image uploads. [https://github.com/woocommerce/woocommerce-android/pull/3414]
+* [*] Fixed a crash when reordering images in the image gallery. [https://github.com/woocommerce/woocommerce-android/pull/3417]
+* [*] Fixed a rare crash in the text editor. [https://github.com/woocommerce/woocommerce-android/pull/3419]
+* [*] Fixed an issue when a product description is after switching to HTML mode. [https://github.com/woocommerce/woocommerce-android/pull/3421]
+* [*] Fixed an crash when a shipping label is missing a date. [https://github.com/woocommerce/woocommerce-android/pull/3424]
+* [*] Fixed a small issue when an empty screen is displayed if no products match the filter. [https://github.com/woocommerce/woocommerce-android/pull/3425]
+* [*] Fixed a small issue of the back arrow in the product list screen after tapping the Add product button. [https://github.com/woocommerce/woocommerce-android/pull/3430]
+* [*] Fixed a bug when a discard dialog is displayed even if no tags were changed in the product details. [https://github.com/woocommerce/woocommerce-android/pull/3449]
+* [*] Fixed a rare bug when an blank menu is displayed after tapping on a notification. [https://github.com/woocommerce/woocommerce-android/pull/3451]
+* [*] Removed the obsolete purchase details card from product details. [https://github.com/woocommerce/woocommerce-android/pull/3453]
+* [*] Fixed a rare crash in product filtering. [https://github.com/woocommerce/woocommerce-android/pull/3454]
+* [*] Fixed a rare crash order details. [https://github.com/woocommerce/woocommerce-android/pull/3455]
+* [*] Fixed a minor UI layout issue review detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3461]
+* [*] Possibly fixed a crash in product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3463]
+* [*] Fixed a rare crash caused by invalid server API response. [https://github.com/woocommerce/woocommerce-android/pull/3464]
  
 5.8
 -----

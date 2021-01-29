@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.core.text.HtmlCompat
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
@@ -57,8 +58,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
     private fun checkOrientation() {
-        val isLandscape = DisplayUtils.isLandscape(context)
-        binding.emptyViewImage.visibility = if (isLandscape) View.GONE else View.VISIBLE
+        binding.emptyViewImage.isVisible = !DisplayUtils.isLandscape(context)
     }
 
     fun show(
