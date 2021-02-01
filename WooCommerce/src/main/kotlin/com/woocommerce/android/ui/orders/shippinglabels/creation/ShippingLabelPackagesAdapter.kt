@@ -19,7 +19,8 @@ import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
     val parameters: SiteParameters,
-    val onWeightEdited: (Int, Double) -> Unit
+    val onWeightEdited: (Int, Double) -> Unit,
+    val onPackageSpinnerClicked: (Int) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
@@ -70,6 +71,9 @@ class ShippingLabelPackagesAdapter(
                     adapterPosition,
                     it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
                 )
+            }
+            binding.selectedPackageSpinner.setOnClickListener {
+                onPackageSpinnerClicked(adapterPosition)
             }
         }
 
