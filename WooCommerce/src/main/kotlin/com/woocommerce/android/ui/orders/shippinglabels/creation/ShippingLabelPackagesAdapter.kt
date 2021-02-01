@@ -81,9 +81,10 @@ class ShippingLabelPackagesAdapter(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
             )
-            binding.packageItemsCount.text = " - ${context.getString(
-                R.string.shipping_label_package_details_items_count,
-                shippingLabelPackage.items.count()
+            binding.packageItemsCount.text = " - ${context.resources.getQuantityString(
+                R.plurals.shipping_label_package_details_items_count,
+                shippingLabelPackage.items.size,
+                shippingLabelPackage.items.size
             )}"
             (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.items
             binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage.title)

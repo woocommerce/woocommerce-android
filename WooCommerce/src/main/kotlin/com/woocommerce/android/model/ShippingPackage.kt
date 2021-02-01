@@ -32,8 +32,8 @@ fun CustomPackage.toAppModel(): ShippingPackage {
         isLetter = isLetter,
         dimensions = PackageDimensions(
             length = dimensionsParts[0].trim().toDouble(),
-            width = dimensionsParts[0].trim().toDouble(),
-            height = dimensionsParts[0].trim().toDouble()
+            width = dimensionsParts[1].trim().toDouble(),
+            height = dimensionsParts[2].trim().toDouble()
         ),
         category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY
     )
@@ -47,8 +47,8 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             isLetter = it.isLetter,
             dimensions = PackageDimensions(
                 length = dimensionsParts[0].trim().toDouble(),
-                width = dimensionsParts[0].trim().toDouble(),
-                height = dimensionsParts[0].trim().toDouble()
+                width = dimensionsParts[1].trim().toDouble(),
+                height = dimensionsParts[2].trim().toDouble()
             ),
             category = this.title
         )

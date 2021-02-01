@@ -6,6 +6,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -16,6 +17,7 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.order.toIdSet
 
 class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -25,7 +27,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     private val productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val KEY_PARAMETERS = "ket_parameters"
+        private const val KEY_PARAMETERS = "key_parameters"
     }
 
     private val arguments: EditShippingLabelPackagesFragmentArgs by savedState.navArgs()
@@ -51,7 +53,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
                     ShippingLabelPackage(
                         selectedPackage = arguments.availablePackages.first(),
                         weight = Double.NaN,
-                        items = order.items.map { it.toShippingItem() }
+                        items = order.getShippableItems().map { it.toShippingItem() }
                     )
                 )
             }
@@ -77,6 +79,12 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
         viewState = viewState.copy(shippingLabelPackages = packages)
+    }
+
+    private fun Order.getShippableItems(): List<Order.Item> {
+        val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
+        return refunds.getNonRefundedProducts(items)
+            .filter { !(productDetailRepository.getProduct(it.productId)?.isVirtual ?: false) }
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
