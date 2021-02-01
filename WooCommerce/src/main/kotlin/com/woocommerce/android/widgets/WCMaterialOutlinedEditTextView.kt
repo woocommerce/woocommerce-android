@@ -110,12 +110,6 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         binding.editText.filters += InputFilter.LengthFilter(max)
     }
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
-        binding.editText.isEnabled = enabled
-    }
-
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
         binding.editText.onSaveInstanceState()?.let {
