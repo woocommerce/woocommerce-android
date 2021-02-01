@@ -16,6 +16,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
@@ -84,6 +85,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleResult<Address>(SELECTED_ADDRESS_TO_BE_EDITED) {
             viewModel.onSuggestedAddressEditRequested(it)
         }
+        handleNotice(EditShippingLabelPackagesFragment.EDIT_PACKAGES_CLOSED) {
+            viewModel.onPackagesEditCanceled()
+        }
     }
 
     override fun onDestroyView() {
@@ -111,12 +115,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
                 binding.paymentStep.update(it)
             }
-            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
-                if (isVisible) {
-                    showProgressDialog(
-                        R.string.shipping_label_edit_address_validation_progress_title,
-                        R.string.shipping_label_edit_address_validation_progress_message
-                    )
+            new.progressDialogState.takeIfNotEqualTo(old?.progressDialogState) { state ->
+                if (state.isShown) {
+                    showProgressDialog(state.title, state.message)
                 } else {
                     hideProgressDialog()
                 }
@@ -132,6 +133,15 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.address,
                             event.type,
                             event.validationResult
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowPackageDetails -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
+                            orderId = event.orderIdentifier,
+                            shippingLabelPackages = event.shippingLabelPackages.toTypedArray(),
+                            availablePackages = event.availablePackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }

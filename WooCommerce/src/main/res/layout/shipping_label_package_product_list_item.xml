@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/major_325">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_goneMarginBottom="@dimen/minor_100"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/product_details"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Water bottle" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/product_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/product_name"
+        tools:text="Grey • 0.5lbs" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/move_button"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shipping_label_package_details_move_item"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
