@@ -11,8 +11,8 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
@@ -27,10 +27,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.LoadPackagesFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
@@ -78,7 +78,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowError -> showError(sideEffect.error)
                         is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
                         is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
-                        is SideEffect.ValidateAddress -> handleResult {
+                        is SideEffect.ValidateAddress -> handleResult(
+                            progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
+                            progressDialogMessage = string.shipping_label_edit_address_validation_progress_message
+                        ) {
                             validateAddress(sideEffect.address, sideEffect.type)
                         }
                         is SideEffect.OpenAddressEditor -> triggerEvent(
@@ -114,15 +117,23 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun handleResult(action: suspend () -> Event) {
-        val progressDialogState = ProgressDialogState(
-            isShown = true,
-            title = string.shipping_label_edit_address_validation_progress_title,
-            message = string.shipping_label_edit_address_validation_progress_message
-        )
-        viewState = viewState.copy(progressDialogState = progressDialogState)
+    private suspend fun handleResult(
+        @StringRes progressDialogTitle: Int = 0,
+        @StringRes progressDialogMessage: Int = 0,
+        action: suspend () -> Event
+    ) {
+        if (progressDialogTitle != 0) {
+            val progressDialogState = ProgressDialogState(
+                isShown = true,
+                title = progressDialogTitle,
+                message = progressDialogMessage
+            )
+            viewState = viewState.copy(progressDialogState = progressDialogState)
+        }
         stateMachine.handleEvent(action())
-        viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
+        if (progressDialogTitle != 0) {
+            viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
+        }
     }
 
     private suspend fun loadAndOpenPackagesDetails() {
