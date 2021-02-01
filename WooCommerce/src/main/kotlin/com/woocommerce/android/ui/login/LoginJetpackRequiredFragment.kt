@@ -2,28 +2,24 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
-import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
+import com.woocommerce.android.databinding.FragmentLoginJetpackRequiredBinding
 import org.wordpress.android.login.LoginListener
 
 /**
  * Fragment shown if the user attempts to login with a site that does not have Jetpack installed which
  * is required for the WCAndroid app.
  */
-class LoginJetpackRequiredFragment : Fragment() {
+class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_required) {
     companion object {
         const val TAG = "LoginJetpackRequiredFragment"
         const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
@@ -49,17 +45,13 @@ class LoginJetpackRequiredFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(layout.fragment_login_jetpack_required, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val binding = FragmentLoginJetpackRequiredBinding.bind(view)
+        val btnBinding = binding.epilogueButtonBar!!
+
+        setHasOptionsMenu(true)
 
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -69,9 +61,9 @@ class LoginJetpackRequiredFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        jetpack_required_msg.text = getString(R.string.login_jetpack_required_text, siteAddress.orEmpty())
+        binding.jetpackRequiredMsg.text = getString(R.string.login_jetpack_required_text, siteAddress.orEmpty())
 
-        with(button_primary) {
+        with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_instructions)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
@@ -79,7 +71,7 @@ class LoginJetpackRequiredFragment : Fragment() {
             }
         }
 
-        with(button_secondary) {
+        with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
@@ -89,7 +81,7 @@ class LoginJetpackRequiredFragment : Fragment() {
             }
         }
 
-        btn_secondary_action.setOnClickListener {
+        binding.btnSecondaryAction.setOnClickListener {
             AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
             jetpackLoginListener?.showWhatIsJetpackDialog()
         }

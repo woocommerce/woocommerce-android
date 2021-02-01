@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.text.Html
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -16,14 +14,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentLoginDiscoveryErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_discovery_error.*
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
-class LoginDiscoveryErrorFragment : Fragment() {
+class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error) {
     companion object {
         const val TAG = "LoginDiscoveryErrorFragment"
         const val ARG_SITE_ADDRESS = "SITE-ARG_SITE_ADDRESS"
@@ -80,18 +78,12 @@ class LoginDiscoveryErrorFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(layout.fragment_login_discovery_error, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setHasOptionsMenu(true)
+
+        val binding = FragmentLoginDiscoveryErrorBinding.bind(view)
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
@@ -100,9 +92,9 @@ class LoginDiscoveryErrorFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        errorMessage?.let { discovery_error_message.text = Html.fromHtml(getString(it)) }
+        errorMessage?.let { binding.discoveryErrorMessage.text = Html.fromHtml(getString(it)) }
 
-        with(discovery_wordpress_option_view) {
+        with(binding.discoveryWordpressOptionView) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
@@ -110,7 +102,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
             }
         }
 
-        with(discovery_troubleshoot_option_view) {
+        with(binding.discoveryTroubleshootOptionView) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.HELP_TROUBLESHOOTING_TIPS)
@@ -118,7 +110,7 @@ class LoginDiscoveryErrorFragment : Fragment() {
             }
         }
 
-        with(discovery_try_option_view) {
+        with(binding.discoveryTryOptionView) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
