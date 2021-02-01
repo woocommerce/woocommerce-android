@@ -70,12 +70,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         binding.currencyEditText.setValue(currentValue)
     }
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
-        binding.currencyEditText.isEnabled = enabled
-    }
-
     fun getCurrencyEditText(): CurrencyEditText = binding.currencyEditText
 
     override fun onSaveInstanceState(): Parcelable? {
