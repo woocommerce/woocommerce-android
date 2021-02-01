@@ -72,7 +72,7 @@ class ShippingLabelPackagesAdapter(
                     it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
                 )
             }
-            binding.selectedPackageSpinner.setOnClickListener {
+            binding.selectedPackageSpinner.setClickListener {
                 onPackageSpinnerClicked(adapterPosition)
             }
         }

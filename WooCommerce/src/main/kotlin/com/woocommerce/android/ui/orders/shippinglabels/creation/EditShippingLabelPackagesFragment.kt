@@ -9,10 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -24,12 +25,15 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         const val EDIT_PACKAGES_CLOSED = "edit_address_closed"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
-
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
+
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
-        ShippingLabelPackagesAdapter(viewModel.parameters, viewModel::onWeightEdited)
+        ShippingLabelPackagesAdapter(
+            viewModel.parameters,
+            viewModel::onWeightEdited,
+            viewModel::onPackageSpinnerClicked
+        )
     }
 
     private val skeletonView: SkeletonView = SkeletonView()
@@ -59,6 +63,14 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is OpenPackageSelectorEvent -> {
+                    val action = EditShippingLabelPackagesFragmentDirections
+                        .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
+                            availablePackages = viewModel.availablePackages
+                        )
+
+                    findNavController().navigateSafely(action)
+                }
                 is Exit -> findNavController().navigateUp()
             }
         }

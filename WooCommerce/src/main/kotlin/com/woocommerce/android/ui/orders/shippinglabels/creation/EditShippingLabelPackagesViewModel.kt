@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -38,6 +39,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     val parameters: SiteParameters by lazy {
         parameterRepository.getParameters(KEY_PARAMETERS, savedState)
     }
+
+    val availablePackages
+        get() = arguments.availablePackages
 
     init {
         initState()
@@ -81,6 +85,10 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
+    fun onPackageSpinnerClicked(position: Int) {
+        triggerEvent(OpenPackageSelectorEvent(position))
+    }
+
     private fun Order.getShippableItems(): List<Order.Item> {
         val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
         return refunds.getNonRefundedProducts(items)
@@ -104,6 +112,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
         val showSkeletonView: Boolean = false
     ) : Parcelable
+
+    data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<EditShippingLabelPackagesViewModel>

@@ -25,7 +25,5 @@ abstract class ShippingPackageSelectorModule {
     @Binds
     @IntoMap
     @ViewModelKey(ShippingPackageSelectorViewModel::class)
-    abstract fun bindFactory(
-        factory: ShippingPackageSelectorViewModel.Factory
-    ): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(factory: ShippingPackageSelectorViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 }

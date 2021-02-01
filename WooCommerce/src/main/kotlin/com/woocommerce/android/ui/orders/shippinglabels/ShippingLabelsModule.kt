@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.Edi
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.PrintShippingLabelFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingLabelAddressSuggestionFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingLabelRefundFragmentModule
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingPackageSelectorFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment
@@ -27,7 +28,7 @@ import dagger.android.ContributesAndroidInjector
     EditShippingLabelAddressFragmentModule::class,
     ShippingLabelAddressSuggestionFragmentModule::class,
     EditShippingLabelPackagesFragmentModule::class,
-    ShippingPackageSelectorModule::class
+    ShippingPackageSelectorFragmentModule::class
 ])
 object ShippingLabelsModule {
     @Module
@@ -70,6 +71,6 @@ object ShippingLabelsModule {
     abstract class ShippingPackageSelectorFragmentModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [ShippingPackageSelectorModule::class])
-        abstract fun shippingLabelAddressSuggestionFragment(): ShippingPackageSelectorFragment
+        abstract fun shippingPackageSelectorFragment(): ShippingPackageSelectorFragment
     }
 }
