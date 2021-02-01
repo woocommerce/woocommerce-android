@@ -6,7 +6,6 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.View
 import androidx.annotation.AttrRes
 import androidx.lifecycle.LiveData
 import com.google.android.material.textfield.TextInputLayout
@@ -39,7 +38,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
     init {
-        View.inflate(context, R.layout.view_material_outlined_currency_edittext, this)
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
                     attrs,
@@ -68,12 +66,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
 
     fun setValue(currentValue: BigDecimal) {
         binding.currencyEditText.setValue(currentValue)
-    }
-
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
-        binding.currencyEditText.isEnabled = enabled
     }
 
     fun getCurrencyEditText(): CurrencyEditText = binding.currencyEditText
