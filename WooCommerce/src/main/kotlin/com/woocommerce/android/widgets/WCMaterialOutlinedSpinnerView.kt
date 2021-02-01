@@ -59,12 +59,6 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
 
     fun getText() = binding.spinnerEditText.text.toString()
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
-        binding.spinnerEditText.isEnabled = enabled
-    }
-
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
         binding.spinnerEditText.onSaveInstanceState()?.let {
