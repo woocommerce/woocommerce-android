@@ -31,6 +31,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="major_250">40dp</dimen>
     <dimen name="major_300">48dp</dimen>
     <dimen name="major_325">56dp</dimen>
+    <dimen name="major_350">60dp</dimen>
 
     <!-- Regular text dimensions (body, subtitles, caption, etc -->
     <dimen name="text_minor_60">10sp</dimen>

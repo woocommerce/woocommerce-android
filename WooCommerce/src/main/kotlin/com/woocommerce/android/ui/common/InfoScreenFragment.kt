@@ -1,29 +1,45 @@
 package com.woocommerce.android.ui.common
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
-import androidx.navigation.fragment.navArgs
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentInfoScreenBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import kotlinx.android.synthetic.main.fragment_info_screen.*
 import java.io.Serializable
 
-class InfoScreenFragment : Fragment() {
+class InfoScreenFragment : Fragment(R.layout.fragment_info_screen) {
     private val navArgs: InfoScreenFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_info_screen, container, false)
+
+        val binding = FragmentInfoScreenBinding.bind(view)
+        binding.infoHeading.showTextOrHide(navArgs.heading)
+        binding.infoMessage.showTextOrHide(navArgs.message)
+        binding.infoLink.showTextOrHide(navArgs.linkTitle)
+
+        if (navArgs.imageResource != 0) {
+            binding.infoImage.setImageDrawable(ContextCompat.getDrawable(requireContext(), navArgs.imageResource))
+        }
+
+        navArgs.linkAction?.let { action ->
+            when (action) {
+                is LearnMoreAboutShippingLabels -> binding.infoLink.setOnClickListener {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), action.LINK)
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -37,24 +53,6 @@ class InfoScreenFragment : Fragment() {
             (it as? AppCompatActivity)
                 ?.supportActionBar
                 ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        info_heading.showTextOrHide(navArgs.heading)
-        info_message.showTextOrHide(navArgs.message)
-        info_link.showTextOrHide(navArgs.linkTitle)
-
-        if (navArgs.imageResource != 0) {
-            info_image.setImageDrawable(ContextCompat.getDrawable(requireContext(), navArgs.imageResource))
-        }
-
-        navArgs.linkAction?.let { action ->
-            when (action) {
-                is LearnMoreAboutShippingLabels -> info_link.setOnClickListener {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), action.LINK)
-                }
-            }
         }
     }
 

@@ -79,6 +79,11 @@
             app:destination="@id/itemSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderTrackingProviderListFragment"
@@ -243,10 +248,29 @@
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPackagesFragment"
             app:destination="@id/editShippingLabelPackagesFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/shippingLabelAddressSuggestionFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment"
+        android:label="ShippingLabelAddressSuggestionFragment" >
+        <argument
+            android:name="enteredAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="suggestedAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="addressType"
+            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
     </fragment>
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"

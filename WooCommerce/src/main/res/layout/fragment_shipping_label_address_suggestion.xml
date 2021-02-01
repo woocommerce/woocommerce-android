@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <com.woocommerce.android.widgets.WCElevatedConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/minor_100">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/suggestionBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/warning_background_color"
+            android:animateLayoutChanges="true"
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:focusable="true"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/suggestionBannerIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:contentDescription="@string/shipping_label_edit_address_validation_error"
+                android:src="@drawable/ic_info_outline_24dp"
+                app:layout_constraintBottom_toTopOf="@id/bannerDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/suggestionBannerMessage"
+                app:layout_constraintVertical_bias="0.0"
+                app:tint="@color/warning_foreground_color"
+                tools:visibility="visible" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/suggestionBannerMessage"
+                style="@style/Woo.TextView.Warning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_200"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/shipping_label_address_suggestion_banner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/suggestionBannerIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/bannerDivider"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/bannerDivider"
+                style="@style/Woo.Divider.Warning"
+                android:layout_width="@dimen/minor_00"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/suggestionBanner"
+            android:layout_marginStart="@dimen/major_75"
+            android:layout_marginBottom="@dimen/major_100">
+
+            <RadioButton
+                android:id="@+id/enteredAddressOption"
+                style="@style/Woo.RadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_75"
+                android:paddingStart="@dimen/major_175"
+                android:paddingEnd="@dimen/major_150"
+                android:text="@string/shipping_label_address_suggestion_entered_address" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/enteredAddressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_350"
+                android:lineSpacingExtra="@dimen/minor_50"
+                android:clickable="true"
+                android:focusable="true"
+                tools:text="Carolle bruce 123 Main St\nSan Francisco CA, 78117\nUSA" />
+
+            <View
+                android:id="@+id/divider"
+                style="@style/Woo.Divider"
+                android:layout_marginStart="@dimen/major_350"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintTop_toBottomOf="@id/editText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <RadioButton
+                android:id="@+id/suggestedAddressOption"
+                style="@style/Woo.RadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                android:paddingStart="@dimen/major_175"
+                android:paddingEnd="@dimen/major_150"
+                android:text="@string/shipping_label_address_suggestion_suggested_address" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/suggestedAddressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_350"
+                android:lineSpacingExtra="@dimen/minor_50"
+                android:clickable="true"
+                android:focusable="true"
+                tools:text="Carolle bruce 123 Main St\nSan Francisco CA, 78117\nUSA" />
+
+        </RadioGroup>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/useSuggestedAddressButton"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            app:layout_constraintBottom_toTopOf="@id/editAddressButton"
+            android:text="@string/shipping_label_address_suggestion_use_selected_address" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editAddressButton"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/shipping_label_address_suggestion_edit_selected_address" />
+
+    </com.woocommerce.android.widgets.WCElevatedConstraintLayout>

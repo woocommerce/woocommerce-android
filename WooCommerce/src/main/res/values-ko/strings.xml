@@ -548,7 +548,6 @@ Language: ko_KR
     <string name="orderdetail_empty_shipping_address">주소가 지정되지 않았습니다.</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
-    <string name="enter_email_for_site">%1$s에 연결하려면 워드프레스닷컴에 로그인하세요.</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1063,7 +1062,6 @@ Language: ko_KR
     <string name="alternatively">또는:</string>
     <string name="open_mail">메일 열기</string>
     <string name="next">다음</string>
-    <string name="enter_email_wordpress_com">이메일 주소를 입력하여 워드프레스닷컴에 로그인하고 회원님의 모든 WordPress 사이트를 관리하세요.</string>
     <string name="login_promo_text_jetpack">이동 중에 젯팩 지원 사이트를 관리하세요. 어디에 가든지 워드프레스가 함께합니다.</string>
     <string name="login_promo_text_notifications">어디에서든 알림을 받을 수 있습니다. 댓글 및 좋아요가 표시되면 즉시 확인하세요.</string>
     <string name="login_promo_text_anytime">언제, 어디서든지 즐겨 찾는 사이트의 최신 소식을 확인하고 대화에 참여하세요.</string>
@@ -1105,7 +1103,6 @@ Language: ko_KR
     <string name="add_order_note_menu_item">추가</string>
     <string name="add_order_note_label">고객에게 이메일로 메모 보내기</string>
     <string name="order_error_update_general">주문을 변경하는 중 오류 발생</string>
-    <string name="order_error_fetch_notes_generic">오류 메모를 가져오는 중 오류 발생</string>
     <string name="order_fulfill_marked_complete">주문이 완료로 표시됨</string>
     <string name="order_fulfill_mark_complete">주문을 완료로 표시</string>
     <string name="orderdetail_addnote_contentdesc">주문 메모 추가</string>
@@ -1168,6 +1165,7 @@ Language: ko_KR
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>
+    <string name="enter_email_wordpress_com">워드프레스닷컴 계정 이메일 주소로 로그인하여 우커머스 스토어를 관리하세요.</string>
     <string name="already_logged_in_wpcom">이미 워드프레스닷컴 계정에 로그인되어 있으므로 다른 계정에 연결된 워드프레스닷컴 사이트를 추가할 수 없습니다.</string>
     <string name="cant_open_url">링크를 열 수 없습니다</string>
     <string name="error_no_sms_app">SMS 앱이 없음</string>

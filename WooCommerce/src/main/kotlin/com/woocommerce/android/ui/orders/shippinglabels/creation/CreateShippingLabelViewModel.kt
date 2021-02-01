@@ -11,6 +11,7 @@ import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -25,6 +26,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressInvalid
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.LoadPackagesFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -84,9 +88,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                                 sideEffect.validationResult
                             )
                         )
-                        is SideEffect.ShowAddressSuggestion -> handleResult {
-                            Event.SuggestedAddressSelected(sideEffect.suggested)
-                        }
+                        is SideEffect.ShowAddressSuggestion -> triggerEvent(
+                            ShowSuggestedAddress(
+                                sideEffect.entered,
+                                sideEffect.suggested,
+                                sideEffect.type
+                            )
+                        )
                         is SideEffect.ShowPackageOptions -> loadAndOpenPackagesDetails()
                         is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
                         is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
@@ -245,6 +253,18 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onAddressEditCanceled() {
         stateMachine.handleEvent(AddressEditCanceled)
+    }
+
+    fun onSuggestedAddressDiscarded() {
+        stateMachine.handleEvent(SuggestedAddressDiscarded)
+    }
+
+    fun onSuggestedAddressAccepted(address: Address) {
+        stateMachine.handleEvent(SuggestedAddressAccepted(address))
+    }
+
+    fun onSuggestedAddressEditRequested(address: Address) {
+        stateMachine.handleEvent(EditAddressRequested(address))
     }
 
     fun onPackagesEditCanceled() {

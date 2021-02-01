@@ -1,15 +1,14 @@
 package com.woocommerce.android.ui.refunds
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import kotlinx.android.synthetic.main.fragment_refund_detail.*
+import com.woocommerce.android.databinding.FragmentRefundDetailBinding
+import com.woocommerce.android.databinding.RefundByItemsProductsBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -18,20 +17,20 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.refund_by_items_products.*
 import javax.inject.Inject
 
-class RefundDetailFragment : BaseFragment() {
+class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var imageMap: ProductImageMap
 
     private val viewModel: RefundDetailViewModel by viewModels { viewModelFactory }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreate(savedInstanceState)
-        return inflater.inflate(R.layout.fragment_refund_detail, container, false)
-    }
+    private var _binding: FragmentRefundDetailBinding? = null
+    private val binding get() = _binding!!
+
+    private var _productsBinding: RefundByItemsProductsBinding? = null
+    private val productsBinding get() = _productsBinding!!
 
     override fun onResume() {
         super.onResume()
@@ -41,13 +40,22 @@ class RefundDetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentRefundDetailBinding.bind(view)
+        _productsBinding = binding.issueRefundProductsList
+
         initializeViews()
         setupObservers(viewModel)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _productsBinding = null
+    }
+
     private fun initializeViews() {
-        issueRefund_products.layoutManager = LinearLayoutManager(context)
-        issueRefund_products.setHasFixedSize(true)
+        productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
+        productsBinding.issueRefundProducts.setHasFixedSize(true)
     }
 
     private fun setupObservers(viewModel: RefundDetailViewModel) {
@@ -56,20 +64,20 @@ class RefundDetailFragment : BaseFragment() {
                 activity?.title = new.screenTitle
             }
             new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {
-                refundDetail_refundAmount.text = new.refundAmount
-                issueRefund_productsTotal.text = new.refundAmount
+                binding.refundDetailRefundAmount.text = new.refundAmount
+                productsBinding.issueRefundProductsTotal.text = new.refundAmount
             }
             new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
-                issueRefund_subtotal.text = new.subtotal
+                productsBinding.issueRefundSubtotal.text = new.subtotal
             }
             new.taxes?.takeIfNotEqualTo(old?.taxes) {
-                issueRefund_taxesTotal.text = new.taxes
+                productsBinding.issueRefundTaxesTotal.text = new.taxes
             }
             new.refundMethod?.takeIfNotEqualTo(old?.refundMethod) {
-                refundDetail_refundMethod.text = new.refundMethod
+                binding.refundDetailRefundMethod.text = new.refundMethod
             }
             new.currency?.takeIfNotEqualTo(old?.currency) {
-                issueRefund_products.adapter = RefundProductListAdapter(
+                productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                         currencyFormatter.buildBigDecimalFormatter(new.currency),
                         imageMap,
                         isProductDetailList = true,
@@ -80,33 +88,33 @@ class RefundDetailFragment : BaseFragment() {
             }
             new.areItemsVisible?.takeIfNotEqualTo(old?.areItemsVisible) { isVisible ->
                 if (isVisible) {
-                    refundDetail_refundItems.show()
+                    binding.refundDetailRefundItems.show()
                 } else {
-                    refundDetail_refundItems.hide()
+                    binding.refundDetailRefundItems.hide()
                 }
             }
             new.areDetailsVisible?.takeIfNotEqualTo(old?.areDetailsVisible) { isVisible ->
                 if (isVisible) {
-                    refundDetail_detailsCard.show()
-                    refundDetail_reasonCard.show()
-                    issueRefund_totalsGroup.show()
+                    binding.refundDetailDetailsCard.show()
+                    binding.refundDetailReasonCard.show()
+                    productsBinding.issueRefundTotalsGroup.show()
                 } else {
-                    refundDetail_detailsCard.hide()
-                    refundDetail_reasonCard.hide()
-                    issueRefund_totalsGroup.hide()
+                    binding.refundDetailDetailsCard.hide()
+                    binding.refundDetailReasonCard.hide()
+                    productsBinding.issueRefundTotalsGroup.hide()
                 }
             }
 
             if (new.refundReason.isNullOrEmpty()) {
-                refundDetail_reasonCard.hide()
+                binding.refundDetailReasonCard.hide()
             } else {
-                refundDetail_reasonCard.show()
-                refundDetail_refundReason.text = new.refundReason
+                binding.refundDetailReasonCard.show()
+                binding.refundDetailRefundReason.text = new.refundReason
             }
         }
 
         viewModel.refundItems.observe(viewLifecycleOwner, Observer { list ->
-            val adapter = issueRefund_products.adapter as RefundProductListAdapter
+            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
             adapter.update(list)
         })
     }

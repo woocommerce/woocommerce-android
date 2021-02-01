@@ -148,7 +148,7 @@ class LoginNoJetpackFragment : Fragment() {
                     .into(image_avatar)
         }
 
-        with(no_stores_view) {
+        with(no_stores_view_text) {
             visibility = View.VISIBLE
             text = getString(R.string.login_no_jetpack, siteAddress)
         }

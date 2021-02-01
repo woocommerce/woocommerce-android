@@ -1,7 +1,0 @@
-5.7:
-- Rimuovi le immagini dalle varianti del prodotto.
-- L'app può aprire il client di posta elettronica su Android 11 durante il processo di accesso tramite link.
-- Correzioni di bug: visualizzazione dei prodotti variabili quando vengono acquistate le etichette di spedizione; rispetto delle selezioni effettuate in una finestra di dialogo.
-- Visualizzazione delle tariffe nei dettagli di pagamento dell'ordine.
-- Accessi senza password supportati.
-- Miglioramenti minori alle schermate di accesso.
