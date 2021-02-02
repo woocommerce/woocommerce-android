@@ -98,7 +98,7 @@ class ShippingLabelPackagesAdapter(
                 shippingLabelPackage.items.size
             )}"
             (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.items
-            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage.title)
+            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setText(shippingLabelPackage.weight.toString())
             }

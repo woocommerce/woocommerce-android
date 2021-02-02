@@ -58,7 +58,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
                 val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
                 listOf(
                     ShippingLabelPackage(
-                        selectedPackage = arguments.availablePackages.first(),
+                        selectedPackage = null,
                         weight = Double.NaN,
                         items = order.getShippableItems().map { it.toShippingItem() }
                     )
@@ -130,7 +130,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         val showSkeletonView: Boolean = false
     ) : Parcelable {
         val isDataValid: Boolean
-            get() = shippingLabelPackages.all { !it.weight.isNaN() && it.weight > 0.0 }
+            get() = shippingLabelPackages.all {
+                !it.weight.isNaN() && it.weight > 0.0 && it.selectedPackage != null
+            }
     }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
