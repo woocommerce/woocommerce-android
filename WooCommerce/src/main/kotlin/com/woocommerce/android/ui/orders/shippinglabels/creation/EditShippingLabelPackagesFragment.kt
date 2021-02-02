@@ -13,12 +13,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
@@ -26,7 +28,8 @@ import javax.inject.Inject
 class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_shipping_label_packages),
     BackPressListener {
     companion object {
-        const val EDIT_PACKAGES_CLOSED = "edit_address_closed"
+        const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
+        const val EDIT_PACKAGES_RESULT = "edit_packages_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -57,6 +60,18 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.isDataValid ?: false
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.onDoneButtonClicked()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,7 +119,8 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
 
                     findNavController().navigateSafely(action)
                 }
-                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
                 else -> event.isHandled = false
             }
         }
@@ -119,7 +135,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
+        viewModel.onBackButtonClicked()
         return false
     }
 }

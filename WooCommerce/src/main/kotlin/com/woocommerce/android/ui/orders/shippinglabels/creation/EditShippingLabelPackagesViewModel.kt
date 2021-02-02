@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -94,6 +96,14 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(selectedPackage = selectedPackage)
         viewState = viewState.copy(shippingLabelPackages = packages)
+    }
+
+    fun onDoneButtonClicked() {
+        triggerEvent(ExitWithResult(viewState.shippingLabelPackages))
+    }
+
+    fun onBackButtonClicked() {
+        triggerEvent(Exit)
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {
