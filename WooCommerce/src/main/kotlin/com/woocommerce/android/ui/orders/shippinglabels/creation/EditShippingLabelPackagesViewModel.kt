@@ -118,7 +118,10 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     data class ViewState(
         val shippingLabelPackages: List<ShippingLabelPackage> = emptyList(),
         val showSkeletonView: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        val isDataValid: Boolean
+            get() = shippingLabelPackages.all { !it.weight.isNaN() && it.weight > 0.0 }
+    }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 

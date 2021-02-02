@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -29,6 +32,8 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     @Inject lateinit var viewModelFactory: ViewModelFactory
     val viewModel: EditShippingLabelPackagesViewModel by viewModels { viewModelFactory }
 
+    private lateinit var doneMenuItem: MenuItem
+
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
             viewModel.parameters,
@@ -40,6 +45,19 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
     private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.isDataValid ?: false
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,6 +85,12 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
 
             new.showSkeletonView.takeIfNotEqualTo(old?.showSkeletonView) {
                 showSkeleton(it, binding)
+            }
+
+            new.isDataValid.takeIfNotEqualTo(old?.isDataValid) {
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = it
+                }
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->

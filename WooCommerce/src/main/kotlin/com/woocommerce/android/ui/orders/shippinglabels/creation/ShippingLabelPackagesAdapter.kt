@@ -67,11 +67,18 @@ class ShippingLabelPackagesAdapter(
                 parameters.weightUnit
             )
             binding.weightEditText.setOnTextChangedListener {
-                onWeightEdited(
-                    adapterPosition,
-                    it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
-                )
+                val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
+                onWeightEdited(adapterPosition, weight)
+
+                if (weight <= 0.0) {
+                    val context = binding.root.context
+                    binding.weightEditText.error =
+                        context.getString(R.string.shipping_label_package_details_weight_error)
+                } else {
+                    binding.weightEditText.error = null
+                }
             }
+
             binding.selectedPackageSpinner.setClickListener {
                 onPackageSpinnerClicked(adapterPosition)
             }

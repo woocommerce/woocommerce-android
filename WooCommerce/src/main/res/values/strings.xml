@@ -1509,4 +1509,5 @@
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_package_selector_title">Selected Package</string>
+    <string name="shipping_label_package_details_weight_error">Invalid weight</string>
 </resources>
