@@ -98,6 +98,15 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
             val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
             mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            mnuEditAttr.isVisible = false
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
+            menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty()
         }
     }
 
@@ -155,11 +164,13 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 } else {
                     WooAnimUtils.fadeOut(binding.emptyView)
                 }
+                requireActivity().invalidateOptionsMenu()
             }
         }
 
         viewModel.variationList.observe(viewLifecycleOwner, Observer {
             showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
+            requireActivity().invalidateOptionsMenu()
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->

@@ -104,6 +104,8 @@ class VariationListViewModel @AssistedInject constructor(
         }
     }
 
+    fun isEmpty() = _variationList.value?.isEmpty() ?: true
+
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
