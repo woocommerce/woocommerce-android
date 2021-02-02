@@ -287,7 +287,7 @@ class ProductPricingFragment
             DateUtils().formatToYYYYmmDD(spinnerEditText.getText())
         else
             DateUtils().formatToYYYYmmDD(Date().formatToMMMddYYYY())
-        val (year, month, day) = dateString.split("-")
+        val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
                 requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
         )
