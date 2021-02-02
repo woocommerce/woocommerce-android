@@ -32,7 +32,7 @@ class OrderDetailProductListAdapter(
         val productId = ProductHelper.productOrVariationId(item.productId, item.variationId)
         val imageSize = holder.view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(productId), imageSize, imageSize)
-        holder.view.initView(orderItems[position], productImage, false, formatCurrencyForDisplay)
+        holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay)
         holder.view.setOnClickListener {
             productItemListener.openOrderProductDetail(productId)
         }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
@@ -23,7 +22,6 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     fun initView(
         item: Order.Item,
         productImage: String?,
-        expanded: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
         binding.productInfoName.text = item.name
@@ -31,24 +29,15 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         val orderTotal = formatCurrencyForDisplay(item.total)
         binding.productInfoTotal.text = orderTotal
 
-        // Modify views for expanded or collapsed mode
-        binding.productInfoTotalTax.isVisible = expanded
-        binding.productInfoLblTax.isVisible = expanded
-
-        val maxLinesInName = if (expanded) Int.MAX_VALUE else 2
-        binding.productInfoName.maxLines = maxLinesInName
-
         val productPrice = formatCurrencyForDisplay(item.price)
         val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
-
         binding.productInfoAttributes.text = context.getString(
             R.string.orderdetail_product_lineitem_attributes,
             attributes, item.quantity.toString(), productPrice
         )
 
-        if (expanded) {
-            binding.productInfoTotalTax.text = formatCurrencyForDisplay(item.totalTax)
-        }
+        val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
+        binding.productInfoSKU.text = productSku
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
