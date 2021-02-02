@@ -32,10 +32,7 @@ import kotlinx.coroutines.launch
 class AttributeListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val variationListRepository: VariationListRepository,
-    private val productRepository: ProductDetailRepository,
-    private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
+    private val attributeListRepository: AttributeListRepository,
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
@@ -49,6 +46,7 @@ class AttributeListViewModel @AssistedInject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState,
         ViewState()
     )
+
     private var viewState by viewStateLiveData
 
     private var loadingJob: Job? = null
@@ -113,7 +111,7 @@ class AttributeListViewModel @AssistedInject constructor(
 
     fun isEmpty() = _variationList.value?.isEmpty() ?: true
 
-    private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
+    private suspend fun fetchAttributes(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationListRepository.fetchProductVariations(remoteProductId, loadMore)
             if (fetchedVariations.isNullOrEmpty()) {
@@ -128,39 +126,16 @@ class AttributeListViewModel @AssistedInject constructor(
         }
         viewState = viewState.copy(
                 isSkeletonShown = false,
-                isRefreshing = false,
-                isLoadingMore = false
+                isRefreshing = false
         )
-    }
-
-    private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
-        val currencyCode = variationListRepository.getCurrencyCode()
-        variations.map { variation ->
-            if (variation.isSaleInEffect) {
-                variation.priceWithCurrency = currencyCode?.let {
-                    currencyFormatter.formatCurrency(variation.salePrice!!, it)
-                } ?: variation.salePrice!!.toString()
-            } else if (variation.regularPrice.isSet()) {
-                variation.priceWithCurrency = currencyCode?.let {
-                    currencyFormatter.formatCurrency(variation.regularPrice!!, it)
-                } ?: variation.regularPrice!!.toString()
-            }
-        }
-        return variations
     }
 
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isLoadingMore: Boolean? = null,
-        val canLoadMore: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null,
-        val isWarningVisible: Boolean? = null,
-        val parentProduct: Product? = null
+        val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
-
-    data class ShowVariationDetail(val variation: ProductVariation) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AttributeListViewModel>
