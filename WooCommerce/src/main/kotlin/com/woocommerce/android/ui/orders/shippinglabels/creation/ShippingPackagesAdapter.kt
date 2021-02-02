@@ -89,4 +89,3 @@ class ShippingPackagesAdapter(
         data class Package(val data: ShippingPackage) : ListItem()
     }
 }
-
