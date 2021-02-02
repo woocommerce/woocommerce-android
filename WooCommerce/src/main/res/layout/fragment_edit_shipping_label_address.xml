@@ -260,10 +260,10 @@
             android:layout_marginBottom="@dimen/major_100"
             android:textAppearance="@style/TextAppearance.Woo.Caption"
             android:hint="@string/shipping_label_edit_address_country"
-            android:nextFocusForward="@+id/use_address_as_is_button" />
+            android:nextFocusForward="@+id/useAddressAsIsButton" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/use_address_as_is_button"
+            android:id="@+id/useAddressAsIsButton"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

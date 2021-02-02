@@ -144,9 +144,11 @@ class MainActivity : AppUpgradeActivity(),
             if (!isFullScreenFragment && !isDialogDestination) {
                 // re-expand the AppBar when returning to top level fragment, collapse it when entering a child fragment
                 if (f is TopLevelFragment) {
-                    // We need to post this to the view handler to make sure isScrolledToTop returns the correct value
+                    // We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value
                     f.view?.post {
-                        expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+                        if (f.view != null) {
+                            expandToolbar(expand = f.shouldExpandToolbar(), animate = false)
+                        }
                     }
                 } else {
                     expandToolbar(expand = false, animate = false)
@@ -187,8 +189,7 @@ class MainActivity : AppUpgradeActivity(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // we have to use findViewById rather than view binding for the toolbar since it's an included layout
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = binding.toolbar.toolbar
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
@@ -371,12 +372,15 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    /***
+    /**
      * Get the actual primary navigation Fragment from the support manager
      */
     private fun getHostChildFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.primaryNavigationFragment
-        return navHostFragment?.childFragmentManager?.fragments?.get(0)
+        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
+            return navHostFragment.childFragmentManager.fragments[0]
+        }
+        return null
     }
 
     /**
@@ -496,7 +500,7 @@ class MainActivity : AppUpgradeActivity(),
      */
     private fun isAtTopLevelNavigation(isAtRoot: Boolean, destination: NavDestination): Boolean {
         val activeChild = getHostChildFragment()
-        val activeChildIsRoot = activeChild != null && activeChild is RootFragment
+        val activeChildIsRoot = activeChild != null && activeChild is TopLevelFragment
         return (isDialogDestination(destination) && activeChildIsRoot) || isAtRoot
     }
 

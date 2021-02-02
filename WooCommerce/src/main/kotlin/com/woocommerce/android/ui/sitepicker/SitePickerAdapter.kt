@@ -3,16 +3,13 @@ package com.woocommerce.android.ui.sitepicker
 import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.SitePickerItemBinding
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.SiteViewHolder
 import com.woocommerce.android.util.StringUtils
-import kotlinx.android.synthetic.main.site_picker_item.view.*
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(private val context: Context, private val listener: OnSiteClickListener) :
@@ -49,25 +46,18 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
-        return SiteViewHolder(LayoutInflater.from(context).inflate(R.layout.site_picker_item, parent, false))
+        return SiteViewHolder(
+            SitePickerItemBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: SiteViewHolder, position: Int) {
         val site = siteList[position]
-        holder.radio.isVisible = siteList.size > 1
-        holder.radio.isChecked = site.siteId == selectedSiteId
-        holder.txtSiteName.text = if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
-        holder.txtSiteDomain.text = StringUtils.getSiteDomainAndPath(site)
-        if (itemCount > 1) {
-            holder.itemView.setOnClickListener {
-                if (selectedSiteId != site.siteId) {
-                    listener.onSiteClick(site.siteId)
-                    selectedSiteId = site.siteId
-                }
-            }
-        } else {
-            holder.itemView.setOnClickListener(null)
-        }
+        holder.bind(site)
     }
 
     /**
@@ -99,13 +89,27 @@ class SitePickerAdapter(private val context: Context, private val listener: OnSi
         return false
     }
 
-    class SiteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val radio: RadioButton = view.radio
-        val txtSiteName: TextView = view.text_site_name
-        val txtSiteDomain: TextView = view.text_site_domain
-
+    inner class SiteViewHolder(val viewBinding: SitePickerItemBinding) : RecyclerView.ViewHolder(viewBinding.root) {
         init {
-            radio.isClickable = false
+            viewBinding.radio.isClickable = false
+        }
+
+        fun bind(site: SiteModel) {
+            viewBinding.radio.isVisible = siteList.size > 1
+            viewBinding.radio.isChecked = site.siteId == selectedSiteId
+            viewBinding.textSiteName.text =
+                if (!TextUtils.isEmpty(site.name)) site.name else context.getString(R.string.untitled)
+            viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(site)
+            if (itemCount > 1) {
+                viewBinding.root.setOnClickListener {
+                    if (selectedSiteId != site.siteId) {
+                        listener.onSiteClick(site.siteId)
+                        selectedSiteId = site.siteId
+                    }
+                }
+            } else {
+                viewBinding.root.setOnClickListener(null)
+            }
         }
     }
 }

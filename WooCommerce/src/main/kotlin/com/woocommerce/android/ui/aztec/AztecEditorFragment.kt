@@ -2,22 +2,20 @@ package com.woocommerce.android.ui.aztec
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
+import com.woocommerce.android.databinding.FragmentAztecEditorBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import kotlinx.android.synthetic.main.fragment_aztec_editor.*
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
@@ -26,7 +24,10 @@ import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
-class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPressListener, IHistoryListener {
+class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
+    IAztecToolbarClickListener,
+    BackPressListener,
+    IHistoryListener {
     companion object {
         const val TAG: String = "AztecEditorFragment"
         const val AZTEC_EDITOR_RESULT = "aztec_editor_result"
@@ -46,30 +47,25 @@ class AztecEditorFragment : BaseFragment(), IAztecToolbarClickListener, BackPres
     private var shouldShowDiscardDialog = true
     private var isHtmlEditorEnabled: Boolean = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_aztec_editor, container, false)
-    }
-
     override fun getFragmentTitle() = navArgs.aztecTitle
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
         (activity as? MainActivity)?.hideBottomNav()
 
+        val binding = FragmentAztecEditorBinding.bind(view)
+
         if (navArgs.aztecCaption.isNullOrBlank()) {
-            aztecCaption.visibility = View.GONE
+            binding.aztecCaption.visibility = View.GONE
         } else {
-            aztecCaption.visibility = View.VISIBLE
-            aztecCaption.text = navArgs.aztecCaption
+            binding.aztecCaption.visibility = View.VISIBLE
+            binding.aztecCaption.text = navArgs.aztecCaption
         }
 
-        aztec = Aztec.with(visualEditor, sourceEditor, aztecToolbar, this)
-                .setImageGetter(GlideImageLoader(requireContext()))
+        aztec = Aztec.with(binding.visualEditor, binding.sourceEditor, binding.aztecToolbar, this)
+            .setImageGetter(GlideImageLoader(requireContext()))
 
         aztec.initSourceEditorHistory()
 

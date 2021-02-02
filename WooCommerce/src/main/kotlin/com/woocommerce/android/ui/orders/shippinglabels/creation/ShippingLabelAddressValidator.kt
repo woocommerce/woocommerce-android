@@ -36,7 +36,7 @@ class ShippingLabelAddressValidator @Inject constructor(
                 is InvalidAddress -> ValidationResult.Invalid((result.model as InvalidAddress).message)
                 is WCAddressVerificationResult.Valid -> {
                     val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
-                    if (suggestion != address) {
+                    if (suggestion.toString() != address.toString()) {
                         ValidationResult.SuggestedChanges(suggestion)
                     } else {
                         ValidationResult.Valid

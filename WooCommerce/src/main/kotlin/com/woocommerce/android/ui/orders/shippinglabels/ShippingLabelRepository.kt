@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,8 @@ class ShippingLabelRepository @Inject constructor(
         shippingLabelId: Long
     ): ShippingLabel? {
         return shippingLabelStore.getShippingLabelById(
-            selectedSite.get(), orderId, shippingLabelId)
+            selectedSite.get(), orderId, shippingLabelId
+        )
             ?.toAppModel()
     }
 
@@ -41,6 +43,23 @@ class ShippingLabelRepository @Inject constructor(
                 paperSize = paperSize,
                 remoteShippingLabelId = shippingLabelId
             )
+        }
+    }
+
+    suspend fun getShippingPackages(): WooResult<List<ShippingPackage>> {
+        return shippingLabelStore.getPackageTypes(selectedSite.get()).let { result ->
+            if (result.isError) return@let WooResult(error = result.error)
+
+            val packagesResult = result.model!!
+            val list = mutableListOf<ShippingPackage>()
+            packagesResult.customPackages.map {
+                list.add(it.toAppModel())
+            }
+            packagesResult.predefinedOptions.forEach { option ->
+                list.addAll(option.toAppModel())
+            }
+
+            WooResult(list)
         }
     }
 }

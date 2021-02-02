@@ -16,8 +16,14 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.CARRIER
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.CUSTOMS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
@@ -32,11 +38,6 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shipping_label) {
-    companion object {
-        const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
-        const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
-    }
-
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -75,6 +76,18 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleNotice(EDIT_ADDRESS_CLOSED) {
             viewModel.onAddressEditCanceled()
         }
+        handleNotice(SUGGESTED_ADDRESS_DISCARDED) {
+            viewModel.onSuggestedAddressDiscarded()
+        }
+        handleResult<Address>(SELECTED_ADDRESS_ACCEPTED) {
+            viewModel.onSuggestedAddressAccepted(it)
+        }
+        handleResult<Address>(SELECTED_ADDRESS_TO_BE_EDITED) {
+            viewModel.onSuggestedAddressEditRequested(it)
+        }
+        handleNotice(EditShippingLabelPackagesFragment.EDIT_PACKAGES_CLOSED) {
+            viewModel.onPackagesEditCanceled()
+        }
     }
 
     override fun onDestroyView() {
@@ -102,12 +115,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             new.paymentStep?.takeIfNotEqualTo(old?.paymentStep) {
                 binding.paymentStep.update(it)
             }
-            new.isProgressDialogVisible?.takeIfNotEqualTo(old?.isProgressDialogVisible) { isVisible ->
-                if (isVisible) {
-                    showProgressDialog(
-                        R.string.shipping_label_edit_address_validation_progress_title,
-                        R.string.shipping_label_edit_address_validation_progress_message
-                    )
+            new.progressDialogState.takeIfNotEqualTo(old?.progressDialogState) { state ->
+                if (state.isShown) {
+                    showProgressDialog(state.title, state.message)
                 } else {
                     hideProgressDialog()
                 }
@@ -126,7 +136,24 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
-                is ShowSuggestedAddress -> {}
+                is ShowPackageDetails -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
+                            orderId = event.orderIdentifier,
+                            shippingLabelPackages = event.shippingLabelPackages.toTypedArray(),
+                            availablePackages = event.availablePackages.toTypedArray()
+                        )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowSuggestedAddress -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToShippingLabelAddressSuggestionFragment(
+                            event.originalAddress,
+                            event.suggestedAddress,
+                            event.type
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 else -> event.isHandled = false
             }
         })

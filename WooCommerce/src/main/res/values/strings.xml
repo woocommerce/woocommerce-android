@@ -371,6 +371,7 @@
     <string name="shipping_label_edit_address_use_address_as_is">Use address as entered</string>
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
     <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Loading address data</string>
     <string name="shipping_label_edit_address_validation_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
     <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
@@ -381,7 +382,26 @@
     <string name="shipping_label_validation_error_template">Validation failed: %s</string>
     <string name="shipping_label_validation_contact_customer">Contact Customer</string>
     <string name="shipping_label_validation_view_map">Open Map</string>
-
+    <string name="shipping_label_address_suggestion_use_selected_address">Use selected address</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Edit selected address</string>
+    <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
+    <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
+    <string name="shipping_label_package_details_items_section_title">Items to fulfill</string>
+    <string name="shipping_label_package_details_move_item">Move</string>
+    <string name="shipping_label_package_details_section_title">Package details</string>
+    <string name="shipping_label_package_details_selected_package_hint">Package selected</string>
+    <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
+    <string name="shipping_label_package_details_weight_info">Includes package weight</string>
+    <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
+    <string name="shipping_label_package_details_items_count">"%1$d items"</string>
+    <plurals name="shipping_label_package_details_items_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="shipping_label_package_details_title_template">Package %1$d</string>
+    <string name="shipping_label_packages_loading_title">Loading Packages!</string>
+    <string name="shipping_label_packages_loading_message">Please wait…</string>
     <!--
         Refunds
     -->
@@ -882,11 +902,9 @@
     <string name="logviewer_error_copy_to_clipboard">Error copying to clipboard</string>
     <string name="logviewer_share_error">Unable to share log</string>
     <string name="about_appname">WooCommerce for Android</string>
-    <string name="about_publisher">Publisher: Automattic, Inc</string>
     <string name="about_tos">Terms of Service</string>
-    <string name="about_url_text" translatable="false">automattic.com</string>
     <string name="about_version">Version %s</string>
-    <string name="about_copyright" translatable="false">© %1$d Automattic, Inc</string>
+    <string name="about_copyright" translatable="false">© %1$d WooCommerce, Inc and WooCommerce Ireland Ltd</string>
     <!--
         Login Library Imported Strings
     -->

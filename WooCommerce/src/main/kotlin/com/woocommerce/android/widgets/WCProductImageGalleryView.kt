@@ -13,7 +13,6 @@ import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
-import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,11 +25,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
+import com.woocommerce.android.databinding.ImageGalleryItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
-import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.util.Date
@@ -119,7 +117,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
         setRecyclerListener { holder ->
-            glideRequests.clear((holder as ImageViewHolder).productImageView)
+            glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
         }
 
         // create a reusable Glide request for all images
@@ -146,11 +144,11 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                 if (isGridView) {
                     GridItemDecoration(
                             spanCount = NUM_COLUMNS,
-                            spacing = resources.getDimensionPixelSize(dimen.margin_extra_large)
+                            spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
                     )
                 } else {
                     HorizontalItemDecoration(
-                            spacing = resources.getDimensionPixelSize(dimen.minor_100)
+                            spacing = resources.getDimensionPixelSize(R.dimen.minor_100)
                     )
                 }
         )
@@ -346,44 +344,17 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val holder = ImageViewHolder(
-                    layoutInflater.inflate(R.layout.image_gallery_item, parent, false),
-                    isDragging
+                ImageGalleryItemBinding.inflate(layoutInflater, parent, false),
+                isDragging
             )
-
-            when (viewType) {
-                VIEW_TYPE_PLACEHOLDER -> {
-                    holder.productImageView.visibility = View.VISIBLE
-                    holder.productImageView.alpha = 0.5F
-                    holder.uploadProgress.visibility = View.VISIBLE
-                    holder.addImageContainer.visibility = View.GONE
-                }
-                VIEW_TYPE_ADD_IMAGE -> {
-                    holder.productImageView.visibility = View.GONE
-                    holder.uploadProgress.visibility = View.GONE
-                    holder.addImageContainer.visibility = View.VISIBLE
-                }
-                else -> {
-                    holder.productImageView.visibility = View.VISIBLE
-                    holder.productImageView.alpha = 1.0F
-                    holder.uploadProgress.visibility = View.GONE
-                    holder.addImageContainer.visibility = View.GONE
-                }
-            }
 
             return holder
         }
 
         override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
             val image = getImage(position)
-            val src = image.source
             val viewType = getItemViewType(position)
-            if (viewType == VIEW_TYPE_PLACEHOLDER) {
-                glideRequest.load(Uri.parse(src)).apply(glideTransform).into(holder.productImageView)
-            } else if (viewType == VIEW_TYPE_IMAGE) {
-                val photonUrl = PhotonUtils.getPhotonImageUrl(src, 0, imageSize)
-                glideRequest.load(photonUrl).apply(glideTransform).into(holder.productImageView)
-                holder.bind(image)
-            }
+            holder.bind(image, viewType)
         }
 
         override fun onViewDetachedFromWindow(holder: ImageViewHolder) {
@@ -392,13 +363,18 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     }
 
     private inner class ImageViewHolder(
-        private val view: View,
+        val viewBinding: ImageGalleryItemBinding,
         private val isDraggingEnabled: LiveData<Boolean>
-    ) : RecyclerView.ViewHolder(view) {
-        val productImageView: BorderedImageView = view.productImage
-        val uploadProgress: ProgressBar = view.uploadProgess
-        val addImageContainer: ViewGroup = view.addImageContainer
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+        init {
+            viewBinding.productImage.layoutParams.height = imageSize
+            viewBinding.productImage.layoutParams.width = if (isGridView) imageSize else WRAP_CONTENT
 
+            viewBinding.addImageContainer.layoutParams.height = imageSize
+            viewBinding.addImageContainer.layoutParams.width = imageSize
+
+            setMargins()
+        }
         @SuppressLint("ClickableViewAccessibility")
         private val dragOnTouchListener = OnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN && draggableItemTouchHelper.isAttached) {
@@ -415,18 +391,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         private val onDraggingEnabledChanged: (Boolean) -> Unit = { enabled ->
             itemView.setOnClickListener(if (enabled) null else onClickListener)
-            view.deleteImageButton.isVisible = enabled
+            viewBinding.deleteImageButton.isVisible = enabled
             itemView.setOnTouchListener(if (enabled) dragOnTouchListener else null)
-        }
-
-        init {
-            productImageView.layoutParams.height = imageSize
-            productImageView.layoutParams.width = if (isGridView) imageSize else WRAP_CONTENT
-
-            addImageContainer.layoutParams.height = imageSize
-            addImageContainer.layoutParams.width = imageSize
-
-            setMargins()
         }
 
         fun onViewAttached() {
@@ -437,16 +403,43 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             isDraggingEnabled.removeObserver(onDraggingEnabledChanged)
         }
 
-        fun bind(image: Product.Image) {
-            view.deleteImageButton.setOnClickListener {
+        fun bind(image: Product.Image, viewType: Int) {
+            if (viewType == VIEW_TYPE_PLACEHOLDER) {
+                glideRequest.load(Uri.parse(image.source)).apply(glideTransform).into(viewBinding.productImage)
+            } else if (viewType == VIEW_TYPE_IMAGE) {
+                val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
+                glideRequest.load(photonUrl).apply(glideTransform).into(viewBinding.productImage)
+            }
+
+            when (viewType) {
+                VIEW_TYPE_PLACEHOLDER -> {
+                    viewBinding.productImage.visibility = View.VISIBLE
+                    viewBinding.productImage.alpha = 0.5F
+                    viewBinding.uploadProgess.visibility = View.VISIBLE
+                    viewBinding.addImageContainer.visibility = View.GONE
+                }
+                VIEW_TYPE_ADD_IMAGE -> {
+                    viewBinding.productImage.visibility = View.GONE
+                    viewBinding.uploadProgess.visibility = View.GONE
+                    viewBinding.addImageContainer.visibility = View.VISIBLE
+                }
+                else -> {
+                    viewBinding.productImage.visibility = View.VISIBLE
+                    viewBinding.productImage.alpha = 1.0F
+                    viewBinding.uploadProgess.visibility = View.GONE
+                    viewBinding.addImageContainer.visibility = View.GONE
+                }
+            }
+
+            viewBinding.deleteImageButton.setOnClickListener {
                 listener.onGalleryImageDeleteIconClicked(image)
             }
         }
 
         private fun setMargins() {
-            (productImageView.layoutParams as FrameLayout.LayoutParams).apply {
+            (viewBinding.productImage.layoutParams as FrameLayout.LayoutParams).apply {
                 val margin = if (isGridView) {
-                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(dimen.margin_medium)
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
                     additionalMarginToFitDeleteIcon
                 } else {
                     0

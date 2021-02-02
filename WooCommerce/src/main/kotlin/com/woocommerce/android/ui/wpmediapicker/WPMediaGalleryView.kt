@@ -8,9 +8,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -19,14 +17,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.WpmediaGalleryItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.widgets.BorderedImageView
 import com.woocommerce.android.widgets.WCSavedState
-import kotlinx.android.synthetic.main.wpmedia_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
 import java.util.ArrayList
@@ -81,7 +78,7 @@ class WPMediaGalleryView @JvmOverloads constructor(
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
         setRecyclerListener { holder ->
-            glideRequests.clear((holder as WPMediaViewHolder).imageView)
+            glideRequests.clear((holder as WPMediaViewHolder).viewBinding.imageView)
         }
 
         // create a reusable Glide request for all images
@@ -151,33 +148,17 @@ class WPMediaGalleryView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WPMediaViewHolder {
             return WPMediaViewHolder(
-                layoutInflater.inflate(R.layout.wpmedia_gallery_item, parent, false)
+                WpmediaGalleryItemBinding.inflate(
+                    layoutInflater, parent,
+                    false
+                )
             )
         }
 
         override fun onBindViewHolder(holder: WPMediaViewHolder, position: Int) {
             val image = getImage(position)
-            val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
-            glideRequest.load(photonUrl).apply(glideTransform).into(holder.imageView)
-
-            holder.textSelectionCount.isVisible = isMultiSelectionAllowed
-            if (isMultiSelectionAllowed) {
-                val isSelected = isItemSelected(image.id)
-                holder.textSelectionCount.isSelected = isSelected
-                if (isSelected) {
-                    val count = selectedIds.indexOf(image.id) + 1
-                    holder.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
-                } else {
-                    holder.textSelectionCount.text = null
-                }
-            }
-
-            // make sure the thumbnail scale reflects its selection state
-            val scale: Float = if (isSelected) SCALE_SELECTED else SCALE_NORMAL
-            if (holder.imageView.scaleX != scale) {
-                holder.imageView.scaleX = scale
-                holder.imageView.scaleY = scale
-            }
+            val isSelected = isMultiSelectionAllowed && isItemSelected(image.id)
+            holder.bind(image, isSelected)
 
             if (position == itemCount - 1) {
                 listener.onRequestLoadMore()
@@ -247,29 +228,29 @@ class WPMediaGalleryView @JvmOverloads constructor(
             if (isMultiSelectionAllowed) {
                 // show and animate the count or check mark
                 if (selected) {
-                    holder.textSelectionCount.text = String.format(
+                    holder.viewBinding.textSelectionCount.text = String.format(
                         Locale.getDefault(),
                         "%d",
                         selectedIds.indexOf(imageId) + 1
                     )
                 } else {
-                    holder.textSelectionCount.text = null
+                    holder.viewBinding.textSelectionCount.text = null
                 }
-                WooAnimUtils.pop(holder.textSelectionCount)
-                holder.textSelectionCount.isVisible = selected
+                WooAnimUtils.pop(holder.viewBinding.textSelectionCount)
+                holder.viewBinding.textSelectionCount.isVisible = selected
             }
 
             // scale the thumbnail based on whether it's selected
             if (selected) {
                 WooAnimUtils.scale(
-                        holder.imageView,
+                        holder.viewBinding.imageView,
                         SCALE_NORMAL,
                         SCALE_SELECTED,
                         Duration.SHORT
                 )
             } else {
                 WooAnimUtils.scale(
-                        holder.imageView,
+                        holder.viewBinding.imageView,
                         SCALE_SELECTED,
                         SCALE_NORMAL,
                         Duration.SHORT
@@ -325,13 +306,11 @@ class WPMediaGalleryView @JvmOverloads constructor(
         super.dispatchThawSelfOnly(container)
     }
 
-    private inner class WPMediaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: BorderedImageView = view.imageView
-        val textSelectionCount: TextView = view.textSelectionCount
-
+    inner class WPMediaViewHolder(val viewBinding: WpmediaGalleryItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
         init {
-            imageView.layoutParams.height = imageSize
-            imageView.layoutParams.width = imageSize
+            viewBinding.imageView.layoutParams.height = imageSize
+            viewBinding.imageView.layoutParams.width = imageSize
 
             itemView.setOnClickListener {
                 if (adapterPosition > NO_POSITION) {
@@ -344,6 +323,29 @@ class WPMediaGalleryView @JvmOverloads constructor(
                     onImageLongClicked(adapterPosition)
                 }
                 true
+            }
+        }
+
+        fun bind(image: Product.Image, isSelected: Boolean) {
+            val photonUrl = PhotonUtils.getPhotonImageUrl(image.source, 0, imageSize)
+            glideRequest.load(photonUrl).apply(glideTransform).into(viewBinding.imageView)
+
+            viewBinding.textSelectionCount.isVisible = isMultiSelectionAllowed
+            if (isMultiSelectionAllowed) {
+                viewBinding.textSelectionCount.isSelected = isSelected
+                if (isSelected) {
+                    val count = selectedIds.indexOf(image.id) + 1
+                    viewBinding.textSelectionCount.text = String.format(Locale.getDefault(), "%d", count)
+                } else {
+                    viewBinding.textSelectionCount.text = null
+                }
+            }
+
+            // make sure the thumbnail scale reflects its selection state
+            val scale: Float = if (isSelected) SCALE_SELECTED else SCALE_NORMAL
+            if (viewBinding.imageView.scaleX != scale) {
+                viewBinding.imageView.scaleX = scale
+                viewBinding.imageView.scaleY = scale
             }
         }
     }

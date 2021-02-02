@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -23,19 +21,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_no_jetpack.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
-import kotlinx.android.synthetic.main.view_login_no_stores.*
-import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
-class LoginNoJetpackFragment : Fragment() {
+class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     companion object {
         const val TAG = "LoginNoJetpackFragment"
         private const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
@@ -104,20 +99,18 @@ class LoginNoJetpackFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(layout.fragment_login_no_jetpack, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        text_displayname.text = mInputUsername
-        with(text_username) {
+        setHasOptionsMenu(true)
+
+        val binding = FragmentLoginNoJetpackBinding.bind(view)
+        val btnBinding = binding.loginEpilogueButtonBar
+        val noStoresBinding = binding.loginNoStores
+        val userInfoBinding = binding.loginUserInfo
+
+        userInfoBinding.textDisplayname.text = mInputUsername
+        with(userInfoBinding.textUsername) {
             val logOutText = getString(R.string.signout)
             val usernameText = getString(R.string.login_no_jetpack_username, mInputUsername, logOutText)
             text = usernameText
@@ -145,15 +138,15 @@ class LoginNoJetpackFragment : Fragment() {
                     .load(it)
                     .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
                     .circleCrop()
-                    .into(image_avatar)
+                    .into(userInfoBinding.imageAvatar)
         }
 
-        with(no_stores_view) {
+        with(noStoresBinding.noStoresViewText) {
             visibility = View.VISIBLE
             text = getString(R.string.login_no_jetpack, siteAddress)
         }
 
-        with(button_primary) {
+        with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_setup_instructions)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
@@ -161,7 +154,7 @@ class LoginNoJetpackFragment : Fragment() {
             }
         }
 
-        with(button_secondary) {
+        with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.try_again)
             setOnClickListener {
@@ -177,7 +170,7 @@ class LoginNoJetpackFragment : Fragment() {
             }
         }
 
-        with(button_help) {
+        with(binding.buttonHelp) {
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_NO_JETPACK_MENU_HELP_TAPPED)
                 loginListener?.helpSiteAddress(siteAddress)

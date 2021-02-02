@@ -15,6 +15,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -32,7 +33,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_login.*
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
@@ -74,13 +74,16 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
 
     private var loginMode: LoginMode? = null
 
+    private lateinit var binding: ActivityLoginBinding
+
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
@@ -575,7 +578,7 @@ class LoginActivity : AppCompatActivity(), LoginListener, GoogleListener, Prolog
     }
 
     override fun onGoogleSignupError(msg: String?) {
-        Snackbar.make(main_view, msg ?: "", BaseTransientBottomBar.LENGTH_LONG).show()
+        Snackbar.make(binding.mainView, msg ?: "", BaseTransientBottomBar.LENGTH_LONG).show()
     }
 
     //  -- END: GoogleListener implementation methods

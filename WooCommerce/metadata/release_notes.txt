@@ -1,3 +1,1 @@
-Products: You can now add and edit downloadable files, manage linked products, and delete products.
-
-Bug fixes: We resolved an issue that sometimes affected the moderation buttons in product reviews.
+This round of WooCommerce mobile app updates is all about fixes. We addressed rare crashes that occurred when adding a new product category, reordering photos, editing text, creating shipping labels, and filtering products. We also updated a timeout limit for server requests and removed the obsolete purchase details card from product details.

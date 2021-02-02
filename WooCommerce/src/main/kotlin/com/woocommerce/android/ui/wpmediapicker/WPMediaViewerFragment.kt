@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.wpmediapicker
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -13,22 +11,33 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentWpmediaViewerBinding
 import com.woocommerce.android.di.GlideApp
-import kotlinx.android.synthetic.main.fragment_wpmedia_viewer.*
 
 /**
  * Fullscreen single image viewer
  */
-class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<Drawable> {
+class WPMediaViewerFragment : androidx.fragment.app.Fragment(R.layout.fragment_wpmedia_viewer),
+    RequestListener<Drawable> {
     private val navArgs: WPMediaViewerFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_wpmedia_viewer, container, false)
+    private var _binding: FragmentWpmediaViewerBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding = FragmentWpmediaViewerBinding.bind(view)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        iconBack.setOnClickListener {
+        binding.iconBack.setOnClickListener {
             findNavController().navigateUp()
         }
         loadImage()
@@ -40,11 +49,11 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
     }
 
     private fun loadImage() {
-        progressBar.isVisible = true
+        binding.progressBar.isVisible = true
         GlideApp.with(this)
                 .load(navArgs.imageUrl)
                 .listener(this)
-                .into(photoView)
+                .into(binding.photoView)
     }
 
     /**
@@ -56,7 +65,7 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
         target: com.bumptech.glide.request.target.Target<Drawable>?,
         isFirstResource: Boolean
     ): Boolean {
-        progressBar.isVisible = false
+        binding.progressBar.isVisible = false
         return false
     }
 
@@ -70,7 +79,7 @@ class WPMediaViewerFragment : androidx.fragment.app.Fragment(), RequestListener<
         dataSource: DataSource?,
         isFirstResource: Boolean
     ): Boolean {
-        progressBar.isVisible = false
+        binding.progressBar.isVisible = false
         return false
     }
 }

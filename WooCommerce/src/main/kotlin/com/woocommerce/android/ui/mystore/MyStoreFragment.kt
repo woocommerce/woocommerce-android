@@ -435,7 +435,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             ?.let { appBar ->
                 appBar.addView(tabLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
                 appBar.post {
-                    appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                    if (context != null) {
+                        appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
+                    }
                 }
             }
     }

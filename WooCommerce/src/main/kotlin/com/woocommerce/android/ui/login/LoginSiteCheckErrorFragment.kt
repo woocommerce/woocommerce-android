@@ -2,25 +2,22 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentLoginSiteCheckErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_site_check_error.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
-class LoginSiteCheckErrorFragment : Fragment() {
+class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_error) {
     companion object {
         const val TAG = "LoginGenericErrorFragment"
         const val ARG_SITE_ADDRESS = "SITE-ADDRESS"
@@ -50,14 +47,14 @@ class LoginSiteCheckErrorFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        activity?.title = getString(R.string.log_in)
-        return inflater.inflate(R.layout.fragment_login_site_check_error, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setHasOptionsMenu(true)
+        activity?.title = getString(R.string.log_in)
+
+        val binding = FragmentLoginSiteCheckErrorBinding.bind(view)
+        val btnBinding = binding.loginEpilogueButtonBar!!
 
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -67,9 +64,9 @@ class LoginSiteCheckErrorFragment : Fragment() {
             it.setDisplayShowTitleEnabled(true)
         }
 
-        login_error_msg.text = errorMsg
+        binding.loginErrorMsg.text = errorMsg
 
-        with(button_primary) {
+        with(btnBinding.buttonPrimary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
@@ -79,7 +76,7 @@ class LoginSiteCheckErrorFragment : Fragment() {
             }
         }
 
-        with(button_secondary) {
+        with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
