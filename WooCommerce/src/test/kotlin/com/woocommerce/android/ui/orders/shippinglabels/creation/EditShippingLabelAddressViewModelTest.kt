@@ -279,9 +279,6 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Shows the errors for the missing required values`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(addressValidator.validateAddress(any(), any()))
-            .thenReturn(ValidationResult.Invalid("Street is invalid"))
-
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
