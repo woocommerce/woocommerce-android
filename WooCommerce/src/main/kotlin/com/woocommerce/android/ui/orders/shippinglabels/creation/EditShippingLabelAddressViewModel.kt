@@ -154,7 +154,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            nameError = getErrorOrClear(address.firstName + address.lastName),
+            nameError = getErrorOrClear(address.firstName + address.lastName + address.company),
             addressError = getErrorOrClear(address.address1),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
