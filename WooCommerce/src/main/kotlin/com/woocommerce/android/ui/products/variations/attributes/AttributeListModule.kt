@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListViewModel.Factory
-import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
@@ -24,7 +23,7 @@ abstract class AttributeListModule {
     }
     @Binds
     @IntoMap
-    @ViewModelKey(VariationListViewModel::class)
+    @ViewModelKey(AttributeListViewModel::class)
     abstract fun bindFactory(factory: Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds

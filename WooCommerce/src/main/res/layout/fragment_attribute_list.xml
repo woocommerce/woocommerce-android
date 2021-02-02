@@ -6,7 +6,7 @@
     android:id="@+id/variationListRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.products.variations.VariationListFragment">
+    tools:context="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
