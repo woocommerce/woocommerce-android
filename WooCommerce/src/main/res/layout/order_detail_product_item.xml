@@ -33,6 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
+        android:maxLines="2"
         app:layout_constrainedWidth="true"
         app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_total"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
@@ -60,28 +61,12 @@
         tools:text="Red, Medium • $15.00 x 2" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_lblTax"
+        android:id="@+id/productInfo_SKU"
         style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/orderdetail_product_lineitem_tax"
+        android:text="@string/orderdetail_product_lineitem_sku_value"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
-        tools:text="Tax:"
-        tools:visibility="visible" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_totalTax"
-        style="@style/Woo.ListItem.Body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/minor_50"
-        android:layout_marginEnd="@dimen/minor_50"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_lblTax"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
-        tools:text="$0.75"
         tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
