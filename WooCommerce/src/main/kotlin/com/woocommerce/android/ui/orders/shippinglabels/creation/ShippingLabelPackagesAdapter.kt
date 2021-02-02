@@ -92,7 +92,7 @@ class ShippingLabelPackagesAdapter(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
             )
-            binding.packageItemsCount.text = " - ${context.resources.getQuantityString(
+            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
                 shippingLabelPackage.items.size,
                 shippingLabelPackage.items.size
