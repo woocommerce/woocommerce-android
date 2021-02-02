@@ -9,7 +9,10 @@ import com.woocommerce.android.databinding.ShippingPackageListHeaderBinding
 import com.woocommerce.android.databinding.ShippingPackageListItemBinding
 import com.woocommerce.android.model.ShippingPackage
 
-class ShippingPackagesAdapter(private val lengthUnit: String) : RecyclerView.Adapter<ViewHolder>() {
+class ShippingPackagesAdapter(
+    private val lengthUnit: String,
+    private val onPackageSelected: (ShippingPackage) -> Unit
+) : RecyclerView.Adapter<ViewHolder>() {
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_PACKAGE = 1
@@ -61,12 +64,17 @@ class ShippingPackagesAdapter(private val lengthUnit: String) : RecyclerView.Ada
         }
     }
 
-    private inner class PackageViewHolder(private val binding: ShippingPackageListItemBinding) : ViewHolder(binding.root) {
+    private inner class PackageViewHolder(
+        private val binding: ShippingPackageListItemBinding
+    ) : ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(shippingPackage: ShippingPackage) {
             binding.title.text = shippingPackage.title
             val dimensions = shippingPackage.dimensions
             binding.dimensions.text = "${dimensions.length} x ${dimensions.width} x ${dimensions.height} $lengthUnit"
+            binding.root.setOnClickListener {
+                onPackageSelected(shippingPackage)
+            }
         }
     }
 

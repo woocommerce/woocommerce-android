@@ -6,6 +6,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -87,6 +88,12 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     fun onPackageSpinnerClicked(position: Int) {
         triggerEvent(OpenPackageSelectorEvent(position))
+    }
+
+    fun onPackageSelected(position: Int, selectedPackage: ShippingPackage) {
+        val packages = viewState.shippingLabelPackages.toMutableList()
+        packages[position] = packages[position].copy(selectedPackage = selectedPackage)
+        viewState = viewState.copy(shippingLabelPackages = packages)
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {

@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -49,6 +50,13 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
         }
 
         setupObservers(binding)
+        setupResultHandlers()
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<ShippingPackageSelectorResult>(ShippingPackageSelectorFragment.SELECTED_PACKAGE_RESULT) { result ->
+            viewModel.onPackageSelected(result.position, result.selectedPackage)
+        }
     }
 
     private fun setupObservers(binding: FragmentEditShippingLabelPackagesBinding) {
@@ -66,12 +74,14 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
                 is OpenPackageSelectorEvent -> {
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
+                            position = event.position,
                             availablePackages = viewModel.availablePackages
                         )
 
                     findNavController().navigateSafely(action)
                 }
                 is Exit -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
         }
     }
