@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewVariationAttributes
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,6 +64,9 @@ class VariationNavigator @Inject constructor() {
                     target.shippingData
                 )
                 fragment.findNavController().navigateSafely(action)
+            }
+            is ViewVariationAttributes -> {
+                // TODO
             }
         }
     }
