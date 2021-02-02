@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -17,6 +18,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -74,8 +76,10 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             viewState = viewState.copy(showSkeletonView = true)
             order.items.forEach {
                 if (productDetailRepository.getProduct(it.productId) == null) {
-                    // Ignore any errors, we will hide the weight if we can't fetch the product
-                    productDetailRepository.fetchProduct(it.productId)
+                    if (productDetailRepository.fetchProduct(it.productId) == null) {
+                        triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
+                        triggerEvent(Exit)
+                    }
                 }
             }
             viewState = viewState.copy(showSkeletonView = false)
@@ -109,13 +113,13 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     private fun Order.getShippableItems(): List<Order.Item> {
         val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
         return refunds.getNonRefundedProducts(items)
-            .filter { !(productDetailRepository.getProduct(it.productId)?.isVirtual ?: false) }
+            .filter { !productDetailRepository.getProduct(it.productId)!!.isVirtual }
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
-        val weight = productDetailRepository.getProduct(productId)?.weight?.let {
+        val weight = productDetailRepository.getProduct(productId)!!.weight.let {
             "$it ${parameters.weightUnit}"
-        } ?: ""
+        }
         return ShippingLabelPackage.Item(
             productId = productId,
             name = name,
