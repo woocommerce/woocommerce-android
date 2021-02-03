@@ -403,6 +403,8 @@
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
     <string name="shipping_label_packages_loading_message">Please wait…</string>
+    <string name="shipping_label_package_selector_title">Selected Package</string>
+    <string name="shipping_label_package_details_weight_error">Invalid weight</string>
     <!--
         Refunds
     -->
@@ -1509,4 +1511,5 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
+    <string name="shipping_label_package_details_fetch_products_error">Can\'t fetch products</string>
 </resources>
