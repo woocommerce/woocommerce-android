@@ -86,7 +86,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
                         is SideEffect.ValidateAddress -> handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
-                            progressDialogMessage = string.shipping_label_edit_address_validation_progress_message
+                            progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
                             validateAddress(sideEffect.address, sideEffect.type)
                         }

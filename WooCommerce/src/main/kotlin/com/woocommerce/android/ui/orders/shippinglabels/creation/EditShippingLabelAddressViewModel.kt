@@ -134,6 +134,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 viewState = viewState.copy(
                     nameError = R.string.shipping_label_error_required_field
                 )
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
             }
         }
     }
@@ -177,6 +178,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         viewState.address?.let { address ->
             if (areRequiredFieldsValid(address)) {
                 triggerEvent(ExitWithResult(address))
+            } else {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
             }
         }
     }
