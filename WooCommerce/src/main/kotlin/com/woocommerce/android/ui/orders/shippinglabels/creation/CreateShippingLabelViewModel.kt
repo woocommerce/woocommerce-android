@@ -44,6 +44,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -55,7 +56,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val stateMachine: ShippingLabelsStateMachine,
     private val addressValidator: ShippingLabelAddressValidator,
     private val site: SelectedSite,
-    private val wooStore: WooCommerceStore
+    private val wooStore: WooCommerceStore,
+    private val accountStore: AccountStore
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = "state"
@@ -256,9 +258,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
         return Address(
-                company = "",
-                firstName = "",
-                lastName = "",
+                company = site.get().name,
+                firstName = accountStore.account.firstName,
+                lastName = accountStore.account.lastName,
                 phone = "",
                 email = "",
                 country = siteSettings?.countryCode ?: "",

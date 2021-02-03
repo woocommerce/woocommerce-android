@@ -31,6 +31,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -45,6 +46,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val addressValidator: ShippingLabelAddressValidator = mock()
     private val site: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
+    private val accountStore: AccountStore = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -135,7 +137,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 stateMachine,
                 addressValidator,
                 site,
-                wooStore
+                wooStore,
+                accountStore
             )
         )
 
