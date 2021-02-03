@@ -97,8 +97,9 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun loadCountriesAndStates() {
         launch {
             if (countries.isEmpty()) {
-                viewState = viewState.copy(isValidationProgressDialogVisible = true)
+                viewState = viewState.copy(isLoadingProgressDialogVisible = true)
                 dataStore.fetchCountriesAndStates(site.get())
+                viewState = viewState.copy(isLoadingProgressDialogVisible = false)
             }
             viewState = viewState.copy(
                 isValidationProgressDialogVisible = false,
