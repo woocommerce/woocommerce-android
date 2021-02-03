@@ -36,18 +36,16 @@ class ShippingLabelAddressValidator @Inject constructor(
             return if (result.isError) {
                 // TODO: Add analytics
                 ValidationResult.Error(result.error.type)
-            } else {
-                when (result.model) {
-                    null -> ValidationResult.Error(GENERIC_ERROR)
-                    is InvalidRequest -> ValidationResult.NotFound((result.model as InvalidRequest).message)
-                    is InvalidAddress -> ValidationResult.Invalid((result.model as InvalidAddress).message)
-                    is WCAddressVerificationResult.Valid -> {
-                        val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
-                        if (suggestion.toString() != address.toString()) {
-                            ValidationResult.SuggestedChanges(suggestion)
-                        } else {
-                            ValidationResult.Valid
-                        }
+            } else when (result.model) {
+                null -> ValidationResult.Error(GENERIC_ERROR)
+                is InvalidRequest -> ValidationResult.NotFound((result.model as InvalidRequest).message)
+                is InvalidAddress -> ValidationResult.Invalid((result.model as InvalidAddress).message)
+                is WCAddressVerificationResult.Valid -> {
+                    val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
+                    if (suggestion.toString() != address.toString()) {
+                        ValidationResult.SuggestedChanges(suggestion)
+                    } else {
+                        ValidationResult.Valid
                     }
                 }
             }
