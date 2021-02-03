@@ -276,7 +276,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         return when (val result = addressValidator.validateAddress(address, type)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
-            is ValidationResult.NotFound, is ValidationResult.Invalid -> AddressInvalid(address, result)
+            is ValidationResult.NotFound,
+            is ValidationResult.Invalid,
+            is ValidationResult.NameMissing -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }
