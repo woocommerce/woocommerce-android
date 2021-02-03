@@ -16,7 +16,7 @@ Language: es
     <string name="shipping_label_error_address_not_found">No se encuentra la dirección</string>
     <string name="shipping_label_edit_address_error_warning">No hemos podido verificar automáticamente la dirección de envío. Puedes verlo en Google Maps o puedes contactar con el cliente para asegurarte de que la dirección es correcta.</string>
     <string name="shipping_label_edit_address_validation_error">Error al validar la dirección</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Por favor, espera…</string>
+    <string name="shipping_label_edit_address_progress_message">Por favor, espera…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Validación de la dirección en curso</string>
     <string name="shipping_label_edit_data_loading_error">No se han podido cargar los datos de la dirección</string>
     <string name="shipping_label_edit_address_use_address_as_is">Usar la dirección especificada</string>
