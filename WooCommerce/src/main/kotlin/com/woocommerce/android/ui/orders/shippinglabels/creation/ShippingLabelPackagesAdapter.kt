@@ -19,7 +19,8 @@ import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
     val parameters: SiteParameters,
-    val onWeightEdited: (Int, Double) -> Unit
+    val onWeightEdited: (Int, Double) -> Unit,
+    val onPackageSpinnerClicked: (Int) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var shippingLabelPackages: List<ShippingLabelPackage> = emptyList()
         set(value) {
@@ -66,10 +67,20 @@ class ShippingLabelPackagesAdapter(
                 parameters.weightUnit
             )
             binding.weightEditText.setOnTextChangedListener {
-                onWeightEdited(
-                    adapterPosition,
-                    it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
-                )
+                val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
+                onWeightEdited(adapterPosition, weight)
+
+                if (weight <= 0.0) {
+                    val context = binding.root.context
+                    binding.weightEditText.error =
+                        context.getString(R.string.shipping_label_package_details_weight_error)
+                } else {
+                    binding.weightEditText.error = null
+                }
+            }
+
+            binding.selectedPackageSpinner.setClickListener {
+                onPackageSpinnerClicked(adapterPosition)
             }
         }
 
@@ -81,13 +92,13 @@ class ShippingLabelPackagesAdapter(
                 R.string.shipping_label_package_details_title_template,
                 position + 1
             )
-            binding.packageItemsCount.text = " - ${context.resources.getQuantityString(
+            binding.packageItemsCount.text = "- ${context.resources.getQuantityString(
                 R.plurals.shipping_label_package_details_items_count,
                 shippingLabelPackage.items.size,
                 shippingLabelPackage.items.size
             )}"
             (binding.itemsList.adapter as PackageProductsAdapter).items = shippingLabelPackage.items
-            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage.title)
+            binding.selectedPackageSpinner.setText(shippingLabelPackage.selectedPackage?.title ?: "")
             if (!shippingLabelPackage.weight.isNaN()) {
                 binding.weightEditText.setText(shippingLabelPackage.weight.toString())
             }

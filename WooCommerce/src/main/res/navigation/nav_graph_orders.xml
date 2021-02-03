@@ -261,7 +261,7 @@
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment"
-        android:label="ShippingLabelAddressSuggestionFragment" >
+        android:label="ShippingLabelAddressSuggestionFragment">
         <argument
             android:name="enteredAddress"
             app:argType="com.woocommerce.android.model.Address" />
@@ -309,6 +309,25 @@
         <argument
             android:name="shippingLabelPackages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
+        <argument
+            android:name="availablePackages"
+            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
+        <action
+            android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingPackageSelectorFragment"
+            app:destination="@id/shippingPackageSelectorFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/shippingPackageSelectorFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment"
+        android:label="ShippingPackageSelectorFragment"
+        tools:layout="@layout/fragment_shipping_packages_selector">
+        <argument
+            android:name="position"
+            app:argType="integer" />
         <argument
             android:name="availablePackages"
             app:argType="com.woocommerce.android.model.ShippingPackage[]" />
