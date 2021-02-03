@@ -3,10 +3,8 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +15,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -26,9 +23,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListAdapter
 import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
-import com.woocommerce.android.ui.products.variations.VariationListFragmentDirections
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -91,14 +85,14 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
             layoutManager.onRestoreInstanceState(it)
         }
 
-        binding.variationList.layoutManager = layoutManager
-        binding.variationList.itemAnimator = null
-        binding.variationList.addItemDecoration(AlignedDividerDecoration(
+        binding.attributeList.layoutManager = layoutManager
+        binding.attributeList.itemAnimator = null
+        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
-        binding.variationListRefreshLayout.apply {
-            scrollUpChild = binding.variationList
+        binding.attributeListRefreshLayout.apply {
+            scrollUpChild = binding.attributeList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
                 viewModel.refreshVariations(navArgs.remoteProductId)
@@ -115,53 +109,38 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.variationListRefreshLayout.isRefreshing = it
-            }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
-                binding.loadMoreProgress.isVisible = it
+                binding.attributeListRefreshLayout.isRefreshing = it
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 // TODO ?
             }
         }
 
-        viewModel.variationList.observe(viewLifecycleOwner, Observer {
+        viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowVariationDetail -> openVariationDetail(event.variation)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
         })
     }
 
-    private fun openVariationDetail(variation: ProductVariation) {
-        val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(
-            variation
-        )
-        findNavController().navigateSafely(action)
-    }
-
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
-
-    override fun onRequestLoadMore() {
-        viewModel.onLoadMoreRequested(navArgs.remoteProductId)
-    }
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(binding.variationList, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(binding.attributeList, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
     }
 
-    private fun showVariations(variations: List<ProductVariation>, parentProduct: Product?) {
+    private fun showAttributes(attributes: List<ProductVariation>, parentProduct: Product?) {
         val adapter: VariationListAdapter
-        if (binding.variationList.adapter == null) {
+        if (binding.attributeList.adapter == null) {
             adapter = VariationListAdapter(
                 requireContext(),
                 GlideApp.with(this),
@@ -169,9 +148,9 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
                 parentProduct,
                 viewModel::onItemClick
             )
-            binding.variationList.adapter = adapter
+            binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.variationList.adapter as VariationListAdapter
+            adapter = binding.attributeList.adapter as VariationListAdapter
         }
 
         adapter.setVariationList(variations)
