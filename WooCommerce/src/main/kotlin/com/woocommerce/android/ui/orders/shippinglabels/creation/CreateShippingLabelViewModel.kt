@@ -9,6 +9,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
@@ -45,6 +46,8 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModel @AssistedInject constructor(
@@ -53,7 +56,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
-    private val addressValidator: ShippingLabelAddressValidator
+    private val addressValidator: ShippingLabelAddressValidator,
+    private val site: SelectedSite,
+    private val wooStore: WooCommerceStore,
+    private val accountStore: AccountStore
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = "state"
@@ -248,14 +254,33 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun loadData(orderId: String): Event {
         val order = requireNotNull(orderDetailRepository.getOrder(orderId))
-        return Event.DataLoaded(order.billingAddress, order.shippingAddress)
+        return Event.DataLoaded(getStoreAddress(), order.shippingAddress)
+    }
+
+    private fun getStoreAddress(): Address {
+        val siteSettings = wooStore.getSiteSettings(site.get())
+        return Address(
+                company = site.get().name,
+                firstName = accountStore.account.firstName,
+                lastName = accountStore.account.lastName,
+                phone = "",
+                email = "",
+                country = siteSettings?.countryCode ?: "",
+                state = siteSettings?.stateCode ?: "",
+                address1 = siteSettings?.address ?: "",
+                address2 = siteSettings?.address2 ?: "",
+                city = siteSettings?.city ?: "",
+                postcode = siteSettings?.postalCode ?: ""
+        )
     }
 
     private suspend fun validateAddress(address: Address, type: AddressType): Event {
         return when (val result = addressValidator.validateAddress(address, type)) {
             ValidationResult.Valid -> AddressValidated(address)
             is ValidationResult.SuggestedChanges -> AddressChangeSuggested(result.suggested)
-            is ValidationResult.NotFound, is ValidationResult.Invalid -> AddressInvalid(address, result)
+            is ValidationResult.NotFound,
+            is ValidationResult.Invalid,
+            is ValidationResult.NameMissing -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
     }

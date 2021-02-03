@@ -123,7 +123,7 @@ class ShippingLabelAddressSuggestionFragment
             return this.toString()
         }
 
-        val stringBuilder = StringBuilder().appendWithIfNotEmpty("$firstName $lastName".trim())
+        val stringBuilder = StringBuilder().appendWithIfNotEmpty(company)
 
         fun append(thisLine: String, otherLine: String, separator: String = "<br>") {
             if (thisLine.isNotEmpty()) {
@@ -135,6 +135,7 @@ class ShippingLabelAddressSuggestionFragment
             }
         }
 
+        stringBuilder.appendWithIfNotEmpty("$firstName $lastName".trim(), "<br>")
         append(this.address1, other.address1)
         append(this.address2, other.address2)
         append(this.city, other.city)
