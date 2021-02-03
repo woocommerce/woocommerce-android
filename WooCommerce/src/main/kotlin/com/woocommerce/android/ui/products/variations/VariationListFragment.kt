@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -26,6 +29,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -39,6 +43,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     companion object {
         const val TAG: String = "VariationListFragment"
         private const val LIST_STATE_KEY = "list_state"
+        private const val ID_EDIT_ATTRIBUTES = 1
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -87,6 +92,33 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
+            val mnuEditAttr = menu.add(Menu.NONE, ID_EDIT_ATTRIBUTES, Menu.NONE, R.string.product_variations_edit_attr)
+            mnuEditAttr.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            mnuEditAttr.isVisible = false
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
+            menu.findItem(ID_EDIT_ATTRIBUTES)?.isVisible = !viewModel.isEmpty()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            ID_EDIT_ATTRIBUTES -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun initializeViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -132,11 +164,13 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
                 } else {
                     WooAnimUtils.fadeOut(binding.emptyView)
                 }
+                requireActivity().invalidateOptionsMenu()
             }
         }
 
         viewModel.variationList.observe(viewLifecycleOwner, Observer {
             showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
+            requireActivity().invalidateOptionsMenu()
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
