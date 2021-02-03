@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.LoadPackagesFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -104,7 +106,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                                 sideEffect.type
                             )
                         )
-                        is SideEffect.ShowPackageOptions -> loadAndOpenPackagesDetails()
+                        is SideEffect.ShowPackageOptions -> loadAndOpenPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
                         is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
                         is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
@@ -142,7 +144,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun loadAndOpenPackagesDetails() {
+    private suspend fun loadAndOpenPackagesDetails(currentShippingPackages: List<ShippingLabelPackage>) {
         if (availablePackages.isEmpty()) {
             val progressDialogState = ProgressDialogState(
                 isShown = true,
@@ -161,7 +163,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(
             ShowPackageDetails(
                 orderIdentifier = arguments.orderIdentifier,
-                shippingLabelPackages = emptyList(),
+                shippingLabelPackages = currentShippingPackages,
                 availablePackages = availablePackages
             )
         )
@@ -301,6 +303,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onSuggestedAddressEditRequested(address: Address) {
         stateMachine.handleEvent(EditAddressRequested(address))
+    }
+
+    fun onPackagesUpdated(packages: List<ShippingLabelPackage>) {
+        stateMachine.handleEvent(PackagesSelected(packages))
     }
 
     fun onPackagesEditCanceled() {

@@ -57,6 +57,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val data = Data(
         originAddress = originAddress,
         shippingAddress = shippingAddress,
+        shippingPackages = emptyList(),
         flowSteps = setOf(ORIGIN_ADDRESS)
     )
 
