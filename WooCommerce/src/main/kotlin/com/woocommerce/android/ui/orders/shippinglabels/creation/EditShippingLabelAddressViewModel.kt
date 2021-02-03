@@ -44,9 +44,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
-    private val countries: List<WCLocationModel> by lazy {
-        dataStore.getCountries()
-    }
+    private val countries: List<WCLocationModel>
+        get() = dataStore.getCountries()
 
     private val states: List<WCLocationModel>
         get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
