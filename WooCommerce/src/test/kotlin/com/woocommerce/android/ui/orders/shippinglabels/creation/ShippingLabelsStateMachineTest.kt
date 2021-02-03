@@ -24,7 +24,7 @@ class ShippingLabelsStateMachineTest {
     private val orderId = "123"
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
-    private val data = Data(originAddress, shippingAddress, setOf(FlowStep.ORIGIN_ADDRESS))
+    private val data = Data(originAddress, shippingAddress, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()

@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
@@ -21,6 +22,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment.Companion.EDIT_PACKAGES_CLOSED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment.Companion.EDIT_PACKAGES_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
@@ -85,8 +88,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleResult<Address>(SELECTED_ADDRESS_TO_BE_EDITED) {
             viewModel.onSuggestedAddressEditRequested(it)
         }
-        handleNotice(EditShippingLabelPackagesFragment.EDIT_PACKAGES_CLOSED) {
+        handleNotice(EDIT_PACKAGES_CLOSED) {
             viewModel.onPackagesEditCanceled()
+        }
+        handleResult<List<ShippingLabelPackage>>(EDIT_PACKAGES_RESULT) {
+            viewModel.onPackagesUpdated(it)
         }
     }
 
