@@ -12,17 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.variations.VariationListAdapter
-import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -45,7 +40,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
 
-    private val navArgs: VariationListFragmentArgs by navArgs()
+    private val navArgs: AttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
@@ -94,15 +89,15 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         binding.attributeListRefreshLayout.apply {
             scrollUpChild = binding.attributeList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
-                viewModel.refreshVariations(navArgs.remoteProductId)
+                // TODO: AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
+                viewModel.refreshAttributes(navArgs.remoteVariationId)
             }
         }
     }
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
+        viewModel.start(navArgs.remoteVariationId)
     }
 
     private fun setupObservers(viewModel: AttributeListViewModel) {
@@ -117,7 +112,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         }
 
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
-            showVariations(it, viewModel.viewStateLiveData.liveData.value?.parentProduct)
+            showAttributes(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -138,21 +133,22 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         }
     }
 
-    private fun showAttributes(attributes: List<ProductVariation>, parentProduct: Product?) {
-        val adapter: VariationListAdapter
+    private fun showAttributes(attributes: List<ProductAttribute>) {
+        val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = VariationListAdapter(
+            adapter = AttributeListAdapter(
                 requireContext(),
-                GlideApp.with(this),
-                this,
-                parentProduct,
                 viewModel::onItemClick
             )
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as VariationListAdapter
+            adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
-        adapter.setVariationList(variations)
+        adapter.setAttributeList(attributes)
+    }
+
+    override fun onRequestLoadMore() {
+        // TODO currently not supported by FluxC
     }
 }

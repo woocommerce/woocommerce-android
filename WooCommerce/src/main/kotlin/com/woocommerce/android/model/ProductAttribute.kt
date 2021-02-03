@@ -4,6 +4,9 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.product.attributes.WCProductAttributeModel
 
+/**
+ * Model representing an attribute for a product variation
+ */
 @Parcelize
 data class ProductAttribute(
     val id: Int,
