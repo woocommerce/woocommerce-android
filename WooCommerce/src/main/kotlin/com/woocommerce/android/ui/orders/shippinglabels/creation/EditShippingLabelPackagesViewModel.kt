@@ -74,9 +74,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
             availablePackages.find { it.id == savedPackageId }
         }
 
-        loadProductsWeightsIfNeeded()
-
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        loadProductsWeightsIfNeeded(order)
+
         viewState = viewState.copy(showSkeletonView = false)
         return listOf(
             ShippingLabelPackage(
@@ -87,8 +87,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         )
     }
 
-    private suspend fun loadProductsWeightsIfNeeded() {
-        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+    private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         if (order.items.any { productDetailRepository.getProduct(it.productId) == null }) {
             order.items.forEach {
                 if (productDetailRepository.getProduct(it.productId) == null) {
