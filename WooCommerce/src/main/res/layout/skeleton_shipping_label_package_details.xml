@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.woocommerce.android.widgets.WCElevatedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface"
@@ -76,4 +76,4 @@
         android:layout_margin="@dimen/major_75"
         android:background="@drawable/skeleton_background" />
 
-</LinearLayout>
+</com.woocommerce.android.widgets.WCElevatedLinearLayout>
