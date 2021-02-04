@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingPackageListHeaderBinding
 import com.woocommerce.android.databinding.ShippingPackageListItemBinding
 import com.woocommerce.android.model.ShippingPackage
@@ -80,7 +81,12 @@ class ShippingPackagesAdapter(
 
     private class HeaderViewHolder(private val binding: ShippingPackageListHeaderBinding) : ViewHolder(binding.root) {
         fun bind(title: String) {
-            binding.root.text = title
+            if (title == ShippingPackage.CUSTOM_PACKAGE_CATEGORY) {
+                binding.root.text =
+                    binding.root.context.getString(R.string.shipping_label_packages_custom_section_title)
+            } else {
+                binding.root.text = title
+            }
         }
     }
 

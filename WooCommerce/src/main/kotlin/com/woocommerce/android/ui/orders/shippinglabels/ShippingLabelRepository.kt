@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.toAppModel
@@ -60,6 +61,14 @@ class ShippingLabelRepository @Inject constructor(
             }
 
             WooResult(list)
+        }
+    }
+
+    suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
+        return shippingLabelStore.getAccountSettings(selectedSite.get()).let { result ->
+            if (result.isError) return@let WooResult(error = result.error)
+
+            WooResult(result.model!!.toAppModel())
         }
     }
 }
