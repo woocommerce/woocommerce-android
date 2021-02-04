@@ -16,7 +16,7 @@ Language: sv_SE
     <string name="shipping_label_error_address_not_found">Adress hittades inte</string>
     <string name="shipping_label_edit_address_error_warning">Vi kunde inte verifiera leveransadressen automatiskt. Visa i Google Maps eller testa att kontakta kunden för att verifiera att adressen stämmer.</string>
     <string name="shipping_label_edit_address_validation_error">Adressvalideringen misslyckades</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Vänta …</string>
+    <string name="shipping_label_edit_address_progress_message">Vänta …</string>
     <string name="shipping_label_edit_address_validation_progress_title">Adressvalideringen pågår</string>
     <string name="shipping_label_edit_data_loading_error">Det gick inte att läsa in adressdata</string>
     <string name="shipping_label_edit_address_use_address_as_is">Använd adressen som angavs</string>

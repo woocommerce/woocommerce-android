@@ -10,6 +10,7 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -30,7 +31,8 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
-    private val productDetailRepository: ProductDetailRepository
+    private val productDetailRepository: ProductDetailRepository,
+    private val shippingLabelRepository: ShippingLabelRepository
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -55,25 +57,39 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     private fun initState() {
         if (viewState.shippingLabelPackages.isNotEmpty()) return
         launch {
-            loadProductsWeightsIfNeeded()
-            val packagesList = arguments.shippingLabelPackages.toList().ifEmpty {
-                val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
-                listOf(
-                    ShippingLabelPackage(
-                        selectedPackage = null,
-                        weight = Double.NaN,
-                        items = order.getShippableItems().map { it.toShippingItem() }
-                    )
-                )
+            val packagesList = if (arguments.shippingLabelPackages.isEmpty()) {
+                createDefaultPackage()
+            } else {
+                arguments.shippingLabelPackages.toList()
             }
             viewState = ViewState(shippingLabelPackages = packagesList)
         }
     }
 
+    private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
+        viewState = viewState.copy(showSkeletonView = true)
+        val lastUsedPackage = shippingLabelRepository.getAccountSettings().let { result ->
+            if (result.isError) return@let null
+            val savedPackageId = result.model!!.lastUsedBoxId
+            availablePackages.find { it.id == savedPackageId }
+        }
+
+        loadProductsWeightsIfNeeded()
+
+        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        viewState = viewState.copy(showSkeletonView = false)
+        return listOf(
+            ShippingLabelPackage(
+                selectedPackage = lastUsedPackage,
+                weight = Double.NaN,
+                items = order.getShippableItems().map { it.toShippingItem() }
+            )
+        )
+    }
+
     private suspend fun loadProductsWeightsIfNeeded() {
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
         if (order.items.any { productDetailRepository.getProduct(it.productId) == null }) {
-            viewState = viewState.copy(showSkeletonView = true)
             order.items.forEach {
                 if (productDetailRepository.getProduct(it.productId) == null) {
                     if (productDetailRepository.fetchProduct(it.productId) == null) {
@@ -82,7 +98,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
                     }
                 }
             }
-            viewState = viewState.copy(showSkeletonView = false)
         }
     }
 

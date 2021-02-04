@@ -16,7 +16,7 @@ Language: fr
     <string name="shipping_label_error_address_not_found">Adresse introuvable</string>
     <string name="shipping_label_edit_address_error_warning">Nous n’avons pas pu vérifier l’adresse d’expédition automatiquement. Affichez-la dans Google Maps ou essayez de contacter le client pour vous assurer que l’adresse est correcte.</string>
     <string name="shipping_label_edit_address_validation_error">Échec de la validation de l’adresse</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Veuillez patienter…</string>
+    <string name="shipping_label_edit_address_progress_message">Veuillez patienter…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Validation de l’adresse en cours</string>
     <string name="shipping_label_edit_data_loading_error">Impossible de charger les données d’adresse</string>
     <string name="shipping_label_edit_address_use_address_as_is">Utiliser l’adresse saisie</string>

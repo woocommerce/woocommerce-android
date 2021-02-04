@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -48,6 +49,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.text.DecimalFormat
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModel @AssistedInject constructor(
@@ -59,7 +61,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val addressValidator: ShippingLabelAddressValidator,
     private val site: SelectedSite,
     private val wooStore: WooCommerceStore,
-    private val accountStore: AccountStore
+    private val accountStore: AccountStore,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = "state"
@@ -88,7 +91,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
                         is SideEffect.ValidateAddress -> handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
-                            progressDialogMessage = string.shipping_label_edit_address_validation_progress_message
+                            progressDialogMessage = string.shipping_label_edit_address_progress_message
                         ) {
                             validateAddress(sideEffect.address, sideEffect.type)
                         }
@@ -205,7 +208,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
-                    packagingDetailsStep = Step.done(),
+                    packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.current(),
                     carrierStep = Step.notDone(),
                     paymentStep = Step.notDone()
@@ -215,7 +218,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
-                    packagingDetailsStep = Step.done(),
+                    packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.current(),
                     paymentStep = Step.notDone()
@@ -225,7 +228,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
-                    packagingDetailsStep = Step.done(),
+                    packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
                     paymentStep = Step.current()
@@ -235,7 +238,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 viewState.copy(
                     originAddressStep = Step.done(data.originAddress.toString()),
                     shippingAddressStep = Step.done(data.shippingAddress.toString()),
-                    packagingDetailsStep = Step.done(),
+                    packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
                     paymentStep = Step.done()
@@ -283,6 +286,39 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             is ValidationResult.NameMissing -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
+    }
+
+    private fun getPackageDetailsDescription(shippingPackages: List<ShippingLabelPackage>): String {
+        val firstLine = if (shippingPackages.size == 1) {
+            shippingPackages.first().selectedPackage!!.title
+        } else {
+            // TODO properly test this during M3
+            resourceProvider.getString(
+                string.shipping_label_multi_packages_items_count,
+                shippingPackages.sumBy { it.items.size },
+                shippingPackages.size
+            )
+        }
+
+        val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+        val stringResource = if (shippingPackages.size == 1) {
+            string.shipping_label_single_package_total_weight
+        } else {
+            string.shipping_label_multi_packages_total_weight
+        }
+        val weightFormatted = with(DecimalFormat()) {
+            maximumFractionDigits = 4
+            minimumFractionDigits = 0
+            format(shippingPackages.sumByDouble { it.weight })
+        }
+
+        val secondLine = resourceProvider.getString(
+            stringResource,
+            weightFormatted,
+            weightDimension
+        )
+
+        return "$firstLine\n$secondLine"
     }
 
     fun onAddressEditConfirmed(address: Address) {

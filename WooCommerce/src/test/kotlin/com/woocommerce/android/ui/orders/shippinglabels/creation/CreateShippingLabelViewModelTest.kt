@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +48,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val site: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val accountStore: AccountStore = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -139,7 +141,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 addressValidator,
                 site,
                 wooStore,
-                accountStore
+                accountStore,
+                resourceProvider
             )
         )
 
