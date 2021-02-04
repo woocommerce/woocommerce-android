@@ -16,7 +16,7 @@ Language: ru
     <string name="shipping_label_error_address_not_found">Адрес не найден</string>
     <string name="shipping_label_edit_address_error_warning">Не удалось автоматически проверить почтовый адрес. Укажите его на Google Картах или свяжитесь с клиентом и убедитесь, что адрес указан верно.</string>
     <string name="shipping_label_edit_address_validation_error">Сбой проверки адреса</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_edit_address_progress_message">Пожалуйста, подождите…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Выполняется проверка адреса</string>
     <string name="shipping_label_edit_data_loading_error">Не удалось загрузить данные адреса</string>
     <string name="shipping_label_edit_address_use_address_as_is">Использовать введённый адрес</string>

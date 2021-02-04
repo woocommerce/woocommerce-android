@@ -16,7 +16,7 @@ Language: he_IL
     <string name="shipping_label_error_address_not_found">הכתובת לא נמצאה</string>
     <string name="shipping_label_edit_address_error_warning">לא הצלחנו לאמת באופן אוטומטי את הכתובת למשלוח. ניתן להציג אותה ב-Google Maps או לנסות ליצור קשר עם הלקוח כדי לוודא שהכתובת נכונה.</string>
     <string name="shipping_label_edit_address_validation_error">אימות הכתובת נכשל</string>
-    <string name="shipping_label_edit_address_validation_progress_message">רק רגע…</string>
+    <string name="shipping_label_edit_address_progress_message">רק רגע…</string>
     <string name="shipping_label_edit_address_validation_progress_title">אימות הכתובת בתהליך</string>
     <string name="shipping_label_edit_data_loading_error">אין אפשרות לטעון את נתוני הכתובת</string>
     <string name="shipping_label_edit_address_use_address_as_is">להשתמש בכתובת כפי שהוזנה</string>
