@@ -372,7 +372,7 @@
     <string name="shipping_label_edit_data_loading_error">Unable to load the address data</string>
     <string name="shipping_label_edit_address_validation_progress_title">Address validation in progress</string>
     <string name="shipping_label_edit_address_loading_progress_title">Loading address data</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Please wait…</string>
+    <string name="shipping_label_edit_address_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_validation_error">Address validation failed</string>
     <string name="shipping_label_edit_address_error_warning">We were unable to automatically verify the shipping address. View it on Google Maps or try contacting the customer to make sure the address is correct.</string>
     <string name="shipping_label_error_address_not_found">Address was not found</string>
@@ -404,6 +404,7 @@
     <string name="shipping_label_packages_loading_message">Please wait…</string>
     <string name="shipping_label_package_selector_title">Selected Package</string>
     <string name="shipping_label_package_details_weight_error">Invalid weight</string>
+    <string name="shipping_label_missing_data_snackbar_message">Certain required fields are blank.</string>
     <!--
         Refunds
     -->

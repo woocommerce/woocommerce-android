@@ -16,7 +16,7 @@ Language: ja_JP
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
     <string name="shipping_label_edit_address_error_warning">自動的に配送先住所を確認できませんでした。 Google マップで表示するか、顧客に連絡して住所が正しいことを確認してください。</string>
     <string name="shipping_label_edit_address_validation_error">住所の確認に失敗しました</string>
-    <string name="shipping_label_edit_address_validation_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_edit_address_progress_message">しばらくお待ちください…</string>
     <string name="shipping_label_edit_address_validation_progress_title">住所の確認中です</string>
     <string name="shipping_label_edit_data_loading_error">住所データを読み込むことができませんでした</string>
     <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>

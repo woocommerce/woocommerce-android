@@ -191,7 +191,7 @@ class EditShippingLabelAddressFragment
                     if (isVisible) {
                         showProgressDialog(
                             getString(R.string.shipping_label_edit_address_validation_progress_title),
-                            getString(R.string.shipping_label_edit_address_validation_progress_message)
+                            getString(R.string.shipping_label_edit_address_progress_message)
                         )
                     } else {
                         hideProgressDialog()
@@ -200,8 +200,8 @@ class EditShippingLabelAddressFragment
             new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
                 if (isVisible) {
                     showProgressDialog(
-                        getString(R.string.shipping_label_edit_address_validation_progress_title),
-                        getString(R.string.shipping_label_edit_address_loading_progress_title)
+                        getString(R.string.shipping_label_edit_address_loading_progress_title),
+                        getString(R.string.shipping_label_edit_address_progress_message)
                     )
                 } else {
                     hideProgressDialog()
