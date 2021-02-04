@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/color_surface"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/package_name"
@@ -51,7 +49,7 @@
         android:id="@+id/items_section_title"
         android:layout_width="0dp"
         android:layout_height="@dimen/major_300"
-        android:background="@color/default_window_background"
+        android:background="?android:attr/colorBackground"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/major_100"
@@ -136,4 +134,4 @@
         app:layout_constraintStart_toStartOf="@id/weight_edit_text"
         app:layout_constraintTop_toBottomOf="@id/weight_edit_text" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.woocommerce.android.widgets.WCElevatedConstraintLayout>
