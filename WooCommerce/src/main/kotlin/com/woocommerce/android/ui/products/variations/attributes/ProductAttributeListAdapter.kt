@@ -1,35 +1,24 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
-import android.content.Context
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AttributeListItemBinding
-import com.woocommerce.android.model.ProductGlobalAttribute
-import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
-import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListAdapter.AttributeViewHolder
 
 class ProductAttributeListAdapter(
-    private val context: Context,
-    private val onItemClick: (attribute: ProductGlobalAttribute) -> Unit
+    private val onItemClick: (attribute: Product.Attribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
-    private var attributeList = listOf<ProductGlobalAttribute>()
+    private var attributeList = listOf<Product.Attribute>()
 
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = attributeList[position].remoteId.toLong()
+    override fun getItemId(position: Int) = attributeList[position].id
 
     override fun getItemCount() = attributeList.size
 
@@ -51,40 +40,12 @@ class ProductAttributeListAdapter(
         }
     }
 
-    private fun ProductVariation.getStockStatusText(): String {
-        return when (stockStatus) {
-            InStock -> {
-                context.getString(R.string.product_stock_status_instock)
-            }
-            OutOfStock -> {
-                context.getString(R.string.product_stock_status_out_of_stock)
-            }
-            OnBackorder -> {
-                context.getString(R.string.product_stock_status_on_backorder)
-            }
-            else -> {
-                stockStatus.value
-            }
-        }
-    }
-
-    private fun highlightText(text: String): SpannableString {
-        val spannable = SpannableString(text)
-        spannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(context, R.color.warning_foreground_color)),
-            0,
-            spannable.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        return spannable
-    }
-
     private class AttributeItemDiffUtil(
-        val oldList: List<ProductGlobalAttribute>,
-        val newList: List<ProductGlobalAttribute>
+        val oldList: List<Product.Attribute>,
+        val newList: List<Product.Attribute>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                oldList[oldItemPosition].remoteId == newList[newItemPosition].remoteId
+                oldList[oldItemPosition].id == newList[newItemPosition].id
 
         override fun getOldListSize(): Int = oldList.size
 
@@ -97,7 +58,7 @@ class ProductAttributeListAdapter(
         }
     }
 
-    fun setAttributeList(attributes: List<ProductGlobalAttribute>) {
+    fun setAttributeList(attributes: List<Product.Attribute>) {
         val diffResult = DiffUtil.calculateDiff(
             AttributeItemDiffUtil(
                 attributeList,
@@ -110,9 +71,9 @@ class ProductAttributeListAdapter(
 
     inner class AttributeViewHolder(val viewBinding: AttributeListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(attribute: ProductGlobalAttribute) {
+        fun bind(attribute: Product.Attribute) {
             viewBinding.attributeName.text = attribute.name
-            // TODO viewBinding.attributeTerms.text = ??
+            viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
         }
     }
 }

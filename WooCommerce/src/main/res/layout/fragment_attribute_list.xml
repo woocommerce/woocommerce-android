@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/attributeListRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context="com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addAttributeButton"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_extra_large"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:text="@string/product_add_attribute"
+            android:textAllCaps="true" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/attributeList"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="?attr/colorSurface"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="match_parent"
             tools:itemCount="3"
-            tools:listitem="@layout/variation_list_item" />
+            tools:listitem="@layout/attribute_list_item" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

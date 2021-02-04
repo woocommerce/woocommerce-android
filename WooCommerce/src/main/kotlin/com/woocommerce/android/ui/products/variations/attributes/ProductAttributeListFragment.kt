@@ -14,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductGlobalAttribute
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
@@ -106,9 +106,6 @@ class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_li
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.attributeListRefreshLayout.isRefreshing = it
             }
-            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                // TODO ?
-            }
         }
 
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
@@ -133,13 +130,10 @@ class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_li
         }
     }
 
-    private fun showAttributes(attributes: List<ProductGlobalAttribute>) {
+    private fun showAttributes(attributes: List<Product.Attribute>) {
         val adapter: ProductAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = ProductAttributeListAdapter(
-                requireContext(),
-                viewModel::onItemClick
-            )
+            adapter = ProductAttributeListAdapter(viewModel::onItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as ProductAttributeListAdapter

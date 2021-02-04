@@ -98,7 +98,33 @@ data class Product(
         val name: String,
         val options: List<String>,
         val isVisible: Boolean
-    ) : Parcelable
+    ) : Parcelable {
+        override fun equals(other: Any?): Boolean {
+            return (other as? Attribute)?.let {
+                id == it.id &&
+                    name == it.name &&
+                    options == it.options &&
+                    isVisible == it.isVisible
+            } ?: false
+        }
+
+        override fun hashCode(): Int {
+            return super.hashCode()
+        }
+
+        fun getCommaSeparatedOptions(): String {
+            if (options.isEmpty()) return ""
+            var commaSeparatedOptions = ""
+            options.forEach { option ->
+                if (commaSeparatedOptions.isEmpty()) {
+                    commaSeparatedOptions = option
+                } else {
+                    commaSeparatedOptions += ", $option"
+                }
+            }
+            return commaSeparatedOptions
+        }
+    }
 
     fun isSameProduct(product: Product): Boolean {
         return remoteId == product.remoteId &&
@@ -526,6 +552,15 @@ fun MediaModel.toAppModel(): Product.Image {
         name = this.fileName,
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
+    )
+}
+
+fun WCProductModel.ProductAttribute.toAppModel(): Product.Attribute {
+    return Product.Attribute(
+        id = this.id,
+        name = this.name,
+        options = this.options,
+        isVisible = this.visible
     )
 }
 
