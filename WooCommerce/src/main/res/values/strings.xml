@@ -405,6 +405,11 @@
     <string name="shipping_label_package_selector_title">Selected Package</string>
     <string name="shipping_label_package_details_weight_error">Invalid weight</string>
     <string name="shipping_label_missing_data_snackbar_message">Certain required fields are blank.</string>
+    <string name="shipping_label_package_details_fetch_products_error">Can\'t fetch products</string>
+    <string name="shipping_label_packages_custom_section_title">Custom packages</string>
+    <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
+    <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
     <!--
         Refunds
     -->
@@ -1511,6 +1516,4 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
-    <string name="shipping_label_package_details_fetch_products_error">Can\'t fetch products</string>
-    <string name="shipping_label_packages_custom_section_title">Custom packages</string>
 </resources>
