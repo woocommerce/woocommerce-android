@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AttributeListItemBinding
-import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
@@ -21,9 +21,9 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeListAd
 
 class AttributeListAdapter(
     private val context: Context,
-    private val onItemClick: (attribute: ProductAttribute) -> Unit
+    private val onItemClick: (attribute: ProductGlobalAttribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
-    private var attributeList = listOf<ProductAttribute>()
+    private var attributeList = listOf<ProductGlobalAttribute>()
 
     init {
         setHasStableIds(true)
@@ -80,8 +80,8 @@ class AttributeListAdapter(
     }
 
     private class AttributeItemDiffUtil(
-        val oldList: List<ProductAttribute>,
-        val newList: List<ProductAttribute>
+        val oldList: List<ProductGlobalAttribute>,
+        val newList: List<ProductGlobalAttribute>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
                 oldList[oldItemPosition].remoteId == newList[newItemPosition].remoteId
@@ -97,7 +97,7 @@ class AttributeListAdapter(
         }
     }
 
-    fun setAttributeList(attributes: List<ProductAttribute>) {
+    fun setAttributeList(attributes: List<ProductGlobalAttribute>) {
         val diffResult = DiffUtil.calculateDiff(
             AttributeItemDiffUtil(
                 attributeList,
@@ -110,7 +110,7 @@ class AttributeListAdapter(
 
     inner class AttributeViewHolder(val viewBinding: AttributeListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(attribute: ProductAttribute) {
+        fun bind(attribute: ProductGlobalAttribute) {
             viewBinding.attributeName.text = attribute.name
             // TODO viewBinding.attributeTerms.text = ??
         }

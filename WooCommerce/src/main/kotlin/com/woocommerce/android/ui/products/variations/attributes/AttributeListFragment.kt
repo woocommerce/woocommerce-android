@@ -14,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
@@ -133,7 +133,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         }
     }
 
-    private fun showAttributes(attributes: List<ProductAttribute>) {
+    private fun showAttributes(attributes: List<ProductGlobalAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeListAdapter(

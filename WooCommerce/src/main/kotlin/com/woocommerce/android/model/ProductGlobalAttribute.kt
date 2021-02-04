@@ -2,13 +2,13 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import org.wordpress.android.fluxc.model.product.attributes.WCProductAttributeModel
+import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 
 /**
  * Model representing an attribute for a product variation
  */
 @Parcelize
-data class ProductAttribute(
+data class ProductGlobalAttribute(
     val id: Int,
     val localSiteId: Int,
     val name: String,
@@ -20,7 +20,7 @@ data class ProductAttribute(
     val remoteId: Int
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
-        return (other as? ProductAttribute)?.let {
+        return (other as? ProductGlobalAttribute)?.let {
             id == it.id &&
                 localSiteId == it.localSiteId &&
                 name == it.name &&
@@ -37,8 +37,8 @@ data class ProductAttribute(
         return super.hashCode()
     }
 
-    fun toDataModel(cachedAttribute: WCProductAttributeModel? = null): WCProductAttributeModel {
-        return (cachedAttribute ?: WCProductAttributeModel()).also {
+    fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
+        return (cachedAttribute ?: WCGlobalAttributeModel()).also {
             it.id = id
             it.localSiteId = localSiteId
             it.name = name
@@ -52,8 +52,8 @@ data class ProductAttribute(
     }
 }
 
-fun WCProductAttributeModel.toAppModel(): ProductAttribute {
-    return ProductAttribute(
+fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {
+    return ProductGlobalAttribute(
         id = this.id,
         remoteId = this.remoteId,
         localSiteId = this.localSiteId,

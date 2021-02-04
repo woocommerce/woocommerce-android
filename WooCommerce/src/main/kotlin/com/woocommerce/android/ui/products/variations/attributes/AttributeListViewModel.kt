@@ -7,7 +7,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -27,8 +27,8 @@ class AttributeListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
 
-    private val _attributeList = MutableLiveData<List<ProductAttribute>>()
-    val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+    private val _attributeList = MutableLiveData<List<ProductGlobalAttribute>>()
+    val attributeList: LiveData<List<ProductGlobalAttribute>> = _attributeList
 
     val viewStateLiveData = LiveDataDelegate(savedState,
         ViewState()
@@ -52,7 +52,7 @@ class AttributeListViewModel @AssistedInject constructor(
         attributeListRepository.onCleanup()
     }
 
-    fun onItemClick(attribute: ProductAttribute) {
+    fun onItemClick(attribute: ProductGlobalAttribute) {
         // TODO
     }
 
