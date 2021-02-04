@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
@@ -30,6 +31,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
@@ -41,6 +44,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
     private val addressValidator: ShippingLabelAddressValidator = mock()
+    private val site: SelectedSite = mock()
+    private val wooStore: WooCommerceStore = mock()
+    private val accountStore: AccountStore = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -130,7 +136,10 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 orderDetailRepository,
                 shippingLabelRepository,
                 stateMachine,
-                addressValidator
+                addressValidator,
+                site,
+                wooStore,
+                accountStore
             )
         )
 
