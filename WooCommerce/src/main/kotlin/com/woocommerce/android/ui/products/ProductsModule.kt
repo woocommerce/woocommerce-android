@@ -71,8 +71,8 @@ import com.woocommerce.android.ui.products.variations.VariationDetailFragment
 import com.woocommerce.android.ui.products.variations.VariationDetailModule
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListModule
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListModule
+import com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListFragment
+import com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -163,8 +163,8 @@ object ProductsModule {
     @Module
     internal abstract class AttributeListFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [AttributeListModule::class])
-        abstract fun attributeListFragment(): AttributeListFragment
+        @ContributesAndroidInjector(modules = [ProductAttributeListModule::class])
+        abstract fun attributeListFragment(): ProductAttributeListFragment
     }
 
     @Module

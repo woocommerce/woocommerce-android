@@ -25,7 +25,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
+class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "AttributeListFragment"
@@ -35,12 +35,12 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
+    private val viewModel: ProductAttributeListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
 
-    private val navArgs: AttributeListFragmentArgs by navArgs()
+    private val navArgs: ProductAttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
@@ -89,18 +89,18 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         binding.attributeListRefreshLayout.apply {
             scrollUpChild = binding.attributeList
             setOnRefreshListener {
-                // TODO: AnalyticsTracker.track(Stat.PRODUCT_VARIANTS_PULLED_TO_REFRESH)
-                viewModel.refreshAttributes(navArgs.remoteVariationId)
+                // TODO: AnalyticsTracker.track
+                viewModel.refreshAttributes(navArgs.remoteProductId)
             }
         }
     }
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteVariationId)
+        viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers(viewModel: AttributeListViewModel) {
+    private fun setupObservers(viewModel: ProductAttributeListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -134,15 +134,15 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     }
 
     private fun showAttributes(attributes: List<ProductGlobalAttribute>) {
-        val adapter: AttributeListAdapter
+        val adapter: ProductAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(
+            adapter = ProductAttributeListAdapter(
                 requireContext(),
                 viewModel::onItemClick
             )
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeListAdapter
+            adapter = binding.attributeList.adapter as ProductAttributeListAdapter
         }
 
         adapter.setAttributeList(attributes)

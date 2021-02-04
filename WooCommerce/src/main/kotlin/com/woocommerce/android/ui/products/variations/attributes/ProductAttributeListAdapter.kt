@@ -17,9 +17,9 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
+import com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListAdapter.AttributeViewHolder
 
-class AttributeListAdapter(
+class ProductAttributeListAdapter(
     private val context: Context,
     private val onItemClick: (attribute: ProductGlobalAttribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {

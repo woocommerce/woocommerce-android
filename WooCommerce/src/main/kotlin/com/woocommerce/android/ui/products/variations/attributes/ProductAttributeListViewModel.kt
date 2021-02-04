@@ -19,10 +19,10 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class AttributeListViewModel @AssistedInject constructor(
+class ProductAttributeListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    private val attributeListRepository: AttributeListRepository,
+    private val attributeListRepository: ProductAttributeListRepository,
     private val networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState, dispatchers) {
     private var remoteProductId = 0L
@@ -61,7 +61,6 @@ class AttributeListViewModel @AssistedInject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "already loading attributes")
             return
         }
-
         this.remoteProductId = remoteProductId
 
         loadingJob = launch {
@@ -73,7 +72,7 @@ class AttributeListViewModel @AssistedInject constructor(
 
     private suspend fun fetchAttributes(remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
-            val fetchedAttributes = attributeListRepository.fetchStoreAttributes()
+            val fetchedAttributes = attributeListRepository.fetchAttributesForStore()
             if (fetchedAttributes.isNullOrEmpty()) {
                 viewState = viewState.copy(isEmptyViewVisible = true)
             } else {
@@ -96,5 +95,5 @@ class AttributeListViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<AttributeListViewModel>
+    interface Factory : ViewModelAssistedFactory<ProductAttributeListViewModel>
 }

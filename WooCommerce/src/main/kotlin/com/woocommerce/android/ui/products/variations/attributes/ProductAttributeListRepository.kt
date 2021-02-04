@@ -9,14 +9,14 @@ import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import javax.inject.Inject
 
-class AttributeListRepository @Inject constructor(
+class ProductAttributeListRepository @Inject constructor(
     private val attributesStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite
 ) {
     /**
      * Submits a fetch request to get a list of attributes for the current store and returns the fetched list
      */
-    suspend fun fetchStoreAttributes(): List<ProductGlobalAttribute> {
+    suspend fun fetchAttributesForStore(): List<ProductGlobalAttribute> {
         val result: List<WCGlobalAttributeModel>
         withContext(Dispatchers.Default) {
             attributesStore.fetchStoreAttributes(selectedSite.get()).also {
@@ -25,6 +25,11 @@ class AttributeListRepository @Inject constructor(
         }
         return result.map { it.toAppModel() }
     }
+
+    // TODO
+    /*fun getAttributesForStore(): List<ProductGlobalAttribute> {
+        attributesStore.
+    }*/
 
     fun onCleanup() {
         // TODO ??
