@@ -22,7 +22,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
@@ -36,10 +35,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
-
-    private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
-
     private val navArgs: AttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
@@ -56,7 +52,6 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     }
 
     override fun onDestroyView() {
-        skeletonView.hide()
         super.onDestroyView()
         _binding = null
     }
@@ -102,7 +97,6 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
 
     private fun setupObservers(viewModel: AttributeListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.attributeListRefreshLayout.isRefreshing = it
             }
@@ -121,14 +115,6 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
-
-    private fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(binding.attributeList, R.layout.skeleton_product_list, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
-    }
 
     private fun showAttributes(attributes: List<Product.Attribute>) {
         val adapter: AttributeListAdapter
