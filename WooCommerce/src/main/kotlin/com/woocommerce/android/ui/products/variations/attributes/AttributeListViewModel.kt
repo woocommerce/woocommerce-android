@@ -54,7 +54,6 @@ class AttributeListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val isSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null
     ) : Parcelable
 
