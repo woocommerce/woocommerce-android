@@ -158,6 +158,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
     val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
+    private val _attributeList = MutableLiveData<List<Product.Attribute>>()
+    val attributeList: LiveData<List<Product.Attribute>> = _attributeList
+
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
@@ -951,6 +954,27 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Loads the attributes assigned to the draft product
+     */
+    fun loadProductDraftAttributes() {
+        _attributeList.value =
+            viewState.productDraft?.let {
+                it.attributes
+            } ?: emptyList()
+    }
+
+    /**
+     * User clicked an attribute in the attribute list fragment
+     */
+    fun onAttributeListItemClick(attribute: Product.Attribute) {
+        // TODO
+    }
+
+    fun hasAttributeChanges(): Boolean {
+        return viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
+    }
+
+    /**
      * Updates the product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
@@ -1511,6 +1535,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
     }
 
     object RefreshMenu : Event()

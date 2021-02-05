@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -14,24 +13,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import javax.inject.Inject
 
-class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
+class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
     private var layoutManager: LayoutManager? = null
     private val navArgs: AttributeListFragmentArgs by navArgs()
 
@@ -45,13 +36,15 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
-        initializeViewModel()
+        setupObservers()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitProductAttributeList())
 
     override fun onResume() {
         super.onResume()
@@ -79,22 +72,11 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
         ))
     }
 
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
-    }
-
-    private fun setupObservers(viewModel: AttributeListViewModel) {
+    private fun setupObservers() {
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> activity?.onBackPressed()
-            }
-        })
+        viewModel.loadProductDraftAttributes()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
@@ -102,7 +84,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
     private fun showAttributes(attributes: List<Product.Attribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onItemClick)
+            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as AttributeListAdapter
