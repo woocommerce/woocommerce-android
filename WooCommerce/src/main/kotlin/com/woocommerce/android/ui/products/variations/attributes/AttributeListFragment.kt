@@ -15,13 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ActivityUtils
