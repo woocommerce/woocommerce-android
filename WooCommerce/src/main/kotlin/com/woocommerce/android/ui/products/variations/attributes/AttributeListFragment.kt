@@ -25,7 +25,7 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
-class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
+class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "AttributeListFragment"
@@ -35,12 +35,12 @@ class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_li
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: ProductAttributeListViewModel by viewModels { viewModelFactory }
+    private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
 
     private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
 
-    private val navArgs: ProductAttributeListFragmentArgs by navArgs()
+    private val navArgs: AttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
@@ -100,7 +100,7 @@ class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_li
         viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers(viewModel: ProductAttributeListViewModel) {
+    private fun setupObservers(viewModel: AttributeListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -131,12 +131,12 @@ class ProductAttributeListFragment : BaseFragment(R.layout.fragment_attribute_li
     }
 
     private fun showAttributes(attributes: List<Product.Attribute>) {
-        val adapter: ProductAttributeListAdapter
+        val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = ProductAttributeListAdapter(viewModel::onItemClick)
+            adapter = AttributeListAdapter(viewModel::onItemClick)
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as ProductAttributeListAdapter
+            adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
         adapter.setAttributeList(attributes)

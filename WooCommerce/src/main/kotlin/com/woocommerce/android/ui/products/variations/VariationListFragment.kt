@@ -197,7 +197,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     }
 
     private fun openAttributeList(remoteProductId: Long) {
-        val action = VariationListFragmentDirections.actionVariationListFragmentToProductAttributeListFragment(
+        val action = VariationListFragmentDirections.actionVariationListFragmentToAttributeListFragment(
             remoteProductId
         )
         findNavController().navigateSafely(action)

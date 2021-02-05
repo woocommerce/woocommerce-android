@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListAdapter.AttributeViewHolder
+import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
-class ProductAttributeListAdapter(
+class AttributeListAdapter(
     private val onItemClick: (attribute: Product.Attribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<Product.Attribute>()

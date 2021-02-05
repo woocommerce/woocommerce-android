@@ -16,7 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore
 
-class ProductAttributeListViewModel @AssistedInject constructor(
+class AttributeListViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productStore: WCProductStore,
@@ -59,5 +59,5 @@ class ProductAttributeListViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ProductAttributeListViewModel>
+    interface Factory : ViewModelAssistedFactory<AttributeListViewModel>
 }

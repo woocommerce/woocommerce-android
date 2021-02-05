@@ -115,8 +115,8 @@
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
         <action
-            android:id="@+id/action_variationListFragment_to_productAttributeListFragment"
-            app:destination="@id/productAttributeListFragment"
+            android:id="@+id/action_variationListFragment_to_attributeListFragment"
+            app:destination="@id/attributeListFragment"
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
@@ -493,9 +493,9 @@
         app:popExitAnim="@anim/activity_slide_out_to_right" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
     <fragment
-        android:id="@+id/productAttributeListFragment"
-        android:name="com.woocommerce.android.ui.products.variations.attributes.ProductAttributeListFragment"
-        android:label="ProductAttributeListFragment" >
+        android:id="@+id/attributeListFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"
+        android:label="attributeListFragment" >
         <argument
             android:name="remoteProductId"
             app:argType="long"
