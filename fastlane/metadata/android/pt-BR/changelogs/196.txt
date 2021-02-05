@@ -1,0 +1,2 @@
+5.9:
+Essa série de atualizações do aplicativo móvel do WooCommerce disponibiliza diversas correções. Corrigimos erros raros que ocorriam ao adicionar uma nova categoria de produtos, reordenar fotos, editar textos, criar etiquetas de envio e filtrar produtos. Também atualizamos o limite de tempo para solicitações do servidor e removemos dos detalhes do produto o cartão de detalhes de compra, que estava obsoleto.
