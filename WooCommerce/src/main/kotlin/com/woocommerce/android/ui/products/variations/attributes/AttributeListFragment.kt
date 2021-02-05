@@ -13,19 +13,16 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import javax.inject.Inject
 
-class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
-    OnLoadMoreListener {
+class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -80,14 +77,6 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
-
-        binding.attributeListRefreshLayout.apply {
-            scrollUpChild = binding.attributeList
-            setOnRefreshListener {
-                // TODO: AnalyticsTracker.track
-                viewModel.refreshAttributes(navArgs.remoteProductId)
-            }
-        }
     }
 
     private fun initializeViewModel() {
@@ -96,12 +85,6 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
     }
 
     private fun setupObservers(viewModel: AttributeListViewModel) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.attributeListRefreshLayout.isRefreshing = it
-            }
-        }
-
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
@@ -126,9 +109,5 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         }
 
         adapter.setAttributeList(attributes)
-    }
-
-    override fun onRequestLoadMore() {
-        // TODO currently not supported by FluxC
     }
 }
