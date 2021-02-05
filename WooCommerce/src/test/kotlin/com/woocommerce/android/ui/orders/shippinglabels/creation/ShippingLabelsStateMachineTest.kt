@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.nhaarman.mockitokotlin2.spy
+import com.woocommerce.android.model.PackageDimensions
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingLabelPackage.Item
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
@@ -78,5 +82,37 @@ class ShippingLabelsStateMachineTest {
         stateMachine.handleEvent(Event.AddressValidated(data.originAddress))
 
         assertThat(sideEffect).isEqualTo(SideEffect.UpdateViewState(newData))
+    }
+
+    @Test
+    fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val packagesList = listOf(
+            ShippingLabelPackage(
+                selectedPackage = ShippingPackage(
+                    "id",
+                    "title",
+                    false,
+                    "provider",
+                    PackageDimensions(10.0, 10.0, 10.0)
+                ),
+                weight = 10.0,
+                items = listOf(Item(10L, "item", "attributes", "10kgs"))
+            )
+        )
+
+        stateMachine.start(orderId)
+        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
+        stateMachine.handleEvent(Event.PackageSelectionStarted)
+
+        assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))
+
+        stateMachine.handleEvent(Event.PackagesSelected(packagesList))
+
+        val newData = data.copy(
+            shippingPackages = packagesList,
+            flowSteps = data.flowSteps + FlowStep.CUSTOMS
+        )
+
+        assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.UpdateViewState(newData))
     }
 }
