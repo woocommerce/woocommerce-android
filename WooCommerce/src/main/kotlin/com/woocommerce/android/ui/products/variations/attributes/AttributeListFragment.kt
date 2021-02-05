@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListViewModel.ShowAddAttributeScreen
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewAddProductAttribute
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -99,7 +99,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         ))
 
         binding.addAttributeButton.setOnClickListener {
-            // TODO viewModel.onAddAttributeButtonClick(navArgs.remoteProductId)
+            viewModel.onAddAttributeButtonClick(navArgs.remoteProductId)
         }
     }
 
@@ -107,7 +107,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowAddAttributeScreen -> openAddAttributeScreen(event.remoteProductId)
+                is ViewAddProductAttribute -> openAddAttributeScreen()
                 is Exit -> activity?.onBackPressed()
                 is ExitProductAttributeList -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -120,9 +120,9 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         viewModel.loadProductDraftAttributes()
     }
 
-    private fun openAddAttributeScreen(remoteProductId: Long) {
+    private fun openAddAttributeScreen() {
         val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment(
-            remoteProductId
+            navArgs.remoteProductId
         )
         findNavController().navigateSafely(action)
     }

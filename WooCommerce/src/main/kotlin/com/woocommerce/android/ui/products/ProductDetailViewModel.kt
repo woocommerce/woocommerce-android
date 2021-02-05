@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCat
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewAddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
@@ -973,6 +974,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAttributeListItemClick(attribute: Product.Attribute) {
         // TODO
+    }
+
+    /**
+     * User tapped "Add attribute" on the attribute list fragment
+     */
+    fun onAddAttributeButtonClick(remoteProductId: Long) {
+        triggerEvent(ViewAddProductAttribute)
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
