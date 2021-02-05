@@ -109,20 +109,16 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         whenever(resourceProvider.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
 
         createViewModel()
-
-        clearInvocations(viewModel, savedState, addressValidator, resourceProvider, dataStore, site)
     }
 
     private fun createViewModel() {
-        viewModel = spy(
-            EditShippingLabelAddressViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                addressValidator,
-                resourceProvider,
-                dataStore,
-                site
-            )
+        viewModel = EditShippingLabelAddressViewModel(
+            savedState,
+            coroutinesTestRule.testDispatchers,
+            addressValidator,
+            resourceProvider,
+            dataStore,
+            site
         )
     }
 
