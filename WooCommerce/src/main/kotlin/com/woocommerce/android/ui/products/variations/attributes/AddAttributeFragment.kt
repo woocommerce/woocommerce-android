@@ -5,7 +5,6 @@ import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +35,6 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     private val viewModel: AddAttributeViewModel by viewModels { viewModelFactory }
 
     private var layoutManager: LayoutManager? = null
-    private val navArgs: AddAttributeFragmentArgs by navArgs()
 
     private var _binding: FragmentAddAttributeBinding? = null
     private val binding get() = _binding!!
@@ -84,11 +82,11 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
 
     private fun initializeViewModel() {
         setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
+        viewModel.start()
     }
 
     private fun setupObservers(viewModel: AddAttributeViewModel) {
-        viewModel.attributeList.observe(viewLifecycleOwner, Observer {
+        viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
 

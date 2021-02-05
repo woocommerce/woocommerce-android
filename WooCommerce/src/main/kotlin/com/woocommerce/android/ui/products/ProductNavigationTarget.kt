@@ -74,5 +74,5 @@ sealed class ProductNavigationTarget : Event() {
     ) :
         ProductNavigationTarget()
     object AddProductDownloadableFile : ProductNavigationTarget()
-    object ViewAddProductAttribute : ProductNavigationTarget()
+    object AddProductAttribute : ProductNavigationTarget()
 }

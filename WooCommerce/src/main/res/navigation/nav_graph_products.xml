@@ -141,12 +141,7 @@
     <fragment
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
-        android:label="addAttributeFragment">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-    </fragment>
+        android:label="addAttributeFragment" />
     <fragment
         android:id="@+id/aztecEditorFragment"
         android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"

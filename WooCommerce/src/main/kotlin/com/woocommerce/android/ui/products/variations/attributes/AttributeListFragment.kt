@@ -16,13 +16,9 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewAddProductAttribute
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ActivityUtils
 
@@ -99,16 +95,13 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         ))
 
         binding.addAttributeButton.setOnClickListener {
-            viewModel.onAddAttributeButtonClick(navArgs.remoteProductId)
+            viewModel.onAddAttributeButtonClick()
         }
     }
 
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ViewAddProductAttribute -> openAddAttributeScreen()
-                is Exit -> activity?.onBackPressed()
                 is ExitProductAttributeList -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
@@ -120,12 +113,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         viewModel.loadProductDraftAttributes()
     }
 
-    private fun openAddAttributeScreen() {
-        val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment(
-            navArgs.remoteProductId
-        )
-        findNavController().navigateSafely(action)
-    }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
 

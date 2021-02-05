@@ -7,7 +7,6 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -22,8 +21,8 @@ class AddAttributeViewModel @AssistedInject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState, dispatchers) {
-    private val _attributeList = MutableLiveData<List<Product.Attribute>>()
-    val attributeList: LiveData<List<Product.Attribute>> = _attributeList
+    private val _globalAttributeList = MutableLiveData<List<Product.Attribute>>()
+    val globalAttributeList: LiveData<List<Product.Attribute>> = _globalAttributeList
 
     val viewStateLiveData = LiveDataDelegate(savedState,
         ViewState()
@@ -31,20 +30,19 @@ class AddAttributeViewModel @AssistedInject constructor(
 
     private var viewState by viewStateLiveData
 
-    fun start(remoteProductId: Long) {
-        loadAttributes(remoteProductId)
+    fun start() {
+        loadGlobalAttributes()
     }
 
     fun onItemClick(attribute: Product.Attribute) {
         // TODO
     }
 
-    private fun loadAttributes(remoteProductId: Long) {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        _attributeList.value = product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
+    private fun loadGlobalAttributes() {
+        // TODO
     }
 
-    fun isEmpty() = _attributeList.value?.isEmpty() ?: true
+    fun isEmpty() = _globalAttributeList.value?.isEmpty() ?: true
 
     @Parcelize
     data class ViewState(
