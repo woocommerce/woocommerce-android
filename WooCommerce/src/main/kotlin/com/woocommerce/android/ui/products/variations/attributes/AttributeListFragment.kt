@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.attributes.AttributeListViewModel.ShowAddAttributeScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -88,6 +91,10 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
                 viewModel.refreshAttributes(navArgs.remoteProductId)
             }
         }
+
+        binding.addAttributeButton.setOnClickListener {
+            viewModel.onAddButtonClick(navArgs.remoteProductId)
+        }
     }
 
     private fun initializeViewModel() {
@@ -109,9 +116,17 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list),
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowAddAttributeScreen -> openAddAttributeScreen(event.remoteProductId)
                 is Exit -> activity?.onBackPressed()
             }
         })
+    }
+
+    private fun openAddAttributeScreen(remoteProductId: Long) {
+        val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment(
+            remoteProductId
+        )
+        findNavController().navigateSafely(action)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)

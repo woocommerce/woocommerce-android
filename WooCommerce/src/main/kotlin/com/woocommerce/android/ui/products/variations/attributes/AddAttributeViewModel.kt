@@ -11,13 +11,12 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore
 
-class AttributeListViewModel @AssistedInject constructor(
+class AddAttributeViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productStore: WCProductStore,
@@ -46,10 +45,6 @@ class AttributeListViewModel @AssistedInject constructor(
         // TODO
     }
 
-    fun onAddButtonClick(remoteProductId: Long) {
-        triggerEvent(ShowAddAttributeScreen(remoteProductId))
-    }
-
     private fun loadAttributes(remoteProductId: Long) {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         _attributeList.value = product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
@@ -62,8 +57,6 @@ class AttributeListViewModel @AssistedInject constructor(
         val isRefreshing: Boolean? = null
     ) : Parcelable
 
-    data class ShowAddAttributeScreen(val remoteProductId: Long) : Event()
-
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<AttributeListViewModel>
+    interface Factory : ViewModelAssistedFactory<AddAttributeViewModel>
 }

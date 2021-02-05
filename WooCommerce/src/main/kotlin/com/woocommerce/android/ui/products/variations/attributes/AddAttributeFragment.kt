@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentAttributeListBinding
+import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
@@ -22,33 +22,30 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     OnLoadMoreListener {
     companion object {
-        const val TAG: String = "AttributeListFragment"
+        const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
+    private val viewModel: AddAttributeViewModel by viewModels { viewModelFactory }
 
-    private val skeletonView = SkeletonView()
     private var layoutManager: LayoutManager? = null
+    private val navArgs: AddAttributeFragmentArgs by navArgs()
 
-    private val navArgs: AttributeListFragmentArgs by navArgs()
-
-    private var _binding: FragmentAttributeListBinding? = null
+    private var _binding: FragmentAddAttributeBinding? = null
     private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentAttributeListBinding.bind(view)
+        _binding = FragmentAddAttributeBinding.bind(view)
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
@@ -56,7 +53,6 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     }
 
     override fun onDestroyView() {
-        skeletonView.hide()
         super.onDestroyView()
         _binding = null
     }
@@ -100,9 +96,8 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
         viewModel.start(navArgs.remoteProductId)
     }
 
-    private fun setupObservers(viewModel: AttributeListViewModel) {
+    private fun setupObservers(viewModel: AddAttributeViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.attributeListRefreshLayout.isRefreshing = it
             }
@@ -121,14 +116,6 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
-
-    private fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(binding.attributeList, R.layout.skeleton_product_list, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
-    }
 
     private fun showAttributes(attributes: List<Product.Attribute>) {
         val adapter: AttributeListAdapter
