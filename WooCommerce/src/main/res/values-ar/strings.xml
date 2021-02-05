@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 09:54:03+0000
+Translation-Revision-Date: 2021-02-04 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
+    <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
+    <string name="order_refunds_shipping_refund_notice_fees">يمكنك استرداد المبالغ المدفوعة في الرسوم ومبالغ الشحن والضرائب %s</string>
+    <string name="shipping_label_validation_view_map">فتح الخريطة</string>
+    <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
+    <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
+    <string name="shipping_label_error_required_field">الحقل المطلوب</string>
+    <string name="shipping_label_error_address_invalid_street">شارع غير صالح</string>
+    <string name="shipping_label_error_address_house_number_missing">رقم المنزل مفقود</string>
+    <string name="shipping_label_error_address_not_found">لم يتم العثور على العنوان</string>
+    <string name="shipping_label_edit_address_error_warning">تعذر علينا التحقُّق من عنوان الشحن تلقائيًا. اعرضه على خرائط غوغل أو حاول الاتصال بالعميل للتأكُّد من صحة العنوان.</string>
+    <string name="shipping_label_edit_address_validation_error">فشل التحقُّق من صحة العنوان</string>
+    <string name="shipping_label_edit_address_validation_progress_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">التحقُّق من صحة العنوان قيد التقدُّم</string>
+    <string name="shipping_label_edit_data_loading_error">يتعذر تحميل بيانات العنوان</string>
+    <string name="shipping_label_edit_address_use_address_as_is">استخدام العنوان كما تم إدخاله</string>
+    <string name="shipping_label_edit_address_country">البلد</string>
+    <string name="shipping_label_edit_address_zip">الرمز البريدي</string>
+    <string name="shipping_label_edit_address_state">الولاية</string>
+    <string name="shipping_label_edit_address_city">المدينة</string>
+    <string name="shipping_label_edit_address_address">العنوان</string>
+    <string name="shipping_label_edit_address_phone">الهاتف</string>
+    <string name="shipping_label_edit_address_company">الشركة</string>
+    <string name="shipping_label_edit_address_name">الاسم</string>
+    <string name="login_not_wordpress_site">موقع الويب ⁦%1$s⁩ ليس موقع ووردبريس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
+    <string name="error_no_gmaps_app">تم العثور على تطبيق خرائط غوغل</string>
+    <string name="please_wait">يُرجى الانتظار…</string>
     <string name="variation_detail_update_variation_image_error">عذرًا، إنَّ إزالة الصورة بشأن مجموعات المنتج المتنوعة مدعومة في WooCommerce الإصدار 4.7 أو أحدث.</string>
     <string name="order_shipment_tracking_progress_message">يُرجى الانتظار</string>
     <string name="order_shipment_tracking_progress_title">إضافة التعقب</string>
@@ -548,6 +575,7 @@ Language: ar
     <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
+    <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b>⁦%1$s⁩&lt;/b></string>
     <string name="country_mapping_ZW">زيمبابوي</string>
     <string name="country_mapping_ZM">زامبيا</string>
     <string name="country_mapping_YE">اليمن</string>
@@ -1103,6 +1131,7 @@ Language: ar
     <string name="add_order_note_menu_item">إضافة</string>
     <string name="add_order_note_label">إرسال الملاحظة عبر البريد الإلكتروني إلى العميل</string>
     <string name="order_error_update_general">حدث خطأ أثناء تغيير الطلب</string>
+    <string name="order_error_fetch_notes_generic">حدث خطأ في أثناء إحضار الملاحظات</string>
     <string name="order_fulfill_marked_complete">تم وضع علامة مكتمل على الطلب</string>
     <string name="order_fulfill_mark_complete">وضع علامة مكتمل على الطلب</string>
     <string name="orderdetail_addnote_contentdesc">إضافة ملاحظة طلب</string>

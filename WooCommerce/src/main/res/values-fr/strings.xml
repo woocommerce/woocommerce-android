@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-20 08:54:04+0000
+Translation-Revision-Date: 2021-02-03 16:54:39+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_wip_title_m5">Nouvelles fonctionnalités disponibles !</string>
+    <string name="product_wip_message_m5">Vous pouvez désormais ajouter des fichiers téléchargeables à un produit et associer des produits suggérés et des ventes croisées. Vous ne voulez plus d’un produit ? Déplacez-le vers la corbeille !</string>
     <string name="order_refunds_shipping_refund_notice_fees">Vous pouvez rembourser les frais, les frais d’expédition et les taxes %s</string>
     <string name="shipping_label_validation_view_map">Ouvrir une carte</string>
     <string name="shipping_label_validation_contact_customer">Contacter le client</string>

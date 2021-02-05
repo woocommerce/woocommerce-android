@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-22 08:54:04+0000
+Translation-Revision-Date: 2021-02-03 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_wip_title_m5">新機能を利用できます。</string>
+    <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
     <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
