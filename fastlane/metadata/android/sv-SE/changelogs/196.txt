@@ -1,0 +1,2 @@
+5.9:
+Denna omgång av uppdateringar av WooCommerce-mobilappen handlar om korrigeringar. Vi tog itu med sällsynta kraschar som inträffade när vi la till en ny produktkategori, ordnade om foton, redigerade text, skapade fraktetiketter och filtrerade produkter. Vi uppdaterade också en tidsgräns för serverförfrågningar och tog bort det föråldrade inköpsinformationskortet från produktinformation.

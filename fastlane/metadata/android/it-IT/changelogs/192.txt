@@ -1,4 +1,0 @@
-5.8:
-Prodotti: ora puoi aggiungere e modificare i file scaricabili, gestire i prodotti collegati ed eliminare i prodotti.
-
-Correzione di bug: abbiamo risolto un problema che interessava a volte i pulsanti per la moderazione nelle recensioni dei prodotti.
