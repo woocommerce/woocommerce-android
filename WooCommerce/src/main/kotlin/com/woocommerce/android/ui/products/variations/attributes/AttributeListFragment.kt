@@ -15,14 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
+import com.woocommerce.android.ui.products.variations.attributes.AttributeListViewModel.ShowAddAttributeScreen
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.ActivityUtils
 
@@ -97,11 +97,18 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
+
+        binding.addAttributeButton.setOnClickListener {
+            // TODO viewModel.onAddAttributeButtonClick(navArgs.remoteProductId)
+        }
     }
 
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowAddAttributeScreen -> openAddAttributeScreen(event.remoteProductId)
+                is Exit -> activity?.onBackPressed()
                 is ExitProductAttributeList -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
@@ -111,6 +118,13 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
             showAttributes(it)
         })
         viewModel.loadProductDraftAttributes()
+    }
+
+    private fun openAddAttributeScreen(remoteProductId: Long) {
+        val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment(
+            remoteProductId
+        )
+        findNavController().navigateSafely(action)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
