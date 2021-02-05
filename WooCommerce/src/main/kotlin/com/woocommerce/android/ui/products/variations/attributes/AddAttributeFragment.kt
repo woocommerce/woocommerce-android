@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -81,14 +80,6 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
         binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
-
-        binding.attributeListRefreshLayout.apply {
-            scrollUpChild = binding.attributeList
-            setOnRefreshListener {
-                // TODO: AnalyticsTracker.track
-                viewModel.refreshAttributes(navArgs.remoteProductId)
-            }
-        }
     }
 
     private fun initializeViewModel() {
@@ -97,12 +88,6 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     }
 
     private fun setupObservers(viewModel: AddAttributeViewModel) {
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.attributeListRefreshLayout.isRefreshing = it
-            }
-        }
-
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })

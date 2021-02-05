@@ -35,12 +35,6 @@ class AddAttributeViewModel @AssistedInject constructor(
         loadAttributes(remoteProductId)
     }
 
-    fun refreshAttributes(remoteProductId: Long) {
-        viewState = viewState.copy(isRefreshing = true)
-        loadAttributes(remoteProductId)
-        viewState = viewState.copy(isRefreshing = false)
-    }
-
     fun onItemClick(attribute: Product.Attribute) {
         // TODO
     }
