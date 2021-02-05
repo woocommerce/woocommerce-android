@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,12 @@ class AttributeListAdapter(
     private val onItemClick: (attribute: Product.Attribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<Product.Attribute>()
+
+    var showTerms: Boolean = true
+        get() = field
+        set(value) {
+            field = value
+        }
 
     init {
         setHasStableIds(true)
@@ -73,7 +80,10 @@ class AttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: Product.Attribute) {
             viewBinding.attributeName.text = attribute.name
-            viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+            viewBinding.attributeTerms.isVisible = showTerms
+            if (showTerms) {
+                viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+            }
         }
     }
 }

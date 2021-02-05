@@ -121,6 +121,13 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+        <action
+            android:id="@+id/action_attributeListFragment_to_addAttributeFragment"
+            app:destination="@id/addAttributeFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -496,6 +503,15 @@
         android:id="@+id/attributeListFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"
         android:label="attributeListFragment" >
+        <argument
+            android:name="remoteProductId"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAttributeFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
+        android:label="addAttributeFragment" >
         <argument
             android:name="remoteProductId"
             app:argType="long"

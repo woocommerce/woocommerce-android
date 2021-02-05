@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/attributeListRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    tools:context="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/attributeEditText"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:layout_marginBottom="@dimen/margin_extra_large"
+            android:hint="@string/product_attribute_name" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/attributeList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="3"
+            tools:listitem="@layout/attribute_list_item" />
+
+    </LinearLayout>
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
