@@ -46,6 +46,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
@@ -448,6 +449,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitProductTags -> {
                 eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
+            }
+            is ExitProductAttributeList -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -970,9 +975,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         // TODO
     }
 
-    fun hasAttributeChanges(): Boolean {
-        return viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
-    }
+    fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Updates the product to the backend only if network is connected.
