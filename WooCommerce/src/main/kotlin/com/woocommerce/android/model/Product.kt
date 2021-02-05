@@ -250,6 +250,12 @@ data class Product(
         } ?: false
     }
 
+    fun hasAttributeChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            attributes != it.attributes
+        } ?: false
+    }
+
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     /**

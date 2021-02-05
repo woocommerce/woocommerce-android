@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -13,28 +15,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListViewModel.ShowAddAttributeScreen
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils
 
-class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
+class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: AttributeListViewModel by viewModels { viewModelFactory }
     private var layoutManager: LayoutManager? = null
     private val navArgs: AttributeListFragmentArgs by navArgs()
 
@@ -48,12 +45,32 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
-        initializeViewModel()
+        setupObservers()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitProductAttributeList())
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_done, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onDoneButtonClicked(ExitProductAttributeList(shouldShowDiscardDialog = false))
+                // TODO analytics
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onResume() {
@@ -80,36 +97,20 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
         binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
-
-        binding.addAttributeButton.setOnClickListener {
-            viewModel.onAddButtonClick(navArgs.remoteProductId)
-        }
     }
 
-    private fun initializeViewModel() {
-        setupObservers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
-    }
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+            when (event) {
+                is ExitProductAttributeList -> findNavController().navigateUp()
+                else -> event.isHandled = false
+            }
+        })
 
-    private fun setupObservers(viewModel: AttributeListViewModel) {
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
-
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowAddAttributeScreen -> openAddAttributeScreen(event.remoteProductId)
-                is Exit -> activity?.onBackPressed()
-            }
-        })
-    }
-
-    private fun openAddAttributeScreen(remoteProductId: Long) {
-        val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment(
-            remoteProductId
-        )
-        findNavController().navigateSafely(action)
+        viewModel.loadProductDraftAttributes()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
@@ -117,7 +118,7 @@ class AttributeListFragment : BaseFragment(R.layout.fragment_attribute_list) {
     private fun showAttributes(attributes: List<Product.Attribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onItemClick)
+            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as AttributeListAdapter
