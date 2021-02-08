@@ -278,6 +278,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         val emptyAddress = address.copy(
+            company = "",
             firstName = "",
             lastName = "",
             address1 = "",
