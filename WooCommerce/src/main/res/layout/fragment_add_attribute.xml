@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/default_window_background"
+    android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface">
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
             android:id="@+id/attributeEditText"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/major_100"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:layout_marginBottom="@dimen/margin_extra_large"
-            android:hint="@string/product_attribute_name" />
+            android:hint="@string/product_new_attribute_name" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/major_100"
+            android:text="@string/product_select_attribute"
+            android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/attributeList"
@@ -26,6 +42,6 @@
             android:layout_height="match_parent"
             tools:itemCount="3"
             tools:listitem="@layout/attribute_list_item" />
-
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
