@@ -110,6 +110,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         viewModel.attributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
+
         viewModel.loadProductDraftAttributes()
     }
 

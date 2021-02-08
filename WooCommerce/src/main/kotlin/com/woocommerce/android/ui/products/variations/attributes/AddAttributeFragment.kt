@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 
@@ -35,7 +34,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
-        initializeViewModel()
+        setupObservers()
     }
 
     override fun onDestroyView() {
@@ -70,11 +69,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeList.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
-    }
 
-    private fun initializeViewModel() {
-        setupObservers()
-        viewModel.start()
+        viewModel.fetchGlobalAttributes()
     }
 
     private fun setupObservers() {
