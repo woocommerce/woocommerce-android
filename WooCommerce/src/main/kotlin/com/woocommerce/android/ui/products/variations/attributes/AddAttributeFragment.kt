@@ -17,8 +17,7 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 
-class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute),
-    OnLoadMoreListener {
+class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
         const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -94,19 +93,14 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
     private fun showGlobalAttributes(globalAttributes: List<ProductGlobalAttribute>) {
-        val adapter: AttributeListAdapter
+        val adapter: GlobalAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick) // TODO
+            adapter = GlobalAttributeListAdapter(viewModel::onGlobalAttributeListItemClick) // TODO
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeListAdapter
+            adapter = binding.attributeList.adapter as GlobalAttributeListAdapter
         }
 
-        adapter.showTerms = false
-        adapter.setAttributeList(globalAttributes)
-    }
-
-    override fun onRequestLoadMore() {
-        // Currently not supported by FluxC
+        adapter.setGlobalAttributeList(globalAttributes)
     }
 }

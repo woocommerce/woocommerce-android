@@ -992,6 +992,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductAttribute)
     }
 
+    /**
+     * User clicked a global attribute in the add attribute fragment
+     */
+    fun onGlobalAttributeListItemClick(globalAttribute: ProductGlobalAttribute) {
+        // TODO
+    }
+
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
