@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
@@ -98,7 +99,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
 
         adapter.setAttributeList(
-            localAttributes = viewModel.getProductDraftAttributes(),
+            localAttributes = viewModel.getProductDraftAttributes().filter { it.id == 0L },
             globalAttributes = globalAttributes
         )
     }
