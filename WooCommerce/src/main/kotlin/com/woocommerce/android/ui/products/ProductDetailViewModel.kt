@@ -456,7 +456,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
-            is ExitProductAttributeList, ExitProductAddAttribute -> {
+            is ExitProductAttributeList -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
+            }
+            is ExitProductAddAttribute -> {
                 // TODO: eventName
                 hasChanges = hasAttributeChanges()
             }

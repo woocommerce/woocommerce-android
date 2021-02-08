@@ -93,17 +93,17 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
-    private fun showGlobalAttributes(attributes: List<ProductGlobalAttribute>) {
+    private fun showGlobalAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onItemClick)
+            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick) // TODO
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
         adapter.showTerms = false
-        adapter.setAttributeList(attributes)
+        adapter.setAttributeList(globalAttributes)
     }
 
     override fun onRequestLoadMore() {
