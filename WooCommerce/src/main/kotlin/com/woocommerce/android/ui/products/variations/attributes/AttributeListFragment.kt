@@ -114,16 +114,15 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         viewModel.loadProductDraftAttributes()
     }
 
-
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
 
     private fun showAttributes(attributes: List<Product.Attribute>) {
-        val adapter: AttributeListAdapter
+        val adapter: CombinedAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
+            adapter = CombinedAttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeListAdapter
+            adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
         }
 
         adapter.setAttributeList(attributes)

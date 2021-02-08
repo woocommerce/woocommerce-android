@@ -972,16 +972,19 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Loads the attributes assigned to the draft product, used by the attribute list fragment
      */
     fun loadProductDraftAttributes() {
-        _attributeList.value =
-            viewState.productDraft?.let {
-                it.attributes
-            } ?: emptyList()
+        _attributeList.value = getProductDraftAttributes()
+    }
+
+    fun getProductDraftAttributes(): List<Product.Attribute> {
+        return viewState.productDraft?.let {
+            it.attributes
+        } ?: emptyList()
     }
 
     /**
-     * User clicked an attribute in the attribute list fragment
+     * User clicked an attribute in the attribute list or add attribute fragment
      */
-    fun onAttributeListItemClick(attribute: Product.Attribute) {
+    fun onAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
         // TODO
     }
 
@@ -990,13 +993,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddAttributeButtonClick() {
         triggerEvent(AddProductAttribute)
-    }
-
-    /**
-     * User clicked a global attribute in the add attribute fragment
-     */
-    fun onGlobalAttributeListItemClick(globalAttribute: ProductGlobalAttribute) {
-        // TODO
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false

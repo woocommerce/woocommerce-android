@@ -17,15 +17,15 @@
             android:id="@+id/attributeEditText"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
-            android:layout_marginBottom="@dimen/major_100"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
             android:hint="@string/product_new_attribute_name" />
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
-        android:layout_marginTop="@dimen/minor_100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
         android:background="?attr/colorSurface"
         android:orientation="vertical">
 
