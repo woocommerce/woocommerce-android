@@ -37,6 +37,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -162,8 +163,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
     val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
-    private val _attributeList = MutableLiveData<List<Product.Attribute>>()
-    val attributeList: LiveData<List<Product.Attribute>> = _attributeList
+    private val _attributeList = MutableLiveData<List<ProductAttribute>>()
+    val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -975,7 +976,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         _attributeList.value = getProductDraftAttributes()
     }
 
-    fun getProductDraftAttributes(): List<Product.Attribute> {
+    fun getProductDraftAttributes(): List<ProductAttribute> {
         return viewState.productDraft?.let {
             it.attributes
         } ?: emptyList()
@@ -984,7 +985,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the attribute list
      */
-    fun onAttributeListItemClick(attribute: Product.Attribute) {
+    fun onAttributeListItemClick(attribute: ProductAttribute) {
         // TODO
     }
 
