@@ -92,12 +92,7 @@ class CombinedAttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: ProductCombinedAttribute) {
             viewBinding.attributeName.text = attribute.name
-            if (attribute.commaSeparatedOptions.isNotEmpty()) {
-                viewBinding.attributeTerms.isVisible = true
-                viewBinding.attributeTerms.text = attribute.commaSeparatedOptions
-            } else {
-                viewBinding.attributeTerms.isVisible = false
-            }
+            viewBinding.attributeTerms.isVisible = false
         }
     }
 }

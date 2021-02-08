@@ -10,16 +10,14 @@ import com.woocommerce.android.model.ProductGlobalAttribute
 class ProductCombinedAttribute(
     val id: Long,
     val name: String,
-    val isGlobalAttribute: Boolean,
-    val commaSeparatedOptions: String = ""
+    val isGlobalAttribute: Boolean
 ) {
     companion object {
         fun fromLocalAttribute(attribute: Product.Attribute): ProductCombinedAttribute {
             return ProductCombinedAttribute(
                 id = attribute.id,
                 name = attribute.name,
-                isGlobalAttribute = false,
-                commaSeparatedOptions = attribute.getCommaSeparatedOptions()
+                isGlobalAttribute = false
             )
         }
 
@@ -35,25 +33,7 @@ class ProductCombinedAttribute(
         return (other as? ProductCombinedAttribute)?.let {
             id == it.id &&
                 name == it.name &&
-                isGlobalAttribute == it.isGlobalAttribute &&
-                commaSeparatedOptions == it.commaSeparatedOptions
+                isGlobalAttribute == it.isGlobalAttribute
         } ?: false
     }
-}
-
-fun ProductCombinedAttribute.fromLocalAttribute(attribute: Product.Attribute): ProductCombinedAttribute {
-    return ProductCombinedAttribute(
-        id = attribute.id,
-        name = attribute.name,
-        isGlobalAttribute = false,
-        commaSeparatedOptions = attribute.getCommaSeparatedOptions()
-    )
-}
-
-fun ProductCombinedAttribute.fromGlobalAttribute(attribute: ProductGlobalAttribute): ProductCombinedAttribute {
-    return ProductCombinedAttribute(
-        id = attribute.id.toLong(),
-        name = attribute.name,
-        isGlobalAttribute = true
-    )
 }

@@ -75,7 +75,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private fun setupObservers() {
         viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
-            showGlobalAttributes(it)
+            showAttributes(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -88,7 +88,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
-    private fun showGlobalAttributes(globalAttributes: List<ProductGlobalAttribute>) {
+    private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: CombinedAttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
