@@ -15,12 +15,6 @@ class AttributeListAdapter(
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<Product.Attribute>()
 
-    var showTerms: Boolean = true
-        get() = field
-        set(value) {
-            field = value
-        }
-
     init {
         setHasStableIds(true)
     }
@@ -80,9 +74,11 @@ class AttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: Product.Attribute) {
             viewBinding.attributeName.text = attribute.name
-            viewBinding.attributeTerms.isVisible = showTerms
-            if (showTerms) {
+            if (attribute.options.isNotEmpty()) {
+                viewBinding.attributeTerms.isVisible = true
                 viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+            } else {
+                viewBinding.attributeTerms.isVisible = false
             }
         }
     }
