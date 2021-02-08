@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -16,10 +17,6 @@ import kotlin.coroutines.resume
 class LoginNoJetpackRepository @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var continuationFetchSiteInfo: Continuation<Boolean>? = null
 
     init {
@@ -32,7 +29,7 @@ class LoginNoJetpackRepository @Inject constructor(
 
     suspend fun verifyJetpackAvailable(siteAddress: String): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchSiteInfo = it
 
                 dispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(siteAddress))

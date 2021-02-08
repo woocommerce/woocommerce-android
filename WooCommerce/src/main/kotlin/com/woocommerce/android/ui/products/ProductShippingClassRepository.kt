@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +26,6 @@ class ProductShippingClassRepository@Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val SHIPPING_CLASS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_SHIPPING_CLASS_PAGE_SIZE
     }
 
@@ -49,7 +49,7 @@ class ProductShippingClassRepository@Inject constructor(
     suspend fun fetchShippingClassesForSite(loadMore: Boolean = false): List<ShippingClass> {
         try {
             continuationShippingClasses?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationShippingClasses = it
                 shippingClassOffset = if (loadMore) {
                     shippingClassOffset + SHIPPING_CLASS_PAGE_SIZE

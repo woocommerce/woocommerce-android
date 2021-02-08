@@ -1,0 +1,2 @@
+5.9:
+Pembaruan aplikasi seluler WooCommerce kali ini semuanya meliputi perbaikan. Kami mengatasi masalah crash yang terjadi saat menambahkan kategori produk baru, menyusun ulang foto, menyunting teks, membuat label pengiriman, dan menyaring produk. Kami juga memperbarui batas waktu habis untuk permintaan ke server, serta menghapus kartu rincian pembelian usang dari detail produk.

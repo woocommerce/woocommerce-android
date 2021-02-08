@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -20,7 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
@@ -38,11 +36,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_STOCK_STATUS
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.Companion.ARG_PRODUCT_FILTER_TYPE_STATUS
 import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
@@ -61,19 +55,16 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener,
-    NavigationResult {
+    OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        const val KEY_LIST_STATE = "list-state"
-        fun newInstance() = ProductListFragment()
+        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private lateinit var productAdapter: ProductListAdapter
-    private var listState: Parcelable? = null
 
     private val viewModel: ProductListViewModel by viewModels { viewModelFactory }
 
@@ -94,12 +85,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setHasOptionsMenu(true)
+
         _binding = FragmentProductListBinding.bind(view)
         setupObservers(viewModel)
         setupResultHandlers()
-        setHasOptionsMenu(true)
-
-        listState = savedInstanceState?.getParcelable(KEY_LIST_STATE)
 
         productAdapter = ProductListAdapter(this, this)
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
@@ -116,6 +106,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 viewModel.onRefreshRequested()
             }
         }
+
+        if (!viewModel.isSearching()) {
+            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -123,15 +117,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         super.onAttach(context)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(KEY_LIST_STATE, binding.productsRecycler.layoutManager?.onSaveInstanceState())
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onDestroyView() {
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
+        showAddProductButton(false)
         super.onDestroyView()
         _binding = null
     }
@@ -144,46 +134,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (hidden) {
-            disableSearchListeners()
-            trashProductUndoSnack?.dismiss()
-            showAddProductButton(false)
-        } else {
-            enableSearchListeners()
-            if (!viewModel.isSearching()) {
-                showAddProductButton(true)
-            }
-        }
-    }
-
-    override fun onChildFragmentOpened() {
-        showAddProductButton(false)
-    }
-
-    override fun onReturnedFromChildFragment() {
-        showOptionsMenu(true)
-
-        if (!viewModel.isSearching()) {
-            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
-            showAddProductButton(true)
-        }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.PRODUCT_LIST_FILTERS -> {
-                viewModel.onFiltersChanged(
-                    stockStatus = result.getString(ARG_PRODUCT_FILTER_STOCK_STATUS),
-                    productStatus = result.getString(ARG_PRODUCT_FILTER_STATUS),
-                    productType = result.getString(ARG_PRODUCT_FILTER_TYPE_STATUS)
-                )
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -199,13 +149,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onPrepareOptionsMenu(menu: Menu) {
         refreshOptionsMenu()
         super.onPrepareOptionsMenu(menu)
-    }
-
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            refreshOptionsMenu()
-        }
     }
 
     /**
@@ -319,10 +262,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(
-                    show = isVisible && isActive &&
-                        (requireActivity() as? MainNavigationRouter)?.isAtNavigationRoot() == true
-                )
+                showAddProductButton(show = isVisible)
             }
         }
 
@@ -355,6 +295,13 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 trashProduct(remoteProductId)
             }
         }
+        handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
+            viewModel.onFiltersChanged(
+                stockStatus = result.stockStatus,
+                productStatus = result.productStatus,
+                productType = result.productType
+            )
+        }
     }
 
     private fun trashProduct(remoteProductId: Long) {
@@ -382,7 +329,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
         trashProductUndoSnack = uiMessageResolver.getUndoSnack(
             R.string.product_trash_undo_snackbar_message,
-            actionListener = actionListener)
+            actionListener = actionListener
+        )
             .also {
                 it.addCallback(callback)
                 it.show()
@@ -390,12 +338,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     override fun getFragmentTitle() = getString(R.string.products)
-
-    override fun refreshFragmentState() {
-        if (isActive) {
-            viewModel.refreshProducts()
-        }
-    }
 
     override fun scrollToTop() {
         binding.productsRecycler.smoothScrollToPosition(0)
@@ -416,18 +358,14 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     private fun showProductList(products: List<Product>) {
         productAdapter.setProductList(products)
-        listState?.let {
-            binding.productsRecycler.layoutManager?.onRestoreInstanceState(it)
-            listState = null
-        }
 
         showProductWIPNoticeCard(true)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
         if (show && feedbackState != DISMISSED) {
-            val wipCardTitleId = R.string.product_adding_wip_title
-            val wipCardMessageId = R.string.product_wip_message_m4
+            val wipCardTitleId = R.string.product_wip_title_m5
+            val wipCardMessageId = R.string.product_wip_message_m5
 
             binding.productsWipCard.visibility = View.VISIBLE
             binding.productsWipCard.initView(
@@ -463,6 +401,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 addProductButton.show()
             }
         }
+
         fun hideButton() = run {
             if (addProductButton.isVisible) {
                 addProductButton.hide()
@@ -486,8 +425,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
 
     private fun showProductDetails(remoteProductId: Long) {
-        disableSearchListeners()
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
     }
 
@@ -498,8 +435,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun showProductFilterScreen(stockStatus: String?, productType: String?, productStatus: String?) {
-        disableSearchListeners()
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.showProductFilters(stockStatus, productType, productStatus)
     }
 
@@ -521,7 +456,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-        ))
+        )
+        )
         registerFeedbackSetting(GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
@@ -533,7 +469,8 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             FEATURE_FEEDBACK_BANNER, mapOf(
             AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCT_M3_FEEDBACK,
             AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-        ))
+        )
+        )
         registerFeedbackSetting(DISMISSED)
         showProductWIPNoticeCard(false)
     }
@@ -543,5 +480,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
     }
 
-    override fun isScrolledToTop() = binding.productsRecycler.computeVerticalScrollOffset() == 0
+    override fun shouldExpandToolbar(): Boolean {
+        return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
+    }
 }

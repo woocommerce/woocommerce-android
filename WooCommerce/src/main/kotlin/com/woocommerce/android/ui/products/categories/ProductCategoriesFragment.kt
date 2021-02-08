@@ -11,13 +11,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
@@ -29,7 +28,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 
 class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_categories_list),
-    OnLoadMoreListener, OnProductCategoryClickListener, NavigationResult {
+    OnLoadMoreListener, OnProductCategoryClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -73,6 +72,7 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
 
         setHasOptionsMenu(true)
         setupObservers(viewModel)
+        setupResultHandlers()
         viewModel.fetchProductCategories()
     }
 
@@ -132,6 +132,13 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
         })
     }
 
+    private fun setupResultHandlers() {
+        handleResult<ProductCategory>(ARG_ADDED_CATEGORY) { category ->
+            viewModel.onProductCategoryAdded(category)
+            changesMade()
+        }
+    }
+
     private fun showProductCategories(productCategories: List<ProductCategory>) {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         val sortedList = viewModel.sortAndStyleProductCategories(product, productCategories)
@@ -189,18 +196,6 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
             changesMade()
-        }
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.PRODUCT_ADD_CATEGORY -> {
-                val addedCategory = result.getParcelable(ARG_ADDED_CATEGORY) as? ProductCategory
-                addedCategory?.let {
-                    viewModel.onProductCategoryAdded(it)
-                    changesMade()
-                }
-            }
         }
     }
 }

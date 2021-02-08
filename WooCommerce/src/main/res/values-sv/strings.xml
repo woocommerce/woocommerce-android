@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-20 15:54:05+0000
+Translation-Revision-Date: 2021-02-02 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
+    <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>

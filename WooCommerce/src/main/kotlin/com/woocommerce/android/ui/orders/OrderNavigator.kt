@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
@@ -91,7 +92,7 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewCreateShippingLabelInfo -> {
-                val action = OrderDetailFragmentDirections.actionGlobalInfoScreenFragment(
+                val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
                     R.string.shipping_label_more_information_title,
                     R.string.shipping_label_more_information_heading,
                     R.string.shipping_label_more_information_message,

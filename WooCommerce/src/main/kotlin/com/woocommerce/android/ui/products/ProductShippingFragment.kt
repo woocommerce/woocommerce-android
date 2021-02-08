@@ -9,15 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductShippingBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isFloat
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.main.MainActivity.NavigationResult
-import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_ID
-import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.ARG_SELECTED_SHIPPING_CLASS_SLUG
+import com.woocommerce.android.model.ShippingClass
+import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.SELECTED_SHIPPING_CLASS_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -28,7 +27,7 @@ import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 /**
  * Fragment which enables updating product shipping data.
  */
-class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping), NavigationResult {
+class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping) {
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory.get() }
 
     override val isDoneButtonVisible: Boolean
@@ -46,6 +45,7 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         _binding = FragmentProductShippingBinding.bind(view)
 
         setupObservers(viewModel)
+        setupResultHandlers()
         setupViews()
     }
 
@@ -89,6 +89,15 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<ShippingClass>(SELECTED_SHIPPING_CLASS_RESULT) { shippingClass ->
+            viewModel.onDataChanged(
+                shippingClassSlug = shippingClass.slug,
+                shippingClassId = shippingClass.remoteShippingClassId
+            )
+        }
     }
 
     private fun setupViews() {
@@ -135,22 +144,9 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
     private fun showShippingClassFragment() {
         val action = ProductShippingFragmentDirections
                 .actionProductShippingFragmentToProductShippingClassFragment(
-                    productShippingClassSlug = viewModel.shippingData.shippingClassSlug ?: ""
+                    productShippingClassId = viewModel.shippingData.shippingClassId ?: -1
                 )
         findNavController().navigateSafely(action)
-    }
-
-    override fun onNavigationResult(requestCode: Int, result: Bundle) {
-        when (requestCode) {
-            RequestCodes.PRODUCT_SHIPPING_CLASS -> {
-                val selectedShippingClassSlug = result.getString(ARG_SELECTED_SHIPPING_CLASS_SLUG, "")
-                val selectedShippingClassId = result.getLong(ARG_SELECTED_SHIPPING_CLASS_ID)
-                viewModel.onDataChanged(
-                    shippingClassSlug = selectedShippingClassSlug,
-                    shippingClassId = selectedShippingClassId
-                )
-            }
-        }
     }
 
     override fun onDoneButtonClicked() {

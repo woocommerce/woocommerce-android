@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
@@ -33,7 +34,6 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -63,10 +63,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
@@ -87,7 +83,7 @@ class OrderDetailRepository @Inject constructor(
         val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
         try {
             continuationFetchOrder?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrder = it
 
                 val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
@@ -107,7 +103,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationFetchOrderNotes?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrderNotes = it
 
                 val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
@@ -125,7 +121,7 @@ class OrderDetailRepository @Inject constructor(
     ): RequestResult {
         return try {
             continuationFetchOrderShipmentTrackingList?.cancel()
-            suspendCancellableCoroutineWithTimeout<RequestResult>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<RequestResult>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchOrderShipmentTrackingList = it
 
                 val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
@@ -163,7 +159,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationUpdateOrderStatus?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateOrderStatus = it
 
                 val payload = UpdateOrderStatusPayload(
@@ -189,7 +185,7 @@ class OrderDetailRepository @Inject constructor(
                 WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
                 return false
             }
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddOrderNote = it
 
                 val dataModel = noteModel.toDataModel()
@@ -209,7 +205,7 @@ class OrderDetailRepository @Inject constructor(
         val orderIdSet = orderIdentifier.toIdSet()
         return try {
             continuationAddShipmentTracking?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddShipmentTracking = it
 
                 val payload = AddOrderShipmentTrackingPayload(
@@ -234,7 +230,7 @@ class OrderDetailRepository @Inject constructor(
     ): Boolean {
         return try {
             continuationDeleteShipmentTracking?.cancel()
-            suspendCancellableCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationDeleteShipmentTracking = it
 
                 val payload = DeleteOrderShipmentTrackingPayload(
@@ -265,12 +261,18 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun getProductsByRemoteIds(remoteIds: List<Long>): List<WCProductModel> {
-        return if (remoteIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteIds)
-        } else {
-            emptyList()
-        }
+    fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getVirtualProductCountByRemoteIds(
+                selectedSite.get(), remoteProductIds
+            ) == remoteProductIds.size
+        } else false
+    }
+
+    fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+        } else 0
     }
 
     fun getOrderRefunds(remoteOrderId: Long) = refundStore
@@ -306,10 +308,12 @@ class OrderDetailRepository @Inject constructor(
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
             WCOrderAction.FETCH_SINGLE_ORDER -> {
-                if (event.isError) {
-                    continuationFetchOrder?.resume(false)
-                } else {
-                    continuationFetchOrder?.resume(true)
+                if (continuationFetchOrder?.isActive == true) {
+                    if (event.isError) {
+                        continuationFetchOrder?.resume(false)
+                    } else {
+                        continuationFetchOrder?.resume(true)
+                    }
                 }
             }
             WCOrderAction.FETCH_ORDER_NOTES -> {

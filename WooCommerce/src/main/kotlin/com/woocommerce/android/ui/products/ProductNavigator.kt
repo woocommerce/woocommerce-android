@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.products
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
@@ -12,7 +12,6 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -22,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloads
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
@@ -102,8 +102,7 @@ class ProductNavigator @Inject constructor() {
                         .actionGlobalAztecEditorFragment(
                                 target.purchaseNote,
                                 target.title,
-                                target.caption,
-                                RequestCodes.PRODUCT_SETTINGS_PURCHASE_NOTE
+                                target.caption
                         )
                 fragment.findNavController().navigateSafely(action)
             }

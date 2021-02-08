@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductShippingClassListBinding
 import com.woocommerce.android.extensions.hide
@@ -16,19 +16,17 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ShippingClassAdapterListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 /**
  * Dialog which displays a list of product shipping classes
  */
-class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list),
-    ShippingClassAdapterListener {
+class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_shipping_class_list) {
     companion object {
         const val TAG = "ProductShippingClassFragment"
-        const val ARG_SELECTED_SHIPPING_CLASS_SLUG = "selected-shipping-class-slug"
-        const val ARG_SELECTED_SHIPPING_CLASS_ID = "selected-shipping-class-id"
+        const val SELECTED_SHIPPING_CLASS_RESULT = "selected-shipping-class"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -48,9 +46,8 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
         setupObservers()
 
         shippingClassAdapter = ProductShippingClassAdapter(
-            requireActivity(),
-            this,
-            navArgs.productShippingClassSlug
+            this::onShippingClassClicked,
+            this::onLoadMoreRequested
         )
 
         with(binding.recycler) {
@@ -78,34 +75,33 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
     }
 
     private fun setupObservers() {
-        viewModel.productShippingClassViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isLoadingProgressShown.takeIfNotEqualTo(old?.isLoadingProgressShown) {
                 showLoadingProgress(new.isLoadingProgressShown)
             }
             new.isLoadingMoreProgressShown.takeIfNotEqualTo(old?.isLoadingMoreProgressShown) {
                 showLoadingMoreProgress(new.isLoadingMoreProgressShown)
             }
-            new.shippingClassList.takeIfNotEqualTo(old?.shippingClassList) {
-                shippingClassAdapter?.shippingClassList = it!!
+            new.shippingClassList?.takeIfNotEqualTo(old?.shippingClassList) {
+                shippingClassAdapter?.update(it, navArgs.productShippingClassId)
+            }
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_SHIPPING_CLASS_RESULT, event.data)
+                else -> event.isHandled = false
             }
         }
     }
 
     override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
-    override fun onShippingClassClicked(shippingClass: ShippingClass?) {
-        val bundle = Bundle()
-        bundle.putString(ARG_SELECTED_SHIPPING_CLASS_SLUG, shippingClass?.slug ?: "")
-        bundle.putLong(ARG_SELECTED_SHIPPING_CLASS_ID, shippingClass?.remoteShippingClassId ?: 0L)
-        requireActivity().navigateBackWithResult(
-                RequestCodes.PRODUCT_SHIPPING_CLASS,
-                bundle,
-                R.id.nav_host_fragment_main,
-                R.id.productShippingFragment
-        )
+    private fun onShippingClassClicked(shippingClass: ShippingClass) {
+        viewModel.onShippingClassClicked(shippingClass)
     }
 
-    override fun onRequestLoadMore() {
+    private fun onLoadMoreRequested() {
         viewModel.loadShippingClasses(loadMore = true)
     }
 

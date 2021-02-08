@@ -38,8 +38,7 @@ class VariationNavigator @Inject constructor() {
                     .actionGlobalAztecEditorFragment(
                         target.description,
                         target.title,
-                        null,
-                        RequestCodes.AZTEC_EDITOR_VARIATION_DESCRIPTION
+                        null
                     )
                 fragment.findNavController().navigateSafely(action)
             }

@@ -589,7 +589,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isProductUpdated = when (event) {
             is ExitProductDetail -> isProductDetailUpdated
-            is ExitProductTags -> isProductDetailUpdated || !_addedProductTags.isEmpty()
+            is ExitProductTags -> isProductDetailUpdated && isProductSubDetailUpdated || !_addedProductTags.isEmpty()
             else -> isProductDetailUpdated && isProductSubDetailUpdated
         }
         if (isProductUpdated && event.shouldShowDiscardDialog) {

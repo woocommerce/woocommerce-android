@@ -6,20 +6,20 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.SparseArray
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentManager
+import androidx.core.view.forEach
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.Builder
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemReselectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.active
-import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
+import com.woocommerce.android.R.anim
 import org.wordpress.android.util.DisplayUtils
 import kotlin.math.min
 
@@ -27,16 +27,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : BottomNavigationView(context, attrs),
-        OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
-    private lateinit var navAdapter: NavAdapter
-    private lateinit var fragmentManager: FragmentManager
+    OnNavigationItemSelectedListener, OnNavigationItemReselectedListener {
+    private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var reviewsBadge: BadgeDrawable
-
-    companion object {
-        private var previousNavPos: BottomNavigationPosition? = null
-    }
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
@@ -45,20 +40,23 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     var currentPosition: BottomNavigationPosition
         get() = findNavigationPositionById(selectedItemId)
-        set(navPos) = updateCurrentPosition(navPos)
+        set(value) = navController.navigate(value.id)
 
-    fun init(fm: FragmentManager, listener: MainNavigationListener) {
-        this.fragmentManager = fm
+    fun init(navController: NavController, listener: MainNavigationListener) {
         this.listener = listener
+        this.navController = navController
 
-        navAdapter = NavAdapter()
         addTopDivider()
         createBadges()
 
         assignNavigationListeners(true)
-
-        // Default to the dashboard position
-        active(MY_STORE.position)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            menu.forEach { item ->
+                if (destination.id == item.itemId) {
+                    item.isChecked = true
+                }
+            }
+        }
     }
 
     /**
@@ -148,12 +146,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment = navAdapter.getFragment(navPos)
-
-    fun updatePositionAndDeferInit(navPos: BottomNavigationPosition) {
-        updateCurrentPosition(navPos, true)
-    }
-
     /**
      * For use when restoring the navigation bar after the host activity
      * state has been restored.
@@ -183,8 +175,19 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navPos = findNavigationPositionById(item.itemId)
-        currentPosition = navPos
+        val builder = Builder()
+            .setLaunchSingleTop(true)
+            .setEnterAnim(anim.nav_default_enter_anim)
+            .setExitAnim(anim.nav_default_exit_anim)
+            .setPopEnterAnim(anim.nav_default_pop_enter_anim)
+            .setPopExitAnim(anim.nav_default_pop_exit_anim)
 
+        val options: NavOptions = builder.build()
+        try {
+            navController.navigate(item.itemId, null, options)
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
         listener.onNavItemSelected(navPos)
         return true
     }
@@ -194,83 +197,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
         listener.onNavItemReselected(navPos)
     }
 
-    /**
-     * Replaces the fragment in [MY_STORE] based on whether the revenue stats is available
-     */
-    fun replaceStatsFragment() {
-        val fragment = fragmentManager.findFragment(currentPosition)
-        val tag = currentPosition.getTag()
-
-        // replace the fragment
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment, tag)
-                .show(fragment)
-                .commitAllowingStateLoss()
-
-        // update the correct fragment in the navigation adapter
-        navAdapter.replaceFragment(currentPosition, fragment)
-    }
-
-    private fun updateCurrentPosition(navPos: BottomNavigationPosition, deferInit: Boolean = false) {
-        assignNavigationListeners(false)
-        try {
-            selectedItemId = navPos.id
-        } finally {
-            assignNavigationListeners(true)
-        }
-
-        val fragment = navAdapter.getFragment(navPos)
-        fragment.deferInit = deferInit
-
-        // hide previous fragment if it exists
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        previousNavPos?.let {
-            val previousFragment = navAdapter.getFragment(it)
-            fragmentTransaction.hide(previousFragment)
-        }
-
-        // add the fragment if it hasn't been added yet
-        val tag = navPos.getTag()
-        if (fragmentManager.findFragmentByTag(tag) == null) {
-            fragmentTransaction.add(R.id.container, fragment, tag)
-        }
-
-        // show the new fragment
-        fragmentTransaction.show(fragment)
-        fragmentTransaction.commitAllowingStateLoss()
-
-        previousNavPos = navPos
-    }
-
     private fun assignNavigationListeners(assign: Boolean) {
         setOnNavigationItemSelectedListener(if (assign) this else null)
         setOnNavigationItemReselectedListener(if (assign) this else null)
     }
-
-    /**
-     * Extension function for retrieving an existing fragment from the [FragmentManager]
-     * if one exists, if not, create a new instance of the requested fragment.
-     */
-    private fun FragmentManager.findFragment(position: BottomNavigationPosition): TopLevelFragment {
-        return (findFragmentByTag(position.getTag()) ?: position.createFragment()) as TopLevelFragment
-    }
-
-    // region Private Classes
-    private inner class NavAdapter {
-        private val fragments = SparseArray<TopLevelFragment>(BottomNavigationPosition.values().size)
-
-        internal fun getFragment(navPos: BottomNavigationPosition): TopLevelFragment {
-            fragments[navPos.position]?.let {
-                return it
-            }
-
-            val fragment = fragmentManager.findFragment(navPos)
-            fragments.put(navPos.position, fragment)
-            return fragment
-        }
-
-        internal fun replaceFragment(navPos: BottomNavigationPosition, fragment: TopLevelFragment) =
-                fragments.put(navPos.position, fragment)
-    }
-    // endregion
 }

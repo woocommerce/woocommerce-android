@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.reviews
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductReview
@@ -29,7 +30,6 @@ class ProductReviewsRepository @Inject constructor(
 ) {
     companion object {
         private const val PRODUCT_REVIEW_STATUS_APPROVED = "approved"
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
     }
 
@@ -58,7 +58,7 @@ class ProductReviewsRepository @Inject constructor(
         loadMore: Boolean
     ): List<ProductReview> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PAGE_SIZE else 0
                 isFetchingProductReviews = true
                 continuationReviews = it

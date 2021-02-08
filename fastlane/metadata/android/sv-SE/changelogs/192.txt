@@ -1,4 +1,0 @@
-5,8:
-Produkter: Du kan nu lägga till och redigera nedladdningsbara filer, hantera länkade produkter och ta bort produkter.
-
-Buggkorrigeringar: Vi löste ett problem som ibland påverkade modereringsknapparna i produktrecensioner.

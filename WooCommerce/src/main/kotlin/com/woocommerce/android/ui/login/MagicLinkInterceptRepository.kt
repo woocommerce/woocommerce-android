@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FETCH_ACCOUNT_SETTINGS_FAILED
@@ -36,10 +37,6 @@ class MagicLinkInterceptRepository @Inject constructor(
     private val accountStore: AccountStore,
     private val loginAnalyticsListener: LoginAnalyticsListener
 ) {
-    companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
-    }
-
     private var isHandlingMagicLink: Boolean = false
 
     private var continuationUpdateToken: Continuation<Boolean>? = null
@@ -127,7 +124,7 @@ class MagicLinkInterceptRepository @Inject constructor(
      */
     private suspend fun storeMagicLinkToken(token: String): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateToken = it
 
                 dispatcher.dispatch(AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(token)))
@@ -145,7 +142,7 @@ class MagicLinkInterceptRepository @Inject constructor(
      */
     private suspend fun fetchAccount(): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchAccount = it
 
                 dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
@@ -163,7 +160,7 @@ class MagicLinkInterceptRepository @Inject constructor(
      */
     private suspend fun fetchAccountSettings(): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchAccountSettings = it
 
                 dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
@@ -181,7 +178,7 @@ class MagicLinkInterceptRepository @Inject constructor(
      */
     private suspend fun fetchSites(): Boolean {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 continuationFetchSites = it
 
                 dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())

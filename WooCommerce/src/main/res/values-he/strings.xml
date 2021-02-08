@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-20 14:54:04+0000
+Translation-Revision-Date: 2021-02-03 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
+    <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
     <string name="order_refunds_shipping_refund_notice_fees">אפשר להנפיק החזר כספי עבור סכומים של עמלות, משלוח ומיסים %s</string>
     <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>

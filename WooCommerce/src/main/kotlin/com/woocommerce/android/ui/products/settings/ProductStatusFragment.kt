@@ -7,7 +7,6 @@ import android.widget.CheckedTextView
 import androidx.annotation.IdRes
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductStatusBinding
 import com.woocommerce.android.ui.products.ProductStatus
@@ -26,12 +25,10 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
     }
 
     private val navArgs: ProductStatusFragmentArgs by navArgs()
-    private var selectedStatus: String? = null
+    private lateinit var selectedStatus: String
 
     private var _binding: FragmentProductStatusBinding? = null
     private val binding get() = _binding!!
-
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_STATUS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,18 +46,16 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         binding.btnPending.setOnClickListener(this)
         binding.btnTrashed.setOnClickListener(this)
 
-        selectedStatus?.let { status ->
-            getButtonForStatus(status)?.isChecked = true
+        getButtonForStatus(selectedStatus)?.isChecked = true
 
-            // if the post is private, we hide the "Published" button and show "Privately published."
-            // making a product private is done on the product visibility screen
-            if (status == PRIVATE.toString()) {
-                binding.btnPublishedPrivately.visibility = View.VISIBLE
-                binding.btnPublished.visibility = View.GONE
-            } else {
-                binding.btnPublishedPrivately.visibility = View.GONE
-                binding.btnPublished.visibility = View.VISIBLE
-            }
+        // if the post is private, we hide the "Published" button and show "Privately published."
+        // making a product private is done on the product visibility screen
+        if (selectedStatus == PRIVATE.toString()) {
+            binding.btnPublishedPrivately.visibility = View.VISIBLE
+            binding.btnPublished.visibility = View.GONE
+        } else {
+            binding.btnPublishedPrivately.visibility = View.GONE
+            binding.btnPublished.visibility = View.VISIBLE
         }
     }
 
@@ -87,11 +82,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         }
     }
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putString(ARG_SELECTED_STATUS, selectedStatus)
-        }
-    }
+    override fun getChangesResult() = ARG_SELECTED_STATUS to ProductStatus.fromString(selectedStatus)!!
 
     override fun hasChanges() = navArgs.status != selectedStatus
 
@@ -115,14 +106,14 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         }
     }
 
-    private fun getStatusForButtonId(@IdRes buttonId: Int): String? {
+    private fun getStatusForButtonId(@IdRes buttonId: Int): String {
         return when (buttonId) {
             R.id.btnPublished -> PUBLISH.toString()
             R.id.btnDraft -> DRAFT.toString()
             R.id.btnPending -> PENDING.toString()
             R.id.btnPrivate -> PRIVATE.toString()
             R.id.btnTrashed -> TRASH.toString()
-            else -> null
+            else -> throw IllegalArgumentException()
         }
     }
 }

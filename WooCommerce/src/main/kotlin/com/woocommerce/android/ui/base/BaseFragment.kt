@@ -57,12 +57,6 @@ open class BaseFragment : Fragment, BaseFragmentView, HasAndroidInjector {
     }
 
     fun updateActivityTitle() {
-        // if this is a top level fragment, skip setting the title when it's not active in the bottom nav
-        (this as? TopLevelFragment)?.let {
-            if (!it.isActive) {
-                return
-            }
-        }
         if (isAdded && !isHidden) {
             activity?.title = getFragmentTitle()
         }

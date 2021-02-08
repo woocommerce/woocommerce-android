@@ -30,7 +30,6 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.di.GlideRequest
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.downloads.DraggableItemTouchHelper
 import kotlinx.android.synthetic.main.image_gallery_item.view.*
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -302,7 +301,9 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             // add the new ones to the top of the list
             if (placeholders.isNotEmpty()) {
-                imageList.addAll(0, placeholders)
+                val list = placeholders + imageList
+                imageList.clear()
+                imageList.addAll(list)
                 didChange = true
             }
 
@@ -400,7 +401,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         @SuppressLint("ClickableViewAccessibility")
         private val dragOnTouchListener = OnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
+            if (event.action == MotionEvent.ACTION_DOWN && draggableItemTouchHelper.isAttached) {
                 draggableItemTouchHelper.startDrag(this@ImageViewHolder)
             }
             return@OnTouchListener false

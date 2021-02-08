@@ -147,8 +147,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(repository).getOrderShippingLabels(any())
         doReturn(emptyList<ShippingLabel>()).whenever(repository).fetchOrderShippingLabels(any())
 
-        doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(any())
-
         var orderData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
@@ -228,7 +226,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
             val virtualOrder = order.copy(items = virtualItems)
 
-            doReturn(virtualProducts).whenever(repository).getProductsByRemoteIds(listOf(3, 4))
+            doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(repository).getOrder(any())
             doReturn(virtualOrder).whenever(repository).fetchOrder(any())
 
@@ -251,7 +249,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val mixedItems = listOf(item, item.copy(productId = 2))
             val mixedOrder = order.copy(items = mixedItems)
 
-            doReturn(mixedProducts).whenever(repository).getProductsByRemoteIds(listOf(1, 2))
+            doReturn(false).whenever(repository).hasVirtualProductsOnly(listOf(1, 2))
             doReturn(mixedOrder).whenever(repository).getOrder(any())
             doReturn(mixedOrder).whenever(repository).fetchOrder(any())
 
@@ -285,7 +283,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `fetch products if there are some missing`() =
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            val product = mixedProducts.first()
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val items = listOf(item, item.copy(productId = 2))
             val ids = items.map { it.productId }
@@ -293,7 +290,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val order = order.copy(items = items)
             doReturn(order).whenever(repository).getOrder(any())
             doReturn(order).whenever(repository).fetchOrder(any())
-            doReturn(listOf(product)).whenever(repository).getProductsByRemoteIds(ids)
+            doReturn(1).whenever(repository).getProductCountForOrder(ids)
 
             doReturn(true).whenever(repository).fetchOrderNotes(any(), any())
             doReturn(testOrderNotes).whenever(repository).getOrderNotes(any())

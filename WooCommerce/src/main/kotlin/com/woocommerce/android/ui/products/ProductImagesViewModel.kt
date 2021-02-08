@@ -294,8 +294,11 @@ class ProductImagesViewModel @AssistedInject constructor(
     }
 
     fun onGalleryImageMoved(from: Int, to: Int) {
-        val reorderedImages = images.swap(from, to)
-        viewState = viewState.copy(images = reorderedImages)
+        val canSwap = from >= 0 && from < images.size && to >= 0 && to < images.size
+        if (canSwap) {
+            val reorderedImages = images.swap(from, to)
+            viewState = viewState.copy(images = reorderedImages)
+        }
     }
 
     @Parcelize

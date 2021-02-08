@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ProductVariation
@@ -27,7 +28,6 @@ class VariationListRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     companion object {
-        private const val ACTION_TIMEOUT = 10L * 1000
         private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
     }
 
@@ -51,7 +51,7 @@ class VariationListRepository @Inject constructor(
      */
     suspend fun fetchProductVariations(remoteProductId: Long, loadMore: Boolean = false): List<ProductVariation> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
+            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 offset = if (loadMore) offset + PRODUCT_VARIATIONS_PAGE_SIZE else 0
                 loadContinuation = it
                 val payload = WCProductStore.FetchProductVariationsPayload(

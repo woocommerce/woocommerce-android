@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductSlugBinding
 
@@ -16,7 +15,6 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
         const val ARG_SLUG = "slug"
     }
 
-    override val requestCode = RequestCodes.PRODUCT_SETTINGS_SLUG
     private val navArgs: ProductSlugFragmentArgs by navArgs()
 
     private var _binding: FragmentProductSlugBinding? = null
@@ -40,11 +38,7 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
 
     override fun hasChanges() = getSlug() != navArgs.slug
 
-    override fun getChangesBundle(): Bundle {
-        return Bundle().also {
-            it.putString(ARG_SLUG, getSlug())
-        }
-    }
+    override fun getChangesResult(): Pair<String, Any> = ARG_SLUG to getSlug()
 
     override fun validateChanges() = true
 

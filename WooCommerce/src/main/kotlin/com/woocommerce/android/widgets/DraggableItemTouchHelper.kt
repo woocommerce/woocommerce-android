@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.downloads
+package com.woocommerce.android.widgets
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -37,4 +37,11 @@ class DraggableItemTouchHelper(
                 }
             }
         }
-)
+) {
+    var isAttached: Boolean = false
+
+    override fun attachToRecyclerView(recyclerView: RecyclerView?) {
+        super.attachToRecyclerView(recyclerView)
+        isAttached = recyclerView != null
+    }
+}
