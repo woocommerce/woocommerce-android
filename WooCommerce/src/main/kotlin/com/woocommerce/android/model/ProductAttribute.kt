@@ -4,6 +4,9 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 
+/**
+ * Represents a local attribute, which is an attribute assigned to a specific product
+ */
 @Parcelize
 data class ProductAttribute(
     val id: Long,
