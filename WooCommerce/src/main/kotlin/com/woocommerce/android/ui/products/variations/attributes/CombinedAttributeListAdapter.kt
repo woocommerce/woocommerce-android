@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.products.variations.attributes.CombinedAttribu
 class CombinedAttributeListAdapter(
     private val onItemClick: (id: Long, isGlobalAttribute: Boolean) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
-    private var attributeList = listOf<ProductCombinedAttribute>()
+    private var attributeList = listOf<CombinedAttributeModel>()
 
     init {
         setHasStableIds(true)
@@ -44,8 +44,8 @@ class CombinedAttributeListAdapter(
     }
 
     private class AttributeItemDiffUtil(
-        val oldList: List<ProductCombinedAttribute>,
-        val newList: List<ProductCombinedAttribute>
+        val oldList: List<CombinedAttributeModel>,
+        val newList: List<CombinedAttributeModel>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
                 oldList[oldItemPosition].id == newList[newItemPosition].id
@@ -65,10 +65,10 @@ class CombinedAttributeListAdapter(
         localAttributes: List<Product.Attribute>,
         globalAttributes: List<ProductGlobalAttribute>
     ) {
-        val combinedList = ArrayList<ProductCombinedAttribute>()
+        val combinedList = ArrayList<CombinedAttributeModel>()
 
-        localAttributes.map { combinedList.add(ProductCombinedAttribute.fromLocalAttribute(it)) }
-        globalAttributes.map { combinedList.add(ProductCombinedAttribute.fromGlobalAttribute(it)) }
+        localAttributes.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
+        globalAttributes.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
         combinedList.sortBy { it.name }
 
         val diffResult = DiffUtil.calculateDiff(
@@ -84,7 +84,7 @@ class CombinedAttributeListAdapter(
 
     inner class AttributeViewHolder(val viewBinding: AttributeListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(attribute: ProductCombinedAttribute) {
+        fun bind(attribute: CombinedAttributeModel) {
             viewBinding.attributeName.text = attribute.name
             viewBinding.attributeTerms.isVisible = false
         }
