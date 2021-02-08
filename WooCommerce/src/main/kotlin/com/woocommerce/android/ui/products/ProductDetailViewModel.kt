@@ -39,6 +39,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -52,11 +53,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadsSettings
@@ -162,6 +163,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _attributeList = MutableLiveData<List<Product.Attribute>>()
     val attributeList: LiveData<List<Product.Attribute>> = _attributeList
+
+    private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
+    val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -984,6 +988,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
+
+    /**
+     * Fetches the list of global attributes, ie: the attributes available store-wide
+     */
+    fun fetchGlobalAttributes() {
+        launch {
+            _globalAttributeList.value = productRepository.fetchGlobalAttributes()
+        }
+    }
 
     /**
      * Updates the product to the backend only if network is connected.
