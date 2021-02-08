@@ -14,7 +14,7 @@ data class ProductGlobalAttribute(
     val orderBy: String,
     val hasArchives: Boolean,
     val termsId: String,
-    val remoteId: Int
+    val remoteId: Long
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         return (other as? ProductGlobalAttribute)?.let {
@@ -44,7 +44,7 @@ data class ProductGlobalAttribute(
             it.orderBy = orderBy
             it.hasArchives = hasArchives
             it.termsId = termsId
-            it.remoteId = remoteId
+            it.remoteId = remoteId.toInt()
         }
     }
 }
@@ -52,7 +52,7 @@ data class ProductGlobalAttribute(
 fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {
     return ProductGlobalAttribute(
         id = this.id,
-        remoteId = this.remoteId,
+        remoteId = this.remoteId.toLong(),
         localSiteId = this.localSiteId,
         name = this.name,
         slug = this.slug,

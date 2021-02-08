@@ -9,31 +9,30 @@ import com.woocommerce.android.model.ProductGlobalAttribute
  */
 class ProductCombinedAttribute(
     val id: Long,
-    val name: String,
-    val isGlobalAttribute: Boolean
+    val name: String
 ) {
     companion object {
         fun fromLocalAttribute(attribute: Product.Attribute): ProductCombinedAttribute {
             return ProductCombinedAttribute(
                 id = attribute.id,
-                name = attribute.name,
-                isGlobalAttribute = false
+                name = attribute.name
             )
         }
 
         fun fromGlobalAttribute(attribute: ProductGlobalAttribute): ProductCombinedAttribute {
             return ProductCombinedAttribute(
                 id = attribute.id.toLong(),
-                name = attribute.name,
-                isGlobalAttribute = true
+                name = attribute.name
             )
         }
     }
+
     override fun equals(other: Any?): Boolean {
         return (other as? ProductCombinedAttribute)?.let {
             id == it.id &&
-                name == it.name &&
-                isGlobalAttribute == it.isGlobalAttribute
+                name == it.name
         } ?: false
     }
+
+    fun isGlobalAttribute() = id != 0L
 }

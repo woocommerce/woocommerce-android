@@ -998,7 +998,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the add attribute fragment
      */
-    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: ProductGlobalAttribute) {
+    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
         // TODO
     }
 

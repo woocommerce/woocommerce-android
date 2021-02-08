@@ -124,6 +124,8 @@ data class Product(
             }
             return commaSeparatedOptions
         }
+
+        fun isLocalAttribute() = id == 0L
     }
 
     fun isSameProduct(product: Product): Boolean {

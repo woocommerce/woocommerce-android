@@ -39,7 +39,7 @@ class CombinedAttributeListAdapter(
 
         holder.itemView.setOnClickListener {
             val item = attributeList[position]
-            onItemClick(item.id, item.isGlobalAttribute)
+            onItemClick(item.id, item.isGlobalAttribute())
         }
     }
 
@@ -67,7 +67,7 @@ class CombinedAttributeListAdapter(
     ) {
         val combinedList = ArrayList<ProductCombinedAttribute>()
 
-        localAttributes.map {ProductCombinedAttribute.fromLocalAttribute(it) }
+        localAttributes.map { combinedList.add(ProductCombinedAttribute.fromLocalAttribute(it)) }
         globalAttributes.map { combinedList.add(ProductCombinedAttribute.fromGlobalAttribute(it)) }
         combinedList.sortBy { it.name }
 
