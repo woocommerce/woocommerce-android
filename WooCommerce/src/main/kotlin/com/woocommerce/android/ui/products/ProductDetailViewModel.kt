@@ -982,9 +982,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * User clicked an attribute in the attribute list or add attribute fragment
+     * User clicked an attribute in the attribute list
      */
-    fun onAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
+    fun onAttributeListItemClick(attribute: Product.Attribute) {
         // TODO
     }
 
@@ -993,6 +993,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddAttributeButtonClick() {
         triggerEvent(AddProductAttribute)
+    }
+
+    /**
+     * User clicked an attribute in the add attribute fragment
+     */
+    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
+        // TODO
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false

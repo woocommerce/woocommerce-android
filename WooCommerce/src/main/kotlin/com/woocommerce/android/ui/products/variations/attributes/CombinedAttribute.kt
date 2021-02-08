@@ -12,7 +12,6 @@ class ProductCombinedAttribute(
     val name: String,
     val isGlobalAttribute: Boolean,
     val commaSeparatedOptions: String = ""
-    // TODO: isVisible ???
 ) {
     companion object {
         fun fromLocalAttribute(attribute: Product.Attribute): ProductCombinedAttribute {
