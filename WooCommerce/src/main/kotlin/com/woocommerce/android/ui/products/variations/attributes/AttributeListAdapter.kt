@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
@@ -73,7 +74,12 @@ class AttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: Product.Attribute) {
             viewBinding.attributeName.text = attribute.name
-            viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+            if (attribute.options.isNotEmpty()) {
+                viewBinding.attributeTerms.isVisible = true
+                viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+            } else {
+                viewBinding.attributeTerms.isVisible = false
+            }
         }
     }
 }
