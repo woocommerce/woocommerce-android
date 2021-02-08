@@ -11,12 +11,17 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @OpenClassOnDebug
+@Singleton
 class ShippingLabelRepository @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite
 ) {
+    private var accountSettings: ShippingAccountSettings? = null
+    private var availablePackages: List<ShippingPackage>? = null
+
     suspend fun refundShippingLabel(orderId: Long, shippingLabelId: Long): WooResult<Boolean> {
         return withContext(Dispatchers.IO) {
             shippingLabelStore.refundShippingLabelForOrder(
@@ -48,27 +53,36 @@ class ShippingLabelRepository @Inject constructor(
     }
 
     suspend fun getShippingPackages(): WooResult<List<ShippingPackage>> {
-        return shippingLabelStore.getPackageTypes(selectedSite.get()).let { result ->
-            if (result.isError) return@let WooResult(error = result.error)
+        return availablePackages?.let { WooResult(it) } ?: shippingLabelStore.getPackageTypes(selectedSite.get())
+            .let { result ->
+                if (result.isError) return@let WooResult<List<ShippingPackage>>(error = result.error)
 
-            val packagesResult = result.model!!
-            val list = mutableListOf<ShippingPackage>()
-            packagesResult.customPackages.map {
-                list.add(it.toAppModel())
-            }
-            packagesResult.predefinedOptions.forEach { option ->
-                list.addAll(option.toAppModel())
-            }
+                val packagesResult = result.model!!
+                val list = mutableListOf<ShippingPackage>()
+                packagesResult.customPackages.map {
+                    list.add(it.toAppModel())
+                }
+                packagesResult.predefinedOptions.forEach { option ->
+                    list.addAll(option.toAppModel())
+                }
 
-            WooResult(list)
-        }
+                availablePackages = list
+
+                WooResult(availablePackages)
+            }
     }
 
     suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
-        return shippingLabelStore.getAccountSettings(selectedSite.get()).let { result ->
-            if (result.isError) return@let WooResult(error = result.error)
+        return accountSettings?.let { WooResult(it) } ?: shippingLabelStore.getAccountSettings(selectedSite.get())
+            .let { result ->
+                if (result.isError) return@let WooResult<ShippingAccountSettings>(error = result.error)
 
-            WooResult(result.model!!.toAppModel())
-        }
+                accountSettings = result.model!!.toAppModel()
+                WooResult(accountSettings)
+            }
+    }
+
+    fun clearCache() {
+        accountSettings = null
     }
 }

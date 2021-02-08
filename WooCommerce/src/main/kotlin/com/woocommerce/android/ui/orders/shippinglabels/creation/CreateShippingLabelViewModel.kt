@@ -379,6 +379,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        shippingLabelRepository.clearCache()
+    }
+
     @Parcelize
     data class ViewState(
         val originAddressStep: Step? = null,
