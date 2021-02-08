@@ -47,6 +47,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
@@ -455,7 +456,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
-            is ExitProductAttributeList -> {
+            is ExitProductAttributeList, ExitProductAddAttribute -> {
                 // TODO: eventName
                 hasChanges = hasAttributeChanges()
             }
@@ -1560,6 +1561,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }

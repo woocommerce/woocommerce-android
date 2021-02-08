@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,27 +11,18 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.model.ProductGlobalAttribute
+import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import javax.inject.Inject
 
-class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
+class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute),
     OnLoadMoreListener {
     companion object {
         const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private val viewModel: AddAttributeViewModel by viewModels { viewModelFactory }
 
     private var layoutManager: LayoutManager? = null
 
@@ -53,6 +43,9 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onRequestAllowBackPress() =
+        viewModel.onBackButtonClicked(ExitProductAddAttribute())
 
     override fun onResume() {
         super.onResume()
@@ -81,26 +74,26 @@ class AddAttributeFragment : BaseFragment(R.layout.fragment_add_attribute),
     }
 
     private fun initializeViewModel() {
-        setupObservers(viewModel)
+        setupObservers()
         viewModel.start()
     }
 
-    private fun setupObservers(viewModel: AddAttributeViewModel) {
+    private fun setupObservers() {
         viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes(it)
+            showGlobalAttributes(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> activity?.onBackPressed()
+                is ExitProductAddAttribute -> activity?.onBackPressed()
+                else -> event.isHandled = false
             }
         })
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
-    private fun showAttributes(attributes: List<Product.Attribute>) {
+    private fun showGlobalAttributes(attributes: List<ProductGlobalAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeListAdapter(viewModel::onItemClick)
