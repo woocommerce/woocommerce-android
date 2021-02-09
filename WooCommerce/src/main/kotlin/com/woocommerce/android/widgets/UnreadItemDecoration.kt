@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
  * communicate unread items (such as unread product reviews)
  */
 class UnreadItemDecoration(context: Context, private val decorListener: ItemDecorationListener) :
-        DividerItemDecoration(context, HORIZONTAL) {
+        DividerItemDecoration(context, VERTICAL) {
     interface ItemDecorationListener {
         fun getItemTypeAtPosition(position: Int): ItemType
     }
