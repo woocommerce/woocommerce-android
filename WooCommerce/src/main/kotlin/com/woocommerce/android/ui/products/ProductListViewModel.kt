@@ -285,6 +285,10 @@ class ProductListViewModel @AssistedInject constructor(
             viewState = viewState.copy(isRefreshing = true)
             loadProducts(scrollToTop = scrollToTop)
         } else {
+            // we have to set isRefreshing to null first since it will already be false here, but the refresh layout
+            // will be showing the loading progress since the user did a pull-to-refresh - without this, the loading
+            // progress will continue to show indefnitely
+            viewState = viewState.copy(isRefreshing = null)
             viewState = viewState.copy(isRefreshing = false)
         }
     }

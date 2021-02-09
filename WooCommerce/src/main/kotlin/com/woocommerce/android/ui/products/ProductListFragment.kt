@@ -232,11 +232,17 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         return true
     }
 
+    private fun setIsRefreshing(isRefreshing: Boolean) {
+        binding.productsRefreshLayout.isRefreshing = isRefreshing
+    }
+
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.productsRefreshLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                setIsRefreshing(false)
+            }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     when {
