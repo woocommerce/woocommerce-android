@@ -83,8 +83,6 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isLoading() = viewState.isLoading == true
 
-    private fun isRefreshing() = viewState.isRefreshing == true
-
     fun getSearchQuery() = viewState.query
 
     fun onSearchQueryChanged(query: String) {
@@ -299,18 +297,14 @@ class ProductListViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            isLoading = true,
+            isSkeletonShown = false,
+            isLoading = false,
+            isLoadingMore = false,
+            isRefreshing = false,
+            isAddProductButtonVisible = true,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = _productList.value?.isEmpty() == true,
             displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-        )
-
-        viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoading = false,
-                isLoadingMore = false,
-                isRefreshing = false,
-                isAddProductButtonVisible = true
         )
 
         if (scrollToTop) {
