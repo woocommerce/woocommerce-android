@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
 
 /**
- * Represents a local attribute, which is an attribute assigned to a specific product
+ * Represents an attribute which is assigned to a product
  */
 @Parcelize
 data class ProductAttribute(
@@ -23,12 +23,9 @@ data class ProductAttribute(
         } ?: false
     }
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode() = super.hashCode()
 
     fun getCommaSeparatedOptions(): String {
-        if (options.isEmpty()) return ""
         var commaSeparatedOptions = ""
         options.forEach { option ->
             if (commaSeparatedOptions.isEmpty()) {
@@ -40,7 +37,10 @@ data class ProductAttribute(
         return commaSeparatedOptions
     }
 
-    fun isLocalAttribute() = id == 0L
+    /**
+     * Local attributes, which are attributes available only to a specific product, have an ID of zero
+     */
+    fun isLocalAttribute() = (id == 0L)
 }
 
 fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
