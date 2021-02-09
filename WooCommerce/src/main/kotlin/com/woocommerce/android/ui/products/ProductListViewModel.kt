@@ -258,8 +258,6 @@ class ProductListViewModel @AssistedInject constructor(
                 }
             }
         }
-
-        resetViewState()
     }
 
     /**
@@ -330,6 +328,8 @@ class ProductListViewModel @AssistedInject constructor(
         if (scrollToTop) {
             triggerEvent(ScrollToTop)
         }
+
+        resetViewState()
     }
 
     private fun getSortingTitle(): Int {
