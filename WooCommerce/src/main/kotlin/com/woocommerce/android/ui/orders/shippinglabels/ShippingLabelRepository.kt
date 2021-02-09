@@ -84,5 +84,6 @@ class ShippingLabelRepository @Inject constructor(
 
     fun clearCache() {
         accountSettings = null
+        availablePackages = null
     }
 }
