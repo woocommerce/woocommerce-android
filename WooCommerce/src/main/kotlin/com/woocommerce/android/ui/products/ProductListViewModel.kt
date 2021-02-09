@@ -281,11 +281,12 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun refreshProducts(scrollToTop: Boolean = false) {
-        if (!checkConnection()) {
-            return
+        if (checkConnection()) {
+            viewState = viewState.copy(isRefreshing = true)
+            loadProducts(scrollToTop = scrollToTop)
+        } else {
+            viewState = viewState.copy(isRefreshing = false)
         }
-        viewState = viewState.copy(isRefreshing = true)
-        loadProducts(scrollToTop = scrollToTop)
     }
 
     private suspend fun fetchProductList(
