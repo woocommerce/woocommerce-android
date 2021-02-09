@@ -57,7 +57,10 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             )
             toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
             toast.show()
+
+            AppPrefs.init(context)
             AppPrefs.setDatabaseDowngraded(true)
+
             reset()
         }
     }
