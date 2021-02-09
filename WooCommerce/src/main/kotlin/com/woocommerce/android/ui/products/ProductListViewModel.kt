@@ -83,7 +83,7 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isLoading() = viewState.isLoading == true
 
-    private fun isRefreshing() = viewState.isRefreshing == true
+    private fun isRefreshing() = viewState.isRefreshing != false
 
     fun getSearchQuery() = viewState.query
 
