@@ -226,20 +226,16 @@ class ProductListViewModel @AssistedInject constructor(
 
             loadJob = launch {
                 val showSkeleton: Boolean
-                val isRefreshing: Boolean
                 if (loadMore) {
                     showSkeleton = false
-                    isRefreshing = false
                 } else {
                     // if this is the initial load, first get the products from the db and show them immediately
                     val productsInDb = productRepository.getProductList(productFilterOptions)
                     if (productsInDb.isEmpty()) {
                         showSkeleton = true
-                        isRefreshing = false
                     } else {
                         _productList.value = productsInDb
                         showSkeleton = false
-                        isRefreshing = true
                     }
                 }
                 viewState = viewState.copy(
@@ -247,7 +243,7 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        isRefreshing = isRefreshing,
+                        isRefreshing = !showSkeleton && !loadMore,
                         displaySortAndFilterCard = !showSkeleton,
                         isAddProductButtonVisible = !showSkeleton
                 )
