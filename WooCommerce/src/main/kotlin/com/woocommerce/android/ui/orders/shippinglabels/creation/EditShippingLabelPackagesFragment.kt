@@ -116,8 +116,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
                 is OpenPackageSelectorEvent -> {
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
-                            position = event.position,
-                            availablePackages = emptyArray()
+                            position = event.position
                         )
 
                     findNavController().navigateSafely(action)

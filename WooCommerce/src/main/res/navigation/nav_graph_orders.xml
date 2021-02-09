@@ -325,8 +325,5 @@
         <argument
             android:name="position"
             app:argType="integer" />
-        <argument
-            android:name="availablePackages"
-            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
     </fragment>
 </navigation>
