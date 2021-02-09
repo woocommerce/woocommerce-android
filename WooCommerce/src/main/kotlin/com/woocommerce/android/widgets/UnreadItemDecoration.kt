@@ -4,9 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.State
 import com.woocommerce.android.R
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import org.wordpress.android.util.DisplayUtils
@@ -60,5 +62,14 @@ class UnreadItemDecoration(context: Context, private val decorListener: ItemDeco
                 canvas.drawRect(left, top, right, bottom, paint)
             }
         }
+    }
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: State) {
+        // Hide the default divider between review item
+        outRect.setEmpty()
+    }
+
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: State) {
+        // Draw nothing to hide divider line below review header
     }
 }
