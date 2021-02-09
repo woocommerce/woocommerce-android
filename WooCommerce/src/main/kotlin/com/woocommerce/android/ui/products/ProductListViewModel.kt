@@ -191,13 +191,19 @@ class ProductListViewModel @AssistedInject constructor(
         )
     }
 
-    final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
+    final fun loadProducts(
+        loadMore: Boolean = false,
+        scrollToTop: Boolean = false,
+        isRefreshing: Boolean = false
+    ) {
         if (isLoading()) {
+            resetViewState()
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
             return
         }
 
         if (loadMore && !productRepository.canLoadMoreProducts) {
+            resetViewState()
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
             return
         }
@@ -244,7 +250,7 @@ class ProductListViewModel @AssistedInject constructor(
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
-                        isRefreshing = !showSkeleton && !loadMore,
+                        isRefreshing = isRefreshing,
                         displaySortAndFilterCard = !showSkeleton,
                         isAddProductButtonVisible = !showSkeleton
                     )
@@ -252,6 +258,17 @@ class ProductListViewModel @AssistedInject constructor(
                 }
             }
         }
+
+        resetViewState()
+    }
+
+    /**
+     * Resets the view state following a refresh
+     */
+    private fun resetViewState() {
+        // The refresh progress automatically appears when the user performs a PTR, and in this situation isRefreshing
+        // will still be false. Setting it to null first will ensure the fragment's observer removes the progress.
+        viewState = viewState.copy(isRefreshing = null)
 
         viewState = viewState.copy(
             isSkeletonShown = false,
@@ -282,14 +299,9 @@ class ProductListViewModel @AssistedInject constructor(
 
     fun refreshProducts(scrollToTop: Boolean = false) {
         if (checkConnection()) {
-            viewState = viewState.copy(isRefreshing = true)
-            loadProducts(scrollToTop = scrollToTop)
+            loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
         } else {
-            // we have to set isRefreshing to null first since it will already be false here, but the refresh layout
-            // will be showing the loading progress since the user did a pull-to-refresh - without this, the loading
-            // progress will continue to show indefnitely
-            viewState = viewState.copy(isRefreshing = null)
-            viewState = viewState.copy(isRefreshing = false)
+            resetViewState()
         }
     }
 
