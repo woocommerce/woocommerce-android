@@ -309,9 +309,6 @@
         <argument
             android:name="shippingLabelPackages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
-        <argument
-            android:name="availablePackages"
-            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingPackageSelectorFragment"
             app:destination="@id/shippingPackageSelectorFragment"
@@ -328,8 +325,5 @@
         <argument
             android:name="position"
             app:argType="integer" />
-        <argument
-            android:name="availablePackages"
-            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
     </fragment>
 </navigation>

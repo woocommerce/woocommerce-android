@@ -1,4 +1,0 @@
-5.8 :
-Produits : vous pouvez désormais ajouter et modifier des fichiers téléchargeables, gérer des produits liés et supprimer des produits.
-
-Résolutions de bogues : nous avons résolu un problème qui affectait parfois les boutons de modération dans les avis sur les produits.

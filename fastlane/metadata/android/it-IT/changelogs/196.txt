@@ -1,0 +1,2 @@
+5.9:
+Questi aggiornamenti per l'app per dispositivi mobili di WooCommerce riguardano principalmente le correzioni. Abbiamo risolto i rari arresti anomali che si verificavano con l'aggiunta di una nuova categoria di prodotto, il riordino di foto, la modifica del testo, la creazione di etichette di spedizione e il filtraggio di prodotti. Abbiamo anche aggiornato un limite di timeout per le richieste dei server e rimosso dai dettagli del prodotto l'obsoleta scheda con i dettagli di acquisto.
