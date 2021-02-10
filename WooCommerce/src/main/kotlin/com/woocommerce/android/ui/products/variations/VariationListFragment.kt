@@ -28,6 +28,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
@@ -113,6 +114,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_EDIT_ATTRIBUTES -> {
+                viewModel.onAddEditAttributesClick(navArgs.remoteProductId)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -176,6 +178,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowVariationDetail -> openVariationDetail(event.variation)
+                is ShowAttributeList -> openAttributeList(event.remoteProductId)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
@@ -189,6 +192,13 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private fun openVariationDetail(variation: ProductVariation) {
         val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(
             variation
+        )
+        findNavController().navigateSafely(action)
+    }
+
+    private fun openAttributeList(remoteProductId: Long) {
+        val action = VariationListFragmentDirections.actionVariationListFragmentToAttributeListFragment(
+            remoteProductId
         )
         findNavController().navigateSafely(action)
     }

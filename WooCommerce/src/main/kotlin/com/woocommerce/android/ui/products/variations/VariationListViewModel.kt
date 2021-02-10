@@ -74,6 +74,11 @@ class VariationListViewModel @AssistedInject constructor(
         triggerEvent(ShowVariationDetail(variation))
     }
 
+    fun onAddEditAttributesClick(remoteProductId: Long) {
+        // TODO: tracks event
+        triggerEvent(ShowAttributeList(remoteProductId))
+    }
+
     private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (loadMore && !variationListRepository.canLoadMoreProductVariations) {
             WooLog.d(WooLog.T.PRODUCTS, "can't load more product variations")
@@ -154,6 +159,7 @@ class VariationListViewModel @AssistedInject constructor(
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
+    data class ShowAttributeList(val remoteProductId: Long) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<VariationListViewModel>

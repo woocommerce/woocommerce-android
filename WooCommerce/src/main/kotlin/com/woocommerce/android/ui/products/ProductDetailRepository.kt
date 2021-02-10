@@ -239,6 +239,11 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
+    fun getProductAttributes(remoteProductId: Long): List<Product.Attribute> {
+        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+        return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
+    }
+
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
