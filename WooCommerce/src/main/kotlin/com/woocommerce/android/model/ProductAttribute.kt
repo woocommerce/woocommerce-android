@@ -14,29 +14,6 @@ data class ProductAttribute(
     val options: List<String>,
     val isVisible: Boolean
 ) : Parcelable {
-    override fun equals(other: Any?): Boolean {
-        return (other as? ProductAttribute)?.let {
-            id == it.id &&
-                name == it.name &&
-                options == it.options &&
-                isVisible == it.isVisible
-        } ?: false
-    }
-
-    override fun hashCode() = super.hashCode()
-
-    fun getCommaSeparatedOptions(): String {
-        var commaSeparatedOptions = ""
-        options.forEach { option ->
-            if (commaSeparatedOptions.isEmpty()) {
-                commaSeparatedOptions = option
-            } else {
-                commaSeparatedOptions += ", $option"
-            }
-        }
-        return commaSeparatedOptions
-    }
-
     /**
      * Local attributes, which are attributes available only to a specific product, have an ID of zero
      */

@@ -63,7 +63,7 @@ data class Product(
     val purchaseNote: String,
     val numVariations: Int,
     val images: List<Image>,
-    val attributes: List<Attribute>,
+    val attributes: List<ProductAttribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
     val isSoldIndividually: Boolean,
@@ -91,16 +91,6 @@ data class Product(
         val source: String,
         val dateCreated: Date
     ) : Parcelable
-
-    @Parcelize
-    data class Attribute(
-        val id: Long,
-        val name: String,
-        val options: List<String>,
-        val isVisible: Boolean
-    ) : Parcelable {
-        fun isLocalAttribute() = id == 0L
-    }
 
     fun isSameProduct(product: Product): Boolean {
         return remoteId == product.remoteId &&
@@ -495,7 +485,7 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map {
-            Product.Attribute(
+            ProductAttribute(
                 it.id,
                 it.name,
                 it.options,
@@ -534,15 +524,6 @@ fun MediaModel.toAppModel(): Product.Image {
         name = this.fileName,
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
-    )
-}
-
-fun WCProductModel.ProductAttribute.toAppModel(): Product.Attribute {
-    return Product.Attribute(
-        id = this.id,
-        name = this.name,
-        options = this.options,
-        isVisible = this.visible
     )
 }
 
