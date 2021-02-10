@@ -197,7 +197,6 @@ class ProductListViewModel @AssistedInject constructor(
         isRefreshing: Boolean = false
     ) {
         if (isLoading()) {
-            resetViewState()
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
             return
         }
