@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +28,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private var layoutManager: LayoutManager? = null
-    private val navArgs: AttributeListFragmentArgs by navArgs()
 
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
