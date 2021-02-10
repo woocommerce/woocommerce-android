@@ -241,7 +241,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                setIsRefreshing(false)
+                setIsRefreshing(it)
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
