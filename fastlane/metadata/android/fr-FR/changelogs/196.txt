@@ -1,0 +1,2 @@
+5.9 :
+Cette vague de mises à jour de l’application mobile WooCommerce reprend avant tout des correctifs. Nous nous sommes penchés sur les incidents rares qui se produisaient lors de l’ajout d’une nouvelle catégorie de produits, de la réorganisation de photos, de la modification de texte, de la création d’étiquettes d’expédition et du filtrage des produits. Nous avons également mis à jour une limite d’expiration pour les demandes de serveur et supprimé la carte obsolète des détails de l’achat de la section des détails du produit.

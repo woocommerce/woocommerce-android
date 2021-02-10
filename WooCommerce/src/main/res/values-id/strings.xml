@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-31 08:54:53+0000
+Translation-Revision-Date: 2021-02-03 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_wip_title_m5">Tersedia fitur baru!</string>
+    <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
+    <string name="order_refunds_shipping_refund_notice_fees">Anda dapat mengembalikan dana, pengiriman, dan jumlah pajak %s</string>
+    <string name="shipping_label_validation_view_map">Buka Peta</string>
+    <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
+    <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
+    <string name="shipping_label_error_required_field">Kolom wajib diisi</string>
+    <string name="shipping_label_error_address_invalid_street">Nama jalan tidak valid</string>
+    <string name="shipping_label_error_address_house_number_missing">Nomor rumah tidak ada</string>
+    <string name="shipping_label_error_address_not_found">Alamat tidak ditemukan</string>
+    <string name="shipping_label_edit_address_error_warning">Kami tidak dapat memverifikasi alamat pengiriman secara otomatis. Lihat di Google Maps atau coba hubungi pelanggan untuk memastikan alamat sudah benar.</string>
+    <string name="shipping_label_edit_address_validation_error">Validasi alamat gagal</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Harap tunggu…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Validasi alamat sedang berlangsung</string>
+    <string name="shipping_label_edit_data_loading_error">Tidak dapat memuat data alamat</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Gunakan alamat yang dimasukkan</string>
+    <string name="shipping_label_edit_address_country">Negara</string>
+    <string name="shipping_label_edit_address_zip">Kode Pos</string>
+    <string name="shipping_label_edit_address_state">Provinsi</string>
+    <string name="shipping_label_edit_address_city">Kota</string>
+    <string name="shipping_label_edit_address_address">Alamat</string>
+    <string name="shipping_label_edit_address_phone">Telepon</string>
+    <string name="shipping_label_edit_address_company">Perusahaan</string>
+    <string name="shipping_label_edit_address_name">Nama</string>
+    <string name="login_not_wordpress_site">Situs web %1$s bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
+    <string name="error_no_gmaps_app">Aplikasi Google Maps tidak ditemukan</string>
+    <string name="please_wait">Harap tunggu…</string>
     <string name="variation_detail_update_variation_image_error">Maaf, penghapusan gambar pada variasi produk baru bisa dilakukan di WooCommerce 4.7 atau yang lebih baru.</string>
     <string name="order_shipment_tracking_progress_message">Harap tunggu…</string>
     <string name="order_shipment_tracking_progress_title">Menambahkan pelacakan</string>
@@ -548,6 +575,7 @@ Language: id
     <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
+    <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yaman</string>
@@ -1103,6 +1131,7 @@ Language: id
     <string name="add_order_note_menu_item">Tambahkan</string>
     <string name="add_order_note_label">Kirim catatan kepada pelanggan lewat email</string>
     <string name="order_error_update_general">Error saat mengubah pesanan</string>
+    <string name="order_error_fetch_notes_generic">Terjadi error saat mengambil catatan</string>
     <string name="order_fulfill_marked_complete">Pesanan Ditandai Selesai</string>
     <string name="order_fulfill_mark_complete">Tandai Pesanan Selesai</string>
     <string name="orderdetail_addnote_contentdesc">Tambahkan catatan pesanan</string>

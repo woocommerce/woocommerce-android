@@ -47,9 +47,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         parameterRepository.getParameters(KEY_PARAMETERS, savedState)
     }
 
-    val availablePackages
-        get() = arguments.availablePackages
-
     init {
         initState()
     }
@@ -68,10 +65,18 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
         viewState = viewState.copy(showSkeletonView = true)
+
+        val shippingPackagesResult = shippingLabelRepository.getShippingPackages()
+        if (shippingPackagesResult.isError) {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_packages_loading_error))
+            triggerEvent(Exit)
+            return emptyList()
+        }
+
         val lastUsedPackage = shippingLabelRepository.getAccountSettings().let { result ->
             if (result.isError) return@let null
             val savedPackageId = result.model!!.lastUsedBoxId
-            availablePackages.find { it.id == savedPackageId }
+            shippingPackagesResult.model!!.find { it.id == savedPackageId }
         }
 
         val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))

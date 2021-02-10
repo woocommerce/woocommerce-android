@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 10:54:04+0000
+Translation-Revision-Date: 2021-02-04 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_wip_title_m5">Neue Funktionen verfügbar!</string>
+    <string name="product_wip_message_m5">Du kannst jetzt herunterladbare Dateien zu einem Produkt hinzufügen und Upsell- und Cross-Sell-Produkte verlinken. Du willst ein Produkt nicht mehr? Lege es in den Papierkorb.</string>
+    <string name="order_refunds_shipping_refund_notice_fees">Du kannst Gebühren, Versand- und Steuerbeträge %s rückerstatten</string>
+    <string name="shipping_label_validation_view_map">Karte öffnen</string>
+    <string name="shipping_label_validation_contact_customer">Kunden kontaktieren</string>
+    <string name="shipping_label_validation_error_template">Validierung fehlgeschlagen: %s</string>
+    <string name="shipping_label_error_required_field">Pflichtfeld</string>
+    <string name="shipping_label_error_address_invalid_street">Ungültige Straße</string>
+    <string name="shipping_label_error_address_house_number_missing">Hausnummer fehlt</string>
+    <string name="shipping_label_error_address_not_found">Adresse konnte nicht gefunden werden</string>
+    <string name="shipping_label_edit_address_error_warning">Die Versandadresse konnte nicht automatisch verifiziert werden. Zeige sie auf Google Maps an oder versuche, den Kunden zu kontaktieren, um die Adresse zu überprüfen.</string>
+    <string name="shipping_label_edit_address_validation_error">Validierung der Adresse fehlgeschlagen</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Bitte warten …</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Validierung der Adresse läuft</string>
+    <string name="shipping_label_edit_data_loading_error">Adressdaten können nicht geladen werden</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Adresse wie eingegeben verwenden</string>
+    <string name="shipping_label_edit_address_country">Land</string>
+    <string name="shipping_label_edit_address_zip">Postleitzahl</string>
+    <string name="shipping_label_edit_address_state">Bundesstaat</string>
+    <string name="shipping_label_edit_address_city">Ort</string>
+    <string name="shipping_label_edit_address_address">Adresse</string>
+    <string name="shipping_label_edit_address_phone">Telefon</string>
+    <string name="shipping_label_edit_address_company">Firma</string>
+    <string name="shipping_label_edit_address_name">Name</string>
+    <string name="login_not_wordpress_site">Die Website %1$s ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
+    <string name="error_no_gmaps_app">Google Maps-App wurde gefunden</string>
+    <string name="please_wait">Bitte warten …</string>
     <string name="variation_detail_update_variation_image_error">Das Entfernen von Bildern für Produktvarianten wird leider nur in WooCommerce 4.7 oder höher unterstützt.</string>
     <string name="order_shipment_tracking_progress_message">Bitte warten</string>
     <string name="order_shipment_tracking_progress_title">Verfolgung wird hinzugefügt</string>
@@ -548,6 +575,7 @@ Language: de
     <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
+    <string name="enter_email_for_site">Melde dich mit WordPress.com an, um dich mit &lt;b>%1$s&lt;/b> zu verbinden</string>
     <string name="country_mapping_ZW">Simbabwe</string>
     <string name="country_mapping_ZM">Sambia</string>
     <string name="country_mapping_YE">Jemen</string>
@@ -1103,6 +1131,7 @@ Language: de
     <string name="add_order_note_menu_item">Hinzufügen</string>
     <string name="add_order_note_label">Hinweis per E-Mail an Kunden senden</string>
     <string name="order_error_update_general">Fehler beim Ändern der Bestellung</string>
+    <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Notizen</string>
     <string name="order_fulfill_marked_complete">Bestellung als abgeschlossen markiert</string>
     <string name="order_fulfill_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_addnote_contentdesc">Bestellhinweis hinzufügen</string>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 10:54:04+0000
+Translation-Revision-Date: 2021-02-05 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
+    <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
+    <string name="order_refunds_shipping_refund_notice_fees">Je kan tarieven, verzend- en belastingkosten restitueren %s</string>
+    <string name="shipping_label_validation_view_map">Kaart openen</string>
+    <string name="shipping_label_validation_contact_customer">Contact opnemen met klant</string>
+    <string name="shipping_label_validation_error_template">Validatie mislukt: %s</string>
+    <string name="shipping_label_error_required_field">Vereist veld</string>
+    <string name="shipping_label_error_address_invalid_street">Ongeldige straat</string>
+    <string name="shipping_label_error_address_house_number_missing">Huisnummer ontbreekt</string>
+    <string name="shipping_label_error_address_not_found">Adres is niet gevonden</string>
+    <string name="shipping_label_edit_address_error_warning">We konden het verzendadres niet automatisch verifiëren. Bekijk het op Google Maps of probeer contact op te nemen met de klant om te controleren of het adres klopt.</string>
+    <string name="shipping_label_edit_address_validation_error">Validatie van adres mislukt</string>
+    <string name="shipping_label_edit_address_validation_progress_message">Een moment geduld …</string>
+    <string name="shipping_label_edit_address_validation_progress_title">Adres wordt gevalideerd</string>
+    <string name="shipping_label_edit_data_loading_error">Kan de adresgegevens niet laden.</string>
+    <string name="shipping_label_edit_address_use_address_as_is">Gebruik het adres zoals het is ingevoerd</string>
+    <string name="shipping_label_edit_address_country">Land</string>
+    <string name="shipping_label_edit_address_zip">Postcode</string>
+    <string name="shipping_label_edit_address_state">Provincie</string>
+    <string name="shipping_label_edit_address_city">Plaats</string>
+    <string name="shipping_label_edit_address_address">Adres</string>
+    <string name="shipping_label_edit_address_phone">Telefoonnummer</string>
+    <string name="shipping_label_edit_address_company">Bedrijf</string>
+    <string name="shipping_label_edit_address_name">Naam</string>
+    <string name="login_not_wordpress_site">De website %1$s is geen WordPress-website. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
+    <string name="error_no_gmaps_app">Google Maps-app gevonden</string>
+    <string name="please_wait">Een moment geduld …</string>
     <string name="variation_detail_update_variation_image_error">Verwijderen van afbeeldingen bij productvariaties wordt helaas alleen ondersteund in WooCommerce 4.7 of nieuwer.</string>
     <string name="order_shipment_tracking_progress_message">Een moment geduld</string>
     <string name="order_shipment_tracking_progress_title">Tracking wordt toegevoegd</string>
@@ -548,6 +575,7 @@ Language: nl
     <string name="orderdetail_empty_shipping_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
+    <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -1103,6 +1131,7 @@ Language: nl
     <string name="add_order_note_menu_item">Toevoegen</string>
     <string name="add_order_note_label">E-mailbericht aan klant</string>
     <string name="order_error_update_general">Fout bij wijzigen bestelling</string>
+    <string name="order_error_fetch_notes_generic">Fout bij ophalen notities</string>
     <string name="order_fulfill_marked_complete">Bestelling gemarkeerd als voltooid</string>
     <string name="order_fulfill_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_addnote_contentdesc">Een bericht van bestelling toevoegen</string>
