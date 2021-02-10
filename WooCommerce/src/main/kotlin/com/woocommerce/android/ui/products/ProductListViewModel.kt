@@ -83,8 +83,6 @@ class ProductListViewModel @AssistedInject constructor(
 
     private fun isLoading() = viewState.isLoading == true
 
-    private fun isRefreshing() = viewState.isRefreshing == true
-
     fun getSearchQuery() = viewState.query
 
     fun onSearchQueryChanged(query: String) {
@@ -193,13 +191,18 @@ class ProductListViewModel @AssistedInject constructor(
         )
     }
 
-    final fun loadProducts(loadMore: Boolean = false, scrollToTop: Boolean = false) {
+    final fun loadProducts(
+        loadMore: Boolean = false,
+        scrollToTop: Boolean = false,
+        isRefreshing: Boolean = false
+    ) {
         if (isLoading()) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
             return
         }
 
         if (loadMore && !productRepository.canLoadMoreProducts) {
+            resetViewState()
             WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
             return
         }
@@ -210,15 +213,17 @@ class ProductListViewModel @AssistedInject constructor(
             searchJob?.cancel()
             searchJob = launch {
                 delay(SEARCH_TYPING_DELAY_MS)
-                viewState = viewState.copy(
+                if (checkConnection()) {
+                    viewState = viewState.copy(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
                         displaySortAndFilterCard = false,
                         isAddProductButtonVisible = false
-                )
-                fetchProductList(viewState.query, loadMore = loadMore)
+                    )
+                    fetchProductList(viewState.query, loadMore = loadMore)
+                }
             }
         } else {
             // if a fetch is already active, wait for it to finish before we start another one
@@ -235,20 +240,39 @@ class ProductListViewModel @AssistedInject constructor(
                         showSkeleton = true
                     } else {
                         _productList.value = productsInDb
-                        showSkeleton = !isRefreshing()
+                        showSkeleton = false
                     }
                 }
-                viewState = viewState.copy(
+                if (checkConnection()) {
+                    viewState = viewState.copy(
                         isLoading = true,
                         isLoadingMore = loadMore,
                         isSkeletonShown = showSkeleton,
                         isEmptyViewVisible = false,
+                        isRefreshing = isRefreshing,
                         displaySortAndFilterCard = !showSkeleton,
                         isAddProductButtonVisible = !showSkeleton
-                )
-                fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
+                    )
+                    fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
+                }
             }
         }
+    }
+
+    /**
+     * Resets the view state following a refresh
+     */
+    private fun resetViewState() {
+        viewState = viewState.copy(
+            isSkeletonShown = false,
+            isLoading = false,
+            isLoadingMore = false,
+            isRefreshing = false,
+            isAddProductButtonVisible = true,
+            canLoadMore = productRepository.canLoadMoreProducts,
+            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+        )
     }
 
     /**
@@ -267,8 +291,11 @@ class ProductListViewModel @AssistedInject constructor(
     }
 
     fun refreshProducts(scrollToTop: Boolean = false) {
-        viewState = viewState.copy(isRefreshing = true)
-        loadProducts(scrollToTop = scrollToTop)
+        if (checkConnection()) {
+            loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
+        } else {
+            resetViewState()
+        }
     }
 
     private suspend fun fetchProductList(
@@ -276,10 +303,6 @@ class ProductListViewModel @AssistedInject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (!checkConnection()) {
-            return
-        }
-
         if (searchQuery.isNullOrEmpty()) {
             _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
         } else {
@@ -297,24 +320,11 @@ class ProductListViewModel @AssistedInject constructor(
             }
         }
 
-        viewState = viewState.copy(
-            isLoading = true,
-            canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = _productList.value?.isEmpty() == true,
-            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
-        )
-
-        viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoading = false,
-                isLoadingMore = false,
-                isRefreshing = false,
-                isAddProductButtonVisible = true
-        )
-
         if (scrollToTop) {
             triggerEvent(ScrollToTop)
         }
+
+        resetViewState()
     }
 
     private fun getSortingTitle(): Int {
