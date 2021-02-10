@@ -98,7 +98,9 @@ data class Product(
         val name: String,
         val options: List<String>,
         val isVisible: Boolean
-    ) : Parcelable
+    ) : Parcelable {
+        fun isLocalAttribute() = id == 0L
+    }
 
     fun isSameProduct(product: Product): Boolean {
         return remoteId == product.remoteId &&
