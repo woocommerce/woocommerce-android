@@ -45,8 +45,8 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
 
     /**
      * Useful during development when we want to test features with a "fresh" database. This can be
-     * called from WooCommerce.onCreate() after we initialize the database. For safety, this has no
-     * effect when called from a release build.
+     * called from WooCommerce.onCreate() after we initialize the database and access the selected
+     * site. For safety, this has no effect when called from a release build.
      */
     fun resetDatabase() {
         if (BuildConfig.DEBUG) {
@@ -57,7 +57,10 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
             )
             toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 0)
             toast.show()
+
+            AppPrefs.init(context)
             AppPrefs.setDatabaseDowngraded(true)
+
             reset()
         }
     }
