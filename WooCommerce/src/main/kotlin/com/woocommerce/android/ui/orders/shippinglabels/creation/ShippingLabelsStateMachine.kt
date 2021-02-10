@@ -291,10 +291,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditPackagingCanceled> {
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
-
-            on<Event.LoadPackagesFailed> {
-                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PackagesLoadingError))
-            }
         }
 
         state<State.CustomsDeclaration> {
@@ -433,7 +429,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object PackageSelectionStarted : Event()
         object EditPackagingRequested : Event()
         object EditPackagingCanceled : Event()
-        object LoadPackagesFailed : Event()
         data class PackagesSelected(val shippingPackages: List<ShippingLabelPackage>) : Event()
 
         object CustomsDeclarationStarted : Event()
