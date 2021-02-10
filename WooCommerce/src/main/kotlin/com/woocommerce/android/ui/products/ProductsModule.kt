@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.di.FragmentScope
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.AttributeListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.LinkedProductsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
@@ -70,6 +71,8 @@ import com.woocommerce.android.ui.products.variations.VariationDetailFragment
 import com.woocommerce.android.ui.products.variations.VariationDetailModule
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListModule
+import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment
+import com.woocommerce.android.ui.products.variations.attributes.AttributeListModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module
@@ -82,6 +85,7 @@ import dagger.android.ContributesAndroidInjector
     ProductFilterListFragmentModule::class,
     ProductFilterOptionListFragmentModule::class,
     VariationListFragmentModule::class,
+    AttributeListFragmentModule::class,
     ProductImagesFragmentModule::class,
     ProductImageViewerFragmentModule::class,
     ProductInventoryFragmentModule::class,
@@ -154,6 +158,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [VariationListModule::class])
         abstract fun variationListFragment(): VariationListFragment
+    }
+
+    @Module
+    internal abstract class AttributeListFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [AttributeListModule::class])
+        abstract fun attributeListFragment(): AttributeListFragment
     }
 
     @Module

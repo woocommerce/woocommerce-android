@@ -46,6 +46,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
@@ -157,6 +158,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
     val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
+
+    private val _attributeList = MutableLiveData<List<Product.Attribute>>()
+    val attributeList: LiveData<List<Product.Attribute>> = _attributeList
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -445,6 +449,10 @@ class ProductDetailViewModel @AssistedInject constructor(
             is ExitProductTags -> {
                 eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
+            }
+            is ExitProductAttributeList -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
             }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
@@ -949,6 +957,25 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState.copy(uploadingImageUris = emptyList())
         }
     }
+
+    /**
+     * Loads the attributes assigned to the draft product
+     */
+    fun loadProductDraftAttributes() {
+        _attributeList.value =
+            viewState.productDraft?.let {
+                it.attributes
+            } ?: emptyList()
+    }
+
+    /**
+     * User clicked an attribute in the attribute list fragment
+     */
+    fun onAttributeListItemClick(attribute: Product.Attribute) {
+        // TODO
+    }
+
+    fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Updates the product to the backend only if network is connected.
@@ -1511,6 +1538,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
     }
 
     object RefreshMenu : Event()

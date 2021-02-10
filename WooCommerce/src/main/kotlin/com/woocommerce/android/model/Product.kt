@@ -224,6 +224,12 @@ data class Product(
         } ?: false
     }
 
+    fun hasAttributeChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            attributes != it.attributes
+        } ?: false
+    }
+
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     /**
@@ -526,6 +532,15 @@ fun MediaModel.toAppModel(): Product.Image {
         name = this.fileName,
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
+    )
+}
+
+fun WCProductModel.ProductAttribute.toAppModel(): Product.Attribute {
+    return Product.Attribute(
+        id = this.id,
+        name = this.name,
+        options = this.options,
+        isVisible = this.visible
     )
 }
 
