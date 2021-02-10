@@ -263,10 +263,6 @@ class ProductListViewModel @AssistedInject constructor(
      * Resets the view state following a refresh
      */
     private fun resetViewState() {
-        // The refresh progress automatically appears when the user performs a PTR, and in this situation isRefreshing
-        // will still be false. Setting it to null first will ensure the fragment's observer removes the progress.
-        viewState = viewState.copy(isRefreshing = null)
-
         viewState = viewState.copy(
             isSkeletonShown = false,
             isLoading = false,
