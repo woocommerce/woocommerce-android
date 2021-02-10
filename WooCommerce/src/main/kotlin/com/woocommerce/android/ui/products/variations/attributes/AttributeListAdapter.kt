@@ -76,7 +76,7 @@ class AttributeListAdapter(
             viewBinding.attributeName.text = attribute.name
             if (attribute.options.isNotEmpty()) {
                 viewBinding.attributeTerms.isVisible = true
-                viewBinding.attributeTerms.text = attribute.getCommaSeparatedOptions()
+                viewBinding.attributeTerms.text = attribute.options.joinToString()
             } else {
                 viewBinding.attributeTerms.isVisible = false
             }

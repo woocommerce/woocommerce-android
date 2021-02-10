@@ -39,7 +39,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         private const val ORDER_ID = "1-1-1"
     }
 
-    private val availablePackages = arrayOf(
+    private val availablePackages = listOf(
         ShippingPackage(
             "id1", "title1", false, "provider1", PackageDimensions(1.0, 1.0, 1.0)
         ),
@@ -68,14 +68,15 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
-    fun setup(currentPackages: Array<ShippingLabelPackage>) {
+    suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
         val savedState: SavedStateWithArgs = spy(
             SavedStateWithArgs(
                 SavedStateHandle(),
                 null,
-                EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages, availablePackages)
+                EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages)
             )
         )
+        whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         whenever(parameterRepository.getParameters(any(), any())).thenReturn(

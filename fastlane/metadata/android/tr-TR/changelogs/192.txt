@@ -1,4 +1,0 @@
-5.8:
-Ürünler: Artık indirilebilir dosyalar ekleyebilir, düzenleyebilir, bağlantılı ürünleri yönetebilir ve ürünleri silebilirsiniz
-
-Hata düzeltmeleri: Ürün yorumlarındaki denetim düğmelerini bazen etkileyen bir sorun giderildi.

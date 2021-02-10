@@ -19,24 +19,6 @@ data class ProductGlobalAttribute(
     val termsId: String,
     val remoteId: Long
 ) : Parcelable {
-    override fun equals(other: Any?): Boolean {
-        return (other as? ProductGlobalAttribute)?.let {
-            id == it.id &&
-                localSiteId == it.localSiteId &&
-                name == it.name &&
-                slug == it.slug &&
-                type == it.type &&
-                orderBy == it.orderBy &&
-                hasArchives == it.hasArchives &&
-                termsId == it.termsId &&
-                remoteId == it.remoteId
-        } ?: false
-    }
-
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
-
     fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
         return (cachedAttribute ?: WCGlobalAttributeModel()).also {
             it.id = id
