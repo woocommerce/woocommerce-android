@@ -51,4 +51,6 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val orderIdentifier: OrderIdentifier,
         val shippingLabelPackages: List<ShippingLabelPackage>
     ) : CreateShippingLabelEvent()
+
+    object ShowPaymentDetails : CreateShippingLabelEvent()
 }

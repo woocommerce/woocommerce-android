@@ -1518,4 +1518,11 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
+    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
 </resources>
