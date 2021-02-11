@@ -5,6 +5,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -41,6 +42,7 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
             }
             viewState = ViewState(
                 isLoading = false,
+                currentAccountSettings = accountSettings,
                 paymentMethods = accountSettings.paymentMethods.map {
                     PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
                 },
@@ -51,14 +53,35 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         }
     }
 
+    fun onEmailReceiptsCheckboxChanged(isChecked: Boolean) {
+        viewState = viewState.copy(emailReceipts = isChecked)
+    }
+
+    fun onPaymentMethodSelected(paymentMethod: PaymentMethod) {
+        val paymentMethodsModels = viewState.paymentMethods.map {
+            it.copy(isSelected = it.paymentMethod == paymentMethod)
+        }
+        viewState = viewState.copy(paymentMethods = paymentMethodsModels)
+    }
+
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        private val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
         val emailReceipts: Boolean = false,
         val storeOwnerDetails: StoreOwnerDetails? = null
-    ) : Parcelable
+    ) : Parcelable {
+        val hasChanges: Boolean
+            get() {
+                return currentAccountSettings?.let {
+                    val selectedPaymentMethod = paymentMethods.find { it.isSelected }
+                    selectedPaymentMethod?.paymentMethod?.id != currentAccountSettings.selectedPaymentId ||
+                        emailReceipts != currentAccountSettings.isEmailReceiptEnabled
+                } ?: false
+            }
+    }
 
     @Parcelize
     data class PaymentMethodUiModel(

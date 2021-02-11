@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -21,7 +22,9 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
 
     private val viewModel: EditShippingLabelPaymentViewModel by viewModels { viewModelFactory }
 
-    private val paymentMethodsAdapter by lazy { ShippingLabelPaymentMethodsAdapter() }
+    private val paymentMethodsAdapter by lazy { ShippingLabelPaymentMethodsAdapter(viewModel::onPaymentMethodSelected) }
+
+    private lateinit var doneMenuItem: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.hasChanges ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,6 +44,9 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
         binding.paymentMethodsList.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = paymentMethodsAdapter
+        }
+        binding.emailReceiptsCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onEmailReceiptsCheckboxChanged(isChecked)
         }
         setupObservers(binding)
     }
@@ -67,6 +75,11 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
                     details.userName,
                     details.wpcomEmail
                 )
+            }
+            new.hasChanges.takeIfNotEqualTo(old?.hasChanges) {
+                if (::doneMenuItem.isInitialized) {
+                    doneMenuItem.isVisible = it
+                }
             }
         }
     }

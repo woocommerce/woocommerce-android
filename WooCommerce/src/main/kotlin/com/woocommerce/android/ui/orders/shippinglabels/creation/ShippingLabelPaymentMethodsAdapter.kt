@@ -8,12 +8,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPaymentMethodListItemBinding
+import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPaymentMethodsAdapter.PaymentMethodViewHolder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ShippingLabelPaymentMethodsAdapter : RecyclerView.Adapter<PaymentMethodViewHolder>() {
+class ShippingLabelPaymentMethodsAdapter(
+    private val onPaymentMethodSelected: (PaymentMethod) -> Unit
+) : RecyclerView.Adapter<PaymentMethodViewHolder>() {
     private val dateFormat by lazy {
         SimpleDateFormat("MM/yy", Locale.getDefault())
     }
@@ -36,7 +39,9 @@ class ShippingLabelPaymentMethodsAdapter : RecyclerView.Adapter<PaymentMethodVie
         holder.bind(items[position])
     }
 
-    inner class PaymentMethodViewHolder(val binding: ShippingLabelPaymentMethodListItemBinding) : ViewHolder(binding.root) {
+    inner class PaymentMethodViewHolder(
+        val binding: ShippingLabelPaymentMethodListItemBinding
+    ) : ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(item: PaymentMethodUiModel) {
             val context = binding.root.context
@@ -50,6 +55,9 @@ class ShippingLabelPaymentMethodsAdapter : RecyclerView.Adapter<PaymentMethodVie
                 R.string.shipping_label_payments_expiration_date,
                 dateFormat.format(item.paymentMethod.expirationDate)
             )
+            binding.radioButton.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) onPaymentMethodSelected.invoke(item.paymentMethod)
+            }
         }
 
         private fun Context.getPaymentMethodTranslation(paymentMethod: String): String {
@@ -66,4 +74,3 @@ class ShippingLabelPaymentMethodsAdapter : RecyclerView.Adapter<PaymentMethodVie
         }
     }
 }
-
