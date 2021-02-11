@@ -108,12 +108,11 @@ class GroupedProductListViewModel @AssistedInject constructor(
     }
 
     fun onBackButtonClicked(): Boolean {
-        return if (hasChanges) {
+        if (hasChanges) {
             triggerEvent(ExitWithResult(selectedProductIds))
-            false
-        } else {
-            true
+            return false
         }
+        return true
     }
 
     private fun loadProducts(loadMore: Boolean = false) {

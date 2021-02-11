@@ -577,13 +577,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Method called when back button is clicked.
      *
      * Each product screen has it's own [ProductExitEvent]
-     * Based on the exit event, the logic is to check if the discard dialog should be displayed.
-     *
-     * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
-     * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     *
-     * For the product detail screen, the discard dialog should only be displayed if there are changes to the
-     * [Product] model locally, that still need to be saved to the backend.
+     * For product detail, we show a discard dialog if any changes have been made to the
+     * [Product] model locall, that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated ?: false
@@ -595,29 +590,17 @@ class ProductDetailViewModel @AssistedInject constructor(
 
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
-        val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated
-            is ExitProductTags -> isProductDetailUpdated && isProductSubDetailUpdated || !_addedProductTags.isEmpty()
-            else -> isProductDetailUpdated && isProductSubDetailUpdated
-        }
-        if (isProductUpdated && event.shouldShowDiscardDialog) {
+        if (event is ExitProductDetail && isProductDetailUpdated) {
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
-                // discard changes made to the current screen
+                // discard changes made to the product and exit product detail
                 discardEditChanges()
-
-                // if the user is in Product detail screen, exit product detail,
-                // otherwise, redirect to Product Detail screen
-                if (event is ExitProductDetail) {
-                    triggerEvent(ExitProduct)
-                } else {
-                    triggerEvent(event)
-                }
+                triggerEvent(ExitProduct)
             }
 
             // if the user is adding a product and this is product detail, include a "Save as draft" neutral
             // button in the discard dialog
             @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow && event is ExitProductDetail) {
+            val neutralAction = if (isAddFlow) {
                 neutralBtnId = string.product_detail_save_as_draft
                 DialogInterface.OnClickListener { _, _ ->
                     updateProductDraft(productStatus = DRAFT)
@@ -628,10 +611,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 null
             }
 
-            triggerEvent(ShowDialog(
+            triggerEvent(
+                ShowDialog(
                     positiveBtnAction = positiveAction,
                     neutralBtnAction = neutralAction
-            ))
+                )
+            )
             return false
         } else if (event is ExitProductDetail && isUploadingImages) {
             // images can't be assigned to the product until they finish uploading so ask whether
