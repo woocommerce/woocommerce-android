@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.products.tags
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
