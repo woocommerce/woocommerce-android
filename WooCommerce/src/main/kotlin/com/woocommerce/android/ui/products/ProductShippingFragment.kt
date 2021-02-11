@@ -30,9 +30,6 @@ import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping) {
     private val viewModel: ProductShippingViewModel by viewModels { viewModelFactory.get() }
 
-    override val isDoneButtonVisible: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
-    override val isDoneButtonEnabled: Boolean = true
     override val lastEvent: Event?
         get() = viewModel.event.value
 
@@ -60,9 +57,6 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isShippingClassSectionVisible?.takeIfNotEqualTo(old?.isShippingClassSectionVisible) { isVisible ->
                 binding.productShippingClassSpinner.isVisible = isVisible
-            }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
-                doneButton?.isVisible = isVisible
             }
             new.shippingData.weight?.takeIfNotEqualTo(old?.shippingData?.weight) { weight ->
                 showValue(binding.productWeight, R.string.product_weight, weight, viewModel.parameters.weightUnit)
@@ -149,11 +143,15 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         findNavController().navigateSafely(action)
     }
 
-    override fun onDoneButtonClicked() {
-        viewModel.onDoneButtonClicked()
-    }
-
     override fun onExit() {
         viewModel.onExit()
+    }
+
+    // TODO remove
+    override val isDoneButtonVisible: Boolean
+        get() = false
+    override val isDoneButtonEnabled: Boolean = false
+    override fun onDoneButtonClicked() {
+        //
     }
 }
