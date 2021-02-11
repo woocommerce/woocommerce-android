@@ -35,10 +35,6 @@ class ProductPricingFragment
     : BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
     private val viewModel: ProductPricingViewModel by viewModels { viewModelFactory.get() }
 
-    override val isDoneButtonVisible: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
-    override val isDoneButtonEnabled: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
     override val lastEvent: Event?
         get() = viewModel.event.value
 
@@ -99,12 +95,6 @@ class ProductPricingFragment
                     View.GONE
                 }
             }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
-                doneButton?.isVisible = isVisible
-            }
-            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
-                doneButton?.isEnabled = isEnabled
-            }
             new.isTaxSectionVisible?.takeIfNotEqualTo(old?.isTaxSectionVisible) { isVisible ->
                 if (isVisible) {
                     binding.productTaxSection.show()
@@ -120,7 +110,6 @@ class ProductPricingFragment
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
-                is ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         })
@@ -203,10 +192,6 @@ class ProductPricingFragment
                 }
             }
         }
-    }
-
-    override fun onDoneButtonClicked() {
-        viewModel.onDoneButtonClicked()
     }
 
     override fun onExit() {
@@ -327,5 +312,14 @@ class ProductPricingFragment
                 }
             }
         }
+    }
+
+    // TODO remove
+    override val isDoneButtonVisible: Boolean
+        get() = false
+    override val isDoneButtonEnabled: Boolean
+        get() = false
+    override fun onDoneButtonClicked() {
+        //
     }
 }
