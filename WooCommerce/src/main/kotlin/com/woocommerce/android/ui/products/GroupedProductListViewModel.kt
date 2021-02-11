@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,9 +18,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -97,31 +94,22 @@ class GroupedProductListViewModel @AssistedInject constructor(
         _productList.value = if (selectedProductIds.isNotEmpty()) {
             groupedProductListRepository.getProductList(selectedProductIds)
         } else emptyList()
-        productListViewState = productListViewState.copy(isDoneButtonVisible = hasChanges)
     }
 
     fun onAddProductButtonClicked() {
         track(ConnectedProductsListAction.ADD_TAPPED)
-        triggerEvent(ViewProductSelectionList(
-            navArgs.remoteProductId,
-            navArgs.groupedProductListType,
-            excludedProductIds = selectedProductIds)
+        triggerEvent(
+            ViewProductSelectionList(
+                navArgs.remoteProductId,
+                navArgs.groupedProductListType,
+                excludedProductIds = selectedProductIds
+            )
         )
-    }
-
-    fun onDoneButtonClicked() {
-        track(ConnectedProductsListAction.DONE_TAPPED)
-        triggerEvent(ExitWithResult(selectedProductIds))
     }
 
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                },
-                negativeButtonId = string.keep_changes
-            ))
+            triggerEvent(ExitWithResult(selectedProductIds))
             false
         } else {
             true
@@ -179,8 +167,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
     data class GroupedProductListViewState(
         val selectedProductIds: List<Long>,
         val isSkeletonShown: Boolean? = null,
-        val isLoadingMore: Boolean? = null,
-        val isDoneButtonVisible: Boolean? = null
+        val isLoadingMore: Boolean? = null
     ) : Parcelable {
         val isAddProductButtonVisible: Boolean
             get() = isSkeletonShown == false
