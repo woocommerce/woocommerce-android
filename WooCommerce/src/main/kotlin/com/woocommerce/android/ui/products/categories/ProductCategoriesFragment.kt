@@ -49,17 +49,6 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
         _binding = null
     }
 
-    // TODO
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductCategories(shouldShowDiscardDialog = false))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

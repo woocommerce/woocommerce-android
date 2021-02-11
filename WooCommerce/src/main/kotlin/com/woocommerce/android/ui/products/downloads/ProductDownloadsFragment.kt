@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.observe
@@ -72,18 +70,8 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_product_downloads_list, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
-                true
-            }
             R.id.menu_product_downloads_settings -> {
                 viewModel.onDownloadsSettingsClicked()
                 true
