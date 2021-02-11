@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.observe
@@ -68,6 +70,12 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_product_downloads_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

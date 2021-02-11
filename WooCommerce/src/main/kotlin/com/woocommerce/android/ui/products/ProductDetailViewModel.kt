@@ -625,6 +625,7 @@ class ProductDetailViewModel @AssistedInject constructor(
             return false
         } else {
             if (event is ExitProductTags) {
+                onProductTagsBackButtonClicked()
                 clearProductTagsState()
             }
             return true
@@ -1284,7 +1285,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
-    fun onProductTagDoneMenuActionClicked() {
+    fun onProductTagsBackButtonClicked() {
         val tags = _addedProductTags.getList()
         // check if there are tags entered that do not exist on the site. If so,
         // call the API to add the tags to the site first
@@ -1323,7 +1324,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             // Since the tag does not exist for the site, add the tag to
             // a list of newly added tags
             _addedProductTags.addNewItem(ProductTag(name = tagName))
-            updateTagsMenuAction()
             loadProductTags()
         }
     }
@@ -1333,7 +1333,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
-        updateTagsMenuAction()
         loadProductTags()
     }
 
@@ -1347,15 +1346,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else {
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
-        updateTagsMenuAction()
         loadProductTags()
-    }
-
-    private fun updateTagsMenuAction() {
-        productTagsViewState = productTagsViewState.copy(
-            shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
-                !_addedProductTags.isEmpty()
-        )
     }
 
     /**
@@ -1399,11 +1390,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when user exits the product tag fragment to clear the stored filter and the done button state
+     * Called when user exits the product tag fragment to clear the stored filter
      * (otherwise it will be retained when the user returns to the tag fragment)
      */
     fun clearProductTagsState() {
-        productTagsViewState = productTagsViewState.copy(currentFilter = "", shouldDisplayDoneMenuButton = false)
+        productTagsViewState = productTagsViewState.copy(currentFilter = "")
     }
 
     /**
@@ -1584,7 +1575,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val shouldDisplayDoneMenuButton: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val currentFilter: String = ""
     ) : Parcelable
