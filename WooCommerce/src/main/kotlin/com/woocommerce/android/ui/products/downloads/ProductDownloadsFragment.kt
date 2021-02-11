@@ -144,6 +144,7 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloads())
+        viewModel.onBackButtonClicked(ExitProductDownloads())
+        return false
     }
 }

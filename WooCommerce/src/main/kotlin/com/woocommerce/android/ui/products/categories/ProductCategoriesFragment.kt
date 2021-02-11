@@ -153,7 +153,8 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductCategories())
+        viewModel.onBackButtonClicked(ExitProductCategories())
+        return false
     }
 
     override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {

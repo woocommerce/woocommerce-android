@@ -100,7 +100,10 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         }
     }
 
-    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked(ExitLinkedProducts())
+        return false
+    }
 
     private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
         val productIds = when (groupedProductType) {

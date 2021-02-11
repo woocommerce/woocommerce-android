@@ -49,7 +49,10 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         _binding = null
     }
 
-    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitProductAttributeList())
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked(ExitProductAttributeList())
+        return false
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
@@ -61,7 +64,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitProductAttributeList(shouldShowDiscardDialog = false))
+                viewModel.onBackButtonClicked(ExitProductAttributeList(shouldShowDiscardDialog = false))
                 // TODO analytics
                 true
             }
