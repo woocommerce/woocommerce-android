@@ -222,13 +222,4 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
     override fun onExit() {
         viewModel.onExit()
     }
-
-    // TODO remove
-    override val isDoneButtonVisible: Boolean
-        get() = false
-    override val isDoneButtonEnabled: Boolean
-        get() = false
-    override fun onDoneButtonClicked() {
-        //
-    }
 }

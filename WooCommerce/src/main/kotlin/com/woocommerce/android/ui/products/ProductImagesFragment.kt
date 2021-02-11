@@ -350,13 +350,4 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     override fun onExit() {
         viewModel.onNavigateBackButtonClicked()
     }
-
-    // TODO: remove
-    override val isDoneButtonVisible: Boolean
-        get() = false
-    override val isDoneButtonEnabled: Boolean
-        get() = false
-    override fun onDoneButtonClicked() {
-        //
-    }
 }

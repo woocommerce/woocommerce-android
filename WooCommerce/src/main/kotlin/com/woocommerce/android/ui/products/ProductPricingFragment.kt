@@ -26,7 +26,6 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
 import java.util.Date
@@ -312,14 +311,5 @@ class ProductPricingFragment
                 }
             }
         }
-    }
-
-    // TODO remove
-    override val isDoneButtonVisible: Boolean
-        get() = false
-    override val isDoneButtonEnabled: Boolean
-        get() = false
-    override fun onDoneButtonClicked() {
-        //
     }
 }
