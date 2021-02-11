@@ -27,6 +27,9 @@ class CombinedAttributeModel(
         }
     }
 
+    val isGlobalAttribute: Boolean
+        get() = id != 0L
+
     override fun equals(other: Any?): Boolean {
         return (other as? CombinedAttributeModel)?.let {
             id == it.id &&
@@ -35,6 +38,4 @@ class CombinedAttributeModel(
     }
 
     override fun hashCode() = super.hashCode()
-
-    fun isGlobalAttribute() = id != 0L
 }
