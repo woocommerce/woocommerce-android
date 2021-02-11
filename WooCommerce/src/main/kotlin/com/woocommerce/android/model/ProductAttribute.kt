@@ -17,7 +17,8 @@ data class ProductAttribute(
     /**
      * Local attributes, which are attributes available only to a specific product, have an ID of zero
      */
-    fun isLocalAttribute() = (id == 0L)
+    val isLocalAttribute: Boolean
+        get() = id == 0L
 }
 
 fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
