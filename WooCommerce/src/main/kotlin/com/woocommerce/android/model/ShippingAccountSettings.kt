@@ -8,10 +8,20 @@ import java.util.Date
 
 @Parcelize
 data class ShippingAccountSettings(
+    val storeOwnerDetails: StoreOwnerDetails,
+    val isEmailReceiptEnabled: Boolean,
     val canManagePayments: Boolean,
     val selectedPaymentId: Int?,
     val paymentMethods: List<PaymentMethod>,
     val lastUsedBoxId: String?
+) : Parcelable
+
+@Parcelize
+data class StoreOwnerDetails(
+    val wpcomEmail: String,
+    val wpcomUserName: String,
+    val userName: String,
+    val name: String
 ) : Parcelable
 
 @Parcelize
@@ -25,6 +35,13 @@ data class PaymentMethod(
 
 fun WCShippingAccountSettings.toAppModel(): ShippingAccountSettings {
     return ShippingAccountSettings(
+        storeOwnerDetails = StoreOwnerDetails(
+            wpcomEmail = storeOwnerWpcomEmail,
+            wpcomUserName = storeOwnerUserName,
+            name = storeOwnerName,
+            userName = storeOwnerUserName
+        ),
+        isEmailReceiptEnabled = isEmailReceiptEnabled,
         canManagePayments = canManagePayments,
         selectedPaymentId = selectedPaymentMethodId,
         paymentMethods = paymentMethods.map {

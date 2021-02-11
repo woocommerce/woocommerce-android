@@ -52,6 +52,22 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
             new.paymentMethods.takeIfNotEqualTo(old?.paymentMethods) {
                 paymentMethodsAdapter.items = it
             }
+            new.emailReceipts.takeIfNotEqualTo(binding.emailReceiptsCheckbox.isChecked) {
+                binding.emailReceiptsCheckbox.isChecked = it
+            }
+            new.storeOwnerDetails?.takeIfNotEqualTo(old?.storeOwnerDetails) { details ->
+                binding.paymentsInfo.text = getString(
+                    R.string.shipping_label_payments_account_info,
+                    details.wpcomUserName,
+                    details.wpcomEmail
+                )
+                binding.emailReceiptsCheckbox.text = getString(
+                    R.string.shipping_label_payments_email_receipts_checkbox,
+                    details.name.ifEmpty { details.userName },
+                    details.userName,
+                    details.wpcomEmail
+                )
+            }
         }
     }
 }

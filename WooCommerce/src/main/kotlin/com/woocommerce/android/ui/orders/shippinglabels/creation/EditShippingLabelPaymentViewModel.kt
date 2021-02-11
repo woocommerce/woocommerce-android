@@ -5,6 +5,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -43,7 +44,9 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
                 paymentMethods = accountSettings.paymentMethods.map {
                     PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
                 },
-                canManagePayments = accountSettings.canManagePayments
+                canManagePayments = accountSettings.canManagePayments,
+                emailReceipts = accountSettings.isEmailReceiptEnabled,
+                storeOwnerDetails = accountSettings.storeOwnerDetails
             )
         }
     }
@@ -54,8 +57,7 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         val canManagePayments: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
         val emailReceipts: Boolean = false,
-        val wpcomUserName: String? = null,
-        val wpcomEmail: String? = null
+        val storeOwnerDetails: StoreOwnerDetails? = null
     ) : Parcelable
 
     @Parcelize

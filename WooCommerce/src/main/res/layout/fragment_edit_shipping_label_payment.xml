@@ -34,19 +34,23 @@
                 tools:listitem="@layout/shipping_label_payment_method_list_item" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/payments_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
+                android:breakStrategy="simple"
                 android:textAppearance="?attr/textAppearanceCaption"
+                tools:ignore="UnusedAttribute"
                 tools:text="Credit cards are retrieved from the following WordPress.com account: username user@email.com" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/email_receipts_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_150"
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_150"
                 android:gravity="top"

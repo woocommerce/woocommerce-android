@@ -109,6 +109,14 @@
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
     <!--
+        Payment methods
+    -->
+    <string name="payment_method_american_express">American Express</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <!--
         Login Library Overrides
     -->
     <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
@@ -412,6 +420,10 @@
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
     <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
+    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
     <!--
         Refunds
     -->
@@ -1518,11 +1530,4 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
-    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
-    <string name="payment_method_american_express">American Express</string>
-    <string name="payment_method_discover">Discover</string>
-    <string name="payment_method_mastercard">MasterCard</string>
-    <string name="payment_method_visa">VISA</string>
-    <string name="payment_method_paypal">Paypal</string>
-    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
 </resources>
