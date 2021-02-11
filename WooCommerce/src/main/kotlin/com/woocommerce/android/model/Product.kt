@@ -99,7 +99,8 @@ data class Product(
         val options: List<String>,
         val isVisible: Boolean
     ) : Parcelable {
-        fun isLocalAttribute() = id == 0L
+        val isLocalAttribute: Boolean
+            get() = id == 0L
     }
 
     fun isSameProduct(product: Product): Boolean {
