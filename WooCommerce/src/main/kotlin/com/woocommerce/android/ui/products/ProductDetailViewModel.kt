@@ -578,16 +578,10 @@ class ProductDetailViewModel @AssistedInject constructor(
      *
      * Each product screen has it's own [ProductExitEvent]
      * For product detail, we show a discard dialog if any changes have been made to the
-     * [Product] model locall, that still need to be saved to the backend.
+     * [Product] model locally that still need to be saved to the backend.
      */
     fun onBackButtonClicked(event: ProductExitEvent): Boolean {
         val isProductDetailUpdated = viewState.isProductUpdated ?: false
-
-        val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
-            viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                viewState.isPasswordChanged
-        } ?: false
-
         val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
 
         if (event is ExitProductDetail && isProductDetailUpdated) {

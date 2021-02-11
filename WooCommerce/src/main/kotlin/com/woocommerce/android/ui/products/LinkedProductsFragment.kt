@@ -45,19 +45,6 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value))
     }
 
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
-                AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
-                    mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.DONE.value))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }*/
-
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
