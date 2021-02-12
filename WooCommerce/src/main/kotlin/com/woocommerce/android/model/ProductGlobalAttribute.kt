@@ -4,6 +4,9 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 
+/**
+ * Represents a global attribute, which is an attribute available store-wide
+ */
 @Parcelize
 data class ProductGlobalAttribute(
     val id: Int,
@@ -14,7 +17,7 @@ data class ProductGlobalAttribute(
     val orderBy: String,
     val hasArchives: Boolean,
     val termsId: String,
-    val remoteId: Int
+    val remoteId: Long
 ) : Parcelable {
     fun toDataModel(cachedAttribute: WCGlobalAttributeModel? = null): WCGlobalAttributeModel {
         return (cachedAttribute ?: WCGlobalAttributeModel()).also {
@@ -26,7 +29,7 @@ data class ProductGlobalAttribute(
             it.orderBy = orderBy
             it.hasArchives = hasArchives
             it.termsId = termsId
-            it.remoteId = remoteId
+            it.remoteId = remoteId.toInt()
         }
     }
 }
@@ -34,7 +37,7 @@ data class ProductGlobalAttribute(
 fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {
     return ProductGlobalAttribute(
         id = this.id,
-        remoteId = this.remoteId,
+        remoteId = this.remoteId.toLong(),
         localSiteId = this.localSiteId,
         name = this.name,
         slug = this.slug,
