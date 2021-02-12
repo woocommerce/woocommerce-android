@@ -37,8 +37,10 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -46,11 +48,13 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -158,8 +162,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
     val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
 
-    private val _attributeList = MutableLiveData<List<Product.Attribute>>()
-    val attributeList: LiveData<List<Product.Attribute>> = _attributeList
+    private val _attributeList = MutableLiveData<List<ProductAttribute>>()
+    val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+
+    private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
+    val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -450,6 +457,10 @@ class ProductDetailViewModel @AssistedInject constructor(
                 hasChanges = hasTagChanges()
             }
             is ExitProductAttributeList -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
+            }
+            is ExitProductAddAttribute -> {
                 // TODO: eventName
                 hasChanges = hasAttributeChanges()
             }
@@ -931,23 +942,47 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Loads the attributes assigned to the draft product
+     * Loads the attributes assigned to the draft product, used by the attribute list fragment
      */
     fun loadProductDraftAttributes() {
-        _attributeList.value =
-            viewState.productDraft?.let {
-                it.attributes
-            } ?: emptyList()
+        _attributeList.value = getProductDraftAttributes()
+    }
+
+    fun getProductDraftAttributes(): List<ProductAttribute> {
+        return viewState.productDraft?.attributes ?: emptyList()
     }
 
     /**
-     * User clicked an attribute in the attribute list fragment
+     * User clicked an attribute in the attribute list
      */
-    fun onAttributeListItemClick(attribute: Product.Attribute) {
+    fun onAttributeListItemClick(attribute: ProductAttribute) {
+        // TODO
+    }
+
+    /**
+     * User tapped "Add attribute" on the attribute list fragment
+     */
+    fun onAddAttributeButtonClick() {
+        triggerEvent(AddProductAttribute)
+    }
+
+    /**
+     * User clicked an attribute in the add attribute fragment
+     */
+    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
         // TODO
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
+
+    /**
+     * Fetches the list of global attributes, ie: the attributes available store-wide
+     */
+    fun fetchGlobalAttributes() {
+        launch {
+            _globalAttributeList.value = productRepository.fetchGlobalAttributes()
+        }
+    }
 
     /**
      * Updates the product to the backend only if network is connected.
@@ -1501,6 +1536,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }

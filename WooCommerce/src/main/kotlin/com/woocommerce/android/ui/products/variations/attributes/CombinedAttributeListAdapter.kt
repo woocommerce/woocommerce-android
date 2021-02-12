@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
+import com.woocommerce.android.model.ProductGlobalAttribute
+import com.woocommerce.android.ui.products.variations.attributes.CombinedAttributeListAdapter.AttributeViewHolder
 
-class AttributeListAdapter(
-    private val onItemClick: (attribute: ProductAttribute) -> Unit
+class CombinedAttributeListAdapter(
+    private val onItemClick: (id: Long, isGlobalAttribute: Boolean) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
-    private var attributeList = listOf<ProductAttribute>()
+    private var attributeList = listOf<CombinedAttributeModel>()
 
     init {
         setHasStableIds(true)
@@ -37,16 +38,17 @@ class AttributeListAdapter(
         holder.bind(attributeList[position])
 
         holder.itemView.setOnClickListener {
-            onItemClick(attributeList[position])
+            val item = attributeList[position]
+            onItemClick(item.id, item.isGlobalAttribute)
         }
     }
 
     private class AttributeItemDiffUtil(
-        val oldList: List<ProductAttribute>,
-        val newList: List<ProductAttribute>
+        val oldList: List<CombinedAttributeModel>,
+        val newList: List<CombinedAttributeModel>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
+                oldList[oldItemPosition].id == newList[newItemPosition].id
 
         override fun getOldListSize(): Int = oldList.size
 
@@ -59,27 +61,32 @@ class AttributeListAdapter(
         }
     }
 
-    fun setAttributeList(attributes: List<ProductAttribute>) {
+    fun setAttributeList(
+        localAttributes: List<ProductAttribute>,
+        globalAttributes: List<ProductGlobalAttribute>
+    ) {
+        val combinedList = ArrayList<CombinedAttributeModel>()
+
+        localAttributes.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
+        globalAttributes.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
+        combinedList.sortBy { it.name }
+
         val diffResult = DiffUtil.calculateDiff(
             AttributeItemDiffUtil(
                 attributeList,
-                attributes
+                combinedList
             )
         )
-        attributeList = attributes
+
+        attributeList = combinedList
         diffResult.dispatchUpdatesTo(this)
     }
 
     inner class AttributeViewHolder(val viewBinding: AttributeListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(attribute: ProductAttribute) {
+        fun bind(attribute: CombinedAttributeModel) {
             viewBinding.attributeName.text = attribute.name
-            if (attribute.options.isNotEmpty()) {
-                viewBinding.attributeTerms.isVisible = true
-                viewBinding.attributeTerms.text = attribute.options.joinToString()
-            } else {
-                viewBinding.attributeTerms.isVisible = false
-            }
+            viewBinding.attributeTerms.isVisible = false
         }
     }
 }
