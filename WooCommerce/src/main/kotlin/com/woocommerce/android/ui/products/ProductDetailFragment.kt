@@ -72,7 +72,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var doneOrUpdateMenuItem: MenuItem? = null
+    private var updateMenuItem: MenuItem? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
@@ -295,7 +295,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+        updateMenuItem = menu.findItem(R.id.menu_done)
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -338,7 +338,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
         menu.findItem(R.id.menu_save_as_draft)?.isVisible = viewModel.isAddFlow && viewModel.hasChanges()
 
-        doneOrUpdateMenuItem?.let {
+        updateMenuItem?.let {
             it.title = if (viewModel.isAddFlow) getString(publishTitleId) else getString(updateTitleId)
             it.isVisible = viewModel.hasChanges()
         }
@@ -382,7 +382,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     }
 
     private fun showUpdateMenuItem(show: Boolean) {
-        doneOrUpdateMenuItem?.isVisible = show
+        updateMenuItem?.isVisible = show
     }
 
     private fun changesMade() {
