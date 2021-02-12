@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
@@ -19,6 +18,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.TestDispatcher
 import com.woocommerce.android.viewmodel.test
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -108,7 +108,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that an error is shown and done button disabled if SKU is already taken`() = test {
+    fun `Test that an error is shown if SKU is already taken`() = test {
         whenever(productDetailRepository.isSkuAvailableLocally(takenSku)).thenReturn(false)
         whenever(productDetailRepository.isSkuAvailableRemotely(expectedData.sku!!)).thenReturn(true)
         whenever(productDetailRepository.isSkuAvailableLocally(expectedData.sku!!)).thenReturn(true)
@@ -121,17 +121,11 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         viewModel.onSkuChanged(takenSku)
 
         assertThat(actual?.inventoryData?.sku).isEqualTo(takenSku)
-        assertThat(actual?.isDoneButtonVisible).isTrue()
-        assertThat(actual?.isDoneButtonDisabled).isTrue()
         assertThat(actual?.skuErrorMessage).isEqualTo(string.product_inventory_update_sku_error)
 
         viewModel.onSkuChanged(expectedData.sku!!)
 
         assertThat(actual?.inventoryData?.sku).isEqualTo(expectedData.sku)
-        assertThat(actual?.isDoneButtonVisible).isTrue()
-
-        assertThat(actual?.isDoneButtonVisible).isTrue()
-        assertThat(actual?.isDoneButtonDisabled).isFalse()
         assertThat(actual?.skuErrorMessage).isEqualTo(0)
     }
 
@@ -168,7 +162,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that a the correct data is returned when Done button clicked`() = test {
+    fun `Test that a the correct data is returned when exiting`() = test {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -183,7 +177,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
             expectedData.stockStatus
         )
 
-        viewModel.onDoneButtonClicked()
+        viewModel.onExit()
 
         assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
@@ -192,24 +186,6 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         val result = events.single { it is ExitWithResult<*> } as ExitWithResult<InventoryData>
 
         assertThat(result.data).isEqualTo(expectedData)
-    }
-
-    @Test
-    fun `Test that the done button is only shown if data changed`() = test {
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
-        }
-
-        assertThat(viewState?.isDoneButtonVisible).isFalse()
-
-        viewModel.onDataChanged(backorderStatus = expectedData.backorderStatus)
-
-        assertThat(viewState?.isDoneButtonVisible).isTrue()
-
-        viewModel.onDataChanged(backorderStatus = initialData.backorderStatus)
-
-        assertThat(viewState?.isDoneButtonVisible).isFalse()
     }
 
     @Test
