@@ -121,7 +121,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that a the correct data is returned when Done button clicked`() = test {
+    fun `Test that a the correct data is returned when exiting`() = test {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -136,7 +136,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
             expectedData.shippingClassId
         )
 
-        viewModel.onDoneButtonClicked()
+        viewModel.onExit()
 
         assertThat(events.any { it is ShowDialog }).isFalse()
         assertThat(events.any { it is Exit }).isFalse()
@@ -145,24 +145,6 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         val result = events.single { it is ExitWithResult<*> } as ExitWithResult<ShippingData>
 
         assertThat(result.data).isEqualTo(expectedData)
-    }
-
-    @Test
-    fun `Test that the done button is only shown if data changed`() = test {
-        var viewState: ViewState? = null
-        viewModel.viewStateData.observeForever { _, new ->
-            viewState = new
-        }
-
-        assertThat(viewState?.isDoneButtonVisible).isFalse()
-
-        viewModel.onDataChanged(expectedData.weight)
-
-        assertThat(viewState?.isDoneButtonVisible).isTrue()
-
-        viewModel.onDataChanged(initialData.weight)
-
-        assertThat(viewState?.isDoneButtonVisible).isFalse()
     }
 
     @Test
