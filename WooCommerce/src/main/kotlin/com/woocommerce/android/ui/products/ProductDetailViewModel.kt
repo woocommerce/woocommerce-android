@@ -1526,7 +1526,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Add a new class here for each new product sub detail screen to handle back navigation.
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
-        class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
