@@ -19,7 +19,6 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -359,7 +358,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             }
         }
 
-        viewModel.onBackButtonClicked(ExitProductDetail())
+        viewModel.onBackButtonClickedProductDetail()
         assertThat(saveAsDraftShown).isFalse()
     }
 }

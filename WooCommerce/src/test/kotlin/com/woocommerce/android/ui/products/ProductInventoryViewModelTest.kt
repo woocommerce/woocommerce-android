@@ -146,22 +146,6 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that a discard dialog is shown if data changed`() = test {
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever {
-            events.add(it)
-        }
-
-        viewModel.onDataChanged(expectedData.sku)
-
-        viewModel.onExit()
-
-        assertThat(events.singleOrNull { it is ShowDialog }).isNotNull
-        assertThat(events.any { it is ExitWithResult<*> }).isFalse()
-        assertThat(events.any { it is Exit }).isFalse()
-    }
-
-    @Test
     fun `Test that a the correct data is returned when exiting`() = test {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
