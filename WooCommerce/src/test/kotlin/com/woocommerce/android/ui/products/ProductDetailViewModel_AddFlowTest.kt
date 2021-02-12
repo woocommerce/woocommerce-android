@@ -341,7 +341,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             }
         }
 
-        viewModel.onBackButtonClicked(ExitProductDetail())
+        viewModel.onBackButtonClickedProductDetail()
         assertThat(saveAsDraftShown).isTrue()
     }
 
