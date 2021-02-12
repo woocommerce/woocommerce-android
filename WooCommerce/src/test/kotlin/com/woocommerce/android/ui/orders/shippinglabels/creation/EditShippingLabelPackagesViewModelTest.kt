@@ -12,6 +12,7 @@ import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -52,7 +53,11 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         canManagePayments = true,
         paymentMethods = emptyList(),
         selectedPaymentId = null,
-        lastUsedBoxId = "id1"
+        lastUsedBoxId = "id1",
+        storeOwnerDetails = StoreOwnerDetails(
+            "email", "username", "username", "name"
+        ),
+        isEmailReceiptEnabled = true
     )
 
     private val testOrder = OrderTestUtils.generateTestOrder(ORDER_ID)

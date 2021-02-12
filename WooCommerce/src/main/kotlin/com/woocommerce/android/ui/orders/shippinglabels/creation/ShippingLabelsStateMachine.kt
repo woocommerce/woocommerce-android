@@ -143,7 +143,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
             }
             on<Event.PaymentSelectionStarted> {
-                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentDetails)
+                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
             on<Event.EditOriginAddressRequested> {
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(data.originAddress, ORIGIN))
@@ -164,7 +164,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
             }
             on<Event.EditPaymentRequested> {
-                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentDetails)
+                transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
         }
 
@@ -468,7 +468,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         ) : SideEffect()
         object ShowCustomsForm : SideEffect()
         object ShowCarrierOptions : SideEffect()
-        object ShowPaymentDetails : SideEffect()
+        object ShowPaymentOptions : SideEffect()
     }
 
     class InvalidStateException(message: String) : Exception(message)
