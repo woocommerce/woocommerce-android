@@ -91,7 +91,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
             viewModel.showAddProductDownload(it.first().source)
-            changesMade()
         }
     }
 
@@ -136,11 +135,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     private fun updateFilesFromProductDraft() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productDownloadsAdapter.filesList = product.downloads
-        changesMade()
-    }
-
-    override fun hasChanges(): Boolean {
-        return viewModel.hasDownloadsChanges() || viewModel.hasDownloadsSettingsChanges()
     }
 
     override fun onRequestAllowBackPress(): Boolean {

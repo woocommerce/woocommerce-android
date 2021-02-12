@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.Observer
@@ -23,7 +20,7 @@ import javax.inject.Inject
 
 /**
  * All product related fragments should extend this class to provide a consistent method
- * of displaying snackbar, handling navigation and discard dialogs
+ * of displaying snackbars and handling navigation
  */
 abstract class BaseProductFragment : BaseFragment, BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
@@ -36,8 +33,6 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
     protected val viewModel: ProductDetailViewModel by navGraphViewModels(R.id.nav_graph_products) {
         viewModelFactory.get()
     }
-
-    protected var doneOrUpdateMenuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,46 +71,11 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        showUpdateMenuItem(hasChanges())
-    }
-
-    protected fun enableUpdateMenuItem(enable: Boolean) {
-        doneOrUpdateMenuItem?.isEnabled = enable
-    }
-
-    protected fun showUpdateMenuItem(show: Boolean) {
-        doneOrUpdateMenuItem?.isVisible = show
-    }
-
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-    }
-
-    /**
-     * Determines if changes have been made in the active fragment
-     */
-    open fun hasChanges(): Boolean {
-        return viewModel.getProduct().productBeforeEnteringFragment?.let {
-            viewModel.getProduct().productDraft?.isSameProduct(it) == false
-        } ?: false
-    }
-
-    /**
-     * Descendants should call this when edits are made so we can show/hide the done/publish button
-     */
-    protected fun changesMade() {
-        requireActivity().invalidateOptionsMenu()
-        showUpdateMenuItem(hasChanges())
     }
 }

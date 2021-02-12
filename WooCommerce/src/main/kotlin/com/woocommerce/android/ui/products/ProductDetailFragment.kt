@@ -72,6 +72,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
+    private var doneOrUpdateMenuItem: MenuItem? = null
 
     private val publishTitleId = R.string.product_add_tool_bar_menu_button_done
     private val updateTitleId = R.string.update
@@ -294,6 +295,8 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
+        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -378,6 +381,14 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
         }
     }
 
+    private fun showUpdateMenuItem(show: Boolean) {
+        doneOrUpdateMenuItem?.isVisible = show
+    }
+
+    private fun changesMade() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
     private fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(binding.appBarLayout, R.layout.skeleton_product_detail, delayed = true)
@@ -455,10 +466,4 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
     }
 
     override fun getFragmentTitle(): String = productName
-
-    /**
-     * Override the BaseProductFragment's fun since we want to return True if any changes have been
-     * made to the product draft
-     */
-    override fun hasChanges() = viewModel.hasChanges()
 }

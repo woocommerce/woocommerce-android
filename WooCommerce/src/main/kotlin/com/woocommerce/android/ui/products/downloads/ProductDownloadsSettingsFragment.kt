@@ -79,17 +79,11 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
         binding.productDownloadExpiry.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadExpiryChanged(value)
-            changesMade()
         }
         binding.productDownloadLimit.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toLong()
             viewModel.onDownloadLimitChanged(value)
-            changesMade()
         }
-    }
-
-    override fun hasChanges(): Boolean {
-        return viewModel.hasDownloadsSettingsChanges()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
