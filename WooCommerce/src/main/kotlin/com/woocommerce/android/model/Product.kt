@@ -63,7 +63,7 @@ data class Product(
     val purchaseNote: String,
     val numVariations: Int,
     val images: List<Image>,
-    val attributes: List<Attribute>,
+    val attributes: List<ProductAttribute>,
     val saleEndDateGmt: Date?,
     val saleStartDateGmt: Date?,
     val isSoldIndividually: Boolean,
@@ -90,14 +90,6 @@ data class Product(
         val name: String,
         val source: String,
         val dateCreated: Date
-    ) : Parcelable
-
-    @Parcelize
-    data class Attribute(
-        val id: Long,
-        val name: String,
-        val options: List<String>,
-        val isVisible: Boolean
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -221,6 +213,12 @@ data class Product(
     fun hasDownloadChanges(updatedProduct: Product?): Boolean {
         return updatedProduct?.let {
             downloads != it.downloads
+        } ?: false
+    }
+
+    fun hasAttributeChanges(updatedProduct: Product?): Boolean {
+        return updatedProduct?.let {
+            attributes != it.attributes
         } ?: false
     }
 
@@ -487,7 +485,7 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map {
-            Product.Attribute(
+            ProductAttribute(
                 it.id,
                 it.name,
                 it.options,

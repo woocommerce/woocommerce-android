@@ -142,6 +142,9 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             null
         }
 
+        // Developers can uncomment the line below to clear the db tables at startup
+        // wellSqlConfig.resetDatabase()
+
         notificationHandler.createNotificationChannels(this)
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)

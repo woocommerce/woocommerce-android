@@ -61,6 +61,11 @@
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
+    <string name="product_variations_edit_attr">Edit attributes</string>
+    <string name="product_variation_attributes">Attributes</string>
+    <string name="product_add_attribute">Add attribute</string>
+    <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -108,6 +113,14 @@
     <string name="error_no_gmaps_app">Google Maps app was found</string>
     <string name="error_no_email_app">No e-mail app was found</string>
     <string name="error_no_sms_app">No SMS app was found</string>
+    <!--
+        Payment methods
+    -->
+    <string name="payment_method_american_express">American Express</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_paypal">Paypal</string>
     <!--
         Login Library Overrides
     -->
@@ -410,6 +423,12 @@
     <string name="shipping_label_single_package_total_weight">Total package weight: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
     <string name="shipping_label_multi_packages_total_weight">Total package weight: %1$s %2$s</string>
+    <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
+    <string name="shipping_label_payments_add_credit_card">Add another credit card</string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
+    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
     <!--
         Refunds
     -->

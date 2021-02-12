@@ -8,12 +8,12 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.LoadPackagesFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
@@ -73,8 +72,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private var availablePackages: List<ShippingPackage> = emptyList()
-
     init {
         initializeStateMachine()
     }
@@ -109,10 +106,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                                 sideEffect.type
                             )
                         )
-                        is SideEffect.ShowPackageOptions -> loadAndOpenPackagesDetails(sideEffect.shippingPackages)
-                        is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
-                        is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
-                        is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
+                        is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
+                        is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
+                        is SideEffect.ShowCarrierOptions -> handleResult { Event.ShippingCarrierSelected }
+                        is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
                 // save the current state
@@ -147,29 +144,17 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun loadAndOpenPackagesDetails(currentShippingPackages: List<ShippingLabelPackage>) {
-        if (availablePackages.isEmpty()) {
-            val progressDialogState = ProgressDialogState(
-                isShown = true,
-                title = string.shipping_label_packages_loading_title,
-                message = string.shipping_label_packages_loading_message
-            )
-            viewState = viewState.copy(progressDialogState = progressDialogState)
-            val availablePackagesResult = shippingLabelRepository.getShippingPackages()
-            viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
-            if (availablePackagesResult.isError) {
-                stateMachine.handleEvent(LoadPackagesFailed)
-                return
-            }
-            availablePackages = availablePackagesResult.model!!
-        }
+    private fun openPackagesDetails(currentShippingPackages: List<ShippingLabelPackage>) {
         triggerEvent(
             ShowPackageDetails(
                 orderIdentifier = arguments.orderIdentifier,
-                shippingLabelPackages = currentShippingPackages,
-                availablePackages = availablePackages
+                shippingLabelPackages = currentShippingPackages
             )
         )
+    }
+
+    private fun openPaymentDetails() {
+        triggerEvent(ShowPaymentDetails)
     }
 
     private fun updateViewState(data: Data) {
@@ -377,6 +362,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }.also { event ->
             event?.let { stateMachine.handleEvent(it) }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shippingLabelRepository.clearCache()
     }
 
     @Parcelize

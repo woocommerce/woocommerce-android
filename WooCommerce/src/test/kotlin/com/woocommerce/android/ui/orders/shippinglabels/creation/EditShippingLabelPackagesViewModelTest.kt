@@ -12,6 +12,7 @@ import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.StoreOwnerDetails
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -39,7 +40,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         private const val ORDER_ID = "1-1-1"
     }
 
-    private val availablePackages = arrayOf(
+    private val availablePackages = listOf(
         ShippingPackage(
             "id1", "title1", false, "provider1", PackageDimensions(1.0, 1.0, 1.0)
         ),
@@ -52,7 +53,11 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         canManagePayments = true,
         paymentMethods = emptyList(),
         selectedPaymentId = null,
-        lastUsedBoxId = "id1"
+        lastUsedBoxId = "id1",
+        storeOwnerDetails = StoreOwnerDetails(
+            "email", "username", "username", "name"
+        ),
+        isEmailReceiptEnabled = true
     )
 
     private val testOrder = OrderTestUtils.generateTestOrder(ORDER_ID)
@@ -68,14 +73,15 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: EditShippingLabelPackagesViewModel
 
-    fun setup(currentPackages: Array<ShippingLabelPackage>) {
+    suspend fun setup(currentPackages: Array<ShippingLabelPackage>) {
         val savedState: SavedStateWithArgs = spy(
             SavedStateWithArgs(
                 SavedStateHandle(),
                 null,
-                EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages, availablePackages)
+                EditShippingLabelPackagesFragmentArgs(ORDER_ID, currentPackages)
             )
         )
+        whenever(shippingLabelRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         whenever(orderDetailRepository.getOrder(ORDER_ID)).thenReturn(testOrder)
         whenever(productDetailRepository.getProduct(any())).thenReturn(testProduct)
         whenever(parameterRepository.getParameters(any(), any())).thenReturn(
