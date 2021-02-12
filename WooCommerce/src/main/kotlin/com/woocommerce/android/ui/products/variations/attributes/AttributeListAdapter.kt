@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
 class AttributeListAdapter(
-    private val onItemClick: (attribute: Product.Attribute) -> Unit
+    private val onItemClick: (attribute: ProductAttribute) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
-    private var attributeList = listOf<Product.Attribute>()
+    private var attributeList = listOf<ProductAttribute>()
 
     init {
         setHasStableIds(true)
@@ -42,8 +42,8 @@ class AttributeListAdapter(
     }
 
     private class AttributeItemDiffUtil(
-        val oldList: List<Product.Attribute>,
-        val newList: List<Product.Attribute>
+        val oldList: List<ProductAttribute>,
+        val newList: List<ProductAttribute>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             oldList[oldItemPosition].id == newList[newItemPosition].id
@@ -59,7 +59,7 @@ class AttributeListAdapter(
         }
     }
 
-    fun setAttributeList(attributes: List<Product.Attribute>) {
+    fun setAttributeList(attributes: List<ProductAttribute>) {
         val diffResult = DiffUtil.calculateDiff(
             AttributeItemDiffUtil(
                 attributeList,
@@ -72,7 +72,7 @@ class AttributeListAdapter(
 
     inner class AttributeViewHolder(val viewBinding: AttributeListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(attribute: Product.Attribute) {
+        fun bind(attribute: ProductAttribute) {
             viewBinding.attributeName.text = attribute.name
             if (attribute.options.isNotEmpty()) {
                 viewBinding.attributeTerms.isVisible = true

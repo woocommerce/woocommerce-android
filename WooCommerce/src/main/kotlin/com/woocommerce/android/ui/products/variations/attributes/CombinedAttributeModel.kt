@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 
 /**
@@ -12,7 +12,7 @@ data class CombinedAttributeModel(
     val name: String
 ) {
     companion object {
-        fun fromLocalAttribute(attribute: Product.Attribute): CombinedAttributeModel {
+        fun fromLocalAttribute(attribute: ProductAttribute): CombinedAttributeModel {
             return CombinedAttributeModel(
                 id = attribute.id,
                 name = attribute.name

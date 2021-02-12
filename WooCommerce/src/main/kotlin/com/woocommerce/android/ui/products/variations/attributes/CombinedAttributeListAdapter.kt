@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.variations.attributes.CombinedAttributeListAdapter.AttributeViewHolder
 
@@ -62,7 +62,7 @@ class CombinedAttributeListAdapter(
     }
 
     fun setAttributeList(
-        localAttributes: List<Product.Attribute>,
+        localAttributes: List<ProductAttribute>,
         globalAttributes: List<ProductGlobalAttribute>
     ) {
         val combinedList = ArrayList<CombinedAttributeModel>()

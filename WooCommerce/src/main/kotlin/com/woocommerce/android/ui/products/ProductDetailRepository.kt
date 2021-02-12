@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingClass
@@ -245,7 +246,7 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Returns the list of attributes assigned to a product
      */
-    fun getProductAttributes(remoteProductId: Long): List<Product.Attribute> {
+    fun getProductAttributes(remoteProductId: Long): List<ProductAttribute> {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
     }

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -114,7 +114,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
     override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
 
-    private fun showAttributes(attributes: List<Product.Attribute>) {
+    private fun showAttributes(attributes: List<ProductAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
