@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.di.FragmentScope
+import com.woocommerce.android.ui.products.ProductsModule.AddAttributeFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AttributeListFragmentModule
@@ -71,6 +72,8 @@ import com.woocommerce.android.ui.products.variations.VariationDetailFragment
 import com.woocommerce.android.ui.products.variations.VariationDetailModule
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListModule
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeModule
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
@@ -86,6 +89,7 @@ import dagger.android.ContributesAndroidInjector
     ProductFilterOptionListFragmentModule::class,
     VariationListFragmentModule::class,
     AttributeListFragmentModule::class,
+    AddAttributeFragmentModule::class,
     ProductImagesFragmentModule::class,
     ProductImageViewerFragmentModule::class,
     ProductInventoryFragmentModule::class,
@@ -165,6 +169,13 @@ object ProductsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [AttributeListModule::class])
         abstract fun attributeListFragment(): AttributeListFragment
+    }
+
+    @Module
+    internal abstract class AddAttributeFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [AddAttributeModule::class])
+        abstract fun attributeListFragment(): AddAttributeFragment
     }
 
     @Module
