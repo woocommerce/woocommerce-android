@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.whenever
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.GroupedProductListViewModel.GroupedProductListViewState
@@ -85,11 +84,6 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     fun `Displays grouped product list view correctly after deletion`() {
         createViewModel()
 
-        val isDoneButtonDisplayed = ArrayList<Boolean>()
-        viewModel.productListViewStateData.observeForever { old, new ->
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isDoneButtonDisplayed.add(it) }
-        }
-
         assertThat(viewModel.hasChanges).isEqualTo(false)
 
         var productData: GroupedProductListViewState? = null
@@ -99,17 +93,12 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
         assertThat(groupedProductIds.size - 1).isEqualTo(productData?.selectedProductIds?.size)
         assertThat(viewModel.hasChanges).isEqualTo(true)
-        assertThat(isDoneButtonDisplayed).containsExactly(true)
     }
 
     @Test
     fun `Displays grouped product list view correctly after addition`() {
         createViewModel()
 
-        val isDoneButtonDisplayed = ArrayList<Boolean>()
-        viewModel.productListViewStateData.observeForever { old, new ->
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isDoneButtonDisplayed.add(it) }
-        }
         assertThat(viewModel.hasChanges).isEqualTo(false)
 
         var productData: GroupedProductListViewState? = null
@@ -120,11 +109,10 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
 
         assertThat(groupedProductIds.size + listAdded.size).isEqualTo(productData?.selectedProductIds?.size)
         assertThat(viewModel.hasChanges).isEqualTo(true)
-        assertThat(isDoneButtonDisplayed).containsExactly(true)
     }
 
     @Test
-    fun `ExitWithResult event dispatched correctly when done menu button clicked`() {
+    fun `ExitWithResult event dispatched correctly when back button clicked`() {
         createViewModel()
 
         var productData: GroupedProductListViewState? = null
@@ -134,7 +122,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { new -> event = new }
 
         viewModel.onProductDeleted(productList.last())
-        viewModel.onDoneButtonClicked()
+        viewModel.onBackButtonClicked()
 
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
         assertThat(((event as ExitWithResult<*>).data as List<*>).size).isEqualTo(
