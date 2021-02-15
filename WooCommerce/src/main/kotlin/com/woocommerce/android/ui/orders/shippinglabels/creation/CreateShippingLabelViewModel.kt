@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -30,7 +31,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -166,7 +169,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.SHIPPING_ADDRESS -> {
@@ -176,7 +179,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.PACKAGING -> {
@@ -186,7 +189,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.current(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.CUSTOMS -> {
@@ -196,7 +199,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.current(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.CARRIER -> {
@@ -206,7 +209,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.current(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.PAYMENT -> {
@@ -216,7 +219,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.current()
+                    paymentStep = Step.current(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.DONE -> {
@@ -226,7 +229,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.done()
+                    paymentStep = Step.done(data.currentPaymentMethod.stepDescription)
                 )
             }
         }
@@ -248,17 +251,17 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
         return Address(
-                company = site.get().name,
-                firstName = accountStore.account.firstName,
-                lastName = accountStore.account.lastName,
-                phone = "",
-                email = "",
-                country = siteSettings?.countryCode ?: "",
-                state = siteSettings?.stateCode ?: "",
-                address1 = siteSettings?.address ?: "",
-                address2 = siteSettings?.address2 ?: "",
-                city = siteSettings?.city ?: "",
-                postcode = siteSettings?.postalCode ?: ""
+            company = site.get().name,
+            firstName = accountStore.account.firstName,
+            lastName = accountStore.account.lastName,
+            phone = "",
+            email = "",
+            country = siteSettings?.countryCode ?: "",
+            state = siteSettings?.stateCode ?: "",
+            address1 = siteSettings?.address ?: "",
+            address2 = siteSettings?.address2 ?: "",
+            city = siteSettings?.city ?: "",
+            postcode = siteSettings?.postalCode ?: ""
         )
     }
 
@@ -306,6 +309,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         return "$firstLine\n$secondLine"
     }
 
+    private val PaymentMethod?.stepDescription: String?
+        get() {
+            if(this == null) return null
+            return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
+        }
+
     fun onAddressEditConfirmed(address: Address) {
         stateMachine.handleEvent(AddressValidated(address))
     }
@@ -332,6 +341,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onPackagesEditCanceled() {
         stateMachine.handleEvent(EditPackagingCanceled)
+    }
+
+    fun onPaymentsUpdated(paymentMethod: PaymentMethod) {
+        stateMachine.handleEvent(PaymentSelected(paymentMethod))
+    }
+
+    fun onPaymentsEditCanceled() {
+        stateMachine.handleEvent(EditPaymentCanceled)
     }
 
     fun onEditButtonTapped(step: FlowStep) {

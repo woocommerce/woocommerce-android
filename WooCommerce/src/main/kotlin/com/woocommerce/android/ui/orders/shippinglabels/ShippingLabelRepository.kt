@@ -90,6 +90,7 @@ class ShippingLabelRepository @Inject constructor(
         ).let { result ->
             if (result.isError) return@let WooResult(error = result.error)
 
+            accountSettings = null
             WooResult(Unit)
         }
     }

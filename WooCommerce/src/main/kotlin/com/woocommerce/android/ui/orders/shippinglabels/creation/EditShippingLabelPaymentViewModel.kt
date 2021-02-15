@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -68,8 +69,9 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
     fun saveSettings() {
         launch {
             viewState = viewState.copy(showSavingProgressDialog = true)
+            val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
             val result = shippingLabelRepository.updatePaymentSettings(
-                selectedPaymentMethodId = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod.id,
+                selectedPaymentMethodId = selectedPaymentMethod.id,
                 emailReceipts = viewState.emailReceipts
             )
             viewState = viewState.copy(showSavingProgressDialog = false)
@@ -77,9 +79,13 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
             if (result.isError) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_payments_saving_error))
             } else {
-                triggerEvent(Exit)
+                triggerEvent(ExitWithResult(selectedPaymentMethod))
             }
         }
+    }
+
+    fun onBackButtonClicked() {
+        triggerEvent(Exit)
     }
 
     @Parcelize

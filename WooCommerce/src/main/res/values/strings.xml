@@ -373,6 +373,7 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_edit_address_name">Name</string>
     <string name="shipping_label_edit_address_company">Company</string>
     <string name="shipping_label_edit_address_phone">Phone</string>

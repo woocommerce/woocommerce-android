@@ -8,20 +8,28 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import javax.inject.Inject
 
-class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shipping_label_payment) {
+class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
+    companion object {
+        const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
+        const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
+    }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
@@ -67,6 +75,11 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
         }
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
+
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
@@ -108,7 +121,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when(event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(EDIT_PAYMENTS_CLOSED)
                 else -> event.isHandled = false
             }
         }

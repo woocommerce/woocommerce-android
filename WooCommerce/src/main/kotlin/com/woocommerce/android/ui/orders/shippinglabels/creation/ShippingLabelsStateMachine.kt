@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
@@ -112,7 +113,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
-                val data = Data(event.originAddress, event.shippingAddress, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
+                val data = Data(
+                    event.originAddress,
+                    event.shippingAddress,
+                    null,
+                    emptyList(),
+                    setOf(FlowStep.ORIGIN_ADDRESS)
+                )
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
             on<Event.DataLoadingFailed> {
@@ -309,8 +316,15 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.PaymentSelection> {
             on<Event.PaymentSelected> {
-                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.DONE)
+                val newData = data.copy(
+                    currentPaymentMethod = it.paymentMethod,
+                    flowSteps = data.flowSteps + FlowStep.DONE
+                )
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+            }
+
+            on<Event.EditPaymentCanceled> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
         }
 
@@ -351,6 +365,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
     data class Data(
         val originAddress: Address,
         val shippingAddress: Address,
+        val currentPaymentMethod: PaymentMethod?,
         val shippingPackages: List<ShippingLabelPackage>,
         val flowSteps: Set<FlowStep>
     ) : Parcelable
@@ -371,37 +386,49 @@ class ShippingLabelsStateMachine @Inject constructor() {
     sealed class State : Parcelable {
         @Parcelize
         object Idle : State()
+
         @Parcelize
         object DataLoadingFailure : State()
+
         @Parcelize
         object DataLoading : State()
+
         @Parcelize
         data class WaitingForInput(val data: Data) : State()
 
         @Parcelize
         data class OriginAddressValidation(val data: Data) : State()
+
         @Parcelize
         data class OriginAddressSuggestion(val data: Data) : State()
+
         @Parcelize
         data class OriginAddressEditing(val data: Data) : State()
+
         @Parcelize
         object OriginAddressValidationFailure : State()
 
         @Parcelize
         data class ShippingAddressValidation(val data: Data) : State()
+
         @Parcelize
         data class ShippingAddressSuggestion(val data: Data) : State()
+
         @Parcelize
         data class ShippingAddressEditing(val data: Data) : State()
+
         @Parcelize
         object ShippingAddressValidationFailure : State()
 
         @Parcelize
         data class PackageSelection(val data: Data) : State()
+
         @Parcelize
         data class CustomsDeclaration(val data: Data) : State()
+
         @Parcelize
         data class ShippingCarrierSelection(val data: Data) : State()
+
         @Parcelize
         data class PaymentSelection(val data: Data) : State()
     }
@@ -441,7 +468,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object PaymentSelectionStarted : Event()
         object EditPaymentRequested : Event()
-        object PaymentSelected : Event()
+        object EditPaymentCanceled : Event()
+        data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
     }
 
     sealed class SideEffect {
@@ -466,6 +494,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class ShowPackageOptions(
             val shippingPackages: List<ShippingLabelPackage>
         ) : SideEffect()
+
         object ShowCustomsForm : SideEffect()
         object ShowCarrierOptions : SideEffect()
         object ShowPaymentOptions : SideEffect()
