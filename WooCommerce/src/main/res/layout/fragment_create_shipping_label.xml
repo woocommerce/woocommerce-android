@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:fillViewport="true">
 
-    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/error_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_gravity="center"/>
+
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
             android:id="@+id/originStep"
@@ -77,6 +97,6 @@
             app:details="@string/shipping_label_create_payment_description"
             app:icon="@drawable/ic_gridicons_credit_card" />
 
-    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    </FrameLayout>
 </ScrollView>

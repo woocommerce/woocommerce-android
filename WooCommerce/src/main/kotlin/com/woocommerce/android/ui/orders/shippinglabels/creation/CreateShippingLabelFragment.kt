@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -22,6 +23,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment.Companion.EDIT_PACKAGES_CLOSED
@@ -40,6 +44,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
@@ -54,6 +60,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     private var _binding: FragmentCreateShippingLabelBinding? = null
     private val binding get() = _binding!!
+
+    private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
 
@@ -113,6 +121,28 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     private fun subscribeObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.uiState?.takeIfNotEqualTo(old?.uiState) { state ->
+                when (state) {
+                    Loading -> {
+                        binding.loadingProgress.isVisible = true
+                        binding.errorView.isVisible = false
+                        binding.contentLayout.isVisible = false
+                    }
+                    Failed -> {
+                        binding.loadingProgress.isVisible = false
+                        binding.contentLayout.isVisible = false
+                        binding.errorView.show(
+                            type = WCEmptyView.EmptyViewType.NETWORK_ERROR,
+                            onButtonClick = { viewModel.retry() }
+                        )
+                    }
+                    WaitingForInput -> {
+                        binding.loadingProgress.isVisible = false
+                        binding.errorView.isVisible = false
+                        binding.contentLayout.isVisible = true
+                    }
+                }
+            }
             new.originAddressStep?.takeIfNotEqualTo(old?.originAddressStep) {
                 binding.originStep.update(it)
             }

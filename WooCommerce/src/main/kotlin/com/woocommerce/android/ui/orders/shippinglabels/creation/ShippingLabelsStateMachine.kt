@@ -120,10 +120,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingPackages = emptyList(),
                     flowSteps = setOf(FlowStep.ORIGIN_ADDRESS)
                 )
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
             on<Event.DataLoadingFailed> {
                 transitionTo(State.DataLoadingFailure, SideEffect.ShowError(DataLoadingError))
+            }
+        }
+
+        state<State.DataLoadingFailure> {
+            on<Event.FlowStarted> { event ->
+                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
             }
         }
 
@@ -181,7 +187,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     originAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.AddressChangeSuggested> { event ->
                 transitionTo(
@@ -206,13 +212,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     originAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.EditAddressRequested> { event ->
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(event.address, ORIGIN))
             }
             on<Event.SuggestedAddressDiscarded> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
@@ -222,10 +228,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     originAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.AddressEditCanceled> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
@@ -235,7 +241,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.AddressChangeSuggested> { event ->
                 transitionTo(
@@ -260,7 +266,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.EditAddressRequested> { event ->
                 transitionTo(
@@ -269,7 +275,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 )
             }
             on<Event.SuggestedAddressDiscarded> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
@@ -279,10 +285,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingAddress = event.address,
                     flowSteps = data.flowSteps + FlowStep.PACKAGING
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
             on<Event.AddressEditCanceled> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
@@ -292,25 +298,25 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingPackages = event.shippingPackages,
                     flowSteps = data.flowSteps + FlowStep.CUSTOMS
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
 
             on<Event.EditPackagingCanceled> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
         state<State.CustomsDeclaration> {
             on<Event.CustomsFormFilledOut> {
                 val newData = data.copy(flowSteps = data.flowSteps + FlowStep.CARRIER)
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
         }
 
         state<State.ShippingCarrierSelection> {
             on<Event.ShippingCarrierSelected> {
                 val newData = data.copy(flowSteps = data.flowSteps + FlowStep.PAYMENT)
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
         }
 
@@ -320,11 +326,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     currentPaymentMethod = it.paymentMethod,
                     flowSteps = data.flowSteps + FlowStep.DONE
                 )
-                transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+                transitionTo(State.WaitingForInput(newData))
             }
 
             on<Event.EditPaymentCanceled> {
-                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+                transitionTo(State.WaitingForInput(data))
             }
         }
 
@@ -481,7 +487,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object NoOp : SideEffect()
         data class LoadData(val orderId: String) : SideEffect()
         data class ShowError(val error: Error) : SideEffect()
-        data class UpdateViewState(val data: Data) : SideEffect()
 
         data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
         data class ShowAddressSuggestion(

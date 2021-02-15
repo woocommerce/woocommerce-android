@@ -16,6 +16,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
@@ -82,18 +85,21 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun initializeStateMachine() {
         launch {
             stateMachine.transitions.collect { transition ->
+                when (transition.state) {
+                    is State.DataLoading -> viewState = viewState.copy(uiState = Loading)
+                    is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
+                    is State.WaitingForInput -> {
+                        viewState = viewState.copy(uiState = WaitingForInput)
+                        updateViewState(transition.state.data)
+                    }
+                    else -> { }
+                }
                 transition.sideEffect?.let { sideEffect ->
                     when (sideEffect) {
                         SideEffect.NoOp -> {
                         }
                         is SideEffect.ShowError -> showError(sideEffect.error)
-                        is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
-                        is SideEffect.LoadData -> handleResult(
-                            progressDialogTitle = string.shipping_label_loading_data_progress_title,
-                            progressDialogMessage = string.shipping_label_loading_data_progress_message
-                        ) {
-                            loadData(sideEffect.orderId)
-                        }
+                        is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
                         is SideEffect.ValidateAddress -> handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
@@ -327,6 +333,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
         }
 
+    fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
+
     fun onAddressEditConfirmed(address: Address) {
         stateMachine.handleEvent(AddressValidated(address))
     }
@@ -400,6 +408,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
+        val uiState: UiState? = null,
         val originAddressStep: Step? = null,
         val shippingAddressStep: Step? = null,
         val packagingDetailsStep: Step? = null,
@@ -408,6 +417,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val paymentStep: Step? = null,
         val progressDialogState: ProgressDialogState = ProgressDialogState()
     ) : Parcelable
+
+    enum class UiState {
+        Loading, Failed, WaitingForInput
+    }
 
     @Parcelize
     data class ProgressDialogState(
