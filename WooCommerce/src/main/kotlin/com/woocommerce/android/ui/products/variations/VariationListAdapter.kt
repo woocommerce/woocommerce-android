@@ -86,7 +86,7 @@ class VariationListAdapter(
     private fun highlightText(text: String): SpannableString {
         val spannable = SpannableString(text)
         spannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(context, R.color.warning_foreground_color)),
+            ForegroundColorSpan(ContextCompat.getColor(context, R.color.warning_banner_foreground_color)),
             0,
             spannable.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

@@ -72,8 +72,8 @@
     <!--
         Warning colors
     -->
-    <color name="warning_foreground_color">@color/woo_orange_30</color>
-    <color name="warning_background_color">@color/woo_orange_70</color>
+    <color name="warning_banner_foreground_color">@color/woo_orange_30</color>
+    <color name="warning_banner_background_color">@color/woo_orange_70</color>
 
     <!--
         Products List

@@ -28,6 +28,7 @@
     <color name="woo_yellow_50">#907300</color>
 
     <color name="woo_celadon_5">#A7E8D4</color>
+    <color name="woo_celadon_40">#009172</color>
     <color name="woo_green_5">#71B02F</color>
 
     <color name="woo_white">@android:color/white</color>
