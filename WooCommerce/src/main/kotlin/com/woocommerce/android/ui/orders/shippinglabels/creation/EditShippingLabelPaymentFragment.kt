@@ -40,6 +40,8 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
     private lateinit var doneMenuItem: MenuItem
     private var progressDialog: CustomProgressDialog? = null
 
+    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
