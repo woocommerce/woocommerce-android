@@ -75,6 +75,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
         }
 
+        setHasOptionsMenu(true)
+
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
         setupViews()
