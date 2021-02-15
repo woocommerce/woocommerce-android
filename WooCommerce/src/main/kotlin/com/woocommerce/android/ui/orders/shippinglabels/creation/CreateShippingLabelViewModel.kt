@@ -408,7 +408,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val uiState: UiState? = null,
+        val uiState: UiState = WaitingForInput,
         val originAddressStep: Step? = null,
         val shippingAddressStep: Step? = null,
         val packagingDetailsStep: Step? = null,

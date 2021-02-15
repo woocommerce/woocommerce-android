@@ -113,7 +113,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.uiState?.takeIfNotEqualTo(old?.uiState) { state ->
+            new.uiState.takeIfNotEqualTo(old?.uiState) { state ->
                 when (state) {
                     Loading -> {
                         showSkeleton(true, binding)
