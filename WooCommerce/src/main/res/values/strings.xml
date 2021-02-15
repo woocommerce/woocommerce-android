@@ -429,9 +429,12 @@
     <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
     <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
+    <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
+    <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
+    <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
     <!--
-        Refunds
-    -->
+            Refunds
+        -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_title_with_amount">Refund %s</string>
     <string name="order_refunds_confirmation">Are you sure you want to issue a refund? This can’t be undone.</string>

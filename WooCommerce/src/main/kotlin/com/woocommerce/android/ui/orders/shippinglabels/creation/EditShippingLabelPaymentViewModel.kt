@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
@@ -64,6 +65,23 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         viewState = viewState.copy(paymentMethods = paymentMethodsModels)
     }
 
+    fun saveSettings() {
+        launch {
+            viewState = viewState.copy(showSavingProgressDialog = true)
+            val result = shippingLabelRepository.updatePaymentSettings(
+                selectedPaymentMethodId = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod.id,
+                emailReceipts = viewState.emailReceipts
+            )
+            viewState = viewState.copy(showSavingProgressDialog = false)
+
+            if (result.isError) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_payments_saving_error))
+            } else {
+                triggerEvent(Exit)
+            }
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
@@ -71,13 +89,15 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         val canManagePayments: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
         val emailReceipts: Boolean = false,
-        val storeOwnerDetails: StoreOwnerDetails? = null
+        val storeOwnerDetails: StoreOwnerDetails? = null,
+        val showSavingProgressDialog: Boolean = false
     ) : Parcelable {
         val hasChanges: Boolean
             get() {
                 return currentAccountSettings?.let {
                     val selectedPaymentMethod = paymentMethods.find { it.isSelected }
-                    selectedPaymentMethod?.paymentMethod?.id != currentAccountSettings.selectedPaymentId ||
+                    (selectedPaymentMethod != null &&
+                        selectedPaymentMethod.paymentMethod.id != currentAccountSettings.selectedPaymentId) ||
                         emailReceipts != currentAccountSettings.isEmailReceiptEnabled
                 } ?: false
             }
