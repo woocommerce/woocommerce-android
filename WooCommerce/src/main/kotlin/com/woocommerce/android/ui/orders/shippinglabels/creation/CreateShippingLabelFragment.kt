@@ -58,9 +58,6 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
 
-    private var _binding: FragmentCreateShippingLabelBinding? = null
-    private val binding get() = _binding!!
-
     private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
@@ -68,10 +65,10 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentCreateShippingLabelBinding.bind(view)
+        val binding = FragmentCreateShippingLabelBinding.bind(view)
 
-        initializeViewModel()
-        initializeViews()
+        initializeViewModel(binding)
+        initializeViews(binding)
     }
 
     override fun onPause() {
@@ -79,8 +76,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         progressDialog?.dismiss()
     }
 
-    private fun initializeViewModel() {
-        subscribeObservers()
+    private fun initializeViewModel(binding: FragmentCreateShippingLabelBinding) {
+        subscribeObservers(binding)
         setupResultHandlers()
     }
 
@@ -114,22 +111,17 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun subscribeObservers() {
+    private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.uiState?.takeIfNotEqualTo(old?.uiState) { state ->
                 when (state) {
                     Loading -> {
-                        binding.loadingProgress.isVisible = true
+                        showSkeleton(true, binding)
                         binding.errorView.isVisible = false
                         binding.contentLayout.isVisible = false
                     }
                     Failed -> {
-                        binding.loadingProgress.isVisible = false
+                        showSkeleton(false, binding)
                         binding.contentLayout.isVisible = false
                         binding.errorView.show(
                             type = WCEmptyView.EmptyViewType.NETWORK_ERROR,
@@ -137,7 +129,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     }
                     WaitingForInput -> {
-                        binding.loadingProgress.isVisible = false
+                        showSkeleton(false, binding)
                         binding.errorView.isVisible = false
                         binding.contentLayout.isVisible = true
                     }
@@ -223,7 +215,15 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         progressDialog = null
     }
 
-    private fun initializeViews() {
+    fun showSkeleton(show: Boolean, binding: FragmentCreateShippingLabelBinding) {
+        if (show) {
+            skeletonView.show(binding.contentLayout, R.layout.skeleton_create_shipping_label, delayed = false)
+        } else {
+            skeletonView.hide()
+        }
+    }
+
+    private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
         binding.originStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(ORIGIN_ADDRESS) }
         binding.shippingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(SHIPPING_ADDRESS) }
         binding.packagingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PACKAGING) }

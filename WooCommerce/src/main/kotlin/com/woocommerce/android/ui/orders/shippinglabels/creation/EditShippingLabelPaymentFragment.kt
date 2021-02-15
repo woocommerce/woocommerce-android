@@ -24,7 +24,8 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import javax.inject.Inject
 
-class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
+class EditShippingLabelPaymentFragment
+    : BaseFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
@@ -121,7 +122,7 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
-            when(event) {
+            when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PAYMENTS_CLOSED)
