@@ -315,7 +315,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.ShippingCarrierSelection> {
             on<Event.ShippingCarrierSelected> {
-                val newData = data.copy(flowSteps = data.flowSteps + FlowStep.PAYMENT)
+                val stepsToAdd = if (data.currentPaymentMethod != null) {
+                    listOf(FlowStep.PAYMENT, FlowStep.DONE)
+                } else {
+                    listOf(FlowStep.PAYMENT)
+                }
+                val newData = data.copy(flowSteps = data.flowSteps + stepsToAdd)
                 transitionTo(State.WaitingForInput(newData))
             }
         }
