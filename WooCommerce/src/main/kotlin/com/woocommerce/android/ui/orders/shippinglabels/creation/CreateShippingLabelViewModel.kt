@@ -88,7 +88,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         }
                         is SideEffect.ShowError -> showError(sideEffect.error)
                         is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
-                        is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
+                        is SideEffect.LoadData -> handleResult(
+                            progressDialogTitle = string.shipping_label_loading_data_progress_title,
+                            progressDialogMessage = string.shipping_label_loading_data_progress_message
+                        ) {
+                            loadData(sideEffect.orderId)
+                        }
                         is SideEffect.ValidateAddress -> handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
                             progressDialogMessage = string.shipping_label_edit_address_progress_message
@@ -243,9 +248,16 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadData(orderId: String): Event {
+    private suspend fun loadData(orderId: String): Event {
         val order = requireNotNull(orderDetailRepository.getOrder(orderId))
-        return Event.DataLoaded(getStoreAddress(), order.shippingAddress)
+        val accountSettings = shippingLabelRepository.getAccountSettings().let {
+            if (it.isError) return Event.DataLoadingFailed
+            it.model!!
+        }
+        return Event.DataLoaded(
+            originAddress = getStoreAddress(),
+            shippingAddress = order.shippingAddress,
+            currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId })
     }
 
     private fun getStoreAddress(): Address {
@@ -311,7 +323,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private val PaymentMethod?.stepDescription: String?
         get() {
-            if(this == null) return null
+            if (this == null) return null
             return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
         }
 

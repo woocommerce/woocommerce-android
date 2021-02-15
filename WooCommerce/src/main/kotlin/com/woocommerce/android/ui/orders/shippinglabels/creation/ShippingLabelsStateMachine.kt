@@ -114,11 +114,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
                 val data = Data(
-                    event.originAddress,
-                    event.shippingAddress,
-                    null,
-                    emptyList(),
-                    setOf(FlowStep.ORIGIN_ADDRESS)
+                    originAddress = event.originAddress,
+                    shippingAddress = event.shippingAddress,
+                    currentPaymentMethod = event.currentPaymentMethod,
+                    shippingPackages = emptyList(),
+                    flowSteps = setOf(FlowStep.ORIGIN_ADDRESS)
                 )
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
@@ -435,7 +435,12 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class Event {
         data class FlowStarted(val orderId: String) : Event()
-        data class DataLoaded(val originAddress: Address, val shippingAddress: Address) : Event()
+        data class DataLoaded(
+            val originAddress: Address,
+            val shippingAddress: Address,
+            val currentPaymentMethod: PaymentMethod?
+        ) : Event()
+
         object DataLoadingFailed : Event()
 
         data class AddressInvalid(val address: Address, val validationResult: ValidationResult) : Event()
