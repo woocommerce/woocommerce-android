@@ -7,16 +7,30 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.CustomProgressDialog
 import javax.inject.Inject
 
-class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shipping_label_payment) {
+class EditShippingLabelPaymentFragment
+    : BaseFragment(R.layout.fragment_edit_shipping_label_payment), BackPressListener {
+    companion object {
+        const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
+        const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
+    }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
@@ -25,6 +39,9 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
     private val paymentMethodsAdapter by lazy { ShippingLabelPaymentMethodsAdapter(viewModel::onPaymentMethodSelected) }
 
     private lateinit var doneMenuItem: MenuItem
+    private var progressDialog: CustomProgressDialog? = null
+
+    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +66,21 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
             viewModel.onEmailReceiptsCheckboxChanged(isChecked)
         }
         setupObservers(binding)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.saveSettings()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
     }
 
     private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding) {
@@ -81,6 +113,35 @@ class EditShippingLabelPaymentFragment : BaseFragment(R.layout.fragment_edit_shi
                     doneMenuItem.isVisible = it
                 }
             }
+            new.showSavingProgressDialog.takeIfNotEqualTo(old?.showSavingProgressDialog) { show ->
+                if (show) {
+                    showSavingProgressDialog()
+                } else {
+                    hideProgressDialog()
+                }
+            }
         }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(EDIT_PAYMENTS_CLOSED)
+                else -> event.isHandled = false
+            }
+        }
+    }
+
+    private fun showSavingProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            title = getString(R.string.shipping_label_payments_saving_dialog_title),
+            message = getString(R.string.shipping_label_payments_saving_dialog_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 }
