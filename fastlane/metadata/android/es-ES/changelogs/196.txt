@@ -1,0 +1,2 @@
+5.9:
+Esta ronda de actualizaciones de la aplicación de WooCommerce se ha centrado en aportar soluciones. Nos hemos ocupado de algunos fallos raros que se producían al añadir una nueva categoría de producto, reordenar fotos, editar texto, crear etiquetas de envío y filtrar productos. También hemos actualizado el límite de tiempo de espera de las solicitudes del servidor y hemos eliminado la tarjeta de información de compras de Detalles del producto, que estaba obsoleta.

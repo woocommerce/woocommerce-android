@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/clickable_list_item_color_surface_bg"
+    android:background="@drawable/shipping_package_item_bg"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView

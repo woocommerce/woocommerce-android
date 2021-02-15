@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.Predefi
 
 @Parcelize
 data class ShippingPackage(
-    val id: String? = null,
+    val id: String,
     val title: String,
     val isLetter: Boolean,
     val category: String,
@@ -28,6 +28,7 @@ data class PackageDimensions(
 fun CustomPackage.toAppModel(): ShippingPackage {
     val dimensionsParts = dimensions.split("x")
     return ShippingPackage(
+        id = title,
         title = title,
         isLetter = isLetter,
         dimensions = PackageDimensions(
@@ -43,6 +44,7 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
     return predefinedPackages.map {
         val dimensionsParts = it.dimensions.split("x")
         ShippingPackage(
+            id = it.id,
             title = it.title,
             isLetter = it.isLetter,
             dimensions = PackageDimensions(

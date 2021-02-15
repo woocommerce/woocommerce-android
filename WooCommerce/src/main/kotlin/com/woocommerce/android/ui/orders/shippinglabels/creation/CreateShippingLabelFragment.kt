@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
@@ -146,8 +147,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToEditShippingLabelPackagesFragment(
                             orderId = event.orderIdentifier,
-                            shippingLabelPackages = event.shippingLabelPackages.toTypedArray(),
-                            availablePackages = event.availablePackages.toTypedArray()
+                            shippingLabelPackages = event.shippingLabelPackages.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -158,6 +158,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.suggestedAddress,
                             event.type
                         )
+                    findNavController().navigateSafely(action)
+                }
+                is ShowPaymentDetails -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToEditShippingLabelPaymentFragment()
                     findNavController().navigateSafely(action)
                 }
                 else -> event.isHandled = false

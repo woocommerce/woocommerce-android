@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-22 08:54:04+0000
+Translation-Revision-Date: 2021-02-03 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_wip_title_m5">新機能を利用できます。</string>
+    <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
     <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
@@ -16,7 +18,7 @@ Language: ja_JP
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
     <string name="shipping_label_edit_address_error_warning">自動的に配送先住所を確認できませんでした。 Google マップで表示するか、顧客に連絡して住所が正しいことを確認してください。</string>
     <string name="shipping_label_edit_address_validation_error">住所の確認に失敗しました</string>
-    <string name="shipping_label_edit_address_validation_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_edit_address_progress_message">しばらくお待ちください…</string>
     <string name="shipping_label_edit_address_validation_progress_title">住所の確認中です</string>
     <string name="shipping_label_edit_data_loading_error">住所データを読み込むことができませんでした</string>
     <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>

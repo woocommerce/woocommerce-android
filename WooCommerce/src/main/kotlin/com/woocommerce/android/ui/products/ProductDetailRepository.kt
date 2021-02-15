@@ -7,6 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.model.TaxClass
@@ -33,6 +35,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
@@ -51,6 +54,7 @@ import kotlin.coroutines.resume
 class ProductDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
+    private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore
 ) {
@@ -237,6 +241,22 @@ class ProductDetailRepository @Inject constructor(
                 } else RequestResult.SUCCESS
             } else RequestResult.NO_ACTION_NEEDED
         }
+    }
+
+    /**
+     * Returns the list of attributes assigned to a product
+     */
+    fun getProductAttributes(remoteProductId: Long): List<ProductAttribute> {
+        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+        return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
+    }
+
+    /**
+     * Fetches the list of store-wide attributes
+     */
+    suspend fun fetchGlobalAttributes(): List<ProductGlobalAttribute> {
+        val wooResult = globalAttributeStore.fetchStoreAttributes(selectedSite.get())
+        return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 
     private fun getCachedWCProductModel(remoteProductId: Long) =

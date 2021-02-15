@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-21 15:54:04+0000
+Translation-Revision-Date: 2021-02-03 16:54:37+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_wip_title_m5">Yeni özellikler mevcut.</string>
+    <string name="product_wip_message_m5">Artık bir ürüne indirilebilir dosyalar ekleyebilir ve daha yüksek satış ve çapraz satış ürünleri arasında bağlantı oluşturabilirsiniz. Bir ürünü artık istemiyor musunuz? Çöpe atın.</string>
     <string name="order_refunds_shipping_refund_notice_fees">Ücretleri, gönderin ve vergi tutarlarını iade edebilirsiniz %s</string>
     <string name="shipping_label_validation_view_map">Haritayı Aç</string>
     <string name="shipping_label_validation_contact_customer">Müşteri İle İletişime Geç</string>
@@ -16,7 +18,7 @@ Language: tr
     <string name="shipping_label_error_address_not_found">Adres bulunamadı</string>
     <string name="shipping_label_edit_address_error_warning">Gönderim adresini otomatik olarak doğrulayamadık. Bunu Google Haritalar\'da görüntüleyin veya adresin doğru olduğundan emin olmak için müşteriyle iletişim kurmayı deneyin.</string>
     <string name="shipping_label_edit_address_validation_error">Adres doğrulanamadı</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_edit_address_progress_message">Lütfen bekleyin…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Adres doğrulama işlemi devam ediyor</string>
     <string name="shipping_label_edit_data_loading_error">Adres verileri yüklenemiyor </string>
     <string name="shipping_label_edit_address_use_address_as_is">Adresi girildiği gibi kullan</string>

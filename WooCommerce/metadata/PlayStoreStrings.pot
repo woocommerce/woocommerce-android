@@ -11,18 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_060"
+msgid ""
+"6.0:\n"
+"What’s new in our 6.0 release?\n"
+"\n"
+"You asked, we listened! Due to popular demand, the product SKU is displayed once again in the Order Details screen. We also fixed an issue where top performers in your store were incorrectly displaying twice.\n"
+msgstr ""
+
 msgctxt "release_note_059"
 msgid ""
 "5.9:\n"
 "This round of WooCommerce mobile app updates is all about fixes. We addressed rare crashes that occurred when adding a new product category, reordering photos, editing text, creating shipping labels, and filtering products. We also updated a timeout limit for server requests and removed the obsolete purchase details card from product details.\n"
-msgstr ""
-
-msgctxt "release_note_058"
-msgid ""
-"5.8:\n"
-"Products: You can now add and edit downloadable files, manage linked products, and delete products.\n"
-"\n"
-"Bug fixes: We resolved an issue that sometimes affected the moderation buttons in product reviews.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

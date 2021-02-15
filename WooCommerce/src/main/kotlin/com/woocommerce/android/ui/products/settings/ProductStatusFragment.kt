@@ -46,7 +46,7 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         binding.btnPending.setOnClickListener(this)
         binding.btnTrashed.setOnClickListener(this)
 
-        getButtonForStatus(selectedStatus).isChecked = true
+        getButtonForStatus(selectedStatus)?.isChecked = true
 
         // if the post is private, we hide the "Published" button and show "Privately published."
         // making a product private is done on the product visibility screen
@@ -95,14 +95,14 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
 
     override fun getFragmentTitle() = getString(R.string.product_status)
 
-    private fun getButtonForStatus(status: String): CheckedTextView {
+    private fun getButtonForStatus(status: String): CheckedTextView? {
         return when (ProductStatus.fromString(status)) {
             PUBLISH -> binding.btnPublished
             DRAFT -> binding.btnDraft
             PENDING -> binding.btnPending
             PRIVATE -> binding.btnPublishedPrivately
             TRASH -> binding.btnTrashed
-            else -> throw IllegalArgumentException()
+            else -> null
         }
     }
 

@@ -422,6 +422,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
         <item name="android:textColor">@color/button_fg_selector</item>
+        <item name="iconTint">@color/button_fg_selector</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="drawableTintMode">src_atop</item>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2020-12-24 08:54:04+0000
+Translation-Revision-Date: 2021-02-05 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_wip_title_m5">已推出新功能！</string>
+    <string name="product_wip_message_m5">您现在可以为产品添加可下载的文件，并链接追加销售和交叉销售产品。 不再想要某款产品了吗？ 将该产品移至回收站！</string>
+    <string name="order_refunds_shipping_refund_notice_fees">您可以退还运费和税款 %s</string>
+    <string name="shipping_label_validation_view_map">打开地图</string>
+    <string name="shipping_label_validation_contact_customer">联系客户</string>
+    <string name="shipping_label_validation_error_template">验证失败：%s</string>
+    <string name="shipping_label_error_required_field">必填字段</string>
+    <string name="shipping_label_error_address_invalid_street">街道无效</string>
+    <string name="shipping_label_error_address_house_number_missing">缺少房屋编号</string>
+    <string name="shipping_label_error_address_not_found">找不到地址</string>
+    <string name="shipping_label_edit_address_error_warning">我们无法自动验证配送地址。 请在 Google Maps 上查看，或尝试联系客户以确保地址正确。</string>
+    <string name="shipping_label_edit_address_validation_error">地址验证失败</string>
+    <string name="shipping_label_edit_address_validation_progress_message">请稍候…</string>
+    <string name="shipping_label_edit_address_validation_progress_title">正在进行地址验证</string>
+    <string name="shipping_label_edit_data_loading_error">无法加载地址数据</string>
+    <string name="shipping_label_edit_address_use_address_as_is">使用输入的地址</string>
+    <string name="shipping_label_edit_address_country">国家/地区</string>
+    <string name="shipping_label_edit_address_zip">邮政编码</string>
+    <string name="shipping_label_edit_address_state">州/省/自治区/直辖市</string>
+    <string name="shipping_label_edit_address_city">城市</string>
+    <string name="shipping_label_edit_address_address">地址</string>
+    <string name="shipping_label_edit_address_phone">电话</string>
+    <string name="shipping_label_edit_address_company">公司</string>
+    <string name="shipping_label_edit_address_name">名称</string>
+    <string name="login_not_wordpress_site">此网站 %1$s 不是 WordPress 站点。 必须在此站点上安装 WordPress，然后我们才能连接此站点。</string>
+    <string name="error_no_gmaps_app"> 找到了 Google Apps 应用</string>
+    <string name="please_wait">请稍候…</string>
     <string name="variation_detail_update_variation_image_error">抱歉，WooCommerce 4.7 或高更版本才支持删除产品变体的图片。</string>
     <string name="order_shipment_tracking_progress_message">请稍候</string>
     <string name="order_shipment_tracking_progress_title">正在添加跟踪</string>
@@ -548,6 +575,7 @@ Language: zh_CN
     <string name="orderdetail_empty_shipping_address">未指定地址。</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
+    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">津巴布韦</string>
     <string name="country_mapping_ZM">赞比亚</string>
     <string name="country_mapping_YE">也门</string>
@@ -1103,6 +1131,7 @@ Language: zh_CN
     <string name="add_order_note_menu_item">添加</string>
     <string name="add_order_note_label">通过电子邮件向客户发送备注</string>
     <string name="order_error_update_general">更改订单时出错</string>
+    <string name="order_error_fetch_notes_generic">抓取备注时出错</string>
     <string name="order_fulfill_marked_complete">订单已标记为完成</string>
     <string name="order_fulfill_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_addnote_contentdesc">添加订单备注</string>

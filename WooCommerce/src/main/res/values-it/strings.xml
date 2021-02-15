@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-21 10:54:05+0000
+Translation-Revision-Date: 2021-02-03 16:54:38+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_wip_title_m5">Nuove funzionalità disponibili.</string>
+    <string name="product_wip_message_m5">Ora puoi aggiungere file scaricabili a un prodotto e collegare i prodotti di upsell e cross-sell. Non desideri più un prodotto? Spostalo nel cestino.</string>
     <string name="order_refunds_shipping_refund_notice_fees">Puoi rimborsare gli importi di tariffe, spedizioni e tasse %s</string>
     <string name="shipping_label_validation_view_map">Apri mappa</string>
     <string name="shipping_label_validation_contact_customer">Contatta cliente</string>
@@ -16,7 +18,7 @@ Language: it
     <string name="shipping_label_error_address_not_found">Indirizzo non trovato</string>
     <string name="shipping_label_edit_address_error_warning">Impossibile verificare automaticamente l\'indirizzo di spedizione. Visualizzalo su Google Maps o prova a contattare il cliente per assicurarti che l\'indirizzo sia corretto.</string>
     <string name="shipping_label_edit_address_validation_error">Convalida dell\'indirizzo non riuscita</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Attendi…</string>
+    <string name="shipping_label_edit_address_progress_message">Attendi…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Convalida dell\'indirizzo in corso</string>
     <string name="shipping_label_edit_data_loading_error">Impossibile caricare i dati dell\'indirizzo</string>
     <string name="shipping_label_edit_address_use_address_as_is">Usa l\'indirizzo inserito</string>

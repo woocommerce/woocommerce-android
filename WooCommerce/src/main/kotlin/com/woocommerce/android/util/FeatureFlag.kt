@@ -8,10 +8,12 @@ import com.woocommerce.android.BuildConfig
  */
 enum class FeatureFlag {
     SHIPPING_LABELS_M2,
+    ADD_EDIT_VARIATIONS,
     DB_DOWNGRADE;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             SHIPPING_LABELS_M2 -> BuildConfig.DEBUG || isTesting()
+            ADD_EDIT_VARIATIONS -> BuildConfig.DEBUG
             DB_DOWNGRADE -> {
                 BuildConfig.DEBUG || context != null && PackageUtils.isBetaBuild(context)
             }

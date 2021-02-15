@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -43,9 +44,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
-    private val countries: List<WCLocationModel> by lazy {
-        dataStore.getCountries()
-    }
+    private val countries: List<WCLocationModel>
+        get() = dataStore.getCountries()
 
     private val states: List<WCLocationModel>
         get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
@@ -96,8 +96,9 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun loadCountriesAndStates() {
         launch {
             if (countries.isEmpty()) {
-                viewState = viewState.copy(isValidationProgressDialogVisible = true)
+                viewState = viewState.copy(isLoadingProgressDialogVisible = true)
                 dataStore.fetchCountriesAndStates(site.get())
+                viewState = viewState.copy(isLoadingProgressDialogVisible = false)
             }
             viewState = viewState.copy(
                 isValidationProgressDialogVisible = false,
@@ -129,6 +130,12 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             is ValidationResult.Error -> triggerEvent(
                 ShowSnackbar(R.string.shipping_label_edit_address_validation_error)
             )
+            is NameMissing -> {
+                viewState = viewState.copy(
+                    nameError = R.string.shipping_label_error_required_field
+                )
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+            }
         }
     }
 
@@ -154,7 +161,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            nameError = getErrorOrClear(address.firstName + address.lastName),
+            nameError = getErrorOrClear(address.firstName + address.lastName + address.company),
             addressError = getErrorOrClear(address.address1),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
@@ -171,6 +178,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         viewState.address?.let { address ->
             if (areRequiredFieldsValid(address)) {
                 triggerEvent(ExitWithResult(address))
+            } else {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
             }
         }
     }

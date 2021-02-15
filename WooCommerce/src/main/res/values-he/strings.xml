@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-01-20 14:54:04+0000
+Translation-Revision-Date: 2021-02-03 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
+    <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
     <string name="order_refunds_shipping_refund_notice_fees">אפשר להנפיק החזר כספי עבור סכומים של עמלות, משלוח ומיסים %s</string>
     <string name="shipping_label_validation_view_map">לפתוח את המפה</string>
     <string name="shipping_label_validation_contact_customer">ליצור קשר עם הלקוח</string>
@@ -16,7 +18,7 @@ Language: he_IL
     <string name="shipping_label_error_address_not_found">הכתובת לא נמצאה</string>
     <string name="shipping_label_edit_address_error_warning">לא הצלחנו לאמת באופן אוטומטי את הכתובת למשלוח. ניתן להציג אותה ב-Google Maps או לנסות ליצור קשר עם הלקוח כדי לוודא שהכתובת נכונה.</string>
     <string name="shipping_label_edit_address_validation_error">אימות הכתובת נכשל</string>
-    <string name="shipping_label_edit_address_validation_progress_message">רק רגע…</string>
+    <string name="shipping_label_edit_address_progress_message">רק רגע…</string>
     <string name="shipping_label_edit_address_validation_progress_title">אימות הכתובת בתהליך</string>
     <string name="shipping_label_edit_data_loading_error">אין אפשרות לטעון את נתוני הכתובת</string>
     <string name="shipping_label_edit_address_use_address_as_is">להשתמש בכתובת כפי שהוזנה</string>
