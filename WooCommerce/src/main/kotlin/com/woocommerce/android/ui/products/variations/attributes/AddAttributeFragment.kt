@@ -98,7 +98,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
 
         adapter.setAttributeList(
-            localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute() },
+            localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute },
             globalAttributes = globalAttributes
         )
     }

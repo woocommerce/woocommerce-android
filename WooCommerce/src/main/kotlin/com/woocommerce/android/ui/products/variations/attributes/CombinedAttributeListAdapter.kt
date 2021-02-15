@@ -39,7 +39,7 @@ class CombinedAttributeListAdapter(
 
         holder.itemView.setOnClickListener {
             val item = attributeList[position]
-            onItemClick(item.id, item.isGlobalAttribute())
+            onItemClick(item.id, item.isGlobalAttribute)
         }
     }
 

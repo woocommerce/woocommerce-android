@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
@@ -106,9 +107,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             )
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
-                        is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
-                        is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
-                        is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
+                        is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
+                        is SideEffect.ShowCarrierOptions -> handleResult { Event.ShippingCarrierSelected }
+                        is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
                 // save the current state
@@ -150,6 +151,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 shippingLabelPackages = currentShippingPackages
             )
         )
+    }
+
+    private fun openPaymentDetails() {
+        triggerEvent(ShowPaymentDetails)
     }
 
     private fun updateViewState(data: Data) {

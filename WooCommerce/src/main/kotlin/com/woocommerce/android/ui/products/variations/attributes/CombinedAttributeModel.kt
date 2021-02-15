@@ -7,7 +7,7 @@ import com.woocommerce.android.model.ProductGlobalAttribute
  * A "combined" product attribute is one that can be created from either a local (product-based) attribute
  * or a global (store-based) attribute
  */
-class CombinedAttributeModel(
+data class CombinedAttributeModel(
     val id: Long,
     val name: String
 ) {
@@ -27,14 +27,6 @@ class CombinedAttributeModel(
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        return (other as? CombinedAttributeModel)?.let {
-            id == it.id &&
-                name == it.name
-        } ?: false
-    }
-
-    override fun hashCode() = super.hashCode()
-
-    fun isGlobalAttribute() = id != 0L
+    val isGlobalAttribute: Boolean
+        get() = id != 0L
 }

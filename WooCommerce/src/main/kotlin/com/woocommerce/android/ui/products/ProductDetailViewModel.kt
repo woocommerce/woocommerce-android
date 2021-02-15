@@ -977,9 +977,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     fun getProductDraftAttributes(): List<ProductAttribute> {
-        return viewState.productDraft?.let {
-            it.attributes
-        } ?: emptyList()
+        return viewState.productDraft?.attributes ?: emptyList()
     }
 
     /**
