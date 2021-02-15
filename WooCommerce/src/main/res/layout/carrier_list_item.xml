@@ -7,20 +7,32 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/carrierImage"
-        android:layout_width="@dimen/image_minor_100"
-        android:layout_height="@dimen/image_minor_100"
-        android:layout_gravity="center"
-        android:background="@drawable/picture_corners"
-        android:contentDescription="@string/product_image_content_description"
-        android:scaleType="fitCenter"
+    <FrameLayout
+        android:id="@+id/imageFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.50"
-        tools:src="@drawable/fedex_logo" />
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/carrierImage"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:background="@drawable/picture_corners"
+            android:contentDescription="@string/product_image_content_description"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/fedex_logo" />
+
+        <RadioButton
+            android:id="@+id/carrierRadioButton"
+            style="@style/Woo.RadioButton"
+            tools:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/carrierServiceName"
@@ -32,7 +44,7 @@
         android:maxLines="2"
         app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
         app:layout_constraintEnd_toStartOf="@id/servicePrice"
-        app:layout_constraintStart_toEndOf="@+id/carrierImage"
+        app:layout_constraintStart_toEndOf="@+id/imageFrame"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="UPS Ground"
         tools:visibility="visible"/>
@@ -46,7 +58,7 @@
         android:layout_marginBottom="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/servicePrice"
-        app:layout_constraintStart_toEndOf="@+id/carrierImage"
+        app:layout_constraintStart_toEndOf="@+id/imageFrame"
         app:layout_constraintTop_toBottomOf="@+id/carrierServiceName"
         tools:text="4 business days" />
 
