@@ -11,15 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.databinding.FragmentAddAttributeOptionsBinding
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeOptions
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import com.woocommerce.android.widgets.SkeletonView
 
 class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_attribute_options) {
     companion object {
@@ -28,7 +24,6 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
     }
 
     private var layoutManager: LayoutManager? = null
-    private val skeletonView = SkeletonView()
 
     private var _binding: FragmentAddAttributeOptionsBinding? = null
     private val binding get() = _binding!!
@@ -81,13 +76,9 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
     }
 
     private fun setupObservers() {
-        viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-        }
-
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductAddAttribute -> findNavController().navigateUp()
+                is ExitProductAddAttributeOptions -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })
@@ -105,16 +96,8 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
         }
 
         adapter.setAttributeList(
-            localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute },
+            localAttributes = emptyList(),
             globalAttributes = globalAttributes
         )
-    }
-
-    private fun showSkeleton(show: Boolean) {
-        if (show) {
-            skeletonView.show(binding.attributeList, R.layout.skeleton_simple_list, delayed = true)
-        } else {
-            skeletonView.hide()
-        }
     }
 }
