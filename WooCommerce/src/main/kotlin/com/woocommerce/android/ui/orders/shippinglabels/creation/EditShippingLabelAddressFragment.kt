@@ -30,7 +30,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
@@ -227,8 +226,7 @@ class EditShippingLabelAddressFragment
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
-                is CancelAddressEditing -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
-                is Exit -> findNavController().navigateUp()
+                is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
                 is ShowSuggestedAddress -> {
                     val action = EditShippingLabelAddressFragmentDirections
                         .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(

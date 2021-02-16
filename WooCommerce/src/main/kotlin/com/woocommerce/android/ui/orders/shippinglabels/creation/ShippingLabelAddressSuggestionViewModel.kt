@@ -7,12 +7,12 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DiscardSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -56,7 +56,7 @@ class ShippingLabelAddressSuggestionViewModel @AssistedInject constructor(
     }
 
     fun onExit() {
-        triggerEvent(DiscardSuggestedAddress)
+        triggerEvent(Exit)
     }
 
     @Parcelize

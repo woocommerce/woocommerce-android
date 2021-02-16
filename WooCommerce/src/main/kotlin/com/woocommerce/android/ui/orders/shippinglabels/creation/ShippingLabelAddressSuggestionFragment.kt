@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelAddressSuggestionBinding
@@ -18,7 +17,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DiscardSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -97,22 +95,10 @@ class ShippingLabelAddressSuggestionFragment
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(
-                    SELECTED_ADDRESS_ACCEPTED,
-                    event.data
-                )
-                is DiscardSuggestedAddress -> navigateBackWithNotice(
-                    SUGGESTED_ADDRESS_DISCARDED
-                )
-                is EditSelectedAddress -> navigateBackWithResult(
-                    SELECTED_ADDRESS_TO_BE_EDITED,
-                    event.address
-                )
-                is UseSelectedAddress -> navigateBackWithResult(
-                    SELECTED_ADDRESS_ACCEPTED,
-                    event.address
-                )
-                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.data)
+                is Exit -> navigateBackWithNotice(SUGGESTED_ADDRESS_DISCARDED)
+                is EditSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_TO_BE_EDITED, event.address)
+                is UseSelectedAddress -> navigateBackWithResult(SELECTED_ADDRESS_ACCEPTED, event.address)
                 else -> event.isHandled = false
             }
         })

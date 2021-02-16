@@ -8,7 +8,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
@@ -19,6 +18,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -227,7 +227,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onExit() {
-        triggerEvent(CancelAddressEditing)
+        triggerEvent(Exit)
     }
 
     // errors are returned as hardcoded strings :facepalm:
