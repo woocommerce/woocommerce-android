@@ -19,8 +19,8 @@ abstract class AddAttributeOptionsModule {
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(): Bundle? {
-            return null
+        fun provideDefaultArgs(fragment: AddAttributeOptionsFragment): Bundle? {
+            return fragment.arguments
         }
 
         @JvmStatic
