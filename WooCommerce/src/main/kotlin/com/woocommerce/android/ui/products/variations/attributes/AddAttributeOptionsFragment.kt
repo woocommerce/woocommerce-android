@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,8 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
     }
 
     private var layoutManager: LayoutManager? = null
+
+    private val navArgs: AddAttributeOptionsFragmentArgs by navArgs()
 
     private var _binding: FragmentAddAttributeOptionsBinding? = null
     private val binding get() = _binding!!
@@ -84,7 +87,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
         })
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_add_attribute)
+    override fun getFragmentTitle() = navArgs.attributeName
 
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: CombinedAttributeListAdapter
