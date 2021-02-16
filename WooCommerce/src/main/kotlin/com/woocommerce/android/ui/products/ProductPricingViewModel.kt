@@ -1,13 +1,10 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
@@ -18,7 +15,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -94,7 +90,6 @@ class ProductPricingViewModel @AssistedInject constructor(
                 taxClass = taxClass
             )
         )
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
     }
 
     fun onRegularPriceEntered(inputValue: BigDecimal) {
@@ -130,23 +125,6 @@ class ProductPricingViewModel @AssistedInject constructor(
         }
     }
 
-    fun onDoneButtonClicked() {
-        AnalyticsTracker.track(
-            Stat.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
-        )
-
-        val isSaleScheduled = pricingData.isSaleScheduled == true &&
-            (pricingData.saleStartDate != null || pricingData.saleEndDate != null)
-
-        val resultPricing = pricingData.copy(
-            isSaleScheduled = isSaleScheduled,
-            saleStartDate = if (isSaleScheduled) pricingData.saleStartDate else null,
-            saleEndDate = if (isSaleScheduled) pricingData.saleEndDate else null
-        )
-        triggerEvent(ExitWithResult(resultPricing))
-    }
-
     private fun fixEndDateIfNecessary(startDate: Date?, endDate: Date?): Date? {
         return endDate?.let {
             if (startDate != null && endDate.before(startDate)) {
@@ -163,12 +141,15 @@ class ProductPricingViewModel @AssistedInject constructor(
     }
 
     fun onExit() {
-        if (hasChanges) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+        if (hasChanges && viewState.canSaveChanges) {
+            val isSaleScheduled = pricingData.isSaleScheduled == true &&
+                (pricingData.saleStartDate != null || pricingData.saleEndDate != null)
+            val resultPricing = pricingData.copy(
+                isSaleScheduled = isSaleScheduled,
+                saleStartDate = if (isSaleScheduled) pricingData.saleStartDate else null,
+                saleEndDate = if (isSaleScheduled) pricingData.saleEndDate else null
+            )
+            triggerEvent(ExitWithResult(resultPricing))
         } else {
             triggerEvent(Exit)
         }
@@ -184,13 +165,12 @@ class ProductPricingViewModel @AssistedInject constructor(
         val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
         val salePriceErrorMessage: Int? = null,
-        val isDoneButtonVisible: Boolean? = null,
         val pricingData: PricingData = PricingData(),
         val isTaxSectionVisible: Boolean? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
             get() = pricingData.saleEndDate != null
-        val isDoneButtonEnabled: Boolean
+        val canSaveChanges: Boolean
             get() = salePriceErrorMessage == 0 || salePriceErrorMessage == null
     }
 

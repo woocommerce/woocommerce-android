@@ -80,10 +80,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
-                true
-            }
             R.id.menu_product_downloads_settings -> {
                 viewModel.onDownloadsSettingsClicked()
                 true

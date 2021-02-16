@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -49,28 +46,11 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductCategories(shouldShowDiscardDialog = false))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductCategoriesListBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
         setupResultHandlers()
         viewModel.fetchProductCategories()
