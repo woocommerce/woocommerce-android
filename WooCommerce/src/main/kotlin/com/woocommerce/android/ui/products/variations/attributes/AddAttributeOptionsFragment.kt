@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeOptionsBinding
-import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeOptions
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -26,10 +25,10 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
 
     private var layoutManager: LayoutManager? = null
 
-    private val navArgs: AddAttributeOptionsFragmentArgs by navArgs()
-
     private var _binding: FragmentAddAttributeOptionsBinding? = null
     private val binding get() = _binding!!
+
+    private val navArgs: AddAttributeOptionsFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,8 +39,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
         initializeViews(savedInstanceState)
         setupObservers()
 
-        // we don't fetch the attributes here since they were fetched in the previous screen
-        showAttributes(viewModel.loadGlobalAttributes())
+        showAvailableAttributeOptions()
     }
 
     override fun onDestroyView() {
@@ -89,18 +87,16 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
 
     override fun getFragmentTitle() = navArgs.attributeName
 
-    private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
-        val adapter: CombinedAttributeListAdapter
+    private fun showAvailableAttributeOptions() {
+        val adapter: AttributeOptionListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
+            adapter = AttributeOptionListAdapter()
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
+            adapter = binding.attributeList.adapter as AttributeOptionListAdapter
         }
 
-        adapter.setAttributeList(
-            localAttributes = emptyList(),
-            globalAttributes = globalAttributes
-        )
+        val options = viewModel.getProductDraftAttributeOptions(navArgs.attributeId, navArgs.attributeName)
+        adapter.setOptionList(options)
     }
 }

@@ -14,13 +14,13 @@
         android:background="?attr/colorSurface">
 
         <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/attributeEditText"
+            android:id="@+id/optionEditText"
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_100"
             android:layout_marginBottom="@dimen/major_100"
-            android:hint="@string/product_new_attribute_name" />
+            android:hint="@string/product_new_attribute_option_name" />
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/major_100"
-            android:text="@string/product_select_attribute"
+            android:text="@string/product_select_attribute_option"
             android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
         <androidx.recyclerview.widget.RecyclerView

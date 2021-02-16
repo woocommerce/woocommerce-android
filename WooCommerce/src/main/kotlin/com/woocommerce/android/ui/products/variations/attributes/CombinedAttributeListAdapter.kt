@@ -63,13 +63,13 @@ class CombinedAttributeListAdapter(
     }
 
     fun setAttributeList(
-        localAttributes: List<ProductAttribute>,
-        globalAttributes: List<ProductGlobalAttribute>
+        localAttributes: List<ProductAttribute>? = null,
+        globalAttributes: List<ProductGlobalAttribute>? = null
     ) {
         val combinedList = ArrayList<CombinedAttributeModel>()
 
-        localAttributes.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
-        globalAttributes.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
+        localAttributes?.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
+        globalAttributes?.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
         combinedList.sortBy { it.name }
 
         val diffResult = DiffUtil.calculateDiff(

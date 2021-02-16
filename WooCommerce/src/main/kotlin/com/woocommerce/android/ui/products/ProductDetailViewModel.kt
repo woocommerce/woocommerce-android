@@ -99,6 +99,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.model.attribute.terms.WCAttributeTermModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -983,6 +984,18 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun getProductDraftAttributes(): List<ProductAttribute> {
         return viewState.productDraft?.attributes ?: emptyList()
+    }
+
+    fun getProductDraftAttributeOptions(attributeId: Long, attributeName: String): List<String> {
+        viewState.productDraft?.attributes?.let { attributes ->
+            attributes.forEach {
+                if (it.id == attributeId && it.name == attributeName) {
+                    return it.options
+                }
+            }
+        }
+
+        return emptyList()
     }
 
     /**
