@@ -85,11 +85,12 @@ This diagram was created using ASCIIFlow (asciiflow.com). If you want to modify 
 import it.
 
  */
-@ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
     // the view states based on the triggered states and side-effects
+    @ExperimentalCoroutinesApi
     private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
+    @ExperimentalCoroutinesApi
     val transitions: StateFlow<Transition> = _transitions
 
     // the actual state machine behavior is defined by a DSL using the following format:

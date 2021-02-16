@@ -43,12 +43,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class EditShippingLabelAddressFragment
     : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
