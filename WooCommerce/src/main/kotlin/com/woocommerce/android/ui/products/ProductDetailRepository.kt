@@ -246,7 +246,7 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Returns the list of attributes assigned to a product
      */
-    fun getProductAttributes(remoteProductId: Long): List<ProductAttribute> {
+    fun getLocalAttributes(remoteProductId: Long): List<ProductAttribute> {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
     }
@@ -257,6 +257,13 @@ class ProductDetailRepository @Inject constructor(
     suspend fun fetchGlobalAttributes(): List<ProductGlobalAttribute> {
         val wooResult = globalAttributeStore.fetchStoreAttributes(selectedSite.get())
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
+    /**
+     * TODO we need a FluxC method to get the global attributes from SQLite
+     */
+    fun getGlobalAttributes(): List<ProductGlobalAttribute> {
+        return emptyList()
     }
 
     private fun getCachedWCProductModel(remoteProductId: Long) =

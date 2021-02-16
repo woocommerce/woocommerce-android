@@ -1008,11 +1008,18 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
-     * Fetches the list of global attributes, ie: the attributes available store-wide
+     * Used by the add attribute screen to fetch the list of store-wide product attributes
      */
     fun fetchGlobalAttributes() {
         launch {
-            globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = true)
+            // load cached global attributes before fetching them, and only show skeleton if the
+            // list is still empty
+            _globalAttributeList.value = productRepository.getGlobalAttributes()
+            if (_globalAttributeList.value?.isEmpty() == true) {
+                globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = true)
+            }
+
+            // now fetch from the backend
             _globalAttributeList.value = productRepository.fetchGlobalAttributes()
             globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = false)
         }
