@@ -126,10 +126,6 @@
         android:id="@+id/attributeListFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"
         android:label="attributeListFragment">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_attributeListFragment_to_addAttributeFragment"
             app:destination="@id/addAttributeFragment"
@@ -142,10 +138,6 @@
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
         android:label="addAttributeFragment">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_addAttributeFragment_to_addAttributeOptionsFragment"
             app:destination="@id/addAttributeOptionsFragment"
@@ -159,13 +151,13 @@
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeOptionsFragment"
         android:label="addAttributeOptionsFragment">
         <argument
-            android:name="attributeName"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
             android:name="attributeId"
-            android:defaultValue="0L"
-            app:argType="long" />
+            app:argType="long"
+            app:nullable="false" />
+        <argument
+            android:name="attributeName"
+            app:argType="string"
+            app:nullable="false" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"

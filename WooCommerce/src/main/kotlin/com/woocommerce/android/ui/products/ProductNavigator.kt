@@ -285,7 +285,10 @@ class ProductNavigator @Inject constructor() {
 
             is AddProductAttributeOptions -> {
                 val action = AddAttributeFragmentDirections
-                    .actionAddAttributeFragmentToAddAttributeOptionsFragment()
+                    .actionAddAttributeFragmentToAddAttributeOptionsFragment(
+                        target.combinedAttribute.id,
+                        target.combinedAttribute.name
+                    )
                 fragment.findNavController().navigate(action)
             }
 
