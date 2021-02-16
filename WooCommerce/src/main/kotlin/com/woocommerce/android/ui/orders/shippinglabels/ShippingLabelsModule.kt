@@ -18,8 +18,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentModule
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarriersFragment
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarriersModule
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment
@@ -90,7 +90,7 @@ object ShippingLabelsModule {
     @Module
     abstract class ShippingCarriersFragmentModule {
         @FragmentScope
-        @ContributesAndroidInjector(modules = [ShippingCarriersModule::class])
-        abstract fun shippingCarriersFragment(): ShippingCarriersFragment
+        @ContributesAndroidInjector(modules = [ShippingCarrierRatesModule::class])
+        abstract fun shippingCarriersFragment(): ShippingCarrierRatesFragment
     }
 }

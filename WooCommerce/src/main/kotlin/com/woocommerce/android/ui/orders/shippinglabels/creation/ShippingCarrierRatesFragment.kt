@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentShippingCarriersBinding
+import com.woocommerce.android.databinding.FragmentShippingCarrierRatesBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -23,11 +23,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-class ShippingCarriersFragment : BaseFragment(R.layout.fragment_shipping_carriers), BackPressListener {
+class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_carrier_rates), BackPressListener {
     companion object {
         const val SHIPPING_CARRIERS_CLOSED = "shipping_carriers_closed"
         const val SHIPPING_CARRIERS_RESULT = "shipping_carriers_result"
@@ -36,10 +35,10 @@ class ShippingCarriersFragment : BaseFragment(R.layout.fragment_shipping_carrier
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private var progressDialog: CustomProgressDialog? = null
-    private var _binding: FragmentShippingCarriersBinding? = null
+    private var _binding: FragmentShippingCarrierRatesBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: ShippingCarriersViewModel by viewModels { viewModelFactory }
+    val viewModel: ShippingCarrierRatesViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +71,7 @@ class ShippingCarriersFragment : BaseFragment(R.layout.fragment_shipping_carrier
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentShippingCarriersBinding.bind(view)
+        _binding = FragmentShippingCarrierRatesBinding.bind(view)
 
         initializeViewModel()
     }

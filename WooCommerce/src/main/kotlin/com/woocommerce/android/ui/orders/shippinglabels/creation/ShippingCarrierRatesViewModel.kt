@@ -16,12 +16,12 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 
-class ShippingCarriersViewModel @AssistedInject constructor(
+class ShippingCarrierRatesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val shippingLabelRepository: ShippingLabelRepository
 ) : ScopedViewModel(savedState, dispatchers) {
-    private val arguments: ShippingCarriersFragmentArgs by savedState.navArgs()
+    private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -62,5 +62,5 @@ class ShippingCarriersViewModel @AssistedInject constructor(
     ) : Parcelable
 
     @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<ShippingCarriersViewModel>
+    interface Factory : ViewModelAssistedFactory<ShippingCarrierRatesViewModel>
 }
