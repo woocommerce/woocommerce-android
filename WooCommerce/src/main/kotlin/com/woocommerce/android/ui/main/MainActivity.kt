@@ -666,8 +666,11 @@ class MainActivity : AppUpgradeActivity(),
 
         // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
         if (isAtNavigationRoot()) {
-            getActiveTopLevelFragment()?.scrollToTop()
-            expandToolbar(expand = true, animate = true)
+            // If the fragment's view is not yet created, do nothing
+            if (getActiveTopLevelFragment()?.view != null) {
+                getActiveTopLevelFragment()?.scrollToTop()
+                expandToolbar(expand = true, animate = true)
+            }
         } else {
             navController.navigate(binding.bottomNav.currentPosition.id)
         }

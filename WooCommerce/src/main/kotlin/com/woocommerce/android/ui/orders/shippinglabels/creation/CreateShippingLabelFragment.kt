@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -13,17 +14,24 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressFragment.Companion.EDIT_ADDRESS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment.Companion.EDIT_PACKAGES_CLOSED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment.Companion.EDIT_PACKAGES_RESULT
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_CLOSED
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.Companion.EDIT_PAYMENTS_RESULT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
@@ -36,6 +44,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
@@ -48,18 +58,17 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     val viewModel: CreateShippingLabelViewModel by viewModels { viewModelFactory }
 
-    private var _binding: FragmentCreateShippingLabelBinding? = null
-    private val binding get() = _binding!!
+    private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentCreateShippingLabelBinding.bind(view)
+        val binding = FragmentCreateShippingLabelBinding.bind(view)
 
-        initializeViewModel()
-        initializeViews()
+        initializeViewModel(binding)
+        initializeViews(binding)
     }
 
     override fun onPause() {
@@ -67,8 +76,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         progressDialog?.dismiss()
     }
 
-    private fun initializeViewModel() {
-        subscribeObservers()
+    private fun initializeViewModel(binding: FragmentCreateShippingLabelBinding) {
+        subscribeObservers(binding)
         setupResultHandlers()
     }
 
@@ -94,15 +103,38 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         handleResult<List<ShippingLabelPackage>>(EDIT_PACKAGES_RESULT) {
             viewModel.onPackagesUpdated(it)
         }
+        handleNotice(EDIT_PAYMENTS_CLOSED) {
+            viewModel.onPaymentsEditCanceled()
+        }
+        handleResult<PaymentMethod>(EDIT_PAYMENTS_RESULT) {
+            viewModel.onPaymentsUpdated(it)
+        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun subscribeObservers() {
+    private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.uiState.takeIfNotEqualTo(old?.uiState) { state ->
+                when (state) {
+                    Loading -> {
+                        showSkeleton(true, binding)
+                        binding.errorView.isVisible = false
+                        binding.contentLayout.isVisible = false
+                    }
+                    Failed -> {
+                        showSkeleton(false, binding)
+                        binding.contentLayout.isVisible = false
+                        binding.errorView.show(
+                            type = WCEmptyView.EmptyViewType.NETWORK_ERROR,
+                            onButtonClick = { viewModel.retry() }
+                        )
+                    }
+                    WaitingForInput -> {
+                        showSkeleton(false, binding)
+                        binding.errorView.isVisible = false
+                        binding.contentLayout.isVisible = true
+                    }
+                }
+            }
             new.originAddressStep?.takeIfNotEqualTo(old?.originAddressStep) {
                 binding.originStep.update(it)
             }
@@ -159,6 +191,11 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is ShowPaymentDetails -> {
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToEditShippingLabelPaymentFragment()
+                    findNavController().navigateSafely(action)
+                }
                 else -> event.isHandled = false
             }
         })
@@ -178,7 +215,15 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         progressDialog = null
     }
 
-    private fun initializeViews() {
+    fun showSkeleton(show: Boolean, binding: FragmentCreateShippingLabelBinding) {
+        if (show) {
+            skeletonView.show(binding.contentLayout, R.layout.skeleton_create_shipping_label, delayed = false)
+        } else {
+            skeletonView.hide()
+        }
+    }
+
+    private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
         binding.originStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(ORIGIN_ADDRESS) }
         binding.shippingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(SHIPPING_ADDRESS) }
         binding.packagingStep.continueButtonClickListener = { viewModel.onContinueButtonTapped(PACKAGING) }
