@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
+import com.woocommerce.android.databinding.AttributeOptionListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeOptionListAdapter.OptionViewHolder
 
 class AttributeOptionListAdapter(
@@ -20,7 +21,7 @@ class AttributeOptionListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
         return OptionViewHolder(
-            AttributeListItemBinding.inflate(
+            AttributeOptionListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -61,13 +62,15 @@ class AttributeOptionListAdapter(
                 options
             )
         )
+
+        optionsList = options
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class OptionViewHolder(val viewBinding: AttributeListItemBinding) :
+    inner class OptionViewHolder(val viewBinding: AttributeOptionListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(option: String) {
-            viewBinding.attributeName.text = option
+            viewBinding.optionName.text = option
         }
     }
 }

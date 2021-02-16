@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/minor_100"
+    android:paddingBottom="@dimen/minor_100">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/optionName"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_50"
+        android:ellipsize="end"
+        android:maxLines="2"
+        tools:text="Blue" />
+
+</LinearLayout>
