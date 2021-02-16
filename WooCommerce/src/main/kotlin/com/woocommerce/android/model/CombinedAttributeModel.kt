@@ -22,12 +22,9 @@ data class CombinedAttributeModel(
 
         fun fromGlobalAttribute(attribute: ProductGlobalAttribute): CombinedAttributeModel {
             return CombinedAttributeModel(
-                id = attribute.id.toLong(),
+                id = attribute.remoteId,
                 name = attribute.name
             )
         }
     }
-
-    val isLocalAttribute: Boolean
-        get() = id == 0L
 }

@@ -36,6 +36,7 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
+import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
@@ -78,7 +79,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
-import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -99,7 +99,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.attribute.terms.WCAttributeTermModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -986,10 +985,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         return viewState.productDraft?.attributes ?: emptyList()
     }
 
-    fun getProductDraftAttributeOptions(attributeId: Long, attributeName: String): List<String> {
+    fun getProductDraftAttributeOptions(id: Long, name: String): List<String> {
         viewState.productDraft?.attributes?.let { attributes ->
             attributes.forEach {
-                if (it.id == attributeId && it.name == attributeName) {
+                if (it.id == id && it.name == name) {
                     return it.options
                 }
             }
