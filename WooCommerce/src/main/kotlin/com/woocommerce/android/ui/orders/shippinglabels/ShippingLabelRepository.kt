@@ -1,15 +1,20 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,6 +75,43 @@ class ShippingLabelRepository @Inject constructor(
 
                 WooResult(availablePackages)
             }
+    }
+
+    suspend fun getShippingRates(
+        orderId: Long,
+        origin: Address,
+        destination: Address,
+        packages: List<ShippingLabelPackage>
+    ): List<List<ShippingRate>>? {
+        val rates = shippingLabelStore.getShippingRates(
+            selectedSite.get(),
+            orderId,
+            origin.toShippingLabelModel(),
+            destination.toShippingLabelModel(),
+            packages.filter { it.selectedPackage != null }.mapIndexed { i, box ->
+                WCShippingLabelModel.ShippingLabelPackage(
+                    id = "package$i",
+                    boxId = box.selectedPackage!!.id,
+                    height = box.selectedPackage.dimensions.height.toFloat(),
+                    width = box.selectedPackage.dimensions.width.toFloat(),
+                    length = box.selectedPackage.dimensions.length.toFloat(),
+                    weight = box.weight.toFloat(),
+                    isLetter = box.selectedPackage.isLetter
+                )
+            }
+        )
+
+        return if (rates.isError) {
+            null
+        } else {
+            rates.model?.packageRates?.map { box ->
+                box.shippingOptions.map {
+                    ShippingRate(
+                        "Ahoj", 3, BigDecimal.ONE
+                    )
+                }
+            }
+        }
     }
 
     suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {
