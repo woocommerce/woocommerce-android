@@ -5,15 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.databinding.AttributeListItemBinding
 import com.woocommerce.android.databinding.AttributeOptionListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeOptionListAdapter.OptionViewHolder
 
-class AttributeOptionListAdapter(
-) : RecyclerView.Adapter<OptionViewHolder>() {
+class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
     private var optionsList = listOf<String>()
 
     init {
+        // local attributes all have an Id of 0, so we can't use stable Ids
         setHasStableIds(false)
     }
 

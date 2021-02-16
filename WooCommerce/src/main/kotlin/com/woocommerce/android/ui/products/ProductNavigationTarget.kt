@@ -78,5 +78,5 @@ sealed class ProductNavigationTarget : Event() {
     object AddProductAttribute : ProductNavigationTarget()
     data class AddProductAttributeOptions(
         val combinedAttribute: CombinedAttributeModel
-    ): ProductNavigationTarget()
+    ) : ProductNavigationTarget()
 }
