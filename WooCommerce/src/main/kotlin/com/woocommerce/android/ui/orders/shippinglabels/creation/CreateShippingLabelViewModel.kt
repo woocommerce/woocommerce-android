@@ -7,13 +7,18 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
@@ -29,7 +34,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidationFailed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditAddressRequested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPackagingCanceled
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -78,12 +85,20 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun initializeStateMachine() {
         launch {
             stateMachine.transitions.collect { transition ->
+                when (transition.state) {
+                    is State.DataLoading -> viewState = viewState.copy(uiState = Loading)
+                    is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
+                    is State.WaitingForInput -> {
+                        viewState = viewState.copy(uiState = WaitingForInput)
+                        updateViewState(transition.state.data)
+                    }
+                    else -> { }
+                }
                 transition.sideEffect?.let { sideEffect ->
                     when (sideEffect) {
                         SideEffect.NoOp -> {
                         }
                         is SideEffect.ShowError -> showError(sideEffect.error)
-                        is SideEffect.UpdateViewState -> updateViewState(sideEffect.data)
                         is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
                         is SideEffect.ValidateAddress -> handleResult(
                             progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
@@ -106,9 +121,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             )
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
-                        is SideEffect.ShowCustomsForm -> Event.CustomsFormFilledOut
-                        is SideEffect.ShowCarrierOptions -> Event.ShippingCarrierSelected
-                        is SideEffect.ShowPaymentDetails -> Event.PaymentSelected
+                        is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
+                        is SideEffect.ShowCarrierOptions -> handleResult { Event.ShippingCarrierSelected }
+                        is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
                 // save the current state
@@ -152,6 +167,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         )
     }
 
+    private fun openPaymentDetails() {
+        triggerEvent(ShowPaymentDetails)
+    }
+
     private fun updateViewState(data: Data) {
         viewState = when (data.flowSteps.maxBy { it.ordinal } ?: FlowStep.ORIGIN_ADDRESS) {
             FlowStep.ORIGIN_ADDRESS -> {
@@ -161,7 +180,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.SHIPPING_ADDRESS -> {
@@ -171,7 +190,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.PACKAGING -> {
@@ -181,7 +200,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.current(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.CUSTOMS -> {
@@ -191,7 +210,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.current(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.CARRIER -> {
@@ -201,7 +220,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.current(),
-                    paymentStep = Step.notDone()
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.PAYMENT -> {
@@ -211,7 +230,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.current()
+                    paymentStep = Step.current(data.currentPaymentMethod.stepDescription)
                 )
             }
             FlowStep.DONE -> {
@@ -221,7 +240,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.done()
+                    paymentStep = Step.done(data.currentPaymentMethod.stepDescription)
                 )
             }
         }
@@ -235,25 +254,32 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadData(orderId: String): Event {
+    private suspend fun loadData(orderId: String): Event {
         val order = requireNotNull(orderDetailRepository.getOrder(orderId))
-        return Event.DataLoaded(getStoreAddress(), order.shippingAddress)
+        val accountSettings = shippingLabelRepository.getAccountSettings().let {
+            if (it.isError) return Event.DataLoadingFailed
+            it.model!!
+        }
+        return Event.DataLoaded(
+            originAddress = getStoreAddress(),
+            shippingAddress = order.shippingAddress,
+            currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId })
     }
 
     private fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
         return Address(
-                company = site.get().name,
-                firstName = accountStore.account.firstName,
-                lastName = accountStore.account.lastName,
-                phone = "",
-                email = "",
-                country = siteSettings?.countryCode ?: "",
-                state = siteSettings?.stateCode ?: "",
-                address1 = siteSettings?.address ?: "",
-                address2 = siteSettings?.address2 ?: "",
-                city = siteSettings?.city ?: "",
-                postcode = siteSettings?.postalCode ?: ""
+            company = site.get().name,
+            firstName = accountStore.account.firstName,
+            lastName = accountStore.account.lastName,
+            phone = "",
+            email = "",
+            country = siteSettings?.countryCode ?: "",
+            state = siteSettings?.stateCode ?: "",
+            address1 = siteSettings?.address ?: "",
+            address2 = siteSettings?.address2 ?: "",
+            city = siteSettings?.city ?: "",
+            postcode = siteSettings?.postalCode ?: ""
         )
     }
 
@@ -301,6 +327,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         return "$firstLine\n$secondLine"
     }
 
+    private val PaymentMethod?.stepDescription: String?
+        get() {
+            if (this == null) return null
+            return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
+        }
+
+    fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
+
     fun onAddressEditConfirmed(address: Address) {
         stateMachine.handleEvent(AddressValidated(address))
     }
@@ -327,6 +361,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onPackagesEditCanceled() {
         stateMachine.handleEvent(EditPackagingCanceled)
+    }
+
+    fun onPaymentsUpdated(paymentMethod: PaymentMethod) {
+        stateMachine.handleEvent(PaymentSelected(paymentMethod))
+    }
+
+    fun onPaymentsEditCanceled() {
+        stateMachine.handleEvent(EditPaymentCanceled)
     }
 
     fun onEditButtonTapped(step: FlowStep) {
@@ -366,6 +408,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
+        val uiState: UiState = WaitingForInput,
         val originAddressStep: Step? = null,
         val shippingAddressStep: Step? = null,
         val packagingDetailsStep: Step? = null,
@@ -374,6 +417,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val paymentStep: Step? = null,
         val progressDialogState: ProgressDialogState = ProgressDialogState()
     ) : Parcelable
+
+    enum class UiState {
+        Loading, Failed, WaitingForInput
+    }
 
     @Parcelize
     data class ProgressDialogState(

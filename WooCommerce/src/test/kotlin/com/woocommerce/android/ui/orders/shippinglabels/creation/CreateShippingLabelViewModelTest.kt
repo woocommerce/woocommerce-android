@@ -59,6 +59,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val data = Data(
         originAddress = originAddress,
         shippingAddress = shippingAddress,
+        currentPaymentMethod = null,
         shippingPackages = emptyList(),
         flowSteps = setOf(ORIGIN_ADDRESS)
     )
@@ -176,7 +177,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+        stateFlow.value = Transition(State.WaitingForInput(data), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -199,7 +200,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             originAddress = originAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
         )
-        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+        stateFlow.value = Transition(State.WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
@@ -223,14 +224,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             shippingAddress = shippingAddressValidated,
             flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS + FlowStep.PACKAGING
         )
-        stateFlow.value = Transition(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
+        stateFlow.value = Transition(State.WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
     fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        stateFlow.value = Transition(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+        stateFlow.value = Transition(State.WaitingForInput(data), null)
 
         viewModel.onContinueButtonTapped(ORIGIN_ADDRESS)
 
