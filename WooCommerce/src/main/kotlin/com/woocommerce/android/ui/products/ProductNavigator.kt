@@ -11,7 +11,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeOptions
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -282,7 +282,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigate(action)
             }
 
-            is AddProductAttributeTerms -> {
+            is AddProductAttributeOptions -> {
                 // TODO
             }
 

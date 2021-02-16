@@ -56,7 +56,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeOptions
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -1003,7 +1003,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the add attribute fragment
      */
     fun onAddAttributeListItemClick(combinedAttribute: CombinedAttributeModel) {
-        triggerEvent(AddProductAttributeTerms(combinedAttribute))
+        triggerEvent(AddProductAttributeOptions(combinedAttribute))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1015,7 +1015,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         launch {
             // load cached global attributes before fetching them, and only show skeleton if the
             // list is still empty
-            _globalAttributeList.value = productRepository.getGlobalAttributes()
+            _globalAttributeList.value = loadGlobalAttributes()
             if (_globalAttributeList.value?.isEmpty() == true) {
                 globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = true)
             }
@@ -1025,6 +1025,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = false)
         }
     }
+
+    fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
+        productRepository.getGlobalAttributes()
 
     /**
      * Updates the product to the backend only if network is connected.
@@ -1591,6 +1594,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductAddAttributeOptions(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }
