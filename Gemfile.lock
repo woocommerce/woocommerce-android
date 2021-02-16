@@ -236,9 +236,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  fastlane (~> 2)!
+  fastlane (~> 2)
   fastlane-plugin-wpmreleasetoolkit!
-  nokogiri!
+  nokogiri
 
 BUNDLED WITH
-   2.1.4
+   2.2.10
