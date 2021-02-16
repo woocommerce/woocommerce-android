@@ -77,6 +77,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.attributes.CombinedAttributeModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
@@ -165,6 +166,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+
+    final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
+    private var globalAttributesViewState by globalAttributeViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -997,7 +1001,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the add attribute fragment
      */
-    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
+    fun onAddAttributeListItemClick(combinedAttributeModel: CombinedAttributeModel) {
         // TODO
     }
 
@@ -1008,7 +1012,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun fetchGlobalAttributes() {
         launch {
+            globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = true)
             _globalAttributeList.value = productRepository.fetchGlobalAttributes()
+            globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = false)
         }
     }
 
@@ -1651,6 +1657,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDownloadsViewState(
         val isUploadingDownloadableFile: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class GlobalAttributesViewState(
+        val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

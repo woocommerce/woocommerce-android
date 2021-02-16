@@ -12,7 +12,7 @@ import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.variations.attributes.CombinedAttributeListAdapter.AttributeViewHolder
 
 class CombinedAttributeListAdapter(
-    private val onItemClick: (id: Long, isGlobalAttribute: Boolean) -> Unit
+    private val onItemClick: (combinedAttribute: CombinedAttributeModel) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<CombinedAttributeModel>()
 
@@ -39,7 +39,7 @@ class CombinedAttributeListAdapter(
 
         holder.itemView.setOnClickListener {
             val item = attributeList[position]
-            onItemClick(item.id, item.isGlobalAttribute)
+            onItemClick(item)
         }
     }
 
