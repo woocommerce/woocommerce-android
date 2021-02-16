@@ -429,6 +429,7 @@
     <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
     <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
+    <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <!--
         Refunds
     -->
