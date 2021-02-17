@@ -220,7 +220,7 @@ end
     android_build_preflight()
 
     # Create the file names
-    version=android_get_release_version()
+    version = android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
 
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
@@ -240,17 +240,7 @@ end
       json_key: './google-upload-credentials.json',
     )
 
-    if (options[:create_release])
-      # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
-      # So don't attach them to the release, as this ends up being confusing for beta-testers.
-      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version)) unless is_ci
-      create_release(
-        repository: GHHELPER_REPO, 
-        version: version["name"], 
-        release_notes_file_path: release_notes_path,
-        release_assets: [apk_file_path, aab_file_path].compact.join(',')
-      )
-    end
+    create_gh_release(version: version) if (options[:create_release])
   end
 
   #####################################################################################
@@ -273,7 +263,7 @@ end
     android_build_preflight() unless (options[:skip_prechecks])
 
     # Create the file names
-    version=android_get_release_version()
+    version = android_get_release_version()
     build_bundle(version: version, flavor:"Vanilla")
 
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
@@ -293,18 +283,7 @@ end
       json_key: './google-upload-credentials.json',
     )
 
-    if (options[:create_release])
-      # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
-      # So don't attach them to the release, as this ends up being confusing for beta-testers.
-      apk_file_path = File.join(project_root, "artifacts", universal_apk_name(version)) unless is_ci
-      create_release(
-        repository: GHHELPER_REPO, 
-        version: version["name"], 
-        release_notes_file_path: release_notes_path,
-        prerelease: true,
-        release_assets: [apk_file_path, aab_file_path].compact.join(',')
-      )
-    end
+    create_gh_release(version: version, prerelease: true) if (options[:create_release])
   end
 
 #####################################################################################
@@ -457,6 +436,30 @@ end
     FileUtils.rm_rf("#{temp_dir}")
   end
 
+  # Creates a new GitHub Release for the given version
+  #
+  # @param [Hash<String>] version The version to create. Expects keys "name" and "code"
+  # @param [Bool] prerelease If true, the GitHub Release will have the prerelease flag
+  #
+  private_lane :create_gh_release do | options |
+    version = options[:version]
+    prerelease = options[:prerelease].nil? ? false : options[:prerelease]
+
+    # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
+    # So don't attach them to the release, as this ends up being confusing for beta-testers.
+    apk_file_path = File.join(project_root, 'artifacts', universal_apk_name(version)) unless is_ci
+    aab_file_path = File.join(project_root, 'artifacts', aab_file_name(version))
+    release_assets = [apk_file_path, aab_file_path].compact
+
+    create_release(
+      repository: GHHELPER_REPO,
+      version: version["name"],
+      release_notes_file_path: release_notes_path,
+      prerelease: prerelease,
+      release_assets: release_assets.join(',')
+    )
+  end
+
   private_lane :send_strings_for_translation do | options |
     sh("cd .. && mkdir -p #{update_strings_path} && cp #{main_strings_path} #{update_strings_path} && git add #{update_strings_path}strings.xml")
     sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
@@ -470,7 +473,11 @@ end
     "#{ENV["PROJECT_ROOT_FOLDER"]}WooCommerce/metadata/release_notes.txt"
   end
 
+  def aab_file_name(version)
+    "wcandroid-#{version["name"]}.aab"
+  end
+
   def universal_apk_name(version)
-    "wcandroid-#{ version["name"] }-universal.apk"
+    "wcandroid-#{version["name"]}-universal.apk"
   end
 end
