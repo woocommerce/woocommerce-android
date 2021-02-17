@@ -49,7 +49,6 @@
         android:id="@+id/rate_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
         app:layout_constraintTop_toBottomOf="@id/divider_1"
         tools:itemCount="5"
         tools:listitem="@layout/shipping_rate_list_item" />
