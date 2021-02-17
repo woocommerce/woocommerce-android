@@ -113,6 +113,19 @@ class ShippingLabelRepository @Inject constructor(
             }
     }
 
+    suspend fun updatePaymentSettings(selectedPaymentMethodId: Int, emailReceipts: Boolean): WooResult<Unit> {
+        return shippingLabelStore.updateAccountSettings(
+            site = selectedSite.get(),
+            selectedPaymentMethodId = selectedPaymentMethodId,
+            isEmailReceiptEnabled = emailReceipts
+        ).let { result ->
+            if (result.isError) return@let WooResult(error = result.error)
+
+            accountSettings = null
+            WooResult(Unit)
+        }
+    }
+
     fun clearCache() {
         accountSettings = null
         availablePackages = null

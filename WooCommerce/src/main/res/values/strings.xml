@@ -373,6 +373,9 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
+    <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
+    <string name="shipping_label_loading_data_progress_message">Please wait…</string>
     <string name="shipping_label_edit_address_name">Name</string>
     <string name="shipping_label_edit_address_company">Company</string>
     <string name="shipping_label_edit_address_phone">Phone</string>
@@ -428,6 +431,9 @@
     <string name="shipping_label_payments_account_info"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
     <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
+    <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
+    <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
+    <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the given destinations and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
@@ -436,8 +442,8 @@
     </plurals>
 
     <!--
-        Refunds
-    -->
+            Refunds
+        -->
     <string name="order_refunds_available_for_refund">%s available for refund</string>
     <string name="order_refunds_title_with_amount">Refund %s</string>
     <string name="order_refunds_confirmation">Are you sure you want to issue a refund? This can’t be undone.</string>
