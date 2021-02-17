@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
