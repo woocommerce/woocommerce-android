@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.android.parcel.Parcelize
@@ -366,7 +368,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     fun handleEvent(event: Event) {
         WooLog.d(T.ORDERS, event.toString())
-        stateMachine.transition(event)
+
+        // we can ignore invalid state transitions caused by user input (most likely caused by duplicate clicks)
+        if (event !is UserInput || stateMachine.state is WaitingForInput) {
+            stateMachine.transition(event)
+        }
     }
 
     /**
@@ -445,6 +451,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
     }
 
     sealed class Event {
+        abstract class UserInput : Event()
+
         data class FlowStarted(val orderId: String) : Event()
         data class DataLoaded(
             val originAddress: Address,
@@ -463,27 +471,27 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object AddressEditCanceled : Event()
         object SuggestedAddressDiscarded : Event()
 
-        object OriginAddressValidationStarted : Event()
-        object EditOriginAddressRequested : Event()
+        object OriginAddressValidationStarted : UserInput()
+        object EditOriginAddressRequested : UserInput()
 
-        object ShippingAddressValidationStarted : Event()
-        object EditShippingAddressRequested : Event()
+        object ShippingAddressValidationStarted : UserInput()
+        object EditShippingAddressRequested : UserInput()
 
-        object PackageSelectionStarted : Event()
-        object EditPackagingRequested : Event()
+        object PackageSelectionStarted : UserInput()
+        object EditPackagingRequested : UserInput()
         object EditPackagingCanceled : Event()
         data class PackagesSelected(val shippingPackages: List<ShippingLabelPackage>) : Event()
 
-        object CustomsDeclarationStarted : Event()
-        object EditCustomsRequested : Event()
+        object CustomsDeclarationStarted : UserInput()
+        object EditCustomsRequested : UserInput()
         object CustomsFormFilledOut : Event()
 
-        object ShippingCarrierSelectionStarted : Event()
-        object EditShippingCarrierRequested : Event()
+        object ShippingCarrierSelectionStarted : UserInput()
+        object EditShippingCarrierRequested : UserInput()
         object ShippingCarrierSelected : Event()
 
-        object PaymentSelectionStarted : Event()
-        object EditPaymentRequested : Event()
+        object PaymentSelectionStarted : UserInput()
+        object EditPaymentRequested : UserInput()
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
     }
