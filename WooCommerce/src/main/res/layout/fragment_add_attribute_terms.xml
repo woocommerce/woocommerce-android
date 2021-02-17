@@ -37,7 +37,7 @@
                 android:id="@+id/assignedTermList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:itemCount="3"
+                tools:itemCount="2"
                 tools:listitem="@layout/attribute_term_list_item" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -52,7 +52,9 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/major_100"
+            android:paddingStart="@dimen/major_100"
+            android:paddingTop="@dimen/major_100"
+            android:paddingEnd="@dimen/major_100"
             android:text="@string/product_select_attribute_term"
             android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
