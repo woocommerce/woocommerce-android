@@ -137,16 +137,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(
-                    State.OriginAddressValidation(data),
-                    SideEffect.ValidateAddress(data.originAddress, ORIGIN)
-                )
+                transitionTo(State.OriginAddressValidation(data))
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(
-                    State.ShippingAddressValidation(data),
-                    SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
-                )
+                transitionTo(State.ShippingAddressValidation(data))
             }
             on<Event.PackageSelectionStarted> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions(data.shippingPackages))
@@ -361,6 +355,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     fun initialize(state: State) {
         stateMachine = createStateMachine(state)
+        _transitions.value = Transition(state, SideEffect.NoOp)
     }
 
     /**
@@ -501,7 +496,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class LoadData(val orderId: String) : SideEffect()
         data class ShowError(val error: Error) : SideEffect()
 
-        data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
         data class ShowAddressSuggestion(
             val entered: Address,
             val suggested: Address,
