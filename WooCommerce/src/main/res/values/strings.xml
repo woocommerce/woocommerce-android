@@ -407,7 +407,6 @@
     <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <string name="shipping_label_package_details_items_count">"%1$d items"</string>
     <plurals name="shipping_label_package_details_items_count">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
@@ -430,6 +429,12 @@
     <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
     <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the given destinations and packages</string>
+    <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
     <!--
         Refunds
     -->

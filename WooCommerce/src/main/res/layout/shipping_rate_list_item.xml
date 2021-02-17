@@ -28,7 +28,7 @@
         <RadioButton
             android:id="@+id/carrierRadioButton"
             style="@style/Woo.RadioButton"
-            tools:visibility="gone"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
