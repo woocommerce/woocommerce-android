@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,8 +43,10 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         _binding = null
     }
 
-    override fun onRequestAllowBackPress() =
+    override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked(ExitProductAddAttribute())
+        return false
+    }
 
     override fun onResume() {
         super.onResume()
@@ -80,7 +83,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductAddAttribute -> activity?.onBackPressed()
+                is ExitProductAddAttribute -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })

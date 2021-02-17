@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
@@ -436,9 +435,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the DONE menu button is clicked in all of the product sub detail screen
+     * Called when the back= button is clicked in a product sub detail screen
      */
-    fun onDoneButtonClicked(event: ProductExitEvent) {
+    fun onBackButtonClicked(event: ProductExitEvent) {
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
@@ -468,6 +467,58 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
+    }
+
+    /**
+     * Method called when the back button in product detail is clicked. We show a discard dialog if any
+     * changes have been made to the [Product] model locally that still need to be saved to the backend.
+     */
+    fun onBackButtonClickedProductDetail(): Boolean {
+        val isProductDetailUpdated = viewState.isProductUpdated ?: false
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
+
+        if (isProductDetailUpdated) {
+            val positiveAction = DialogInterface.OnClickListener { _, _ ->
+                // discard changes made to the product and exit product detail
+                discardEditChanges()
+                triggerEvent(ExitProduct)
+            }
+
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
+            // button in the discard dialog
+            @StringRes val neutralBtnId: Int?
+            val neutralAction = if (isAddFlow) {
+                neutralBtnId = string.product_detail_save_as_draft
+                DialogInterface.OnClickListener { _, _ ->
+                    updateProductDraft(productStatus = DRAFT)
+                    startPublishProduct(exitWhenDone = true)
+                }
+            } else {
+                neutralBtnId = null
+                null
+            }
+
+            triggerEvent(
+                ShowDialog(
+                    positiveBtnAction = positiveAction,
+                    neutralBtnAction = neutralAction
+                )
+            )
+            return false
+        } else if (isUploadingImages) {
+            // images can't be assigned to the product until they finish uploading so ask whether
+            // to discard the uploading images
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    triggerEvent(ExitProduct)
+                }
+            ))
+            return false
+        } else {
+            return true
+        }
     }
 
     /**
@@ -581,65 +632,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
             triggerEvent(LaunchUrlInChromeTab(url))
-        }
-    }
-
-    /**
-     * Method called when back button is clicked.
-     *
-     * Each product screen has it's own [ProductExitEvent]
-     * For product detail, we show a discard dialog if any changes have been made to the
-     * [Product] model locally that still need to be saved to the backend.
-     */
-    fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.isProductUpdated ?: false
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
-
-        if (event is ExitProductDetail && isProductDetailUpdated) {
-            val positiveAction = DialogInterface.OnClickListener { _, _ ->
-                // discard changes made to the product and exit product detail
-                discardEditChanges()
-                triggerEvent(ExitProduct)
-            }
-
-            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
-            // button in the discard dialog
-            @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow) {
-                neutralBtnId = string.product_detail_save_as_draft
-                DialogInterface.OnClickListener { _, _ ->
-                    updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct(exitWhenDone = true)
-                }
-            } else {
-                neutralBtnId = null
-                null
-            }
-
-            triggerEvent(
-                ShowDialog(
-                    positiveBtnAction = positiveAction,
-                    neutralBtnAction = neutralAction
-                )
-            )
-            return false
-        } else if (event is ExitProductDetail && isUploadingImages) {
-            // images can't be assigned to the product until they finish uploading so ask whether
-            // to discard the uploading images
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        triggerEvent(event)
-                    }
-            ))
-            return false
-        } else {
-            if (event is ExitProductTags) {
-                onProductTagsBackButtonClicked()
-                clearProductTagsState()
-            }
-            return true
         }
     }
 
@@ -1339,11 +1331,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
         }
     }
 

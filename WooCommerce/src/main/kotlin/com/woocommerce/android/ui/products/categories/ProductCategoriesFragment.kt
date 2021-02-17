@@ -115,7 +115,6 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
     private fun setupResultHandlers() {
         handleResult<ProductCategory>(ARG_ADDED_CATEGORY) { category ->
             viewModel.onProductCategoryAdded(category)
-            changesMade()
         }
     }
 
@@ -153,7 +152,8 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductCategories())
+        viewModel.onBackButtonClicked(ExitProductCategories())
+        return false
     }
 
     override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
@@ -175,7 +175,6 @@ class ProductCategoriesFragment : BaseProductFragment(R.layout.fragment_product_
 
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
-            changesMade()
         }
     }
 }

@@ -213,12 +213,10 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
     override fun onProductTagAdded(productTag: ProductTag) {
         viewModel.onProductTagSelected(productTag)
         updateSelectedTags()
-        changesMade()
     }
 
     override fun onProductTagRemoved(productTag: ProductTag) {
         viewModel.onProductTagSelectionRemoved(productTag)
         binding.addProductTagView.removeSelectedTag(productTag)
-        changesMade()
     }
 }
