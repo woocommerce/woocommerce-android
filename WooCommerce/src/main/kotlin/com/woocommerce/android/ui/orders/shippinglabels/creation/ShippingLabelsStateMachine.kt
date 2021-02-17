@@ -113,7 +113,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
-                val data = Data(event.originAddress, event.shippingAddress, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
+                val data = Data(
+                    event.remoteOrderId,
+                    event.originAddress,
+                    event.shippingAddress,
+                    emptyList(),
+                    setOf(FlowStep.ORIGIN_ADDRESS)
+                )
                 transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
             }
             on<Event.DataLoadingFailed> {
@@ -141,7 +147,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
             }
             on<Event.ShippingCarrierSelectionStarted> {
-                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
             }
             on<Event.PaymentSelectionStarted> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
@@ -162,7 +168,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
             }
             on<Event.EditShippingCarrierRequested> {
-                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
             }
             on<Event.EditPaymentRequested> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
@@ -306,6 +312,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(flowSteps = data.flowSteps + FlowStep.PAYMENT)
                 transitionTo(State.WaitingForInput(newData), SideEffect.UpdateViewState(newData))
             }
+            on<Event.ShippingCarrierSelectionCanceled> {
+                transitionTo(State.WaitingForInput(data), SideEffect.UpdateViewState(data))
+            }
         }
 
         state<State.PaymentSelection> {
@@ -350,6 +359,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     @Parcelize
     data class Data(
+        val remoteOrderId: Long,
         val originAddress: Address,
         val shippingAddress: Address,
         val shippingPackages: List<ShippingLabelPackage>,
@@ -409,7 +419,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class Event {
         data class FlowStarted(val orderId: String) : Event()
-        data class DataLoaded(val originAddress: Address, val shippingAddress: Address) : Event()
+        data class DataLoaded(
+            val remoteOrderId: Long,
+            val originAddress: Address,
+            val shippingAddress: Address
+        ) : Event()
         object DataLoadingFailed : Event()
 
         data class AddressInvalid(val address: Address, val validationResult: ValidationResult) : Event()
@@ -439,6 +453,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object ShippingCarrierSelectionStarted : Event()
         object EditShippingCarrierRequested : Event()
         object ShippingCarrierSelected : Event()
+        object ShippingCarrierSelectionCanceled : Event()
 
         object PaymentSelectionStarted : Event()
         object EditPaymentRequested : Event()
@@ -468,7 +483,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             val shippingPackages: List<ShippingLabelPackage>
         ) : SideEffect()
         object ShowCustomsForm : SideEffect()
-        object ShowCarrierOptions : SideEffect()
+        data class ShowCarrierOptions(val data: Data) : SideEffect()
         object ShowPaymentOptions : SideEffect()
     }
 
