@@ -85,7 +85,7 @@
                 android:lineSpacingExtra="@dimen/minor_50"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?attr/selectableItemBackground"
                 tools:text="Carolle bruce 123 Main St\nSan Francisco CA, 78117\nUSA" />
 
             <View
@@ -116,7 +116,7 @@
                 android:lineSpacingExtra="@dimen/minor_50"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?attr/selectableItemBackground"
                 tools:text="Carolle bruce 123 Main St\nSan Francisco CA, 78117\nUSA" />
 
         </RadioGroup>
