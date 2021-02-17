@@ -25,5 +25,7 @@ abstract class EditShippingLabelPackagesModule {
     @Binds
     @IntoMap
     @ViewModelKey(EditShippingLabelPackagesViewModel::class)
-    abstract fun bindFactory(factory: EditShippingLabelPackagesViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    abstract fun bindFactory(
+        factory: EditShippingLabelPackagesViewModel.Factory
+    ): ViewModelAssistedFactory<out ViewModel>
 }
