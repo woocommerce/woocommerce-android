@@ -6,17 +6,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeTermListItemBinding
-import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
 
+/**
+ * Adapter which shows a simple list of attribute term names
+ */
 class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
-    private var termsList = listOf<ProductAttributeTerm>()
+    private var termNames = listOf<String>()
 
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemCount() = termsList.size
+    override fun getItemCount() = termNames.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TermViewHolder {
         return TermViewHolder(
@@ -29,7 +31,7 @@ class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
-        holder.bind(termsList[position])
+        holder.bind(termNames[position])
 
         holder.itemView.setOnClickListener {
             // TODO onItemClick(item)
@@ -37,39 +39,36 @@ class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
     }
 
     private class TermItemDiffUtil(
-        val oldList: List<ProductAttributeTerm>,
-        val newList: List<ProductAttributeTerm>
+        val oldList: List<String>,
+        val newList: List<String>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
+            oldList[oldItemPosition] == newList[newItemPosition]
 
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = oldList[oldItemPosition]
-            val newItem = newList[newItemPosition]
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
-    fun setTermsList(terms: List<ProductAttributeTerm>) {
+    fun setTerms(terms: List<String>) {
         val diffResult = DiffUtil.calculateDiff(
             TermItemDiffUtil(
-                termsList,
+                termNames,
                 terms
             )
         )
 
-        termsList = terms
+        termNames = terms
         diffResult.dispatchUpdatesTo(this)
     }
 
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(term: ProductAttributeTerm) {
-            viewBinding.termName.text = term.name
+        fun bind(term: String) {
+            viewBinding.termName.text = term
         }
     }
 }

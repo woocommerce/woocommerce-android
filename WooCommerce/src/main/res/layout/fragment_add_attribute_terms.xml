@@ -13,14 +13,33 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface">
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/optionEditText"
-            style="@style/Woo.Button.Outlined"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:hint="@string/product_new_attribute_term_name" />
+            android:orientation="vertical">
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/optionEditText"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:hint="@string/product_new_attribute_term_name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_enter_attribute_term"
+                android:textAppearance="@style/TextAppearance.Woo.Caption" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/assignedTermList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="3"
+                tools:listitem="@layout/attribute_term_list_item" />
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
@@ -38,11 +57,11 @@
             android:textAppearance="@style/TextAppearance.Woo.Caption" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/attributeList"
+            android:id="@+id/globalTermList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="3"
-            tools:listitem="@layout/attribute_list_item" />
+            tools:listitem="@layout/attribute_term_list_item" />
     </LinearLayout>
 
 </LinearLayout>

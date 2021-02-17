@@ -21,10 +21,12 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
-        private const val LIST_STATE_KEY = "list_state"
+        private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
+        private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
     }
 
-    private var layoutManager: LayoutManager? = null
+    private var layoutManagerAssigned: LinearLayoutManager? = null
+    private var layoutManagerGlobal: LinearLayoutManager? = null
 
     private var _binding: FragmentAddAttributeTermsBinding? = null
     private val binding get() = _binding!!
@@ -44,11 +46,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun getAttributeTerms() {
+        // if this is a global attribute, fetch the attribute's terms
         if (navArgs.attributeId != 0L) {
             viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
-        }  else {
-            // TODO handle local attributes
         }
+
+        // get the attribute terms for attributes already assigned to this product
+        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, navArgs.attributeName))
     }
 
     override fun onDestroyView() {
@@ -65,29 +69,42 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        layoutManager?.let {
-            outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
+        layoutManagerAssigned?.let {
+            outState.putParcelable(LIST_STATE_KEY_ASSIGNED, it.onSaveInstanceState())
+        }
+        layoutManagerGlobal?.let {
+            outState.putParcelable(LIST_STATE_KEY_GLOBAL, it.onSaveInstanceState())
         }
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
-        val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-        this.layoutManager = layoutManager
-
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
-            layoutManager.onRestoreInstanceState(it)
+        layoutManagerAssigned = initializeRecycler(binding.assignedTermList)
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
+            layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
-        binding.attributeList.layoutManager = layoutManager
-        binding.attributeList.itemAnimator = null
-        binding.attributeList.addItemDecoration(AlignedDividerDecoration(
+        layoutManagerGlobal = initializeRecycler(binding.globalTermList)
+        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
+            layoutManagerGlobal!!.onRestoreInstanceState(it)
+        }
+    }
+
+    private fun initializeRecycler(recycler: RecyclerView): LinearLayoutManager {
+        val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+
+        recycler.layoutManager = layoutManager
+        recycler.itemAnimator = null
+        recycler.adapter = AttributeTermsListAdapter()
+        recycler.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
+
+        return layoutManager
     }
 
     private fun setupObservers() {
         viewModel.attributeTermsList.observe(viewLifecycleOwner, Observer {
-            showAttributeTerms(it)
+            showGlobalAttributeTerms(it)
         })
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -100,14 +117,27 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun getFragmentTitle() = navArgs.attributeName
 
-    private fun showAttributeTerms(terms: List<ProductAttributeTerm>) {
-        val adapter: AttributeTermsListAdapter
-        if (binding.attributeList.adapter == null) {
-            adapter = AttributeTermsListAdapter()
-            binding.attributeList.adapter = adapter
-        } else {
-            adapter = binding.attributeList.adapter as AttributeTermsListAdapter
+    /**
+     * Show the list of terms already assigned to the product attribute
+     */
+    fun showAssignedTerms(termNames: List<String>) {
+        val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+        adapter.setTerms(termNames)
+    }
+
+    /**
+     *
+     * Triggered by fetching the list of terms for global attributes
+     */
+    private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
+        // build a list of term names
+        // TODO filter out ones that are already assigned
+        val termNames = ArrayList<String>()
+        terms.forEach { term ->
+            termNames.add(term.name)
         }
-        adapter.setTermsList(terms)
+
+        val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
+        adapter.setTerms(termNames)
     }
 }

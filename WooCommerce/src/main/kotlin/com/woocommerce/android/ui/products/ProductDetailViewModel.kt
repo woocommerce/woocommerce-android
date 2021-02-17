@@ -985,8 +985,26 @@ class ProductDetailViewModel @AssistedInject constructor(
         _attributeList.value = getProductDraftAttributes()
     }
 
+    /**
+     * Returns the list of attributes assigned to the product
+     */
     fun getProductDraftAttributes(): List<ProductAttribute> {
         return viewState.productDraft?.attributes ?: emptyList()
+    }
+
+    /**
+     * Returns the list of term names for a specific attribute assigned to the product
+     */
+    fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
+        val attributes = getProductDraftAttributes()
+        attributes.forEach { attribute ->
+            if (attribute.isLocalAttribute && attribute.name == attributeName) {
+                return attribute.terms
+            } else if (attribute.isGlobalAttribute && attribute.id == attributeId) {
+                return attribute.terms
+            }
+        }
+        return emptyList()
     }
 
     /**
@@ -999,7 +1017,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * User clicked an attribute in the attribute list
+     * User clicked an attribute in the attribute list fragment
      */
     fun onAttributeListItemClick(attribute: ProductAttribute) {
         // TODO
