@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeOptionListItemBinding
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.variations.attributes.AttributeOptionListAdapter.OptionViewHolder
 
 class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
-    private var optionsList = listOf<String>()
+    private var optionsList = listOf<ProductAttributeTerm>()
 
     init {
         // local attributes all have an Id of 0, so we can't use stable Ids
@@ -37,11 +38,11 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
     }
 
     private class OptionItemDiffUtil(
-        val oldList: List<String>,
-        val newList: List<String>
+        val oldList: List<ProductAttributeTerm>,
+        val newList: List<ProductAttributeTerm>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            areContentsTheSame(oldItemPosition, newItemPosition)
+            oldList[oldItemPosition].id == newList[newItemPosition].id
 
         override fun getOldListSize(): Int = oldList.size
 
@@ -54,7 +55,7 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
         }
     }
 
-    fun setOptionList(options: List<String>) {
+    fun setOptionList(options: List<ProductAttributeTerm>) {
         val diffResult = DiffUtil.calculateDiff(
             OptionItemDiffUtil(
                 optionsList,
@@ -68,8 +69,8 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
 
     inner class OptionViewHolder(val viewBinding: AttributeOptionListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(option: String) {
-            viewBinding.optionName.text = option
+        fun bind(option: ProductAttributeTerm) {
+            viewBinding.optionName.text = option.name
         }
     }
 }
