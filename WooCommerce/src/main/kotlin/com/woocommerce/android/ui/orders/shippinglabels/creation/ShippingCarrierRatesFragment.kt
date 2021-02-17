@@ -6,9 +6,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingCarrierRatesBinding
@@ -21,8 +24,9 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import com.woocommerce.android.widgets.CustomProgressDialog
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -33,8 +37,8 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
     }
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var viewModelFactory: ViewModelFactory
+    @Inject lateinit var resourceProvider: ResourceProvider
 
-    private var progressDialog: CustomProgressDialog? = null
     private var _binding: FragmentShippingCarrierRatesBinding? = null
     private val binding get() = _binding!!
 
@@ -49,11 +53,6 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        progressDialog?.dismiss()
     }
 
     override fun onStop() {
@@ -74,10 +73,19 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         _binding = FragmentShippingCarrierRatesBinding.bind(view)
 
         initializeViewModel()
+        initializeViews()
     }
 
     private fun initializeViewModel() {
         subscribeObservers()
+    }
+
+    private fun initializeViews() {
+        binding.carrierRates.apply {
+            adapter = binding.carrierRates.adapter ?: ShippingCarrierRatesAdapter(viewModel::onShippingRateSelected)
+            layoutManager = LinearLayoutManager(context)
+            itemAnimator = DefaultItemAnimator()
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_shipping_carriers_title)
@@ -101,21 +109,21 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
 
     @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
-        viewModel.shippingRates.observe(viewLifecycleOwner) {
-
+        viewModel.shippingRates.observe(viewLifecycleOwner) { rates ->
+            (binding.carrierRates.adapter as? ShippingCarrierRatesAdapter)?.items = rates
         }
 
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
             }
-            new.isLoadingProgressDialogVisible?.takeIfNotEqualTo(old?.isLoadingProgressDialogVisible) { isVisible ->
+            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { isLoading ->
+                binding.loadingProgress.isVisible = isLoading
+            }
+            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
                 if (isVisible) {
-                    showProgressDialog(
-                        getString(R.string.shipping_label_edit_address_validation_progress_title),
-                        getString(R.string.shipping_label_edit_address_loading_progress_title)
-                    )
+                    binding.emptyView.show(SHIPPING_LABEL_CARRIER_RATES)
                 } else {
-                    hideProgressDialog()
+                    binding.emptyView.hide()
                 }
             }
         }
@@ -128,20 +136,6 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
                 else -> event.isHandled = false
             }
         })
-    }
-
-    private fun showProgressDialog(title: String, message: String) {
-        hideProgressDialog()
-        progressDialog = CustomProgressDialog.show(
-            title = title,
-            message = message
-        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-        progressDialog?.isCancelable = false
-    }
-
-    private fun hideProgressDialog() {
-        progressDialog?.dismiss()
-        progressDialog = null
     }
 
     // Let the ViewModel know the user is attempting to close the screen
