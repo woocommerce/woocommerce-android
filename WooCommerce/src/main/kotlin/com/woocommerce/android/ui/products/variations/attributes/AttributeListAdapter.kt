@@ -74,9 +74,9 @@ class AttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: ProductAttribute) {
             viewBinding.attributeName.text = attribute.name
-            if (attribute.options.isNotEmpty()) {
+            if (attribute.terms.isNotEmpty()) {
                 viewBinding.attributeTerms.isVisible = true
-                viewBinding.attributeTerms.text = attribute.options.joinToString()
+                viewBinding.attributeTerms.text = attribute.terms.joinToString()
             } else {
                 viewBinding.attributeTerms.isVisible = false
             }

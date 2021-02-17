@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.model.WCProductModel
 data class ProductAttribute(
     val id: Long,
     val name: String,
-    val options: List<String>,
+    val terms: List<String>,
     val isVisible: Boolean
 ) : Parcelable {
     /**
@@ -25,7 +25,7 @@ fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
     return ProductAttribute(
         id = this.id,
         name = this.name,
-        options = this.options,
+        terms = this.options,
         isVisible = this.visible
     )
 }
