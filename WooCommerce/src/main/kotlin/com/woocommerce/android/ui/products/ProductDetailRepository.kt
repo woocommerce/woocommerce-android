@@ -245,14 +245,6 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
-     * Returns the list of attributes assigned to a product
-     */
-    fun getLocalAttributes(remoteProductId: Long): List<ProductAttribute> {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
-    }
-
-    /**
      * Fetches the list of store-wide attributes
      */
     suspend fun fetchGlobalAttributes(): List<ProductGlobalAttribute> {
