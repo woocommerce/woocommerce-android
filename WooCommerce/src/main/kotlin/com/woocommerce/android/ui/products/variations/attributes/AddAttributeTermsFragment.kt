@@ -45,9 +45,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun getAttributeTerms() {
-        // if this is a global attribute, fetch the attribute's terms
+        // if this is a global attribute, fetch the attribute's terms and exclude ones that are already assigned
         if (navArgs.attributeId != 0L) {
-            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
+            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId, excludeAssignedTerms = true)
         }
 
         // get the attribute terms for attributes already assigned to this product

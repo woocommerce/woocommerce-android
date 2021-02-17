@@ -1010,9 +1010,17 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Fetches terms for a global product attribute
      */
-    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
+    fun fetchGlobalAttributeTerms(remoteAttributeId: Long, excludeAssignedTerms: Boolean = false) {
         launch {
-            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+            val terms = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+            if (excludeAssignedTerms) {
+                val assignedTerms = getProductDraftAttributeTerms(remoteAttributeId, "")
+                _attributeTermsList.value = terms.filterNot {
+                    assignedTerms.contains(it.name)
+                }
+            } else {
+                _attributeTermsList.value = terms
+            }
         }
     }
 
