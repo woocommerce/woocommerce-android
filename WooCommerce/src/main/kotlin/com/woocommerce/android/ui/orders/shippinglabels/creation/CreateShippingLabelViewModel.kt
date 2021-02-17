@@ -98,7 +98,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 savedState[STATE_KEY] = transition.state
 
                 when (transition.state) {
-                    is State.DataLoading -> viewState = viewState.copy(uiState = Loading)
+                    is State.DataLoading -> {
+                        viewState = viewState.copy(uiState = Loading)
+                        handleResult { loadData(transition.state.orderId) }
+                    }
                     is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
                     is State.WaitingForInput -> {
                         viewState = viewState.copy(
@@ -131,7 +134,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         SideEffect.NoOp -> {
                         }
                         is SideEffect.ShowError -> showError(sideEffect.error)
-                        is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
                         is SideEffect.OpenAddressEditor -> triggerEvent(
                             ShowAddressEditor(
                                 sideEffect.address,

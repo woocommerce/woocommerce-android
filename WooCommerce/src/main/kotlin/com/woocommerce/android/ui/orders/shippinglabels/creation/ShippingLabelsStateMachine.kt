@@ -109,7 +109,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.Idle> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
@@ -131,7 +131,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoadingFailure> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
@@ -403,7 +403,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        object DataLoading : State()
+        data class DataLoading(val orderId: String) : State()
 
         @Parcelize
         data class WaitingForInput(val data: Data) : State()
@@ -493,7 +493,6 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class SideEffect {
         object NoOp : SideEffect()
-        data class LoadData(val orderId: String) : SideEffect()
         data class ShowError(val error: Error) : SideEffect()
 
         data class ShowAddressSuggestion(
