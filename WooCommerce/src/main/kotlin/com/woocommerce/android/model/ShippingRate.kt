@@ -8,5 +8,12 @@ import java.math.BigDecimal
 data class ShippingRate(
     val title: String,
     val deliveryEstimate: Int,
-    val price: BigDecimal
-) : Parcelable
+    val price: BigDecimal,
+    val carrier: ShippingCarrier
+) : Parcelable {
+    enum class ShippingCarrier {
+        FEDEX,
+        USPS,
+        UPS
+    }
+}
