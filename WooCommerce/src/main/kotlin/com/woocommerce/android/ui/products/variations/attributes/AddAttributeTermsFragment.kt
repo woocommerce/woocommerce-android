@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -39,7 +40,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         initializeViews(savedInstanceState)
         setupObservers()
 
-        showAttributeTerms()
+        getAttributeTerms()
+    }
+
+    private fun getAttributeTerms() {
+        if (navArgs.attributeId != 0L) {
+            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
+        }  else {
+            // TODO handle local attributes
+        }
     }
 
     override fun onDestroyView() {
@@ -77,6 +86,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
+        viewModel.attributeTermsList.observe(viewLifecycleOwner, Observer {
+            showAttributeTerms(it)
+        })
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductAddAttributeTerms -> findNavController().navigateUp()
@@ -87,7 +100,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun getFragmentTitle() = navArgs.attributeName
 
-    private fun showAttributeTerms() {
+    private fun showAttributeTerms(terms: List<ProductAttributeTerm>) {
         val adapter: AttributeTermsListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeTermsListAdapter()
@@ -95,8 +108,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         } else {
             adapter = binding.attributeList.adapter as AttributeTermsListAdapter
         }
-
-        val terms = viewModel.fetchAttributeTerms(navArgs.attributeId)
         adapter.setTermsList(terms)
     }
 }

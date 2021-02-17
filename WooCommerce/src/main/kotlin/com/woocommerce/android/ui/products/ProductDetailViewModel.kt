@@ -169,6 +169,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
+    private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
+    val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
+
     final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
@@ -986,9 +989,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         return viewState.productDraft?.attributes ?: emptyList()
     }
 
-    fun fetchAttributeTerms(attributeRemoteId: Long): List<ProductAttributeTerm> {
-        // TODO
-        return emptyList()
+    /**
+     * Fetches terms for a global product attribute
+     */
+    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
+        launch {
+            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+        }
     }
 
     /**

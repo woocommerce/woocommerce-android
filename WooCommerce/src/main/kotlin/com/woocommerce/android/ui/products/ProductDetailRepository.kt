@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingClass
@@ -257,6 +258,17 @@ class ProductDetailRepository @Inject constructor(
     suspend fun fetchGlobalAttributes(): List<ProductGlobalAttribute> {
         val wooResult = globalAttributeStore.fetchStoreAttributes(selectedSite.get())
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
+    /**
+     * Fetches the list of terms for an attribute
+     */
+    suspend fun fetchGlobalAttributeTerms(remoteAttributeId: Long): List<ProductAttributeTerm> {
+        val wooResult = globalAttributeStore.fetchAttributeTerms(
+            selectedSite.get(),
+            remoteAttributeId
+        )
+        return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
     }
 
     /**
