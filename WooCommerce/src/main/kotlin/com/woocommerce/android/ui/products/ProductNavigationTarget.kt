@@ -76,7 +76,7 @@ sealed class ProductNavigationTarget : Event() {
         ProductNavigationTarget()
     object AddProductDownloadableFile : ProductNavigationTarget()
     object AddProductAttribute : ProductNavigationTarget()
-    data class AddProductAttributeOptions(
+    data class AddProductAttributeTerms(
         val combinedAttribute: CombinedAttributeModel
     ) : ProductNavigationTarget()
 }

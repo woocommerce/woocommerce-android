@@ -39,6 +39,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -57,7 +58,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
-import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeOptions
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -985,15 +986,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         return viewState.productDraft?.attributes ?: emptyList()
     }
 
-    fun getProductDraftAttributeOptions(id: Long, name: String): List<String> {
-        viewState.productDraft?.attributes?.let { attributes ->
-            attributes.forEach {
-                if (it.id == id && it.name == name) {
-                    return it.options
-                }
-            }
-        }
-
+    fun fetchAttributeTerms(attributeRemoteId: Long): List<ProductAttributeTerm> {
+        // TODO
         return emptyList()
     }
 
@@ -1015,7 +1009,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the add attribute fragment
      */
     fun onAddAttributeListItemClick(combinedAttribute: CombinedAttributeModel) {
-        triggerEvent(AddProductAttributeOptions(combinedAttribute))
+        triggerEvent(AddProductAttributeTerms(combinedAttribute))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1608,7 +1602,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
-        class ExitProductAddAttributeOptions(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+        class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }

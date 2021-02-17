@@ -12,34 +12,34 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentAddAttributeOptionsBinding
+import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeOptions
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 
-class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_attribute_options) {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
-        const val TAG: String = "AddAttributeOptionsFragment"
+        const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY = "list_state"
     }
 
     private var layoutManager: LayoutManager? = null
 
-    private var _binding: FragmentAddAttributeOptionsBinding? = null
+    private var _binding: FragmentAddAttributeTermsBinding? = null
     private val binding get() = _binding!!
 
-    private val navArgs: AddAttributeOptionsFragmentArgs by navArgs()
+    private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentAddAttributeOptionsBinding.bind(view)
+        _binding = FragmentAddAttributeTermsBinding.bind(view)
 
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
 
-        showAvailableAttributeOptions()
+        showAttributeTerms()
     }
 
     override fun onDestroyView() {
@@ -48,7 +48,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
     }
 
     override fun onRequestAllowBackPress() =
-        viewModel.onBackButtonClicked(ExitProductAddAttributeOptions())
+        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
 
     override fun onResume() {
         super.onResume()
@@ -79,7 +79,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ExitProductAddAttributeOptions -> findNavController().navigateUp()
+                is ExitProductAddAttributeTerms -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })
@@ -87,7 +87,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
 
     override fun getFragmentTitle() = navArgs.attributeName
 
-    private fun showAvailableAttributeOptions() {
+    private fun showAttributeTerms() {
         val adapter: AttributeOptionListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeOptionListAdapter()
@@ -96,7 +96,7 @@ class AddAttributeOptionsFragment : BaseProductFragment(R.layout.fragment_add_at
             adapter = binding.attributeList.adapter as AttributeOptionListAdapter
         }
 
-        val options = viewModel.getProductDraftAttributeOptions(navArgs.attributeId, navArgs.attributeName)
+        val options = viewModel.fetchAttributeTerms(navArgs.attributeId)
         adapter.setOptionList(options)
     }
 }

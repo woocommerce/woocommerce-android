@@ -13,8 +13,7 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
     private var optionsList = listOf<ProductAttributeTerm>()
 
     init {
-        // local attributes all have an Id of 0, so we can't use stable Ids
-        setHasStableIds(false)
+        setHasStableIds(true)
     }
 
     override fun getItemCount() = optionsList.size

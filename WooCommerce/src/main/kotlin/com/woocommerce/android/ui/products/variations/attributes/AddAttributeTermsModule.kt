@@ -14,18 +14,18 @@ import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class AddAttributeOptionsModule {
+abstract class AddAttributeTermsModule {
     @Module
     companion object {
         @JvmStatic
         @Provides
-        fun provideDefaultArgs(fragment: AddAttributeOptionsFragment): Bundle? {
+        fun provideDefaultArgs(fragment: AddAttributeTermsFragment): Bundle? {
             return fragment.arguments
         }
 
         @JvmStatic
         @Provides
-        fun provideSavedStateRegistryOwner(fragment: AddAttributeOptionsFragment): SavedStateRegistryOwner {
+        fun provideSavedStateRegistryOwner(fragment: AddAttributeTermsFragment): SavedStateRegistryOwner {
             return fragment.findNavController().getBackStackEntry(R.id.nav_graph_products)
         }
     }
