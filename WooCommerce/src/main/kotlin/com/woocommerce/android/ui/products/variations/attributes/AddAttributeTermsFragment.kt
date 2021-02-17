@@ -9,7 +9,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
@@ -78,23 +77,23 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
-        layoutManagerAssigned = initializeRecycler(binding.assignedTermList)
+        layoutManagerAssigned = initializeRecycler(binding.assignedTermList, showIcons = true)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
-        layoutManagerGlobal = initializeRecycler(binding.globalTermList)
+        layoutManagerGlobal = initializeRecycler(binding.globalTermList, showIcons = false)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
     }
 
-    private fun initializeRecycler(recycler: RecyclerView): LinearLayoutManager {
+    private fun initializeRecycler(recycler: RecyclerView, showIcons: Boolean): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
 
         recycler.layoutManager = layoutManager
         recycler.itemAnimator = null
-        recycler.adapter = AttributeTermsListAdapter()
+        recycler.adapter = AttributeTermsListAdapter(showIcons)
         recycler.addItemDecoration(AlignedDividerDecoration(
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))

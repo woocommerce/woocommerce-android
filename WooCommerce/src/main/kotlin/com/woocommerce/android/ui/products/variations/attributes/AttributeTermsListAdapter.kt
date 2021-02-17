@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
 /**
  * Adapter which shows a simple list of attribute term names
  */
-class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
+class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<TermViewHolder>() {
     private var termNames = listOf<String>()
 
     init {
@@ -69,6 +70,8 @@ class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(term: String) {
             viewBinding.termName.text = term
+            viewBinding.termDragHandle.isVisible = showIcons
+            viewBinding.termDelete.isVisible = showIcons
         }
     }
 }
