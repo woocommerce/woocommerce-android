@@ -5,22 +5,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.databinding.AttributeOptionListItemBinding
+import com.woocommerce.android.databinding.AttributeTermListItemBinding
 import com.woocommerce.android.model.ProductAttributeTerm
-import com.woocommerce.android.ui.products.variations.attributes.AttributeOptionListAdapter.OptionViewHolder
+import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
 
-class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
-    private var optionsList = listOf<ProductAttributeTerm>()
+class AttributeTermsListAdapter() : RecyclerView.Adapter<TermViewHolder>() {
+    private var termsList = listOf<ProductAttributeTerm>()
 
     init {
         setHasStableIds(true)
     }
 
-    override fun getItemCount() = optionsList.size
+    override fun getItemCount() = termsList.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
-        return OptionViewHolder(
-            AttributeOptionListItemBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TermViewHolder {
+        return TermViewHolder(
+            AttributeTermListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -28,15 +28,15 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
         )
     }
 
-    override fun onBindViewHolder(holder: OptionViewHolder, position: Int) {
-        holder.bind(optionsList[position])
+    override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
+        holder.bind(termsList[position])
 
         holder.itemView.setOnClickListener {
             // TODO onItemClick(item)
         }
     }
 
-    private class OptionItemDiffUtil(
+    private class TermItemDiffUtil(
         val oldList: List<ProductAttributeTerm>,
         val newList: List<ProductAttributeTerm>
     ) : Callback() {
@@ -54,22 +54,22 @@ class AttributeOptionListAdapter() : RecyclerView.Adapter<OptionViewHolder>() {
         }
     }
 
-    fun setOptionList(options: List<ProductAttributeTerm>) {
+    fun setTermsList(terms: List<ProductAttributeTerm>) {
         val diffResult = DiffUtil.calculateDiff(
-            OptionItemDiffUtil(
-                optionsList,
-                options
+            TermItemDiffUtil(
+                termsList,
+                terms
             )
         )
 
-        optionsList = options
+        termsList = terms
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class OptionViewHolder(val viewBinding: AttributeOptionListItemBinding) :
+    inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(option: ProductAttributeTerm) {
-            viewBinding.optionName.text = option.name
+        fun bind(term: ProductAttributeTerm) {
+            viewBinding.termName.text = term.name
         }
     }
 }

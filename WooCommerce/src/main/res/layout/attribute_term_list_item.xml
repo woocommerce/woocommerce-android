@@ -9,7 +9,7 @@
     android:paddingBottom="@dimen/minor_100">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/optionName"
+        android:id="@+id/termName"
         style="@style/Woo.ListItem.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

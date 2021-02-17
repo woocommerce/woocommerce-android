@@ -88,15 +88,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun getFragmentTitle() = navArgs.attributeName
 
     private fun showAttributeTerms() {
-        val adapter: AttributeOptionListAdapter
+        val adapter: AttributeTermsListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = AttributeOptionListAdapter()
+            adapter = AttributeTermsListAdapter()
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as AttributeOptionListAdapter
+            adapter = binding.attributeList.adapter as AttributeTermsListAdapter
         }
 
-        val options = viewModel.fetchAttributeTerms(navArgs.attributeId)
-        adapter.setOptionList(options)
+        val terms = viewModel.fetchAttributeTerms(navArgs.attributeId)
+        adapter.setTermsList(terms)
     }
 }
