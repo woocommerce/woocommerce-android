@@ -125,12 +125,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     /**
-     *
      * Triggered by fetching the list of terms for global attributes
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
         // build a list of term names
-        // TODO filter out ones that are already assigned
         val termNames = ArrayList<String>()
         terms.forEach { term ->
             termNames.add(term.name)
