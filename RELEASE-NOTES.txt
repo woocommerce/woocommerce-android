@@ -2,7 +2,7 @@
 
 6.1
 -----
- 
+* [*] Fixed a bug where the app doesn't show the updated product settings. [https://github.com/woocommerce/woocommerce-android/pull/3599]
 
 6.0
 -----
