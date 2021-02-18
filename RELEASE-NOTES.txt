@@ -4,6 +4,7 @@
 -----
 * [**] When editing a product, it's no longer necessary to tap "Done" in every screen to save changes to the local product. Instead, all changes are automatically saved locally, and tapping "Update" in the main product detail screen will send those changes to the server. [https://github.com/woocommerce/woocommerce-android/pull/3598]
  
+* [*] Fixed a bug where the app doesn't show the updated product settings. [https://github.com/woocommerce/woocommerce-android/pull/3599]
 
 6.0
 -----
