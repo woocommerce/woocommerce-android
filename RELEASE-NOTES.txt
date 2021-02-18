@@ -3,6 +3,7 @@
 6.1
 -----
 * [*] Fixed a bug where the app doesn't show the updated product settings. [https://github.com/woocommerce/woocommerce-android/pull/3599]
+* [*] Fixed a bug the field of product price couldn't be edited if the device's language uses a different numerals system (e.g. Arabic) [https://github.com/woocommerce/woocommerce-android/pull/3589]
 
 6.0
 -----
