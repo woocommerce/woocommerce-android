@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,8 +43,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_PARAMETERS, savedState)
+    val weightUnit: String by lazy {
+        val parameters = parameterRepository.getParameters(KEY_PARAMETERS, savedState)
+        parameters.weightUnit ?: ""
     }
 
     init {
@@ -144,7 +144,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
         val weight = productDetailRepository.getProduct(productId)!!.weight.let {
-            "$it ${parameters.weightUnit}"
+            "$it $weightUnit"
         }
         return ShippingLabelPackage.Item(
             productId = productId,

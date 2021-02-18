@@ -42,7 +42,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
 
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
-            viewModel.parameters,
+            viewModel.weightUnit,
             viewModel::onWeightEdited,
             viewModel::onPackageSpinnerClicked
         )
