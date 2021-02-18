@@ -25,6 +25,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 
 class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -96,7 +97,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         if (order.items.any { productDetailRepository.getProduct(it.productId) == null }) {
             order.items.forEach {
                 if (productDetailRepository.getProduct(it.productId) == null) {
-                    if (productDetailRepository.fetchProduct(it.productId) == null) {
+                    if (productDetailRepository.fetchProduct(it.productId) == null &&
+                        productDetailRepository.lastFetchProductErrorType != ProductErrorType.INVALID_PRODUCT_ID) {
+                        // If we fail to fetch a non deleted product, display an error
                         triggerEvent(ShowSnackbar(R.string.shipping_label_package_details_fetch_products_error))
                         triggerEvent(Exit)
                     }
@@ -132,7 +135,11 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     private fun Order.getShippableItems(): List<Order.Item> {
         val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
         return refunds.getNonRefundedProducts(items)
-            .filter { !productDetailRepository.getProduct(it.productId)!!.isVirtual }
+            .filter {
+                val product = productDetailRepository.getProduct(it.productId)
+                // Exclude deleted and virtual products
+                product != null && !product.isVirtual
+            }
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
