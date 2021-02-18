@@ -10,7 +10,6 @@ import androidx.multidex.MultiDexApplication
 import com.android.volley.VolleyLog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.idescout.sql.SqlScoutServer
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.AppComponent
@@ -113,9 +112,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
         // https://github.com/woocommerce/woocommerce-android/issues/817
         if (!BuildConfig.DEBUG) {
             VolleyLog.DEBUG = false
-        } else {
-            // We are in a debug build. Let's enable sqlScout
-            SqlScoutServer.create(this, getPackageName())
         }
 
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
