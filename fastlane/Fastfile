@@ -240,7 +240,7 @@ platform :android do
       json_key: './google-upload-credentials.json',
     )
 
-    create_gh_release(version: version) if (options[:create_release])
+    create_gh_release(version: version) if options[:create_release]
   end
 
   #####################################################################################
@@ -283,7 +283,7 @@ platform :android do
       json_key: './google-upload-credentials.json',
     )
 
-    create_gh_release(version: version, prerelease: true) if (options[:create_release])
+    create_gh_release(version: version, prerelease: true) if options[:create_release]
   end
 
   #####################################################################################
@@ -443,7 +443,7 @@ platform :android do
   #
   private_lane :create_gh_release do | options |
     version = options[:version]
-    prerelease = options[:prerelease].nil? ? false : options[:prerelease]
+    prerelease = options[:prerelease] || false
 
     # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
     # So don't attach them to the release, as this ends up being confusing for beta-testers.
