@@ -2,7 +2,7 @@
 
 6.1
 -----
-* [**] When editing a product, it's no longer necessary to tap "Done" in every screen to save changes to the local product. Instead, all changes are automatically saved locally, and tapping "Update" in thw main product detail screen will send those changes to the server.
+* [**] When editing a product, it's no longer necessary to tap "Done" in every screen to save changes to the local product. Instead, all changes are automatically saved locally, and tapping "Update" in the main product detail screen will send those changes to the server. [https://github.com/woocommerce/woocommerce-android/pull/3598]
  
 
 6.0
