@@ -224,7 +224,7 @@ platform :android do
     build_bundle(version: version, flavor:"Vanilla")
 
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
+    aab_file_path = File.join(project_root, "artifacts", aab_file_name(version))
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
@@ -267,7 +267,7 @@ platform :android do
     build_bundle(version: version, flavor:"Vanilla")
 
     project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
-    aab_file_path = File.join(project_root, "artifacts", "wcandroid-#{ version["name"] }.aab")
+    aab_file_path = File.join(project_root, "artifacts", aab_file_name(version))
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
@@ -363,12 +363,12 @@ platform :android do
   desc "Builds an app bundle"
   lane :build_bundle do | options |
     # Create the file names
-    version=options[:version]
-    name="wcandroid-#{version["name"]}.aab"
-    apk_name=universal_apk_name(version)
-    aab_file="WooCommerce-vanilla-release.aab"
-    output_dir="WooCommerce/build/outputs/bundle/"
-    build_dir="artifacts/"
+    version = options[:version]
+    name = aab_file_name(version)
+    apk_name = universal_apk_name(version)
+    aab_file = "WooCommerce-vanilla-release.aab"
+    output_dir = "WooCommerce/build/outputs/bundle/"
+    build_dir = "artifacts/"
 
     # Build
     Dir.chdir(".") do
