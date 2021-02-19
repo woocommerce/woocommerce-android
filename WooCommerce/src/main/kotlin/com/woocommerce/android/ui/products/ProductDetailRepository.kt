@@ -263,11 +263,9 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
-     * TODO we need a FluxC method to get the global attributes from SQLite
+     * Returns a list of global attributes from the local db
      */
-    fun getGlobalAttributes(): List<ProductGlobalAttribute> {
-        return emptyList()
-    }
+    fun getGlobalAttributes() = globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
 
     private fun getCachedWCProductModel(remoteProductId: Long) =
             productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
@@ -378,7 +376,7 @@ class ProductDetailRepository @Inject constructor(
      */
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onProductCreated(event: OnProductCreated) {
         if (event.causeOfChange == ADDED_PRODUCT) {
             if (event.isError) {
