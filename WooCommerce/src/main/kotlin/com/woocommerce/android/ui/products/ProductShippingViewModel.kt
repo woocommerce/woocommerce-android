@@ -1,19 +1,15 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -33,7 +29,6 @@ class ProductShippingViewModel @AssistedInject constructor(
         savedState,
         ViewState(
             shippingData = navArgs.shippingData,
-            isDoneButtonVisible = false,
             isShippingClassSectionVisible = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_SHIPPING
         )
     )
@@ -69,25 +64,11 @@ class ProductShippingViewModel @AssistedInject constructor(
                 shippingClassId = shippingClassId
             )
         )
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
-    }
-
-    fun onDoneButtonClicked() {
-        AnalyticsTracker.track(
-            Stat.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
-        )
-
-        triggerEvent(ExitWithResult(shippingData))
     }
 
     fun onExit() {
         if (hasChanges) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+            triggerEvent(ExitWithResult(shippingData))
         } else {
             triggerEvent(Exit)
         }
@@ -105,7 +86,6 @@ class ProductShippingViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),
-        val isDoneButtonVisible: Boolean? = null,
         val isShippingClassSectionVisible: Boolean? = null
     ) : Parcelable
 

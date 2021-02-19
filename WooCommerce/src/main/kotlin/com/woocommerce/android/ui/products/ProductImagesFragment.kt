@@ -60,10 +60,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
 
-    override val isDoneButtonVisible: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
-
-    override val isDoneButtonEnabled: Boolean = true
     override val lastEvent: Event?
         get() = viewModel.event.value
 
@@ -78,6 +74,8 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
         savedInstanceState?.let { bundle ->
             capturedPhotoUri = bundle.getParcelable(KEY_CAPTURED_PHOTO_URI)
         }
+
+        setHasOptionsMenu(true)
 
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
@@ -152,9 +150,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
             }
             new.images.takeIfNotEqualTo(old?.images) { images ->
                 updateImages(images ?: emptyList(), new.uploadingImageUris)
-            }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
-                doneButton?.isVisible = isVisible
             }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { isVisible ->
                 binding.textWarning.isVisible = isVisible
@@ -352,10 +347,6 @@ class ProductImagesFragment : BaseProductEditorFragment(R.layout.fragment_produc
                 }
             }
         }
-    }
-
-    override fun onDoneButtonClicked() {
-        viewModel.onDoneButtonClicked()
     }
 
     override fun onExit() {

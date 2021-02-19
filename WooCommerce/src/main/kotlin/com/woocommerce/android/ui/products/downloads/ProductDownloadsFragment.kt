@@ -80,10 +80,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
-                true
-            }
             R.id.menu_product_downloads_settings -> {
                 viewModel.onDownloadsSettingsClicked()
                 true
@@ -95,7 +91,6 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
             viewModel.showAddProductDownload(it.first().source)
-            changesMade()
         }
     }
 
@@ -140,14 +135,10 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
     private fun updateFilesFromProductDraft() {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         productDownloadsAdapter.filesList = product.downloads
-        changesMade()
-    }
-
-    override fun hasChanges(): Boolean {
-        return viewModel.hasDownloadsChanges() || viewModel.hasDownloadsSettingsChanges()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloads())
+        viewModel.onBackButtonClicked(ExitProductDownloads())
+        return false
     }
 }

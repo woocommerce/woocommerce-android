@@ -1,13 +1,10 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -16,7 +13,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -39,7 +35,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
         savedState,
         ViewState(
             inventoryData = navArgs.inventoryData,
-            isDoneButtonVisible = false,
             isIndividualSaleSwitchVisible = isProduct,
             isStockManagementVisible = !isProduct || navArgs.productType != EXTERNAL && navArgs.productType != GROUPED,
             isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE
@@ -69,8 +64,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
             if (sku == originalSku) {
                 clearSkuError()
             } else {
-                viewState = viewState.copy(isDoneButtonDisabled = true)
-
                 if (!productRepository.isSkuAvailableLocally(sku)) {
                     showSkuError()
                 } else {
@@ -91,8 +84,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
                         } else {
                             showSkuError()
                         }
-
-                        viewState = viewState.copy(isDoneButtonDisabled = false)
                     }
                 }
             }
@@ -117,25 +108,11 @@ class ProductInventoryViewModel @AssistedInject constructor(
                 stockStatus = stockStatus
             )
         )
-        viewState = viewState.copy(isDoneButtonVisible = hasChanges)
-    }
-
-    fun onDoneButtonClicked() {
-        AnalyticsTracker.track(
-            Stat.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
-        )
-
-        triggerEvent(ExitWithResult(inventoryData))
     }
 
     fun onExit() {
-        if (hasChanges) {
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    triggerEvent(Exit)
-                }
-            ))
+        if (hasChanges && !hasSkuError()) {
+            triggerEvent(ExitWithResult(inventoryData))
         } else {
             triggerEvent(Exit)
         }
@@ -149,6 +126,8 @@ class ProductInventoryViewModel @AssistedInject constructor(
         viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
     }
 
+    private fun hasSkuError() = viewState.skuErrorMessage != 0 && viewState.skuErrorMessage != null
+
     override fun onCleared() {
         super.onCleared()
         productRepository.onCleanup()
@@ -157,16 +136,11 @@ class ProductInventoryViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val inventoryData: InventoryData = InventoryData(),
-        val isDoneButtonVisible: Boolean? = null,
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
-        val isStockManagementVisible: Boolean? = null,
-        val isDoneButtonDisabled: Boolean = false
-    ) : Parcelable {
-        val isDoneButtonEnabled: Boolean
-            get() = !isDoneButtonDisabled && (skuErrorMessage == 0 || skuErrorMessage == null)
-    }
+        val isStockManagementVisible: Boolean? = null
+    ) : Parcelable
 
     @Parcelize
     data class InventoryData(
