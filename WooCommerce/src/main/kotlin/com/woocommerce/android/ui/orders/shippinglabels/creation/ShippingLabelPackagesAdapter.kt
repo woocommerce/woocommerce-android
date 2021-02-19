@@ -14,11 +14,10 @@ import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBi
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
-    val parameters: SiteParameters,
+    val weightUnit: String,
     val onWeightEdited: (Int, Double) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
@@ -64,7 +63,7 @@ class ShippingLabelPackagesAdapter(
             }
             binding.weightEditText.hint = binding.root.context.getString(
                 R.string.shipping_label_package_details_weight_hint,
-                parameters.weightUnit
+                weightUnit
             )
             binding.weightEditText.setOnTextChangedListener {
                 val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toDouble() ?: Double.NaN
