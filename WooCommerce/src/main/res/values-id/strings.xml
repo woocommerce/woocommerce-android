@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 10:54:04+0000
+Translation-Revision-Date: 2021-02-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Total berat paket: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d item pada paket %2$d</string>
+    <string name="shipping_label_single_package_total_weight">Total berat paket: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Paket khusus</string>
+    <string name="shipping_label_package_details_fetch_products_error">Tidak dapat mengambil produk</string>
+    <string name="shipping_label_missing_data_snackbar_message">Beberapa kolom wajib belum diisi.</string>
+    <string name="shipping_label_package_details_weight_error">Berat tidak valid</string>
+    <string name="shipping_label_package_selector_title">Paket yang Dipilih</string>
+    <string name="shipping_label_packages_loading_message">Harap tunggu…</string>
+    <string name="shipping_label_packages_loading_title">Memuat Paket!</string>
+    <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count">\"%1$d item\"</string>
+    <string name="shipping_label_packages_loading_error">Tidak dapat memuat definisi paket</string>
+    <string name="shipping_label_package_details_weight_info">Mencakup berat paket</string>
+    <string name="shipping_label_package_details_weight_hint">Total berat paket (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Paket yang dipilih</string>
+    <string name="shipping_label_package_details_section_title">Detail paket</string>
+    <string name="shipping_label_package_details_move_item">Pindahkan</string>
+    <string name="shipping_label_package_details_items_section_title">Item untuk dipenuhi</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Alamat yang disarankan</string>
+    <string name="shipping_label_address_suggestion_entered_address">Alamat yang dimasukkan</string>
+    <string name="shipping_label_address_suggestion_banner">Kami sedikit mengubah alamat yang dimasukkan. Jika sudah benar, gunakan alamat yang disarankan untuk memastikan pengiriman yang akurat.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Sunting alamat yang dipilih</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Gunakan alamat yang dipilih</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
     <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Anda dapat mengembalikan dana, pengiriman, dan jumlah pajak %s</string>
@@ -18,7 +43,7 @@ Language: id
     <string name="shipping_label_error_address_not_found">Alamat tidak ditemukan</string>
     <string name="shipping_label_edit_address_error_warning">Kami tidak dapat memverifikasi alamat pengiriman secara otomatis. Lihat di Google Maps atau coba hubungi pelanggan untuk memastikan alamat sudah benar.</string>
     <string name="shipping_label_edit_address_validation_error">Validasi alamat gagal</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Harap tunggu…</string>
+    <string name="shipping_label_edit_address_progress_message">Harap tunggu…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Validasi alamat sedang berlangsung</string>
     <string name="shipping_label_edit_data_loading_error">Tidak dapat memuat data alamat</string>
     <string name="shipping_label_edit_address_use_address_as_is">Gunakan alamat yang dimasukkan</string>
@@ -972,7 +997,6 @@ Language: id
     <string name="new_notifications">%d pemberitahuan baru</string>
     <string name="about_version">Versi %s</string>
     <string name="about_tos">Ketentuan layanan</string>
-    <string name="about_publisher">Penerbit: Automattic, Inc</string>
     <string name="about_appname">WooCommerce untuk Android</string>
     <string name="support_identity_input_dialog_name_label">Nama</string>
     <string name="settings_licenses">Lisensi sumber terbuka</string>

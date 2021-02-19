@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 16:54:37+0000
+Translation-Revision-Date: 2021-02-18 11:54:14+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Toplam paket ağırlığı: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%2$d pakette %1$d öğe</string>
+    <string name="shipping_label_single_package_total_weight">Toplam paket ağırlığı: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Özel paketler</string>
+    <string name="shipping_label_package_details_fetch_products_error">Ürünleri getiremiyorum</string>
+    <string name="shipping_label_missing_data_snackbar_message">Bazı zorunlu alanlar boş.</string>
+    <string name="shipping_label_package_details_weight_error">Geçersiz ağırlık</string>
+    <string name="shipping_label_package_selector_title">Seçilen Paket</string>
+    <string name="shipping_label_packages_loading_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_packages_loading_title">Paketler Yükleniyor.</string>
+    <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count">\"%1$d öğe\"</string>
+    <string name="shipping_label_packages_loading_error">Paket tanımları yüklenemiyor</string>
+    <string name="shipping_label_package_details_weight_info">Paket ağırlığı dahildir</string>
+    <string name="shipping_label_package_details_weight_hint">Toplam paket ağırlığı (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Paket seçildi</string>
+    <string name="shipping_label_package_details_section_title">Paket ayrıntıları</string>
+    <string name="shipping_label_package_details_move_item">Taşı</string>
+    <string name="shipping_label_package_details_items_section_title">Tamamlanacak öğeler</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Önerilen adres</string>
+    <string name="shipping_label_address_suggestion_entered_address">Girilen adres</string>
+    <string name="shipping_label_address_suggestion_banner">Girilen adresi biraz değiştirdik. Doğruysa, teslimatın doğru yapılması için lütfen önerilen adresi kullanın.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Seçili adresi düzenle</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Seçilen adresi kullan</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Adres verileri yükleniyor</string>
     <string name="product_wip_title_m5">Yeni özellikler mevcut.</string>
     <string name="product_wip_message_m5">Artık bir ürüne indirilebilir dosyalar ekleyebilir ve daha yüksek satış ve çapraz satış ürünleri arasında bağlantı oluşturabilirsiniz. Bir ürünü artık istemiyor musunuz? Çöpe atın.</string>
     <string name="order_refunds_shipping_refund_notice_fees">Ücretleri, gönderin ve vergi tutarlarını iade edebilirsiniz %s</string>
@@ -972,7 +997,6 @@ Language: tr
     <string name="new_notifications">%d yeni bildirim</string>
     <string name="about_version">Sürüm %s</string>
     <string name="about_tos">Hizmet koşulları</string>
-    <string name="about_publisher">Yayımlayan: Automattic, Inc</string>
     <string name="about_appname">Android İçin WooCommerce</string>
     <string name="support_identity_input_dialog_name_label">Ad</string>
     <string name="settings_licenses">Açık kaynak lisanslar</string>
