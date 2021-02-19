@@ -3,10 +3,12 @@ package com.woocommerce.android.extensions
 import android.graphics.Rect
 import android.view.TouchDelegate
 import android.view.View
+import android.view.View.MeasureSpec
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
-import android.view.View.MeasureSpec
+import androidx.core.view.children
 import androidx.core.view.isVisible
 
 fun View.show() {
@@ -84,5 +86,13 @@ fun View.expandHitArea(horizontal: Int, vertical: Int) {
         rect.bottom += vertical
 
         parent.touchDelegate = TouchDelegate(rect, this)
+    }
+}
+
+fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
+    isEnabled = enabled
+    children.forEach {
+        it.isEnabled = enabled
+        if(it is ViewGroup) it.setEnabledRecursive(enabled)
     }
 }
