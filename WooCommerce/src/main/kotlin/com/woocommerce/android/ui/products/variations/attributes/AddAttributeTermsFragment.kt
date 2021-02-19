@@ -59,8 +59,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         _binding = null
     }
 
-    override fun onRequestAllowBackPress() =
+    override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
+        return false
+    }
 
     override fun onResume() {
         super.onResume()
