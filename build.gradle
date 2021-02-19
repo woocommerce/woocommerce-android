@@ -82,7 +82,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = 'b2e6989dd7d68c035d7fd3ff1c0a7ff8972ff310'
+    fluxCVersion = 'dde4c321259b0e908e80dcb873c61499ab3a28f3'
     daggerVersion = '2.29.1'
     glideVersion = '4.10.0'
     testRunnerVersion = '1.0.1'
