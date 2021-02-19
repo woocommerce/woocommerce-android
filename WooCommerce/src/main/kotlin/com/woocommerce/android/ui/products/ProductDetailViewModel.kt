@@ -36,7 +36,6 @@ import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
-import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -1013,8 +1012,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the add attribute fragment
      */
-    fun onAddAttributeListItemClick(combinedAttribute: CombinedAttributeModel) {
-        triggerEvent(AddProductAttributeTerms(combinedAttribute))
+    fun onAddAttributeListItemClick(attributeId: Long, attributeName: String) {
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false

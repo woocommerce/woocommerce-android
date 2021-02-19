@@ -265,7 +265,7 @@ class ProductDetailRepository @Inject constructor(
      * Returns a list of global attributes from the local db
      */
     fun getGlobalAttributes(): List<ProductGlobalAttribute> {
-        val wooResult= globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
+        val wooResult = globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 

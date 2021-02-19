@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -77,6 +76,7 @@ sealed class ProductNavigationTarget : Event() {
     object AddProductDownloadableFile : ProductNavigationTarget()
     object AddProductAttribute : ProductNavigationTarget()
     data class AddProductAttributeTerms(
-        val combinedAttribute: CombinedAttributeModel
+        val attributeId: Long,
+        val attributeName: String
     ) : ProductNavigationTarget()
 }
