@@ -1,2 +1,0 @@
-5.9:
-Bei diese Reihe von Aktualisierungen der mobilen WooCommerce-App dreht sich alles um Fehlerbehebungen. Wir haben seltene Abstürze behoben, die beim Hinzufügen einer neuen Produktkategorie, beim Nachbestellen von Fotos, beim Bearbeiten von Text, beim Erstellen von Versandetiketten und beim Filtern von Produkten auftraten. Wir haben auch eine Zeitüberschreitungsgrenze für Serveranfragen aktualisiert und die veraltete Karte mit den Kaufdetails aus den Produktdetails entfernt.
