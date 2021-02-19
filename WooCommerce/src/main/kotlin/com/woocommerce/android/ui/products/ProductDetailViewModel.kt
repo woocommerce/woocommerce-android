@@ -1013,8 +1013,8 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * User clicked an attribute in the add attribute fragment
      */
-    fun onAddAttributeListItemClick(combinedAttribute: CombinedAttributeModel) {
-        triggerEvent(AddProductAttributeTerms(combinedAttribute))
+    fun onAddAttributeListItemClick(attributeId: Long, attributeName: String) {
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false

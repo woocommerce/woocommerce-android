@@ -286,8 +286,8 @@ class ProductNavigator @Inject constructor() {
             is AddProductAttributeTerms -> {
                 val action = AddAttributeFragmentDirections
                     .actionAddAttributeFragmentToAddAttributeTermsFragment(
-                        target.combinedAttribute.id,
-                        target.combinedAttribute.name
+                        target.attributeId,
+                        target.attributeName
                     )
                 fragment.findNavController().navigate(action)
             }
