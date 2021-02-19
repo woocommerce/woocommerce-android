@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.di.GlideApp
@@ -36,8 +37,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             attributes, item.quantity.toString(), productPrice
         )
 
-        val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
-        binding.productInfoSKU.text = productSku
+        with(binding.productInfoSKU) {
+            isVisible = item.sku.isNotEmpty()
+            val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
+            binding.productInfoSKU.text = productSku
+        }
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)

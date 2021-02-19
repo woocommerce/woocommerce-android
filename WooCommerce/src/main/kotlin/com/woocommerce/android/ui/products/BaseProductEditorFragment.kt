@@ -2,13 +2,9 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -34,17 +30,11 @@ abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
         return inflater.inflate(layoutRes, container, false)
     }
 
-    protected var doneButton: MenuItem? = null
-
-    abstract fun onDoneButtonClicked()
     abstract fun onExit()
 
-    abstract val isDoneButtonVisible: Boolean
-    abstract val isDoneButtonEnabled: Boolean
     abstract val lastEvent: Event?
 
     override fun onResume() {
@@ -57,31 +47,6 @@ abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) 
         activity?.let {
             ActivityUtils.hideKeyboard(it)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        inflater.inflate(R.menu.menu_done, menu)
-        doneButton = menu.findItem(R.id.menu_done)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                onDoneButtonClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        doneButton?.isVisible = isDoneButtonVisible
-        doneButton?.isEnabled = isDoneButtonEnabled
     }
 
     override fun onRequestAllowBackPress(): Boolean {

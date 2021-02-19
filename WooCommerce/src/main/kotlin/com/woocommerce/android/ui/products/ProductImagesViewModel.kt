@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImageUploaded
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
@@ -51,7 +50,6 @@ class ProductImagesViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
-            isDoneButtonVisible = false,
             uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
@@ -71,9 +69,6 @@ class ProductImagesViewModel @AssistedInject constructor(
 
     val isImageDeletingAllowed
         get() = viewState.isImageDeletingAllowed ?: true
-
-    private val hasChanges: Boolean
-        get() = !originalImages.areSameImagesAs(images) || !viewState.uploadingImageUris.isNullOrEmpty()
 
     init {
         EventBus.getDefault().register(this)
@@ -149,15 +144,6 @@ class ProductImagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(productImagesState = Browsing)
     }
 
-    fun onDoneButtonClicked() {
-        AnalyticsTracker.track(
-                Stat.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
-                mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
-        )
-
-        triggerEvent(ExitWithResult(images))
-    }
-
     fun onNavigateBackButtonClicked() {
         when (val productImagesState = viewState.productImagesState) {
             is Dragging -> {
@@ -184,17 +170,8 @@ class ProductImagesViewModel @AssistedInject constructor(
                     }
                 ))
             }
-            hasChanges -> {
-                triggerEvent(ShowDialog(
-                    messageId = string.discard_images_message,
-                    positiveButtonId = string.discard,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        triggerEvent(ExitWithResult(originalImages))
-                    }
-                ))
-            }
             else -> {
-                triggerEvent(ExitWithResult(originalImages))
+                triggerEvent(ExitWithResult(images))
             }
         }
     }
@@ -202,7 +179,6 @@ class ProductImagesViewModel @AssistedInject constructor(
     private fun updateButtonStates() {
         val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
         viewState = viewState.copy(
-            isDoneButtonVisible = hasChanges,
             chooserButtonButtonTitleRes = when {
                 isMultiSelectionAllowed -> string.product_add_photos
                 numImages > 0 -> string.product_replace_photo
@@ -304,7 +280,6 @@ class ProductImagesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val uploadingImageUris: List<Uri>? = null,
-        val isDoneButtonVisible: Boolean? = null,
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,

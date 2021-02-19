@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -34,16 +31,13 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductExternalLinkBinding.bind(view)
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
 
         binding.productUrl.setOnTextChangedListener {
             viewModel.updateProductDraft(externalUrl = it.toString())
-            changesMade()
         }
         binding.productButtonText.setOnTextChangedListener {
             viewModel.updateProductDraft(buttonText = it.toString())
-            changesMade()
         }
     }
 
@@ -53,23 +47,6 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
     }
 
     override fun getFragmentTitle() = getString(R.string.product_external_link)
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitExternalLink(shouldShowDiscardDialog = false))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -90,6 +67,8 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitExternalLink())
+        ActivityUtils.hideKeyboard(activity)
+        viewModel.onBackButtonClicked(ExitExternalLink())
+        return false
     }
 }

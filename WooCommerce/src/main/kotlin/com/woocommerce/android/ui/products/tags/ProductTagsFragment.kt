@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.products.tags
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -51,7 +48,6 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
 
         _binding = FragmentProductTagsBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
         viewModel.loadProductTags()
     }
@@ -67,22 +63,6 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onProductTagDoneMenuActionClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -139,9 +119,6 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
             }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
-            new.shouldDisplayDoneMenuButton?.takeIfNotEqualTo(old?.shouldDisplayDoneMenuButton) {
-                showUpdateMenuItem(it)
-            }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible && !binding.emptyView.isVisible) {
                     WooAnimUtils.fadeIn(binding.emptyView)
@@ -229,18 +206,17 @@ class ProductTagsFragment : BaseProductFragment(R.layout.fragment_product_tags),
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductTags())
+        viewModel.onProductTagsBackButtonClicked()
+        return false
     }
 
     override fun onProductTagAdded(productTag: ProductTag) {
         viewModel.onProductTagSelected(productTag)
         updateSelectedTags()
-        changesMade()
     }
 
     override fun onProductTagRemoved(productTag: ProductTag) {
         viewModel.onProductTagSelectionRemoved(productTag)
         binding.addProductTagView.removeSelectedTag(productTag)
-        changesMade()
     }
 }
