@@ -24,7 +24,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
@@ -266,7 +265,7 @@ class ProductDetailRepository @Inject constructor(
      * Returns a list of global attributes from the local db
      */
     fun getGlobalAttributes(): List<ProductGlobalAttribute> {
-        val wooResult= globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
+        val wooResult = globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 
