@@ -158,7 +158,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_DONE_BUTTON_TAPPED)
-                viewModel.onDoneButtonClicked(ExitSettings(shouldShowDiscardDialog = false))
+                viewModel.onBackButtonClicked(ExitSettings(shouldShowDiscardDialog = false))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -166,7 +166,8 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitSettings())
+        viewModel.onBackButtonClicked(ExitSettings())
+        return false
     }
 
     override fun getFragmentTitle() = getString(R.string.product_settings)

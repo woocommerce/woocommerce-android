@@ -42,7 +42,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
 
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
-            viewModel.parameters,
+            viewModel.weightUnit,
             viewModel::onWeightEdited,
             viewModel::onPackageSpinnerClicked
         )
@@ -116,8 +116,7 @@ class EditShippingLabelPackagesFragment : BaseFragment(R.layout.fragment_edit_sh
                 is OpenPackageSelectorEvent -> {
                     val action = EditShippingLabelPackagesFragmentDirections
                         .actionEditShippingLabelPackagesFragmentToShippingPackageSelectorFragment(
-                            position = event.position,
-                            availablePackages = viewModel.availablePackages
+                            position = event.position
                         )
 
                     findNavController().navigateSafely(action)

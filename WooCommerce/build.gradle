@@ -211,11 +211,6 @@ dependencies {
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
-    // For use with SqlScout, a Sqlite plugin for Android Studio
-    // https://plugins.jetbrains.com/plugin/8322-sqlscout-sqlite-support-
-    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
-    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
-
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.9.0"

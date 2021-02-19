@@ -37,8 +37,10 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -46,11 +48,13 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDetail
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -157,6 +161,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _addedProductTags = MutableLiveData<MutableList<ProductTag>>()
     val addedProductTags: MutableLiveData<MutableList<ProductTag>> = _addedProductTags
+
+    private val _attributeList = MutableLiveData<List<ProductAttribute>>()
+    val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+
+    private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
+    val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
@@ -425,9 +435,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when the DONE menu button is clicked in all of the product sub detail screen
+     * Called when the back= button is clicked in a product sub detail screen
      */
-    fun onDoneButtonClicked(event: ProductExitEvent) {
+    fun onBackButtonClicked(event: ProductExitEvent) {
         var eventName: Stat? = null
         var hasChanges = false
         when (event) {
@@ -446,9 +456,69 @@ class ProductDetailViewModel @AssistedInject constructor(
                 eventName = Stat.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
+            is ExitProductAttributeList -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
+            }
+            is ExitProductAddAttribute -> {
+                // TODO: eventName
+                hasChanges = hasAttributeChanges()
+            }
         }
         eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
+    }
+
+    /**
+     * Method called when the back button in product detail is clicked. We show a discard dialog if any
+     * changes have been made to the [Product] model locally that still need to be saved to the backend.
+     */
+    fun onBackButtonClickedProductDetail(): Boolean {
+        val isProductDetailUpdated = viewState.isProductUpdated ?: false
+        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
+
+        if (isProductDetailUpdated) {
+            val positiveAction = DialogInterface.OnClickListener { _, _ ->
+                // discard changes made to the product and exit product detail
+                discardEditChanges()
+                triggerEvent(ExitProduct)
+            }
+
+            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
+            // button in the discard dialog
+            @StringRes val neutralBtnId: Int?
+            val neutralAction = if (isAddFlow) {
+                neutralBtnId = string.product_detail_save_as_draft
+                DialogInterface.OnClickListener { _, _ ->
+                    updateProductDraft(productStatus = DRAFT)
+                    startPublishProduct(exitWhenDone = true)
+                }
+            } else {
+                neutralBtnId = null
+                null
+            }
+
+            triggerEvent(
+                ShowDialog(
+                    positiveBtnAction = positiveAction,
+                    neutralBtnAction = neutralAction
+                )
+            )
+            return false
+        } else if (isUploadingImages) {
+            // images can't be assigned to the product until they finish uploading so ask whether
+            // to discard the uploading images
+            triggerEvent(ShowDialog.buildDiscardDialogEvent(
+                messageId = string.discard_images_message,
+                positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    ProductImagesService.cancel()
+                    triggerEvent(ExitProduct)
+                }
+            ))
+            return false
+        } else {
+            return true
+        }
     }
 
     /**
@@ -562,85 +632,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         AnalyticsTracker.track(PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
             triggerEvent(LaunchUrlInChromeTab(url))
-        }
-    }
-
-    /**
-     * Method called when back button is clicked.
-     *
-     * Each product screen has it's own [ProductExitEvent]
-     * Based on the exit event, the logic is to check if the discard dialog should be displayed.
-     *
-     * For all product sub-detail screens such as [ProductInventoryFragment] and [ProductPricingFragment],
-     * the discard dialog should only be displayed if there are currently any changes made to the fields in the screen.
-     *
-     * For the product detail screen, the discard dialog should only be displayed if there are changes to the
-     * [Product] model locally, that still need to be saved to the backend.
-     */
-    fun onBackButtonClicked(event: ProductExitEvent): Boolean {
-        val isProductDetailUpdated = viewState.isProductUpdated ?: false
-
-        val isProductSubDetailUpdated = viewState.productDraft?.let { draft ->
-            viewState.productBeforeEnteringFragment?.isSameProduct(draft) == false ||
-                viewState.isPasswordChanged
-        } ?: false
-
-        val isUploadingImages = ProductImagesService.isUploadingForProduct(getRemoteProductId())
-
-        val isProductUpdated = when (event) {
-            is ExitProductDetail -> isProductDetailUpdated
-            is ExitProductTags -> isProductDetailUpdated && isProductSubDetailUpdated || !_addedProductTags.isEmpty()
-            else -> isProductDetailUpdated && isProductSubDetailUpdated
-        }
-        if (isProductUpdated && event.shouldShowDiscardDialog) {
-            val positiveAction = DialogInterface.OnClickListener { _, _ ->
-                // discard changes made to the current screen
-                discardEditChanges()
-
-                // if the user is in Product detail screen, exit product detail,
-                // otherwise, redirect to Product Detail screen
-                if (event is ExitProductDetail) {
-                    triggerEvent(ExitProduct)
-                } else {
-                    triggerEvent(event)
-                }
-            }
-
-            // if the user is adding a product and this is product detail, include a "Save as draft" neutral
-            // button in the discard dialog
-            @StringRes val neutralBtnId: Int?
-            val neutralAction = if (isAddFlow && event is ExitProductDetail) {
-                neutralBtnId = string.product_detail_save_as_draft
-                DialogInterface.OnClickListener { _, _ ->
-                    updateProductDraft(productStatus = DRAFT)
-                    startPublishProduct(exitWhenDone = true)
-                }
-            } else {
-                neutralBtnId = null
-                null
-            }
-
-            triggerEvent(ShowDialog(
-                    positiveBtnAction = positiveAction,
-                    neutralBtnAction = neutralAction
-            ))
-            return false
-        } else if (event is ExitProductDetail && isUploadingImages) {
-            // images can't be assigned to the product until they finish uploading so ask whether
-            // to discard the uploading images
-            triggerEvent(ShowDialog.buildDiscardDialogEvent(
-                    messageId = string.discard_images_message,
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        ProductImagesService.cancel()
-                        triggerEvent(event)
-                    }
-            ))
-            return false
-        } else {
-            if (event is ExitProductTags) {
-                clearProductTagsState()
-            }
-            return true
         }
     }
 
@@ -947,6 +938,49 @@ class ProductDetailViewModel @AssistedInject constructor(
             viewState.copy(uploadingImageUris = uris)
         } else {
             viewState.copy(uploadingImageUris = emptyList())
+        }
+    }
+
+    /**
+     * Loads the attributes assigned to the draft product, used by the attribute list fragment
+     */
+    fun loadProductDraftAttributes() {
+        _attributeList.value = getProductDraftAttributes()
+    }
+
+    fun getProductDraftAttributes(): List<ProductAttribute> {
+        return viewState.productDraft?.attributes ?: emptyList()
+    }
+
+    /**
+     * User clicked an attribute in the attribute list
+     */
+    fun onAttributeListItemClick(attribute: ProductAttribute) {
+        // TODO
+    }
+
+    /**
+     * User tapped "Add attribute" on the attribute list fragment
+     */
+    fun onAddAttributeButtonClick() {
+        triggerEvent(AddProductAttribute)
+    }
+
+    /**
+     * User clicked an attribute in the add attribute fragment
+     */
+    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
+        // TODO
+    }
+
+    fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
+
+    /**
+     * Fetches the list of global attributes, ie: the attributes available store-wide
+     */
+    fun fetchGlobalAttributes() {
+        launch {
+            _globalAttributeList.value = productRepository.fetchGlobalAttributes()
         }
     }
 
@@ -1278,7 +1312,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         return sortedList.toList()
     }
 
-    fun onProductTagDoneMenuActionClicked() {
+    fun onProductTagsBackButtonClicked() {
         val tags = _addedProductTags.getList()
         // check if there are tags entered that do not exist on the site. If so,
         // call the API to add the tags to the site first
@@ -1297,11 +1331,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+                onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onDoneButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
+            onBackButtonClicked(ExitProductTags(shouldShowDiscardDialog = false))
         }
     }
 
@@ -1317,7 +1351,6 @@ class ProductDetailViewModel @AssistedInject constructor(
             // Since the tag does not exist for the site, add the tag to
             // a list of newly added tags
             _addedProductTags.addNewItem(ProductTag(name = tagName))
-            updateTagsMenuAction()
             loadProductTags()
         }
     }
@@ -1327,7 +1360,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onProductTagSelected(tag: ProductTag) {
         updateProductDraft(tags = tag.addTag(viewState.productDraft))
-        updateTagsMenuAction()
         loadProductTags()
     }
 
@@ -1341,15 +1373,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         } else {
             updateProductDraft(tags = tag.removeTag(viewState.productDraft))
         }
-        updateTagsMenuAction()
         loadProductTags()
-    }
-
-    private fun updateTagsMenuAction() {
-        productTagsViewState = productTagsViewState.copy(
-            shouldDisplayDoneMenuButton = viewState.productDraft?.tags?.isNotEmpty() == true ||
-                !_addedProductTags.isEmpty()
-        )
     }
 
     /**
@@ -1393,11 +1417,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Called when user exits the product tag fragment to clear the stored filter and the done button state
+     * Called when user exits the product tag fragment to clear the stored filter
      * (otherwise it will be retained when the user returns to the tag fragment)
      */
     fun clearProductTagsState() {
-        productTagsViewState = productTagsViewState.copy(currentFilter = "", shouldDisplayDoneMenuButton = false)
+        productTagsViewState = productTagsViewState.copy(currentFilter = "")
     }
 
     /**
@@ -1502,7 +1526,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Add a new class here for each new product sub detail screen to handle back navigation.
      */
     sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
-        class ExitProductDetail(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
@@ -1511,6 +1534,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
         class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
             ProductExitEvent(shouldShowDiscardDialog)
+        class ExitProductAttributeList(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
     }
 
     object RefreshMenu : Event()
@@ -1575,7 +1604,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val shouldDisplayDoneMenuButton: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val currentFilter: String = ""
     ) : Parcelable

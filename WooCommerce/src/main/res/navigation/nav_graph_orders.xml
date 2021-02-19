@@ -257,6 +257,9 @@
             app:destination="@id/editShippingLabelPackagesFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPaymentFragment"
+            app:destination="@id/editShippingLabelPaymentFragment" />
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
@@ -309,9 +312,6 @@
         <argument
             android:name="shippingLabelPackages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
-        <argument
-            android:name="availablePackages"
-            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingPackageSelectorFragment"
             app:destination="@id/shippingPackageSelectorFragment"
@@ -328,8 +328,10 @@
         <argument
             android:name="position"
             app:argType="integer" />
-        <argument
-            android:name="availablePackages"
-            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
     </fragment>
+    <fragment
+        android:id="@+id/editShippingLabelPaymentFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
+        android:label="EditShippingLabelPaymentFragment"
+        tools:layout="@layout/fragment_edit_shipping_label_payment"/>
 </navigation>
