@@ -109,7 +109,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.Idle> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
@@ -131,22 +131,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoadingFailure> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(
-                    State.OriginAddressValidation(data),
-                    SideEffect.ValidateAddress(data.originAddress, ORIGIN)
-                )
+                transitionTo(State.OriginAddressValidation(data))
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(
-                    State.ShippingAddressValidation(data),
-                    SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
-                )
+                transitionTo(State.ShippingAddressValidation(data))
             }
             on<Event.PackageSelectionStarted> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions(data.shippingPackages))
@@ -361,6 +355,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     fun initialize(state: State) {
         stateMachine = createStateMachine(state)
+        _transitions.value = Transition(state, SideEffect.NoOp)
     }
 
     /**
@@ -408,7 +403,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        object DataLoading : State()
+        data class DataLoading(val orderId: String) : State()
 
         @Parcelize
         data class WaitingForInput(val data: Data) : State()
@@ -498,10 +493,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     sealed class SideEffect {
         object NoOp : SideEffect()
-        data class LoadData(val orderId: String) : SideEffect()
         data class ShowError(val error: Error) : SideEffect()
 
-        data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
         data class ShowAddressSuggestion(
             val entered: Address,
             val suggested: Address,
