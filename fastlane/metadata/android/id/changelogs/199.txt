@@ -1,0 +1,4 @@
+6.0:
+Apa yang baru di rilis 6.0 kami?
+
+Anda meminta, kami menyediakannya! Karena banyaknya permintaan, SKU produk akan ditampilkan sekali lagi pada layar Detail Pesanan. Kami juga memperbaiki masalah saat produk dengan performa tertinggi di toko Anda salah ditampilkan dua kali.

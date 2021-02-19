@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-02 16:54:04+0000
+Translation-Revision-Date: 2021-02-16 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Total förpackningsvikt: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d varor i %2$d förpackningar</string>
+    <string name="shipping_label_single_package_total_weight">Total förpackningsvikt: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Anpassade paket</string>
+    <string name="shipping_label_package_details_fetch_products_error">Kan inte hämta produkter</string>
+    <string name="shipping_label_missing_data_snackbar_message">Vissa obligatoriska fält är tomma.</string>
+    <string name="shipping_label_package_details_weight_error">Ogiltig vikt</string>
+    <string name="shipping_label_package_selector_title">Valt paket</string>
+    <string name="shipping_label_packages_loading_message">Vänta …</string>
+    <string name="shipping_label_packages_loading_title">Laddar in paket!</string>
+    <string name="shipping_label_package_details_title_template">Packet %1$d</string>
+    <string name="shipping_label_package_details_items_count">\"%1$d varor\"</string>
+    <string name="shipping_label_packages_loading_error">Kan inte ladda paketdefinitioner</string>
+    <string name="shipping_label_package_details_weight_info">Inkluderar förpackningsvikt</string>
+    <string name="shipping_label_package_details_weight_hint">Total förpackningsvikt (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Vald förpackning</string>
+    <string name="shipping_label_package_details_section_title">Paketdetaljer</string>
+    <string name="shipping_label_package_details_move_item">Flytta</string>
+    <string name="shipping_label_package_details_items_section_title">Poster att slutföra</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Föreslagen adress</string>
+    <string name="shipping_label_address_suggestion_entered_address">Angiven adress</string>
+    <string name="shipping_label_address_suggestion_banner">Vi har ändrat den adress du angav något. Använd den föreslagna adressen om den stämmer för att försäkra korrekt leverans.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Redigera vald adress</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Använd vald adress</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Laddar in adressdata</string>
     <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
     <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
@@ -973,7 +998,6 @@ Language: sv_SE
     <string name="new_notifications">%d nya notiser</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Användarvillkor</string>
-    <string name="about_publisher">Utgivare: Automattic, Inc</string>
     <string name="about_appname">WooCommerce för Android</string>
     <string name="support_identity_input_dialog_name_label">Namn</string>
     <string name="settings_licenses">Öppen källkodslicens</string>

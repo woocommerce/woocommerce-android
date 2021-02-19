@@ -1,2 +1,0 @@
-5,9:
-WooCommerce mobil uygulama güncellemelerini içeren bu paket tamamen düzeltmelerle ilgilidir.  Yeni bir ürün kategorisi eklerken, fotoğrafları yeniden sıralarken, metin düzenlerken, nakliye etiketleri oluştururken ve ürünleri filtrelerken ortaya çıkan nadir hata durumlarını düzelttik.  Ayrıca sunucu istekleri için zaman aşımı sınırını güncelledik ve ürün ayrıntılarından eski satın alma ayrıntıları kartını kaldırdık.

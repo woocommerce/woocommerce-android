@@ -1,2 +1,0 @@
-5.9:
-Bij deze update van de mobiele WooCommerce-app staan oplossingen centraal. We hebben zeldzame crashes aangepakt die zich voordeden bij het toevoegen van een nieuwe productcategorie, het herschikken van foto's, het bewerken van tekst, het aanmaken van verzendlabels en het filteren van producten. We hebben ook een time-outlimiet bijgewerkt voor serveraanvragen en hebben de overbodige kaart met aankoopgegevens uit de productgegevens verwijderd.
