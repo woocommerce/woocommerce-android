@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-import org.wordpress.android.util.BuildConfig
+import com.woocommerce.android.BuildConfig
 import java.util.Locale
 
 object PackageUtils {
