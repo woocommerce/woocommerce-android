@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.di.ActivityScope
+import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.Binds
 import dagger.Module
@@ -14,4 +15,8 @@ internal abstract class MainModule {
     @ActivityScope
     @Binds
     abstract fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
+
+    @ActivityScope
+    @Binds
+    abstract fun provideMainAddFabManager(mainAddFabManager: MainAddFabManager): FabManager
 }

@@ -20,10 +20,12 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
@@ -32,6 +34,7 @@ import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.ORDER_CREATION
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -63,6 +66,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject internal lateinit var fabManager: FabManager
 
     private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
 
@@ -145,6 +149,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        showFabIfFeatureEnabled()
 
         setHasOptionsMenu(true)
 
@@ -332,6 +338,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         })
 
         viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
+            showFabIfFeatureEnabled()
             updatePagedListData(it)
         })
 
@@ -347,6 +354,12 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
         viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
             it?.let { emptyViewType ->
+                if (emptyViewType == EmptyViewType.ORDER_LIST_LOADING) {
+                    fabManager.hideFabAnimated()
+                } else {
+                    showFabIfFeatureEnabled()
+                }
+
                 when (emptyViewType) {
                     EmptyViewType.SEARCH_RESULTS -> {
                         binding.orderStatusListView
@@ -598,8 +611,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         viewModel.submitSearchOrFilter(searchQuery = query)
     }
 
-    private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
-
     private fun showTabs(show: Boolean) {
         if (show && tabLayout.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(tabLayout)
@@ -738,5 +749,14 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+    }
+
+    private fun showFabIfFeatureEnabled() {
+        if (ORDER_CREATION.isEnabled(activity)) {
+            // TO-DO set correct content description
+            fabManager.showFabAnimated(string.add_products_button) { viewModel.onAddOrderButtonClicked() }
+        } else {
+            fabManager.hideFabImmediately()
+        }
     }
 }
