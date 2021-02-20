@@ -15,6 +15,15 @@ object PackageUtils {
      */
     fun isDebugBuild() = BuildConfig.DEBUG
 
+    fun isTesting(): Boolean {
+        return try {
+            Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
+
     fun isBetaBuild(context: Context): Boolean {
         val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
         return (versionName.contains("beta") || versionName.contains("rc"))
