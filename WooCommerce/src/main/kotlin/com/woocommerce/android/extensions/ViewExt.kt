@@ -93,6 +93,6 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
     isEnabled = enabled
     children.forEach {
         it.isEnabled = enabled
-        if(it is ViewGroup) it.setEnabledRecursive(enabled)
+        if (it is ViewGroup) it.setEnabledRecursive(enabled)
     }
 }
