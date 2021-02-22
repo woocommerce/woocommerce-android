@@ -12,6 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import javax.inject.Inject
@@ -81,8 +86,8 @@ class ShippingLabelRepository @Inject constructor(
         origin: Address,
         destination: Address,
         packages: List<ShippingLabelPackage>
-    ): List<WCShippingRatesResult.ShippingPackage>? {
-        val rates = shippingLabelStore.getShippingRates(
+    ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
+        val carrierRates = shippingLabelStore.getShippingRates(
             selectedSite.get(),
             orderId,
             origin.toShippingLabelModel(),
@@ -101,7 +106,24 @@ class ShippingLabelRepository @Inject constructor(
             }
         )
 
-        return rates.model?.packageRates
+        return when {
+            carrierRates.isError -> {
+                WooResult(carrierRates.error)
+            }
+            carrierRates.model == null || carrierRates.model!!.packageRates.isEmpty() -> {
+                WooResult(WooError(INVALID_RESPONSE, GenericErrorType.PARSE_ERROR, "Empty response"))
+            }
+            carrierRates.model!!.packageRates.all { pack ->
+                pack.shippingOptions.isEmpty() || pack.shippingOptions.all { option ->
+                    option.rates.isEmpty()
+                }
+            } -> {
+                WooResult(WooError(GENERIC_ERROR, NOT_FOUND, "Empty result"))
+            }
+            else -> {
+                WooResult(carrierRates.model!!.packageRates)
+            }
+        }
     }
 
     suspend fun getAccountSettings(): WooResult<ShippingAccountSettings> {

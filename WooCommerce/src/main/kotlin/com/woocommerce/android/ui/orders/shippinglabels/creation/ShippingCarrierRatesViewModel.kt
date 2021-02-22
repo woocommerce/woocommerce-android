@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.FEDEX
@@ -14,10 +15,12 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.ShippingRatesApiResponse.ShippingOption.Rate
 
 class ShippingCarrierRatesViewModel @AssistedInject constructor(
@@ -46,15 +49,20 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadRates() {
-        val shippingPackages = shippingLabelRepository.getShippingRates(
+        val carrierRatesResult = shippingLabelRepository.getShippingRates(
             arguments.orderId,
             arguments.originAddress,
             arguments.destinationAddress,
             arguments.packages.toList()
         )
 
-        if (shippingPackages != null) {
-            _shippingRates.value = shippingPackages.mapIndexed { i, pkg ->
+        if (carrierRatesResult.isError) {
+            viewState = viewState.copy(isEmptyViewVisible = true)
+            if (carrierRatesResult.error.original != NOT_FOUND) {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_shipping_carrier_rates_generic_error))
+            }
+        } else {
+            _shippingRates.value = carrierRatesResult.model!!.mapIndexed { i, pkg ->
                 PackageRateList(
                     title = pkg.shippingOptions.first().optionId,
                     itemCount = arguments.packages[i].items.size,
@@ -68,13 +76,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     }
                 )
             }
+            viewState = viewState.copy(isEmptyViewVisible = false)
         }
-
-        val areRatesUnavailable = shippingPackages.isNullOrEmpty() || shippingPackages.any { pack ->
-            pack.shippingOptions.isEmpty() || pack.shippingOptions.all { it.rates.isEmpty() }
-        }
-
-        viewState = viewState.copy(isEmptyViewVisible = areRatesUnavailable)
     }
 
     private fun getCarrier(it: Rate) =

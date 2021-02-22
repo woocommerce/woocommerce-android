@@ -435,11 +435,12 @@
     <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
     <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
-    <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the given destinations and packages</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
     </plurals>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
 
     <!--
             Refunds
