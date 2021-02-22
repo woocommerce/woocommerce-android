@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
@@ -237,10 +236,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         verify(stateMachine).handleEvent(OriginAddressValidationStarted)
 
-        stateFlow.value = Transition(
-            State.OriginAddressValidation(data),
-            SideEffect.ValidateAddress(originAddress, ORIGIN)
-        )
+        stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
         verify(addressValidator).validateAddress(originAddress, ORIGIN)
     }

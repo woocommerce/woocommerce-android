@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.android.parcel.Parcelize
@@ -108,7 +110,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.Idle> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
@@ -131,22 +133,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         state<State.DataLoadingFailure> {
             on<Event.FlowStarted> { event ->
-                transitionTo(State.DataLoading, SideEffect.LoadData(event.orderId))
+                transitionTo(State.DataLoading(event.orderId))
             }
         }
 
         state<State.WaitingForInput> {
             on<Event.OriginAddressValidationStarted> {
-                transitionTo(
-                    State.OriginAddressValidation(data),
-                    SideEffect.ValidateAddress(data.originAddress, ORIGIN)
-                )
+                transitionTo(State.OriginAddressValidation(data))
             }
             on<Event.ShippingAddressValidationStarted> {
-                transitionTo(
-                    State.ShippingAddressValidation(data),
-                    SideEffect.ValidateAddress(data.shippingAddress, DESTINATION)
-                )
+                transitionTo(State.ShippingAddressValidation(data))
             }
             on<Event.PackageSelectionStarted> {
                 transitionTo(State.PackageSelection(data), SideEffect.ShowPackageOptions(data.shippingPackages))
@@ -364,6 +360,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
     fun initialize(state: State) {
         stateMachine = createStateMachine(state)
+        _transitions.value = Transition(state, SideEffect.NoOp)
     }
 
     /**
@@ -371,7 +368,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     fun handleEvent(event: Event) {
         WooLog.d(T.ORDERS, event.toString())
-        stateMachine.transition(event)
+
+        // we can ignore invalid state transitions caused by user input (most likely caused by duplicate clicks)
+        if (event !is UserInput || stateMachine.state is WaitingForInput) {
+            stateMachine.transition(event)
+        }
     }
 
     /**
@@ -408,7 +409,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingFailure : State()
 
         @Parcelize
-        object DataLoading : State()
+        data class DataLoading(val orderId: String) : State()
 
         @Parcelize
         data class WaitingForInput(val data: Data) : State()
@@ -451,6 +452,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
     }
 
     sealed class Event {
+        abstract class UserInput : Event()
+
         data class FlowStarted(val orderId: String) : Event()
         data class DataLoaded(
             val remoteOrderId: Long,
@@ -470,38 +473,36 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object AddressEditCanceled : Event()
         object SuggestedAddressDiscarded : Event()
 
-        object OriginAddressValidationStarted : Event()
-        object EditOriginAddressRequested : Event()
+        object OriginAddressValidationStarted : UserInput()
+        object EditOriginAddressRequested : UserInput()
 
-        object ShippingAddressValidationStarted : Event()
-        object EditShippingAddressRequested : Event()
+        object ShippingAddressValidationStarted : UserInput()
+        object EditShippingAddressRequested : UserInput()
 
-        object PackageSelectionStarted : Event()
-        object EditPackagingRequested : Event()
+        object PackageSelectionStarted : UserInput()
+        object EditPackagingRequested : UserInput()
         object EditPackagingCanceled : Event()
         data class PackagesSelected(val shippingPackages: List<ShippingLabelPackage>) : Event()
 
-        object CustomsDeclarationStarted : Event()
-        object EditCustomsRequested : Event()
+        object CustomsDeclarationStarted : UserInput()
+        object EditCustomsRequested : UserInput()
         object CustomsFormFilledOut : Event()
 
-        object ShippingCarrierSelectionStarted : Event()
-        object EditShippingCarrierRequested : Event()
+        object ShippingCarrierSelectionStarted : UserInput()
+        object EditShippingCarrierRequested : UserInput()
         object ShippingCarrierSelected : Event()
         object ShippingCarrierSelectionCanceled : Event()
 
-        object PaymentSelectionStarted : Event()
-        object EditPaymentRequested : Event()
+        object PaymentSelectionStarted : UserInput()
+        object EditPaymentRequested : UserInput()
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
     }
 
     sealed class SideEffect {
         object NoOp : SideEffect()
-        data class LoadData(val orderId: String) : SideEffect()
         data class ShowError(val error: Error) : SideEffect()
 
-        data class ValidateAddress(val address: Address, val type: AddressType) : SideEffect()
         data class ShowAddressSuggestion(
             val entered: Address,
             val suggested: Address,

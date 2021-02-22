@@ -48,7 +48,7 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
+                viewModel.onBackButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
                 AnalyticsTracker.track(Stat.PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED)
                 true
             }
@@ -79,20 +79,15 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
         binding.productDownloadExpiry.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadExpiryChanged(value)
-            changesMade()
         }
         binding.productDownloadLimit.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toLong()
             viewModel.onDownloadLimitChanged(value)
-            changesMade()
         }
     }
 
-    override fun hasChanges(): Boolean {
-        return viewModel.hasDownloadsSettingsChanges()
-    }
-
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
+        viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
+        return false
     }
 }

@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.0-rc-2"
+            versionName "6.0"
         }
-        versionCode 198
+        versionCode 199
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -211,11 +211,6 @@ dependencies {
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
-    // For use with SqlScout, a Sqlite plugin for Android Studio
-    // https://plugins.jetbrains.com/plugin/8322-sqlscout-sqlite-support-
-    debugImplementation 'com.idescout.sql:sqlscout-server:4.1'
-    releaseImplementation 'com.idescout.sql:sqlscout-server-noop:4.1'
-
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.9.0"
@@ -263,9 +258,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '4.0.0') {
-        exclude group: 'com.google.dagger'
-    }
+    implementation "com.zendesk:support:5.0.2"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"

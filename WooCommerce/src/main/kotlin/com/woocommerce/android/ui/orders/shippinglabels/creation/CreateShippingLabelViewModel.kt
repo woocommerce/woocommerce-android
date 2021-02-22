@@ -22,6 +22,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error
@@ -85,29 +87,55 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private fun initializeStateMachine() {
+        val state = savedState.get<State>(STATE_KEY)
+        if (state != null) {
+            stateMachine.initialize(state)
+        } else {
+            stateMachine.start(arguments.orderIdentifier)
+        }
+
         launch {
             stateMachine.transitions.collect { transition ->
+                // save the current state
+                savedState[STATE_KEY] = transition.state
+
                 when (transition.state) {
-                    is State.DataLoading -> viewState = viewState.copy(uiState = Loading)
+                    is State.DataLoading -> {
+                        viewState = viewState.copy(uiState = Loading)
+                        handleResult { loadData(transition.state.orderId) }
+                    }
                     is State.DataLoadingFailure -> viewState = viewState.copy(uiState = Failed)
                     is State.WaitingForInput -> {
-                        viewState = viewState.copy(uiState = WaitingForInput)
+                        viewState = viewState.copy(
+                            uiState = WaitingForInput,
+                            progressDialogState = ProgressDialogState(isShown = false)
+                        )
                         updateViewState(transition.state.data)
                     }
-                    else -> { }
+                    is State.OriginAddressValidation -> {
+                        handleResult(
+                            progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
+                            progressDialogMessage = string.shipping_label_edit_address_progress_message
+                        ) {
+                            validateAddress(transition.state.data.originAddress, ORIGIN)
+                        }
+                    }
+                    is State.ShippingAddressValidation -> {
+                        handleResult(
+                            progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
+                            progressDialogMessage = string.shipping_label_edit_address_progress_message
+                        ) {
+                            validateAddress(transition.state.data.shippingAddress, DESTINATION)
+                        }
+                    }
+                    else -> {
+                    }
                 }
                 transition.sideEffect?.let { sideEffect ->
                     when (sideEffect) {
                         SideEffect.NoOp -> {
                         }
                         is SideEffect.ShowError -> showError(sideEffect.error)
-                        is SideEffect.LoadData -> handleResult { loadData(sideEffect.orderId) }
-                        is SideEffect.ValidateAddress -> handleResult(
-                            progressDialogTitle = string.shipping_label_edit_address_validation_progress_title,
-                            progressDialogMessage = string.shipping_label_edit_address_progress_message
-                        ) {
-                            validateAddress(sideEffect.address, sideEffect.type)
-                        }
                         is SideEffect.OpenAddressEditor -> triggerEvent(
                             ShowAddressEditor(
                                 sideEffect.address,
@@ -128,16 +156,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
-                // save the current state
-                savedState[STATE_KEY] = transition.state
             }
-        }
-
-        val state = savedState.get<State>(STATE_KEY)
-        if (state != null) {
-            stateMachine.initialize(state)
-        } else {
-            stateMachine.start(arguments.orderIdentifier)
         }
     }
 

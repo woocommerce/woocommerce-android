@@ -71,11 +71,11 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Trigger exit event on done button clicked when in browsing state`() {
+    fun `Trigger exit event on back button clicked when in browsing state`() {
         val images = generateProductImagesList()
         initialize(images)
 
-        viewModel.onDoneButtonClicked()
+        viewModel.onNavigateBackButtonClicked()
 
         observeEvents { event ->
             assertThat(event).isEqualTo(ExitWithResult(images))

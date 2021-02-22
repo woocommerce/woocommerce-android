@@ -1,0 +1,4 @@
+6.0:
+Vad är nytt i vår 6.0-utgåva?
+
+Du frågade, vi lyssnade! På grund av allmän begäran visas produkt-SKU en gång till på skärmen för beställningsinformation. Vi korrigerade också ett problem där toppresultat i din butik visades felaktigt två gånger.
