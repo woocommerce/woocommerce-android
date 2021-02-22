@@ -68,5 +68,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <include layout="@layout/view_login_epilogue_button_bar" />
+    <include
+        android:id="@+id/login_epilogue_button_bar"
+        layout="@layout/view_login_epilogue_button_bar" />
 </LinearLayout>

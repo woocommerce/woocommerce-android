@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-05 10:54:04+0000
+Translation-Revision-Date: 2021-02-19 17:25:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d artikelen in %2$d pakketten</string>
+    <string name="shipping_label_single_package_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Aangepaste pakketten</string>
+    <string name="shipping_label_package_details_fetch_products_error">Producten kunnen niet opgehaald worden</string>
+    <string name="shipping_label_missing_data_snackbar_message">Bepaalde vereiste velden zijn leeg.</string>
+    <string name="shipping_label_package_details_weight_error">Ongeldig gewicht</string>
+    <string name="shipping_label_package_selector_title">Geselecteerd pakket</string>
+    <string name="shipping_label_packages_loading_message">Een moment geduld…</string>
+    <string name="shipping_label_packages_loading_title">Pakketten worden geladen!</string>
+    <string name="shipping_label_package_details_title_template">Pakket %1$d</string>
+    <string name="shipping_label_package_details_items_count">\'%1$d artikelen\'</string>
+    <string name="shipping_label_packages_loading_error">Kan pakket-afmetingen niet laden</string>
+    <string name="shipping_label_package_details_weight_info">Pakketgewicht inbegrepen</string>
+    <string name="shipping_label_package_details_weight_hint">Totaal pakketgewicht (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Pakket geselecteerd</string>
+    <string name="shipping_label_package_details_section_title">Pakketgegevens</string>
+    <string name="shipping_label_package_details_move_item">Verplaats</string>
+    <string name="shipping_label_package_details_items_section_title">Artikelen om te voltooien</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Aanbevolen adres</string>
+    <string name="shipping_label_address_suggestion_entered_address">Ingevoerd adres</string>
+    <string name="shipping_label_address_suggestion_banner">We hebben het adres dat is ingevoerd een beetje aangepast. Indien het juist is, gebruik dan het aanbevolen adres om zeker te zijn van een nauwkeurige levering.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Geselecteerd adres bewerken</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Het geselecteerde adres gebruiken</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Adresgegevens worden geladen</string>
     <string name="product_wip_title_m5">Nieuwe functies beschikbaar!</string>
     <string name="product_wip_message_m5">Je kan nu downloadbare bestanden aan een product toevoegen en upsell- en cross-sell-producten koppelen. Wil je een product niet meer? Verplaats het naar de prullenbak!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Je kan tarieven, verzend- en belastingkosten restitueren %s</string>
@@ -18,7 +43,7 @@ Language: nl
     <string name="shipping_label_error_address_not_found">Adres is niet gevonden</string>
     <string name="shipping_label_edit_address_error_warning">We konden het verzendadres niet automatisch verifiëren. Bekijk het op Google Maps of probeer contact op te nemen met de klant om te controleren of het adres klopt.</string>
     <string name="shipping_label_edit_address_validation_error">Validatie van adres mislukt</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Een moment geduld …</string>
+    <string name="shipping_label_edit_address_progress_message">Een moment geduld…</string>
     <string name="shipping_label_edit_address_validation_progress_title">Adres wordt gevalideerd</string>
     <string name="shipping_label_edit_data_loading_error">Kan de adresgegevens niet laden.</string>
     <string name="shipping_label_edit_address_use_address_as_is">Gebruik het adres zoals het is ingevoerd</string>
@@ -972,7 +997,6 @@ Language: nl
     <string name="new_notifications">%d nieuwe meldingen</string>
     <string name="about_version">Versie %s</string>
     <string name="about_tos">Servicevoorwaarden</string>
-    <string name="about_publisher">Publisher: Automattic, Inc</string>
     <string name="about_appname">WooCommerce voor Android</string>
     <string name="support_identity_input_dialog_name_label">Naam</string>
     <string name="settings_licenses">Bronlicenties openen</string>

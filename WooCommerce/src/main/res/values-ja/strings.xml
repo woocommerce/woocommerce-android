@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 11:54:04+0000
+Translation-Revision-Date: 2021-02-18 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">荷物の総重量: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%2$d個の荷物内に%1$d個のアイテム</string>
+    <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">カスタム荷物</string>
+    <string name="shipping_label_package_details_fetch_products_error">商品を取得できません</string>
+    <string name="shipping_label_missing_data_snackbar_message">いくつかの必須フィールドが空白になっています。</string>
+    <string name="shipping_label_package_details_weight_error">無効な重量</string>
+    <string name="shipping_label_package_selector_title">選択済みの荷物</string>
+    <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
+    <string name="shipping_label_packages_loading_title">荷物を積み込んでいます。</string>
+    <string name="shipping_label_package_details_title_template">荷物 %1$d</string>
+    <string name="shipping_label_package_details_items_count">「%1$d個のアイテム」</string>
+    <string name="shipping_label_packages_loading_error">荷物の定義を読み込めません</string>
+    <string name="shipping_label_package_details_weight_info">荷物の重量を含む</string>
+    <string name="shipping_label_package_details_weight_hint">荷物の総重量 (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">荷物が選択されました</string>
+    <string name="shipping_label_package_details_section_title">荷物の詳細</string>
+    <string name="shipping_label_package_details_move_item">移動</string>
+    <string name="shipping_label_package_details_items_section_title">処理するアイテム</string>
+    <string name="shipping_label_address_suggestion_suggested_address">提案された住所</string>
+    <string name="shipping_label_address_suggestion_entered_address">入力された住所</string>
+    <string name="shipping_label_address_suggestion_banner">入力された住所が一部修正されました。 正しい場合は、正確に配送できるように提案された住所を使用してください。</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">選択した住所を編集</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">選択した住所を使用</string>
+    <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
     <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
     <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
@@ -18,7 +43,7 @@ Language: ja_JP
     <string name="shipping_label_error_address_not_found">住所が見つかりませんでした</string>
     <string name="shipping_label_edit_address_error_warning">自動的に配送先住所を確認できませんでした。 Google マップで表示するか、顧客に連絡して住所が正しいことを確認してください。</string>
     <string name="shipping_label_edit_address_validation_error">住所の確認に失敗しました</string>
-    <string name="shipping_label_edit_address_validation_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_edit_address_progress_message">しばらくお待ちください…</string>
     <string name="shipping_label_edit_address_validation_progress_title">住所の確認中です</string>
     <string name="shipping_label_edit_data_loading_error">住所データを読み込むことができませんでした</string>
     <string name="shipping_label_edit_address_use_address_as_is">入力した住所を使用</string>
@@ -970,7 +995,6 @@ Language: ja_JP
     <string name="new_notifications">%d件の新しい通知</string>
     <string name="about_version">バージョン%s</string>
     <string name="about_tos">利用規約</string>
-    <string name="about_publisher">投稿者:Automattic, Inc</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="support_identity_input_dialog_name_label">名前</string>
     <string name="settings_licenses">オープンソースライセンス</string>

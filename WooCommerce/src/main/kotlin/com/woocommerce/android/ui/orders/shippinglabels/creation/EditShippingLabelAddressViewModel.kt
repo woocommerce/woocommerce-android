@@ -13,8 +13,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult.NameMissing
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -42,19 +44,17 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState(arguments.address))
     private var viewState by viewStateData
 
-    private val countries: List<WCLocationModel> by lazy {
-        dataStore.getCountries()
-    }
+    private val countries: List<WCLocationModel>
+        get() = dataStore.getCountries()
 
-    private val states: List<WCLocationModel> by lazy {
-        viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
-    }
+    private val states: List<WCLocationModel>
+        get() = viewState.address?.country?.let { dataStore.getStates(it) } ?: emptyList()
 
     private val selectedCountry: String?
         get() = countries.firstOrNull { it.code == viewState.address?.country }?.name
 
-    private val selectedState: String?
-        get() = states.firstOrNull { it.code == viewState.address?.state }?.name
+    private val selectedState: String
+        get() = states.firstOrNull { it.code == viewState.address?.state }?.name ?: ""
 
     init {
         viewState = viewState.copy(
@@ -84,11 +84,11 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     fun onDoneButtonClicked(address: Address) {
         if (areRequiredFieldsValid(address)) {
             launch {
-                viewState = viewState.copy(address = address, isProgressDialogVisible = true)
+                viewState = viewState.copy(address = address, isValidationProgressDialogVisible = true)
                 val result = addressValidator.validateAddress(address, arguments.addressType)
                 clearErrors()
                 handleValidationResult(address, result)
-                viewState = viewState.copy(isProgressDialogVisible = false)
+                viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
         }
     }
@@ -96,13 +96,14 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     private fun loadCountriesAndStates() {
         launch {
             if (countries.isEmpty()) {
-                viewState = viewState.copy(isProgressDialogVisible = true)
+                viewState = viewState.copy(isLoadingProgressDialogVisible = true)
                 dataStore.fetchCountriesAndStates(site.get())
+                viewState = viewState.copy(isLoadingProgressDialogVisible = false)
             }
             viewState = viewState.copy(
-                isProgressDialogVisible = false,
+                isValidationProgressDialogVisible = false,
                 selectedCountryName = selectedCountry,
-                selectedStateName = selectedState,
+                selectedStateName = if (selectedState.isBlank()) viewState.address?.state else selectedState,
                 isStateFieldSpinner = states.isNotEmpty()
             )
         }
@@ -115,9 +116,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
                 addressError = getAddressErrorStringRes(result.message)
             )
             is ValidationResult.SuggestedChanges -> {
-                // Temporary until suggestions are implemented
-                // triggerEvent(ShowSuggestedAddress(address, result.suggested))
-                triggerEvent(ExitWithResult(address))
+                triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
             }
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
@@ -131,6 +130,12 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
             is ValidationResult.Error -> triggerEvent(
                 ShowSnackbar(R.string.shipping_label_edit_address_validation_error)
             )
+            is NameMissing -> {
+                viewState = viewState.copy(
+                    nameError = R.string.shipping_label_error_required_field
+                )
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+            }
         }
     }
 
@@ -156,7 +161,7 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         }
 
         viewState = viewState.copy(
-            nameError = getErrorOrClear(address.firstName + address.lastName),
+            nameError = getErrorOrClear(address.firstName + address.lastName + address.company),
             addressError = getErrorOrClear(address.address1),
             cityError = getErrorOrClear(address.city),
             zipError = getErrorOrClear(address.postcode)
@@ -165,9 +170,17 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
         return allOk
     }
 
-    fun onUseAddressAsIsButtonClicked(address: Address) {
-        if (areRequiredFieldsValid(address)) {
-            triggerEvent(ExitWithResult(address))
+    fun updateAddress(address: Address) {
+        viewState = viewState.copy(address = address)
+    }
+
+    fun onUseAddressAsIsButtonClicked() {
+        viewState.address?.let { address ->
+            if (areRequiredFieldsValid(address)) {
+                triggerEvent(ExitWithResult(address))
+            } else {
+                triggerEvent(ShowSnackbar(R.string.shipping_label_missing_data_snackbar_message))
+            }
         }
     }
 
@@ -180,8 +193,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     }
 
     fun onOpenMapTapped() {
-        viewState.address?.let {
-            triggerEvent(OpenMapWithAddress(it))
+        viewState.address?.let { address ->
+            triggerEvent(OpenMapWithAddress(address))
         }
     }
 
@@ -193,12 +206,24 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
 
     fun onCountrySelected(country: String) {
         viewState = viewState.copy(address = viewState.address?.copy(country = country))
-        viewState = viewState.copy(selectedCountryName = selectedCountry)
+        viewState = viewState.copy(
+            selectedCountryName = selectedCountry,
+            selectedStateName = selectedState,
+            isStateFieldSpinner = states.isNotEmpty()
+        )
     }
 
     fun onStateSelected(state: String) {
         viewState = viewState.copy(address = viewState.address?.copy(state = state))
         viewState = viewState.copy(selectedStateName = selectedState)
+    }
+
+    fun onAddressSelected(address: Address) {
+        triggerEvent(ExitWithResult(address))
+    }
+
+    fun onEditRequested(address: Address) {
+        updateAddress(address)
     }
 
     fun onExit() {
@@ -219,7 +244,8 @@ class EditShippingLabelAddressViewModel @AssistedInject constructor(
     data class ViewState(
         val address: Address? = null,
         val bannerMessage: String? = null,
-        val isProgressDialogVisible: Boolean? = null,
+        val isValidationProgressDialogVisible: Boolean? = null,
+        val isLoadingProgressDialogVisible: Boolean? = null,
         val isStateFieldSpinner: Boolean? = null,
         val selectedCountryName: String? = null,
         val selectedStateName: String? = null,

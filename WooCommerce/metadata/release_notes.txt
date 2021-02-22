@@ -1,1 +1,3 @@
-This round of WooCommerce mobile app updates is all about fixes. We addressed rare crashes that occurred when adding a new product category, reordering photos, editing text, creating shipping labels, and filtering products. We also updated a timeout limit for server requests and removed the obsolete purchase details card from product details.
+What’s new in our 6.0 release?
+
+You asked, we listened! Due to popular demand, the product SKU is displayed once again in the Order Details screen. We also fixed an issue where top performers in your store were incorrectly displaying twice.

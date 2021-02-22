@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/package_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Package 1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/package_items_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_50"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        app:layout_constraintBaseline_toBaselineOf="@id/package_name"
+        app:layout_constraintStart_toEndOf="@id/package_name"
+        tools:text="- 10 items" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
+        android:layout_marginEnd="@dimen/major_100"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/color_on_surface_high"
+        app:layout_constraintBottom_toBottomOf="@id/package_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/package_name" />
+
+    <View
+        android:id="@+id/divider_1"
+        style="@style/Woo.Divider"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/package_name" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/items_section_title"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/major_300"
+        android:background="?android:attr/colorBackground"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        android:text="@string/shipping_label_package_details_items_section_title"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_on_surface_disabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_1" />
+
+    <View
+        android:id="@+id/divider_2"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/items_section_title" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/items_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@id/divider_2"
+        tools:itemCount="5"
+        tools:listitem="@layout/shipping_label_package_product_list_item" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/details_section_title"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/major_300"
+        android:background="@color/default_window_background"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        android:text="@string/shipping_label_package_details_section_title"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_on_surface_disabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/items_list" />
+
+    <View
+        android:id="@+id/divider_3"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/details_section_title" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+        android:id="@+id/selected_package_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_100"
+        android:hint="@string/shipping_label_package_details_selected_package_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_3" />
+
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/weight_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_175"
+        android:layout_marginEnd="@dimen/major_100"
+        android:hint="@string/shipping_label_package_details_weight_hint"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selected_package_spinner" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:text="@string/shipping_label_package_details_weight_info"
+        android:textAppearance="?attr/textAppearanceCaption"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/weight_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/weight_edit_text" />
+
+</com.woocommerce.android.widgets.WCElevatedConstraintLayout>

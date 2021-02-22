@@ -128,7 +128,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(binding.emptyView)
-                    binding.emptyView.button.visibility = View.GONE
+                    binding.emptyView.showButton(false)
                 } else {
                     WooAnimUtils.fadeOut(binding.emptyView)
                 }

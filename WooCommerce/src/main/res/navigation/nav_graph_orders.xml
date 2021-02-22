@@ -79,6 +79,11 @@
             app:destination="@id/itemSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/addOrderTrackingProviderListFragment"
@@ -242,6 +247,30 @@
             app:destination="@id/editShippingLabelAddressFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingLabelAddressSuggestionFragment"
+            app:destination="@id/shippingLabelAddressSuggestionFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPackagesFragment"
+            app:destination="@id/editShippingLabelPackagesFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/shippingLabelAddressSuggestionFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment"
+        android:label="ShippingLabelAddressSuggestionFragment">
+        <argument
+            android:name="enteredAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="suggestedAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="addressType"
+            app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
     </fragment>
     <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
@@ -267,5 +296,40 @@
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
             app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/editShippingLabelPackagesFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesFragment"
+        android:label="EditShippingLabelPackagesFragment"
+        tools:layout="@layout/fragment_edit_shipping_label_packages">
+        <argument
+            android:name="orderId"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="shippingLabelPackages"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
+        <argument
+            android:name="availablePackages"
+            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
+        <action
+            android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingPackageSelectorFragment"
+            app:destination="@id/shippingPackageSelectorFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/shippingPackageSelectorFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment"
+        android:label="ShippingPackageSelectorFragment"
+        tools:layout="@layout/fragment_shipping_packages_selector">
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <argument
+            android:name="availablePackages"
+            app:argType="com.woocommerce.android.model.ShippingPackage[]" />
     </fragment>
 </navigation>

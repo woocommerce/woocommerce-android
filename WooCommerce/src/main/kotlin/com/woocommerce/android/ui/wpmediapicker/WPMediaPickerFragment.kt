@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.wpmediapicker
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentWpmediaPickerBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -30,10 +29,11 @@ import com.woocommerce.android.ui.wpmediapicker.WPMediaGalleryView.WPMediaGaller
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_wpmedia_picker.*
 import javax.inject.Inject
 
-class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressListener {
+class WPMediaPickerFragment : BaseFragment(R.layout.fragment_wpmedia_picker),
+    WPMediaGalleryListener,
+    BackPressListener {
     companion object {
         private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
         const val KEY_WP_IMAGE_PICKER_RESULT = "key_wp_image_picker_result"
@@ -51,9 +51,26 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     private var doneOrUpdateMenuItem: MenuItem? = null
     private var isConfirmingDiscard = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private var _binding: FragmentWpmediaPickerBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_wpmedia_picker, container, false)
+        _binding = FragmentWpmediaPickerBinding.bind(view)
+
+        binding.wpMediaGallery.isMultiSelectionAllowed = navArgs.allowMultiple
+        initializeViewModel()
+
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
+            confirmDiscard()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,17 +84,6 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
         super.onPrepareOptionsMenu(menu)
 
         doneOrUpdateMenuItem?.isVisible = isMultiSelectAllowed
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        wpMediaGallery.isMultiSelectionAllowed = navArgs.allowMultiple
-        initializeViewModel()
-
-        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
-            confirmDiscard()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -112,12 +118,12 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun setupObservers() {
         viewModel.mediaList.observe(viewLifecycleOwner, Observer {
-            wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
+            binding.wpMediaGallery.showImages(it, this, isMultiSelectAllowed)
         })
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { loadingProgress.isVisible = it }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { loadingMoreProgress.isVisible = it }
+            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { binding.loadingProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.loadingMoreProgress.isVisible = it }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
             new.isMultiSelectionAllowed?.takeIfNotEqualTo(old?.isEmptyViewVisible) {
                 doneOrUpdateMenuItem?.isVisible = it
@@ -136,7 +142,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      * If any images are selected set the title to the selection count, otherwise use default title
      */
     override fun getFragmentTitle(): String {
-        val count = wpMediaGallery?.getSelectedCount()
+        val count = binding.wpMediaGallery.getSelectedCount()
         return if (count == 0) {
             getString(R.string.wpmedia_picker_title)
         } else {
@@ -149,8 +155,8 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
      * simply navigate back
      */
     private fun navigateBackWithResult() {
-        if (wpMediaGallery.getSelectedCount() > 0) {
-            navigateBackWithResult(KEY_WP_IMAGE_PICKER_RESULT, wpMediaGallery.getSelectedImages())
+        if (binding.wpMediaGallery.getSelectedCount() > 0) {
+            navigateBackWithResult(KEY_WP_IMAGE_PICKER_RESULT, binding.wpMediaGallery.getSelectedImages())
         } else {
             findNavController().navigateUp()
         }
@@ -169,7 +175,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     override fun onSelectionCountChanged() {
         requireActivity().title = getFragmentTitle()
 
-        if (!isMultiSelectAllowed && wpMediaGallery.getSelectedCount() == 1) {
+        if (!isMultiSelectAllowed && binding.wpMediaGallery.getSelectedCount() == 1) {
             navigateBackWithResult()
         }
     }
@@ -183,7 +189,7 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return if (wpMediaGallery.getSelectedCount() > 0) {
+        return if (binding.wpMediaGallery.getSelectedCount() > 0) {
             confirmDiscard()
             false
         } else {
@@ -209,11 +215,11 @@ class WPMediaPickerFragment : BaseFragment(), WPMediaGalleryListener, BackPressL
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            emptyText.show()
-            wpMediaGallery.hide()
+            binding.emptyText.show()
+            binding.wpMediaGallery.hide()
         } else {
-            emptyText.hide()
-            wpMediaGallery.show()
+            binding.emptyText.hide()
+            binding.wpMediaGallery.show()
         }
     }
 }

@@ -2,26 +2,23 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.zendesk.util.StringUtils
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_login_no_wpcom_account_found.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
 import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
-class LoginNoWPcomAccountFoundFragment : Fragment() {
+class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found) {
     companion object {
         const val TAG = "LoginNoWPcomAccountFoundFragment"
         const val ARG_EMAIL_ADDRESS = "email_address"
@@ -48,13 +45,12 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_login_no_wpcom_account_found, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+
+        val binding = FragmentLoginNoWpcomAccountFoundBinding.bind(view)
+        val btnBinding = binding.loginEpilogueButtonBar
 
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -64,9 +60,9 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-        no_wp_account_msg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
+        binding.noWpAccountMsg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
 
-        with(button_primary) {
+        with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_store_address)
             setOnClickListener {
                 unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
@@ -75,7 +71,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
             }
         }
 
-        with(button_secondary) {
+        with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
@@ -85,7 +81,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment() {
             }
         }
 
-        btn_find_connected_email.setOnClickListener {
+        binding.btnFindConnectedEmail.setOnClickListener {
             loginListener?.showHelpFindingConnectedEmail()
         }
     }

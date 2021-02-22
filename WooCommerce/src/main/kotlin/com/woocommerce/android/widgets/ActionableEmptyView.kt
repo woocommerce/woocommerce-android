@@ -4,21 +4,17 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textview.MaterialTextView
+import androidx.core.view.isVisible
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.actionable_empty_view.view.*
+import com.woocommerce.android.databinding.ActionableEmptyViewBinding
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {
-    lateinit var button: MaterialButton
-    lateinit var image: ImageView
-    lateinit var layout: View
-    lateinit var title: MaterialTextView
+    private val binding = ActionableEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         initView(context, attrs)
@@ -34,12 +30,6 @@ class ActionableEmptyView : LinearLayout {
         gravity = Gravity.CENTER
         orientation = VERTICAL
 
-        layout = View.inflate(context, R.layout.actionable_empty_view, this)
-
-        image = layout.findViewById(R.id.empty_view_image)
-        title = layout.findViewById(R.id.empty_view_text)
-        button = layout.findViewById(R.id.empty_view_button)
-
         attrs.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.ActionableEmptyView, 0, 0)
 
@@ -49,33 +39,37 @@ class ActionableEmptyView : LinearLayout {
             val titleAppearance = typedArray.getResourceId(R.styleable.ActionableEmptyView_aevTitleAppearance, 0)
 
             if (imageResource != 0) {
-                image.setImageResource(imageResource)
-                image.visibility = View.VISIBLE
+                binding.emptyViewImage.setImageResource(imageResource)
+                binding.emptyViewImage.visibility = View.VISIBLE
             }
 
             if (titleAppearance != 0) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    title.setTextAppearance(titleAppearance)
+                    binding.emptyViewText.setTextAppearance(titleAppearance)
                 } else {
-                    title.setTextAppearance(context, titleAppearance)
+                    binding.emptyViewText.setTextAppearance(context, titleAppearance)
                 }
             }
 
             if (!titleAttribute.isNullOrEmpty()) {
-                title.text = titleAttribute
+                binding.emptyViewText.text = titleAttribute
             } else {
                 throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")
             }
 
             if (!buttonAttribute.isNullOrEmpty()) {
-                button.text = buttonAttribute
-                button.visibility = View.VISIBLE
+                binding.emptyViewButton.text = buttonAttribute
+                binding.emptyViewButton.visibility = View.VISIBLE
             }
 
             typedArray.recycle()
         }
 
         checkOrientation()
+    }
+
+    fun showButton(show: Boolean) {
+        binding.emptyViewButton.isVisible = show
     }
 
     /**
@@ -91,17 +85,17 @@ class ActionableEmptyView : LinearLayout {
 
         if (isSearching) {
             params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            layout.setPadding(0, context.resources.getDimensionPixelSize(R.dimen.major_300), 0, 0)
+            binding.root.setPadding(0, context.resources.getDimensionPixelSize(R.dimen.major_300), 0, 0)
 
-            image.visibility = View.GONE
-            button.visibility = View.GONE
+            binding.emptyViewImage.visibility = View.GONE
+            binding.emptyViewButton.visibility = View.GONE
         } else {
             params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            layout.setPadding(0, 0, 0, 0)
+            binding.root.setPadding(0, 0, 0, 0)
         }
 
         params.topMargin = topMargin
-        layout.layoutParams = params
+        binding.root.layoutParams = params
     }
 
     /**
@@ -109,7 +103,7 @@ class ActionableEmptyView : LinearLayout {
      */
     private fun checkOrientation() {
         val isLandscape = DisplayUtils.isLandscape(context)
-        empty_view_image.visibility = if (empty_view_image.visibility == View.VISIBLE && !isLandscape) {
+        binding.emptyViewImage.visibility = if (binding.emptyViewImage.visibility == View.VISIBLE && !isLandscape) {
             View.VISIBLE
         } else {
             View.GONE

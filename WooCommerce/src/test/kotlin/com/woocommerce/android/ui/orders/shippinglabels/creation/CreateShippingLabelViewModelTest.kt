@@ -6,7 +6,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -21,6 +23,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +32,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
@@ -36,9 +41,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         private const val ORDER_ID = "123"
     }
 
-    private val repository: OrderDetailRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
+    private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
     private val addressValidator: ShippingLabelAddressValidator = mock()
+    private val site: SelectedSite = mock()
+    private val wooStore: WooCommerceStore = mock()
+    private val accountStore: AccountStore = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -49,6 +59,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val data = Data(
         originAddress = originAddress,
         shippingAddress = shippingAddress,
+        shippingPackages = emptyList(),
         flowSteps = setOf(ORIGIN_ADDRESS)
     )
 
@@ -124,16 +135,21 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 coroutinesTestRule.testDispatchers,
-                repository,
+                orderDetailRepository,
+                shippingLabelRepository,
                 stateMachine,
-                addressValidator
+                addressValidator,
+                site,
+                wooStore,
+                accountStore,
+                resourceProvider
             )
         )
 
         clearInvocations(
             viewModel,
             savedState,
-            repository,
+            orderDetailRepository,
             stateMachine
         )
     }

@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class ShowAddressEditor(
@@ -15,10 +18,17 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     data class ShowSuggestedAddress(
         val originalAddress: Address,
-        val suggestedAddress: Address
+        val suggestedAddress: Address,
+        val type: AddressType
     ) : CreateShippingLabelEvent()
 
     object CancelAddressEditing : CreateShippingLabelEvent()
+
+    object DiscardSuggestedAddress : CreateShippingLabelEvent()
+
+    data class UseSelectedAddress(val address: Address) : CreateShippingLabelEvent()
+
+    data class EditSelectedAddress(val address: Address) : CreateShippingLabelEvent()
 
     data class ShowCountrySelector(
         val locations: List<WCLocationModel>,
@@ -36,5 +46,11 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     data class DialPhoneNumber(
         val phoneNumber: String
+    ) : CreateShippingLabelEvent()
+
+    data class ShowPackageDetails(
+        val orderIdentifier: OrderIdentifier,
+        val shippingLabelPackages: List<ShippingLabelPackage>,
+        val availablePackages: List<ShippingPackage>
     ) : CreateShippingLabelEvent()
 }

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -34,6 +32,8 @@
             android:visibility="visible"/>
     </ScrollView>
 
-    <include layout="@layout/view_login_epilogue_button_bar" />
+    <include
+        android:id="@+id/login_epilogue_button_bar"
+        layout="@layout/view_login_epilogue_button_bar" />
 
 </LinearLayout>

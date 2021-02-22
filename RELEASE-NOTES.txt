@@ -1,7 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.1
+-----
+ 
+
 6.0
------ 
+-----
+* [*] Fixed a bug where the Top Performers were displayed twice. [https://github.com/woocommerce/woocommerce-android/pull/3514]
+* [**] Due to popular demand, the product SKU is displayed once again in Order Details screen. [https://github.com/woocommerce/woocommerce-android/pull/3517]
 
 5.9
 -----

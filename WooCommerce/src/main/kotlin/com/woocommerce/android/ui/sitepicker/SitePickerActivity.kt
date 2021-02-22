@@ -27,6 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.databinding.ActivitySitePickerBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.push.FCMRegistrationIntentService
 import com.woocommerce.android.support.HelpActivity
@@ -51,12 +52,6 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_site_picker.*
-import kotlinx.android.synthetic.main.fragment_login_jetpack_required.*
-import kotlinx.android.synthetic.main.view_login_epilogue_button_bar.*
-import kotlinx.android.synthetic.main.view_login_no_stores.*
-import kotlinx.android.synthetic.main.view_login_no_stores.btn_secondary_action
-import kotlinx.android.synthetic.main.view_login_user_info.*
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -116,12 +111,17 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private var hasConnectedStores: Boolean = false
 
+    private var _binding: ActivitySitePickerBinding? = null
+    private val binding get() = _binding!!
+
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_site_picker)
+
+        _binding = ActivitySitePickerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         currentSite = selectedSite.getIfExists()
 
@@ -129,36 +129,36 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 ?: intent.getBooleanExtra(KEY_CALLED_FROM_LOGIN, false)
 
         if (calledFromLogin) {
-            toolbar.visibility = View.GONE
-            button_help.setOnClickListener {
+            binding.toolbar.toolbar.visibility = View.GONE
+            binding.buttonHelp.setOnClickListener {
                 startActivity(HelpActivity.createIntent(this, Origin.LOGIN_EPILOGUE, null))
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_BUTTON_TAPPED)
                 if (calledFromLogin) {
                     unifiedLoginTracker.trackClick(Click.SHOW_HELP)
                 }
             }
-            site_list_container.elevation = resources.getDimension(R.dimen.plane_01)
+            binding.siteListContainer.elevation = resources.getDimension(R.dimen.plane_01)
         } else {
             // Opened from settings to change active store.
             overridePendingTransition(R.anim.activity_slide_in_from_right, R.anim.activity_slide_out_to_left)
 
-            toolbar.visibility = View.VISIBLE
-            setSupportActionBar(toolbar as Toolbar)
+            binding.toolbar.toolbar.visibility = View.VISIBLE
+            setSupportActionBar(binding.toolbar.toolbar as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             title = getString(R.string.site_picker_title)
-            button_help.visibility = View.GONE
-            site_list_label.visibility = View.GONE
-            site_list_container.elevation = 0f
-            (site_list_container.layoutParams as MarginLayoutParams).topMargin = 0
-            (site_list_container.layoutParams as MarginLayoutParams).bottomMargin = 0
+            binding.buttonHelp.visibility = View.GONE
+            binding.siteListLabel.visibility = View.GONE
+            binding.siteListContainer.elevation = 0f
+            (binding.siteListContainer.layoutParams as MarginLayoutParams).topMargin = 0
+            (binding.siteListContainer.layoutParams as MarginLayoutParams).bottomMargin = 0
         }
 
         presenter.takeView(this)
 
-        sites_recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.sitesRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         siteAdapter = SitePickerAdapter(this, this)
-        sites_recycler.adapter = siteAdapter
+        binding.sitesRecycler.adapter = siteAdapter
 
         loadUserInfo()
 
@@ -264,11 +264,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      * Load the user info view with user information and gravatar.
      */
     private fun loadUserInfo() {
-        text_displayname.text = presenter.getUserDisplayName()
+        binding.loginUserInfo.textDisplayname.text = presenter.getUserDisplayName()
 
         presenter.getUserName()?.let { userName ->
             if (userName.isNotEmpty()) {
-                text_username.text = String.format(getString(R.string.at_username), userName)
+                binding.loginUserInfo.textUsername.text = String.format(getString(R.string.at_username), userName)
             }
         }
 
@@ -276,7 +276,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             .load(presenter.getUserAvatarUrl())
             .placeholder(R.drawable.img_gravatar_placeholder)
             .circleCrop()
-            .into(image_avatar)
+            .into(binding.loginUserInfo.imageAvatar)
     }
 
     /**
@@ -288,24 +288,24 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
      */
     private fun showUserInfo(centered: Boolean) {
         if (calledFromLogin) {
-            user_info_group.visibility = View.VISIBLE
+            binding.loginUserInfo.loginUserInfo.visibility = View.VISIBLE
             if (centered) {
-                user_info_group.gravity = Gravity.CENTER
-                with(image_avatar) {
+                binding.loginUserInfo.loginUserInfo.gravity = Gravity.CENTER
+                with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_64)
                     requestLayout()
                 }
             } else {
-                user_info_group.gravity = Gravity.START
-                with(image_avatar) {
+                binding.loginUserInfo.loginUserInfo.gravity = Gravity.START
+                with(binding.loginUserInfo.imageAvatar) {
                     layoutParams.height = resources.getDimensionPixelSize(R.dimen.image_major_72)
                     layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_major_72)
                     requestLayout()
                 }
             }
         } else {
-            user_info_group.visibility = View.GONE
+            binding.loginUserInfo.loginUserInfo.visibility = View.GONE
         }
     }
 
@@ -318,13 +318,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 hasConnectedStores = true
 
                 // Make "show connected stores" visible to the user
-                button_secondary.visibility = View.VISIBLE
-                button_secondary.text = getString(R.string.login_view_connected_stores)
+                binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.VISIBLE
+                binding.loginEpilogueButtonBar.buttonSecondary.text = getString(R.string.login_view_connected_stores)
             } else {
                 hasConnectedStores = false
 
                 // Hide "show connected stores"
-                button_secondary.visibility = View.GONE
+                binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.GONE
             }
 
             loginSiteUrl?.let { processLoginSite(it) }
@@ -336,7 +336,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
             // Show the 'try another account' button in case the user
             // doesn't see the store they want to log into.
-            with(button_secondary) {
+            with(binding.loginEpilogueButtonBar.buttonSecondary) {
                 visibility = View.VISIBLE
                 text = getString(R.string.login_try_another_account)
                 setOnClickListener {
@@ -348,7 +348,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         } else {
             // Called from settings. Hide the button.
-            button_secondary.isVisible = false
+            binding.loginEpilogueButtonBar.buttonSecondary.isVisible = false
         }
 
         AnalyticsTracker.track(
@@ -356,19 +356,19 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to presenter.getWooCommerceSites().size)
         )
 
-        site_picker_root.visibility = View.VISIBLE
+        binding.sitePickerRoot.visibility = View.VISIBLE
 
         if (wcSites.isEmpty()) {
             showNoStoresView()
             return
         }
 
-        no_stores_view.visibility = View.GONE
-        btn_secondary_action.visibility = View.GONE
-        site_list_container.visibility = View.VISIBLE
-        btn_secondary_action.visibility = View.GONE
+        binding.noStoresView.noStoresViewText.visibility = View.GONE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
+        binding.siteListContainer.visibility = View.VISIBLE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
-        site_list_label.text = when {
+        binding.siteListLabel.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
             calledFromLogin -> getString(R.string.login_pick_store)
             else -> getString(R.string.site_picker_title)
@@ -381,7 +381,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             selectedSite.getIfExists()?.siteId ?: wcSites[0].siteId
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.done)
             isEnabled = true
             setOnClickListener {
@@ -396,7 +396,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
     override fun onSiteClick(siteId: Long) {
         clickedSiteId = siteId
-        button_primary.isEnabled = true
+        binding.loginEpilogueButtonBar.buttonPrimary.isEnabled = true
     }
 
     override fun siteSelected(site: SiteModel, isAutoLogin: Boolean) {
@@ -460,7 +460,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // re-select the previous site, if there was one
         siteAdapter.selectedSiteId = currentSite?.siteId ?: 0L
-        button_primary.isEnabled = siteAdapter.selectedSiteId != 0L
+        binding.loginEpilogueButtonBar.buttonPrimary.isEnabled = siteAdapter.selectedSiteId != 0L
 
         WooUpgradeRequiredDialog().show(supportFragmentManager)
     }
@@ -472,7 +472,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         val siteName = if (!TextUtils.isEmpty(site.name)) site.name else getString(R.string.untitled)
         Snackbar.make(
-                site_picker_root as ViewGroup,
+                binding.sitePickerRoot as ViewGroup,
                 getString(R.string.login_verifying_site_error, siteName),
                 BaseTransientBottomBar.LENGTH_LONG
         ).show()
@@ -488,11 +488,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
-        no_stores_view.visibility = View.VISIBLE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
@@ -501,7 +501,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_jetpack_view_instructions_alt)
             isEnabled = true
             setOnClickListener {
@@ -510,7 +510,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = View.VISIBLE
             text = getString(R.string.login_try_another_account)
             isEnabled = true
@@ -530,7 +530,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         when (show) {
-            true -> skeletonView.show(sites_recycler, R.layout.skeleton_site_picker, delayed = true)
+            true -> skeletonView.show(binding.sitesRecycler, R.layout.skeleton_site_picker, delayed = true)
             false -> skeletonView.hide()
         }
     }
@@ -604,13 +604,13 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
 
-        no_stores_view.text = getString(R.string.login_not_connected_to_account, url)
+        binding.noStoresView.noStoresViewText.text = getString(R.string.login_not_connected_to_account, url)
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_need_help_finding_email)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
@@ -621,7 +621,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_ACCOUNT_BUTTON_TAPPED)
@@ -632,7 +632,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 
@@ -661,11 +661,11 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.noStoresView.noStoresViewText.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
 
-        with(no_stores_view) {
+        with(binding.noStoresView.noStoresViewText) {
             val refreshAppText = getString(R.string.login_refresh_app_continue)
             val notConnectedText = getString(
                     R.string.login_not_connected_jetpack,
@@ -696,7 +696,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        with(btn_secondary_action) {
+        with(binding.noStoresView.btnSecondaryAction) {
             text = getString(R.string.login_jetpack_what_is)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
@@ -705,7 +705,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             visibility = View.VISIBLE
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_store)
             setOnClickListener {
                 AnalyticsTracker.track(Stat.SITE_PICKER_TRY_ANOTHER_STORE_BUTTON_TAPPED)
@@ -716,7 +716,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 
@@ -750,12 +750,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
         }
 
         showUserInfo(centered = true)
-        site_picker_root.visibility = View.VISIBLE
-        no_stores_view.visibility = View.VISIBLE
-        site_list_container.visibility = View.GONE
-        btn_secondary_action.visibility = View.GONE
+        binding.sitePickerRoot.visibility = View.VISIBLE
+        binding.noStoresView.noStoresView.visibility = View.VISIBLE
+        binding.siteListContainer.visibility = View.GONE
+        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
-        with(no_stores_view) {
+        with(binding.noStoresView.noStoresViewText) {
             // Build and configure the error message and make part of the message
             // clickable. When clicked, we'll fetch a fresh copy of the active site from the API.
             val siteName = site.name.takeIf { !it.isNullOrEmpty() } ?: site.url
@@ -783,7 +783,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        with(button_primary) {
+        with(binding.loginEpilogueButtonBar.buttonPrimary) {
             text = getString(R.string.login_try_another_account)
 
             setOnClickListener {
@@ -795,7 +795,7 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             }
         }
 
-        with(button_secondary) {
+        with(binding.loginEpilogueButtonBar.buttonSecondary) {
             visibility = if (hasConnectedStores) {
                 text = getString(R.string.login_view_connected_stores)
 

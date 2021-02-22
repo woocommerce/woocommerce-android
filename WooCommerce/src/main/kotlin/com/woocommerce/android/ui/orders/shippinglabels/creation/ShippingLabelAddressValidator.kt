@@ -22,21 +22,27 @@ class ShippingLabelAddressValidator @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     suspend fun validateAddress(address: Address, type: AddressType): ValidationResult {
-        val result = withContext(Dispatchers.IO) {
-            shippingLabelStore.verifyAddress(selectedSite.get(), address.toShippingLabelAddress(), type.toDataType())
-        }
-
-        return if (result.isError) {
-            // TODO: Add analytics
-            ValidationResult.Error(result.error.type)
+        if (isNameMissing(address)) {
+            return ValidationResult.NameMissing
         } else {
-            when (result.model) {
+            val result = withContext(Dispatchers.IO) {
+                shippingLabelStore.verifyAddress(
+                    selectedSite.get(),
+                    address.toShippingLabelAddress(),
+                    type.toDataType()
+                )
+            }
+
+            return if (result.isError) {
+                // TODO: Add analytics
+                ValidationResult.Error(result.error.type)
+            } else when (result.model) {
                 null -> ValidationResult.Error(GENERIC_ERROR)
                 is InvalidRequest -> ValidationResult.NotFound((result.model as InvalidRequest).message)
                 is InvalidAddress -> ValidationResult.Invalid((result.model as InvalidAddress).message)
                 is WCAddressVerificationResult.Valid -> {
                     val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
-                    if (suggestion != address) {
+                    if (suggestion.toString() != address.toString()) {
                         ValidationResult.SuggestedChanges(suggestion)
                     } else {
                         ValidationResult.Valid
@@ -46,9 +52,16 @@ class ShippingLabelAddressValidator @Inject constructor(
         }
     }
 
+    private fun isNameMissing(address: Address): Boolean {
+        return (address.firstName + address.lastName).isBlank() && address.company.isBlank()
+    }
+
     sealed class ValidationResult : Parcelable {
         @Parcelize
         object Valid : ValidationResult()
+
+        @Parcelize
+        object NameMissing : ValidationResult()
 
         @Parcelize
         data class SuggestedChanges(val suggested: Address) : ValidationResult()

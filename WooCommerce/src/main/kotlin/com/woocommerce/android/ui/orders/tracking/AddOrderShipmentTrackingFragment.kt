@@ -115,7 +115,10 @@ class AddOrderShipmentTrackingFragment : BaseFragment(R.layout.fragment_add_ship
             }
 
             new.date.takeIfNotEqualTo(old?.date) {
-                binding.date.setText(DateUtils().getLocalizedLongDateString(requireActivity(), it))
+                DateUtils().getLocalizedLongDateString(requireActivity(), it)
+                    .let { localizedString ->
+                        binding.date.setText(localizedString.orEmpty())
+                    }
             }
 
             new.showLoadingProgress.takeIfNotEqualTo(old?.showLoadingProgress) {

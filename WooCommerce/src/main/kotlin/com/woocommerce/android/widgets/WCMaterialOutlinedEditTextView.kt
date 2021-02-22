@@ -7,13 +7,13 @@ import android.text.Editable
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.util.SparseArray
-import android.view.View
+import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.AttrRes
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import kotlinx.android.synthetic.main.view_material_outlined_edittext.view.*
+import com.woocommerce.android.databinding.ViewMaterialOutlinedEdittextBinding
 
 /**
  * Custom View that encapsulates a [TextInputLayout] and [TextInputEditText], and as such has the following
@@ -36,11 +36,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.wcMaterialOutlinedEditTextViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleAttr) {
+    private val binding = ViewMaterialOutlinedEdittextBinding.inflate(LayoutInflater.from(context), this)
+
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-EDITTEXT-VIEW-SUPER-STATE"
     }
     init {
-        View.inflate(context, R.layout.view_material_outlined_edittext, this)
         if (attrs != null) {
             val a = context.obtainStyledAttributes(
                     attrs,
@@ -48,7 +49,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
             )
             try {
                 // Set the edit text input type
-                edit_text.inputType = a.getInt(
+                binding.editText.inputType = a.getInt(
                         R.styleable.WCMaterialOutlinedEditTextView_android_inputType,
                         EditorInfo.TYPE_TEXT_VARIATION_NORMAL
                 )
@@ -72,27 +73,27 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     }
 
     fun setText(selectedText: String) {
-        edit_text.setText(selectedText)
+        binding.editText.setText(selectedText)
     }
 
-    fun getText() = edit_text.text.toString()
+    fun getText() = binding.editText.text.toString()
 
     fun setSelection(start: Int, stop: Int) {
-        edit_text.setSelection(start, stop)
+        binding.editText.setSelection(start, stop)
     }
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {
-        edit_text.doAfterTextChanged {
+        binding.editText.doAfterTextChanged {
             cb(it)
         }
     }
 
     fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
-        edit_text.setOnEditorActionListener { _, action, _ ->
+        binding.editText.setOnEditorActionListener { _, action, _ ->
             if (action == EditorInfo.IME_ACTION_DONE) {
-                val text = edit_text.text.toString()
+                val text = binding.editText.text.toString()
                 if (text.isNotEmpty()) {
-                    edit_text.setText("")
+                    binding.editText.setText("")
                     cb.invoke(text)
                 } else false
             } else {
@@ -106,18 +107,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     }
 
     fun setMaxLength(max: Int) {
-        edit_text.filters += InputFilter.LengthFilter(max)
-    }
-
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-
-        edit_text?.isEnabled = enabled
+        binding.editText.filters += InputFilter.LengthFilter(max)
     }
 
     override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
-        edit_text.onSaveInstanceState()?.let {
+        binding.editText.onSaveInstanceState()?.let {
             bundle.putParcelable(KEY_SUPER_STATE, WCSavedState(super.onSaveInstanceState(), it))
         }
         return bundle
@@ -131,7 +126,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     }
 
     private fun restoreViewState(state: WCSavedState): Parcelable {
-        edit_text.onRestoreInstanceState(state.savedState)
+        binding.editText.onRestoreInstanceState(state.savedState)
         return state.superState
     }
 

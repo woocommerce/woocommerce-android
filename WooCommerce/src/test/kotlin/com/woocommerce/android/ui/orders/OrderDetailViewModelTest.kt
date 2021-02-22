@@ -541,6 +541,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             if (it is ShowSnackbar) snackbar = it
         }
 
+        viewModel.order = order
         viewModel.start()
         viewModel.onOrderStatusChanged(CoreOrderStatus.PROCESSING.value)
         viewModel.updateOrderStatus(CoreOrderStatus.PROCESSING.value)

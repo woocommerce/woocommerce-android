@@ -82,13 +82,14 @@ data class Address(
 
     override fun toString(): String {
         return StringBuilder()
-            .appendWithIfNotEmpty("$firstName $lastName".trim())
+            .appendWithIfNotEmpty(this.company)
+            .appendWithIfNotEmpty("$firstName $lastName".trim(), "\n")
             .appendWithIfNotEmpty(this.address1, "\n")
             .appendWithIfNotEmpty(this.address2, "\n")
             .appendWithIfNotEmpty(this.city, "\n")
             .appendWithIfNotEmpty(this.state)
-            .appendWithIfNotEmpty(this.postcode)
-            .appendWithIfNotEmpty(this.country, "\n")
+            .appendWithIfNotEmpty(this.postcode, " ")
+            .appendWithIfNotEmpty(getCountryLabelByCountryCode(), "\n")
             .toString()
     }
 }
