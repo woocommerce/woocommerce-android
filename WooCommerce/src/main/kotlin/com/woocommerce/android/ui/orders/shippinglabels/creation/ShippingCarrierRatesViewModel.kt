@@ -57,7 +57,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         )
 
         if (carrierRatesResult.isError) {
-            viewState = viewState.copy(isEmptyViewVisible = true)
+            viewState = viewState.copy(isEmptyViewVisible = true, isDoneButtonVisible = false)
             if (carrierRatesResult.error.original != NOT_FOUND) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_shipping_carrier_rates_generic_error))
             }
@@ -76,7 +76,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     }
                 )
             }
-            viewState = viewState.copy(isEmptyViewVisible = false)
+            viewState = viewState.copy(isEmptyViewVisible = false, isDoneButtonVisible = true)
         }
     }
 
@@ -101,8 +101,9 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val bannerMessage: String? = null,
-        val isLoading: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isLoading: Boolean = false,
+        val isEmptyViewVisible: Boolean = false,
+        val isDoneButtonVisible: Boolean = false
     ) : Parcelable
 
     @Parcelize

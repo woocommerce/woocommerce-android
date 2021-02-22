@@ -39,6 +39,8 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var resourceProvider: ResourceProvider
 
+    private var doneMenuItem: MenuItem? = null
+
     private var _binding: FragmentShippingCarrierRatesBinding? = null
     private val binding get() = _binding!!
 
@@ -94,6 +96,8 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.menu_done, menu)
+        doneMenuItem = menu.findItem(R.id.menu_done)
+        doneMenuItem?.isVisible = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -116,15 +120,18 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
             }
-            new.isLoading?.takeIfNotEqualTo(old?.isLoading) { isLoading ->
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
                 binding.loadingProgress.isVisible = isLoading
             }
-            new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
+            new.isEmptyViewVisible.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
                 if (isVisible) {
                     binding.emptyView.show(SHIPPING_LABEL_CARRIER_RATES)
                 } else {
                     binding.emptyView.hide()
                 }
+            }
+            new.isDoneButtonVisible.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
+                doneMenuItem?.isVisible = isVisible
             }
         }
 
