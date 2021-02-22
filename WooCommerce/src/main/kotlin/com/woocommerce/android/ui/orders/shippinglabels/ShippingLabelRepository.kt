@@ -87,15 +87,16 @@ class ShippingLabelRepository @Inject constructor(
             orderId,
             origin.toShippingLabelModel(),
             destination.toShippingLabelModel(),
-            packages.filter { it.selectedPackage != null }.mapIndexed { i, box ->
+            packages.mapIndexed { i, box ->
+                val pack = requireNotNull(box.selectedPackage)
                 WCShippingLabelModel.ShippingLabelPackage(
                     id = "package$i",
-                    boxId = box.selectedPackage!!.id,
-                    height = box.selectedPackage.dimensions.height.toFloat(),
-                    width = box.selectedPackage.dimensions.width.toFloat(),
-                    length = box.selectedPackage.dimensions.length.toFloat(),
+                    boxId = pack.id,
+                    height = pack.dimensions.height.toFloat(),
+                    width = pack.dimensions.width.toFloat(),
+                    length = pack.dimensions.length.toFloat(),
                     weight = box.weight.toFloat(),
-                    isLetter = box.selectedPackage.isLetter
+                    isLetter = pack.isLetter
                 )
             }
         )
