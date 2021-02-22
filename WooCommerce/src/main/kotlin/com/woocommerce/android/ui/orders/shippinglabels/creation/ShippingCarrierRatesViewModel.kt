@@ -46,15 +46,15 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadRates() {
-        val rates = shippingLabelRepository.getShippingRates(
+        val shippingPackages = shippingLabelRepository.getShippingRates(
             arguments.orderId,
             arguments.originAddress,
             arguments.destinationAddress,
             arguments.packages.toList()
         )
 
-        if (rates != null) {
-            _shippingRates.value = rates.mapIndexed { i, pkg ->
+        if (shippingPackages != null) {
+            _shippingRates.value = shippingPackages.mapIndexed { i, pkg ->
                 PackageRateList(
                     title = pkg.shippingOptions.first().optionId,
                     itemCount = arguments.packages[i].items.size,
@@ -70,9 +70,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             }
         }
 
-        val ratesUnavailable = rates.isNullOrEmpty() || rates.any { it.shippingOptions.isEmpty() }
+        val areRatesUnavailable = shippingPackages.isNullOrEmpty() || shippingPackages.any { pack ->
+            pack.shippingOptions.isEmpty() || pack.shippingOptions.all { it.rates.isEmpty() }
+        }
 
-        viewState = viewState.copy(isEmptyViewVisible = ratesUnavailable)
+        viewState = viewState.copy(isEmptyViewVisible = areRatesUnavailable)
     }
 
     private fun getCarrier(it: Rate) =
