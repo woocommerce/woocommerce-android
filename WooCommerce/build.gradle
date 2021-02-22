@@ -258,9 +258,7 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
     androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
-    implementation(group: 'com.zendesk', name: 'support', version: '4.0.0') {
-        exclude group: 'com.google.dagger'
-    }
+    implementation "com.zendesk:support:5.0.2"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
