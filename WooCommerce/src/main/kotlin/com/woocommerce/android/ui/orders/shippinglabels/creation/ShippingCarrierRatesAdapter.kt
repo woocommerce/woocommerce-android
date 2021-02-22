@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesViewModel.PackageRateList
 
 class ShippingCarrierRatesAdapter(
-    internal val onRateSelected: (ShippingRate) -> Unit
+    private val onRateSelected: (ShippingRate) -> Unit
 ) : RecyclerView.Adapter<RateListViewHolder>() {
     var items: List<PackageRateList> = emptyList()
         set(value) {
