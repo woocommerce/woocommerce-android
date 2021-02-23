@@ -704,7 +704,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         downloads: List<ProductFile>? = null,
         downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
-        isDownloadable: Boolean? = null
+        isDownloadable: Boolean? = null,
+        attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -757,7 +758,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     downloads = downloads ?: product.downloads,
                     downloadLimit = downloadLimit ?: product.downloadLimit,
                     downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable
+                    isDownloadable = isDownloadable ?: product.isDownloadable,
+                    attributes = attributes ?: product.attributes
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -1038,6 +1040,28 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
         productRepository.getGlobalAttributes()
+
+    /**
+     * Adds a local attribute to the product
+     */
+    fun addProductAttribute(attributeName: String) {
+        // get the list of current attributes
+        val attributes = ArrayList<ProductAttribute>()
+        viewState.productDraft?.attributes?. let {
+            attributes.addAll(it)
+        }
+
+        // add the new one to the list
+        attributes.add(
+            ProductAttribute(
+                id = 0L,
+                name = attributeName,
+                terms = emptyList(),
+                isVisible = true)
+        )
+
+        updateProductDraft(attributes = attributes)
+    }
 
     /**
      * Updates the product to the backend only if network is connected.

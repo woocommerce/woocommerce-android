@@ -76,6 +76,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
+        binding.attributeEditText.setOnEditorActionListener {
+            viewModel.addProductAttribute(it)
+            true
+        }
+
         viewModel.fetchGlobalAttributes()
     }
 
