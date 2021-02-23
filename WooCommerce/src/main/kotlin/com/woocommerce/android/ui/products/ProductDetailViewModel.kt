@@ -996,6 +996,13 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Clears the global attribute terms
+     */
+    fun resetGlobalAttributeTerms() {
+        _attributeTermsList.value = emptyList()
+    }
+
+    /**
      * User clicked an attribute in the attribute list fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
