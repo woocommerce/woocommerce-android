@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
