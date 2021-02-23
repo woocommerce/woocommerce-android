@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -76,8 +77,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
-        binding.attributeEditText.setOnEditorActionListener {
-            viewModel.addProductAttribute(it)
+        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+            val attributeName = binding.attributeEditText.text?.toString() ?: ""
+            if (attributeName.isNotBlank()) {
+                viewModel.addLocalAttribute(attributeName)
+            }
             true
         }
 

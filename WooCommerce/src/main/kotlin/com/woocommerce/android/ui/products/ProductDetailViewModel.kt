@@ -1042,12 +1042,29 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.getGlobalAttributes()
 
     /**
-     * Adds a local attribute to the product
+     * Returns true if an attribute with this name is attached to the product draft
      */
-    fun addProductAttribute(attributeName: String) {
+    private fun containsAttributeName(attributeName: String): Boolean {
+        viewState.productDraft?.attributes?.forEach {
+            if (it.name.equals(attributeName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Called from the attribute list when the user enters a new attribute
+     */
+    fun addLocalAttribute(attributeName: String) {
+        if (containsAttributeName(attributeName)) {
+            triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+            return
+        }
+
         // get the list of current attributes
         val attributes = ArrayList<ProductAttribute>()
-        viewState.productDraft?.attributes?. let {
+        viewState.productDraft?.attributes?.let {
             attributes.addAll(it)
         }
 
@@ -1060,7 +1077,11 @@ class ProductDetailViewModel @AssistedInject constructor(
                 isVisible = true)
         )
 
+        // update the draft with the new list
         updateProductDraft(attributes = attributes)
+
+        // take the user to the add attribute terms screen
+        triggerEvent(AddProductAttributeTerms(0L, attributeName))
     }
 
     /**
