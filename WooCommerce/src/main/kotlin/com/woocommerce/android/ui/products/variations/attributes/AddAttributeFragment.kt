@@ -101,7 +101,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: CombinedAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
+            adapter = CombinedAttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
