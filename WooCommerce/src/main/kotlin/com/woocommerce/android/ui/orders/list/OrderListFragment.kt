@@ -406,6 +406,12 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         }
     }
 
+    private fun openOrderCreation() {
+        AnalyticsTracker.track(Stat.ORDERS_LIST_ADD_ORDER_TAPPED)
+        setStateWhenNavigationToChild()
+        (activity as? MainNavigationRouter)?.showOrderCreationScreen()
+    }
+
     override fun openOrderDetail(localOrderId: Int, remoteOrderId: Long, orderStatus: String) {
         // Track user clicked to open an order and the status of that order
         AnalyticsTracker.track(
@@ -415,6 +421,11 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         )
         )
 
+        setStateWhenNavigationToChild()
+        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
+    }
+
+    private fun setStateWhenNavigationToChild() {
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
         if (isSearching) {
@@ -424,9 +435,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             searchQuery = savedSearch
             isSearching = true
         }
-
         showOptionsMenu(false)
-        (activity as? MainNavigationRouter)?.showOrderDetail(selectedSite.get().id, localOrderId, remoteOrderId)
     }
 
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
@@ -752,7 +761,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     private fun showFabIfFeatureEnabled() {
         if (ORDER_CREATION.isEnabled(activity)) {
-            fabManager.showFabAnimated(R.string.orderlist_add_order_button) { viewModel.onAddOrderButtonClicked() }
+            fabManager.showFabAnimated(R.string.orderlist_add_order_button) { openOrderCreation() }
         } else {
             fabManager.hideFabImmediately()
         }

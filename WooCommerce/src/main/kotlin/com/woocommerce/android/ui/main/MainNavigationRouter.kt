@@ -13,6 +13,7 @@ interface MainNavigationRouter {
         remoteOrderId: Long,
         remoteNoteId: Long = 0
     )
+    fun showOrderCreationScreen()
     fun showAddProduct()
     fun showReviewDetail(
         remoteReviewId: Long,

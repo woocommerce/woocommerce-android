@@ -833,6 +833,11 @@
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
     <string name="product_images_validate_drag_and_drop">Validate</string>
 
+    <!--
+        Order Creation
+    -->
+    <string name="order_creation_new_order">New order</string>
+
 
     <!--
         Empty list messages

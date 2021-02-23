@@ -245,10 +245,6 @@ class OrderListViewModel @AssistedInject constructor(
         activePagedListWrapper?.invalidateData()
     }
 
-    fun onAddOrderButtonClicked() {
-        // TO-DO #3604
-    }
-
     /**
      * Activates the provided list by first removing the LiveData sources for the active list,
      * then creating new LiveData sources for the provided [pagedListWrapper] and setting it as

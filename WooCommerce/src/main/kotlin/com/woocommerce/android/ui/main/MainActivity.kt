@@ -861,6 +861,10 @@ class MainActivity : AppUpgradeActivity(),
         navController.navigateSafely(action)
     }
 
+    override fun showOrderCreationScreen() {
+        navController.navigateSafely(OrderListFragmentDirections.actionOrderListFragmentToNewOrderFragment())
+    }
+
     override fun showFeedbackSurvey() {
         NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.MAIN).apply {
             navController.navigateSafely(this)

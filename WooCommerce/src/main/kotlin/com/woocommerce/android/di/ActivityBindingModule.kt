@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainModule
 import com.woocommerce.android.ui.mystore.MyStoreModule
 import com.woocommerce.android.ui.orders.OrdersModule
+import com.woocommerce.android.ui.orders.creation.common.di.OrderCreationModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.AppSettingsModule
@@ -32,6 +33,7 @@ abstract class ActivityBindingModule {
             MainModule::class,
             MyStoreModule::class,
             OrdersModule::class,
+            OrderCreationModule::class,
             RefundsModule::class,
             ProductsModule::class,
             ReviewsModule::class,
