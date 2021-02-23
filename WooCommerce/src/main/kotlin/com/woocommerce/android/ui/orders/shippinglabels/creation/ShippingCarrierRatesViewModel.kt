@@ -60,6 +60,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             viewState = viewState.copy(isEmptyViewVisible = true, isDoneButtonVisible = false)
             if (carrierRatesResult.error.original != NOT_FOUND) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_shipping_carrier_rates_generic_error))
+                triggerEvent(Exit)
             }
         } else {
             _shippingRates.value = carrierRatesResult.model!!.mapIndexed { i, pkg ->
