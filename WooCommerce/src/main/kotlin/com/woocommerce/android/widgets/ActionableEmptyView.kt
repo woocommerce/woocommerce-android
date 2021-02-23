@@ -72,6 +72,10 @@ class ActionableEmptyView : LinearLayout {
         binding.emptyViewButton.isVisible = show
     }
 
+    fun setOnClickListener(action: (View) -> Unit) {
+        binding.emptyViewButton.setOnClickListener(action)
+    }
+
     /**
      * Update actionable empty view layout when used while searching.  The following characteristics are for each case:
      *      Default - center in parent, use original top margin
