@@ -44,6 +44,7 @@
             app:aevTitleAppearance="?attr/textAppearanceSubtitle1"
             app:aevTitle="@string/product_variant_list_empty"
             app:aevImage="@drawable/ic_empty_variations"
+            app:aevButton="@string/product_variant_list_empty_action"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>

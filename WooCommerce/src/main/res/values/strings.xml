@@ -679,6 +679,7 @@
     <string name="product_wip_message_m3">You can now edit grouped, external and variable products, change product type and update categories and tags.</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Add your first variation</string>
+    <string name="product_variant_list_empty_action">Add Attribute</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
