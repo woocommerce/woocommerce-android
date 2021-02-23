@@ -32,7 +32,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -63,7 +62,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var fabManager: FabManager
 
     private lateinit var productAdapter: ProductListAdapter
 
@@ -463,4 +461,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun shouldExpandToolbar(): Boolean {
         return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
     }
+
+    override val hasFab = true
 }

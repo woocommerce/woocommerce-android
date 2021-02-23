@@ -329,6 +329,14 @@ class MainActivity : AppUpgradeActivity(),
     }
 
     /**
+     * Returns if currently navigating to top-level fragment has a FAB.
+     * Returns false if currently navigation not to a top-level fragment.
+     */
+    override fun currentDestinationHasFab(): Boolean {
+        return getActiveChildFragment() == null && getActiveTopLevelFragment()?.hasFab == true
+    }
+
+    /**
      * Returns true if the navigation controller is showing the root fragment (ie: a top level fragment is showing)
      */
     override fun isAtNavigationRoot(): Boolean {

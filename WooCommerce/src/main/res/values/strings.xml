@@ -226,6 +226,7 @@
     <string name="orderlist_search_hint">Search orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
+    <string name="orderlist_add_order_button">Add order</string>
     <!--
         Order Detail Views
     -->

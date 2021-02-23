@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.main
 
 interface MainNavigationRouter {
+    fun currentDestinationHasFab(): Boolean
+
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 

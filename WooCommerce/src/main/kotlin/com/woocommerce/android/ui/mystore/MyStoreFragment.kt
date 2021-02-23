@@ -450,4 +450,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
+
+    override val hasFab = false
 }

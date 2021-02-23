@@ -20,12 +20,10 @@ import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
@@ -66,7 +64,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
-    @Inject internal lateinit var fabManager: FabManager
 
     private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
 
@@ -751,10 +748,11 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
 
+    override val hasFab = ORDER_CREATION.isEnabled(activity)
+
     private fun showFabIfFeatureEnabled() {
         if (ORDER_CREATION.isEnabled(activity)) {
-            // TO-DO set correct content description
-            fabManager.showFabAnimated(string.add_products_button) { viewModel.onAddOrderButtonClicked() }
+            fabManager.showFabAnimated(R.string.orderlist_add_order_button) { viewModel.onAddOrderButtonClicked() }
         } else {
             fabManager.hideFabImmediately()
         }
