@@ -1,0 +1,4 @@
+6.0 :
+Nouveauté de la version 6.0
+
+Vous l’avez demandé, nous vous avons écouté ! Suite à une demande récurrente, l’UGS du produit apparaît également dans l’écran Détails de la commande. Nous avons également résolu un problème se traduisant par un double affichage erroné des produits les plus performants de votre boutique.

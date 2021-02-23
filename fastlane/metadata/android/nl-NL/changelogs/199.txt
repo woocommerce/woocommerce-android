@@ -1,0 +1,4 @@
+6.0:
+Wat is er nieuw in onze 6.0-uitgave?
+
+Jij vraagt, wij draaien! Op veler verzoek wordt de product-SKU weer weergegeven in het scherm Bestelgegevens. We hebben ook een probleem opgelost waarbij toppresteerders in je winkel per ongeluk twee keer werden weergegeven.

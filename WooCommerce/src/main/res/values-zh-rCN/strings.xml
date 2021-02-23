@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-05 09:54:04+0000
+Translation-Revision-Date: 2021-02-19 17:23:45+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">包裹总重：%1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%2$d 包裹中有 %1$d 件商品</string>
+    <string name="shipping_label_single_package_total_weight">包裹总重：%1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">定制包裹</string>
+    <string name="shipping_label_package_details_fetch_products_error">无法获取产品</string>
+    <string name="shipping_label_missing_data_snackbar_message">有些必填字段为空。</string>
+    <string name="shipping_label_package_details_weight_error">重量无效</string>
+    <string name="shipping_label_package_selector_title">选定包裹</string>
+    <string name="shipping_label_packages_loading_message">请稍候…</string>
+    <string name="shipping_label_packages_loading_title">加载包裹！</string>
+    <string name="shipping_label_package_details_title_template">包裹 %1$d</string>
+    <string name="shipping_label_package_details_items_count">“%1$d 件商品”</string>
+    <string name="shipping_label_packages_loading_error">无法加载包裹定义</string>
+    <string name="shipping_label_package_details_weight_info">包含包裹重量</string>
+    <string name="shipping_label_package_details_weight_hint">包裹总重 (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">选定包裹</string>
+    <string name="shipping_label_package_details_section_title">包裹详细信息</string>
+    <string name="shipping_label_package_details_move_item">移动</string>
+    <string name="shipping_label_package_details_items_section_title">要履单的商品</string>
+    <string name="shipping_label_address_suggestion_suggested_address">推荐的地址</string>
+    <string name="shipping_label_address_suggestion_entered_address">输入的地址</string>
+    <string name="shipping_label_address_suggestion_banner">我们稍微修改了输入的地址。 如果正确，请使用推荐的地址，以确保准确交付。</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">编辑选定地址</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">使用选定地址</string>
+    <string name="shipping_label_edit_address_loading_progress_title">正在加载地址数据</string>
     <string name="product_wip_title_m5">已推出新功能！</string>
     <string name="product_wip_message_m5">您现在可以为产品添加可下载的文件，并链接追加销售和交叉销售产品。 不再想要某款产品了吗？ 将该产品移至回收站！</string>
     <string name="order_refunds_shipping_refund_notice_fees">您可以退还运费和税款 %s</string>
@@ -18,7 +43,7 @@ Language: zh_CN
     <string name="shipping_label_error_address_not_found">找不到地址</string>
     <string name="shipping_label_edit_address_error_warning">我们无法自动验证配送地址。 请在 Google Maps 上查看，或尝试联系客户以确保地址正确。</string>
     <string name="shipping_label_edit_address_validation_error">地址验证失败</string>
-    <string name="shipping_label_edit_address_validation_progress_message">请稍候…</string>
+    <string name="shipping_label_edit_address_progress_message">请稍候…</string>
     <string name="shipping_label_edit_address_validation_progress_title">正在进行地址验证</string>
     <string name="shipping_label_edit_data_loading_error">无法加载地址数据</string>
     <string name="shipping_label_edit_address_use_address_as_is">使用输入的地址</string>
@@ -972,7 +997,6 @@ Language: zh_CN
     <string name="new_notifications">%d 条新通知</string>
     <string name="about_version">版本 %s</string>
     <string name="about_tos">服务条款</string>
-    <string name="about_publisher">发布者：Automattic, Inc</string>
     <string name="about_appname">WooCommerce for Android</string>
     <string name="support_identity_input_dialog_name_label">名称</string>
     <string name="settings_licenses">开源许可协议</string>

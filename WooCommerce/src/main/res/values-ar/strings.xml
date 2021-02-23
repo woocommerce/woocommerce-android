@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-04 15:54:04+0000
+Translation-Revision-Date: 2021-02-19 10:57:22+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ من العناصر موجودة في ⁦%2$d⁩ من الحزم</string>
+    <string name="shipping_label_single_package_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">حزم مخصصة</string>
+    <string name="shipping_label_package_details_fetch_products_error">يتعذر إحضار المنتجات</string>
+    <string name="shipping_label_missing_data_snackbar_message">بعض الحقول المطلوبة فارغة.</string>
+    <string name="shipping_label_package_details_weight_error">وزن غير صالح</string>
+    <string name="shipping_label_package_selector_title">الحزمة المحدَّدة</string>
+    <string name="shipping_label_packages_loading_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_packages_loading_title">تحميل الحزم!</string>
+    <string name="shipping_label_package_details_title_template">الحزمة ⁦%1$d⁩</string>
+    <string name="shipping_label_package_details_items_count">\"⁦%1$d⁩ من العناصر\"</string>
+    <string name="shipping_label_packages_loading_error">يتعذر تحميل تعريفات الحزمة</string>
+    <string name="shipping_label_package_details_weight_info">يتضمن وزن الحزمة</string>
+    <string name="shipping_label_package_details_weight_hint">إجمالي وزن الحزمة (⁦%1$s⁩)</string>
+    <string name="shipping_label_package_details_selected_package_hint">تم تحديد الحزمة</string>
+    <string name="shipping_label_package_details_section_title">تفاصيل الحزمة</string>
+    <string name="shipping_label_package_details_move_item">نقل</string>
+    <string name="shipping_label_package_details_items_section_title">العناصر المراد تنفيذها</string>
+    <string name="shipping_label_address_suggestion_suggested_address">العنوان المقترح</string>
+    <string name="shipping_label_address_suggestion_entered_address">العنوان الذي تم إدخاله</string>
+    <string name="shipping_label_address_suggestion_banner">لقد أجرينا تعديلاً طفيفًا على العنوان الذي تم إدخاله. إذا كان صحيحًا، فيرجى استخدام العنوان المقترح لضمان التوصيل الدقيق.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">تحرير العنوان المحدَّد</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">استخدام العنوان المحدَّد</string>
+    <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
     <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
     <string name="order_refunds_shipping_refund_notice_fees">يمكنك استرداد المبالغ المدفوعة في الرسوم ومبالغ الشحن والضرائب %s</string>
@@ -18,7 +43,7 @@ Language: ar
     <string name="shipping_label_error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="shipping_label_edit_address_error_warning">تعذر علينا التحقُّق من عنوان الشحن تلقائيًا. اعرضه على خرائط غوغل أو حاول الاتصال بالعميل للتأكُّد من صحة العنوان.</string>
     <string name="shipping_label_edit_address_validation_error">فشل التحقُّق من صحة العنوان</string>
-    <string name="shipping_label_edit_address_validation_progress_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_edit_address_progress_message">يُرجى الانتظار…</string>
     <string name="shipping_label_edit_address_validation_progress_title">التحقُّق من صحة العنوان قيد التقدُّم</string>
     <string name="shipping_label_edit_data_loading_error">يتعذر تحميل بيانات العنوان</string>
     <string name="shipping_label_edit_address_use_address_as_is">استخدام العنوان كما تم إدخاله</string>
@@ -233,7 +258,7 @@ Language: ar
     <string name="product_type_edit">تغيير نوع المنتج</string>
     <string name="product_variation_no_price_set">لم يتم تعيين أي سعر</string>
     <string name="product_variation_enabled">مُفعل</string>
-    <string name="product_pricing_scheduled_sale_price_error">يجب عليك تعيين سعر البيع إذا تمت جدولة البيع</string>
+    <string name="product_pricing_scheduled_sale_price_error">يجب عليك تعيين سعر التخفيض إذا تمت جدولة التخفيض</string>
     <string name="product_wip_message_m3">يمكنك الآن تحرير المنتجات المجمَّعة والخارجية والمتغيِّرة، وتغيير نوع المنتج، وتحديث التصنيفات والوسوم.</string>
     <string name="product_review_list_item_title">⁦%1$s⁩ تم ترك مراجعة</string>
     <string name="feedback_request_like_it">يعجبني</string>
@@ -388,8 +413,8 @@ Language: ar
     <string name="product_tax_settings">إعدادات الضريبة</string>
     <string name="product_schedule_sale_to_label">إلى</string>
     <string name="product_schedule_sale_from_label">من</string>
-    <string name="product_schedule_sale_sublabel">بدء البيع وانتهاؤه تلقائيًا</string>
-    <string name="product_schedule_sale_label">جدولة البيع</string>
+    <string name="product_schedule_sale_sublabel">بدء التخفيض وانتهاؤه تلقائيًا</string>
+    <string name="product_schedule_sale_label">جدولة التخفيض</string>
     <string name="order_refunds_store_admin_link_text">في مسؤول المتجر الخاص بك</string>
     <string name="order_refunds_shipping_refund_notice">يمكنك استرداد %s من مبالغ الشحن والضرائب</string>
     <string name="orders_empty_message_with_order_status_filter">نأسف لذلك، لم نتمكن من العثور على أي \"%s\" من الطلبات</string>
@@ -422,7 +447,7 @@ Language: ar
     <string name="product_sku_summary">يساعد في التعرف على هذا المنتج بسهولة</string>
     <string name="product_sale_date_from">من %1$s</string>
     <string name="product_sale_date_from_to">%1$s - %2$s</string>
-    <string name="product_sale_dates">تواريخ البيع</string>
+    <string name="product_sale_dates">تواريخ التخفيض</string>
     <string name="product_price_empty">إضافة سعر</string>
     <string name="product_inventory_empty">إضافة المخزون</string>
     <string name="orderlist_loading">جارٍ البحث عن طلباتك…</string>
@@ -888,24 +913,24 @@ Language: ar
     <string name="product_size">الحجم</string>
     <string name="product_weight">الوزن</string>
     <string name="product_shipping">الشحن</string>
-    <string name="product_backorders">Backorders</string>
-    <string name="product_stock_quantity">Stock quantity</string>
-    <string name="product_stock_status">Stock status</string>
+    <string name="product_backorders">الطلبات المسبقة</string>
+    <string name="product_stock_quantity">كمية المخزون</string>
+    <string name="product_stock_status">حالة المخزون</string>
     <string name="product_sku">SKU</string>
-    <string name="product_sale_price">Sale price</string>
-    <string name="product_regular_price">Regular price</string>
-    <string name="product_price">Price</string>
-    <string name="product_inventory">Inventory</string>
-    <string name="product_pricing_and_inventory">Pricing and inventory</string>
-    <string name="product_purchase_note">Purchase note</string>
+    <string name="product_sale_price">سعر التخفيض</string>
+    <string name="product_regular_price">السعر العادي</string>
+    <string name="product_price">السعر</string>
+    <string name="product_inventory">المخزون</string>
+    <string name="product_pricing_and_inventory">السعر والمخزون</string>
+    <string name="product_purchase_note">ملاحظة عند الشراء</string>
     <string name="product_name">العنوان</string>
-    <string name="product_detail_fetch_product_error">Error fetching product</string>
+    <string name="product_detail_fetch_product_error">خطأ عند تحميل المنتج</string>
     <string name="add_order_note_invalid_order">طب غير صالح</string>
-    <string name="order_shipment_tracking_copy_to_clipboard">Copy tracking number to clipboard</string>
-    <string name="order_shipment_tracking_section_cd">Shipment tracking</string>
+    <string name="order_shipment_tracking_copy_to_clipboard">نسخ رقم تتبع الشحنة</string>
+    <string name="order_shipment_tracking_section_cd">تعقب الحزمة</string>
     <string name="order_shipment_tracking_button">تعقب الحزمة</string>
-    <string name="order_shipment_tracking_number_clipboard">Tracking number copied to the clipboard</string>
-    <string name="order_shipment_tracking_number">Tracking Number</string>
+    <string name="order_shipment_tracking_number_clipboard">تم نسخ رقم تتبع الشحنة</string>
+    <string name="order_shipment_tracking_number">رقم تتبع الشحنة</string>
     <string name="order_shipment_tracking">التعقب</string>
     <string name="error_copy_to_clipboard">حدث خطأ أثناء النسخ إلى الحافظة</string>
     <string name="settings_switch_site_notifs_msg">تم التبديل إلى %s. لن تتلقى إلا تنبيهات لهذا المتجر</string>
@@ -972,7 +997,6 @@ Language: ar
     <string name="new_notifications">%d من الإخطارات الجديدة</string>
     <string name="about_version">الإصدار %s</string>
     <string name="about_tos">شروط الخدمة</string>
-    <string name="about_publisher">الناشر: Automattic, Inc</string>
     <string name="about_appname">WooCommerce لنظام التشغيل Android</string>
     <string name="support_identity_input_dialog_name_label">الاسم</string>
     <string name="settings_licenses">تراخيص المصدر المفتوحة</string>
