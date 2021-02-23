@@ -147,6 +147,9 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
+        binding.emptyView.setOnClickListener {
+            // TODO call variation creation view
+        }
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
@@ -162,7 +165,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (isEmptyViewVisible) {
                     WooAnimUtils.fadeIn(binding.emptyView)
-                    binding.emptyView.showButton(false)
+                    binding.emptyView.showButton(true)
                 } else {
                     WooAnimUtils.fadeOut(binding.emptyView)
                 }
