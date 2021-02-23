@@ -445,6 +445,8 @@ platform :android do
     version = options[:version]
     prerelease = options[:prerelease] || false
 
+    project_root = File.dirname(File.expand_path(File.dirname(__FILE__)))
+    
     # APKs built on CI are not signed with master key, which means Google Sign-In won't work with those.
     # So don't attach them to the release, as this ends up being confusing for beta-testers.
     apk_file_path = File.join(project_root, 'artifacts', universal_apk_name(version)) unless is_ci

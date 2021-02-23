@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 13:54:03+0000
+Translation-Revision-Date: 2021-02-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ פריטים ב-⁦%2$d⁩ חבילות</string>
+    <string name="shipping_label_single_package_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">חבילות מותאמות אישית</string>
+    <string name="shipping_label_package_details_fetch_products_error">אין אפשרות להביא מוצרים</string>
+    <string name="shipping_label_missing_data_snackbar_message">חלק מהשדות הנדרשים ריקים.</string>
+    <string name="shipping_label_package_details_weight_error">משקל לא חוקי</string>
+    <string name="shipping_label_package_selector_title">חבילה שנבחרה</string>
+    <string name="shipping_label_packages_loading_message">רק רגע…</string>
+    <string name="shipping_label_packages_loading_title">טוען את החבילות!</string>
+    <string name="shipping_label_package_details_title_template">חבילה ⁦%1$d⁩</string>
+    <string name="shipping_label_package_details_items_count">\"⁦%1$d⁩ פירטים\"</string>
+    <string name="shipping_label_packages_loading_error">אין אפשרות לטעון את הגדרות החבילה</string>
+    <string name="shipping_label_package_details_weight_info">כולל המשקל של החבילה</string>
+    <string name="shipping_label_package_details_weight_hint">משקל החבילה הכולל (⁦%1$s⁩)</string>
+    <string name="shipping_label_package_details_selected_package_hint">החבילה נבחרה</string>
+    <string name="shipping_label_package_details_section_title">פרטי החבילה</string>
+    <string name="shipping_label_package_details_move_item">להעביר</string>
+    <string name="shipping_label_package_details_items_section_title">פריטים להשלים</string>
+    <string name="shipping_label_address_suggestion_suggested_address">כתובת מומלצת</string>
+    <string name="shipping_label_address_suggestion_entered_address">כתובת שהוזנה</string>
+    <string name="shipping_label_address_suggestion_banner">שינינו מעט את הכתובת שהוזנה. אם הכתובת נכונה, אנחנו מציעים להשתמש בכתובת המומלצת כדי לוודא שהיעד למשלוח מדויק.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">לערוך את הכתובת שנבחרה</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">להשתמש בכתובת שנבחרה</string>
+    <string name="shipping_label_edit_address_loading_progress_title">טוען את הנתונים של הכתובת</string>
     <string name="product_wip_title_m5">אפשרויות חדשות זמינות!</string>
     <string name="product_wip_message_m5">כעת אפשר להוסיף קבצים שניתנים להורדה למוצר ולקשר מוצרים של שדרוגי מכירות ושל מכירות משלימות. אין לך עוד צורך במוצר מסוים? אפשר להעביר אותו לפח!</string>
     <string name="order_refunds_shipping_refund_notice_fees">אפשר להנפיק החזר כספי עבור סכומים של עמלות, משלוח ומיסים %s</string>
@@ -972,7 +997,6 @@ Language: he_IL
     <string name="new_notifications">%d הודעות חדשות</string>
     <string name="about_version">גרסה %s</string>
     <string name="about_tos">תנאי שימוש</string>
-    <string name="about_publisher">פורסם על ידי: Automattic, Inc‎</string>
     <string name="about_appname">WooCommerce ל-Android</string>
     <string name="support_identity_input_dialog_name_label">שם</string>
     <string name="settings_licenses">רישיונות קוד פתוח</string>

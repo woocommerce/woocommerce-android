@@ -55,6 +55,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onDestroyView() {
+        viewModel.resetGlobalAttributeTerms()
         super.onDestroyView()
         _binding = null
     }
