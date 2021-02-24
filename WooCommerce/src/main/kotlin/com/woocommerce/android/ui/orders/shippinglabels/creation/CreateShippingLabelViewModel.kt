@@ -215,7 +215,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
                     paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
-                    orderSummaryState = null
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.SHIPPING_ADDRESS -> {
@@ -226,7 +226,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
                     paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
-                    orderSummaryState = null
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.PACKAGING -> {
@@ -237,7 +237,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
                     paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
-                    orderSummaryState = null
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.CUSTOMS -> {
@@ -248,7 +248,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.current(),
                     carrierStep = Step.notDone(),
                     paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
-                    orderSummaryState = null
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.CARRIER -> {
@@ -258,7 +258,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.current(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.PAYMENT -> {
@@ -269,7 +270,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
                     paymentStep = Step.current(data.currentPaymentMethod.stepDescription),
-                    orderSummaryState = null
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.DONE -> {
@@ -281,7 +282,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     carrierStep = Step.done(),
                     paymentStep = Step.done(data.currentPaymentMethod.stepDescription),
                     orderSummaryState = OrderSummaryState(
-                        BigDecimal.TEN, BigDecimal.ONE
+                        isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
                     )
                 )
             }
@@ -471,7 +472,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val customsStep: Step? = null,
         val carrierStep: Step? = null,
         val paymentStep: Step? = null,
-        val orderSummaryState: OrderSummaryState? = null,
+        val orderSummaryState: OrderSummaryState = OrderSummaryState(),
         val progressDialogState: ProgressDialogState = ProgressDialogState()
     ) : Parcelable
 
@@ -488,8 +489,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     @Parcelize
     data class OrderSummaryState(
-        val price: BigDecimal,
-        val discount: BigDecimal?
+        val isVisible: Boolean = false,
+        val price: BigDecimal = BigDecimal.ZERO,
+        val discount: BigDecimal? = null
     ) : Parcelable
 
     @Parcelize

@@ -305,8 +305,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         data.isHighlighted?.let { isHighlighted = it }
     }
 
-    private fun ViewShippingLabelOrderSummaryBinding.update(state: OrderSummaryState?) {
-        if (state == null) {
+    private fun ViewShippingLabelOrderSummaryBinding.update(state: OrderSummaryState) {
+        if (!state.isVisible) {
             root.isVisible = false
             return
         }
