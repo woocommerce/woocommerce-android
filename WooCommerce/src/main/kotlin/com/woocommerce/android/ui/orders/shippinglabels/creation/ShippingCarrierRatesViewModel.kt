@@ -85,10 +85,12 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         } else {
             _shippingRates.value = carrierRatesResult.model!!.mapIndexed { i, pkg ->
                 PackageRateList(
+                    pkg.boxId,
                     title = pkg.shippingOptions.first().optionId,
                     itemCount = arguments.packages[i].items.size,
                     rateOptions = pkg.shippingOptions.first().rates.map {
                         ShippingRate(
+                            it.rateId,
                             it.title,
                             it.deliveryDays,
                             it.rate,
@@ -123,7 +125,12 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             else -> throw IllegalArgumentException("Unsupported carrier ID: `${it.carrierId}`")
         }
 
-    fun onShippingRateSelected(rate: ShippingRate) {
+    fun onShippingRateSelected(packageId: String, rateId: String) {
+        val list = shippingRates.value?.toMutableList()
+        list?.indexOfFirst { it.id == packageId }?.let { i ->
+            list[i] = list[i].copy(selectedRate = list[i].rateOptions.first { it.id == rateId })
+        }
+        _shippingRates.value = list
     }
 
     fun onDoneButtonClicked() {
@@ -143,6 +150,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
 
     @Parcelize
     data class PackageRateList(
+        val id: String,
         val title: String,
         val itemCount: Int,
         val rateOptions: List<ShippingRate>,

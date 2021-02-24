@@ -6,6 +6,7 @@ import java.math.BigDecimal
 
 @Parcelize
 data class ShippingRate(
+    val id: String,
     val title: String,
     val deliveryEstimate: Int,
     val price: BigDecimal,

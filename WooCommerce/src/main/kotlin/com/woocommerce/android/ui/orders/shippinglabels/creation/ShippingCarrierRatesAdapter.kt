@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesViewModel.PackageRateList
 
 class ShippingCarrierRatesAdapter(
-    private val onRateSelected: (ShippingRate) -> Unit
+    private val onRateSelected: (String, String) -> Unit
 ) : RecyclerView.Adapter<RateListViewHolder>() {
     var items: List<PackageRateList> = emptyList()
         set(value) {
@@ -54,7 +54,7 @@ class ShippingCarrierRatesAdapter(
             )}"
 
             val ratesAdapter = binding.rateOptions.adapter as? RateListAdapter ?: RateListAdapter()
-            ratesAdapter.updateRates(rateList.rateOptions, rateList.selectedRate)
+            ratesAdapter.updateRates(rateList)
 
             binding.rateOptions.apply {
                 adapter = ratesAdapter
@@ -65,16 +65,18 @@ class ShippingCarrierRatesAdapter(
     }
 
     private inner class RateListAdapter : RecyclerView.Adapter<RateViewHolder>() {
-        private var selectedRate: ShippingRate? = null
+        private lateinit var packageId: String
+        private var selectedRateId: String? = null
         private var items: List<ShippingRate> = emptyList()
             set(value) {
                 field = value
                 notifyDataSetChanged()
             }
 
-        fun updateRates(rates: List<ShippingRate>, selectedRate: ShippingRate?) {
-            this.items = rates
-            this.selectedRate = selectedRate
+        fun updateRates(packageRateList: PackageRateList) {
+            this.packageId = packageRateList.id
+            this.selectedRateId = packageRateList.selectedRate?.id
+            this.items = packageRateList.rateOptions
         }
 
         override fun getItemCount(): Int = items.size
@@ -85,7 +87,7 @@ class ShippingCarrierRatesAdapter(
         }
 
         override fun onBindViewHolder(holder: RateViewHolder, position: Int) {
-            holder.bind(items[position], items[position] == selectedRate)
+            holder.bind(items[position], items[position].id == selectedRateId)
         }
 
         private inner class RateViewHolder(
@@ -114,7 +116,7 @@ class ShippingCarrierRatesAdapter(
                 binding.carrierRadioButton.isChecked = isSelected
 
                 binding.root.setOnClickListener {
-                    onRateSelected(rate)
+                    onRateSelected(packageId, rate.id)
                 }
             }
         }
