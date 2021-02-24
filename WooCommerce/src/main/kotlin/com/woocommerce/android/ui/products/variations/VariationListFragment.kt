@@ -148,7 +148,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
-        binding.emptyView.setOnClickListener {
+        binding.firstVariationView.setOnClickListener {
             // TODO call variation creation view
         }
     }
