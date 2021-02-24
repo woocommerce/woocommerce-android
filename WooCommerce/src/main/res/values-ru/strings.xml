@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 16:54:40+0000
+Translation-Revision-Date: 2021-02-18 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Общий вес посылок: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">Число товаров в посылках (%2$d): %1$d</string>
+    <string name="shipping_label_single_package_total_weight">Общий вес посылок: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Специальные посылки</string>
+    <string name="shipping_label_package_details_fetch_products_error">Не удаётся получить данные о товарах</string>
+    <string name="shipping_label_missing_data_snackbar_message">Некоторые обязательные поля не заполнены.</string>
+    <string name="shipping_label_package_details_weight_error">Неверный вес</string>
+    <string name="shipping_label_package_selector_title">Выбранная посылка</string>
+    <string name="shipping_label_packages_loading_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_packages_loading_title">Загрузка посылок!</string>
+    <string name="shipping_label_package_details_title_template">Посылка %1$d</string>
+    <string name="shipping_label_package_details_items_count">\"Товаров: %1$d\"</string>
+    <string name="shipping_label_packages_loading_error">Не удаётся загрузить определения посылок</string>
+    <string name="shipping_label_package_details_weight_info">Включает вес посылок</string>
+    <string name="shipping_label_package_details_weight_hint">Общий вес посылок (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Посылка выбрана</string>
+    <string name="shipping_label_package_details_section_title">Сведения о посылке</string>
+    <string name="shipping_label_package_details_move_item">Переместить</string>
+    <string name="shipping_label_package_details_items_section_title">Товары в заказе к выполнению</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Предложенный адрес</string>
+    <string name="shipping_label_address_suggestion_entered_address">Введённый адрес</string>
+    <string name="shipping_label_address_suggestion_banner">Мы немного изменили введённый адрес. Если всё правильно, используйте предложенный адрес для доставки по назначению.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Редактировать выбранный адрес</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Использовать выбранный адрес</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
     <string name="product_wip_message_m5">Теперь вы можете добавлять к товару скачиваемые файлы и давать ссылки на сопутствующие и более дорогие товары. Товар больше не нужен? Отправьте его в корзину!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Можно получить возврат оплаты товара, доставки и суммы налогов (%s)</string>
@@ -972,7 +997,6 @@ Language: ru
     <string name="new_notifications">Новых уведомлений: %d</string>
     <string name="about_version">Версия %s</string>
     <string name="about_tos">Условия предоставления услуг</string>
-    <string name="about_publisher">Автор: Automattic, Inc</string>
     <string name="about_appname">WooCommerce для Android</string>
     <string name="support_identity_input_dialog_name_label">Имя</string>
     <string name="settings_licenses">Лицензии на ПО с открытым исходным кодом</string>

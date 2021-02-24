@@ -9,12 +9,14 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
@@ -39,6 +41,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelectionCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressDiscarded
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
@@ -51,14 +55,12 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.text.DecimalFormat
 
-@ExperimentalCoroutinesApi
 class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
@@ -150,7 +152,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
-                        is SideEffect.ShowCarrierOptions -> handleResult { Event.ShippingCarrierSelected }
+                        is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
@@ -175,6 +177,17 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         if (progressDialogTitle != 0) {
             viewState = viewState.copy(progressDialogState = ProgressDialogState(isShown = false))
         }
+    }
+
+    private fun openShippingCarrierRates(data: Data) {
+        triggerEvent(
+            ShowShippingRates(
+                data.remoteOrderId,
+                data.originAddress,
+                data.shippingAddress,
+                data.shippingPackages
+            )
+        )
     }
 
     private fun openPackagesDetails(currentShippingPackages: List<ShippingLabelPackage>) {
@@ -280,9 +293,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             it.model!!
         }
         return Event.DataLoaded(
+            remoteOrderId = order.remoteId,
             originAddress = getStoreAddress(),
             shippingAddress = order.shippingAddress,
-            currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId })
+            currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId }
+        )
     }
 
     private fun getStoreAddress(): Address {
@@ -388,6 +403,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onPaymentsEditCanceled() {
         stateMachine.handleEvent(EditPaymentCanceled)
+    }
+
+    fun onShippingCarriersSelected(carriers: List<ShippingRate>) {
+        stateMachine.handleEvent(ShippingCarrierSelected)
+    }
+
+    fun onShippingCarrierSelectionCanceled() {
+        stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
     fun onEditButtonTapped(step: FlowStep) {

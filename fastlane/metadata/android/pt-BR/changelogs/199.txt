@@ -1,0 +1,4 @@
+6.0:
+Novidades da versão 6.0.
+
+Você pediu, nós atendemos! Devido a inúmeros pedidos, o SKU do produto é exibido mais uma vez na tela de Detalhes do pedido. Também corrigimos um problema em que os melhores desempenhos em sua loja eram exibidos duas vezes incorretamente.

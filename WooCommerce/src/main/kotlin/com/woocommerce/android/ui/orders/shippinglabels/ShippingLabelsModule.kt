@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.Edi
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.EditShippingLabelPackagesFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.EditShippingLabelPaymentFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.PrintShippingLabelFragmentModule
+import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingCarriersFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingLabelAddressSuggestionFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingLabelRefundFragmentModule
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelsModule.ShippingPackageSelectorFragmentModule
@@ -17,6 +18,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentModule
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionModule
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment
@@ -32,6 +35,7 @@ import dagger.android.ContributesAndroidInjector
     ShippingLabelAddressSuggestionFragmentModule::class,
     EditShippingLabelPackagesFragmentModule::class,
     ShippingPackageSelectorFragmentModule::class,
+    ShippingCarriersFragmentModule::class,
     EditShippingLabelPaymentFragmentModule::class
 ])
 object ShippingLabelsModule {
@@ -82,5 +86,11 @@ object ShippingLabelsModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [EditShippingLabelPaymentModule::class])
         abstract fun shippingPackageSelectorFragment(): EditShippingLabelPaymentFragment
+    }
+    @Module
+    abstract class ShippingCarriersFragmentModule {
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [ShippingCarrierRatesModule::class])
+        abstract fun shippingCarriersFragment(): ShippingCarrierRatesFragment
     }
 }

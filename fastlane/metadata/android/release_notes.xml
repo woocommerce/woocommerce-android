@@ -1,68 +1,102 @@
 <ar>
-5.9:
-تدور كل هذه الجولة الخاصة بتحديثات تطبيق WooCommerce على الهاتف حول الإصلاحات. عالجنا أعطالاً نادرة كانت تحدث عند إضافة تصنيف منتج جديد، وإعادة ترتيب الصور، وتحرير النص، وإنشاء ملصقات الشحن، وتصفية المنتجات. قمنا أيضًا بتحديث حد المهلة الموضوع لطلبات الخادم، وإزالة بطاقة تفاصيل الشراء القديمة من تفاصيل المنتج.
+6.0:
+ما الجديد في الإصدار 6.0 الخاص بنا؟
+
+لقد سألت واستمعنا! بسبب طلب الجماهير، يتم عرض وحدة SKU الخاصة بالمنتج مرة أخرى في شاشة تفاصيل الطلب. أصلحنا كذلك مشكلة كان يتم فيها عرض أهم العملاء في مخزنك مرتين على نحو غير صحيح.
 </ar>
 <de-DE>
-5.9:
-Bei diese Reihe von Aktualisierungen der mobilen WooCommerce-App dreht sich alles um Fehlerbehebungen. Wir haben seltene Abstürze behoben, die beim Hinzufügen einer neuen Produktkategorie, beim Nachbestellen von Fotos, beim Bearbeiten von Text, beim Erstellen von Versandetiketten und beim Filtern von Produkten auftraten. Wir haben auch eine Zeitüberschreitungsgrenze für Serveranfragen aktualisiert und die veraltete Karte mit den Kaufdetails aus den Produktdetails entfernt.
+6.0:
+Neuerungen in unserer Version 6.0
+
+Euer Wunsch ist uns Befehl! Aufgrund der großen Nachfrage wird die Produkt-SKU wieder auf dem Bildschirm mit den Bestelldetails angezeigt. Wir haben auch ein Problem behoben, bei dem Topseller in deinem Store fälschlicherweise zweimal angezeigt wurden.
 </de-DE>
 <es-ES>
-5.9:
-Esta ronda de actualizaciones de la aplicación de WooCommerce se ha centrado en aportar soluciones. Nos hemos ocupado de algunos fallos raros que se producían al añadir una nueva categoría de producto, reordenar fotos, editar texto, crear etiquetas de envío y filtrar productos. También hemos actualizado el límite de tiempo de espera de las solicitudes del servidor y hemos eliminado la tarjeta de información de compras de Detalles del producto, que estaba obsoleta.
+6.0:
+Novedades de la versión 6.0
+
+Hemos respondido a tus peticiones. Por demanda popular, ahora la SKU de los productos vuelve a mostrarse en la pantalla Detalles del pedido. También hemos corregido un problema por el que los productos con mejor rendimiento se mostraban dos veces por error.
 </es-ES>
 <fr-FR>
-5.9 :
-Cette vague de mises à jour de l’application mobile WooCommerce reprend avant tout des correctifs. Nous nous sommes penchés sur les incidents rares qui se produisaient lors de l’ajout d’une nouvelle catégorie de produits, de la réorganisation de photos, de la modification de texte, de la création d’étiquettes d’expédition et du filtrage des produits. Nous avons également mis à jour une limite d’expiration pour les demandes de serveur et supprimé la carte obsolète des détails de l’achat de la section des détails du produit.
+6.0 :
+Nouveauté de la version 6.0
+
+Vous l’avez demandé, nous vous avons écouté ! Suite à une demande récurrente, l’UGS du produit apparaît également dans l’écran Détails de la commande. Nous avons également résolu un problème se traduisant par un double affichage erroné des produits les plus performants de votre boutique.
 </fr-FR>
 <iw-IL>
-5.9:
-הגרסה החדשה של האפליקציה לנייד של WooCommerce מתמקדת בתיקונים. טיפלנו בכמה מקרים נדירים של קריסות שהתרחשו בעת הוספה של קטגוריית מוצר חדשה, שינוי סדר של תמונות, עריכת טקסט, יצירה של תוויות משלוח ושל סינון מוצרים. בנוסף, עדכנו את מגבלת הזמן הקצוב לבקשות שרת והסרנו את כרטיס הפרטים של רכישות מיושנות מפרטי המוצר.
+6.0:
+מה חדש בגרסת 6.0?
+
+הקשבנו לבקשות מהמשתמשים! עקב הביקוש הרב, ה-SKU של המוצר מוצג שוב במסך 'פרטי הזמנה'. תיקנו גם בעיה שגרמה לביצועים המובילים בחנות להופיע פעמיים בצורה לא תקינה.
 </iw-IL>
 <id>
-5.9:
-Pembaruan aplikasi seluler WooCommerce kali ini semuanya meliputi perbaikan. Kami mengatasi masalah crash yang terjadi saat menambahkan kategori produk baru, menyusun ulang foto, menyunting teks, membuat label pengiriman, dan menyaring produk. Kami juga memperbarui batas waktu habis untuk permintaan ke server, serta menghapus kartu rincian pembelian usang dari detail produk.
+6.0:
+Apa yang baru di rilis 6.0 kami?
+
+Anda meminta, kami menyediakannya! Karena banyaknya permintaan, SKU produk akan ditampilkan sekali lagi pada layar Detail Pesanan. Kami juga memperbaiki masalah saat produk dengan performa tertinggi di toko Anda salah ditampilkan dua kali.
 </id>
 <it-IT>
-5.9:
-Questi aggiornamenti per l'app per dispositivi mobili di WooCommerce riguardano principalmente le correzioni. Abbiamo risolto i rari arresti anomali che si verificavano con l'aggiunta di una nuova categoria di prodotto, il riordino di foto, la modifica del testo, la creazione di etichette di spedizione e il filtraggio di prodotti. Abbiamo anche aggiornato un limite di timeout per le richieste dei server e rimosso dai dettagli del prodotto l'obsoleta scheda con i dettagli di acquisto.
+6.0:
+Novità del rilascio 6.0
+
+Tu hai chiesto, noi abbiamo ascoltato. A grande richiesta, lo SKU del prodotto viene visualizzato nuovamente nella schermata Dettagli dell'ordine. Abbiamo anche risolto un problema per il quale i risultati migliori nel negozio venivano visualizzati in modo errato due volte.
 </it-IT>
 <ja-JP>
-5.9:
-今回の WooCommerce モバイルアプリの更新は、すべて修正に関するものです。 新しい商品カテゴリの追加時、写真の並べ替え時、テキストの編集時、配送ラベルの作成時、商品のフィルター時にまれに発生していたクラッシュを修正しました。 また、サーバーリクエストのタイムアウトの制限を更新し、商品の詳細から古くなった購入詳細カードを削除しました。
+6.0:
+6.0リリースの新機能
+
+ご不明な点があればお知らせください。 多くのご要望をいただきましたが、製品の SKU が「注文詳細」画面で再度表示されるようになりました。 また、ストアのトップパフォーマーが誤って2回表示されていた問題も修正しました。
 </ja-JP>
 <ko-KR>
-5.9:
-이번 WooCommerce 모바일 앱 업데이트는 모두 수정 사항에 관한 내용입니다. 새 제품 카테고리 추가, 사진 재정렬, 텍스트 편집, 배송 레이블 생성 및 제품 필터링 시 드물게 발생하는 충돌을 해결했습니다. 또한 서버 요청에 대한 시간 제한을 업데이트했고, 사용되지 않는 구매 상세 정보 카드를 제품 상세 정보에서 제거했습니다.
+6.0:
+6.0 릴리스의 새로운 기능
+
+여러 회원의 질문을 경청했습니다! 많이 사용하는 제품 SKU가 주문 상세 정보 화면에 한 번 더 표시됩니다. 스토어의 최고 인기 상품이 올바르지 않게 두 번 표시되는 문제도 해결했습니다.
 </ko-KR>
 <nl-NL>
-5.9:
-Bij deze update van de mobiele WooCommerce-app staan oplossingen centraal. We hebben zeldzame crashes aangepakt die zich voordeden bij het toevoegen van een nieuwe productcategorie, het herschikken van foto's, het bewerken van tekst, het aanmaken van verzendlabels en het filteren van producten. We hebben ook een time-outlimiet bijgewerkt voor serveraanvragen en hebben de overbodige kaart met aankoopgegevens uit de productgegevens verwijderd.
+6.0:
+Wat is er nieuw in onze 6.0-uitgave?
+
+Jij vraagt, wij draaien! Op veler verzoek wordt de product-SKU weer weergegeven in het scherm Bestelgegevens. We hebben ook een probleem opgelost waarbij toppresteerders in je winkel per ongeluk twee keer werden weergegeven.
 </nl-NL>
 <pt-BR>
-5.9:
-Essa série de atualizações do aplicativo móvel do WooCommerce disponibiliza diversas correções. Corrigimos erros raros que ocorriam ao adicionar uma nova categoria de produtos, reordenar fotos, editar textos, criar etiquetas de envio e filtrar produtos. Também atualizamos o limite de tempo para solicitações do servidor e removemos dos detalhes do produto o cartão de detalhes de compra, que estava obsoleto.
+6.0:
+Novidades da versão 6.0.
+
+Você pediu, nós atendemos! Devido a inúmeros pedidos, o SKU do produto é exibido mais uma vez na tela de Detalhes do pedido. Também corrigimos um problema em que os melhores desempenhos em sua loja eram exibidos duas vezes incorretamente.
 </pt-BR>
 <ru-RU>
-5.9
-В этом обновлении мобильного приложения WooCommerce исправлены ошибки. Мы устранили редкие сбои, которые происходили при добавлении новой категории товара, изменении порядка фотографий, редактировании текста, создании транспортных этикеток и фильтрации продуктов. Мы также изменили ограничения по времени ожидания для запросов сервера и удалили из информации о продукте устаревшую карточку сведений о покупке.
+6.0: 
+Что нового в выпуске 6.0?
+
+Вы просили — мы сделали! По многочисленным просьбам мы вернули отображение артикула товара на странице сведений о заказе. Мы также исправили ошибку, которая заключалась в том, что самые продаваемые товары вашего магазина отображались дважды.
 </ru-RU>
 <sv-SE>
-5.9:
-Denna omgång av uppdateringar av WooCommerce-mobilappen handlar om korrigeringar. Vi tog itu med sällsynta kraschar som inträffade när vi la till en ny produktkategori, ordnade om foton, redigerade text, skapade fraktetiketter och filtrerade produkter. Vi uppdaterade också en tidsgräns för serverförfrågningar och tog bort det föråldrade inköpsinformationskortet från produktinformation.
+6.0:
+Vad är nytt i vår 6.0-utgåva?
+
+Du frågade, vi lyssnade! På grund av allmän begäran visas produkt-SKU en gång till på skärmen för beställningsinformation. Vi korrigerade också ett problem där toppresultat i din butik visades felaktigt två gånger.
 </sv-SE>
 <tr-TR>
-5,9:
-WooCommerce mobil uygulama güncellemelerini içeren bu paket tamamen düzeltmelerle ilgilidir.  Yeni bir ürün kategorisi eklerken, fotoğrafları yeniden sıralarken, metin düzenlerken, nakliye etiketleri oluştururken ve ürünleri filtrelerken ortaya çıkan nadir hata durumlarını düzelttik.  Ayrıca sunucu istekleri için zaman aşımı sınırını güncelledik ve ürün ayrıntılarından eski satın alma ayrıntıları kartını kaldırdık.
+6.0:
+6.0 sürümümüzdeki yenilikler nelerdir?
+
+Siz istediniz, biz yaptık! Yoğun talepten dolayı ürün SKU'su Sipariş Ayrıntıları ekranında yeniden görüntüleniyor. Ayrıca mağazanızda en iyi performans gösteren ürünlerin hatalı bir şekilde iki kez görüntülenmesine neden olan bir sorunu da çözdük.
 </tr-TR>
 <zh-CN>
-5.9：
-这一轮的 WooCommerce 移动应用程序更新旨在修复各种问题。 我们解决了在添加新商品类别、重新排序照片、编辑文本、创建发货标签和过滤商品时，在罕见情况下会发生的崩溃问题。 我们还更新了服务器请求的超时限制，并从产品详情中删除了过时的购买详细信息卡片。
+6.0：
+6.0 版本有哪些新功能？
+
+您提问，我们倾听！ 为迎合大众需求，产品 SKU 再次在“订单详细信息”屏幕中显示。 我们还修复了您商店中的热销产品错误地显示两次的问题。
 </zh-CN>
 <zh-TW>
-5.9：
-這次 WooCommerce 行動應用程式更新重點在於修正。 我們解決了在新增產品類別、重新排序相片、編輯文字、建立郵寄標籤和篩選產品時發生的罕見當機問題。 我們也更新了伺服器要求的逾時限制，並從產品詳細資料中移除了過時的購買詳細資料卡。
+6.0：
+6.0 版有哪些更新？
+
+你的要求我們聽見了！ 在許多使用者的要求下，我們再次把產品 SKU 放到「訂單詳細資訊」畫面上了。 我們也修正了商店中成效最佳項目不正確地重複顯示的問題。
 </zh-TW>
 <en-US>
-5.9:
-This round of WooCommerce mobile app updates is all about fixes. We addressed rare crashes that occurred when adding a new product category, reordering photos, editing text, creating shipping labels, and filtering products. We also updated a timeout limit for server requests and removed the obsolete purchase details card from product details.
+6.0:
+What’s new in our 6.0 release?
+
+You asked, we listened! Due to popular demand, the product SKU is displayed once again in the Order Details screen. We also fixed an issue where top performers in your store were incorrectly displaying twice.
 </en-US>

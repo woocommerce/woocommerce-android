@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:background="@color/warning_background_color"
+            android:background="@color/warning_banner_background_color"
             android:animateLayoutChanges="true"
             android:clickable="true"
             android:focusable="true"
@@ -34,7 +34,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/errorBannerMessage"
                 app:layout_constraintVertical_bias="0.0"
-                app:tint="@color/warning_foreground_color"
+                app:tint="@color/warning_banner_foreground_color"
                 tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton

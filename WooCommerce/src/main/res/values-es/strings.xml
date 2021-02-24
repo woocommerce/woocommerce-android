@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-03 16:54:40+0000
+Translation-Revision-Date: 2021-02-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Peso total del paquete: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d artículos en %2$d paquetes</string>
+    <string name="shipping_label_single_package_total_weight">Peso total del paquete: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Paquetes personalizados</string>
+    <string name="shipping_label_package_details_fetch_products_error">No se han podido recuperar los productos</string>
+    <string name="shipping_label_missing_data_snackbar_message">Algunos campos obligatorios están en blanco.</string>
+    <string name="shipping_label_package_details_weight_error">Peso no válido</string>
+    <string name="shipping_label_package_selector_title">Paquete seleccionado</string>
+    <string name="shipping_label_packages_loading_message">Por favor, espera…</string>
+    <string name="shipping_label_packages_loading_title">Cargando paquetes</string>
+    <string name="shipping_label_package_details_title_template">Paquete %1$d</string>
+    <string name="shipping_label_package_details_items_count">\"%1$d artículos\"</string>
+    <string name="shipping_label_packages_loading_error">No se han podido cargar las definiciones de paquete</string>
+    <string name="shipping_label_package_details_weight_info">Incluye el peso del paquete</string>
+    <string name="shipping_label_package_details_weight_hint">Peso total del paquete (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Paquete seleccionado</string>
+    <string name="shipping_label_package_details_section_title">Detalles del paquete</string>
+    <string name="shipping_label_package_details_move_item">Mover</string>
+    <string name="shipping_label_package_details_items_section_title">Artículos para completar el pedido</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Dirección sugerida</string>
+    <string name="shipping_label_address_suggestion_entered_address">Dirección introducida</string>
+    <string name="shipping_label_address_suggestion_banner">Hemos modificado ligeramente la dirección introducida. Si es correcta, utiliza la dirección sugerida para garantizar que la entrega se realice sin problemas.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Editar la dirección seleccionada</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Usar la dirección seleccionada</string>
+    <string name="shipping_label_edit_address_loading_progress_title">cargando los datos de la dirección</string>
     <string name="product_wip_title_m5">¡Hay nuevas funciones disponibles!</string>
     <string name="product_wip_message_m5">Ahora puedes añadir archivos descargables a un producto y enlazar productos de ventas dirigidas y cruzadas ¿Ya no quieres un producto? ¡Envíalo a la papelera!</string>
     <string name="order_refunds_shipping_refund_notice_fees">Puedes reembolsar los importes de cuotas, envíos e impuestos %s</string>
@@ -972,7 +997,6 @@ Language: es
     <string name="new_notifications">%d notificaciones nuevas</string>
     <string name="about_version">Versión %s</string>
     <string name="about_tos">Condiciones del servicio</string>
-    <string name="about_publisher">Editor: Automattic, Inc</string>
     <string name="about_appname">WooCommerce para Android</string>
     <string name="support_identity_input_dialog_name_label">Nombre</string>
     <string name="settings_licenses">Licencias de código abierto</string>

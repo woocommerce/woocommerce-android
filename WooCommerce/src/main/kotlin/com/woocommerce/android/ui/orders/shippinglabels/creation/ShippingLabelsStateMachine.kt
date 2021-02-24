@@ -88,11 +88,12 @@ This diagram was created using ASCIIFlow (asciiflow.com). If you want to modify 
 import it.
 
  */
-@ExperimentalCoroutinesApi
 class ShippingLabelsStateMachine @Inject constructor() {
     // the flow can be observed by a ViewModel (similar to LiveData) and it can react by perform actions and update
     // the view states based on the triggered states and side-effects
+    @ExperimentalCoroutinesApi
     private val _transitions = MutableStateFlow(Transition(State.Idle, SideEffect.NoOp))
+    @ExperimentalCoroutinesApi
     val transitions: StateFlow<Transition> = _transitions
 
     // the actual state machine behavior is defined by a DSL using the following format:
@@ -116,6 +117,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
                 val data = Data(
+                    remoteOrderId = event.remoteOrderId,
                     originAddress = event.originAddress,
                     shippingAddress = event.shippingAddress,
                     currentPaymentMethod = event.currentPaymentMethod,
@@ -149,7 +151,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
             }
             on<Event.ShippingCarrierSelectionStarted> {
-                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
             }
             on<Event.PaymentSelectionStarted> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
@@ -170,7 +172,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.CustomsDeclaration(data), SideEffect.ShowCustomsForm)
             }
             on<Event.EditShippingCarrierRequested> {
-                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions)
+                transitionTo(State.ShippingCarrierSelection(data), SideEffect.ShowCarrierOptions(data))
             }
             on<Event.EditPaymentRequested> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
@@ -319,6 +321,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(flowSteps = data.flowSteps + stepsToAdd)
                 transitionTo(State.WaitingForInput(newData))
             }
+            on<Event.ShippingCarrierSelectionCanceled> {
+                transitionTo(State.WaitingForInput(data))
+            }
         }
 
         state<State.PaymentSelection> {
@@ -375,6 +380,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     @Parcelize
     data class Data(
+        val remoteOrderId: Long,
         val originAddress: Address,
         val shippingAddress: Address,
         val currentPaymentMethod: PaymentMethod?,
@@ -450,6 +456,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         data class FlowStarted(val orderId: String) : Event()
         data class DataLoaded(
+            val remoteOrderId: Long,
             val originAddress: Address,
             val shippingAddress: Address,
             val currentPaymentMethod: PaymentMethod?
@@ -484,6 +491,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object ShippingCarrierSelectionStarted : UserInput()
         object EditShippingCarrierRequested : UserInput()
         object ShippingCarrierSelected : Event()
+        object ShippingCarrierSelectionCanceled : Event()
 
         object PaymentSelectionStarted : UserInput()
         object EditPaymentRequested : UserInput()
@@ -512,7 +520,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         ) : SideEffect()
 
         object ShowCustomsForm : SideEffect()
-        object ShowCarrierOptions : SideEffect()
+        data class ShowCarrierOptions(val data: Data) : SideEffect()
         object ShowPaymentOptions : SideEffect()
     }
 

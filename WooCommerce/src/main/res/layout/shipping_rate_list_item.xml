@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground">
+
+    <FrameLayout
+        android:id="@+id/imageFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/carrierImage"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:background="@drawable/picture_corners"
+            android:contentDescription="@string/product_image_content_description"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/fedex_logo" />
+
+        <RadioButton
+            android:id="@+id/carrierRadioButton"
+            style="@style/Woo.RadioButton"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/carrierServiceName"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:layout_marginBottom="@dimen/minor_00"
+        android:maxLines="2"
+        app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
+        app:layout_constraintEnd_toStartOf="@id/servicePrice"
+        app:layout_constraintStart_toEndOf="@+id/imageFrame"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="UPS Ground"
+        tools:visibility="visible"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/deliveryTime"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_00"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/servicePrice"
+        app:layout_constraintStart_toEndOf="@+id/imageFrame"
+        app:layout_constraintTop_toBottomOf="@+id/carrierServiceName"
+        tools:text="4 business days" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/servicePrice"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"
+        tools:text="$22.00"
+        tools:visibility="visible"/>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/carrierServiceName"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

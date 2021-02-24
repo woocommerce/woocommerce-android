@@ -19,7 +19,7 @@
                 android:id="@+id/edit_warning_banner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/warning_background_color"
+                android:background="@color/warning_banner_background_color"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -34,7 +34,7 @@
                     android:src="@drawable/ic_info_outline_24dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/warning_foreground_color"
+                    app:tint="@color/warning_banner_foreground_color"
                     tools:visibility="visible" />
 
                 <com.google.android.material.textview.MaterialTextView

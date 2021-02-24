@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-04 14:54:04+0000
+Translation-Revision-Date: 2021-02-19 17:24:27+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="shipping_label_multi_packages_total_weight">Gesamtgewicht des Pakets: %1$s %2$s</string>
+    <string name="shipping_label_multi_packages_items_count">%1$d Artikel in %2$d Paketen</string>
+    <string name="shipping_label_single_package_total_weight">Gesamtgewicht des Pakets: %1$s %2$s</string>
+    <string name="shipping_label_packages_custom_section_title">Individuelle Pakete</string>
+    <string name="shipping_label_package_details_fetch_products_error">Produkte können nicht abgerufen werden</string>
+    <string name="shipping_label_missing_data_snackbar_message">Bestimmte Pflichtfelder sind leer.</string>
+    <string name="shipping_label_package_details_weight_error">Ungültiges Gewicht</string>
+    <string name="shipping_label_package_selector_title">Ausgewähltes Paket</string>
+    <string name="shipping_label_packages_loading_message">Bitte warten …</string>
+    <string name="shipping_label_packages_loading_title">Pakete werden geladen!</string>
+    <string name="shipping_label_package_details_title_template">Paket %1$d</string>
+    <string name="shipping_label_package_details_items_count">„%1$d Artikel“</string>
+    <string name="shipping_label_packages_loading_error">Paketdefinitionen können nicht geladen werden</string>
+    <string name="shipping_label_package_details_weight_info">Enthält Paketgewicht</string>
+    <string name="shipping_label_package_details_weight_hint">Gesamtgewicht des Pakets: (%1$s)</string>
+    <string name="shipping_label_package_details_selected_package_hint">Paket ausgewählt</string>
+    <string name="shipping_label_package_details_section_title">Verpackungsdetails</string>
+    <string name="shipping_label_package_details_move_item">Verschieben</string>
+    <string name="shipping_label_package_details_items_section_title">Auszuführende Artikel</string>
+    <string name="shipping_label_address_suggestion_suggested_address">Vorgeschlagene Adresse</string>
+    <string name="shipping_label_address_suggestion_entered_address">Eingegebene Adresse</string>
+    <string name="shipping_label_address_suggestion_banner">Wir haben die eingegebene Adresse leicht verändert. Wenn diese korrekt ist, verwende bitte die vorgeschlagene Adresse, um eine Zustellung an den richtigen Empfänger sicherzustellen.</string>
+    <string name="shipping_label_address_suggestion_edit_selected_address">Ausgewählte Adresse bearbeiten</string>
+    <string name="shipping_label_address_suggestion_use_selected_address">Ausgewählte Adresse verwenden</string>
+    <string name="shipping_label_edit_address_loading_progress_title">Adressdaten werden geladen</string>
     <string name="product_wip_title_m5">Neue Funktionen verfügbar!</string>
     <string name="product_wip_message_m5">Du kannst jetzt herunterladbare Dateien zu einem Produkt hinzufügen und Upsell- und Cross-Sell-Produkte verlinken. Du willst ein Produkt nicht mehr? Lege es in den Papierkorb.</string>
     <string name="order_refunds_shipping_refund_notice_fees">Du kannst Gebühren, Versand- und Steuerbeträge %s rückerstatten</string>
@@ -18,7 +43,7 @@ Language: de
     <string name="shipping_label_error_address_not_found">Adresse konnte nicht gefunden werden</string>
     <string name="shipping_label_edit_address_error_warning">Die Versandadresse konnte nicht automatisch verifiziert werden. Zeige sie auf Google Maps an oder versuche, den Kunden zu kontaktieren, um die Adresse zu überprüfen.</string>
     <string name="shipping_label_edit_address_validation_error">Validierung der Adresse fehlgeschlagen</string>
-    <string name="shipping_label_edit_address_validation_progress_message">Bitte warten …</string>
+    <string name="shipping_label_edit_address_progress_message">Bitte warten …</string>
     <string name="shipping_label_edit_address_validation_progress_title">Validierung der Adresse läuft</string>
     <string name="shipping_label_edit_data_loading_error">Adressdaten können nicht geladen werden</string>
     <string name="shipping_label_edit_address_use_address_as_is">Adresse wie eingegeben verwenden</string>
@@ -972,7 +997,6 @@ Language: de
     <string name="new_notifications">%d neue Benachrichtigungen</string>
     <string name="about_version">Version %s</string>
     <string name="about_tos">Geschäftsbedingungen</string>
-    <string name="about_publisher">Herausgeber: Automattic, Inc</string>
     <string name="about_appname">WooCommerce für Android</string>
     <string name="support_identity_input_dialog_name_label">Name</string>
     <string name="settings_licenses">Open-Source-Lizenzen</string>
