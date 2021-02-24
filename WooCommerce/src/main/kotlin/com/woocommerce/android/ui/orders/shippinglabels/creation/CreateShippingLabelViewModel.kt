@@ -281,6 +281,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
                     paymentStep = Step.done(data.currentPaymentMethod.stepDescription),
+                    // TODO caculate the order summary value from the selected shipping rates
                     orderSummaryState = OrderSummaryState(
                         isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
                     )
