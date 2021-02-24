@@ -30,7 +30,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CancelAddressEditing
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
@@ -44,12 +43,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class EditShippingLabelAddressFragment
     : BaseFragment(R.layout.fragment_edit_shipping_label_address), BackPressListener {
     companion object {
@@ -227,8 +224,7 @@ class EditShippingLabelAddressFragment
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_ADDRESS_RESULT, event.data)
-                is CancelAddressEditing -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
-                is Exit -> findNavController().navigateUp()
+                is Exit -> navigateBackWithNotice(EDIT_ADDRESS_CLOSED)
                 is ShowSuggestedAddress -> {
                     val action = EditShippingLabelAddressFragmentDirections
                         .actionEditShippingLabelAddressFragmentToShippingLabelAddressSuggestionFragment(

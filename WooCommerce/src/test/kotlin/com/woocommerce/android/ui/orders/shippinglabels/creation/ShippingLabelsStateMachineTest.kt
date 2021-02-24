@@ -26,10 +26,17 @@ import org.junit.Test
 class ShippingLabelsStateMachineTest {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
-    private val orderId = "123"
+    private val remoteOrderId = 123L
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
-    private val data = Data(originAddress, shippingAddress, null, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
+    private val data = Data(
+        remoteOrderId,
+        originAddress,
+        shippingAddress,
+        null,
+        emptyList(),
+        setOf(FlowStep.ORIGIN_ADDRESS)
+    )
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -51,11 +58,16 @@ class ShippingLabelsStateMachineTest {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(orderId)
+        stateMachine.start(remoteOrderId.toString())
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(orderId))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(remoteOrderId.toString()))
 
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.handleEvent(Event.DataLoaded(
+            remoteOrderId,
+            originAddress,
+            shippingAddress,
+            null
+        ))
 
         assertThat(transition?.state).isEqualTo(State.WaitingForInput(data))
     }
@@ -70,8 +82,8 @@ class ShippingLabelsStateMachineTest {
             }
         }
 
-        stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.start(remoteOrderId.toString())
+        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
         assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
@@ -101,8 +113,8 @@ class ShippingLabelsStateMachineTest {
             )
         )
 
-        stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.start(remoteOrderId.toString())
+        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))

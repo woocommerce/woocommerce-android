@@ -21,10 +21,6 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val type: AddressType
     ) : CreateShippingLabelEvent()
 
-    object CancelAddressEditing : CreateShippingLabelEvent()
-
-    object DiscardSuggestedAddress : CreateShippingLabelEvent()
-
     data class UseSelectedAddress(val address: Address) : CreateShippingLabelEvent()
 
     data class EditSelectedAddress(val address: Address) : CreateShippingLabelEvent()
@@ -49,6 +45,13 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     data class ShowPackageDetails(
         val orderIdentifier: OrderIdentifier,
+        val shippingLabelPackages: List<ShippingLabelPackage>
+    ) : CreateShippingLabelEvent()
+
+    data class ShowShippingRates(
+        val orderId: Long,
+        val originAddress: Address,
+        val destinationAddress: Address,
         val shippingLabelPackages: List<ShippingLabelPackage>
     ) : CreateShippingLabelEvent()
 
