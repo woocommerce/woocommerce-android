@@ -35,6 +35,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.ActionableEmptyView
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
@@ -163,11 +164,16 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                if (isEmptyViewVisible) {
-                    WooAnimUtils.fadeIn(binding.emptyView)
-                    binding.emptyView.showButton(true)
+                if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
+                    binding.firstVariationView.handleEmptyViewVisibility(
+                        shouldBeVisible = isEmptyViewVisible,
+                        showButton = true
+                    )
                 } else {
-                    WooAnimUtils.fadeOut(binding.emptyView)
+                    binding.emptyView.handleEmptyViewVisibility(
+                        shouldBeVisible = isEmptyViewVisible,
+                        showButton = false
+                    )
                 }
                 requireActivity().invalidateOptionsMenu()
             }
@@ -234,5 +240,14 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         adapter.setVariationList(variations)
+    }
+
+    private fun ActionableEmptyView.handleEmptyViewVisibility(shouldBeVisible: Boolean, showButton: Boolean) {
+        if(shouldBeVisible) {
+            WooAnimUtils.fadeIn(this)
+            showButton(showButton)
+        } else {
+            WooAnimUtils.fadeOut(this)
+        }
     }
 }
