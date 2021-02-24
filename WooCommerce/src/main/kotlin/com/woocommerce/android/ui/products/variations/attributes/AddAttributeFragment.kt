@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.SkeletonView
 
 class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
@@ -24,6 +26,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private var layoutManager: LayoutManager? = null
+    private val skeletonView = SkeletonView()
 
     private var _binding: FragmentAddAttributeBinding? = null
     private val binding get() = _binding!!
@@ -81,6 +84,10 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             showAttributes(it)
         })
 
+        viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductAddAttribute -> findNavController().navigateUp()
@@ -104,5 +111,13 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute },
             globalAttributes = globalAttributes
         )
+    }
+
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.attributeList, R.layout.skeleton_simple_list, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 }

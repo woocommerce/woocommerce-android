@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -45,6 +46,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVi
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -278,6 +280,15 @@ class ProductNavigator @Inject constructor() {
 
             is AddProductAttribute -> {
                 val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment()
+                fragment.findNavController().navigate(action)
+            }
+
+            is AddProductAttributeTerms -> {
+                val action = AddAttributeFragmentDirections
+                    .actionAddAttributeFragmentToAddAttributeTermsFragment(
+                        target.attributeId,
+                        target.attributeName
+                    )
                 fragment.findNavController().navigate(action)
             }
 
