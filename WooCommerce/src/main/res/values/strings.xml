@@ -444,6 +444,7 @@
         <item quantity="other">%d days</item>
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
 
     <!--
             Refunds

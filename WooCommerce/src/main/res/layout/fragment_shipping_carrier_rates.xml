@@ -20,22 +20,22 @@
         tools:visibility="visible">
 
         <ImageView
-            android:id="@+id/errorBannerIcon"
+            android:id="@+id/infoBannerIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:contentDescription="@string/shipping_label_edit_address_validation_error"
             android:src="@drawable/ic_info_outline_24dp"
-            app:layout_constraintBottom_toTopOf="@id/errorBannerDivider"
+            app:layout_constraintBottom_toTopOf="@id/infoBannerDivider"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/errorBannerMessage"
+            app:layout_constraintTop_toTopOf="@id/infoBannerMessage"
             app:layout_constraintVertical_bias="0.0"
             app:tint="@color/info_banner_foreground_color"
             tools:visibility="visible" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/errorBannerMessage"
+            android:id="@+id/infoBannerMessage"
             style="@style/Woo.TextView.Warning"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,12 +46,12 @@
             android:textColor="@color/color_on_surface_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/errorBannerIcon"
+            app:layout_constraintStart_toEndOf="@id/infoBannerIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
         <View
-            android:id="@+id/errorBannerDivider"
+            android:id="@+id/infoBannerDivider"
             style="@style/Woo.Divider.Info"
             android:layout_width="@dimen/minor_00"
             app:layout_constraintBottom_toBottomOf="parent"

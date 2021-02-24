@@ -118,7 +118,9 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         }
 
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
+            new.bannerMessage.takeIfNotEqualTo(old?.bannerMessage) { message ->
+                binding.infoBanner.isVisible = !message.isNullOrEmpty()
+                binding.infoBannerMessage.text = message
             }
             new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
                 binding.loadingProgress.isVisible = isLoading
