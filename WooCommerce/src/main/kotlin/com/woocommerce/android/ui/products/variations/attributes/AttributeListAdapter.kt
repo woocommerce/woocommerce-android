@@ -11,7 +11,7 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListAdapter.AttributeViewHolder
 
 class AttributeListAdapter(
-    private val onItemClick: (attribute: ProductAttribute) -> Unit
+    private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<ProductAttribute>()
 
@@ -37,7 +37,8 @@ class AttributeListAdapter(
         holder.bind(attributeList[position])
 
         holder.itemView.setOnClickListener {
-            onItemClick(attributeList[position])
+            val item = attributeList[position]
+            onItemClick(item.id, item.name)
         }
     }
 
@@ -74,9 +75,9 @@ class AttributeListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(attribute: ProductAttribute) {
             viewBinding.attributeName.text = attribute.name
-            if (attribute.options.isNotEmpty()) {
+            if (attribute.terms.isNotEmpty()) {
                 viewBinding.attributeTerms.isVisible = true
-                viewBinding.attributeTerms.text = attribute.options.joinToString()
+                viewBinding.attributeTerms.text = attribute.terms.joinToString()
             } else {
                 viewBinding.attributeTerms.isVisible = false
             }

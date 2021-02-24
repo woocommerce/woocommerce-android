@@ -114,7 +114,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_EDIT_ATTRIBUTES -> {
-                viewModel.onAddEditAttributesClick(navArgs.remoteProductId)
+                viewModel.onAddEditAttributesClick()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -181,7 +181,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowVariationDetail -> openVariationDetail(event.variation)
-                is ShowAttributeList -> openAttributeList(event.remoteProductId)
+                is ShowAttributeList -> openAttributeList()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
@@ -199,10 +199,8 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         findNavController().navigateSafely(action)
     }
 
-    private fun openAttributeList(remoteProductId: Long) {
-        val action = VariationListFragmentDirections.actionVariationListFragmentToAttributeListFragment(
-            remoteProductId
-        )
+    private fun openAttributeList() {
+        val action = VariationListFragmentDirections.actionVariationListFragmentToAttributeListFragment()
         findNavController().navigateSafely(action)
     }
 

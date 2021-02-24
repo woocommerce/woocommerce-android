@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -19,7 +16,6 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import org.wordpress.android.util.ActivityUtils
 
 class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
@@ -37,7 +33,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         _binding = FragmentAttributeListBinding.bind(view)
 
-        setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
     }
@@ -50,24 +45,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked(ExitProductAttributeList())
         return false
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onBackButtonClicked(ExitProductAttributeList(shouldShowDiscardDialog = false))
-                // TODO analytics
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onResume() {

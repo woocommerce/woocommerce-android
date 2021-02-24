@@ -591,7 +591,7 @@ class ProductDetailCardBuilder(
         return if (this.numVariations > 0) {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.attributes) {
-                properties[attribute.name] = attribute.options.size.toString()
+                properties[attribute.name] = attribute.terms.size.toString()
             }
 
             PropertyGroup(
