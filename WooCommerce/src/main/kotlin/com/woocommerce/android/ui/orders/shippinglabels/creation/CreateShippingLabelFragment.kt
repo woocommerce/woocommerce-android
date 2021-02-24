@@ -13,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
@@ -313,14 +314,14 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         root.isVisible = true
         subtotalPrice.text = currencyFormatter.formatCurrency(state.price, "USD")
 
-        if (state.discount != null) {
+        if (state.discount.isNotEqualTo(BigDecimal.ZERO)) {
             discountGroup.isVisible = true
             discountPrice.text = currencyFormatter.formatCurrency(state.discount, "USD")
         } else {
             discountGroup.isVisible = false
         }
 
-        val totalPriceValue = state.price - (state.discount ?: BigDecimal.ZERO)
+        val totalPriceValue = state.price - state.discount
         totalPrice.text = currencyFormatter.formatCurrency(totalPriceValue, "USD")
     }
 }
