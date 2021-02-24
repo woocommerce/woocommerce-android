@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
@@ -422,6 +423,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
+    fun onWooDiscountInfoClicked() {
+        triggerEvent(ShowWooDiscountBottomSheet)
+    }
+
     fun onEditButtonTapped(step: FlowStep) {
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
@@ -485,7 +490,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     data class OrderSummaryState(
         val price: BigDecimal,
         val discount: BigDecimal?
-    ): Parcelable
+    ) : Parcelable
 
     @Parcelize
     data class Step(

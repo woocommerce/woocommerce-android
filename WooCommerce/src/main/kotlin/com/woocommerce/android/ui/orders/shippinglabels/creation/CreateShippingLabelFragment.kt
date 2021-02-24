@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.OrderSummaryState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
@@ -222,6 +224,12 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is ShowWooDiscountBottomSheet -> {
+                    BottomSheetDialog(requireContext()).apply {
+                        setContentView(R.layout.dialog_woo_discount_info)
+                        show()
+                    }
+                }
                 else -> event.isHandled = false
             }
         })
@@ -283,6 +291,10 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         binding.customsStep.editButtonClickListener = { viewModel.onEditButtonTapped(CUSTOMS) }
         binding.carrierStep.editButtonClickListener = { viewModel.onEditButtonTapped(CARRIER) }
         binding.paymentStep.editButtonClickListener = { viewModel.onEditButtonTapped(PAYMENT) }
+
+        binding.orderSummaryLayout.discountInfo.setOnClickListener {
+            viewModel.onWooDiscountInfoClicked()
+        }
     }
 
     private fun ShippingLabelCreationStepView.update(data: Step) {

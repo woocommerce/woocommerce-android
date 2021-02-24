@@ -56,4 +56,6 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     ) : CreateShippingLabelEvent()
 
     object ShowPaymentDetails : CreateShippingLabelEvent()
+
+    object ShowWooDiscountBottomSheet: CreateShippingLabelEvent()
 }

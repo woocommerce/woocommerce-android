@@ -448,7 +448,8 @@
         <item quantity="other">%d days</item>
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
-
+    <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
     <!--
             Refunds
         -->
