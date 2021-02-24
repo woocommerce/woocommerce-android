@@ -41,8 +41,21 @@
             android:layout_height="match_parent"
             android:visibility="gone"
             tools:visibility="visible"
-            app:aevTitleAppearance="?attr/textAppearanceHeadline6"
+            app:aevTitleAppearance="?attr/textAppearanceSubtitle1"
             app:aevTitle="@string/product_variant_list_empty"
+            app:aevImage="@drawable/ic_empty_variations"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.woocommerce.android.widgets.ActionableEmptyView
+            android:id="@+id/first_variation_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="gone"
+            app:aevTitleAppearance="?attr/textAppearanceHeadline6"
+            app:aevTitle="@string/product_variant_list_add_first_variation"
             app:aevImage="@drawable/ic_add_variations"
             app:aevButton="@string/product_variant_list_empty_action"
             app:layout_constraintTop_toTopOf="parent"
