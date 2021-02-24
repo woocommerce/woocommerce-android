@@ -607,9 +607,9 @@ class ProductDetailCardBuilder(
             }
         } else {
             ComplexProperty(
-                R.string.product_variations,
-                resources.getString(R.string.product_detail_no_variations),
-                R.drawable.ic_gridicons_types
+                value = resources.getString(R.string.product_detail_add_variations),
+                icon = R.drawable.ic_gridicons_types,
+                showTitle = false
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductVariations(this.remoteId),
