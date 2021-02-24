@@ -24,6 +24,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag.ORDER_CREATION
+import com.woocommerce.android.util.FeatureFlagResolver
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -67,8 +69,11 @@ class OrderListViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: OrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    featureFlagResolver: FeatureFlagResolver
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
+    private val orderCreationFeatureEnabled = featureFlagResolver.isFeatureEnabled(ORDER_CREATION)
+
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -99,6 +104,9 @@ class OrderListViewModel @AssistedInject constructor(
 
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
+
+    private val _isAddOrderButtonVisible = MutableLiveData<Boolean>(orderCreationFeatureEnabled)
+    val isAddOrderButtonVisible: LiveData<Boolean> = _isAddOrderButtonVisible
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
@@ -268,6 +276,7 @@ class OrderListViewModel @AssistedInject constructor(
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
                 _pagedListData.value = it
+                showAddOrderButtonIfEnabled()
             }
         }
         _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
@@ -326,6 +335,8 @@ class OrderListViewModel @AssistedInject constructor(
         val hasOrders = repository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
 
+        changeAddOrderButtonVisibility(isLoadingData)
+
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
             when {
                 isError -> EmptyViewType.NETWORK_ERROR
@@ -367,12 +378,26 @@ class OrderListViewModel @AssistedInject constructor(
         _emptyViewType.postValue(newEmptyViewType)
     }
 
+    private fun changeAddOrderButtonVisibility(isLoadingData: Boolean) {
+        if (isLoadingData && !isSearching) {
+            _isAddOrderButtonVisible.value = false
+        } else {
+            showAddOrderButtonIfEnabled()
+        }
+    }
+
     private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
             orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
         triggerEvent(ShowErrorSnack(R.string.offline_error))
+    }
+
+    private fun showAddOrderButtonIfEnabled() {
+        if (orderCreationFeatureEnabled) {
+            _isAddOrderButtonVisible.value = true
+        }
     }
 
     override fun onCleared() {

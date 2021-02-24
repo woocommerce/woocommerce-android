@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.ViewState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag.ORDER_CREATION
+import com.woocommerce.android.util.FeatureFlagResolver
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -73,6 +75,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: OrderFetcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val featureFlagResolver: FeatureFlagResolver = mock()
 
     @Before
     fun setup() = test {
@@ -81,28 +84,31 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
         whenever(pagedListWrapper.isLoadingMore).doReturn(mock())
         whenever(pagedListWrapper.data).doReturn(mock())
-        whenever(listStore.getList<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType>(
+        whenever(
+            listStore.getList<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType>(
                 listDescriptor = any(),
                 dataSource = any(),
                 lifecycle = any()
-        )).doReturn(pagedListWrapper)
+            )
+        ).doReturn(pagedListWrapper)
         doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
         doReturn(MutableLiveData(ViewState())).whenever(savedStateArgs).getLiveData<ViewState>(any(), any())
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(SiteModel()).whenever(selectedSite).get()
 
         viewModel = OrderListViewModel(
-                savedState = savedStateArgs,
-                coroutineDispatchers = coroutineDispatchers,
-                repository = repository,
-                orderStore = orderStore,
-                listStore = listStore,
-                networkStatus = networkStatus,
-                dispatcher = dispatcher,
-                selectedSite = selectedSite,
-                fetcher = orderFetcher,
-                resourceProvider = resourceProvider,
-                wooCommerceStore = wooCommerceStore
+            savedState = savedStateArgs,
+            coroutineDispatchers = coroutineDispatchers,
+            repository = repository,
+            orderStore = orderStore,
+            listStore = listStore,
+            networkStatus = networkStatus,
+            dispatcher = dispatcher,
+            selectedSite = selectedSite,
+            fetcher = orderFetcher,
+            resourceProvider = resourceProvider,
+            wooCommerceStore = wooCommerceStore,
+            featureFlagResolver = featureFlagResolver
         )
     }
 
@@ -515,5 +521,112 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.fetchPaymentGateways()
         verify(repository, times(0)).fetchPaymentGateways()
         assertTrue(viewModel.viewState.arePaymentGatewaysFetched)
+    }
+
+    @Test
+    fun `add order button initially visible when order creation feature enabled`() {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    @Test
+    fun `add order button initially invisible when order creation feature disabled`() {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    @Test
+    fun `add order button always invisible when order creation feature disabled`() = test {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isSearching = false
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    @Test
+    fun `add order button is visible when order creation feature enabled and result comes`() = test {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isSearching = false
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    @Test
+    fun `add order button is invisible when order creation feature enabled and loading in progress`() = test {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isSearching = false
+        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    @Test
+    fun `add order button is visible when order creation feature enabled and loading and search in progress`() = test {
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        viewModel.isSearching = true
+        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+        }
+    }
+
+    private fun createViewModelWithFeatureFlagResolver(featureFlagResolver: FeatureFlagResolver) {
+        viewModel = OrderListViewModel(
+            savedState = savedStateArgs,
+            coroutineDispatchers = coroutineDispatchers,
+            repository = repository,
+            orderStore = orderStore,
+            listStore = listStore,
+            networkStatus = networkStatus,
+            dispatcher = dispatcher,
+            selectedSite = selectedSite,
+            fetcher = orderFetcher,
+            resourceProvider = resourceProvider,
+            wooCommerceStore = wooCommerceStore,
+            featureFlagResolver = featureFlagResolver
+        )
     }
 }

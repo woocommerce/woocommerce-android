@@ -658,10 +658,6 @@ class MainActivity : AppUpgradeActivity(),
         }
         AnalyticsTracker.track(stat)
 
-        if (navPos != ORDERS && navPos != PRODUCTS) {
-            fabManager.hideFabAnimated()
-        }
-
         if (navPos == REVIEWS) {
             NotificationHandler.removeAllReviewNotifsFromSystemBar(this)
         } else if (navPos == ORDERS) {
