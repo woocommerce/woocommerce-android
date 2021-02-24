@@ -182,7 +182,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun openShippingCarrierRates(data: Data) {
         triggerEvent(
             ShowShippingRates(
-                data.remoteOrderId,
+                data.order,
                 data.originAddress,
                 data.shippingAddress,
                 data.shippingPackages
@@ -293,7 +293,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             it.model!!
         }
         return Event.DataLoaded(
-            remoteOrderId = order.remoteId,
+            order = order,
             originAddress = getStoreAddress(),
             shippingAddress = order.shippingAddress,
             currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId }

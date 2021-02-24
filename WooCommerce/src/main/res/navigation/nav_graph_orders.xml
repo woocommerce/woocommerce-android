@@ -355,7 +355,7 @@
             android:name="packages"
             app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
         <argument
-            android:name="orderId"
-            app:argType="long" />
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order" />
     </fragment>
 </navigation>

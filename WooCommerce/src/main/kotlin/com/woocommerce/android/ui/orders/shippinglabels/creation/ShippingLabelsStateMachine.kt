@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
@@ -117,7 +118,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         state<State.DataLoading> {
             on<Event.DataLoaded> { event ->
                 val data = Data(
-                    remoteOrderId = event.remoteOrderId,
+                    order = event.order,
                     originAddress = event.originAddress,
                     shippingAddress = event.shippingAddress,
                     currentPaymentMethod = event.currentPaymentMethod,
@@ -380,7 +381,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     @Parcelize
     data class Data(
-        val remoteOrderId: Long,
+        val order: Order,
         val originAddress: Address,
         val shippingAddress: Address,
         val currentPaymentMethod: PaymentMethod?,
@@ -456,7 +457,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         data class FlowStarted(val orderId: String) : Event()
         data class DataLoaded(
-            val remoteOrderId: Long,
+            val order: Order,
             val originAddress: Address,
             val shippingAddress: Address,
             val currentPaymentMethod: PaymentMethod?
