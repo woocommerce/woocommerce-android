@@ -323,6 +323,8 @@ class OrderListViewModel @AssistedInject constructor(
             _isEmpty.removeSource(isEmpty)
             _isFetchingFirstPage.removeSource(isFetchingFirstPage)
             _isLoadingMore.removeSource(isLoadingMore)
+
+            listChanged.removeObservers(this@OrderListViewModel)
         }
     }
 
