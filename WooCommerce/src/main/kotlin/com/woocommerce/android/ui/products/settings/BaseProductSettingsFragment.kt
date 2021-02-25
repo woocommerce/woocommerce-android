@@ -25,12 +25,14 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        if (hasChanges() && validateChanges()) {
-            navigateBackWithResult()
+        if (hasChanges()) {
+            if (validateChanges()) {
+                navigateBackWithResult()
+            }
         } else {
             findNavController().navigateUp()
         }
-        return true
+        return false
     }
 
     /**
