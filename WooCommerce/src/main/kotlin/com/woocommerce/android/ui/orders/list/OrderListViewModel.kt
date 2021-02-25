@@ -15,6 +15,10 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -163,7 +167,7 @@ class OrderListViewModel @AssistedInject constructor(
         requireNotNull(allPagedListWrapper) {
             "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
-        activatePagedListWrapper(allPagedListWrapper!!)
+        activatePagedListWrapper(allPagedListWrapper!!, trackLoadingDuration = true)
     }
 
     /**
@@ -173,7 +177,11 @@ class OrderListViewModel @AssistedInject constructor(
         requireNotNull(processingPagedListWrapper) {
             "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
-        activatePagedListWrapper(processingPagedListWrapper!!)
+        activatePagedListWrapper(
+            processingPagedListWrapper!!,
+            trackLoadingDuration = true,
+            status = CoreOrderStatus.PROCESSING
+        )
     }
 
     /**
@@ -253,7 +261,9 @@ class OrderListViewModel @AssistedInject constructor(
      */
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
-        isFirstInit: Boolean = false
+        isFirstInit: Boolean = false,
+        trackLoadingDuration: Boolean = false,
+        status: CoreOrderStatus? = null
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
@@ -281,6 +291,18 @@ class OrderListViewModel @AssistedInject constructor(
                 triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
             }
         })
+
+        if (trackLoadingDuration) {
+            pagedListWrapper.listChanged.observe(this, Observer {
+                it?.totalDuration?.let { totalDuration ->
+                    val totalDurationInSeconds = totalDuration.toDouble() / 1_000
+                    AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
+                        KEY_TOTAL_DURATION to totalDurationInSeconds,
+                        KEY_STATUS to status?.value
+                    ))
+                }
+            })
+        }
 
         this.activePagedListWrapper = pagedListWrapper
 
