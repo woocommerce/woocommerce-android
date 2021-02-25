@@ -25,10 +25,8 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        if (hasChanges()) {
-            if (validateChanges()) {
-                navigateBackWithResult()
-            }
+        if (hasChanges() && validateChanges()) {
+            navigateBackWithResult()
         } else {
             findNavController().navigateUp()
         }
@@ -36,8 +34,7 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     }
 
     /**
-     * Called when the Done button is tapped and changes have been made. Navigates back to the main product
-     * settings fragment and passes it a bundle containing the changes.
+     * Navigates back to the main product settings fragment and passes it a bundle containing the changes
      */
     private fun navigateBackWithResult() {
         val (key, result) = getChangesResult()
