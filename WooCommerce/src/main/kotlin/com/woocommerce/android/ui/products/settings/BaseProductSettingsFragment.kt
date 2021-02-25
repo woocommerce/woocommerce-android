@@ -26,6 +26,11 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
 
     override fun onRequestAllowBackPress(): Boolean {
         if (hasChanges()) {
+            // we only want to return to the previous screen if the changes are valid, which means if they're
+            // not the user will have to correct them in order to go back. currently this only applies to the
+            // product visibility screen if the user chooses "Password protected" without entering a password,
+            // which is easily correctly by the user. however, we may need to re-think this if more settings
+            // are added that require validation.
             if (validateChanges()) {
                 navigateBackWithResult()
             }
