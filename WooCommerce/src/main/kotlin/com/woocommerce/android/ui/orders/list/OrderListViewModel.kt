@@ -180,7 +180,7 @@ class OrderListViewModel @AssistedInject constructor(
         activatePagedListWrapper(
             processingPagedListWrapper!!,
             trackLoadingDuration = true,
-            status = CoreOrderStatus.PROCESSING
+            status = CoreOrderStatus.PROCESSING.value
         )
     }
 
@@ -263,7 +263,7 @@ class OrderListViewModel @AssistedInject constructor(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
         isFirstInit: Boolean = false,
         trackLoadingDuration: Boolean = false,
-        status: CoreOrderStatus? = null
+        status: String? = null
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
@@ -298,7 +298,7 @@ class OrderListViewModel @AssistedInject constructor(
                     val totalDurationInSeconds = totalDuration.toDouble() / 1_000
                     AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
                         KEY_TOTAL_DURATION to totalDurationInSeconds,
-                        KEY_STATUS to status?.value
+                        KEY_STATUS to status
                     ))
                 }
             })
