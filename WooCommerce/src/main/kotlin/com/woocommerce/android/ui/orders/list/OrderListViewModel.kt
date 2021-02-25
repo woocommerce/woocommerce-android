@@ -194,7 +194,16 @@ class OrderListViewModel @AssistedInject constructor(
     fun submitSearchOrFilter(statusFilter: String? = null, searchQuery: String? = null) {
         val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+
+        // We don't need to track ORDERS_LIST_LOADED for search queries.
+        val trackLoadingDuration = statusFilter != null && searchQuery.isNullOrEmpty()
+
+        activatePagedListWrapper(
+            pagedListWrapper,
+            isFirstInit = true,
+            trackLoadingDuration = trackLoadingDuration,
+            status = statusFilter
+        )
     }
 
     /**
