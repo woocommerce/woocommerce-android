@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.FEDEX
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.UPS
@@ -38,10 +39,18 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
-        private const val FLAT_RATE_SHIPPING = "Flat rate"
-        private const val CARRIER_USPS = "usps"
-        private const val CARRIER_UPS = "ups"
-        private const val CARRIER_FEDEX = "fedex"
+        private const val CARRIER_USPS_KEY = "usps"
+        private const val CARRIER_UPS_KEY = "ups"
+        private const val CARRIER_FEDEX_KEY = "fedex"
+        private const val FLAT_RATE_KEY = "flat_rate"
+        private const val FREE_SHIPPING_KEY = "free_shipping"
+        private const val LOCAL_PICKUP_KEY = "local_pickup"
+        private const val SHIPPING_METHOD_USPS_TITLE = "USPS"
+        private const val SHIPPING_METHOD_DHL_TITLE = "DHL Express"
+        private const val SHIPPING_METHOD_FEDEX_TITLE = "Fedex"
+        private const val SHIPPING_METHOD_USPS_KEY= "wc_services_usps"
+        private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
+        private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
         private const val KEY_SHIPPING_CARRIERS_PARAMETERS = "key_shipping_carriers_parameters"
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
@@ -84,11 +93,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             }
         } else {
             _shippingRates.value = carrierRatesResult.model!!.mapIndexed { i, pkg ->
-                PackageRateList(
-                    pkg.boxId,
-                    title = pkg.shippingOptions.first().optionId,
-                    itemCount = arguments.packages[i].items.size,
-                    rateOptions = pkg.shippingOptions.first().rates.map {
+                val rates = pkg.shippingOptions.fold(mutableListOf<ShippingRate>(), { acc, option ->
+                    acc.addAll(option.rates.map {
                         ShippingRate(
                             it.rateId,
                             it.title,
@@ -96,13 +102,19 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             it.rate,
                             getCarrier(it)
                         )
-                    }
+                    })
+                    acc
+                })
+                PackageRateList(
+                    pkg.boxId,
+                    title = pkg.shippingOptions.first().optionId,
+                    itemCount = arguments.packages[i].items.size,
+                    rateOptions = rates
                 )
             }
 
             var banner: String? = null
             if (arguments.order.shippingTotal > BigDecimal.ZERO) {
-                val shipping = arguments.order.shippingMethodList.joinToString()
                 banner = resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_flat_fee_banner_message,
                     PriceUtils.formatCurrency(
@@ -110,18 +122,32 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                         parameters.currencyCode,
                         currencyFormatter
                     ),
-                    shipping
+                    getShippingMethods(arguments.order).joinToString()
                 )
             }
             viewState = viewState.copy(isEmptyViewVisible = false, isDoneButtonVisible = true, bannerMessage = banner)
         }
     }
 
+    private fun getShippingMethods(order: Order): List<String> {
+        return order.shippingMethods.map {
+            when (it.id) {
+                FLAT_RATE_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_flat_rate)
+                FREE_SHIPPING_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_free_shipping)
+                LOCAL_PICKUP_KEY -> resourceProvider.getString(R.string.shipping_label_shipping_method_local_pickup)
+                SHIPPING_METHOD_USPS_KEY -> SHIPPING_METHOD_USPS_TITLE
+                SHIPPING_METHOD_FEDEX_KEY -> SHIPPING_METHOD_FEDEX_TITLE
+                SHIPPING_METHOD_DHL_KEY -> SHIPPING_METHOD_DHL_TITLE
+                else -> resourceProvider.getString(R.string.other)
+            }
+        }
+    }
+
     private fun getCarrier(it: Rate) =
         when (it.carrierId) {
-            CARRIER_USPS -> USPS
-            CARRIER_FEDEX -> FEDEX
-            CARRIER_UPS -> UPS
+            CARRIER_USPS_KEY -> USPS
+            CARRIER_FEDEX_KEY -> FEDEX
+            CARRIER_UPS_KEY -> UPS
             else -> throw IllegalArgumentException("Unsupported carrier ID: `${it.carrierId}`")
         }
 

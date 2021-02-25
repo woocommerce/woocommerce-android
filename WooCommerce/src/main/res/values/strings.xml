@@ -97,6 +97,7 @@
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
+    <string name="other">Other</string>
     <!--
         Date/Time Labels
     -->
@@ -445,6 +446,9 @@
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
+    <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
+    <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
+    <string name="shipping_label_shipping_method_free_shipping">Free shipping</string>
 
     <!--
             Refunds
