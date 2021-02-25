@@ -47,8 +47,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
             else -> {
                 binding.customerInfoShippingAddr.text = shippingAddress
-                binding.customerInfoShippingMethodSection.isVisible = order.shippingMethodList.firstOrNull()?.let {
-                    binding.customerInfoShippingMethod.text = it
+                binding.customerInfoShippingMethodSection.isVisible = order.shippingMethods.firstOrNull()?.let {
+                    binding.customerInfoShippingMethod.text = it.title
                     true
                 } ?: false
             }
