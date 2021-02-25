@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
@@ -41,6 +44,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -606,16 +610,31 @@ class ProductDetailCardBuilder(
                 )
             }
         } else {
+            emptyVariations()
+        }
+        }
+
+    private fun Product.emptyVariations(): ComplexProperty {
+        val onClickAction = {
+            viewModel.onEditProductCardClicked(
+                ViewProductVariations(this.remoteId),
+                PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+            )
+        }
+        return if (ADD_EDIT_VARIATIONS.isEnabled()) {
             ComplexProperty(
-                value = resources.getString(R.string.product_detail_add_variations),
-                icon = R.drawable.ic_gridicons_types,
-                showTitle = false
-            ) {
-                viewModel.onEditProductCardClicked(
-                    ViewProductVariations(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                )
-            }
+                value = resources.getString(string.product_detail_add_variations),
+                icon = drawable.ic_gridicons_types,
+                showTitle = false,
+                onClick = onClickAction
+            )
+        } else {
+            ComplexProperty(
+                title = string.product_variations,
+                value = resources.getString(string.product_detail_no_variations),
+                icon = drawable.ic_gridicons_types,
+                onClick = onClickAction
+            )
         }
     }
 
