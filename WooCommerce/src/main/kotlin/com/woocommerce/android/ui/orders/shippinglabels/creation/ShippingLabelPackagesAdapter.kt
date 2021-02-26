@@ -57,9 +57,7 @@ class ShippingLabelPackagesAdapter(
             with(binding.itemsList) {
                 layoutManager =
                     LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
-                val canMoveItems = shippingLabelPackages.count() > 1 ||
-                    shippingLabelPackages.firstOrNull()?.items?.count() ?: 0 > 1
-                adapter = PackageProductsAdapter(canMoveItems = canMoveItems)
+                adapter = PackageProductsAdapter()
             }
             binding.weightEditText.hint = binding.root.context.getString(
                 R.string.shipping_label_package_details_weight_hint,
@@ -138,7 +136,7 @@ class ShippingLabelPackagesAdapter(
     }
 }
 
-class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<PackageProductViewHolder>() {
+class PackageProductsAdapter() : RecyclerView.Adapter<PackageProductViewHolder>() {
     var items: List<ShippingLabelPackage.Item> = emptyList()
         set(value) {
             field = value
@@ -160,7 +158,6 @@ class PackageProductsAdapter(val canMoveItems: Boolean) : RecyclerView.Adapter<P
         val binding: ShippingLabelPackageProductListItemBinding
     ) : ViewHolder(binding.root) {
         fun bind(item: ShippingLabelPackage.Item) {
-            binding.moveButton.isVisible = canMoveItems
             binding.productName.text = item.name
             val attributes = item.attributesList.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY
             val details = "$attributes${item.weight}"
