@@ -152,11 +152,18 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
 
     fun onShippingRateSelected(packageId: String, rateId: String) {
-        val list = shippingRates.value?.toMutableList()
-        list?.indexOfFirst { it.id == packageId }?.let { i ->
-            list[i] = list[i].copy(selectedRate = list[i].rateOptions.first { it.id == rateId })
+        fun MutableList<PackageRateList>.getSelectedPackageRates(): List<PackageRateList>? {
+            indexOfFirst { it.id == packageId }.takeIf { it != -1 }?.let { i ->
+                val selectedRate = this[i].rateOptions.first { it.id == rateId }
+                this[i] = this[i].updateSelectedRate(selectedRate)
+            }
+            return null
         }
-        _shippingRates.value = list
+        fun MutableLiveData<List<PackageRateList>>.updateSelection() {
+            _shippingRates.value = this.value?.toMutableList()?.getSelectedPackageRates()
+        }
+
+        _shippingRates.updateSelection()
     }
 
     fun onDoneButtonClicked() {
@@ -181,7 +188,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         val itemCount: Int,
         val rateOptions: List<ShippingRate>,
         val selectedRate: ShippingRate? = null
-    ) : Parcelable
+    ) : Parcelable {
+        fun updateSelectedRate(rate: ShippingRate): PackageRateList {
+            return copy(selectedRate = rate)
+        }
+    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ShippingCarrierRatesViewModel>
