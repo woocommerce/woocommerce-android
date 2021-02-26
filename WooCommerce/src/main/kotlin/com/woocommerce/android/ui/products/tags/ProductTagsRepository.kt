@@ -15,6 +15,7 @@ import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_TAGS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_TAGS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -129,6 +130,11 @@ class ProductTagsRepository @Inject constructor(
                     loadContinuation?.resume(true)
                 }
                 loadContinuation = null
+            }
+            ADDED_PRODUCT_TAGS -> {
+                // No need to handle errors because errors are currently handled by `OrderListViewModel`.
+                addProductTagsContinuation?.resume(false)
+                addProductTagsContinuation = null
             }
             else -> { }
         }
