@@ -72,6 +72,16 @@ object PriceUtils {
         } ?: amount.toString()
     }
 
+    fun formatCurrencyOrNull(
+        amount: BigDecimal?,
+        currencyCode: String?,
+        currencyFormatter: CurrencyFormatter
+    ): String? {
+        return currencyCode?.let {
+            currencyFormatter.formatCurrency(amount ?: BigDecimal.ZERO, it)
+        }
+    }
+
     private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date, resources: ResourceProvider): String {
         val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
             dateOnSaleFrom.formatToMMMdd()

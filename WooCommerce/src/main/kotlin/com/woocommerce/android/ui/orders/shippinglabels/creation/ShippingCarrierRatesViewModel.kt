@@ -7,8 +7,11 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.ShippingRate.ExtraOption
+import com.woocommerce.android.model.ShippingRate.ExtraOption.NONE
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.FEDEX
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.UPS
 import com.woocommerce.android.model.ShippingRate.ShippingCarrier.USPS
@@ -26,6 +29,7 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingRatesResult.ShippingPackage
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.ShippingRatesApiResponse.ShippingOption.Rate
 import java.math.BigDecimal
@@ -39,6 +43,9 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
+        private const val DEFAULT_RATE_OPTION = "default"
+        private const val SIGNATURE_RATE_OPTION = "signature_required"
+        private const val ADULT_SIGNATURE_RATE_OPTION = "adult_signature_required"
         private const val CARRIER_USPS_KEY = "usps"
         private const val CARRIER_UPS_KEY = "ups"
         private const val CARRIER_FEDEX_KEY = "fedex"
@@ -92,40 +99,56 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                 triggerEvent(Exit)
             }
         } else {
-            _shippingRates.value = carrierRatesResult.model!!.mapIndexed { i, pkg ->
-                val rates = pkg.shippingOptions.fold(mutableListOf<ShippingRate>(), { acc, option ->
-                    acc.addAll(option.rates.map {
-                        ShippingRate(
-                            it.rateId,
-                            it.title,
-                            it.deliveryDays,
-                            it.rate,
-                            getCarrier(it)
-                        )
-                    })
-                    acc
-                })
-                PackageRateList(
-                    pkg.boxId,
-                    title = pkg.shippingOptions.first().optionId,
-                    itemCount = arguments.packages[i].items.size,
-                    rateOptions = rates
-                )
-            }
+            updateRates(generateRateModels(carrierRatesResult.model!!))
 
             var banner: String? = null
             if (arguments.order.shippingTotal > BigDecimal.ZERO) {
                 banner = resourceProvider.getString(
                     R.string.shipping_label_shipping_carrier_flat_fee_banner_message,
-                    PriceUtils.formatCurrency(
-                        arguments.order.shippingTotal,
-                        parameters.currencyCode,
-                        currencyFormatter
-                    ),
+                    arguments.order.shippingTotal.format(),
                     getShippingMethods(arguments.order).joinToString()
                 )
             }
-            viewState = viewState.copy(isEmptyViewVisible = false, isDoneButtonVisible = true, bannerMessage = banner)
+            viewState = viewState.copy(isEmptyViewVisible = false, bannerMessage = banner)
+        }
+    }
+
+    private fun generateRateModels(carrierRates: List<ShippingPackage>): List<PackageRateList> {
+        return carrierRates.mapIndexed { i, pkg ->
+            val defaultRates = pkg.shippingOptions.first { it.optionId == DEFAULT_RATE_OPTION }.rates
+            val signatureRates = pkg.shippingOptions.first { it.optionId == SIGNATURE_RATE_OPTION }.rates
+            val adultSignatureRates = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
+            val shippingRates = defaultRates.map { default ->
+                val optionWithSignature = signatureRates.firstOrNull { it.serviceId == default.serviceId }
+                val optionWithAdultSignature = adultSignatureRates.firstOrNull { it.serviceId == default.serviceId }
+                val isSignatureRequired = optionWithSignature?.rate?.minus(default.rate).isEqualTo(BigDecimal.ZERO)
+
+                ShippingRate(
+                    id = default.rateId,
+                    title = default.title,
+                    deliveryEstimate = default.deliveryDays,
+                    deliveryDate = default.deliveryDate,
+                    price = default.rate.format(),
+                    carrier = getCarrier(default),
+                    isTrackingAvailable = default.hasTracking,
+                    isFreePickupAvailable = default.isPickupFree,
+                    isInsuranceAvailable = default.insurance > BigDecimal.ZERO,
+                    insuranceCoverage = default.insurance.format(),
+                    isSignatureRequired = isSignatureRequired,
+                    isSignatureAvailable = optionWithSignature != null && !isSignatureRequired,
+                    signaturePrice = optionWithSignature?.rate?.minus(default.rate).format(),
+                    isAdultSignatureAvailable = optionWithAdultSignature != null,
+                    adultSignaturePrice = optionWithAdultSignature?.rate?.minus(default.rate).format(),
+                    extraOptionSelected = NONE,
+                    isSelected = false
+                )
+            }
+            PackageRateList(
+                pkg.boxId,
+                title = pkg.shippingOptions.first().optionId,
+                itemCount = arguments.packages[i].items.size,
+                rateOptions = shippingRates
+            )
         }
     }
 
@@ -143,6 +166,10 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
     }
 
+    private fun BigDecimal?.format(): String {
+        return PriceUtils.formatCurrencyOrNull(this, parameters.currencyCode, currencyFormatter) ?: "0"
+    }
+
     private fun getCarrier(it: Rate) =
         when (it.carrierId) {
             CARRIER_USPS_KEY -> USPS
@@ -151,19 +178,30 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             else -> throw IllegalArgumentException("Unsupported carrier ID: `${it.carrierId}`")
         }
 
-    fun onShippingRateSelected(packageId: String, rateId: String) {
-        fun MutableList<PackageRateList>.getSelectedPackageRates(): List<PackageRateList>? {
-            indexOfFirst { it.id == packageId }.takeIf { it != -1 }?.let { i ->
-                val selectedRate = this[i].rateOptions.first { it.id == rateId }
-                this[i] = this[i].updateSelectedRate(selectedRate)
-            }
-            return null
-        }
-        fun MutableLiveData<List<PackageRateList>>.updateSelection() {
-            _shippingRates.value = this.value?.toMutableList()?.getSelectedPackageRates()
+    fun onShippingRateSelected(packageId: String, rateId: String, optionSelected: ExtraOption) {
+        fun List<PackageRateList>.updatePackageRates(packageRates: PackageRateList): List<PackageRateList> {
+            this.indexOfFirst { it.id == packageRates.id }.takeIf { it != -1 }?.let { i ->
+                return this.toMutableList().apply {
+                    this[i] = packageRates
+                }
+            } ?: return this
         }
 
-        _shippingRates.updateSelection()
+        fun List<PackageRateList>.updateSelectedRate(): List<PackageRateList> {
+            firstOrNull { it.id == packageId }?.let { pack ->
+                val packageRates = pack.updateSelectedRate(rateId, optionSelected)
+                return updatePackageRates(packageRates)
+            } ?: return this
+        }
+
+        shippingRates.value?.let { rates ->
+            updateRates(rates.updateSelectedRate())
+        }
+    }
+
+    private fun updateRates(rates: List<PackageRateList>) {
+        _shippingRates.value = rates
+        viewState = viewState.copy(isDoneButtonVisible = rates.all { it.selectedRate != null })
     }
 
     fun onDoneButtonClicked() {
@@ -186,11 +224,17 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         val id: String,
         val title: String,
         val itemCount: Int,
-        val rateOptions: List<ShippingRate>,
-        val selectedRate: ShippingRate? = null
+        val rateOptions: List<ShippingRate>
     ) : Parcelable {
-        fun updateSelectedRate(rate: ShippingRate): PackageRateList {
-            return copy(selectedRate = rate)
+        val selectedRate = rateOptions.firstOrNull { it.isSelected }
+        fun updateSelectedRate(rateId: String, extraOption: ExtraOption): PackageRateList {
+            return copy(rateOptions = rateOptions.map {
+                if (it.id == rateId) {
+                    it.copy(isSelected = true, extraOptionSelected = extraOption)
+                } else {
+                    it.copy(isSelected = false)
+                }
+            })
         }
     }
 
