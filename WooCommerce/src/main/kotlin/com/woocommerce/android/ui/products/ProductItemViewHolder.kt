@@ -68,6 +68,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             }
             else -> {
                 size = imageSize
+                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
                 GlideApp.with(context)
                     .load(imageUrl)
