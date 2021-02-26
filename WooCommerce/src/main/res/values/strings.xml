@@ -683,7 +683,7 @@
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
     <string name="product_variant_list_add_first_variation">Add your first variation</string>
-    <string name="product_variant_list_empty_action">Add Attribute</string>
+    <string name="product_variant_list_empty_action">Add Variation</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
