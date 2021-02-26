@@ -376,6 +376,13 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_create_order_summary">Shipping label order summary</string>
+    <string name="shipping_label_create_price_subtotal">Subtotal</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce Services discount</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Learn more about WooCommerce Services discount</string>
+    <string name="shipping_label_create_price_total">Order total</string>
+    <string name="shipping_label_create_mark_order_complete">Mark this order as complete and notify the customer</string>
+    <string name="shipping_label_create_purchase">Purchase shipping label</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>
@@ -444,7 +451,8 @@
         <item quantity="other">%d days</item>
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
-
+    <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
     <!--
             Refunds
         -->

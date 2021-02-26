@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Loading
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.WaitingForInput
@@ -59,6 +60,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import java.text.DecimalFormat
 
 class CreateShippingLabelViewModel @AssistedInject constructor(
@@ -212,7 +214,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.SHIPPING_ADDRESS -> {
@@ -222,7 +225,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.notDone(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.PACKAGING -> {
@@ -232,7 +236,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.current(),
                     customsStep = Step.notDone(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.CUSTOMS -> {
@@ -242,7 +247,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.current(),
                     carrierStep = Step.notDone(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.CARRIER -> {
@@ -252,7 +258,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.current(),
-                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.notDone(data.currentPaymentMethod.stepDescription),
+                    orderSummaryState = OrderSummaryState()
                 )
             }
             FlowStep.PAYMENT -> {
@@ -262,7 +269,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.current(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.current(data.currentPaymentMethod.stepDescription),
+                    // TODO caculate the order summary value from the selected shipping rates
+                    orderSummaryState = OrderSummaryState(
+                        isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
+                    )
                 )
             }
             FlowStep.DONE -> {
@@ -272,7 +283,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     packagingDetailsStep = Step.done(getPackageDetailsDescription(data.shippingPackages)),
                     customsStep = Step.done(),
                     carrierStep = Step.done(),
-                    paymentStep = Step.done(data.currentPaymentMethod.stepDescription)
+                    paymentStep = Step.done(data.currentPaymentMethod.stepDescription),
+                    // TODO caculate the order summary value from the selected shipping rates
+                    orderSummaryState = OrderSummaryState(
+                        isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
+                    )
                 )
             }
         }
@@ -413,6 +428,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
+    fun onWooDiscountInfoClicked() {
+        triggerEvent(ShowWooDiscountBottomSheet)
+    }
+
     fun onEditButtonTapped(step: FlowStep) {
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
@@ -457,6 +476,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val customsStep: Step? = null,
         val carrierStep: Step? = null,
         val paymentStep: Step? = null,
+        val orderSummaryState: OrderSummaryState = OrderSummaryState(),
         val progressDialogState: ProgressDialogState = ProgressDialogState()
     ) : Parcelable
 
@@ -469,6 +489,13 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         val isShown: Boolean = false,
         @StringRes val title: Int = 0,
         @StringRes val message: Int = 0
+    ) : Parcelable
+
+    @Parcelize
+    data class OrderSummaryState(
+        val isVisible: Boolean = false,
+        val price: BigDecimal = BigDecimal.ZERO,
+        val discount: BigDecimal = BigDecimal.ZERO
     ) : Parcelable
 
     @Parcelize
