@@ -164,7 +164,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         )
                         is SideEffect.ShowPackageOptions -> openPackagesDetails(sideEffect.shippingPackages)
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
-                        is SideEffect.ShowCarrierOptions -> handleResult { Event.ShippingCarrierSelected }
+                        is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                     }
                 }
