@@ -27,6 +27,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
     private val bullet = "\u2022"
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
+    private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.white)
 
     fun bind(
         product: Product,
@@ -59,16 +61,16 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             itemView.isActivated -> {
                 size = imageSize / 2
                 viewBinding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
-                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
+                viewBinding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
             }
             firstImage.isNullOrEmpty() -> {
                 size = imageSize / 2
-                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
                 viewBinding.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
                 size = imageSize
-                viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                viewBinding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(firstImage, imageSize, imageSize)
                 GlideApp.with(context)
                     .load(imageUrl)
