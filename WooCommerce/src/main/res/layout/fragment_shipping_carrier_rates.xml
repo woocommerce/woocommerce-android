@@ -69,6 +69,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/infoBanner"
+        android:scrollbars="vertical"
         tools:itemCount="5"
         tools:listitem="@layout/shipping_rate_list_item"
         tools:visibility="visible" />

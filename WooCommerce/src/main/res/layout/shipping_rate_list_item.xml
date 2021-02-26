@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -29,12 +28,12 @@
         <RadioButton
             android:id="@+id/carrierRadioButton"
             style="@style/Woo.RadioButton"
-            android:padding="@dimen/minor_00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:minWidth="@dimen/image_minor_100"
             android:minHeight="@dimen/image_minor_100"
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:padding="@dimen/minor_00"
+            android:visibility="visible" />
 
     </FrameLayout>
 
@@ -43,15 +42,15 @@
         style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
         android:layout_marginBottom="@dimen/minor_00"
+        android:includeFontPadding="false"
         android:maxLines="2"
         app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
         app:layout_constraintEnd_toStartOf="@id/servicePrice"
         app:layout_constraintStart_toEndOf="@+id/imageFrame"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="UPS Ground"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/deliveryTime"
@@ -83,51 +82,48 @@
         style="@style/Woo.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/minor_00"
-        tools:text="Signature required (+2.60)"
         android:layout_marginTop="@dimen/major_75"
+        android:minHeight="@dimen/minor_00"
         app:layout_constraintStart_toStartOf="@id/includedOptions"
-        app:layout_constraintTop_toBottomOf="@+id/includedOptions" />
+        app:layout_constraintTop_toBottomOf="@+id/includedOptions"
+        tools:text="Signature required (+2.60)"
+        android:visibility="gone" />
 
     <CheckBox
         android:id="@+id/adultSignatureOption"
         style="@style/Woo.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/minor_00"
-        tools:text="Adult signature required (+2.60)"
         android:layout_marginTop="@dimen/minor_00"
+        android:minHeight="@dimen/minor_00"
+        app:layout_goneMarginTop="@dimen/major_75"
         app:layout_constraintStart_toStartOf="@id/signatureOption"
-        app:layout_constraintTop_toBottomOf="@+id/signatureOption" />
+        app:layout_constraintTop_toBottomOf="@+id/signatureOption"
+        tools:text="Adult signature required (+2.60)" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/servicePrice"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
         android:layout_marginTop="@dimen/major_125"
+        android:includeFontPadding="false"
         android:maxLines="2"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="bold"
         tools:text="$22.00"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/selectedRateItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="adultSignatureOption,signatureOption,includedOptions" />
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_width="0dp"
+        android:layout_marginTop="@dimen/major_75"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintTop_toBottomOf="@+id/adultSignatureOption"
-        app:layout_constraintStart_toStartOf="@+id/carrierServiceName"/>
+        app:layout_constraintStart_toStartOf="@+id/carrierServiceName"
+        app:layout_constraintTop_toBottomOf="@+id/adultSignatureOption" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
