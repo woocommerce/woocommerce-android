@@ -1,14 +1,7 @@
 package com.woocommerce.android.ui.products.settings
 
-import android.content.DialogInterface
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -22,55 +15,8 @@ import org.wordpress.android.util.ActivityUtils
  * expected to be lightweight.
  */
 abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
-    companion object {
-        private const val KEY_IS_CONFIRMING_DISCARD = "is_confirming_discard"
-    }
-
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
-
-    private var isConfirmingDiscard = false
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
-        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRMING_DISCARD) == true) {
-            confirmDiscard()
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_done)?.isVisible = hasChanges()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                if (hasChanges()) {
-                    if (validateChanges()) {
-                        navigateBackWithResult()
-                    }
-                } else {
-                    findNavController().navigateUp()
-                }
-                true
-            }
-        else ->
-            super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onStop() {
         super.onStop()
@@ -80,42 +26,26 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
 
     override fun onRequestAllowBackPress(): Boolean {
         if (hasChanges()) {
-            confirmDiscard()
-            return false
+            // we only want to return to the previous screen if the changes are valid, which means if they're
+            // not the user will have to correct them in order to go back. currently this only applies to the
+            // product visibility screen if the user chooses "Password protected" without entering a password,
+            // which is easily correctly by the user. however, we may need to re-think this if more settings
+            // are added that require validation.
+            if (validateChanges()) {
+                navigateBackWithResult()
+            }
+        } else {
+            findNavController().navigateUp()
         }
-        return true
-    }
-
-    private fun confirmDiscard() {
-        isConfirmingDiscard = true
-        WooDialog.showDialog(
-                requireActivity(),
-                messageId = R.string.discard_message,
-                positiveButtonId = R.string.discard,
-                posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                    findNavController().navigateUp()
-                },
-                negativeButtonId = R.string.keep_editing,
-                negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                })
+        return false
     }
 
     /**
-     * Called when the Done button is tapped and changes have been made. Navigates back to the main product
-     * settings fragment and passes it a bundle containing the changes.
+     * Navigates back to the main product settings fragment and passes it a bundle containing the changes
      */
     private fun navigateBackWithResult() {
         val (key, result) = getChangesResult()
         navigateBackWithResult(key, result)
-    }
-
-    /**
-     * Descendants should call this when edits are made so we can show/hide the done button
-     */
-    fun changesMade() {
-        activity?.invalidateOptionsMenu()
     }
 
     /**

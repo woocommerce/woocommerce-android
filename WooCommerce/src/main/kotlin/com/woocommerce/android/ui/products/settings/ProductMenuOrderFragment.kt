@@ -27,9 +27,6 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
         _binding = FragmentProductMenuOrderBinding.bind(view)
 
         binding.productMenuOrder.setText(navArgs.menuOrder.toString())
-        binding.productMenuOrder.setOnTextChangedListener {
-            changesMade()
-        }
     }
 
     override fun onDestroyView() {
