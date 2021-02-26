@@ -35,7 +35,7 @@ class ProductTagsRepository @Inject constructor(
     }
 
     private var loadContinuation: CancellableContinuation<Boolean>? = null
-    private var addProductTagsContinuation: Continuation<Boolean>? = null
+    private var addProductTagsContinuation: CancellableContinuation<Boolean>? = null
     private var offset = 0
 
     var canLoadMoreProductTags = true
@@ -88,7 +88,7 @@ class ProductTagsRepository @Inject constructor(
      */
     suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
         try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
+            suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 addProductTagsContinuation = it
 
                 val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
