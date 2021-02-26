@@ -436,12 +436,15 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class PackagingStep(
-            override val status: StepStatus, override val data: List<ShippingLabelPackage>
+            override val status: StepStatus,
+            override val data: List<ShippingLabelPackage>
         ) : Step<List<ShippingLabelPackage>>()
 
         @Parcelize
         data class CustomsStep(
-            override val status: StepStatus, override val isVisible: Boolean = false, override val data: Unit = Unit
+            override val status: StepStatus,
+            override val isVisible: Boolean = false,
+            override val data: Unit = Unit
         ) : Step<Unit>()
 
         @Parcelize
@@ -452,7 +455,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class PaymentsStep(
-            override val status: StepStatus, override val data: PaymentMethod?
+            override val status: StepStatus,
+            override val data: PaymentMethod?
         ) : Step<PaymentMethod?>()
     }
 
