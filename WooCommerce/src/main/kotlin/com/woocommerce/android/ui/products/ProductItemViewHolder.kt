@@ -58,7 +58,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         when {
             itemView.isActivated -> {
                 size = imageSize / 2
-                viewBinding.productImage.setImageResource(R.drawable.ic_menu_check)
+                viewBinding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
                 viewBinding.productImageFrame.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
             }
             firstImage.isNullOrEmpty() -> {
