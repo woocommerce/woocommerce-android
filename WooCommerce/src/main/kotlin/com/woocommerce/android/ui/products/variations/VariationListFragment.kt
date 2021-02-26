@@ -31,11 +31,9 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
-import com.woocommerce.android.widgets.ActionableEmptyView
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
@@ -165,12 +163,12 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
                 if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
-                    binding.firstVariationView.handleEmptyViewVisibility(
+                    binding.firstVariationView.updateVisibility(
                         shouldBeVisible = isEmptyViewVisible,
                         showButton = true
                     )
                 } else {
-                    binding.emptyView.handleEmptyViewVisibility(
+                    binding.emptyView.updateVisibility(
                         shouldBeVisible = isEmptyViewVisible,
                         showButton = false
                     )
@@ -240,14 +238,5 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         }
 
         adapter.setVariationList(variations)
-    }
-
-    private fun ActionableEmptyView.handleEmptyViewVisibility(shouldBeVisible: Boolean, showButton: Boolean) {
-        if (shouldBeVisible) {
-            WooAnimUtils.fadeIn(this)
-            showButton(showButton)
-        } else {
-            WooAnimUtils.fadeOut(this)
-        }
     }
 }
