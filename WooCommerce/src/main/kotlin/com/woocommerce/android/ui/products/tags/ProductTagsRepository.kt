@@ -9,7 +9,6 @@ import com.woocommerce.android.model.toProductTag
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
-import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import org.greenrobot.eventbus.Subscribe
