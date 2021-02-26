@@ -70,10 +70,10 @@ class ActionableEmptyView : LinearLayout {
     }
 
     fun updateVisibility(shouldBeVisible: Boolean, showButton: Boolean) {
-        if(shouldBeVisible && isVisible.not()) {
+        if (shouldBeVisible && isVisible.not()) {
             WooAnimUtils.fadeIn(this)
             showButton(showButton)
-        } else if(shouldBeVisible.not() && isVisible) {
+        } else if (shouldBeVisible.not() && isVisible) {
             WooAnimUtils.fadeOut(this)
         }
     }
