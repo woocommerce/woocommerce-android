@@ -217,18 +217,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun updateViewState(stateMachineData: StateMachineData) {
         fun <T> Step<T>.mapToUiState(): StepUiState {
-            if(!isVisible) return StepUiState.hide()
+            if (!isVisible) return StepUiState.hide()
 
-            val description = when(this) {
+            val description = when (this) {
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
-                is PackagingStep -> {
-                    if (data.isNotEmpty()) {
-                        getPackageDetailsDescription(data)
-                    } else {
-                        null
-                    }
-                }
+                is PackagingStep -> data.stepDescription
                 is CustomsStep -> null
                 is CarrierStep -> null
                 is PaymentsStep -> data.stepDescription
@@ -315,38 +309,41 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getPackageDetailsDescription(shippingPackages: List<ShippingLabelPackage>): String {
-        val firstLine = if (shippingPackages.size == 1) {
-            shippingPackages.first().selectedPackage!!.title
-        } else {
-            // TODO properly test this during M3
-            resourceProvider.getString(
-                string.shipping_label_multi_packages_items_count,
-                shippingPackages.sumBy { it.items.size },
-                shippingPackages.size
+    private val List<ShippingLabelPackage>.stepDescription: String?
+        get() {
+            if (isEmpty()) return null
+
+            val firstLine = if (size == 1) {
+                first().selectedPackage!!.title
+            } else {
+                // TODO properly test this during M3
+                resourceProvider.getString(
+                    string.shipping_label_multi_packages_items_count,
+                    sumBy { it.items.size },
+                    size
+                )
+            }
+
+            val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+            val stringResource = if (size == 1) {
+                string.shipping_label_single_package_total_weight
+            } else {
+                string.shipping_label_multi_packages_total_weight
+            }
+            val weightFormatted = with(DecimalFormat()) {
+                maximumFractionDigits = 4
+                minimumFractionDigits = 0
+                format(sumByDouble { it.weight })
+            }
+
+            val secondLine = resourceProvider.getString(
+                stringResource,
+                weightFormatted,
+                weightDimension
             )
-        }
 
-        val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
-        val stringResource = if (shippingPackages.size == 1) {
-            string.shipping_label_single_package_total_weight
-        } else {
-            string.shipping_label_multi_packages_total_weight
+            return "$firstLine\n$secondLine"
         }
-        val weightFormatted = with(DecimalFormat()) {
-            maximumFractionDigits = 4
-            minimumFractionDigits = 0
-            format(shippingPackages.sumByDouble { it.weight })
-        }
-
-        val secondLine = resourceProvider.getString(
-            stringResource,
-            weightFormatted,
-            weightDimension
-        )
-
-        return "$firstLine\n$secondLine"
-    }
 
     private val PaymentMethod?.stepDescription: String?
         get() {
@@ -481,6 +478,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             fun hide() = StepUiState(
                 isVisible = false
             )
+
             fun notDone(newDetails: String? = null) = StepUiState(
                 details = newDetails,
                 isEnabled = false,
