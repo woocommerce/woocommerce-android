@@ -47,10 +47,6 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
         binding.btnVisibilityCatalog.setOnClickListener(this)
         binding.btnVisibilitySearch.setOnClickListener(this)
         binding.btnVisibilityHidden.setOnClickListener(this)
-
-        binding.btnFeatured.setOnCheckedChangeListener { _, isChecked ->
-            changesMade()
-        }
     }
 
     override fun onDestroyView() {
@@ -71,8 +67,6 @@ class ProductCatalogVisibilityFragment : BaseProductSettingsFragment(R.layout.fr
             binding.btnVisibilitySearch.isChecked = it == binding.btnVisibilitySearch
             binding.btnVisibilityHidden.isChecked = it == binding.btnVisibilityHidden
             selectedCatalogVisibility = getVisibilityForButtonId(it.id)
-
-            changesMade()
         }
     }
 
