@@ -21,7 +21,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductTagsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductTagChanged
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @OpenClassOnDebug
