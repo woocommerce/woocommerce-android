@@ -89,13 +89,26 @@ class EditShippingLabelPaymentFragment
                 binding.loadingProgress.isVisible = isLoading
                 binding.contentLayout.isVisible = !isLoading
             }
+            new.canManagePayments.takeIfNotEqualTo(old?.canManagePayments) { canManagePayments ->
+                binding.editWarningBanner.isVisible = !canManagePayments
+                paymentMethodsAdapter.isEditingEnabled = canManagePayments
+                binding.paymentMethodsSectionTitle.isEnabled = canManagePayments
+            }
             new.paymentMethods.takeIfNotEqualTo(old?.paymentMethods) {
                 paymentMethodsAdapter.items = it
+            }
+            new.canEditSettings.takeIfNotEqualTo(old?.canEditSettings) { canEditSettings ->
+                binding.emailReceiptsCheckbox.isEnabled = canEditSettings
             }
             new.emailReceipts.takeIfNotEqualTo(binding.emailReceiptsCheckbox.isChecked) {
                 binding.emailReceiptsCheckbox.isChecked = it
             }
             new.storeOwnerDetails?.takeIfNotEqualTo(old?.storeOwnerDetails) { details ->
+                binding.warningMessage.text = getString(
+                    R.string.shipping_label_payments_cant_edit_warning,
+                    details.name,
+                    details.wpcomUserName
+                )
                 binding.paymentsInfo.text = getString(
                     R.string.shipping_label_payments_account_info,
                     details.wpcomUserName,

@@ -77,8 +77,6 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
             binding.btnPending.isChecked = it == binding.btnPending
             binding.btnTrashed.isChecked = it == binding.btnTrashed
             selectedStatus = getStatusForButtonId(it.id)
-
-            changesMade()
         }
     }
 

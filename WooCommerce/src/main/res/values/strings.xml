@@ -377,6 +377,13 @@
     <string name="shipping_label_create_customs_description">Fill out customs form</string>
     <string name="shipping_label_create_carrier_description">Select your shipping carrier and rates</string>
     <string name="shipping_label_create_payment_description">Add a new credit card</string>
+    <string name="shipping_label_create_order_summary">Shipping label order summary</string>
+    <string name="shipping_label_create_price_subtotal">Subtotal</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce Services discount</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Learn more about WooCommerce Services discount</string>
+    <string name="shipping_label_create_price_total">Order total</string>
+    <string name="shipping_label_create_mark_order_complete">Mark this order as complete and notify the customer</string>
+    <string name="shipping_label_create_purchase">Purchase shipping label</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>
@@ -414,7 +421,6 @@
     <string name="shipping_label_package_details_weight_hint">Total package weight (%1$s)</string>
     <string name="shipping_label_package_details_weight_info">Includes package weight</string>
     <string name="shipping_label_packages_loading_error">Unable to load package definitions</string>
-    <string name="shipping_label_package_details_items_count">"%1$d items"</string>
     <plurals name="shipping_label_package_details_items_count">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
@@ -439,6 +445,15 @@
     <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
     <string name="shipping_label_payments_saving_dialog_message">Please wait…</string>
     <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
+    <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
+    <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
     <!--
             Refunds
         -->
@@ -1545,4 +1560,5 @@
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
+    <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
 </resources>

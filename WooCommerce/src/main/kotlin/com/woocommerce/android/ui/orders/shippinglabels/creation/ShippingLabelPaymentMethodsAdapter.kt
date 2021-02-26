@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPaymentMethodListItemBinding
+import com.woocommerce.android.extensions.setEnabledRecursive
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.PaymentMethodUiModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPaymentMethodsAdapter.PaymentMethodViewHolder
@@ -25,6 +26,8 @@ class ShippingLabelPaymentMethodsAdapter(
             field = value
             notifyDataSetChanged()
         }
+
+    var isEditingEnabled: Boolean = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentMethodViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -45,6 +48,7 @@ class ShippingLabelPaymentMethodsAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(item: PaymentMethodUiModel) {
             val context = binding.root.context
+            binding.root.setEnabledRecursive(isEditingEnabled)
             binding.radioButton.isChecked = item.isSelected
             val cardType = context.getPaymentMethodTranslation(item.paymentMethod.cardType)
             binding.cardTypeNumber.text = context.getString(

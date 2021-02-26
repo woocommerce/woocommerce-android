@@ -8,6 +8,7 @@ import java.util.Date
 
 @Parcelize
 data class ShippingAccountSettings(
+    val canEditSettings: Boolean,
     val storeOwnerDetails: StoreOwnerDetails,
     val isEmailReceiptEnabled: Boolean,
     val canManagePayments: Boolean,
@@ -35,6 +36,7 @@ data class PaymentMethod(
 
 fun WCShippingAccountSettings.toAppModel(): ShippingAccountSettings {
     return ShippingAccountSettings(
+        canEditSettings = canEditSettings,
         storeOwnerDetails = StoreOwnerDetails(
             wpcomEmail = storeOwnerWpcomEmail,
             wpcomUserName = storeOwnerUserName,

@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.nhaarman.mockitokotlin2.clearInvocations
 import com.nhaarman.mockitokotlin2.spy
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DiscardSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionViewModel.ViewState
@@ -12,6 +11,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -98,11 +98,11 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Exits the screen with a discard event`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Exits the screen with a exit event`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
         viewModel.onExit()
-        assertThat(event).isEqualTo(DiscardSuggestedAddress)
+        assertThat(event).isEqualTo(Exit)
     }
 }

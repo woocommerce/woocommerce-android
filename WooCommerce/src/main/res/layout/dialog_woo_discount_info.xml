@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottomsheet_rounded"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingVertical="@dimen/major_100">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_info_outline_24dp"
+        app:tint="@color/woo_purple_60" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:gravity="center"
+        android:text="@string/shipping_label_woo_discount_bottomsheet_title"
+        android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    <View
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:gravity="center"
+        android:text="@string/shipping_label_woo_discount_bottomsheet_message"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textColor="@color/color_on_surface_high" />
+</LinearLayout>

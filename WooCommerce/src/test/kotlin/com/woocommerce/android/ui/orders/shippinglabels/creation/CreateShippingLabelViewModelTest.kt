@@ -38,6 +38,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = "123"
+        private const val REMOTE_ORDER_ID = 123L
     }
 
     private val orderDetailRepository: OrderDetailRepository = mock()
@@ -56,6 +57,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
 
     private val data = Data(
+        remoteOrderId = REMOTE_ORDER_ID,
         originAddress = originAddress,
         shippingAddress = shippingAddress,
         currentPaymentMethod = null,
