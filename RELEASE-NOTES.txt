@@ -2,6 +2,7 @@
 
 6.2
 -----
+* [*] Fix adding tags taking a long time. 
 
 
 6.1
