@@ -524,27 +524,27 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `add order button initially visible when order creation feature enabled`() {
+    fun `add order button initially not changed when order creation feature enabled`() {
         whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
         createViewModelWithFeatureFlagResolver(featureFlagResolver)
 
         viewModel.isAddOrderButtonVisible.observeForTesting {
-            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+            assertNull(viewModel.isAddOrderButtonVisible.value)
         }
     }
 
     @Test
-    fun `add order button initially invisible when order creation feature disabled`() {
+    fun `add order button initially not changed when order creation feature disabled`() {
         whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
         createViewModelWithFeatureFlagResolver(featureFlagResolver)
 
         viewModel.isAddOrderButtonVisible.observeForTesting {
-            assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+            assertNull(viewModel.isAddOrderButtonVisible.value)
         }
     }
 
     @Test
-    fun `add order button always invisible when order creation feature disabled`() = test {
+    fun `add order button not changed when order creation feature disabled and data available`() = test {
         whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
         createViewModelWithFeatureFlagResolver(featureFlagResolver)
 
@@ -557,39 +557,17 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
 
         viewModel.isAddOrderButtonVisible.observeForTesting {
-            assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+            assertNull(viewModel.isAddOrderButtonVisible.value)
         }
     }
 
     @Test
-    fun `add order button is visible when order creation feature enabled and result comes`() = test {
-        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
-        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+    fun `add order button invisible when on refresh called`() = test {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
-        viewModel.isSearching = false
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
-
-        viewModel.isAddOrderButtonVisible.observeForTesting {
-            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
-        }
-    }
-
-    @Test
-    fun `add order button is invisible when order creation feature enabled and loading in progress`() = test {
-        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
-        createViewModelWithFeatureFlagResolver(featureFlagResolver)
-
-        viewModel.isSearching = false
-        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        viewModel.onRefreshOrders()
 
         viewModel.isAddOrderButtonVisible.observeForTesting {
             assertFalse(viewModel.isAddOrderButtonVisible.value!!)
@@ -597,21 +575,76 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `add order button is visible when order creation feature enabled and loading and search in progress`() = test {
-        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
-        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+    fun `add order button is visible when on refresh called and fetching first page finished and feature enabled`() =
+        test {
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
 
-        viewModel.isSearching = true
-        whenever(pagedListWrapper.isEmpty.value).doReturn(false)
-        whenever(pagedListWrapper.listError.value).doReturn(null)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
+            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+            createViewModelWithFeatureFlagResolver(featureFlagResolver)
 
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+            viewModel.onRefreshOrders()
+            viewModel.onFetchingFirstPage(false)
 
-        viewModel.isAddOrderButtonVisible.observeForTesting {
-            assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+            viewModel.isAddOrderButtonVisible.observeForTesting {
+                assertTrue(viewModel.isAddOrderButtonVisible.value!!)
+            }
         }
-    }
+
+    @Test
+    fun `add order button is invisible when on refresh called and fetching first page finished and feature disabled`() =
+        test {
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
+            createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+            viewModel.onRefreshOrders()
+            viewModel.onFetchingFirstPage(false)
+
+            viewModel.isAddOrderButtonVisible.observeForTesting {
+                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+            }
+        }
+
+    @Test
+    fun `add order button is invisible when on refresh called and fetching first page and feature enabled`() =
+        test {
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
+            createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+            viewModel.onRefreshOrders()
+            viewModel.onFetchingFirstPage(true)
+
+            viewModel.isAddOrderButtonVisible.observeForTesting {
+                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+            }
+        }
+
+    @Test
+    fun `add order button is invisible when on refresh called and fetching first page and feature disabled`() =
+        test {
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
+            createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+            viewModel.onRefreshOrders()
+            viewModel.onFetchingFirstPage(true)
+
+            viewModel.isAddOrderButtonVisible.observeForTesting {
+                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
+            }
+        }
 
     private fun createViewModelWithFeatureFlagResolver(featureFlagResolver: FeatureFlagResolver) {
         viewModel = OrderListViewModel(

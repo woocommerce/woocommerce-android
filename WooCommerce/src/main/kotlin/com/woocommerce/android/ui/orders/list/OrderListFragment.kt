@@ -160,7 +160,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
-                refreshOrders()
+                viewModel.onRefreshOrders()
             }
         }
 
@@ -363,7 +363,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         emptyView.show(emptyViewType) {
-                            refreshOrders()
+                            viewModel.onRefreshOrders()
                         }
                     }
                     else -> {
@@ -613,10 +613,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         } else if (!show && tabLayout.visibility != View.GONE) {
             tabLayout.visibility = View.GONE
         }
-    }
-
-    private fun refreshOrders() {
-        viewModel.fetchOrdersAndOrderDependencies()
     }
 
     private fun disableSearchListeners() {

@@ -32,6 +32,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -73,6 +74,7 @@ class OrderListViewModel @AssistedInject constructor(
     featureFlagResolver: FeatureFlagResolver
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     private val orderCreationFeatureEnabled = featureFlagResolver.isFeatureEnabled(ORDER_CREATION)
+    private var isRefreshing: Boolean = false
 
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -105,7 +107,7 @@ class OrderListViewModel @AssistedInject constructor(
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
-    private val _isAddOrderButtonVisible = MutableLiveData<Boolean>(orderCreationFeatureEnabled)
+    private val _isAddOrderButtonVisible = SingleLiveEvent<Boolean>()
     val isAddOrderButtonVisible: LiveData<Boolean> = _isAddOrderButtonVisible
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
@@ -197,6 +199,12 @@ class OrderListViewModel @AssistedInject constructor(
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
+    fun onRefreshOrders() {
+        isRefreshing = true
+        hideAddOrderButton()
+        fetchOrdersAndOrderDependencies()
+    }
+
     /**
      * Refresh the active order list with fresh data from the API as well as refresh order status
      * options and payment gateways if the network is available.
@@ -209,6 +217,8 @@ class OrderListViewModel @AssistedInject constructor(
                 fetchPaymentGateways()
             }
         } else {
+            showAddOrderButtonIfEnabled()
+            isRefreshing = false
             viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
         }
@@ -276,11 +286,10 @@ class OrderListViewModel @AssistedInject constructor(
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
                 _pagedListData.value = it
-                showAddOrderButtonIfEnabled()
             }
         }
-        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
-            _isFetchingFirstPage.value = it
+        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) { isFetchingFirstPage ->
+            onFetchingFirstPage(isFetchingFirstPage)
         }
         _isEmpty.addSource(pagedListWrapper.isEmpty) {
             _isEmpty.value = it
@@ -302,6 +311,15 @@ class OrderListViewModel @AssistedInject constructor(
         } else {
             pagedListWrapper.invalidateData()
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun onFetchingFirstPage(isFetchingFirstPage: Boolean) {
+        _isFetchingFirstPage.value = isFetchingFirstPage
+        if (!isFetchingFirstPage) {
+            showAddOrderButtonIfEnabled()
+        }
+        isRefreshing = false
     }
 
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
@@ -334,8 +352,6 @@ class OrderListViewModel @AssistedInject constructor(
         val isListEmpty = wrapper.isEmpty.value ?: true
         val hasOrders = repository.hasCachedOrdersForSite()
         val isError = wrapper.listError.value != null
-
-        changeAddOrderButtonVisibility(isLoadingData)
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
             when {
@@ -378,20 +394,16 @@ class OrderListViewModel @AssistedInject constructor(
         _emptyViewType.postValue(newEmptyViewType)
     }
 
-    private fun changeAddOrderButtonVisibility(isLoadingData: Boolean) {
-        if (isLoadingData && !isSearching) {
-            _isAddOrderButtonVisible.value = false
-        } else {
-            showAddOrderButtonIfEnabled()
-        }
-    }
-
     private fun isShowingProcessingOrders() = orderStatusFilter.isNotEmpty() &&
             orderStatusFilter.toLowerCase(Locale.ROOT) == CoreOrderStatus.PROCESSING.value
 
     private fun showOfflineSnack() {
         // Network is not connected
         triggerEvent(ShowErrorSnack(R.string.offline_error))
+    }
+
+    private fun hideAddOrderButton() {
+        _isAddOrderButtonVisible.value = false
     }
 
     private fun showAddOrderButtonIfEnabled() {
