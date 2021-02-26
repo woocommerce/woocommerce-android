@@ -88,6 +88,7 @@ class ProductTagsRepository @Inject constructor(
      */
     suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
         try {
+            addProductTagsContinuation?.cancel()
             suspendCancellableCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
                 addProductTagsContinuation = it
 
