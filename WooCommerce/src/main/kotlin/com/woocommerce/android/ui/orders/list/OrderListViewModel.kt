@@ -74,7 +74,6 @@ class OrderListViewModel @AssistedInject constructor(
     featureFlagResolver: FeatureFlagResolver
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
     private val orderCreationFeatureEnabled = featureFlagResolver.isFeatureEnabled(ORDER_CREATION)
-    private var isRefreshing: Boolean = false
 
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -200,7 +199,6 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     fun onRefreshOrders() {
-        isRefreshing = true
         hideAddOrderButton()
         fetchOrdersAndOrderDependencies()
     }
@@ -218,7 +216,6 @@ class OrderListViewModel @AssistedInject constructor(
             }
         } else {
             showAddOrderButtonIfEnabled()
-            isRefreshing = false
             viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
         }
@@ -288,8 +285,8 @@ class OrderListViewModel @AssistedInject constructor(
                 _pagedListData.value = it
             }
         }
-        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) { isFetchingFirstPage ->
-            onFetchingFirstPage(isFetchingFirstPage)
+        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) { isFetchingInProgress ->
+            onFetchingFirstPage(isFetchingInProgress)
         }
         _isEmpty.addSource(pagedListWrapper.isEmpty) {
             _isEmpty.value = it
@@ -313,13 +310,11 @@ class OrderListViewModel @AssistedInject constructor(
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun onFetchingFirstPage(isFetchingFirstPage: Boolean) {
-        _isFetchingFirstPage.value = isFetchingFirstPage
-        if (!isFetchingFirstPage) {
+    private fun onFetchingFirstPage(isFetchingInProgress: Boolean) {
+        _isFetchingFirstPage.value = isFetchingInProgress
+        if (!isFetchingInProgress) {
             showAddOrderButtonIfEnabled()
         }
-        isRefreshing = false
     }
 
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {

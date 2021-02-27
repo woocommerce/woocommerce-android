@@ -577,74 +577,70 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `add order button is visible when on refresh called and fetching first page finished and feature enabled`() =
         test {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
-            createViewModelWithFeatureFlagResolver(featureFlagResolver)
-
-            viewModel.onRefreshOrders()
-            viewModel.onFetchingFirstPage(false)
-
-            viewModel.isAddOrderButtonVisible.observeForTesting {
-                assertTrue(viewModel.isAddOrderButtonVisible.value!!)
-            }
+            testFABVisibility(
+                featureEnabled = true,
+                isFetchingFirstPageInProgress = false,
+                expectedResult = true
+            )
         }
 
     @Test
     fun `add order button is invisible when on refresh called and fetching first page finished and feature disabled`() =
         test {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
-            createViewModelWithFeatureFlagResolver(featureFlagResolver)
-
-            viewModel.onRefreshOrders()
-            viewModel.onFetchingFirstPage(false)
-
-            viewModel.isAddOrderButtonVisible.observeForTesting {
-                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
-            }
+            testFABVisibility(
+                featureEnabled = false,
+                isFetchingFirstPageInProgress = false,
+                expectedResult = false
+            )
         }
 
     @Test
     fun `add order button is invisible when on refresh called and fetching first page and feature enabled`() =
         test {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(true)
-            createViewModelWithFeatureFlagResolver(featureFlagResolver)
-
-            viewModel.onRefreshOrders()
-            viewModel.onFetchingFirstPage(true)
-
-            viewModel.isAddOrderButtonVisible.observeForTesting {
-                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
-            }
+            testFABVisibility(
+                featureEnabled = true,
+                isFetchingFirstPageInProgress = true,
+                expectedResult = false
+            )
         }
 
     @Test
     fun `add order button is invisible when on refresh called and fetching first page and feature disabled`() =
         test {
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
-            doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
-            doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
-
-            whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(false)
-            createViewModelWithFeatureFlagResolver(featureFlagResolver)
-
-            viewModel.onRefreshOrders()
-            viewModel.onFetchingFirstPage(true)
-
-            viewModel.isAddOrderButtonVisible.observeForTesting {
-                assertFalse(viewModel.isAddOrderButtonVisible.value!!)
-            }
+            testFABVisibility(
+                featureEnabled = false,
+                isFetchingFirstPageInProgress = true,
+                expectedResult = false
+            )
         }
+
+    private suspend fun testFABVisibility(
+        featureEnabled: Boolean,
+        isFetchingFirstPageInProgress: Boolean,
+        expectedResult: Boolean
+    ) {
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchOrderStatusOptionsFromApi()
+        doReturn(orderStatusOptions).whenever(repository).getCachedOrderStatusOptions()
+        doReturn(RequestResult.SUCCESS).whenever(repository).fetchPaymentGateways()
+
+        whenever(featureFlagResolver.isFeatureEnabled(ORDER_CREATION)).thenReturn(featureEnabled)
+        createViewModelWithFeatureFlagResolver(featureFlagResolver)
+
+        val isFetchingFirstPage = MutableLiveData<Boolean>()
+        whenever(pagedListWrapper.isFetchingFirstPage).thenReturn(isFetchingFirstPage)
+
+        // https://stackoverflow.com/questions/53910409/mediatorlivedata-doesnt-work-in-junit-tests
+        viewModel.isFetchingFirstPage.observeForever {}
+
+        viewModel.initializeListsForMainTabs()
+        viewModel.loadAllList()
+        viewModel.onRefreshOrders()
+        isFetchingFirstPage.value = isFetchingFirstPageInProgress
+
+        viewModel.isAddOrderButtonVisible.observeForTesting {
+            assertEquals(viewModel.isAddOrderButtonVisible.value!!, expectedResult)
+        }
+    }
 
     private fun createViewModelWithFeatureFlagResolver(featureFlagResolver: FeatureFlagResolver) {
         viewModel = OrderListViewModel(
