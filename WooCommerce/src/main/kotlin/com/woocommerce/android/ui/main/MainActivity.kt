@@ -42,6 +42,7 @@ import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -114,6 +115,7 @@ class MainActivity : AppUpgradeActivity(),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
+    @Inject lateinit var fabManager: FabManager
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -324,6 +326,14 @@ class MainActivity : AppUpgradeActivity(),
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    /**
+     * Returns if currently navigating to top-level fragment has a FAB.
+     * Returns false if currently navigation not to a top-level fragment.
+     */
+    override fun currentDestinationHasFab(): Boolean {
+        return getActiveChildFragment() == null && getActiveTopLevelFragment()?.hasFab == true
     }
 
     /**

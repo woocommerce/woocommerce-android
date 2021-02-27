@@ -362,4 +362,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     }
 
     override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
+
+    override val hasFab = false
 }

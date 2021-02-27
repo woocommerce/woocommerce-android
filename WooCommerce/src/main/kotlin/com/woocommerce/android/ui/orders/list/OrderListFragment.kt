@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.orders.OrderStatusListView
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.ORDER_CREATION
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -159,7 +160,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
-                refreshOrders()
+                viewModel.onRefreshOrders()
             }
         }
 
@@ -362,7 +363,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         emptyView.show(emptyViewType) {
-                            refreshOrders()
+                            viewModel.onRefreshOrders()
                         }
                     }
                     else -> {
@@ -370,6 +371,14 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     }
                 }
             } ?: hideEmptyView()
+        })
+
+        viewModel.isAddOrderButtonVisible.observe(viewLifecycleOwner, Observer { isVisible ->
+            if (isVisible) {
+                fabManager.showFabAnimated(R.string.orderlist_add_order_button) { viewModel.onAddOrderButtonClicked() }
+            } else {
+                fabManager.hideFabAnimated()
+            }
         })
     }
 
@@ -598,18 +607,12 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         viewModel.submitSearchOrFilter(searchQuery = query)
     }
 
-    private fun isOrderStatusFilterEnabled() = isFilterEnabled || !isSearching
-
     private fun showTabs(show: Boolean) {
         if (show && tabLayout.visibility != View.VISIBLE) {
             WooAnimUtils.fadeIn(tabLayout)
         } else if (!show && tabLayout.visibility != View.GONE) {
             tabLayout.visibility = View.GONE
         }
-    }
-
-    private fun refreshOrders() {
-        viewModel.fetchOrdersAndOrderDependencies()
     }
 
     private fun disableSearchListeners() {
@@ -739,4 +742,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
+
+    override val hasFab = ORDER_CREATION.isEnabled()
 }

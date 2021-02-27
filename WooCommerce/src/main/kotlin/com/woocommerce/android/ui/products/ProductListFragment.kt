@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -58,7 +57,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -121,7 +120,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         skeletonView.hide()
         disableSearchListeners()
         searchView = null
-        showAddProductButton(false)
         super.onDestroyView()
         _binding = null
     }
@@ -268,7 +266,11 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(show = isVisible)
+                if (isVisible) {
+                    fabManager.showFabAnimated(R.string.add_products_button) { viewModel.onAddProductButtonClicked() }
+                } else {
+                    fabManager.hideFabAnimated()
+                }
             }
         }
 
@@ -398,36 +400,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         binding.productsSortFilterCard.updateFilterSelection(filterCount)
     }
 
-    private fun showAddProductButton(show: Boolean) {
-        // note that the FAB is part of the main activity so it can be direct child of the CoordinatorLayout
-        val addProductButton = requireActivity().findViewById<FloatingActionButton>(R.id.addProductButton)
-
-        fun showButton() = run {
-            if (!addProductButton.isVisible) {
-                addProductButton.show()
-            }
-        }
-
-        fun hideButton() = run {
-            if (addProductButton.isVisible) {
-                addProductButton.hide()
-            }
-        }
-
-        when (show) {
-            true -> {
-                showButton()
-                addProductButton.setOnClickListener {
-                    viewModel.onAddProductButtonClicked()
-                }
-            }
-            else -> {
-                hideButton()
-                addProductButton.setOnClickListener(null)
-            }
-        }
-    }
-
     override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
 
     private fun showProductDetails(remoteProductId: Long) {
@@ -489,4 +461,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun shouldExpandToolbar(): Boolean {
         return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
     }
+
+    override val hasFab = true
 }
