@@ -1,12 +1,13 @@
 package com.woocommerce.android.model.customer
 
 import android.os.Parcelable
+import com.woocommerce.android.model.Address
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Customer(
     val avatarUrl: String,
-    val billing: CustomerBilling,
+    val billing: Address,
     val dateCreated: String,
     val dateCreatedGmt: String,
     val dateModified: String,
@@ -17,6 +18,6 @@ data class Customer(
     val isPayingCustomer: Boolean,
     val lastName: String,
     val role: String,
-    val shipping: CustomerShipping,
+    val shipping: Address,
     val username: String
 ) : Parcelable
