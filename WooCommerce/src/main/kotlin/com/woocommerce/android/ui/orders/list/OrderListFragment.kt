@@ -147,8 +147,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showFabIfFeatureEnabled()
-
         setHasOptionsMenu(true)
 
         _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
@@ -162,7 +160,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
-                refreshOrders()
+                viewModel.onRefreshOrders()
             }
         }
 
@@ -335,7 +333,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         })
 
         viewModel.pagedListData.observe(viewLifecycleOwner, Observer {
-            showFabIfFeatureEnabled()
             updatePagedListData(it)
         })
 
@@ -351,12 +348,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
         viewModel.emptyViewType.observe(viewLifecycleOwner, Observer {
             it?.let { emptyViewType ->
-                if (emptyViewType == EmptyViewType.ORDER_LIST_LOADING) {
-                    fabManager.hideFabAnimated()
-                } else {
-                    showFabIfFeatureEnabled()
-                }
-
                 when (emptyViewType) {
                     EmptyViewType.SEARCH_RESULTS -> {
                         binding.orderStatusListView
@@ -372,7 +363,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     }
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         emptyView.show(emptyViewType) {
-                            refreshOrders()
+                            viewModel.onRefreshOrders()
                         }
                     }
                     else -> {
@@ -380,6 +371,14 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     }
                 }
             } ?: hideEmptyView()
+        })
+
+        viewModel.isAddOrderButtonVisible.observe(viewLifecycleOwner, Observer { isVisible ->
+            if (isVisible) {
+                fabManager.showFabAnimated(R.string.orderlist_add_order_button) { viewModel.onAddOrderButtonClicked() }
+            } else {
+                fabManager.hideFabAnimated()
+            }
         })
     }
 
@@ -625,10 +624,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         }
     }
 
-    private fun refreshOrders() {
-        viewModel.fetchOrdersAndOrderDependencies()
-    }
-
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         binding.orderListViewRoot.visibility = View.VISIBLE
@@ -757,13 +752,5 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
 
-    override val hasFab = ORDER_CREATION.isEnabled(activity)
-
-    private fun showFabIfFeatureEnabled() {
-        if (ORDER_CREATION.isEnabled(activity)) {
-            fabManager.showFabAnimated(R.string.orderlist_add_order_button) { openOrderCreation() }
-        } else {
-            fabManager.hideFabImmediately()
-        }
-    }
+    override val hasFab = ORDER_CREATION.isEnabled()
 }

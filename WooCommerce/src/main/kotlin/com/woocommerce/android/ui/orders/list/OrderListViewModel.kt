@@ -24,12 +24,15 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag.ORDER_CREATION
+import com.woocommerce.android.util.FeatureFlagResolver
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
@@ -67,8 +70,11 @@ class OrderListViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: OrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    featureFlagResolver: FeatureFlagResolver
 ) : ScopedViewModel(savedState, coroutineDispatchers), LifecycleOwner {
+    private val orderCreationFeatureEnabled = featureFlagResolver.isFeatureEnabled(ORDER_CREATION)
+
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -99,6 +105,9 @@ class OrderListViewModel @AssistedInject constructor(
 
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
+
+    private val _isAddOrderButtonVisible = SingleLiveEvent<Boolean>()
+    val isAddOrderButtonVisible: LiveData<Boolean> = _isAddOrderButtonVisible
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
@@ -189,6 +198,11 @@ class OrderListViewModel @AssistedInject constructor(
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
+    fun onRefreshOrders() {
+        hideAddOrderButton()
+        fetchOrdersAndOrderDependencies()
+    }
+
     /**
      * Refresh the active order list with fresh data from the API as well as refresh order status
      * options and payment gateways if the network is available.
@@ -201,6 +215,7 @@ class OrderListViewModel @AssistedInject constructor(
                 fetchPaymentGateways()
             }
         } else {
+            showAddOrderButtonIfEnabled()
             viewState = viewState.copy(isRefreshPending = true)
             showOfflineSnack()
         }
@@ -266,8 +281,8 @@ class OrderListViewModel @AssistedInject constructor(
                 _pagedListData.value = it
             }
         }
-        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
-            _isFetchingFirstPage.value = it
+        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) { isFetchingInProgress ->
+            onFetchingFirstPage(isFetchingInProgress)
         }
         _isEmpty.addSource(pagedListWrapper.isEmpty) {
             _isEmpty.value = it
@@ -288,6 +303,13 @@ class OrderListViewModel @AssistedInject constructor(
             fetchOrdersAndOrderDependencies()
         } else {
             pagedListWrapper.invalidateData()
+        }
+    }
+
+    private fun onFetchingFirstPage(isFetchingInProgress: Boolean) {
+        _isFetchingFirstPage.value = isFetchingInProgress
+        if (!isFetchingInProgress) {
+            showAddOrderButtonIfEnabled()
         }
     }
 
@@ -369,6 +391,16 @@ class OrderListViewModel @AssistedInject constructor(
     private fun showOfflineSnack() {
         // Network is not connected
         triggerEvent(ShowErrorSnack(R.string.offline_error))
+    }
+
+    private fun hideAddOrderButton() {
+        _isAddOrderButtonVisible.value = false
+    }
+
+    private fun showAddOrderButtonIfEnabled() {
+        if (orderCreationFeatureEnabled) {
+            _isAddOrderButtonVisible.value = true
+        }
     }
 
     override fun onCleared() {

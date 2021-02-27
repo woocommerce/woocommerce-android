@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import javax.inject.Inject
 
 /**
  * "Feature flags" are used to hide in-progress features from release versions
@@ -10,6 +11,7 @@ enum class FeatureFlag {
     ADD_EDIT_VARIATIONS,
     DB_DOWNGRADE,
     ORDER_CREATION;
+
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             SHIPPING_LABELS_M2 -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
@@ -20,4 +22,8 @@ enum class FeatureFlag {
             ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
         }
     }
+}
+
+class FeatureFlagResolver @Inject constructor() {
+    fun isFeatureEnabled(flag: FeatureFlag) = flag.isEnabled()
 }
