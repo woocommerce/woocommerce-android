@@ -69,6 +69,7 @@ class VariationDetailCardBuilder(
             properties = listOf(
                 variation.price(),
                 variation.warning(),
+                variation.attributes(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -265,4 +266,6 @@ class VariationDetailCardBuilder(
             )
         }
     }
+
+    private fun ProductVariation.attributes(): ProductProperty? = null
 }
