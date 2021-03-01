@@ -7,15 +7,18 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
-import com.woocommerce.android.model.ShippingRate.ExtraOption
-import com.woocommerce.android.model.ShippingRate.ExtraOption.NONE
-import com.woocommerce.android.model.ShippingRate.ShippingCarrier.FEDEX
-import com.woocommerce.android.model.ShippingRate.ShippingCarrier.UPS
-import com.woocommerce.android.model.ShippingRate.ShippingCarrier.USPS
+import com.woocommerce.android.model.ShippingRate.Option
+import com.woocommerce.android.model.ShippingRate.Option.ADULT_SIGNATURE
+import com.woocommerce.android.model.ShippingRate.Option.DEFAULT
+import com.woocommerce.android.model.ShippingRate.Option.SIGNATURE
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.PackageRateListItem
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -69,8 +72,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val _shippingRates = MutableLiveData<List<PackageRateList>>()
-    val shippingRates: LiveData<List<PackageRateList>> = _shippingRates
+    private val _shippingRates = MutableLiveData<List<PackageRateListItem>>()
+    val shippingRates: LiveData<List<PackageRateListItem>> = _shippingRates
 
     init {
         loadShippingRates()
@@ -113,39 +116,78 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun generateRateModels(carrierRates: List<ShippingPackage>): List<PackageRateList> {
+    @Suppress("UNCHECKED_CAST")
+    private fun generateRateModels(carrierRates: List<ShippingPackage>): List<PackageRateListItem> {
+        // different carrier options, such as express shipping, priority shipping, etc.
         return carrierRates.mapIndexed { i, pkg ->
-            val defaultRates = pkg.shippingOptions.first { it.optionId == DEFAULT_RATE_OPTION }.rates
-            val signatureRates = pkg.shippingOptions.first { it.optionId == SIGNATURE_RATE_OPTION }.rates
-            val adultSignatureRates = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
-            val shippingRates = defaultRates.map { default ->
-                val optionWithSignature = signatureRates.firstOrNull { it.serviceId == default.serviceId }
-                val optionWithAdultSignature = adultSignatureRates.firstOrNull { it.serviceId == default.serviceId }
-                val isSignatureRequired = optionWithSignature?.rate?.minus(default.rate).isEqualTo(BigDecimal.ZERO)
+            // a particular carrier option without any extras
+            val defaultRate = pkg.shippingOptions.first { it.optionId == DEFAULT_RATE_OPTION }.rates
 
-                ShippingRate(
-                    id = default.rateId,
+            // a particular carrier option with a required signature option selected
+            val rateWithSignature = pkg.shippingOptions.first { it.optionId == SIGNATURE_RATE_OPTION }.rates
+
+            // a particular carrier option with a required adult signature option selected
+            val rateWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
+
+            val shippingRates = defaultRate.map { default ->
+                val optionWithSignature = rateWithSignature.firstOrNull { it.serviceId == default.serviceId }
+                val optionWithAdultSignature = rateWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
+                val signaturePrice = optionWithSignature?.rate?.minus(default.rate)
+                val adultSignaturePrice = optionWithAdultSignature?.rate?.minus(default.rate)
+
+                // we can use the default rate as a base for most of the properties (these are the same for all
+                // extra options) and we just calculate the price for each extra option
+                ShippingRateItem(
+                    serviceId = default.serviceId,
                     title = default.title,
                     deliveryEstimate = default.deliveryDays,
                     deliveryDate = default.deliveryDate,
-                    price = default.rate.format(),
                     carrier = getCarrier(default),
                     isTrackingAvailable = default.hasTracking,
                     isFreePickupAvailable = default.isPickupFree,
                     isInsuranceAvailable = default.insurance > BigDecimal.ZERO,
                     insuranceCoverage = default.insurance.format(),
-                    isSignatureRequired = isSignatureRequired,
-                    isSignatureAvailable = optionWithSignature != null && !isSignatureRequired,
-                    signaturePrice = optionWithSignature?.rate?.minus(default.rate).format(),
-                    isAdultSignatureAvailable = optionWithAdultSignature != null,
-                    adultSignaturePrice = optionWithAdultSignature?.rate?.minus(default.rate).format(),
-                    extraOptionSelected = NONE,
-                    isSelected = false
+                    options = mapOf(
+                        DEFAULT to ShippingRate(
+                            pkg.boxId,
+                            default.rateId,
+                            default.serviceId,
+                            default.carrierId,
+                            default.title,
+                            default.rate,
+                            default.rate.format(),
+                            DEFAULT
+                        ),
+                        SIGNATURE to optionWithSignature?.let { rate ->
+                            ShippingRate(
+                                pkg.boxId,
+                                rate.rateId,
+                                rate.serviceId,
+                                rate.carrierId,
+                                rate.title,
+                                signaturePrice ?: BigDecimal.ZERO,
+                                signaturePrice.format(),
+                                SIGNATURE
+                            )
+                        },
+                        ADULT_SIGNATURE to optionWithAdultSignature?.let { rate ->
+                            ShippingRate(
+                                pkg.boxId,
+                                rate.rateId,
+                                rate.serviceId,
+                                rate.carrierId,
+                                rate.title,
+                                adultSignaturePrice ?: BigDecimal.ZERO,
+                                adultSignaturePrice.format(),
+                                ADULT_SIGNATURE
+                            )
+                        }
+                    ).filterValues { it != null } as Map<Option, ShippingRate>
                 )
             }
-            PackageRateList(
+
+            PackageRateListItem(
                 pkg.boxId,
-                title = pkg.shippingOptions.first().optionId,
                 itemCount = arguments.packages[i].items.size,
                 rateOptions = shippingRates
             )
@@ -178,30 +220,24 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             else -> throw IllegalArgumentException("Unsupported carrier ID: `${it.carrierId}`")
         }
 
-    fun onShippingRateSelected(packageId: String, rateId: String, optionSelected: ExtraOption) {
-        fun List<PackageRateList>.updatePackageRates(packageRates: PackageRateList): List<PackageRateList> {
-            this.indexOfFirst { it.id == packageRates.id }.takeIf { it != -1 }?.let { i ->
-                return this.toMutableList().apply {
-                    this[i] = packageRates
+    fun onShippingRateSelected(rate: ShippingRate) {
+        shippingRates.value?.let { packageRates ->
+            updateRates(
+                packageRates.map {
+                    // update the selected rate for the specific package
+                    if (it.id == rate.packageId) {
+                        it.updateSelectedRateAndCopy(rate)
+                    } else {
+                        it
+                    }
                 }
-            } ?: return this
-        }
-
-        fun List<PackageRateList>.updateSelectedRate(): List<PackageRateList> {
-            firstOrNull { it.id == packageId }?.let { pack ->
-                val packageRates = pack.updateSelectedRate(rateId, optionSelected)
-                return updatePackageRates(packageRates)
-            } ?: return this
-        }
-
-        shippingRates.value?.let { rates ->
-            updateRates(rates.updateSelectedRate())
+            )
         }
     }
 
-    private fun updateRates(rates: List<PackageRateList>) {
-        _shippingRates.value = rates
-        viewState = viewState.copy(isDoneButtonVisible = rates.all { it.selectedRate != null })
+    private fun updateRates(packageRates: List<PackageRateListItem>) {
+        _shippingRates.value = packageRates
+        viewState = viewState.copy(isDoneButtonVisible = packageRates.all { it.hasSelectedOption })
     }
 
     fun onDoneButtonClicked() {
@@ -218,25 +254,6 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         val isEmptyViewVisible: Boolean = false,
         val isDoneButtonVisible: Boolean = false
     ) : Parcelable
-
-    @Parcelize
-    data class PackageRateList(
-        val id: String,
-        val title: String,
-        val itemCount: Int,
-        val rateOptions: List<ShippingRate>
-    ) : Parcelable {
-        val selectedRate = rateOptions.firstOrNull { it.isSelected }
-        fun updateSelectedRate(rateId: String, extraOption: ExtraOption): PackageRateList {
-            return copy(rateOptions = rateOptions.map {
-                if (it.id == rateId) {
-                    it.copy(isSelected = true, extraOptionSelected = extraOption)
-                } else {
-                    it.copy(isSelected = false)
-                }
-            })
-        }
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<ShippingCarrierRatesViewModel>
