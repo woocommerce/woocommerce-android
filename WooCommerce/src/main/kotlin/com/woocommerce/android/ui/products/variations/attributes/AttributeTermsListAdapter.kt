@@ -57,6 +57,14 @@ class AttributeTermsListAdapter(
         return true
     }
 
+    fun swapItems(from: Int, to: Int) {
+        val fromValue = termNames[from]
+        termNames[from] = termNames[to]
+        termNames[to] = fromValue
+        notifyItemChanged(from)
+        notifyItemChanged(to)
+    }
+
     private fun removeTerm(term: String) {
         val index = termNames.indexOf(term)
         if (index >= 0) {

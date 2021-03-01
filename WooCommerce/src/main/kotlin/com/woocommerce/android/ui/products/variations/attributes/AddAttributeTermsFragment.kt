@@ -39,7 +39,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         DraggableItemTouchHelper(
             dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             onMove = { from, to ->
-                // TODO
+                val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+                adapter.swapItems(from, to)
             }
         )
     }
