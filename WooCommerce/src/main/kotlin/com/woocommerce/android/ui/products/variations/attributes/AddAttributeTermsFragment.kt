@@ -3,12 +3,12 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -18,6 +18,7 @@ import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
 class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
@@ -33,6 +34,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val binding get() = _binding!!
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
+
+    private val itemTouchHelper by lazy {
+        DraggableItemTouchHelper(
+            dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            onMove = { from, to ->
+                // TODO
+            }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -107,10 +117,22 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         recycler.layoutManager = layoutManager
         recycler.itemAnimator = null
-        recycler.adapter = AttributeTermsListAdapter(showIcons)
-        recycler.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
+
+        if (showIcons) {
+            recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
+            itemTouchHelper.attachToRecyclerView(recycler)
+        } else {
+            recycler.adapter = AttributeTermsListAdapter(showIcons)
+        }
+
+        recycler.addItemDecoration(
+            AlignedDividerDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.variationOptionName,
+                clipToMargin = false
+            )
+        )
 
         return layoutManager
     }

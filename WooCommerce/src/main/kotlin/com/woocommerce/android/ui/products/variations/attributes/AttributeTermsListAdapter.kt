@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeTermListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
@@ -12,7 +15,10 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
 /**
  * Adapter which shows a simple list of attribute term names
  */
-class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<TermViewHolder>() {
+class AttributeTermsListAdapter(
+    private val showIcons: Boolean,
+    private val dragHelper: ItemTouchHelper? = null
+) : RecyclerView.Adapter<TermViewHolder>() {
     private var termNames = ArrayList<String>()
 
     init {
@@ -89,6 +95,7 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
 
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(term: String) {
             viewBinding.termName.text = term
             viewBinding.termDragHandle.isVisible = showIcons
@@ -97,6 +104,13 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
             if (showIcons) {
                 viewBinding.termDelete.setOnClickListener {
                     removeTerm(term)
+                }
+
+                viewBinding.termDragHandle.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        dragHelper?.startDrag(this)
+                    }
+                    false
                 }
             }
         }
