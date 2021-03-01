@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -86,7 +85,6 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         binding.carrierRates.apply {
             adapter = binding.carrierRates.adapter ?: ShippingCarrierRatesAdapter(viewModel::onShippingRateSelected)
             layoutManager = LinearLayoutManager(context)
-            itemAnimator = DefaultItemAnimator()
         }
     }
 
