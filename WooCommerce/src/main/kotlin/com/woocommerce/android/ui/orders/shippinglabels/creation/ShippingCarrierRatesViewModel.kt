@@ -58,7 +58,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         private const val SHIPPING_METHOD_USPS_TITLE = "USPS"
         private const val SHIPPING_METHOD_DHL_TITLE = "DHL Express"
         private const val SHIPPING_METHOD_FEDEX_TITLE = "Fedex"
-        private const val SHIPPING_METHOD_USPS_KEY= "wc_services_usps"
+        private const val SHIPPING_METHOD_USPS_KEY = "wc_services_usps"
         private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
         private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
         private const val KEY_SHIPPING_CARRIERS_PARAMETERS = "key_shipping_carriers_parameters"
