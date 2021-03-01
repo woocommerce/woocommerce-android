@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -89,6 +90,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
+
+        binding.termEditText.setOnEditorActionListener { _, actionId, event ->
+            val termName = binding.termEditText.text?.toString() ?: ""
+            true
+        }
     }
 
     private fun initializeRecycler(recycler: RecyclerView, showIcons: Boolean): LinearLayoutManager {
@@ -123,21 +129,32 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      * Show the list of terms already assigned to the product attribute
      */
     fun showAssignedTerms(termNames: List<String>) {
-        val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-        adapter.setTerms(termNames)
+        if (termNames.isEmpty()) {
+            binding.assignedTermList.isVisible = false
+        } else {
+            binding.assignedTermList.isVisible = true
+            val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+            adapter.setTerms(termNames)
+        }
     }
 
     /**
      * Triggered by fetching the list of terms for global attributes
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
-        // build a list of term names
-        val termNames = ArrayList<String>()
-        terms.forEach { term ->
-            termNames.add(term.name)
-        }
+        if (terms.isEmpty()) {
+            binding.globalTermContainer.isVisible = false
+        } else {
+            binding.globalTermContainer.isVisible = true
 
-        val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
-        adapter.setTerms(termNames)
+            // build a list of term names
+            val termNames = ArrayList<String>()
+            terms.forEach { term ->
+                termNames.add(term.name)
+            }
+
+            val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
+            adapter.setTerms(termNames)
+        }
     }
 }
