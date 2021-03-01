@@ -259,7 +259,14 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_editShippingLabelPaymentFragment"
-            app:destination="@id/editShippingLabelPaymentFragment" />
+            app:destination="@id/editShippingLabelPaymentFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_shippingCarrierRatesFragment"
+            app:destination="@id/shippingCarrierRatesFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
@@ -334,4 +341,21 @@
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"
         tools:layout="@layout/fragment_edit_shipping_label_payment"/>
+    <fragment
+        android:id="@+id/shippingCarrierRatesFragment"
+        android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
+        android:label="ShippingCarrierRatesFragment">
+        <argument
+            android:name="originAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="destinationAddress"
+            app:argType="com.woocommerce.android.model.Address" />
+        <argument
+            android:name="packages"
+            app:argType="com.woocommerce.android.model.ShippingLabelPackage[]" />
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </fragment>
 </navigation>

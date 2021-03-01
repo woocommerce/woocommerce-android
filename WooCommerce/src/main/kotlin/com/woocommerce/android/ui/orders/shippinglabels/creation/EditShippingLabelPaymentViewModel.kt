@@ -49,6 +49,9 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
                     PaymentMethodUiModel(paymentMethod = it, isSelected = it.id == accountSettings.selectedPaymentId)
                 },
                 canManagePayments = accountSettings.canManagePayments,
+                // Allow editing the email receipts option if the user has either the permission to change settings
+                // or changing payment options
+                canEditSettings = accountSettings.canEditSettings || accountSettings.canManagePayments,
                 emailReceipts = accountSettings.isEmailReceiptEnabled,
                 storeOwnerDetails = accountSettings.storeOwnerDetails
             )
@@ -93,6 +96,7 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         val isLoading: Boolean = false,
         private val currentAccountSettings: ShippingAccountSettings? = null,
         val canManagePayments: Boolean = false,
+        val canEditSettings: Boolean = false,
         val paymentMethods: List<PaymentMethodUiModel> = emptyList(),
         val emailReceipts: Boolean = false,
         val storeOwnerDetails: StoreOwnerDetails? = null,

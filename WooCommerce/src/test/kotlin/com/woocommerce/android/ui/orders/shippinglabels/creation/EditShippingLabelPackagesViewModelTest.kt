@@ -50,6 +50,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     )
 
     private val shippingAccountSettings = ShippingAccountSettings(
+        canEditSettings = true,
         canManagePayments = true,
         paymentMethods = emptyList(),
         selectedPaymentId = null,

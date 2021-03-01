@@ -9,16 +9,25 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.Step
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.StepUiState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep.ORIGIN_ADDRESS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PackagingStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PaymentsStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.ShippingAddressStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -38,6 +47,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = "123"
+        private const val REMOTE_ORDER_ID = 123L
     }
 
     private val orderDetailRepository: OrderDetailRepository = mock()
@@ -55,15 +65,19 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
 
-    private val data = Data(
-        originAddress = originAddress,
-        shippingAddress = shippingAddress,
-        currentPaymentMethod = null,
-        shippingPackages = emptyList(),
-        flowSteps = setOf(ORIGIN_ADDRESS)
+    private val data = StateMachineData(
+        remoteOrderId = REMOTE_ORDER_ID,
+        stepsState = StepsState(
+            originAddressStep = OriginAddressStep(READY, originAddress),
+            shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
+            packagingStep = PackagingStep(NOT_READY, emptyList()),
+            customsStep = CustomsStep(NOT_READY, isVisible = true),
+            carrierStep = CarrierStep(NOT_READY),
+            paymentsStep = PaymentsStep(NOT_READY, null)
+        )
     )
 
-    private val originAddressCurrent = Step(
+    private val originAddressCurrent = StepUiState(
         details = originAddress.toString(),
         isEnabled = true,
         isContinueButtonVisible = true,
@@ -78,7 +92,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = false
     )
 
-    private val shippingAddressNotDone = Step(
+    private val shippingAddressNotDone = StepUiState(
         details = shippingAddress.toString(),
         isEnabled = false,
         isContinueButtonVisible = false,
@@ -100,14 +114,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = false
     )
 
-    private val otherNotDone = Step(
+    private val otherNotDone = StepUiState(
         isEnabled = false,
         isContinueButtonVisible = false,
         isEditButtonVisible = false,
         isHighlighted = false
     )
 
-    private val otherCurrent = Step(
+    private val otherCurrent = StepUiState(
         isEnabled = true,
         isContinueButtonVisible = true,
         isEditButtonVisible = false,
@@ -195,10 +209,11 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        val newData = data.copy(
-            originAddress = originAddressValidated,
-            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
+        val newStepsState = data.stepsState.copy(
+            originAddressStep = data.stepsState.originAddressStep.copy(status = DONE, data = originAddressValidated),
+            shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = READY)
         )
+        val newData = data.copy(stepsState = newStepsState)
         stateFlow.value = Transition(State.WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
@@ -218,11 +233,16 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        val newData = data.copy(
-            originAddress = originAddressValidated,
-            shippingAddress = shippingAddressValidated,
-            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS + FlowStep.PACKAGING
+        val newStepsState = data.stepsState.copy(
+            originAddressStep = data.stepsState.originAddressStep.copy(status = DONE, data = originAddressValidated),
+            shippingAddressStep = data.stepsState.shippingAddressStep.copy(
+                status = DONE,
+                data = shippingAddressValidated
+            ),
+            packagingStep = data.stepsState.packagingStep.copy(status = READY)
         )
+
+        val newData = data.copy(stepsState = newStepsState)
         stateFlow.value = Transition(State.WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
@@ -232,7 +252,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         stateFlow.value = Transition(State.WaitingForInput(data), null)
 
-        viewModel.onContinueButtonTapped(ORIGIN_ADDRESS)
+        viewModel.onContinueButtonTapped(FlowStep.ORIGIN_ADDRESS)
 
         verify(stateMachine).handleEvent(OriginAddressValidationStarted)
 

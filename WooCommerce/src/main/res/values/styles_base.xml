@@ -538,7 +538,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Divider.Warning">
-        <item name="android:background">@color/warning_foreground_color</item>
+        <item name="android:background">@color/warning_banner_foreground_color</item>
+    </style>
+
+    <style name="Woo.Divider.Info">
+        <item name="android:background">@color/info_banner_foreground_color</item>
     </style>
 
     <!--

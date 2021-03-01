@@ -5,11 +5,20 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PackagingStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PaymentsStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.ShippingAddressStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,10 +35,20 @@ import org.junit.Test
 class ShippingLabelsStateMachineTest {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
-    private val orderId = "123"
+    private val remoteOrderId = 123L
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
-    private val data = Data(originAddress, shippingAddress, null, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
+    private val data = StateMachineData(
+        remoteOrderId,
+        StepsState(
+            originAddressStep = OriginAddressStep(READY, originAddress),
+            shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
+            packagingStep = PackagingStep(NOT_READY, emptyList()),
+            customsStep = CustomsStep(NOT_READY),
+            carrierStep = CarrierStep(NOT_READY),
+            paymentsStep = PaymentsStep(NOT_READY, null)
+        )
+    )
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -51,11 +70,18 @@ class ShippingLabelsStateMachineTest {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(orderId)
+        stateMachine.start(remoteOrderId.toString())
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(orderId))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(remoteOrderId.toString()))
 
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.handleEvent(
+            Event.DataLoaded(
+                remoteOrderId,
+                originAddress,
+                shippingAddress,
+                null
+            )
+        )
 
         assertThat(transition?.state).isEqualTo(State.WaitingForInput(data))
     }
@@ -70,17 +96,18 @@ class ShippingLabelsStateMachineTest {
             }
         }
 
-        stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.start(remoteOrderId.toString())
+        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
         assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
 
-        val newData = data.copy(
-            originAddress = data.originAddress,
-            flowSteps = data.flowSteps + FlowStep.SHIPPING_ADDRESS
+        val newStepsState = data.stepsState.copy(
+            originAddressStep = data.stepsState.originAddressStep.copy(status = DONE),
+            shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = READY)
         )
-        stateMachine.handleEvent(Event.AddressValidated(data.originAddress))
+        val newData = data.copy(stepsState = newStepsState)
+        stateMachine.handleEvent(Event.AddressValidated(data.stepsState.originAddressStep.data))
 
         assertThat(transition?.state).isEqualTo(State.WaitingForInput(newData))
     }
@@ -101,18 +128,19 @@ class ShippingLabelsStateMachineTest {
             )
         )
 
-        stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
+        stateMachine.start(remoteOrderId.toString())
+        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))
 
         stateMachine.handleEvent(Event.PackagesSelected(packagesList))
 
-        val newData = data.copy(
-            shippingPackages = packagesList,
-            flowSteps = data.flowSteps + FlowStep.CUSTOMS
+        val newStepsState = data.stepsState.copy(
+            packagingStep = data.stepsState.packagingStep.copy(status = DONE, data = packagesList),
+            carrierStep = data.stepsState.carrierStep.copy(status = READY)
         )
+        val newData = data.copy(stepsState = newStepsState)
 
         assertThat(stateMachine.transitions.value.state).isEqualTo(State.WaitingForInput(newData))
     }

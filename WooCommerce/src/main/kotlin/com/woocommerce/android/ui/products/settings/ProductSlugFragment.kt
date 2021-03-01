@@ -26,9 +26,6 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
         _binding = FragmentProductSlugBinding.bind(view)
 
         binding.editSlug.setText(navArgs.slug)
-        binding.editSlug.setOnTextChangedListener {
-            changesMade()
-        }
     }
 
     override fun onDestroyView() {

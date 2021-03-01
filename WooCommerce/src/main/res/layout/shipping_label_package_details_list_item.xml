@@ -35,6 +35,7 @@
         android:src="@drawable/ic_arrow_down"
         android:tint="@color/color_on_surface_high"
         app:layout_constraintBottom_toBottomOf="@id/package_name"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/package_name" />
 
