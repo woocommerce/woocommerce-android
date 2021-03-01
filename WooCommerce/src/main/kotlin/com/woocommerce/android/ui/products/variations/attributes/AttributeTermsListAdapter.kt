@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  * Adapter which shows a simple list of attribute term names
  */
 class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<TermViewHolder>() {
-    private var termNames = listOf<String>()
+    private var termNames = ArrayList<String>()
 
     init {
         setHasStableIds(true)
@@ -39,6 +39,18 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
         }
     }
 
+    fun addTerm(termName: String): Boolean {
+        termNames.forEach { term ->
+            if (term.equals(termName, ignoreCase = true)) {
+                return false
+            }
+        }
+
+        termNames.add(0, termName)
+        notifyItemInserted(0)
+        return true
+    }
+
     private class TermItemDiffUtil(
         val oldList: List<String>,
         val newList: List<String>
@@ -62,7 +74,8 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
             )
         )
 
-        termNames = terms
+        termNames.clear()
+        termNames.addAll(terms)
         diffResult.dispatchUpdatesTo(this)
     }
 

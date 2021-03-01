@@ -971,13 +971,39 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
         val attributes = getProductDraftAttributes()
         attributes.forEach { attribute ->
-            if (attribute.isLocalAttribute && attribute.name == attributeName) {
-                return attribute.terms
-            } else if (attribute.isGlobalAttribute && attribute.id == attributeId) {
+            if (attribute.name == attributeName) {
                 return attribute.terms
             }
         }
         return emptyList()
+    }
+
+    /**
+     * Adds a single term to the product draft
+     */
+    fun addProductDraftAttributeTerm(attributeId: Long, attributeName: String, termName: String) {
+        val attributes = getProductDraftAttributes()
+
+        // first make sure this term doesn't aleady exist
+        attributes.forEach { attribute ->
+            if (attribute.name == attributeName) {
+                attribute.terms.forEach { term ->
+                    if (term.equals(termName, ignoreCase = true)) {
+                        triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
+                        return
+                    }
+                }
+            }
+        }
+
+        attributes.forEach { attribute ->
+            if (attribute.name == attributeName) {
+                attribute.addTerm(termName)
+                return@forEach
+            }
+        }
+
+        updateProductDraft(attributes = attributes)
     }
 
     /**

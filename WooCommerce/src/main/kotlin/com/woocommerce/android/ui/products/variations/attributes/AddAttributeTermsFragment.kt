@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -93,6 +94,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
+            if (termName.isNotBlank()) {
+                addLocalTerm(termName)
+                binding.termEditText.text?.clear()
+            }
             true
         }
     }
@@ -155,6 +160,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
             val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
             adapter.setTerms(termNames)
+        }
+    }
+
+    private fun addLocalTerm(termName: String) {
+        val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+        if (adapter.addTerm(termName)) {
+            binding.assignedTermList.isVisible = true
         }
     }
 }
