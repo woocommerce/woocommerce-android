@@ -180,6 +180,12 @@ class VariationDetailCardBuilder(
         }
     }
 
+    private fun ProductVariation.attributes(): ProductProperty =
+        PropertyGroup(
+            title = R.string.product_attributes,
+            properties = mapOf()
+        )
+
     private fun ProductVariation.shipping(): ProductProperty? {
         return if (!this.isVirtual) {
             val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
@@ -266,6 +272,4 @@ class VariationDetailCardBuilder(
             )
         }
     }
-
-    private fun ProductVariation.attributes(): ProductProperty? = null
 }
