@@ -6,7 +6,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate.ShippingCarrier
+import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -451,8 +451,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CarrierStep(
             override val status: StepStatus,
-            override val data: List<ShippingCarrier> = emptyList()
-        ) : Step<List<ShippingCarrier>>()
+            override val data: List<ShippingRate> = emptyList()
+        ) : Step<List<ShippingRate>>()
 
         @Parcelize
         data class PaymentsStep(
@@ -542,7 +542,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     carrierStep = invalidateCarrierStepIfNeeded()
                 )
                 is CustomsStep -> copy(customsStep = customsStep.copy(data = newData as Unit))
-                is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingCarrier>))
+                is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingRate>))
                 is PaymentsStep -> copy(paymentsStep = paymentsStep.copy(data = newData as PaymentMethod))
             }
         }
