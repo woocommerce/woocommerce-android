@@ -980,6 +980,7 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     /**
      * Adds a single term to the product draft
+     * TODO untested
      */
     fun addProductDraftAttributeTerm(attributeId: Long, attributeName: String, termName: String) {
         val attributes = getProductDraftAttributes()

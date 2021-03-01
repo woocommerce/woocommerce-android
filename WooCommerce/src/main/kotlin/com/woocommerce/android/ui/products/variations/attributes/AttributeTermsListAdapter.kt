@@ -51,6 +51,14 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
         return true
     }
 
+    private fun removeTerm(term: String) {
+        val index = termNames.indexOf(term)
+        if (index >= 0) {
+            termNames.remove(term)
+            notifyItemRemoved(index)
+        }
+    }
+
     private class TermItemDiffUtil(
         val oldList: List<String>,
         val newList: List<String>
@@ -85,6 +93,12 @@ class AttributeTermsListAdapter(val showIcons: Boolean) : RecyclerView.Adapter<T
             viewBinding.termName.text = term
             viewBinding.termDragHandle.isVisible = showIcons
             viewBinding.termDelete.isVisible = showIcons
+
+            if (showIcons) {
+                viewBinding.termDelete.setOnClickListener {
+                    removeTerm(term)
+                }
+            }
         }
     }
 }
