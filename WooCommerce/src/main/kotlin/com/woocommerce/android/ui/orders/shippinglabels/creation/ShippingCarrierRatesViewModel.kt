@@ -117,26 +117,27 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun generateRateModels(carrierRates: List<ShippingPackage>): List<PackageRateListItem> {
-        // different carrier options, such as express shipping, priority shipping, etc.
-        return carrierRates.mapIndexed { i, pkg ->
-            // a particular carrier option without any extras
-            val defaultRate = pkg.shippingOptions.first { it.optionId == DEFAULT_RATE_OPTION }.rates
+    private fun generateRateModels(packageRates: List<ShippingPackage>): List<PackageRateListItem> {
+        // different shipping options for each package (each package contains a list of different carrier options,
+        // such as Express shipping, Priority shipping, etc.)
+        return packageRates.mapIndexed { i, pkg ->
+            // rates from across different carrier options, grouped by type (here, a default option without any extras)
+            val defaultRates = pkg.shippingOptions.first { it.optionId == DEFAULT_RATE_OPTION }.rates
 
-            // a particular carrier option with a required signature option selected
-            val rateWithSignature = pkg.shippingOptions.first { it.optionId == SIGNATURE_RATE_OPTION }.rates
+            // rate group (across different carrier options) that require signature option selected
+            val ratesWithSignature = pkg.shippingOptions.first { it.optionId == SIGNATURE_RATE_OPTION }.rates
 
-            // a particular carrier option with a required adult signature option selected
-            val rateWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
+            // rate group (across different carrier options) that require adult signature option selected
+            val ratesWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
 
-            val shippingRates = defaultRate.map { default ->
-                val optionWithSignature = rateWithSignature.firstOrNull { it.serviceId == default.serviceId }
-                val optionWithAdultSignature = rateWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
+            val shippingRates = defaultRates.map { default ->
+                val optionWithSignature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
+                val optionWithAdultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
                 val signaturePrice = optionWithSignature?.rate?.minus(default.rate)
                 val adultSignaturePrice = optionWithAdultSignature?.rate?.minus(default.rate)
 
                 // we can use the default rate as a base for most of the properties (these are the same for all
-                // extra options) and we just calculate the price for each extra option
+                // extra options for a particular carrier option) and we just calculate the price for each extra option
                 ShippingRateItem(
                     serviceId = default.serviceId,
                     title = default.title,
