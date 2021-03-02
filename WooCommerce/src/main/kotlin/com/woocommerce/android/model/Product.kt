@@ -21,6 +21,7 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.attribute.WCProductAttributeModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -363,6 +364,18 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         return jsonArray.toString()
     }
 
+    fun attributesToJson(): String {
+        val jsonArray = JsonArray()
+        attributes.map {
+            WCProductAttributeModel(
+                globalAttributeId = it.id.toInt(),
+                name = it.name,
+                options = it.terms.toMutableList()
+            )
+        }.forEach { jsonArray.add(it.toJson()) }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -425,6 +438,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.downloadLimit = downloadLimit
         it.downloadExpiry = downloadExpiry
         it.downloadable = isDownloadable
+        it.attributes = attributesToJson()
     }
 }
 
@@ -533,3 +547,23 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
+
+/**
+ * TODO: move to FluxC model
+ */
+fun WCProductAttributeModel.toJson(): JsonObject {
+    return JsonObject().also { json ->
+        json.addProperty("id", globalAttributeId)
+        json.addProperty("name", name)
+        json.addProperty("position", position)
+        json.addProperty("visible", visible)
+        json.addProperty("variation", variation)
+        val jsonArray = JsonArray()
+        for (term in options) {
+            jsonArray.add(JsonObject().also {
+                it.addProperty("name", term)
+            })
+        }
+        json.add("options", jsonArray)
+    }
+}
