@@ -21,10 +21,6 @@ class AttributeTermsListAdapter(
 ) : RecyclerView.Adapter<TermViewHolder>() {
     private var termNames = ArrayList<String>()
 
-    init {
-        setHasStableIds(false)
-    }
-
     override fun getItemCount() = termNames.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TermViewHolder {
