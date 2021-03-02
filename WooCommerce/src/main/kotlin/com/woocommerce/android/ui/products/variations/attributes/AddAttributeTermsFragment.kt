@@ -17,6 +17,7 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermClickListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
@@ -24,7 +25,7 @@ import com.woocommerce.android.widgets.DraggableItemTouchHelper
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), OnTermClickListener {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -128,7 +129,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
             itemTouchHelper.attachToRecyclerView(recycler)
         } else {
-            recycler.adapter = AttributeTermsListAdapter(showIcons)
+            recycler.adapter = AttributeTermsListAdapter(showIcons, onTermClick = this)
         }
 
         recycler.addItemDecoration(
@@ -200,5 +201,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun addLocalTerm(termName: String) {
         getAssignedTermsAdapter().addTerm(termName)
         binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
+    }
+
+    /**
+     * Called by the gobal adapter when a term is clicked
+     */
+    override fun onTermClick(termName: String) {
+        // TODO
     }
 }

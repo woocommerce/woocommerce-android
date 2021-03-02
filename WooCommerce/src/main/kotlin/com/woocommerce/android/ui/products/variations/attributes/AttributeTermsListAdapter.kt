@@ -17,8 +17,13 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  */
 class AttributeTermsListAdapter(
     private val showIcons: Boolean,
-    private val dragHelper: ItemTouchHelper? = null
+    private val dragHelper: ItemTouchHelper? = null,
+    private val onTermClick: OnTermClickListener? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
+    interface OnTermClickListener {
+        fun onTermClick(termName: String)
+    }
+
     var termNames: ArrayList<String> = ArrayList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
@@ -46,8 +51,11 @@ class AttributeTermsListAdapter(
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
         holder.bind(termNames[position])
 
-        holder.itemView.setOnClickListener {
-            // TODO onItemClick(item)
+        onTermClick?.let { listener ->
+            holder.itemView.setOnClickListener {
+                val item = termNames[position]
+                listener.onTermClick(item)
+            }
         }
     }
 
