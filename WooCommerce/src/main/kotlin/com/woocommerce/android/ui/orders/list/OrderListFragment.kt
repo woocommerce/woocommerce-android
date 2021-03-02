@@ -375,11 +375,13 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
         viewModel.isAddOrderButtonVisible.observe(viewLifecycleOwner, Observer { isVisible ->
             if (isVisible) {
-                fabManager.showFabAnimated(R.string.orderlist_add_order_button) { openOrderCreation() }
+                fabManager.showFabAnimated(R.string.orderlist_add_order_button) { viewModel.onAddOrderButtonClicked() }
             } else {
                 fabManager.hideFabAnimated()
             }
         })
+
+        viewModel.openOrderCreationEvent.observe(viewLifecycleOwner, Observer { openOrderCreation() })
     }
 
     private fun hideEmptyView() {

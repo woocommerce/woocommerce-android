@@ -614,6 +614,15 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `on add order button click triggers open order creation event`() {
+        viewModel.onAddOrderButtonClicked()
+
+        viewModel.openOrderCreationEvent.observeForTesting {
+            assertEquals(viewModel.openOrderCreationEvent.value!!, Unit)
+        }
+    }
+
     private suspend fun testFABVisibility(
         featureEnabled: Boolean,
         isFetchingFirstPageInProgress: Boolean,
