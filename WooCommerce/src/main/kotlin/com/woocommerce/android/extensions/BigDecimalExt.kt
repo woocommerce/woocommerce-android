@@ -18,3 +18,11 @@ infix fun BigDecimal?.isEquivalentTo(that: BigDecimal?): Boolean {
 fun BigDecimal?.isNotSet(): Boolean = this.isEquivalentTo(BigDecimal.ZERO)
 
 fun BigDecimal?.isSet(): Boolean = !this.isNotSet()
+
+inline fun <T> Iterable<T>.sumByBigDecimal(selector: (T) -> BigDecimal): BigDecimal {
+    val sum = BigDecimal.ZERO
+    for (element in this) {
+        sum.plus(selector(element))
+    }
+    return sum
+}
