@@ -22,7 +22,7 @@ class AttributeTermsListAdapter(
     private var termNames = ArrayList<String>()
 
     init {
-        setHasStableIds(true)
+        setHasStableIds(false)
     }
 
     override fun getItemCount() = termNames.size
@@ -45,16 +45,22 @@ class AttributeTermsListAdapter(
         }
     }
 
-    fun addTerm(termName: String): Boolean {
+    fun isEmpty() = termNames.isEmpty()
+
+    private fun containsTerm(termName: String): Boolean {
         termNames.forEach { term ->
             if (term.equals(termName, ignoreCase = true)) {
-                return false
+                return true
             }
         }
+        return false
+    }
 
-        termNames.add(0, termName)
-        notifyItemInserted(0)
-        return true
+    fun addTerm(termName: String) {
+        if (!containsTerm(termName)) {
+            termNames.add(0, termName)
+            notifyItemInserted(0)
+        }
     }
 
     fun swapItems(from: Int, to: Int) {

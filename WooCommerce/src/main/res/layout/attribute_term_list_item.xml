@@ -7,9 +7,9 @@
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:paddingStart="@dimen/major_100"
-    android:paddingTop="@dimen/minor_100"
+    android:paddingTop="@dimen/major_75"
     android:paddingEnd="@dimen/major_100"
-    android:paddingBottom="@dimen/minor_100">
+    android:paddingBottom="@dimen/major_75">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/termDragHandle"

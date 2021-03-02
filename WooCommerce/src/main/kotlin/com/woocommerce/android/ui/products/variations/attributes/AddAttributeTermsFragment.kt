@@ -115,9 +115,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun initializeRecycler(recycler: RecyclerView, showIcons: Boolean): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-
         recycler.layoutManager = layoutManager
-        recycler.itemAnimator = null
 
         if (showIcons) {
             recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
@@ -186,10 +184,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
     }
 
+    /**
+     * User entered a new term
+     */
     private fun addLocalTerm(termName: String) {
         val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-        if (adapter.addTerm(termName)) {
-            binding.assignedTermList.isVisible = true
-        }
+        adapter.addTerm(termName)
+        binding.assignedTermList.isVisible = !adapter.isEmpty()
     }
 }
