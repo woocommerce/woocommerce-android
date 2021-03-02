@@ -155,6 +155,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             default.serviceId,
                             default.carrierId,
                             default.title,
+                            default.deliveryDays,
                             default.rate,
                             default.rate.format(),
                             DEFAULT
@@ -166,6 +167,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                                 rate.serviceId,
                                 rate.carrierId,
                                 rate.title,
+                                default.deliveryDays,
                                 signaturePrice ?: BigDecimal.ZERO,
                                 signaturePrice.format(),
                                 SIGNATURE
@@ -178,6 +180,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                                 rate.serviceId,
                                 rate.carrierId,
                                 rate.title,
+                                default.deliveryDays,
                                 adultSignaturePrice ?: BigDecimal.ZERO,
                                 adultSignaturePrice.format(),
                                 ADULT_SIGNATURE
