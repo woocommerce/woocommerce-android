@@ -612,28 +612,29 @@ class ProductDetailCardBuilder(
         } else {
             emptyVariations()
         }
-        }
+    }
 
     private fun Product.emptyVariations(): ComplexProperty {
-        val onClickAction = {
-            viewModel.onEditProductCardClicked(
-                ViewProductVariations(this.remoteId),
-                PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-            )
-        }
         return if (ADD_EDIT_VARIATIONS.isEnabled()) {
             ComplexProperty(
                 value = resources.getString(string.product_detail_add_variations),
                 icon = drawable.ic_gridicons_types,
                 showTitle = false,
-                onClick = onClickAction
+                onClick = {
+                    // TODO call variation creation view sequence
+                }
             )
         } else {
             ComplexProperty(
                 title = string.product_variations,
                 value = resources.getString(string.product_detail_no_variations),
                 icon = drawable.ic_gridicons_types,
-                onClick = onClickAction
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductVariations(this.remoteId),
+                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                    )
+                }
             )
         }
     }
