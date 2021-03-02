@@ -1,4 +1,3 @@
-//Order.kt
 package com.woocommerce.android.model
 
 import android.os.Parcelable
