@@ -982,14 +982,19 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Set the list of terms for a single attribute in the product draft
      */
     fun setProductDraftAttributeTerms(attributeId: Long, attributeName: String, termNames: ArrayList<String>) {
-        val attributes = getProductDraftAttributes()
-        attributes.forEach { attribute ->
+        val draftAttributes = getProductDraftAttributes()
+        val updatedAttributes = ArrayList<ProductAttribute>()
+
+        draftAttributes.forEach { attribute ->
             if (attribute.name == attributeName) {
-                attribute.setTermNames(termNames)
-                updateProductDraft(attributes = attributes)
-                return@forEach
+                val newAttribute = attribute.copy()
+                newAttribute.setTermNames(termNames)
+                updatedAttributes.add(newAttribute)
+            } else {
+                updatedAttributes.add(attribute)
             }
         }
+        updateProductDraft(attributes = updatedAttributes)
     }
 
     /**
