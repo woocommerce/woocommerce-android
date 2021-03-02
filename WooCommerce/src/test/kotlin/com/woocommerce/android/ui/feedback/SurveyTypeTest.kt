@@ -17,17 +17,17 @@ class SurveyTypeTest {
 
     @Test
     fun `Product SurveyType url should include a milestone tag`() {
-        assertThat(PRODUCT.url.contains(Regex("product-milestone=${anyDigitAndNothingAfter}"))).isTrue()
+        assertThat(PRODUCT.url.contains(Regex("product-milestone=$anyDigitAndNothingAfter"))).isTrue()
     }
 
     @Test
     fun `ShippingLabels SurveyType url should include a milestone tag`() {
-        assertThat(SHIPPING_LABELS.url.contains(Regex("shipping_label_milestone=${anyDigitAndNothingAfter}"))).isTrue()
+        assertThat(SHIPPING_LABELS.url.contains(Regex("shipping_label_milestone=$anyDigitAndNothingAfter"))).isTrue()
     }
 
     @Test
     fun `Main SurveyType url should NOT include a milestone tag`() {
-        assertThat(MAIN.url.contains(Regex("milestone=${anyDigitAndNothingAfter}"))).isFalse()
+        assertThat(MAIN.url.contains(Regex("milestone=$anyDigitAndNothingAfter"))).isFalse()
     }
 
     @Test
