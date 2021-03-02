@@ -558,12 +558,6 @@ fun WCProductAttributeModel.toJson(): JsonObject {
         json.addProperty("position", position)
         json.addProperty("visible", visible)
         json.addProperty("variation", variation)
-        val jsonArray = JsonArray()
-        for (term in options) {
-            jsonArray.add(JsonObject().also {
-                it.addProperty("name", term)
-            })
-        }
-        json.add("options", jsonArray)
+        json.addProperty("options", options.joinToString())
     }
 }
