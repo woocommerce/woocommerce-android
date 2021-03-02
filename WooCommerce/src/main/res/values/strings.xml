@@ -465,6 +465,8 @@
     <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
     <string name="shipping_label_rate_included_options_signature_required">Signature required</string>
+    <string name="shipping_label_selected_rates_description">%s rates selected</string>
+    <string name="shipping_label_selected_rates_total_description">%s total</string>
     <!--
             Refunds
         -->
