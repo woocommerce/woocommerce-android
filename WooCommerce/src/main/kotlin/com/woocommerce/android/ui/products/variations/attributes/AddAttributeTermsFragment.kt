@@ -39,8 +39,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         DraggableItemTouchHelper(
             dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             onMove = { from, to ->
-                val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-                adapter.swapItems(from, to)
+                getAssignedTermsAdapter().swapItems(from, to)
             }
         )
     }
@@ -151,6 +150,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun getFragmentTitle() = navArgs.attributeName
 
+    private fun getAssignedTermsAdapter() = binding.assignedTermList.adapter as AttributeTermsListAdapter
+
     /**
      * Show the list of terms already assigned to the product attribute
      */
@@ -159,8 +160,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             binding.assignedTermList.isVisible = false
         } else {
             binding.assignedTermList.isVisible = true
-            val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-            adapter.termNames = ArrayList<String>().also { it.addAll(termNames) }
+            getAssignedTermsAdapter().termNames = ArrayList<String>().also { it.addAll(termNames) }
         }
     }
 
@@ -179,8 +179,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 termNames.add(term.name)
             }
 
-            val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
-            adapter.termNames = termNames
+            getAssignedTermsAdapter().termNames = termNames
         }
     }
 
@@ -188,8 +187,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      * User entered a new term
      */
     private fun addLocalTerm(termName: String) {
-        val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-        adapter.addTerm(termName)
-        binding.assignedTermList.isVisible = !adapter.isEmpty()
+        getAssignedTermsAdapter().addTerm(termName)
+        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
     }
 }
