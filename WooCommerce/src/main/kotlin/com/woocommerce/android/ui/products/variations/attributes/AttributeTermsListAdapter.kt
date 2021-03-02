@@ -19,7 +19,18 @@ class AttributeTermsListAdapter(
     private val showIcons: Boolean,
     private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
-    private var termNames = ArrayList<String>()
+    var termNames: ArrayList<String> = ArrayList()
+        get() = field
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(
+                TermItemDiffUtil(
+                    field,
+                    value
+                ), true)
+            field = value
+
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     override fun getItemCount() = termNames.size
 
@@ -88,19 +99,6 @@ class AttributeTermsListAdapter(
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             areItemsTheSame(oldItemPosition, newItemPosition)
-    }
-
-    fun setTerms(terms: List<String>) {
-        val diffResult = DiffUtil.calculateDiff(
-            TermItemDiffUtil(
-                termNames,
-                terms
-            )
-        )
-
-        termNames.clear()
-        termNames.addAll(terms)
-        diffResult.dispatchUpdatesTo(this)
     }
 
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :

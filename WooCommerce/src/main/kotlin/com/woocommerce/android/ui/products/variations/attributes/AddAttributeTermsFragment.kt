@@ -160,7 +160,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         } else {
             binding.assignedTermList.isVisible = true
             val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-            adapter.setTerms(termNames)
+            adapter.termNames = ArrayList<String>().also { it.addAll(termNames) }
         }
     }
 
@@ -180,7 +180,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
 
             val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
-            adapter.setTerms(termNames)
+            adapter.termNames = termNames
         }
     }
 
