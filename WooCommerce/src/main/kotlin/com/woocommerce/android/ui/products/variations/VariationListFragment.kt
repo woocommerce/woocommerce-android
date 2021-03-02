@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -147,6 +146,9 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private fun initializeViewModel() {
         setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
+        binding.firstVariationView.setOnClickListener {
+            // TODO call variation creation view sequence
+        }
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
@@ -160,11 +162,16 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
             }
             new.isWarningVisible?.takeIfNotEqualTo(old?.isWarningVisible) { showWarning(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { isEmptyViewVisible ->
-                if (isEmptyViewVisible) {
-                    WooAnimUtils.fadeIn(binding.emptyView)
-                    binding.emptyView.showButton(false)
+                if (FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled()) {
+                    binding.firstVariationView.updateVisibility(
+                        shouldBeVisible = isEmptyViewVisible,
+                        showButton = true
+                    )
                 } else {
-                    WooAnimUtils.fadeOut(binding.emptyView)
+                    binding.emptyView.updateVisibility(
+                        shouldBeVisible = isEmptyViewVisible,
+                        showButton = false
+                    )
                 }
                 requireActivity().invalidateOptionsMenu()
             }
