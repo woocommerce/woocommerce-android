@@ -137,7 +137,8 @@ data class Product(
             downloads == product.downloads &&
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
-            isDownloadable == product.isDownloadable
+            isDownloadable == product.isDownloadable &&
+            attributes == product.attributes
     }
 
     val hasCategories get() = categories.isNotEmpty()
