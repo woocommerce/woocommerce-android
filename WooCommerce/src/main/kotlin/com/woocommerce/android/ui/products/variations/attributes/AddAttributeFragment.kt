@@ -79,6 +79,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
             val attributeName = binding.attributeEditText.text?.toString() ?: ""
             if (attributeName.isNotBlank()) {
+                binding.attributeEditText.text?.clear()
                 viewModel.addLocalAttribute(attributeName)
             }
             true
