@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.feedback
 
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.BuildConfig
 
 enum class SurveyType(private val untaggedUrl: String, private val milestone: Int? = null) {
     PRODUCT(AppUrls.CROWDSIGNAL_PRODUCT_SURVEY, 4),
@@ -8,12 +9,18 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY);
 
     val url
-        get() = "$untaggedUrl?$platformTag$milestoneTag"
+        get() = "$untaggedUrl?$platformTag$milestoneTag$appVersion"
 
     private val milestoneTag
         get() = when (this) {
             PRODUCT -> "&product-milestone=$milestone"
             SHIPPING_LABELS -> "&shipping_label_milestone=$milestone"
+            else -> ""
+        }
+
+    private val appVersion
+        get() = when (this) {
+            MAIN -> "&app-version=${BuildConfig.VERSION_NAME}"
             else -> ""
         }
 
