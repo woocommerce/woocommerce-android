@@ -697,6 +697,8 @@
     <string name="product_wip_message_m3">You can now edit grouped, external and variable products, change product type and update categories and tags.</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
+    <string name="product_variant_list_add_first_variation">Add your first variation</string>
+    <string name="product_variant_list_empty_action">Add Variation</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
@@ -713,6 +715,7 @@
     <string name="product_detail_product_type_hint">%1$s product</string>
     <string name="product_detail_add_more">Add more details</string>
     <string name="product_detail_no_variations">This product has no variations yet</string>
+    <string name="product_detail_add_variations">Add variations</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
