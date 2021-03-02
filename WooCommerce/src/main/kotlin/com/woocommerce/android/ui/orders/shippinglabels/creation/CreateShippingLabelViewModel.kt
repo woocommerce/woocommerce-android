@@ -4,8 +4,10 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -59,7 +61,11 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -76,6 +82,7 @@ import java.text.DecimalFormat
 class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
@@ -83,10 +90,16 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val site: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val accountStore: AccountStore,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = "state"
+        private const val KEY_SHIPPING_LABELS_PARAMETERS = "key_shipping_labels_parameters"
+    }
+
+    private val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
     }
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
@@ -222,10 +235,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             val description = when (this) {
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
-                is PackagingStep -> data.stepDescription
+                is PackagingStep -> stepDescription
                 is CustomsStep -> null
-                is CarrierStep -> null
-                is PaymentsStep -> data.stepDescription
+                is CarrierStep -> stepDescription
+                is PaymentsStep -> stepDescription
             }
 
             return when (status) {
@@ -309,23 +322,23 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private val List<ShippingLabelPackage>.stepDescription: String?
+    private val PackagingStep.stepDescription: String?
         get() {
-            if (isEmpty()) return null
+            if (data.isEmpty()) return null
 
-            val firstLine = if (size == 1) {
-                first().selectedPackage!!.title
+            val firstLine = if (data.size == 1) {
+                data.first().selectedPackage!!.title
             } else {
                 // TODO properly test this during M3
                 resourceProvider.getString(
                     string.shipping_label_multi_packages_items_count,
-                    sumBy { it.items.size },
-                    size
+                    data.sumBy { it.items.size },
+                    data.size
                 )
             }
 
             val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
-            val stringResource = if (size == 1) {
+            val stringResource = if (data.size == 1) {
                 string.shipping_label_single_package_total_weight
             } else {
                 string.shipping_label_multi_packages_total_weight
@@ -333,7 +346,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             val weightFormatted = with(DecimalFormat()) {
                 maximumFractionDigits = 4
                 minimumFractionDigits = 0
-                format(sumByDouble { it.weight })
+                format(data.sumByDouble { it.weight })
             }
 
             val secondLine = resourceProvider.getString(
@@ -345,10 +358,36 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             return "$firstLine\n$secondLine"
         }
 
-    private val PaymentMethod?.stepDescription: String?
+    private val PaymentsStep.stepDescription: String?
         get() {
-            if (this == null) return null
-            return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
+            if (data == null) return null
+            return resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
+        }
+
+    private val CarrierStep.stepDescription: String?
+        get() {
+            if (data.isEmpty()) return null
+
+            val firstLine: String
+            val secondLine: String
+            if (data.size > 1) {
+                firstLine = resourceProvider.getString(string.shipping_label_selected_rates_description, data.size)
+                secondLine = resourceProvider.getString(
+                    string.shipping_label_selected_rates_total_description,
+                    data.sumByBigDecimal { it.price }.format()
+                )
+            } else {
+                val rate = data.first()
+                firstLine = rate.serviceName
+
+                val total = data.sumByBigDecimal { it.price }.format()
+                val deliveryDays = resourceProvider.getPluralString(
+                    R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                    rate.deliveryDays
+                )
+                secondLine = "$total - $deliveryDays"
+            }
+            return "$firstLine\n$secondLine"
         }
 
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
@@ -389,8 +428,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(EditPaymentCanceled)
     }
 
-    fun onShippingCarriersSelected(carriers: List<ShippingRate>) {
-        stateMachine.handleEvent(ShippingCarrierSelected)
+    fun onShippingCarriersSelected(rates: List<ShippingRate>) {
+        stateMachine.handleEvent(ShippingCarrierSelected(rates))
     }
 
     fun onShippingCarrierSelectionCanceled() {
@@ -432,6 +471,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     override fun onCleared() {
         super.onCleared()
         shippingLabelRepository.clearCache()
+    }
+
+    private fun BigDecimal?.format(): String {
+        return PriceUtils.formatCurrencyOrNull(this, parameters.currencyCode, currencyFormatter) ?: "0"
     }
 
     @Parcelize

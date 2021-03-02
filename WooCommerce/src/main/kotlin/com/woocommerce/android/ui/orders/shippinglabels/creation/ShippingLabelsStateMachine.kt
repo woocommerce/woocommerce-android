@@ -132,7 +132,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingAddressStep = ShippingAddressStep(NOT_READY, event.shippingAddress),
                     packagingStep = PackagingStep(NOT_READY, emptyList()),
                     customsStep = CustomsStep(NOT_READY),
-                    carrierStep = CarrierStep(NOT_READY),
+                    carrierStep = CarrierStep(NOT_READY, emptyList()),
                     paymentsStep = PaymentsStep(NOT_READY, event.currentPaymentMethod)
                 )
                 val data = StateMachineData(
@@ -351,7 +351,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(
                         data.stepsState.carrierStep,
-                        emptyList()
+                        it.rates
                     )
                 )
                 transitionTo(State.WaitingForInput(newData))
@@ -451,7 +451,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CarrierStep(
             override val status: StepStatus,
-            override val data: List<ShippingRate> = emptyList()
+            override val data: List<ShippingRate>
         ) : Step<List<ShippingRate>>()
 
         @Parcelize
@@ -516,7 +516,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 is CarrierStep -> {
                     val paymentStatus = if (paymentsStep.data == null) READY else DONE
                     copy(
-                        carrierStep = carrierStep.copy(status = DONE),
+                        carrierStep = carrierStep.copy(status = DONE, data = newData as List<ShippingRate>),
                         paymentsStep = paymentsStep.copy(status = paymentStatus)
                     )
                 }
@@ -651,7 +651,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object ShippingCarrierSelectionStarted : UserInput()
         object EditShippingCarrierRequested : UserInput()
-        object ShippingCarrierSelected : Event()
+        data class ShippingCarrierSelected(val rates: List<ShippingRate>) : Event()
         object ShippingCarrierSelectionCanceled : Event()
 
         object PaymentSelectionStarted : UserInput()

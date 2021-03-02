@@ -296,6 +296,15 @@ class ShippingCarrierRatesAdapter(
         val itemCount: Int,
         val rateOptions: List<ShippingRateItem>
     ) : Parcelable {
+        val selectedRate: ShippingRate?
+            get() {
+                return rateOptions.mapNotNull { rate ->
+                    rate.selectedOption?.let { option ->
+                        rate[option]
+                    }
+                }.firstOrNull()
+            }
+
         val hasSelectedOption: Boolean = rateOptions.any { it.selectedOption != null }
 
         fun updateSelectedRateAndCopy(selectedRate: ShippingRate): PackageRateListItem {

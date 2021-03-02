@@ -26,6 +26,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -245,6 +246,10 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     fun onDoneButtonClicked() {
+        val selectedRates = shippingRates.value?.let { rates ->
+            rates.map { it.selectedRate }
+        }
+        triggerEvent(ExitWithResult(selectedRates))
     }
 
     fun onExit() {
