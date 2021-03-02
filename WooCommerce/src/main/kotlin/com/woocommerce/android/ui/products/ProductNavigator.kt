@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVi
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
-import com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
 import javax.inject.Inject
 import javax.inject.Singleton

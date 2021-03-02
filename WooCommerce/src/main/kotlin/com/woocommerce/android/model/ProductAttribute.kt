@@ -23,13 +23,8 @@ data class ProductAttribute(
     val isGlobalAttribute: Boolean
         get() = !isLocalAttribute
 
-    fun addTerm(termName: String) {
-        val existingTerms = terms
-        val newTerms = ArrayList<String>().also {
-            it.add(termName)
-            it.addAll(existingTerms)
-        }
-        terms = newTerms.toList()
+    fun setTermNames(termNames: List<String>) {
+        terms = termNames
     }
 }
 

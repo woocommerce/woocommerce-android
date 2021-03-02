@@ -979,32 +979,17 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Adds a single term to the product draft
-     * TODO untested
+     * Set the list of terms for a single attribute in the product draft
      */
-    fun addProductDraftAttributeTerm(attributeId: Long, attributeName: String, termName: String) {
+    fun setProductDraftAttributeTerms(attributeId: Long, attributeName: String, termNames: ArrayList<String>) {
         val attributes = getProductDraftAttributes()
-
-        // first make sure this term doesn't aleady exist
         attributes.forEach { attribute ->
             if (attribute.name == attributeName) {
-                attribute.terms.forEach { term ->
-                    if (term.equals(termName, ignoreCase = true)) {
-                        triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
-                        return
-                    }
-                }
-            }
-        }
-
-        attributes.forEach { attribute ->
-            if (attribute.name == attributeName) {
-                attribute.addTerm(termName)
+                attribute.setTermNames(termNames)
+                updateProductDraft(attributes = attributes)
                 return@forEach
             }
         }
-
-        updateProductDraft(attributes = attributes)
     }
 
     /**
@@ -1069,7 +1054,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         productRepository.getGlobalAttributes()
 
     /**
-     * Returns true if an attribute with this name is attached to the product draft
+     * Returns true if an attribute with this name is assigned to the product draft
      */
     private fun containsAttributeName(attributeName: String): Boolean {
         viewState.productDraft?.attributes?.forEach {

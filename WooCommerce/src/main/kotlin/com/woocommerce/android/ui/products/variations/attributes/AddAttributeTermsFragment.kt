@@ -20,6 +20,10 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
+/**
+ * This fragment contains two lists of product attribute terms. Thee first is a list of terms
+ * assigned to the product attribute, the second is a list of global product attributes.
+ */
 class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
@@ -49,10 +53,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         _binding = FragmentAddAttributeTermsBinding.bind(view)
 
-        setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
-
         getAttributeTerms()
     }
 
@@ -73,6 +75,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        val terms = getAssignedTermsAdapter().termNames
+        viewModel.setProductDraftAttributeTerms(
+            navArgs.attributeId,
+            navArgs.attributeName,
+            terms
+        )
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
     }
