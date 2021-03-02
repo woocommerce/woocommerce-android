@@ -53,6 +53,13 @@ class AttributeTermsListAdapter(
 
     fun isEmpty() = termNames.isEmpty()
 
+    fun clear() {
+        if (!isEmpty()) {
+            termNames.clear()
+            notifyDataSetChanged()
+        }
+    }
+
     private fun containsTerm(termName: String): Boolean {
         termNames.forEach { term ->
             if (term.equals(termName, ignoreCase = true)) {

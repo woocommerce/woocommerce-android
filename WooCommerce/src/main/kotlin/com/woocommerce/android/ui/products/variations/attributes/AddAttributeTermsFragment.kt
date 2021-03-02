@@ -21,8 +21,8 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
 /**
- * This fragment contains two lists of product attribute terms. Thee first is a list of terms
- * assigned to the product attribute, the second is a list of global product attributes.
+ * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
+ * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
 class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
@@ -160,6 +160,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun getAssignedTermsAdapter() = binding.assignedTermList.adapter as AttributeTermsListAdapter
 
+    private fun getGlobalTermsAdapter() = binding.globalTermList.adapter as AttributeTermsListAdapter
+
     /**
      * Show the list of terms already assigned to the product attribute
      */
@@ -178,6 +180,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
         if (terms.isEmpty()) {
             binding.globalTermContainer.isVisible = false
+            getGlobalTermsAdapter().clear()
         } else {
             binding.globalTermContainer.isVisible = true
 
@@ -187,7 +190,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 termNames.add(term.name)
             }
 
-            getAssignedTermsAdapter().termNames = termNames
+            getGlobalTermsAdapter().termNames = termNames
         }
     }
 
