@@ -20,7 +20,6 @@ class AttributeTermsListAdapter(
     private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
     var termNames: ArrayList<String> = ArrayList()
-        get() = field
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
                 TermItemDiffUtil(

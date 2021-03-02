@@ -163,7 +163,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     /**
      * Show the list of terms already assigned to the product attribute
      */
-    fun showAssignedTerms(termNames: List<String>) {
+    private fun showAssignedTerms(termNames: List<String>) {
         if (termNames.isEmpty()) {
             binding.assignedTermList.isVisible = false
         } else {
