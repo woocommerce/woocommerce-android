@@ -183,7 +183,15 @@ class VariationDetailCardBuilder(
     private fun ProductVariation.attributes(): ProductProperty =
         PropertyGroup(
             title = R.string.product_attributes,
-            properties = mapOf()
+            properties = mutableMapOf<String, String>()
+                .let { map ->
+                    attributes.forEach {
+                        it.takeIf { it.name != null && it.option != null }
+                            ?.apply { map[name!!] = option!! }
+                    }
+                    map
+                },
+            icon = drawable.ic_gridicons_customize
         )
 
     private fun ProductVariation.shipping(): ProductProperty? {
