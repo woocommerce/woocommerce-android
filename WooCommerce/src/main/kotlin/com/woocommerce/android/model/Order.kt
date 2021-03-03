@@ -123,26 +123,24 @@ data class Order(
             shippingName, shippingAddress, shippingCountry
         )
     }
+}
 
-    companion object {
-        // Conversion is needed for refunding shipping line items.
-        // Properties that are irrelevant for the refund process are set as either (-1), or empty string.
-        fun convertShippingLineToItem(shippingLine: ShippingLine): Item {
-            return Item(
-                shippingLine.itemId,
-                -1, /* irrelevant */
-                shippingLine.methodTitle,
-                (-1).toBigDecimal(), /* irrelevant */
-                "", /* irrelevant */
-                1,
-                (-1).toBigDecimal(), /* irrelevant */
-                shippingLine.totalTax,
-                shippingLine.total,
-                -1, /* irrelevant */
-                "" /* irrelevant */
-            )
-        }
-    }
+// Conversion is needed for refunding shipping line items.
+// Properties that are irrelevant for the refund process are set as either (-1), or empty string.
+fun ShippingLine.toItem(): Item {
+    return Item(
+        itemId = itemId,
+        productId = -1, /* irrelevant */
+        name = methodTitle,
+        price = (-1).toBigDecimal(), /* irrelevant */
+        sku = "", /* irrelevant */
+        quantity = 1,
+        subtotal = (-1).toBigDecimal(), /* irrelevant */
+        totalTax = totalTax,
+        total = total,
+        variationId = -1, /* irrelevant */
+        attributesList = "" /* irrelevant */
+    )
 }
 
 fun WCOrderModel.toAppModel(): Order {
