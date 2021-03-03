@@ -134,8 +134,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             val shippingRates = defaultRates.map { default ->
                 val optionWithSignature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
                 val optionWithAdultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
-                val signaturePrice = optionWithSignature?.rate?.minus(default.rate)
-                val adultSignaturePrice = optionWithAdultSignature?.rate?.minus(default.rate)
+                val signatureFee = optionWithSignature?.rate?.minus(default.rate)
+                val adultSignatureFee = optionWithAdultSignature?.rate?.minus(default.rate)
 
                 // we can use the default rate as a base for most of the properties (these are the same for all
                 // extra options for a particular carrier option) and we just calculate the price for each extra option
@@ -161,29 +161,29 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             default.rate.format(),
                             DEFAULT
                         ),
-                        SIGNATURE to optionWithSignature?.let { rate ->
+                        SIGNATURE to optionWithSignature?.let { option ->
                             ShippingRate(
                                 pkg.boxId,
-                                rate.rateId,
-                                rate.serviceId,
-                                rate.carrierId,
-                                rate.title,
+                                option.rateId,
+                                option.serviceId,
+                                option.carrierId,
+                                option.title,
                                 default.deliveryDays,
-                                signaturePrice ?: BigDecimal.ZERO,
-                                signaturePrice.format(),
+                                option.rate,
+                                signatureFee.format(),
                                 SIGNATURE
                             )
                         },
-                        ADULT_SIGNATURE to optionWithAdultSignature?.let { rate ->
+                        ADULT_SIGNATURE to optionWithAdultSignature?.let { option ->
                             ShippingRate(
                                 pkg.boxId,
-                                rate.rateId,
-                                rate.serviceId,
-                                rate.carrierId,
-                                rate.title,
+                                option.rateId,
+                                option.serviceId,
+                                option.carrierId,
+                                option.title,
                                 default.deliveryDays,
-                                adultSignaturePrice ?: BigDecimal.ZERO,
-                                adultSignaturePrice.format(),
+                                option.rate,
+                                adultSignatureFee.format(),
                                 ADULT_SIGNATURE
                             )
                         }

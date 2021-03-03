@@ -13,7 +13,7 @@ data class ShippingRate(
     val serviceName: String,
     val deliveryDays: Int,
     val price: BigDecimal,
-    val formattedPrice: String,
+    val formattedFee: String,
     val option: Option
 ) : Parcelable {
     enum class Option {

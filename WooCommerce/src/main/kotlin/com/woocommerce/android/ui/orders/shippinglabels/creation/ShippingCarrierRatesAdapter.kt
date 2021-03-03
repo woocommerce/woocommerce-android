@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
 import kotlinx.android.parcel.Parcelize
-import java.math.BigDecimal
 import java.util.Date
 
 class ShippingCarrierRatesAdapter(
@@ -131,7 +130,7 @@ class ShippingCarrierRatesAdapter(
                         )
                     }
 
-                    binding.servicePrice.text = rateItem.options[DEFAULT]?.formattedPrice
+                    binding.servicePrice.text = rateItem.options[DEFAULT]?.formattedFee
                     binding.carrierImage.setImageResource(
                         when (rateItem.carrier) {
                             FEDEX -> R.drawable.fedex_logo
@@ -203,7 +202,7 @@ class ShippingCarrierRatesAdapter(
                     if (rateItem.isSignatureAvailable) {
                         binding.signatureOption.text = binding.root.resources.getString(
                             string.shipping_label_rate_option_signature_required,
-                            rateItem[SIGNATURE].formattedPrice
+                            rateItem[SIGNATURE].formattedFee
                         )
                         binding.signatureOption.isChecked = rateItem.selectedOption == SIGNATURE
                         binding.signatureOption.show()
@@ -221,7 +220,7 @@ class ShippingCarrierRatesAdapter(
                     if (rateItem.isAdultSignatureAvailable) {
                         binding.adultSignatureOption.text = binding.root.resources.getString(
                             string.shipping_label_rate_option_adult_signature_required,
-                            rateItem[ADULT_SIGNATURE].formattedPrice
+                            rateItem[ADULT_SIGNATURE].formattedFee
                         )
                         binding.adultSignatureOption.isChecked = rateItem.selectedOption == ADULT_SIGNATURE
                         binding.adultSignatureOption.show()
@@ -338,7 +337,7 @@ class ShippingCarrierRatesAdapter(
             return requireNotNull(options[option])
         }
 
-        val isSignatureFree = options[SIGNATURE]?.price.isEqualTo(BigDecimal.ZERO)
+        val isSignatureFree = options[SIGNATURE]?.price.isEqualTo(options[DEFAULT]?.price)
 
         val isSignatureAvailable = options.keys.contains(SIGNATURE) && !isSignatureFree
 
