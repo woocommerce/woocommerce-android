@@ -28,6 +28,11 @@
                 android:defaultValue="0L"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderListFragment_to_newOrderFragment"
+            app:destination="@id/nav_graph_order_creation"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/products"
@@ -148,6 +153,7 @@
             app:argType="boolean" />
     </fragment>
     <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_creation" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
 

@@ -109,6 +109,9 @@ class OrderListViewModel @AssistedInject constructor(
     private val _isAddOrderButtonVisible = SingleLiveEvent<Boolean>()
     val isAddOrderButtonVisible: LiveData<Boolean> = _isAddOrderButtonVisible
 
+    private val _openOrderCreationEvent = SingleLiveEvent<Unit>()
+    val openOrderCreationEvent: LiveData<Unit> = _openOrderCreationEvent
+
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData<EmptyViewType?>(
                 offset = EMPTY_VIEW_THROTTLE,
@@ -261,7 +264,7 @@ class OrderListViewModel @AssistedInject constructor(
     }
 
     fun onAddOrderButtonClicked() {
-        // TO-DO #3604
+        _openOrderCreationEvent.value = Unit
     }
 
     /**
