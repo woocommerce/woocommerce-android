@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
-import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -41,7 +39,6 @@ import java.math.BigDecimal
 class ShippingCarrierRatesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    parameterRepository: ParameterRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
@@ -62,13 +59,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         private const val SHIPPING_METHOD_USPS_KEY = "wc_services_usps"
         private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
         private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
-        private const val KEY_SHIPPING_CARRIERS_PARAMETERS = "key_shipping_carriers_parameters"
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
-
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_SHIPPING_CARRIERS_PARAMETERS, savedState)
-    }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -229,7 +221,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     private fun BigDecimal?.format(): String {
-        return PriceUtils.formatCurrencyOrNull(this, parameters.currencyCode, currencyFormatter) ?: "0"
+        return PriceUtils.formatCurrencyOrNull(this, arguments.order.currency, currencyFormatter) ?: "0"
     }
 
     private fun getCarrier(it: Rate) =
