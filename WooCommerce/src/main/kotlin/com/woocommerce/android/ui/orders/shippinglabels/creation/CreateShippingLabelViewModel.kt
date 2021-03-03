@@ -261,7 +261,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 val price = sumByBigDecimal { it.price }
                 val discount = sumByBigDecimal { it.discount }
 
-                return OrderSummaryState(isVisible = true, price = price, discount = discount)
+                return OrderSummaryState(
+                    isVisible = true,
+                    price = price,
+                    discount = discount,
+                    currency = parameters.currencyCode
+                )
             }
         }
 
@@ -516,7 +521,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     data class OrderSummaryState(
         val isVisible: Boolean = false,
         val price: BigDecimal = BigDecimal.ZERO,
-        val discount: BigDecimal = BigDecimal.ZERO
+        val discount: BigDecimal = BigDecimal.ZERO,
+        val currency: String? = null
     ) : Parcelable
 
     @Parcelize
