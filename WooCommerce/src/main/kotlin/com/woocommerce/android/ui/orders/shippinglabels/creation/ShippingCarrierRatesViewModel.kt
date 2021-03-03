@@ -84,9 +84,9 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
 
     private fun loadShippingRates() {
         launch {
-            viewState = viewState.copy(isLoading = true)
+            viewState = viewState.copy(isSkeletonVisible = true)
             loadRates()
-            viewState = viewState.copy(isLoading = false)
+            viewState = viewState.copy(isSkeletonVisible = false)
         }
     }
 
@@ -268,7 +268,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val bannerMessage: String? = null,
-        val isLoading: Boolean = false,
+        val isSkeletonVisible: Boolean = false,
         val isEmptyViewVisible: Boolean = false,
         val isDoneButtonVisible: Boolean = false
     ) : Parcelable
