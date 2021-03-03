@@ -257,9 +257,12 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 carrierStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
-            return OrderSummaryState(
-                isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
-            )
+            with(stateMachineData.stepsState.carrierStep.data) {
+                val price = sumByBigDecimal { it.price }
+                val discount = sumByBigDecimal { it.discount }
+
+                return OrderSummaryState(isVisible = true, price = price, discount = discount)
+            }
         }
 
         viewState = viewState.copy(

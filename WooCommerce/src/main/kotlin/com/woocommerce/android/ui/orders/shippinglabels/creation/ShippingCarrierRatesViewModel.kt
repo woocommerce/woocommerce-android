@@ -134,10 +134,13 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             val ratesWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
 
             val shippingRates = defaultRates.map { default ->
-                val optionWithSignature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
-                val optionWithAdultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
-                val signatureFee = optionWithSignature?.rate?.minus(default.rate)
-                val adultSignatureFee = optionWithAdultSignature?.rate?.minus(default.rate)
+                val signature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
+                val signatureFee = signature?.rate?.minus(default.rate)
+                val signatureDiscount = signature?.retailRate?.minus(signature.rate) ?: BigDecimal.ZERO
+
+                val adultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
+                val adultSignatureFee = adultSignature?.rate?.minus(default.rate)
+                val adultSignatureDiscount = adultSignature?.retailRate?.minus(adultSignature.rate) ?: BigDecimal.ZERO
 
                 // we can use the default rate as a base for most of the properties (these are the same for all
                 // extra options for a particular carrier option) and we just calculate the price for each extra option
@@ -150,10 +153,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                         default.title,
                         default.deliveryDays,
                         default.rate,
+                        BigDecimal.ZERO,
                         default.rate.format(),
                         DEFAULT
                     ),
-                    SIGNATURE to optionWithSignature?.let { option ->
+                    SIGNATURE to signature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
                             option.rateId,
@@ -162,11 +166,12 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            signatureDiscount,
                             signatureFee.format(),
                             SIGNATURE
                         )
                     },
-                    ADULT_SIGNATURE to optionWithAdultSignature?.let { option ->
+                    ADULT_SIGNATURE to adultSignature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
                             option.rateId,
@@ -175,6 +180,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            adultSignatureDiscount,
                             adultSignatureFee.format(),
                             ADULT_SIGNATURE
                         )
