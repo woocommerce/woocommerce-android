@@ -31,18 +31,10 @@ class SurveyTypeTest {
     }
 
     @Test
-    fun `Main SurveyType url should include an app version`() {
-        assertThat(MAIN.url.contains(Regex("app-version=${BuildConfig.VERSION_NAME}"))).isTrue()
-    }
-
-    @Test
-    fun `ShippingLabels SurveyType url should NOT include an app version`() {
-        assertThat(SHIPPING_LABELS.url.contains(Regex("app-version=${BuildConfig.VERSION_NAME}"))).isFalse()
-    }
-
-    @Test
-    fun `Product SurveyType url should NOT include an app version`() {
-        assertThat(PRODUCT.url.contains(Regex("app-version=${BuildConfig.VERSION_NAME}"))).isFalse()
+    fun `SurveyType url should include app version form tag for any URL`() {
+        SurveyType.values().forEach {
+            assertThat(it.url.contains("app-version=${BuildConfig.VERSION_NAME}")).isTrue()
+        }
     }
 
     companion object {

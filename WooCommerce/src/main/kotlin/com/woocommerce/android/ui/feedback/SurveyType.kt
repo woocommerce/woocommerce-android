@@ -9,7 +9,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY);
 
     val url
-        get() = "$untaggedUrl?$platformTag$milestoneTag$appVersion"
+        get() = "$untaggedUrl?$platformTag$appVersion$milestoneTag"
 
     private val milestoneTag
         get() = when (this) {
@@ -18,11 +18,7 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
             else -> ""
         }
 
-    private val appVersion
-        get() = when (this) {
-            MAIN -> "&app-version=${BuildConfig.VERSION_NAME}"
-            else -> ""
-        }
+    private val appVersion = "&app-version=${BuildConfig.VERSION_NAME}"
 
     private val platformTag = "woo-mobile-platform=android"
 }
