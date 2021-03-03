@@ -322,72 +322,79 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private val PackagingStep.stepDescription: String?
+    private val PackagingStep.stepDescription: String
         get() {
-            if (data.isEmpty()) return null
+            return if (status == DONE && data.isNotEmpty()) {
+                val firstLine = if (data.size == 1) {
+                    data.first().selectedPackage!!.title
+                } else {
+                    // TODO properly test this during M3
+                    resourceProvider.getString(
+                        string.shipping_label_multi_packages_items_count,
+                        data.sumBy { it.items.size },
+                        data.size
+                    )
+                }
 
-            val firstLine = if (data.size == 1) {
-                data.first().selectedPackage!!.title
-            } else {
-                // TODO properly test this during M3
-                resourceProvider.getString(
-                    string.shipping_label_multi_packages_items_count,
-                    data.sumBy { it.items.size },
-                    data.size
+                val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+                val stringResource = if (data.size == 1) {
+                    string.shipping_label_single_package_total_weight
+                } else {
+                    string.shipping_label_multi_packages_total_weight
+                }
+                val weightFormatted = with(DecimalFormat()) {
+                    maximumFractionDigits = 4
+                    minimumFractionDigits = 0
+                    format(data.sumByDouble { it.weight })
+                }
+
+                val secondLine = resourceProvider.getString(
+                    stringResource,
+                    weightFormatted,
+                    weightDimension
                 )
-            }
 
-            val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
-            val stringResource = if (data.size == 1) {
-                string.shipping_label_single_package_total_weight
+                "$firstLine\n$secondLine"
             } else {
-                string.shipping_label_multi_packages_total_weight
+                resourceProvider.getString(string.shipping_label_create_packaging_details_description)
             }
-            val weightFormatted = with(DecimalFormat()) {
-                maximumFractionDigits = 4
-                minimumFractionDigits = 0
-                format(data.sumByDouble { it.weight })
-            }
-
-            val secondLine = resourceProvider.getString(
-                stringResource,
-                weightFormatted,
-                weightDimension
-            )
-
-            return "$firstLine\n$secondLine"
         }
 
     private val PaymentsStep.stepDescription: String?
         get() {
-            if (data == null) return null
-            return resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
+            return if (status == DONE && data != null) {
+                resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
+            } else {
+                null
+            }
         }
 
-    private val CarrierStep.stepDescription: String?
+    private val CarrierStep.stepDescription: String
         get() {
-            if (data.isEmpty()) return null
+            return if (status == DONE && data.isNotEmpty()) {
+                val firstLine: String
+                val secondLine: String
+                if (data.size > 1) {
+                    firstLine = resourceProvider.getString(string.shipping_label_selected_rates_description, data.size)
+                    secondLine = resourceProvider.getString(
+                        string.shipping_label_selected_rates_total_description,
+                        data.sumByBigDecimal { it.price }.format()
+                    )
+                } else {
+                    val rate = data.first()
+                    firstLine = rate.serviceName
 
-            val firstLine: String
-            val secondLine: String
-            if (data.size > 1) {
-                firstLine = resourceProvider.getString(string.shipping_label_selected_rates_description, data.size)
-                secondLine = resourceProvider.getString(
-                    string.shipping_label_selected_rates_total_description,
-                    data.sumByBigDecimal { it.price }.format()
-                )
+                    val total = data.sumByBigDecimal { it.price }.format()
+                    val deliveryDays = resourceProvider.getPluralString(
+                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                        rate.deliveryDays
+                    )
+                    secondLine = "$total - $deliveryDays"
+                }
+                return "$firstLine\n$secondLine"
             } else {
-                val rate = data.first()
-                firstLine = rate.serviceName
-
-                val total = data.sumByBigDecimal { it.price }.format()
-                val deliveryDays = resourceProvider.getPluralString(
-                    R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
-                    rate.deliveryDays
-                )
-                secondLine = "$total - $deliveryDays"
+                resourceProvider.getString(string.shipping_label_create_carrier_description)
             }
-            return "$firstLine\n$secondLine"
         }
 
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
