@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -46,6 +47,7 @@ data class ProductVariation(
     val isVisible: Boolean,
     val shippingClass: String,
     val shippingClassId: Long,
+    val attributes: Array<VariantOption>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
@@ -83,6 +85,7 @@ data class ProductVariation(
                 isVisible == variation.isVisible &&
                 shippingClass == variation.shippingClass &&
                 shippingClassId == variation.shippingClassId &&
+                attributes.contentEquals(variation.attributes) &&
                 weight == variation.weight &&
                 length == variation.length &&
                 height == variation.height &&
@@ -133,6 +136,9 @@ data class ProductVariation(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
+            attributes.forEach { variant ->
+                it.addVariant(variant.asSourceModel())
+            }
             it.length = if (length == 0f) "" else length.formatToString()
             it.width = if (width == 0f) "" else width.formatToString()
             it.weight = if (weight == 0f) "" else weight.formatToString()
@@ -152,6 +158,21 @@ data class ProductVariation(
         val attributeName: String,
         val optionChoice: String
     ) : Parcelable
+}
+
+@Parcelize
+data class VariantOption(
+    val id: Long?,
+    val name: String?,
+    val option: String?
+): Parcelable {
+    constructor(sourceModel: ProductVariantOption) : this(
+        id = sourceModel.id,
+        name = sourceModel.name,
+        option = sourceModel.option
+    )
+
+    fun asSourceModel() = ProductVariantOption(id, name, option)
 }
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
@@ -186,6 +207,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
+        attributes = this.attributeList.map { VariantOption(it) }.toTypedArray(),
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
         height = this.height.toFloatOrNull() ?: 0f,
