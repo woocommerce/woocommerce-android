@@ -20,9 +20,9 @@ fun BigDecimal?.isNotSet(): Boolean = this.isEquivalentTo(BigDecimal.ZERO)
 fun BigDecimal?.isSet(): Boolean = !this.isNotSet()
 
 inline fun <T> Iterable<T>.sumByBigDecimal(selector: (T) -> BigDecimal): BigDecimal {
-    val sum = BigDecimal.ZERO
+    var sum = BigDecimal.ZERO
     for (element in this) {
-        sum.plus(selector(element))
+        sum += selector(element)
     }
     return sum
 }
