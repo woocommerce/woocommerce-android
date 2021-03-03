@@ -77,7 +77,9 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     val shippingRates: LiveData<List<PackageRateListItem>> = _shippingRates
 
     init {
-        loadShippingRates()
+        if (shippingRates.value.isNullOrEmpty()) {
+            loadShippingRates()
+        }
     }
 
     private fun loadShippingRates() {
@@ -139,6 +141,50 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
 
                 // we can use the default rate as a base for most of the properties (these are the same for all
                 // extra options for a particular carrier option) and we just calculate the price for each extra option
+                val options = mapOf(
+                    DEFAULT to ShippingRate(
+                        pkg.boxId,
+                        default.rateId,
+                        default.serviceId,
+                        default.carrierId,
+                        default.title,
+                        default.deliveryDays,
+                        default.rate,
+                        default.rate.format(),
+                        DEFAULT
+                    ),
+                    SIGNATURE to optionWithSignature?.let { option ->
+                        ShippingRate(
+                            pkg.boxId,
+                            option.rateId,
+                            option.serviceId,
+                            option.carrierId,
+                            option.title,
+                            default.deliveryDays,
+                            option.rate,
+                            signatureFee.format(),
+                            SIGNATURE
+                        )
+                    },
+                    ADULT_SIGNATURE to optionWithAdultSignature?.let { option ->
+                        ShippingRate(
+                            pkg.boxId,
+                            option.rateId,
+                            option.serviceId,
+                            option.carrierId,
+                            option.title,
+                            default.deliveryDays,
+                            option.rate,
+                            adultSignatureFee.format(),
+                            ADULT_SIGNATURE
+                        )
+                    }
+                ).filterValues { it != null } as Map<Option, ShippingRate>
+
+                val selectedOption = arguments.selectedRates.firstOrNull {
+                    it.packageId == pkg.boxId && it.serviceId == default.serviceId
+                }?.option
+
                 ShippingRateItem(
                     serviceId = default.serviceId,
                     title = default.title,
@@ -149,45 +195,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     isFreePickupAvailable = default.isPickupFree,
                     isInsuranceAvailable = default.insurance > BigDecimal.ZERO,
                     insuranceCoverage = default.insurance.format(),
-                    options = mapOf(
-                        DEFAULT to ShippingRate(
-                            pkg.boxId,
-                            default.rateId,
-                            default.serviceId,
-                            default.carrierId,
-                            default.title,
-                            default.deliveryDays,
-                            default.rate,
-                            default.rate.format(),
-                            DEFAULT
-                        ),
-                        SIGNATURE to optionWithSignature?.let { option ->
-                            ShippingRate(
-                                pkg.boxId,
-                                option.rateId,
-                                option.serviceId,
-                                option.carrierId,
-                                option.title,
-                                default.deliveryDays,
-                                option.rate,
-                                signatureFee.format(),
-                                SIGNATURE
-                            )
-                        },
-                        ADULT_SIGNATURE to optionWithAdultSignature?.let { option ->
-                            ShippingRate(
-                                pkg.boxId,
-                                option.rateId,
-                                option.serviceId,
-                                option.carrierId,
-                                option.title,
-                                default.deliveryDays,
-                                option.rate,
-                                adultSignatureFee.format(),
-                                ADULT_SIGNATURE
-                            )
-                        }
-                    ).filterValues { it != null } as Map<Option, ShippingRate>
+                    options = options,
+                    selectedOption = selectedOption
                 )
             }
 

@@ -210,7 +210,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 data.order,
                 data.stepsState.originAddressStep.data,
                 data.stepsState.shippingAddressStep.data,
-                data.stepsState.packagingStep.data
+                data.stepsState.packagingStep.data+data.stepsState.packagingStep.data,
+                data.stepsState.carrierStep.data
             )
         )
     }

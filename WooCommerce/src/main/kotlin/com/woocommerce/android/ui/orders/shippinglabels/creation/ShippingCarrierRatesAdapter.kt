@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
 import com.woocommerce.android.util.DateUtils
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.util.Date
 
@@ -304,6 +305,7 @@ class ShippingCarrierRatesAdapter(
                 }.firstOrNull()
             }
 
+        @IgnoredOnParcel
         val hasSelectedOption: Boolean = rateOptions.any { it.selectedOption != null }
 
         fun updateSelectedRateAndCopy(selectedRate: ShippingRate): PackageRateListItem {
@@ -337,10 +339,13 @@ class ShippingCarrierRatesAdapter(
             return requireNotNull(options[option])
         }
 
+        @IgnoredOnParcel
         val isSignatureFree = options[SIGNATURE]?.price.isEqualTo(options[DEFAULT]?.price)
 
+        @IgnoredOnParcel
         val isSignatureAvailable = options.keys.contains(SIGNATURE) && !isSignatureFree
 
+        @IgnoredOnParcel
         val isAdultSignatureAvailable = options.keys.contains(ADULT_SIGNATURE)
 
         enum class ShippingCarrier(val title: String) {

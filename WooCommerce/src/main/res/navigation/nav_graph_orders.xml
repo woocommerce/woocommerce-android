@@ -357,5 +357,8 @@
         <argument
             android:name="order"
             app:argType="com.woocommerce.android.model.Order" />
+        <argument
+            android:name="selectedRates"
+            app:argType="com.woocommerce.android.model.ShippingRate[]" />
     </fragment>
 </navigation>
