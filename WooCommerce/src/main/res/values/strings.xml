@@ -98,6 +98,7 @@
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
+    <string name="free">free</string>
     <!--
         Date/Time Labels
     -->
@@ -458,13 +459,13 @@
     <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
     <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
     <string name="shipping_label_shipping_method_free_shipping">Free shipping</string>
-    <string name="shipping_label_rate_option_signature_required">Signature required (+%s)</string>
-    <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (+%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
     <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
     <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
     <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
-    <string name="shipping_label_rate_included_options_signature_required">Signature required</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
     <string name="shipping_label_selected_rates_description">%s rates selected</string>
     <string name="shipping_label_selected_rates_total_description">%s total</string>
     <!--

@@ -7,6 +7,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.model.ShippingRate.Option
@@ -223,7 +224,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
     }
 
     private fun BigDecimal?.format(): String {
-        return PriceUtils.formatCurrencyOrNull(this, arguments.order.currency, currencyFormatter) ?: "0"
+        return when {
+            this == null -> "N/A"
+            this.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(R.string.free)
+            else -> "+${PriceUtils.formatCurrency(this, arguments.order.currency, currencyFormatter)}"
+        }
     }
 
     private fun getCarrier(it: Rate) =

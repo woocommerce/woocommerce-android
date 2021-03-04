@@ -374,7 +374,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             return if (status == DONE && data != null) {
                 resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
             } else {
-                null
+                resourceProvider.getString(string.shipping_label_create_payment_description)
             }
         }
 
@@ -489,8 +489,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         shippingLabelRepository.clearCache()
     }
 
-    private fun BigDecimal?.format(): String {
-        return PriceUtils.formatCurrencyOrNull(this, parameters.currencyCode, currencyFormatter) ?: "0"
+    private fun BigDecimal.format(): String {
+        return PriceUtils.formatCurrency(this, parameters.currencyCode, currencyFormatter)
     }
 
     @Parcelize
