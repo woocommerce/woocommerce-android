@@ -366,7 +366,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             return if (status == DONE && data != null) {
                 resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
             } else {
-                null
+                resourceProvider.getString(string.shipping_label_create_payment_description)
             }
         }
 
