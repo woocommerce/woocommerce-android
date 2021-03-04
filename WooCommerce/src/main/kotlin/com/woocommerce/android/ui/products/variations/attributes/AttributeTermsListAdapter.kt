@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -130,11 +129,8 @@ class AttributeTermsListAdapter(
                     onTermListener.onTermDelete(item)
                 }
 
-                viewBinding.termDragHandle.setOnTouchListener { _, event ->
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        dragHelper?.startDrag(this)
-                    }
-                    false
+                viewBinding.termDragHandle.setOnClickListener {
+                    dragHelper?.startDrag(this)
                 }
             }
         }
