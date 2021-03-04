@@ -52,13 +52,6 @@ class AttributeTermsListAdapter(
 
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
         holder.bind(termNames[position])
-
-        onTermListener.let { listener ->
-            holder.itemView.setOnClickListener {
-                val item = termNames[position]
-                listener.onTermClick(item)
-            }
-        }
     }
 
     fun setOnTermListener(listener: OnTermListener) {
@@ -121,18 +114,20 @@ class AttributeTermsListAdapter(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        @SuppressLint("ClickableViewAccessibility")
-        fun bind(termName: String) {
-            viewBinding.termName.text = termName
-            viewBinding.termDragHandle.isVisible = showIcons
-            viewBinding.termDelete.isVisible = showIcons
+        init {
+            viewBinding.root.setOnClickListener {
+                val item = termNames[adapterPosition]
+                onTermListener.onTermClick(item)
+            }
 
             if (showIcons) {
                 viewBinding.termDelete.setOnClickListener {
-                    removeTerm(termName)
-                    onTermListener.onTermDelete(termName)
+                    val item = termNames[adapterPosition]
+                    removeTerm(item)
+                    onTermListener.onTermDelete(item)
                 }
 
                 viewBinding.termDragHandle.setOnTouchListener { _, event ->
@@ -142,6 +137,12 @@ class AttributeTermsListAdapter(
                     false
                 }
             }
+        }
+
+        fun bind(termName: String) {
+            viewBinding.termName.text = termName
+            viewBinding.termDragHandle.isVisible = showIcons
+            viewBinding.termDelete.isVisible = showIcons
         }
     }
 }
