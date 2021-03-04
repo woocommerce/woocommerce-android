@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.FormatUtils
@@ -180,19 +181,21 @@ class VariationDetailCardBuilder(
         }
     }
 
-    private fun ProductVariation.attributes(): ProductProperty =
-        PropertyGroup(
-            title = R.string.product_attributes,
-            properties = mutableMapOf<String, String>()
-                .let { map ->
-                    attributes.forEach {
-                        it.takeIf { it.name != null && it.option != null }
-                            ?.apply { map[name!!] = option!! }
-                    }
-                    map
-                },
-            icon = drawable.ic_gridicons_customize
-        )
+    private fun ProductVariation.attributes() =
+        takeIf { FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled() }
+            ?.let {
+                PropertyGroup(
+                    title = R.string.product_attributes,
+                    properties = mutableMapOf<String, String>()
+                        .let { map ->
+                            attributes
+                                .filter { it.name != null && it.option != null }
+                                .map { Pair(it.name!!, it.option!!) }
+                                .let { map.apply { putAll(it) } }
+                        },
+                    icon = drawable.ic_gridicons_customize
+                )
+            }
 
     private fun ProductVariation.shipping(): ProductProperty? {
         return if (!this.isVirtual) {
