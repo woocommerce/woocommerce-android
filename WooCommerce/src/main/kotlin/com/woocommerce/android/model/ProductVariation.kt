@@ -165,7 +165,7 @@ data class VariantOption(
     val id: Long?,
     val name: String?,
     val option: String?
-): Parcelable {
+) : Parcelable {
     constructor(sourceModel: ProductVariantOption) : this(
         id = sourceModel.id,
         name = sourceModel.name,
