@@ -68,7 +68,7 @@ class AttributeTermsListAdapter(
         }
     }
 
-    private fun containsTerm(termName: String): Boolean {
+    fun containsTerm(termName: String): Boolean {
         termNames.forEach { term ->
             if (term.equals(termName, ignoreCase = true)) {
                 return true

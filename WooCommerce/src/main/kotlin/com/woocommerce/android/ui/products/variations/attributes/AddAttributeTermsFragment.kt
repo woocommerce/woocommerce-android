@@ -63,9 +63,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun getAttributeTerms() {
-        // if this is a global attribute, fetch the attribute's terms and exclude ones that are already assigned
-        if (navArgs.attributeId != 0L) {
-            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId, excludeAssignedTerms = true)
+        // if this is a global attribute, fetch the attribute's terms
+        if (isGlobalAttribute) {
+            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
         }
 
         // get the attribute terms for attributes already assigned to this product
@@ -116,7 +116,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
-            if (termName.isNotBlank()) {
+            if (termName.isNotBlank() && !getAssignedTermsAdapter().containsTerm(termName)) {
                 addTerm(termName, saveToBackend = isGlobalAttribute)
                 binding.termEditText.text?.clear()
             }
@@ -183,19 +183,26 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
         if (terms.isEmpty()) {
-            binding.globalTermContainer.isVisible = false
             getGlobalTermsAdapter().clear()
         } else {
-            binding.globalTermContainer.isVisible = true
-
-            // build a list of term names
+            // build a list of term names, excluding ones that are already assigned
+            val assignedTermNames = getAssignedTermsAdapter().termNames
             val termNames = ArrayList<String>()
             terms.forEach { term ->
-                termNames.add(term.name)
+                if (!assignedTermNames.contains(term.name)) {
+                    termNames.add(term.name)
+                }
             }
 
             getGlobalTermsAdapter().termNames = termNames
         }
+
+        checkViews()
+    }
+
+    private fun checkViews() {
+        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
+        binding.globalTermContainer.isVisible = !getGlobalTermsAdapter().isEmpty()
     }
 
     /**
@@ -216,7 +223,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             viewModel.addGlobalAttributeTerm(navArgs.attributeId, termName)
         }
 
-        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
+        checkViews()
     }
 
     /**
