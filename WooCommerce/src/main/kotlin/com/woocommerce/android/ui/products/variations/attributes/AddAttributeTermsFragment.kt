@@ -49,6 +49,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
     }
 
+    private val isGlobalAttribute
+        get() = navArgs.attributeId != 0L
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
