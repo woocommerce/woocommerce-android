@@ -44,10 +44,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         DraggableItemTouchHelper(
             dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             onMove = { from, to ->
-                getAssignedTermsAdapter().swapItems(from, to)
+                assignedTermsAdapter.swapItems(from, to)
             }
         )
     }
+
+    private lateinit var assignedTermsAdapter: AttributeTermsListAdapter
+    private lateinit var globalTermsAdapter: AttributeTermsListAdapter
 
     private val assignedTermListener by lazy {
         object : OnTermListener {
@@ -65,7 +68,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                         it == termName
                     }
                 }?.let { term ->
-                    getGlobalTermsAdapter().addTerm(termName)
+                    globalTermsAdapter.addTerm(termName)
                 }
 
                 checkViews()
@@ -113,7 +116,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val assignedTerms = getAssignedTermsAdapter().termNames
+        val assignedTerms = assignedTermsAdapter.termNames
         viewModel.setProductDraftAttributeTerms(
             navArgs.attributeId,
             navArgs.attributeName,
@@ -139,20 +142,22 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         layoutManagerAssigned = initializeRecycler(binding.assignedTermList, showIcons = true)
-        getAssignedTermsAdapter().setOnTermListener(assignedTermListener)
+        assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
+        assignedTermsAdapter.setOnTermListener(assignedTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
         layoutManagerGlobal = initializeRecycler(binding.globalTermList, showIcons = false)
-        getGlobalTermsAdapter().setOnTermListener(globalTermListener)
+        globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
+        globalTermsAdapter.setOnTermListener(globalTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
-            if (termName.isNotBlank() && !getAssignedTermsAdapter().containsTerm(termName)) {
+            if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName, saveToBackend = isGlobalAttribute)
                 binding.termEditText.text?.clear()
             }
@@ -198,10 +203,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun getFragmentTitle() = navArgs.attributeName
 
-    private fun getAssignedTermsAdapter() = binding.assignedTermList.adapter as AttributeTermsListAdapter
-
-    private fun getGlobalTermsAdapter() = binding.globalTermList.adapter as AttributeTermsListAdapter
-
     /**
      * Show the list of terms already assigned to the product attribute
      */
@@ -210,7 +211,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             binding.assignedTermList.isVisible = false
         } else {
             binding.assignedTermList.isVisible = true
-            getAssignedTermsAdapter().termNames = ArrayList<String>().also { it.addAll(termNames) }
+            assignedTermsAdapter.termNames = ArrayList<String>().also { it.addAll(termNames) }
         }
     }
 
@@ -219,10 +220,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
         if (terms.isEmpty()) {
-            getGlobalTermsAdapter().clear()
+            globalTermsAdapter.clear()
         } else {
             // build a list of term names, excluding ones that are already assigned
-            val assignedTermNames = getAssignedTermsAdapter().termNames
+            val assignedTermNames = assignedTermsAdapter.termNames
             val termNames = ArrayList<String>()
             terms.forEach { term ->
                 if (!assignedTermNames.contains(term.name)) {
@@ -230,15 +231,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 }
             }
 
-            getGlobalTermsAdapter().termNames = termNames
+            globalTermsAdapter.termNames = termNames
         }
 
         checkViews()
     }
 
     private fun checkViews() {
-        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
-        binding.globalTermContainer.isVisible = !getGlobalTermsAdapter().isEmpty()
+        binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
+        binding.globalTermContainer.isVisible = !globalTermsAdapter.isEmpty()
     }
 
     /**
@@ -247,15 +248,15 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      */
     private fun addTerm(termName: String, saveToBackend: Boolean) {
         // add the term to the list of assigned terms
-        getAssignedTermsAdapter().addTerm(termName)
+        assignedTermsAdapter.addTerm(termName)
 
         // remove it from the list of global terms
         if (isGlobalAttribute) {
-            getGlobalTermsAdapter().removeTerm(termName)
+            globalTermsAdapter.removeTerm(termName)
         }
 
         if (saveToBackend) {
-            // TODO progress spinner or progress dialog?
+            // TODO batch save to backend when user leaves screen
             viewModel.addGlobalAttributeTerm(navArgs.attributeId, termName)
         }
 
