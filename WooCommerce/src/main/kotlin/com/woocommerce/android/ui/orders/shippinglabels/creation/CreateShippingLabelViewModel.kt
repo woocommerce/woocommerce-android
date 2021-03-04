@@ -265,6 +265,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     isVisible = true,
                     price = price,
                     discount = discount,
+                    // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
                     currency = parameters.currencyCode
                 )
             }

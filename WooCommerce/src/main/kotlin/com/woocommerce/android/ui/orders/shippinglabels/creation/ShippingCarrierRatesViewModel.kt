@@ -223,6 +223,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
     }
 
+    // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
     private fun BigDecimal?.format(): String {
         return when {
             this == null -> "N/A"
