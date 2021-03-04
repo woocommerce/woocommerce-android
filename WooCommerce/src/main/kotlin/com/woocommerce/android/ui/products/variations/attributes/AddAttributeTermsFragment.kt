@@ -49,29 +49,31 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
     }
 
-    private val assignedTermListener by lazy() {
+    private val assignedTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {}
 
+            /**
+             * If the user removed a global term from the assigned term list, we need to return it to the
+             * global term list
+             */
             override fun onTermDelete(termName: String) {
-                // if this was a global term, we need to restore it to the global term list
-                viewModel.getProductDraftAttributes().forEach { attribute ->
-                    if (attribute.isGlobalAttribute && attribute.id == navArgs.attributeId) {
-                        attribute.terms.forEach { term ->
-                            if (termName == term) {
-                                getGlobalTermsAdapter().addTerm(termName)
-                                return@forEach
-                            }
-                        }
-                        return@forEach
+                viewModel.getProductDraftAttributes().find {
+                    it.isGlobalAttribute && it.id == navArgs.attributeId
+                }?.let { attribute ->
+                    attribute.terms.find {
+                        it == termName
                     }
+                }?.let { term ->
+                    getGlobalTermsAdapter().addTerm(termName)
                 }
+
                 checkViews()
             }
         }
     }
 
-    private val globalTermListener by lazy() {
+    private val globalTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {
                 addTerm(termName, saveToBackend = false)
