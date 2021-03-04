@@ -372,7 +372,11 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
                 name = it.name,
                 options = it.terms.toMutableList()
             )
-        }.forEach { jsonArray.add(it.toJson()) }
+        }.forEach {
+            if (it.options.isNotEmpty()) {
+                jsonArray.add(it.toJson())
+            }
+        }
         return jsonArray.toString()
     }
 
