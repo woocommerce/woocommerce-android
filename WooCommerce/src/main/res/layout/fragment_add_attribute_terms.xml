@@ -18,13 +18,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-                android:id="@+id/optionEditText"
-                style="@style/Woo.Button.Outlined"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/termEditText"
+                style="@style/Woo.TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
-                android:hint="@string/product_new_attribute_term_name" />
+                android:hint="@string/product_new_attribute_term_name"
+                android:inputType="text" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
@@ -43,11 +44,14 @@
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
+        android:id="@+id/globalTermContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/minor_100"
         android:background="?attr/colorSurface"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"

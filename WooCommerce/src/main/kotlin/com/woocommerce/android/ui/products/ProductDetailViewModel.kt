@@ -704,7 +704,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         downloads: List<ProductFile>? = null,
         downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
-        isDownloadable: Boolean? = null
+        isDownloadable: Boolean? = null,
+        attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -757,7 +758,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     downloads = downloads ?: product.downloads,
                     downloadLimit = downloadLimit ?: product.downloadLimit,
                     downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable
+                    isDownloadable = isDownloadable ?: product.isDownloadable,
+                    attributes = attributes ?: product.attributes
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -969,13 +971,35 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
         val attributes = getProductDraftAttributes()
         attributes.forEach { attribute ->
-            if (attribute.isLocalAttribute && attribute.name == attributeName) {
-                return attribute.terms
-            } else if (attribute.isGlobalAttribute && attribute.id == attributeId) {
+            if (attribute.name == attributeName) {
                 return attribute.terms
             }
         }
         return emptyList()
+    }
+
+    /**
+     * Set the list of terms for a single attribute in the product draft
+     */
+    fun setProductDraftAttributeTerms(attributeId: Long, attributeName: String, termNames: ArrayList<String>) {
+        val updatedAttributes = ArrayList<ProductAttribute>()
+
+        getProductDraftAttributes().forEach { draftAttribute ->
+            if (draftAttribute.name == attributeName) {
+                updatedAttributes.add(
+                    ProductAttribute(
+                        id = attributeId,
+                        name = attributeName,
+                        terms = termNames,
+                        isVisible = draftAttribute.isVisible
+                    )
+                )
+            } else {
+                updatedAttributes.add(draftAttribute)
+            }
+        }
+
+        updateProductDraft(attributes = updatedAttributes)
     }
 
     /**
@@ -1003,10 +1027,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * User clicked an attribute in the attribute list fragment
+     * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        // TODO
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
     }
 
     /**
@@ -1014,13 +1038,6 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddAttributeButtonClick() {
         triggerEvent(AddProductAttribute)
-    }
-
-    /**
-     * User clicked an attribute in the add attribute fragment
-     */
-    fun onAddAttributeListItemClick(attributeId: Long, attributeName: String) {
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1045,6 +1062,49 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
         productRepository.getGlobalAttributes()
+
+    /**
+     * Returns true if an attribute with this name is assigned to the product draft
+     */
+    private fun containsAttributeName(attributeName: String): Boolean {
+        viewState.productDraft?.attributes?.forEach {
+            if (it.name.equals(attributeName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Called from the attribute list when the user enters a new attribute
+     */
+    fun addLocalAttribute(attributeName: String) {
+        if (containsAttributeName(attributeName)) {
+            triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+            return
+        }
+
+        // get the list of current attributes
+        val attributes = ArrayList<ProductAttribute>()
+        viewState.productDraft?.attributes?.let {
+            attributes.addAll(it)
+        }
+
+        // add the new one to the list
+        attributes.add(
+            ProductAttribute(
+                id = 0L,
+                name = attributeName,
+                terms = emptyList(),
+                isVisible = true)
+        )
+
+        // update the draft with the new list
+        updateProductDraft(attributes = attributes)
+
+        // take the user to the add attribute terms screen
+        triggerEvent(AddProductAttributeTerms(0L, attributeName))
+    }
 
     /**
      * Updates the product to the backend only if network is connected.

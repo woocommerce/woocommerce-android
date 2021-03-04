@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -15,9 +17,15 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermClickListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
+/**
+ * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
+ * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
+ */
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), OnTermClickListener {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -32,15 +40,22 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
 
+    private val itemTouchHelper by lazy {
+        DraggableItemTouchHelper(
+            dragDirs = ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            onMove = { from, to ->
+                getAssignedTermsAdapter().swapItems(from, to)
+            }
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentAddAttributeTermsBinding.bind(view)
 
-        setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
-
         getAttributeTerms()
     }
 
@@ -61,6 +76,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        val terms = getAssignedTermsAdapter().termNames
+        viewModel.setProductDraftAttributeTerms(
+            navArgs.attributeId,
+            navArgs.attributeName,
+            terms
+        )
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
     }
@@ -89,17 +110,36 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
+
+        binding.termEditText.setOnEditorActionListener { _, actionId, event ->
+            val termName = binding.termEditText.text?.toString() ?: ""
+            if (termName.isNotBlank()) {
+                addLocalTerm(termName)
+                binding.termEditText.text?.clear()
+            }
+            true
+        }
     }
 
     private fun initializeRecycler(recycler: RecyclerView, showIcons: Boolean): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-
         recycler.layoutManager = layoutManager
-        recycler.itemAnimator = null
-        recycler.adapter = AttributeTermsListAdapter(showIcons)
-        recycler.addItemDecoration(AlignedDividerDecoration(
-            requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-        ))
+
+        if (showIcons) {
+            recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
+            itemTouchHelper.attachToRecyclerView(recycler)
+        } else {
+            recycler.adapter = AttributeTermsListAdapter(showIcons, onTermClick = this)
+        }
+
+        recycler.addItemDecoration(
+            AlignedDividerDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.variationOptionName,
+                clipToMargin = false
+            )
+        )
 
         return layoutManager
     }
@@ -119,25 +159,54 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun getFragmentTitle() = navArgs.attributeName
 
+    private fun getAssignedTermsAdapter() = binding.assignedTermList.adapter as AttributeTermsListAdapter
+
+    private fun getGlobalTermsAdapter() = binding.globalTermList.adapter as AttributeTermsListAdapter
+
     /**
      * Show the list of terms already assigned to the product attribute
      */
-    fun showAssignedTerms(termNames: List<String>) {
-        val adapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
-        adapter.setTerms(termNames)
+    private fun showAssignedTerms(termNames: List<String>) {
+        if (termNames.isEmpty()) {
+            binding.assignedTermList.isVisible = false
+        } else {
+            binding.assignedTermList.isVisible = true
+            getAssignedTermsAdapter().termNames = ArrayList<String>().also { it.addAll(termNames) }
+        }
     }
 
     /**
      * Triggered by fetching the list of terms for global attributes
      */
     private fun showGlobalAttributeTerms(terms: List<ProductAttributeTerm>) {
-        // build a list of term names
-        val termNames = ArrayList<String>()
-        terms.forEach { term ->
-            termNames.add(term.name)
-        }
+        if (terms.isEmpty()) {
+            binding.globalTermContainer.isVisible = false
+            getGlobalTermsAdapter().clear()
+        } else {
+            binding.globalTermContainer.isVisible = true
 
-        val adapter = binding.globalTermList.adapter as AttributeTermsListAdapter
-        adapter.setTerms(termNames)
+            // build a list of term names
+            val termNames = ArrayList<String>()
+            terms.forEach { term ->
+                termNames.add(term.name)
+            }
+
+            getGlobalTermsAdapter().termNames = termNames
+        }
+    }
+
+    /**
+     * User entered a new term
+     */
+    private fun addLocalTerm(termName: String) {
+        getAssignedTermsAdapter().addTerm(termName)
+        binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
+    }
+
+    /**
+     * Called by the gobal adapter when a term is clicked
+     */
+    override fun onTermClick(termName: String) {
+        // TODO
     }
 }

@@ -76,6 +76,15 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
+        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+            val attributeName = binding.attributeEditText.text?.toString() ?: ""
+            if (attributeName.isNotBlank()) {
+                binding.attributeEditText.text?.clear()
+                viewModel.addLocalAttribute(attributeName)
+            }
+            true
+        }
+
         viewModel.fetchGlobalAttributes()
     }
 
@@ -101,7 +110,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: CombinedAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
+            adapter = CombinedAttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
