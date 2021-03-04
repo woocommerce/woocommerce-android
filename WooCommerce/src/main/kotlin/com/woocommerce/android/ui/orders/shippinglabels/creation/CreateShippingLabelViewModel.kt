@@ -481,8 +481,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         shippingLabelRepository.clearCache()
     }
 
-    private fun BigDecimal?.format(): String {
-        return PriceUtils.formatCurrencyOrNull(this, parameters.currencyCode, currencyFormatter) ?: "0"
+    private fun BigDecimal.format(): String {
+        return PriceUtils.formatCurrency(this, parameters.currencyCode, currencyFormatter)
     }
 
     @Parcelize

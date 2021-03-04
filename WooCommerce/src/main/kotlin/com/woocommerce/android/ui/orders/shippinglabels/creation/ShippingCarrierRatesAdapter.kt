@@ -182,7 +182,7 @@ class ShippingCarrierRatesAdapter(
                     if (rateItem.isSignatureFree) {
                         options.add(
                             binding.root.resources.getString(
-                                string.shipping_label_rate_included_options_signature_required
+                                string.shipping_label_rate_included_options_signature_required_free
                             )
                         )
                     }
@@ -335,6 +335,9 @@ class ShippingCarrierRatesAdapter(
         val options: Map<Option, ShippingRate>,
         val selectedOption: Option? = null
     ) : Parcelable {
+        companion object {
+            const val USPS_EXPRESS_SERVICE_ID = "Express"
+        }
         operator fun get(option: Option): ShippingRate {
             return requireNotNull(options[option])
         }
@@ -343,7 +346,8 @@ class ShippingCarrierRatesAdapter(
         val isSignatureFree = options[SIGNATURE]?.price.isEqualTo(options[DEFAULT]?.price)
 
         @IgnoredOnParcel
-        val isSignatureAvailable = options.keys.contains(SIGNATURE) && !isSignatureFree
+        val isSignatureAvailable = options.keys.contains(SIGNATURE) &&
+            (!isSignatureFree || serviceId == USPS_EXPRESS_SERVICE_ID && carrier == USPS)
 
         @IgnoredOnParcel
         val isAdultSignatureAvailable = options.keys.contains(ADULT_SIGNATURE)
