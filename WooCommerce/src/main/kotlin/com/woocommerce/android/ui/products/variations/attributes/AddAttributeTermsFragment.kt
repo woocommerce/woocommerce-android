@@ -17,7 +17,7 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
-import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermClickListener
+import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 
@@ -25,7 +25,7 @@ import com.woocommerce.android.widgets.DraggableItemTouchHelper
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), OnTermClickListener {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -47,6 +47,38 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 getAssignedTermsAdapter().swapItems(from, to)
             }
         )
+    }
+
+    private val assignedTermListener by lazy() {
+        object : OnTermListener {
+            override fun onTermClick(termName: String) {}
+
+            override fun onTermDelete(termName: String) {
+                // if this was a global term, we need to restore it to the global term list
+                viewModel.getProductDraftAttributes().forEach { attribute ->
+                    if (attribute.isGlobalAttribute && attribute.id == navArgs.attributeId) {
+                        attribute.terms.forEach { term ->
+                            if (termName == term) {
+                                getGlobalTermsAdapter().addTerm(termName)
+                                return@forEach
+                            }
+                        }
+                        return@forEach
+                    }
+                }
+                checkViews()
+            }
+        }
+    }
+
+    private val globalTermListener by lazy() {
+        object : OnTermListener {
+            override fun onTermClick(termName: String) {
+                addTerm(termName, saveToBackend = false)
+            }
+
+            override fun onTermDelete(termName: String) {}
+        }
     }
 
     private val isGlobalAttribute
@@ -79,11 +111,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val terms = getAssignedTermsAdapter().termNames
+        val assignedTerms = getAssignedTermsAdapter().termNames
         viewModel.setProductDraftAttributeTerms(
             navArgs.attributeId,
             navArgs.attributeName,
-            terms
+            assignedTerms
         )
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
@@ -105,11 +137,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         layoutManagerAssigned = initializeRecycler(binding.assignedTermList, showIcons = true)
+        getAssignedTermsAdapter().setOnTermListener(assignedTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
         layoutManagerGlobal = initializeRecycler(binding.globalTermList, showIcons = false)
+        getGlobalTermsAdapter().setOnTermListener(globalTermListener)
         savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
@@ -129,10 +163,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         recycler.layoutManager = layoutManager
 
         if (showIcons) {
-            recycler.adapter = AttributeTermsListAdapter(showIcons, itemTouchHelper)
+            recycler.adapter = AttributeTermsListAdapter(showIcons)
             itemTouchHelper.attachToRecyclerView(recycler)
         } else {
-            recycler.adapter = AttributeTermsListAdapter(showIcons, onTermClick = this)
+            recycler.adapter = AttributeTermsListAdapter(showIcons)
         }
 
         recycler.addItemDecoration(
@@ -224,12 +258,5 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
 
         checkViews()
-    }
-
-    /**
-     * Called by the global adapter when a term is clicked
-     */
-    override fun onTermClick(termName: String) {
-        addTerm(termName, saveToBackend = false)
     }
 }

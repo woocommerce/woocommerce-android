@@ -17,12 +17,14 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  */
 class AttributeTermsListAdapter(
     private val showIcons: Boolean,
-    private val dragHelper: ItemTouchHelper? = null,
-    private val onTermClick: OnTermClickListener? = null
+    private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
-    interface OnTermClickListener {
+    interface OnTermListener {
         fun onTermClick(termName: String)
+        fun onTermDelete(termName: String)
     }
+
+    private lateinit var onTermListener: OnTermListener
 
     var termNames: ArrayList<String> = ArrayList()
         set(value) {
@@ -51,12 +53,16 @@ class AttributeTermsListAdapter(
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
         holder.bind(termNames[position])
 
-        onTermClick?.let { listener ->
+        onTermListener.let { listener ->
             holder.itemView.setOnClickListener {
                 val item = termNames[position]
                 listener.onTermClick(item)
             }
         }
+    }
+
+    fun setOnTermListener(listener: OnTermListener) {
+        onTermListener = listener
     }
 
     fun isEmpty() = termNames.isEmpty()
@@ -118,14 +124,15 @@ class AttributeTermsListAdapter(
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         @SuppressLint("ClickableViewAccessibility")
-        fun bind(term: String) {
-            viewBinding.termName.text = term
+        fun bind(termName: String) {
+            viewBinding.termName.text = termName
             viewBinding.termDragHandle.isVisible = showIcons
             viewBinding.termDelete.isVisible = showIcons
 
             if (showIcons) {
                 viewBinding.termDelete.setOnClickListener {
-                    removeTerm(term)
+                    removeTerm(termName)
+                    onTermListener.onTermDelete(termName)
                 }
 
                 viewBinding.termDragHandle.setOnTouchListener { _, event ->
