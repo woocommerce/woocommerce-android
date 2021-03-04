@@ -207,7 +207,10 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
-        attributes = this.attributeList.map { VariantOption(it) }.toTypedArray(),
+        attributes = this.attributeList
+            ?.map { VariantOption(it) }
+            ?.toTypedArray()
+            ?: emptyArray(),
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
         height = this.height.toFloatOrNull() ?: 0f,
