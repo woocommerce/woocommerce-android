@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:background="?android:attr/selectableItemBackground">
 
     <FrameLayout
@@ -12,9 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/carrierImage"
@@ -28,9 +28,12 @@
         <RadioButton
             android:id="@+id/carrierRadioButton"
             style="@style/Woo.RadioButton"
-            android:visibility="gone"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/image_minor_100"
+            android:minHeight="@dimen/image_minor_100"
+            android:padding="@dimen/minor_00"
+            android:visibility="visible" />
 
     </FrameLayout>
 
@@ -39,15 +42,15 @@
         style="@style/Woo.ListItem.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
         android:layout_marginBottom="@dimen/minor_00"
+        android:includeFontPadding="false"
         android:maxLines="2"
         app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
         app:layout_constraintEnd_toStartOf="@id/servicePrice"
         app:layout_constraintStart_toEndOf="@+id/imageFrame"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="UPS Ground"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/deliveryTime"
@@ -55,36 +58,74 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_00"
-        android:layout_marginBottom="@dimen/major_100"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/includedOptions"
         app:layout_constraintEnd_toStartOf="@id/servicePrice"
         app:layout_constraintStart_toEndOf="@+id/imageFrame"
         app:layout_constraintTop_toBottomOf="@+id/carrierServiceName"
         tools:text="4 business days" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/includedOptions"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintBottom_toTopOf="@id/signatureOption"
+        app:layout_constraintEnd_toStartOf="@id/servicePrice"
+        app:layout_constraintStart_toEndOf="@+id/imageFrame"
+        app:layout_constraintTop_toBottomOf="@+id/deliveryTime"
+        tools:text="Includes tracking and insurance (up to $100)" />
+
+    <CheckBox
+        android:id="@+id/signatureOption"
+        style="@style/Woo.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:minHeight="@dimen/minor_00"
+        android:textColor="@color/checkbox_shipping_rate_bg_selector"
+        app:layout_constraintStart_toStartOf="@id/includedOptions"
+        app:layout_constraintTop_toBottomOf="@+id/includedOptions"
+        tools:text="Signature required (+2.60)"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/adultSignatureOption"
+        style="@style/Woo.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_00"
+        android:minHeight="@dimen/minor_00"
+        android:textColor="@color/checkbox_shipping_rate_bg_selector"
+        app:layout_goneMarginTop="@dimen/major_75"
+        app:layout_constraintStart_toStartOf="@id/signatureOption"
+        app:layout_constraintTop_toBottomOf="@+id/signatureOption"
+        tools:text="Adult signature required (+2.60)" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/servicePrice"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_125"
         android:includeFontPadding="false"
         android:maxLines="2"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="bold"
         tools:text="$22.00"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
+
 
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
         android:layout_width="0dp"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/minor_00"
+        android:layout_marginTop="@dimen/major_75"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/carrierServiceName"/>
+        app:layout_constraintStart_toStartOf="@+id/carrierServiceName"
+        app:layout_constraintTop_toBottomOf="@+id/adultSignatureOption" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

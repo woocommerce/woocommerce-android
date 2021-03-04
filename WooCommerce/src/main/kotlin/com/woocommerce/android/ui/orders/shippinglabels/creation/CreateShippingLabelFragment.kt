@@ -221,7 +221,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.originAddress,
                             event.destinationAddress,
                             event.shippingLabelPackages.toTypedArray(),
-                            event.orderId
+                            event.order,
+                            event.selectedRates.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }

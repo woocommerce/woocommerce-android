@@ -6,7 +6,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep
@@ -29,7 +31,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -45,11 +49,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
-    companion object {
-        private const val ORDER_ID = "123"
-        private const val REMOTE_ORDER_ID = 123L
-    }
-
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val stateMachine: ShippingLabelsStateMachine = mock()
@@ -58,21 +57,24 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val accountStore: AccountStore = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val parameterRepository: ParameterRepository = mock()
+    private val currencyFormatter: CurrencyFormatter = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val originAddressValidated = originAddress.copy(city = "DONE")
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
+    private val order = OrderTestUtils.generateOrder()
 
     private val data = StateMachineData(
-        remoteOrderId = REMOTE_ORDER_ID,
+        order = order.toAppModel(),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
             customsStep = CustomsStep(NOT_READY, isVisible = true),
-            carrierStep = CarrierStep(NOT_READY),
+            carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
     )
@@ -134,7 +136,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         SavedStateWithArgs(
             SavedStateHandle(),
             null,
-            CreateShippingLabelFragmentArgs(ORDER_ID)
+            CreateShippingLabelFragmentArgs(order.getIdentifier())
         )
     )
 
@@ -149,6 +151,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 coroutinesTestRule.testDispatchers,
+                parameterRepository,
                 orderDetailRepository,
                 shippingLabelRepository,
                 stateMachine,
@@ -156,7 +159,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 site,
                 wooStore,
                 accountStore,
-                resourceProvider
+                resourceProvider,
+                currencyFormatter
             )
         )
 

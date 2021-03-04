@@ -523,6 +523,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
+    <style name="Woo.CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="paddingStart">@dimen/major_100</item>
+        <item name="android:paddingLeft">@dimen/major_100</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
     <!--
         Divider Style
     -->

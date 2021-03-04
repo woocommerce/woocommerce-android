@@ -99,6 +99,8 @@
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
+    <string name="other">Other</string>
+    <string name="free">free</string>
     <!--
         Date/Time Labels
     -->
@@ -449,12 +451,25 @@
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
-        <item quantity="one">%d day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">%d business day</item>
+        <item quantity="other">%d business days</item>
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
+    <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
+    <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
+    <string name="shipping_label_shipping_method_free_shipping">Free shipping</string>
+    <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
+    <string name="shipping_label_rate_included_options">Includes %s</string>
+    <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
+    <string name="shipping_label_selected_rates_description">%s rates selected</string>
+    <string name="shipping_label_selected_rates_total_description">%s total</string>
     <!--
             Refunds
         -->
