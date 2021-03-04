@@ -261,7 +261,6 @@ class ProductDetailRepository @Inject constructor(
         return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
     }
 
-
     suspend fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
         globalAttributeStore.createOptionValueForAttribute(selectedSite.get(), attributeId, termName)
     }
