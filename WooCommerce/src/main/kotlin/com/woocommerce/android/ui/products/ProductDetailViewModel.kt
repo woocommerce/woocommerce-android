@@ -1020,6 +1020,15 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Adds a new term to a global attribute
+     */
+    fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
+        launch {
+            productRepository.addGlobalAttributeTerm(attributeId, termName)
+        }
+    }
+
+    /**
      * Clears the global attribute terms
      */
     fun resetGlobalAttributeTerms() {

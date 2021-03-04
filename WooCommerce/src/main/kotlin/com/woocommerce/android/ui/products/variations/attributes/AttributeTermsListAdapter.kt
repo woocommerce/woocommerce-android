@@ -92,7 +92,7 @@ class AttributeTermsListAdapter(
         notifyItemChanged(to)
     }
 
-    private fun removeTerm(term: String) {
+    fun removeTerm(term: String) {
         val index = termNames.indexOf(term)
         if (index >= 0) {
             termNames.remove(term)

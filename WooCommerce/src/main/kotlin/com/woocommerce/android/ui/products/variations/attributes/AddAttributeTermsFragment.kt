@@ -117,7 +117,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
             if (termName.isNotBlank()) {
-                addLocalTerm(termName)
+                addTerm(termName, saveToBackend = isGlobalAttribute)
                 binding.termEditText.text?.clear()
             }
             true
@@ -199,17 +199,30 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     /**
-     * User entered a new term
+     * User entered a new term or tapped a global term, saveToBackend will only be true
+     * if the user entered a new term and this is a global attribute
      */
-    private fun addLocalTerm(termName: String) {
+    private fun addTerm(termName: String, saveToBackend: Boolean) {
+        // add the term to the list of assigned terms
         getAssignedTermsAdapter().addTerm(termName)
+
+        // remove it from the list of global terms
+        if (isGlobalAttribute) {
+            getGlobalTermsAdapter().removeTerm(termName)
+        }
+
+        if (saveToBackend) {
+            // TODO progress spinner or progress dialog?
+            viewModel.addGlobalAttributeTerm(navArgs.attributeId, termName)
+        }
+
         binding.assignedTermList.isVisible = !getAssignedTermsAdapter().isEmpty()
     }
 
     /**
-     * Called by the gobal adapter when a term is clicked
+     * Called by the global adapter when a term is clicked
      */
     override fun onTermClick(termName: String) {
-        // TODO
+        addTerm(termName, saveToBackend = false)
     }
 }
