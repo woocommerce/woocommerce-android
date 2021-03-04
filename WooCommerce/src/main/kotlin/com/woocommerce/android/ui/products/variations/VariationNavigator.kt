@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
@@ -63,6 +64,10 @@ class VariationNavigator @Inject constructor() {
                     target.shippingData
                 )
                 fragment.findNavController().navigateSafely(action)
+            }
+            is ViewAttributes -> {
+                VariationDetailFragmentDirections.actionVariationDetailFragmentToEditVariationAttributesFragment()
+                    .let { fragment.findNavController().navigateSafely(it) }
             }
         }
     }

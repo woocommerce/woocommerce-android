@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
@@ -185,7 +186,7 @@ class VariationDetailCardBuilder(
         takeIf { FeatureFlag.ADD_EDIT_VARIATIONS.isEnabled() }
             ?.let {
                 PropertyGroup(
-                    title = R.string.product_attributes,
+                    title = string.product_attributes,
                     properties = mutableMapOf<String, String>()
                         .let { map ->
                             attributes
@@ -193,7 +194,15 @@ class VariationDetailCardBuilder(
                                 .map { Pair(it.name!!, it.option!!) }
                                 .let { map.apply { putAll(it) } }
                         },
-                    icon = drawable.ic_gridicons_customize
+                    icon = drawable.ic_gridicons_customize,
+                    onClick = {
+                        viewModel.onEditVariationCardClicked(
+                            ViewAttributes(
+                                this.attributes.toList(),
+                                parentProduct?.attributes ?: emptyList()
+                            )
+                        )
+                    }
                 )
             }
 
