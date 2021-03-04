@@ -126,6 +126,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             val ratesWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
 
             val shippingRates = defaultRates.map { default ->
+                val defaultDiscount = default.retailRate.minus(default.rate)
+
                 val signature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
                 val signatureFee = signature?.rate?.minus(default.rate)
                 val signatureDiscount = signature?.retailRate?.minus(signature.rate) ?: BigDecimal.ZERO
@@ -145,7 +147,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                         default.title,
                         default.deliveryDays,
                         default.rate,
-                        BigDecimal.ZERO,
+                        defaultDiscount,
                         default.rate.format(),
                         DEFAULT
                     ),
