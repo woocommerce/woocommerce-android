@@ -26,6 +26,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
@@ -43,6 +44,8 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
 
     private var _binding: FragmentShippingCarrierRatesBinding? = null
     private val binding get() = _binding!!
+
+    private val skeletonView: SkeletonView = SkeletonView()
 
     val viewModel: ShippingCarrierRatesViewModel by viewModels { viewModelFactory }
 
@@ -86,7 +89,9 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         binding.carrierRates.apply {
             adapter = binding.carrierRates.adapter ?: ShippingCarrierRatesAdapter(viewModel::onShippingRateSelected)
             layoutManager = LinearLayoutManager(context)
-            itemAnimator = DefaultItemAnimator()
+            itemAnimator = DefaultItemAnimator().apply {
+                supportsChangeAnimations = false
+            }
         }
     }
 
@@ -118,17 +123,15 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
         }
 
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
+            new.bannerMessage.takeIfNotEqualTo(old?.bannerMessage) { message ->
+                binding.infoBanner.isVisible = !message.isNullOrEmpty()
+                binding.infoBannerMessage.text = message
             }
-            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
-                binding.loadingProgress.isVisible = isLoading
+            new.isSkeletonVisible.takeIfNotEqualTo(old?.isSkeletonVisible) { isVisible ->
+                showSkeleton(isVisible)
             }
             new.isEmptyViewVisible.takeIfNotEqualTo(old?.isEmptyViewVisible) { isVisible ->
-                if (isVisible) {
-                    binding.emptyView.show(SHIPPING_LABEL_CARRIER_RATES)
-                } else {
-                    binding.emptyView.hide()
-                }
+                showEmptyView(isVisible)
             }
             new.isDoneButtonVisible.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
                 doneMenuItem?.isVisible = isVisible
@@ -143,6 +146,22 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun showEmptyView(isVisible: Boolean) {
+        if (isVisible) {
+            binding.emptyView.show(SHIPPING_LABEL_CARRIER_RATES)
+        } else {
+            binding.emptyView.hide()
+        }
+    }
+
+    fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.carrierRates, R.layout.skeleton_shipping_label_carrier_list, delayed = false)
+        } else {
+            skeletonView.hide()
+        }
     }
 
     // Let the ViewModel know the user is attempting to close the screen
