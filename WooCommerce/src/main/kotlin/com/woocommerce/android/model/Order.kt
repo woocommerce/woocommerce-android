@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Order.ShippingMethod
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
@@ -15,10 +16,11 @@ import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
+import kotlin.collections.sumBy
+import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @Parcelize
 data class Order(
@@ -47,7 +49,7 @@ data class Order(
     val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
-    val shippingMethodList: List<String?>,
+    val shippingMethods: List<ShippingMethod>,
     val items: List<Item>
 ) : Parcelable {
     @IgnoredOnParcel
@@ -62,6 +64,14 @@ data class Order(
 
     @IgnoredOnParcel
     val availableRefundQuantity = items.sumBy { it.quantity }
+
+    @Parcelize
+    data class ShippingMethod(
+        val id: String,
+        val title: String,
+        val total: BigDecimal,
+        val tax: BigDecimal
+    ) : Parcelable
 
     @Parcelize
     data class OrderStatus(
@@ -170,7 +180,14 @@ fun WCOrderModel.toAppModel(): Order {
                         ""
                 )
             },
-            shippingMethodList = getShippingLineList().map { it.methodTitle },
+            shippingMethods = getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
+                ShippingMethod(
+                    it.methodId!!,
+                    it.methodTitle!!,
+                    it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+                )
+            },
             items = getLineItemList()
                     .filter { it.productId != null && it.id != null }
                     .map {

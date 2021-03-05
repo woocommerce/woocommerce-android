@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface"
+    android:padding="@dimen/major_100">
+
+    <View
+        android:id="@+id/image"
+        android:layout_width="@dimen/skeleton_list_item_icon_200"
+        android:layout_height="@dimen/skeleton_list_item_icon_200"
+        android:background="@color/skeleton_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/name"
+        android:layout_width="200dp"
+        android:layout_height="@dimen/skeleton_text_height_150"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_100"
+        android:background="@color/skeleton_color"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/image"
+        app:layout_constraintTop_toTopOf="@+id/image" />
+
+    <Space
+        android:id="@+id/spacer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/minor_50"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+    <View
+        android:id="@+id/description"
+        android:layout_width="120dp"
+        android:layout_height="@dimen/skeleton_text_height_100"
+        android:background="@color/skeleton_color"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/name"
+        app:layout_constraintTop_toBottomOf="@+id/spacer" />
+
+
+    <View
+        android:id="@+id/price"
+        android:layout_width="60dp"
+        android:layout_height="@dimen/skeleton_text_height_150"
+        android:layout_marginTop="@dimen/major_85"
+        android:background="@color/skeleton_color"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/image" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

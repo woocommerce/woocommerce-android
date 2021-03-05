@@ -7,15 +7,16 @@
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:paddingStart="@dimen/major_100"
-    android:paddingTop="@dimen/minor_100"
+    android:paddingTop="@dimen/major_75"
     android:paddingEnd="@dimen/major_100"
-    android:paddingBottom="@dimen/minor_100">
+    android:paddingBottom="@dimen/major_75">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/termDragHandle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_100"
+        android:background="?android:attr/selectableItemBackground"
         android:src="@drawable/ic_gridicons_align_justify"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/termName"
@@ -42,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_150"
+        android:background="?android:attr/selectableItemBackground"
         android:src="@drawable/ic_gridicons_cross_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

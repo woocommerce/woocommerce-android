@@ -69,6 +69,8 @@
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
     <string name="product_enter_attribute_term">Add each option name and press enter</string>
+    <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
+    <string name="product_term_name_already_exists">An option with this name already exists</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -97,6 +99,8 @@
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
+    <string name="other">Other</string>
+    <string name="free">free</string>
     <!--
         Date/Time Labels
     -->
@@ -447,12 +451,25 @@
     <string name="shipping_label_shipping_carriers_title">Carriers and rates</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">There are no shipping options for the selected address and packages</string>
     <plurals name="shipping_label_shipping_carrier_rates_delivery_estimate">
-        <item quantity="one">%d day</item>
-        <item quantity="other">%d days</item>
+        <item quantity="one">%d business day</item>
+        <item quantity="other">%d business days</item>
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
     <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
+    <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
+    <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
+    <string name="shipping_label_shipping_method_free_shipping">Free shipping</string>
+    <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
+    <string name="shipping_label_rate_included_options">Includes %s</string>
+    <string name="shipping_label_rate_included_options_tracking">%s tracking</string>
+    <string name="shipping_label_rate_included_options_insurance">Insurance (up to %s)</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Eligible for free pickup</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Eligible for free signature requirement</string>
+    <string name="shipping_label_selected_rates_description">%s rates selected</string>
+    <string name="shipping_label_selected_rates_total_description">%s total</string>
     <!--
             Refunds
         -->
@@ -697,6 +714,8 @@
     <string name="product_wip_message_m3">You can now edit grouped, external and variable products, change product type and update categories and tags.</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
+    <string name="product_variant_list_add_first_variation">Add your first variation</string>
+    <string name="product_variant_list_empty_action">Add Variation</string>
     <string name="product_description_hint">Start writing…</string>
     <string name="product_edit_description">Edit description</string>
     <string name="product_description">Description</string>
@@ -713,6 +732,7 @@
     <string name="product_detail_product_type_hint">%1$s product</string>
     <string name="product_detail_add_more">Add more details</string>
     <string name="product_detail_no_variations">This product has no variations yet</string>
+    <string name="product_detail_add_variations">Add variations</string>
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
@@ -1031,7 +1051,7 @@
     <string name="signup_with_google_button">Sign Up with Google</string>
     <string name="signup_with_google_progress">Signing up with Google…</string>
 
-    <string name="enter_email_for_site">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Log in with WordPress.com to connect to &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_wordpress_site">The website at this address is not a WordPress site. For us to connect to it, the site must have WordPress installed.</string>
     <string name="login_need_help_finding_connected_email">Need help finding the email you connected with?</string>
     <string name="send_verification_email">Send verification email</string>
@@ -1523,7 +1543,7 @@
     <string name="login_get_link_by_email">Get a login link by email</string>
     <string name="signup_magic_link_message">We’ve emailed you a signup link to create your new WordPress.com account. Check your email on this device, and tap the link in the email you receive from WordPress.com.</string>
     <string name="signup_confirmation_magic_link_message">We’ll email you a signup link to create your new WordPress.com account.</string>
-    <string name="enter_email_wordpress_com">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Log in with your WordPress.com account email address to manage your WooCommerce stores.</string>
     <string name="login_site_address_help_title">What\'s my site address?</string>
     <string name="login_site_address_help_content">Your site address appears in the bar at the top of the screen when you visit your site in Chrome.</string>
     <string name="login_find_your_site_adress">Find your site address</string>
