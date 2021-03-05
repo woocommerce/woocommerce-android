@@ -27,6 +27,13 @@ gradle.properties
 fabric.properties
 sentry.properties
 
+# Configuration Secrets
+.configure-files/*
+!.configure-files/*.enc
+
+# Ignore auto-created gradle.properties backups from `./gradlew updateConfiguration`
+gradle*.properties.bak
+
 # Local configuration file (sdk path, etc)
 local.properties
 

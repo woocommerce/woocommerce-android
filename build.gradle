@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://dl.bintray.com/automattic/maven/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.2'
@@ -12,10 +13,12 @@ buildscript {
         classpath 'com.automattic.android:fetchstyle:1.1'
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        classpath 'com.automattic.android:configure:0.5.0'
     }
 }
 
 apply plugin: 'com.automattic.android.fetchstyle'
+apply plugin: 'com.automattic.android.configure'
 
 allprojects {
     apply plugin: 'checkstyle'

@@ -88,7 +88,7 @@ jobs:
           cache_key_prefix: installable-build-v2
       - run:
           name: Copy Secrets
-          command: bundle exec fastlane run configure_apply
+          command: ./gradlew applyConfiguration
       - android/restore-gradle-cache
       - run:
           name: Build APK
@@ -121,7 +121,7 @@ jobs:
           cache_key_prefix: release-build-v2
       - run:
           name: Copy Secrets
-          command: bundle exec fastlane run configure_apply
+          command: ./gradlew applyConfiguration
       - run:
           name: Install other tools
           command: |
