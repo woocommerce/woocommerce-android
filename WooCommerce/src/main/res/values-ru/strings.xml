@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 17:54:04+0000
+Translation-Revision-Date: 2021-03-04 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Ошибка при сохранении настроек</string>
+    <string name="shipping_label_payments_saving_dialog_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Сохранение настроек</string>
+    <string name="shipping_label_payments_expiration_date">Срок действия истекает %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Отправлять квитанции о покупке на %1$s (%2$s) — %3$s</string>
+    <string name="shipping_label_payments_account_info">Сведения о кредитных картах получены из следующей учётной записи WordPress.com: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Добавить другую кредитную карту</string>
+    <string name="shipping_label_payments_selected_payment_method">Способ оплаты выбран</string>
+    <string name="shipping_label_loading_data_progress_message">Пожалуйста, подождите…</string>
+    <string name="shipping_label_loading_data_progress_title">Выполняется получение настроек</string>
+    <string name="shipping_label_selected_payment_description">Последние цифры кредитной карты: %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Найти</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Или нажмите, чтобы выбрать существующий атрибут</string>
+    <string name="product_new_attribute_name">Название нового атрибута</string>
+    <string name="product_add_attribute">Добавить атрибут</string>
+    <string name="product_variation_attributes">Атрибуты</string>
+    <string name="product_variations_edit_attr">Редактировать атрибуты</string>
     <string name="shipping_label_multi_packages_total_weight">Общий вес посылок: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">Число товаров в посылках (%2$d): %1$d</string>
     <string name="shipping_label_single_package_total_weight">Общий вес посылок: %1$s %2$s</string>

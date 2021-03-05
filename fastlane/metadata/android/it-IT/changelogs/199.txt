@@ -1,4 +1,0 @@
-6.0:
-Novità del rilascio 6.0
-
-Tu hai chiesto, noi abbiamo ascoltato. A grande richiesta, lo SKU del prodotto viene visualizzato nuovamente nella schermata Dettagli dell'ordine. Abbiamo anche risolto un problema per il quale i risultati migliori nel negozio venivano visualizzati in modo errato due volte.

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-19 10:57:22+0000
+Translation-Revision-Date: 2021-03-02 21:30:37+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
+    <string name="shipping_label_payments_saving_dialog_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
+    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
+    <string name="shipping_label_payments_account_info">Credit cards are retrieved from the following WordPress.com account: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">أضف بطاقة ائتمان أخرى</string>
+    <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
+    <string name="shipping_label_loading_data_progress_message">يُرجى الانتظار…</string>
+    <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
+    <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">فيزا</string>
+    <string name="payment_method_mastercard">ماستركارد</string>
+    <string name="payment_method_discover">اكتشاف</string>
+    <string name="payment_method_american_express">أمريكان اكسبريس</string>
+    <string name="product_select_attribute">Or tap to select an existing attribute</string>
+    <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_add_attribute">إضافة سمة</string>
+    <string name="product_variation_attributes">السمات</string>
+    <string name="product_variations_edit_attr">Edit attributes</string>
     <string name="shipping_label_multi_packages_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ من العناصر موجودة في ⁦%2$d⁩ من الحزم</string>
     <string name="shipping_label_single_package_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-04 15:54:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">אירעה שגיאה במהלך שמירת ההגדרות שלך</string>
+    <string name="shipping_label_payments_saving_dialog_message">רק רגע…</string>
+    <string name="shipping_label_payments_saving_dialog_title">שומר את ההגדרות שלך</string>
+    <string name="shipping_label_payments_expiration_date">תאריך תפוגה ⁦%1$s⁩</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">לשלוח את הקבלות על רכישת התווית אל ⁦%1$s⁩ (⁦%2$s⁩) ב-⁦%3$s⁩</string>
+    <string name="shipping_label_payments_account_info">כרטיסי אשראי מתקבלים מהחשבון הבא של WordPress.com: ⁦%1$s⁩ &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">הוספה של כרטיס אשראי אחר</string>
+    <string name="shipping_label_payments_selected_payment_method">אמצעי התשלום נבחר</string>
+    <string name="shipping_label_loading_data_progress_message">רק רגע…</string>
+    <string name="shipping_label_loading_data_progress_title">מביא את ההגדרות שלך</string>
+    <string name="shipping_label_selected_payment_description">כרטיס אשראי שמסתיים בספרות ⁦%1$s⁩</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">לחלופין, ניתן להקיש כדי לבחור מאפיין קיים</string>
+    <string name="product_new_attribute_name">שם המאפיין החדש</string>
+    <string name="product_add_attribute">הוספת תכונה</string>
+    <string name="product_variation_attributes">תכונות</string>
+    <string name="product_variations_edit_attr">לערוך מאפיינים</string>
     <string name="shipping_label_multi_packages_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ פריטים ב-⁦%2$d⁩ חבילות</string>
     <string name="shipping_label_single_package_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
