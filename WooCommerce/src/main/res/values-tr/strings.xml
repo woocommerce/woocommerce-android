@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:14+0000
+Translation-Revision-Date: 2021-03-04 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Ayarlarınız kaydedilirken hata oluştu</string>
+    <string name="shipping_label_payments_saving_dialog_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Ayarlarınız kaydediliyor </string>
+    <string name="shipping_label_payments_expiration_date">Son kullanma tarihi: %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Etiket satın alma makbuzlarını e-posta ile şuraya gönderin: %1$s (%2$s), %3$s</string>
+    <string name="shipping_label_payments_account_info">Kredi kartları aşağıdaki WordPress.com hesabından alınır: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Başka kredi kartı ekle</string>
+    <string name="shipping_label_payments_selected_payment_method">Ödeme yöntemi seçildi</string>
+    <string name="shipping_label_loading_data_progress_message">Lütfen bekleyin…</string>
+    <string name="shipping_label_loading_data_progress_title">Ayarlarınız getiriliyor</string>
+    <string name="shipping_label_selected_payment_description">%1$s ile biten kredi kartı</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Veya mevcut bir niteliği seçmek için dokunun</string>
+    <string name="product_new_attribute_name">Yeni nitelik adı</string>
+    <string name="product_add_attribute">Nitelik ekle</string>
+    <string name="product_variation_attributes">Nitelikler</string>
+    <string name="product_variations_edit_attr">Nitelik ekle</string>
     <string name="shipping_label_multi_packages_total_weight">Toplam paket ağırlığı: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%2$d pakette %1$d öğe</string>
     <string name="shipping_label_single_package_total_weight">Toplam paket ağırlığı: %1$s %2$s</string>

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">설정 저장 중 오류 발생</string>
+    <string name="shipping_label_payments_saving_dialog_message">기다려주세요…</string>
+    <string name="shipping_label_payments_saving_dialog_title">설정 저장 중</string>
+    <string name="shipping_label_payments_expiration_date">%1$s 만료</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">%3$s에 %1$s(%2$s)(으)로 레이블 구매 영수증을 이메일로 보내기</string>
+    <string name="shipping_label_payments_account_info">워드프레스닷컴 계정 %1$s&lt;%2$s>에서 신용카드가 검색되었습니다.</string>
+    <string name="shipping_label_payments_type_digits">%1$s**** %2$s</string>
+    <string name="shipping_label_payments_add_credit_card">다른 신용카드 추가</string>
+    <string name="shipping_label_payments_selected_payment_method">결제 수단 선택됨</string>
+    <string name="shipping_label_loading_data_progress_message">기다려주세요…</string>
+    <string name="shipping_label_loading_data_progress_title">설정을 가져오는 중</string>
+    <string name="shipping_label_selected_payment_description">%1$s에 신용카드 종료</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">또는 기존 속성을 눌러서 선택</string>
+    <string name="product_new_attribute_name">새 속성 이름</string>
+    <string name="product_add_attribute">속성 추가하기</string>
+    <string name="product_variation_attributes">속성</string>
+    <string name="product_variations_edit_attr">속성 편집</string>
     <string name="shipping_label_multi_packages_total_weight">총 패키지 무게: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%2$d 패키지의 %1$d개 아이템</string>
     <string name="shipping_label_single_package_total_weight">총 패키지 무게: %1$s %2$s</string>
