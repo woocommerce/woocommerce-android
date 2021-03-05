@@ -7,5 +7,6 @@ updates:
       interval: "daily"
     reviewers:
       - "woocommerce/android-developers"
+      - "woocommerce/platform-9"
     ignore:
       - dependency-name: "com.android.tools.build:gradle"
