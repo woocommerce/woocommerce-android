@@ -1,4 +1,0 @@
-6.0:
-6.0 sürümümüzdeki yenilikler nelerdir?
-
-Siz istediniz, biz yaptık! Yoğun talepten dolayı ürün SKU'su Sipariş Ayrıntıları ekranında yeniden görüntüleniyor. Ayrıca mağazanızda en iyi performans gösteren ürünlerin hatalı bir şekilde iki kez görüntülenmesine neden olan bir sorunu da çözdük.
