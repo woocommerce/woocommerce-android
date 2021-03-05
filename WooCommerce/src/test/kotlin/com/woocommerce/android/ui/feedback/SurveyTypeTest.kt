@@ -10,7 +10,7 @@ import org.junit.Test
 class SurveyTypeTest {
     @Test
     fun `SurveyType url should include platform tag for any URL`() {
-        SurveyType.values().forEach {
+        assertThat(SurveyType.values()).allSatisfy {
             assertThat(it.url.contains("woo-mobile-platform=android")).isTrue()
         }
     }
@@ -32,7 +32,7 @@ class SurveyTypeTest {
 
     @Test
     fun `SurveyType url should include app version form tag for any URL`() {
-        SurveyType.values().forEach {
+        assertThat(SurveyType.values()).allSatisfy {
             assertThat(it.url.contains("app-version=${BuildConfig.VERSION_NAME}")).isTrue()
         }
     }
