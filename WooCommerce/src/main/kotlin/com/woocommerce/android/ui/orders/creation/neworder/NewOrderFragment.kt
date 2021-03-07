@@ -7,15 +7,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreationNewOrderBinding
-import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.orders.creation.common.base.BaseOrderCreationFragment
 import com.woocommerce.android.ui.orders.creation.common.navigation.OrderCreationNavigationTarget
 import com.woocommerce.android.ui.orders.creation.common.navigation.OrderCreationNavigator
-import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class NewOrderFragment : BaseFragment(R.layout.fragment_order_creation_new_order) {
+class NewOrderFragment : BaseOrderCreationFragment(R.layout.fragment_order_creation_new_order) {
     @Inject lateinit var navigator: OrderCreationNavigator
     @Inject lateinit var viewModelFactory: ViewModelFactory
     private val viewModel: NewOrderViewModel by viewModels { viewModelFactory }
@@ -27,8 +26,6 @@ class NewOrderFragment : BaseFragment(R.layout.fragment_order_creation_new_order
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderCreationNewOrderBinding.bind(view)
-
-        setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
 
         // The button is used for development purposes
         binding.addNewCustomerButton.setOnClickListener {
