@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/addCustomerFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customercreation.CustomerCreationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.addcustomer.AddCustomerFragment"
         android:label="CustomerCreationFragment"
         tools:layout="@layout/fragment_order_creation_add_customer" />
 </navigation>

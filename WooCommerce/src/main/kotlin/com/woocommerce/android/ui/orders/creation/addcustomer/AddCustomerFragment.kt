@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customercreation
+package com.woocommerce.android.ui.orders.creation.addcustomer
 
 import android.content.Context
 import android.os.Bundle
@@ -13,10 +13,10 @@ import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class CustomerCreationFragment : BaseOrderCreationFragment(layout.fragment_order_creation_add_customer) {
+class AddCustomerFragment : BaseOrderCreationFragment(layout.fragment_order_creation_add_customer) {
     @Inject lateinit var navigator: OrderCreationNavigator
     @Inject lateinit var viewModelFactory: ViewModelFactory
-    private val viewModel: CustomerCreationViewModel by viewModels { viewModelFactory }
+    private val viewModel: AddCustomerViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentOrderCreationAddCustomerBinding? = null
     private val binding get() = _binding!!
