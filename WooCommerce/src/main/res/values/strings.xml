@@ -836,7 +836,10 @@
     <!--
         Order Creation
     -->
-    <string name="order_creation_new_order">New order</string>
+    <string name="order_creation_new_order_title">New order</string>
+
+    <string name="order_creation_add_customer_title">Add customer</string>
+    <string name="order_creation_add_customer_button">Add new customer</string>
 
 
     <!--

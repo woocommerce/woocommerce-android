@@ -4,9 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_order_creation"
     app:startDestination="@id/newOrderFragment">
+
     <fragment
         android:id="@+id/newOrderFragment"
         android:name="com.woocommerce.android.ui.orders.creation.neworder.NewOrderFragment"
-        android:label="OrderCreationFragment"
-        tools:layout="@layout/fragment_new_order" />
+        android:label="NewOrderFragment"
+        tools:layout="@layout/fragment_order_creation_new_order" >
+        <action
+            android:id="@+id/action_newOrderFragment_to_addCustomerFragment"
+            app:destination="@id/addCustomerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addCustomerFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customercreation.CustomerCreationFragment"
+        android:label="CustomerCreationFragment"
+        tools:layout="@layout/fragment_order_creation_add_customer" />
 </navigation>
