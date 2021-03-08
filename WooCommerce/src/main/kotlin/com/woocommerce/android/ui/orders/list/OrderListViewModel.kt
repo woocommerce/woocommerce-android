@@ -179,10 +179,7 @@ class OrderListViewModel @AssistedInject constructor(
         requireNotNull(processingPagedListWrapper) {
             "processingPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
-        activatePagedListWrapper(
-            processingPagedListWrapper!!,
-            status = CoreOrderStatus.PROCESSING.value
-        )
+        activatePagedListWrapper(processingPagedListWrapper!!)
     }
 
     /**
@@ -196,11 +193,7 @@ class OrderListViewModel @AssistedInject constructor(
         val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
-        activatePagedListWrapper(
-            pagedListWrapper,
-            isFirstInit = true,
-            status = statusFilter
-        )
+        activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
 
     /**
@@ -267,8 +260,7 @@ class OrderListViewModel @AssistedInject constructor(
      */
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
-        isFirstInit: Boolean = false,
-        status: String? = null
+        isFirstInit: Boolean = false
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
