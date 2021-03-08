@@ -81,7 +81,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
         whenever(pagedListWrapper.isLoadingMore).doReturn(mock())
         whenever(pagedListWrapper.data).doReturn(mock())
-        whenever(pagedListWrapper.listChanged).doReturn(mock())
         whenever(listStore.getList<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType>(
                 listDescriptor = any(),
                 dataSource = any(),
