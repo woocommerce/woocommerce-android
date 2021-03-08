@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-import org.wordpress.android.util.BuildConfig
+import com.woocommerce.android.BuildConfig
 import java.util.Locale
 
 object PackageUtils {
@@ -14,6 +14,15 @@ object PackageUtils {
      * Return true if Debug build. false otherwise.
      */
     fun isDebugBuild() = BuildConfig.DEBUG
+
+    fun isTesting(): Boolean {
+        return try {
+            Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
 
     fun isBetaBuild(context: Context): Boolean {
         val versionName = getVersionName(context).toLowerCase(Locale.ROOT)

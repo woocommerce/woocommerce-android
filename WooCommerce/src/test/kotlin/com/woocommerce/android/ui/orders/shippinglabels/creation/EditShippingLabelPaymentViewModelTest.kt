@@ -22,7 +22,6 @@ import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
@@ -43,6 +42,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     private val shippingAccountSettings = ShippingAccountSettings(
         canManagePayments = true,
+        canEditSettings = true,
         paymentMethods = paymentMethods,
         selectedPaymentId = 1,
         lastUsedBoxId = null,
@@ -57,8 +57,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
 
-    @Before
-    fun setup() {
+    fun setup(accountSettings: ShippingAccountSettings = shippingAccountSettings) {
         val savedState: SavedStateWithArgs = spy(
             SavedStateWithArgs(
                 SavedStateHandle(),
@@ -66,7 +65,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
             )
         )
         coroutinesTestRule.testDispatcher.runBlockingTest {
-            whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(shippingAccountSettings))
+            whenever(shippingLabelRepository.getAccountSettings()).thenReturn(WooResult(accountSettings))
         }
         viewModel = EditShippingLabelPaymentViewModel(
             savedState,
@@ -77,6 +76,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `test display settings`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        setup()
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -92,6 +92,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `display done button when selecting payment method`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        setup()
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -101,7 +102,28 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `can't edit payments if not store owner`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val accountSettings = shippingAccountSettings.copy(canManagePayments = false)
+        setup(accountSettings)
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState!!.canManagePayments).isEqualTo(false)
+    }
+
+    @Test
+    fun `can't edit settings`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val accountSettings = shippingAccountSettings.copy(canManagePayments = false, canEditSettings = false)
+        setup(accountSettings)
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState!!.canEditSettings).isEqualTo(false)
+    }
+
+    @Test
     fun `display done button when changing email receipts`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        setup()
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -113,6 +135,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `save settings success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         whenever(shippingLabelRepository.updatePaymentSettings(any(), any())).thenReturn(WooResult(Unit))
+        setup()
 
         var event: Event? = null
         viewModel.event.observeForever { new -> event = new }
@@ -129,6 +152,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
     fun `save settings failure`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val error = WooError(API_ERROR, NETWORK_ERROR, "")
         whenever(shippingLabelRepository.updatePaymentSettings(any(), any())).thenReturn(WooResult(error = error))
+        setup()
 
         var event: Event? = null
         viewModel.event.observeForever { new -> event = new }

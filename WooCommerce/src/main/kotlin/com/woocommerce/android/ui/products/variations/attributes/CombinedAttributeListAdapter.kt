@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeListItemBinding
+import com.woocommerce.android.model.CombinedAttributeModel
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.variations.attributes.CombinedAttributeListAdapter.AttributeViewHolder
 
 class CombinedAttributeListAdapter(
-    private val onItemClick: (id: Long, isGlobalAttribute: Boolean) -> Unit
+    private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : RecyclerView.Adapter<AttributeViewHolder>() {
     private var attributeList = listOf<CombinedAttributeModel>()
 
@@ -39,7 +40,7 @@ class CombinedAttributeListAdapter(
 
         holder.itemView.setOnClickListener {
             val item = attributeList[position]
-            onItemClick(item.id, item.isGlobalAttribute)
+            onItemClick(item.id, item.name)
         }
     }
 
@@ -62,13 +63,13 @@ class CombinedAttributeListAdapter(
     }
 
     fun setAttributeList(
-        localAttributes: List<ProductAttribute>,
-        globalAttributes: List<ProductGlobalAttribute>
+        localAttributes: List<ProductAttribute>? = null,
+        globalAttributes: List<ProductGlobalAttribute>? = null
     ) {
         val combinedList = ArrayList<CombinedAttributeModel>()
 
-        localAttributes.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
-        globalAttributes.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
+        localAttributes?.map { combinedList.add(CombinedAttributeModel.fromLocalAttribute(it)) }
+        globalAttributes?.map { combinedList.add(CombinedAttributeModel.fromGlobalAttribute(it)) }
         combinedList.sortBy { it.name }
 
         val diffResult = DiffUtil.calculateDiff(

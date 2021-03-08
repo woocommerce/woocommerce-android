@@ -188,3 +188,10 @@ be covered by a different license compatible with the GPLv2.
 [wp-com-apps]: https://developer.wordpress.com/apps/
 [wp-fluxc]: https://github.com/wordpress-mobile/WordPress-FluxC-Android
 [wc-slack]: https://woocommerce.com/community-slack/
+
+
+<p align="center">
+    <br/><br/>
+    Made with 💜 by <a href="https://automattic.com/">Automattic</a>.<br/>
+    <a href="https://automattic.com/work-with-us/">We're hiring</a>! Come work with us!
+</p>
