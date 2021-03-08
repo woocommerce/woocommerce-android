@@ -15,6 +15,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.annotations.OpenClassOnDebug
@@ -465,8 +466,16 @@ class OrderListViewModel @AssistedInject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderSummariesFetched(event: OnOrderSummariesFetched) {
+        // Only track if this is not from a search query
+        if (!event.listDescriptor.searchQuery.isNullOrEmpty()) {
+            return
+        }
+
         val totalDurationInSeconds = event.duration.toDouble() / 1_000
-        AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(KEY_TOTAL_DURATION to totalDurationInSeconds))
+        AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
+            KEY_TOTAL_DURATION to totalDurationInSeconds,
+            KEY_STATUS to event.listDescriptor.statusFilter
+        ))
     }
 
     sealed class OrderListEvent : Event() {
