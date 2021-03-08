@@ -135,7 +135,6 @@
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginTop="@dimen/major_100"
         android:paddingStart="@dimen/major_75"
-        android:paddingTop="@dimen/minor_25"
         android:gravity="top"
         android:text="@string/shipping_label_create_mark_order_complete"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"

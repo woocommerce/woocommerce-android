@@ -102,7 +102,6 @@
                 android:layout_marginEnd="@dimen/major_100"
                 android:layout_marginBottom="@dimen/major_150"
                 android:gravity="top"
-                android:paddingTop="@dimen/minor_25"
                 android:paddingStart="@dimen/minor_100"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 tools:ignore="RtlSymmetry"
