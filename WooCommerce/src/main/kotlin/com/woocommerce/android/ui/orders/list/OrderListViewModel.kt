@@ -169,7 +169,7 @@ class OrderListViewModel @AssistedInject constructor(
         requireNotNull(allPagedListWrapper) {
             "allPagedListWrapper must be initialized by first calling initializeListsForMainTabs()"
         }
-        activatePagedListWrapper(allPagedListWrapper!!, trackLoadingDuration = true)
+        activatePagedListWrapper(allPagedListWrapper!!)
     }
 
     /**
@@ -181,7 +181,6 @@ class OrderListViewModel @AssistedInject constructor(
         }
         activatePagedListWrapper(
             processingPagedListWrapper!!,
-            trackLoadingDuration = true,
             status = CoreOrderStatus.PROCESSING.value
         )
     }
@@ -197,13 +196,9 @@ class OrderListViewModel @AssistedInject constructor(
         val listDescriptor = WCOrderListDescriptor(selectedSite.get(), statusFilter, searchQuery)
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
 
-        // We don't need to track ORDERS_LIST_LOADED for search queries.
-        val trackLoadingDuration = statusFilter != null && searchQuery.isNullOrEmpty()
-
         activatePagedListWrapper(
             pagedListWrapper,
             isFirstInit = true,
-            trackLoadingDuration = trackLoadingDuration,
             status = statusFilter
         )
     }
@@ -273,7 +268,6 @@ class OrderListViewModel @AssistedInject constructor(
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
         isFirstInit: Boolean = false,
-        trackLoadingDuration: Boolean = false,
         status: String? = null
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
