@@ -6,91 +6,100 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.woocommerce.android.widgets.WCEmptyView
             android:id="@+id/error_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_gravity="center"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.woocommerce.android.widgets.WCElevatedLinearLayout
-            android:id="@+id/content_layout"
+            android:id="@+id/steps_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"
             android:orientation="vertical">
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/originStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="true"
-            tools:continue_button_visible="false"
-            tools:edit_button_visible="true"
-            tools:details="Some address\nSecond line\nThird"
-            app:caption="@string/orderdetail_shipping_label_item_shipfrom"
-            app:icon="@drawable/ic_gridicons_shipping" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/originStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/orderdetail_shipping_label_item_shipfrom"
+                app:icon="@drawable/ic_gridicons_shipping"
+                tools:continue_button_visible="false"
+                tools:details="Some address\nSecond line\nThird"
+                tools:edit_button_visible="true"
+                tools:enabled="true" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/shippingStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="true"
-            tools:continue_button_visible="true"
-            tools:edit_button_visible="false"
-            tools:details="Some address\nSecond line\nThird"
-            app:caption="@string/orderdetail_shipping_label_item_shipto"
-            app:icon="@drawable/ic_gridicons_house" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/shippingStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/orderdetail_shipping_label_item_shipto"
+                app:icon="@drawable/ic_gridicons_house"
+                tools:continue_button_visible="true"
+                tools:details="Some address\nSecond line\nThird"
+                tools:edit_button_visible="false"
+                tools:enabled="true" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/packagingStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="false"
-            tools:continue_button_visible="false"
-            tools:edit_button_visible="false"
-            app:caption="@string/shipping_label_create_packaging_details"
-            app:details="@string/shipping_label_create_packaging_details_description"
-            app:icon="@drawable/ic_product" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/packagingStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/shipping_label_create_packaging_details"
+                app:details="@string/shipping_label_create_packaging_details_description"
+                app:icon="@drawable/ic_product"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                tools:enabled="false" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/customsStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="false"
-            tools:continue_button_visible="false"
-            tools:edit_button_visible="false"
-            app:caption="@string/shipping_label_create_customs"
-            app:details="@string/shipping_label_create_customs_description"
-            app:icon="@drawable/ic_gridicons_globe" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/customsStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/shipping_label_create_customs"
+                app:details="@string/shipping_label_create_customs_description"
+                app:icon="@drawable/ic_gridicons_globe"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                tools:enabled="false" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/carrierStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="false"
-            tools:continue_button_visible="false"
-            tools:edit_button_visible="false"
-            app:caption="@string/orderdetail_shipping_label_item_carrier"
-            app:details="@string/shipping_label_create_carrier_description"
-            app:icon="@drawable/ic_gridicons_money" />
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/carrierStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/orderdetail_shipping_label_item_carrier"
+                app:details="@string/shipping_label_create_carrier_description"
+                app:icon="@drawable/ic_gridicons_money"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                tools:enabled="false" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
-            android:id="@+id/paymentStep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:enabled="false"
-            tools:continue_button_visible="false"
-            tools:edit_button_visible="false"
-            app:divider_visible="false"
-            app:caption="@string/orderdetail_shipping_label_item_payment"
-            app:details="@string/shipping_label_create_payment_description"
-            app:icon="@drawable/ic_gridicons_credit_card" />
-
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationStepView
+                android:id="@+id/paymentStep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/orderdetail_shipping_label_item_payment"
+                app:details="@string/shipping_label_create_payment_description"
+                app:divider_visible="false"
+                app:icon="@drawable/ic_gridicons_credit_card"
+                tools:continue_button_visible="false"
+                tools:edit_button_visible="false"
+                tools:enabled="false" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-    </FrameLayout>
+
+        <include
+            android:id="@+id/order_summary_layout"
+            layout="@layout/view_shipping_label_order_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/major_100"/>
+    </LinearLayout>
 </ScrollView>

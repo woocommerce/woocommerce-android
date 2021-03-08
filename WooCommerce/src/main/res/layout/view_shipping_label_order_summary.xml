@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/start_guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/major_100" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/end_guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/major_100" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_75"
+        android:text="@string/shipping_label_create_order_summary"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_on_surface_disabled"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subtotal_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_create_price_subtotal"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subtotal_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBaseline_toBaselineOf="@id/subtotal_label"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/subtotal_label"
+        tools:text="$16.57" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/discount_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="discount_label, discount_info, discount_price" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/discount_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_50"
+        android:text="@string/shipping_label_create_price_woo_discount"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/subtotal_label" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/discount_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_50"
+        android:background="@drawable/ripple_grey_oval"
+        android:contentDescription="@string/shipping_label_create_price_woo_discount_content_description"
+        app:layout_constraintBottom_toBottomOf="@id/discount_label"
+        app:layout_constraintStart_toEndOf="@id/discount_label"
+        app:layout_constraintTop_toTopOf="@id/discount_label"
+        app:srcCompat="@drawable/ic_info_outline_24dp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/discount_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBaseline_toBaselineOf="@id/discount_label"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/discount_label"
+        tools:text="-$0.6" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/total_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/shipping_label_create_price_total"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/discount_label" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/total_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/total_label"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/total_label"
+        tools:text="$16.57" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/mark_order_complete_checkbox"
+        style="@style/Woo.CheckBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:paddingStart="@dimen/major_75"
+        android:gravity="top"
+        android:text="@string/shipping_label_create_mark_order_complete"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/total_label"
+        tools:ignore="RtlSymmetry" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/purchase_label_button"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/shipping_label_create_purchase"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mark_order_complete_checkbox" />
+
+</com.woocommerce.android.widgets.WCElevatedConstraintLayout>

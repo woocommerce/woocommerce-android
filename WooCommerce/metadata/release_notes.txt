@@ -1,6 +1,2 @@
-* [**] When editing a product, it's no longer necessary to tap "Done" in every screen to save changes to the local product. Instead, all changes are automatically saved locally, and tapping "Update" in the main product detail screen will send those changes to the server. [https://github.com/woocommerce/woocommerce-android/pull/3598]
- 
-* [*] Fixed a bug where the app doesn't show the updated product settings. [https://github.com/woocommerce/woocommerce-android/pull/3599]
-* [*] Fixed a bug the field of product price couldn't be edited if the device's language uses a different numerals system (e.g. Arabic) [https://github.com/woocommerce/woocommerce-android/pull/3589]
-* [*] Fixed a bug where the app doesn't receive push notification for support request reply [https://github.com/woocommerce/woocommerce-android/pull/3607]
+
 

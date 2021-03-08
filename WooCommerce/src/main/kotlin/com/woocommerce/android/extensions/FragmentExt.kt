@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
  *
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
- * @param [destinationId] an optional destinationId, that can be used to navigating up to a specified destination
+ * @param [destinationId] an optional destinationId, that can be used to navigate up to a specified destination
  *
  */
 fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinationId: Int? = null) {
