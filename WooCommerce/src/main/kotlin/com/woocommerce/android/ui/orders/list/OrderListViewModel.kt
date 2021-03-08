@@ -13,12 +13,11 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -40,6 +39,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATION
 import org.wordpress.android.fluxc.action.NotificationAction.UPDATE_NOTIFICATION
@@ -52,6 +52,7 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 
@@ -301,18 +302,6 @@ class OrderListViewModel @AssistedInject constructor(
             }
         })
 
-        if (trackLoadingDuration) {
-            pagedListWrapper.listChanged.observe(this, Observer {
-                it?.totalDuration?.let { totalDuration ->
-                    val totalDurationInSeconds = totalDuration.toDouble() / 1_000
-                    AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(
-                        KEY_TOTAL_DURATION to totalDurationInSeconds,
-                        KEY_STATUS to status
-                    ))
-                }
-            })
-        }
-
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
@@ -332,8 +321,6 @@ class OrderListViewModel @AssistedInject constructor(
             _isEmpty.removeSource(isEmpty)
             _isFetchingFirstPage.removeSource(isFetchingFirstPage)
             _isLoadingMore.removeSource(isLoadingMore)
-
-            listChanged.removeObservers(this@OrderListViewModel)
         }
     }
 
@@ -473,6 +460,13 @@ class OrderListViewModel @AssistedInject constructor(
             allPagedListWrapper?.fetchFirstPage()
             processingPagedListWrapper?.fetchFirstPage()
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onOrderSummariesFetched(event: OnOrderSummariesFetched) {
+        val totalDurationInSeconds = event.duration.toDouble() / 1_000
+        AnalyticsTracker.track(Stat.ORDERS_LIST_LOADED, mapOf(KEY_TOTAL_DURATION to totalDurationInSeconds))
     }
 
     sealed class OrderListEvent : Event() {
