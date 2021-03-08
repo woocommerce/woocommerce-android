@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-04 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Terjadi error saat menyimpan pengaturan Anda</string>
+    <string name="shipping_label_payments_saving_dialog_message">Harap tunggu…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Menyimpan pengaturan Anda</string>
+    <string name="shipping_label_payments_expiration_date">Berakhir pada %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Kirimkan email tanda terima pembelian label ke %1$s (%2$s) di %3$s</string>
+    <string name="shipping_label_payments_account_info">Kartu kredit diambil dari akun WordPress.com berikut: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Tambahkan kartu kredit lain</string>
+    <string name="shipping_label_payments_selected_payment_method">Metode pembayaran dipilih</string>
+    <string name="shipping_label_loading_data_progress_message">Harap tunggu…</string>
+    <string name="shipping_label_loading_data_progress_title">Mengambil pengaturan Anda</string>
+    <string name="shipping_label_selected_payment_description">Kartu kredit berakhir dalam %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Temukan</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Atau ketuk untuk memilih atribut yang sudah ada</string>
+    <string name="product_new_attribute_name">Nama atribut baru</string>
+    <string name="product_add_attribute">Tambahkan Fitur</string>
+    <string name="product_variation_attributes">Atribut</string>
+    <string name="product_variations_edit_attr">Sunting atribut</string>
     <string name="shipping_label_multi_packages_total_weight">Total berat paket: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d item pada paket %2$d</string>
     <string name="shipping_label_single_package_total_weight">Total berat paket: %1$s %2$s</string>

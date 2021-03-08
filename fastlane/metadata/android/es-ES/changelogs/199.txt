@@ -1,4 +1,0 @@
-6.0:
-Novedades de la versión 6.0
-
-Hemos respondido a tus peticiones. Por demanda popular, ahora la SKU de los productos vuelve a mostrarse en la pantalla Detalles del pedido. También hemos corregido un problema por el que los productos con mejor rendimiento se mostraban dos veces por error.

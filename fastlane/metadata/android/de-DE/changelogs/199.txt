@@ -1,4 +1,0 @@
-6.0:
-Neuerungen in unserer Version 6.0
-
-Euer Wunsch ist uns Befehl! Aufgrund der großen Nachfrage wird die Produkt-SKU wieder auf dem Bildschirm mit den Bestelldetails angezeigt. Wir haben auch ein Problem behoben, bei dem Topseller in deinem Store fälschlicherweise zweimal angezeigt wurden.

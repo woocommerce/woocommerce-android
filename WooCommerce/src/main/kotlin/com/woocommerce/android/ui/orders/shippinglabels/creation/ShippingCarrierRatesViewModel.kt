@@ -20,8 +20,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrier
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.FEDEX
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.UPS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesAdapter.ShippingRateItem.ShippingCarrier.USPS
-import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -42,7 +40,6 @@ import java.math.BigDecimal
 class ShippingCarrierRatesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
-    parameterRepository: ParameterRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
@@ -63,13 +60,8 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         private const val SHIPPING_METHOD_USPS_KEY = "wc_services_usps"
         private const val SHIPPING_METHOD_DHL_KEY = "wc_services_dhlexpress"
         private const val SHIPPING_METHOD_FEDEX_KEY = "wc_services_fedex"
-        private const val KEY_SHIPPING_CARRIERS_PARAMETERS = "key_shipping_carriers_parameters"
     }
     private val arguments: ShippingCarrierRatesFragmentArgs by savedState.navArgs()
-
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_SHIPPING_CARRIERS_PARAMETERS, savedState)
-    }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -135,10 +127,15 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
             val ratesWithAdultSignature = pkg.shippingOptions.first { it.optionId == ADULT_SIGNATURE_RATE_OPTION }.rates
 
             val shippingRates = defaultRates.map { default ->
-                val optionWithSignature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
-                val optionWithAdultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
-                val signatureFee = optionWithSignature?.rate?.minus(default.rate)
-                val adultSignatureFee = optionWithAdultSignature?.rate?.minus(default.rate)
+                val defaultDiscount = default.retailRate.minus(default.rate)
+
+                val signature = ratesWithSignature.firstOrNull { it.serviceId == default.serviceId }
+                val signatureFee = signature?.rate?.minus(default.rate)
+                val signatureDiscount = signature?.retailRate?.minus(signature.rate) ?: BigDecimal.ZERO
+
+                val adultSignature = ratesWithAdultSignature.firstOrNull { it.serviceId == default.serviceId }
+                val adultSignatureFee = adultSignature?.rate?.minus(default.rate)
+                val adultSignatureDiscount = adultSignature?.retailRate?.minus(adultSignature.rate) ?: BigDecimal.ZERO
 
                 // we can use the default rate as a base for most of the properties (these are the same for all
                 // extra options for a particular carrier option) and we just calculate the price for each extra option
@@ -151,10 +148,11 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                         default.title,
                         default.deliveryDays,
                         default.rate,
+                        defaultDiscount,
                         default.rate.format(),
                         DEFAULT
                     ),
-                    SIGNATURE to optionWithSignature?.let { option ->
+                    SIGNATURE to signature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
                             option.rateId,
@@ -163,11 +161,12 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            signatureDiscount,
                             signatureFee.format(),
                             SIGNATURE
                         )
                     },
-                    ADULT_SIGNATURE to optionWithAdultSignature?.let { option ->
+                    ADULT_SIGNATURE to adultSignature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
                             option.rateId,
@@ -176,6 +175,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                             option.title,
                             default.deliveryDays,
                             option.rate,
+                            adultSignatureDiscount,
                             adultSignatureFee.format(),
                             ADULT_SIGNATURE
                         )
@@ -223,11 +223,12 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
         }
     }
 
+    // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
     private fun BigDecimal?.format(): String {
         return when {
             this == null -> "N/A"
             this.isEqualTo(BigDecimal.ZERO) -> resourceProvider.getString(R.string.free)
-            else -> "+${PriceUtils.formatCurrency(this, parameters.currencyCode, currencyFormatter)}"
+            else -> "+${PriceUtils.formatCurrency(this, arguments.order.currency, currencyFormatter)}"
         }
     }
 

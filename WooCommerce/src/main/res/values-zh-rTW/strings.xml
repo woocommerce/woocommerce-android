@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-19 10:54:16+0000
+Translation-Revision-Date: 2021-03-04 17:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">儲存設定時發生錯誤</string>
+    <string name="shipping_label_payments_saving_dialog_message">請稍候…</string>
+    <string name="shipping_label_payments_saving_dialog_title">正在儲存設定</string>
+    <string name="shipping_label_payments_expiration_date">有效期限 %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">透過電子郵件傳送標籤購買收據給 %1$s (%2$s)，電子郵件地址是 %3$s</string>
+    <string name="shipping_label_payments_account_info">從以下 WordPress.com 帳號擷取信用卡：%1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">新增其他信用卡</string>
+    <string name="shipping_label_payments_selected_payment_method">已選取付款方式</string>
+    <string name="shipping_label_loading_data_progress_message">請稍候…</string>
+    <string name="shipping_label_loading_data_progress_title">正在擷取設定</string>
+    <string name="shipping_label_selected_payment_description">末碼是 %1$s 的信用卡</string>
+    <string name="payment_method_paypal">PayPal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">探索</string>
+    <string name="payment_method_american_express">美國運通</string>
+    <string name="product_select_attribute">或點選以選取現有屬性</string>
+    <string name="product_new_attribute_name">新屬性名稱</string>
+    <string name="product_add_attribute">新增屬性</string>
+    <string name="product_variation_attributes">屬性</string>
+    <string name="product_variations_edit_attr">編輯屬性</string>
     <string name="shipping_label_multi_packages_total_weight">包裹總重：%1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count"> %2$d 包裹中有 %1$d 項商品</string>
     <string name="shipping_label_single_package_total_weight">包裹總重：%1$s %2$s</string>

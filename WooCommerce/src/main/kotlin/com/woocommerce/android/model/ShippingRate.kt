@@ -13,6 +13,7 @@ data class ShippingRate(
     val serviceName: String,
     val deliveryDays: Int,
     val price: BigDecimal,
+    val discount: BigDecimal,
     val formattedFee: String,
     val option: Option
 ) : Parcelable {

@@ -257,9 +257,18 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 carrierStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
-            return OrderSummaryState(
-                isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
-            )
+            with(stateMachineData.stepsState.carrierStep.data) {
+                val price = sumByBigDecimal { it.price }
+                val discount = sumByBigDecimal { it.discount }
+
+                return OrderSummaryState(
+                    isVisible = true,
+                    price = price,
+                    discount = discount,
+                    // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
+                    currency = parameters.currencyCode
+                )
+            }
         }
 
         viewState = viewState.copy(
@@ -513,7 +522,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     data class OrderSummaryState(
         val isVisible: Boolean = false,
         val price: BigDecimal = BigDecimal.ZERO,
-        val discount: BigDecimal = BigDecimal.ZERO
+        val discount: BigDecimal = BigDecimal.ZERO,
+        val currency: String? = null
     ) : Parcelable
 
     @Parcelize

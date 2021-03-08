@@ -1,0 +1,2 @@
+6.1:
+WooCommerce Android uygulamasıyla ilgili en son güncellemeler burada. Bir ürünü düzenlerken, tüm değişiklikler artık otomatik şekilde yerel olarak kaydedilecek. "Güncelle"ye tıkladığınızda değişiklikler sunucunuza gönderilir. Ayrıca ürün ayarlarının görüntülenmesini, ürün fiyatlarının dilinin düzenlenmesini ve destek talepleriyle ilgili anlık bildirimleri etkileyen hatalar da düzeltildi.
