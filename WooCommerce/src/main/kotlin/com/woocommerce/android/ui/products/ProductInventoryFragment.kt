@@ -24,10 +24,6 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
     ProductItemSelectorDialogListener {
     private val viewModel: ProductInventoryViewModel by viewModels { viewModelFactory.get() }
 
-    override val isDoneButtonVisible: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
-    override val isDoneButtonEnabled: Boolean
-        get() = viewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
     override val lastEvent: Event?
         get() = viewModel.event.value
 
@@ -66,12 +62,6 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.skuErrorMessage?.takeIfNotEqualTo(old?.skuErrorMessage) {
                 displaySkuError(it)
-            }
-            new.isDoneButtonVisible?.takeIfNotEqualTo(old?.isDoneButtonVisible) { isVisible ->
-                doneButton?.isVisible = isVisible
-            }
-            new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
-                doneButton?.isEnabled = isEnabled
             }
             new.isStockManagementVisible?.takeIfNotEqualTo(old?.isStockManagementVisible) { isVisible ->
                 binding.stockManagementPanel.isVisible = isVisible
@@ -227,10 +217,6 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 }
             }
         }
-    }
-
-    override fun onDoneButtonClicked() {
-        viewModel.onDoneButtonClicked()
     }
 
     override fun onExit() {

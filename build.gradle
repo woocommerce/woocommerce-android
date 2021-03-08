@@ -23,9 +23,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            url 'http://www.idescout.com/maven/repo/'
-        }
     }
 
     task checkstyle(type: Checkstyle) {
@@ -85,7 +82,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '1.10.1'
+    fluxCVersion = '1.11.0'
     daggerVersion = '2.29.1'
     glideVersion = '4.10.0'
     testRunnerVersion = '1.0.1'

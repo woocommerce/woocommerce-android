@@ -1,3 +1,1 @@
-What’s new in our 6.0 release?
-
-You asked, we listened! Due to popular demand, the product SKU is displayed once again in the Order Details screen. We also fixed an issue where top performers in your store were incorrectly displaying twice.
+The latest updates to the WooCommerce Android app are here. When editing a product, all changes will now automatically save locally—clicking “Update” will send the changes to your server. We also fixed bugs affecting the display of product settings, the editing of the language of product prices, and push notifications about support requests. 

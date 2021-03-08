@@ -72,13 +72,12 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         TaxClass("weird")
     )
     private val viewState = ViewState(
-        "$",
-        2,
-        taxClasses,
-        null,
-        null,
-        pricingData,
-        true
+        currency = "$",
+        decimals = 2,
+        taxClassList = taxClasses,
+        salePriceErrorMessage = null,
+        pricingData = pricingData,
+        isTaxSectionVisible = true
     )
 
     @Before
@@ -128,7 +127,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             pricingData = pricingData.copy(
                 regularPrice = newPrice
             ),
-            isDoneButtonVisible = true,
             salePriceErrorMessage = 0
         )
 
@@ -140,14 +138,13 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             pricingData = pricingData.copy(
                 regularPrice = viewState.pricingData.regularPrice
             ),
-            isDoneButtonVisible = false,
             salePriceErrorMessage = 0
         )
         assertThat(state).isEqualTo(restoredState)
     }
 
     @Test
-    fun `Disables the done button if there is validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays error message if there is validation error`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         var state: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> state = new }
 
@@ -158,12 +155,10 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             pricingData = pricingData.copy(
                 salePrice = newPrice
             ),
-            isDoneButtonVisible = true,
             salePriceErrorMessage = R.string.product_pricing_update_sale_price_error
         )
 
         assertThat(state).isEqualTo(expectedState)
-        assertThat(state?.isDoneButtonEnabled).isFalse()
     }
 
     @Test
@@ -213,7 +208,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         )
 
         val expectedState = viewState.copy(
-            isDoneButtonVisible = true,
             pricingData = pricingData.copy(
                 isSaleScheduled = true,
                 saleStartDate = startDate,
@@ -246,7 +240,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         )
 
         val expectedState = viewState.copy(
-            isDoneButtonVisible = true,
             pricingData = pricingData.copy(
                 isSaleScheduled = true,
                 saleStartDate = startDate,
@@ -259,7 +252,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         viewModel.onScheduledSaleChanged(false)
 
         val resetState = viewState.copy(
-            isDoneButtonVisible = true,
             pricingData = pricingData.copy(
                 isSaleScheduled = false,
                 saleStartDate = startDate,
@@ -269,7 +261,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
         assertThat(state).isEqualTo(resetState)
 
-        viewModel.onDoneButtonClicked()
+        viewModel.onExit()
 
         val expectedResultData = resetState.pricingData.copy(
             saleStartDate = null,

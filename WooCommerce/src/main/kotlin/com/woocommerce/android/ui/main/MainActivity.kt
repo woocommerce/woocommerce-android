@@ -408,17 +408,11 @@ class MainActivity : AppUpgradeActivity(),
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
-                R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
-                R.id.productSettingsFragment,
-                R.id.addProductCategoryFragment,
-                R.id.parentCategoryListFragment,
-                R.id.productSelectionListFragment,
                 R.id.printShippingLabelInfoFragment,
-                R.id.shippingLabelFormatOptionsFragment,
-                R.id.productDownloadsSettingsFragment -> {
+                R.id.shippingLabelFormatOptionsFragment -> {
                     true
                 }
                 R.id.productDetailFragment -> {

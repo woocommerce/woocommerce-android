@@ -5,11 +5,12 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Data
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.FlowStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -28,7 +29,7 @@ class ShippingLabelsStateMachineTest {
     private val orderId = "123"
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
-    private val data = Data(originAddress, shippingAddress, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
+    private val data = Data(originAddress, shippingAddress, null, emptyList(), setOf(FlowStep.ORIGIN_ADDRESS))
 
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
@@ -41,39 +42,39 @@ class ShippingLabelsStateMachineTest {
     @Test
     fun `Test the data login sequence of events after start`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val expectedSideEffectCount = 3 // necessary to terminate the flow
-        var sideEffect: SideEffect? = null
+        var transition: Transition? = null
         launch {
             stateMachine.transitions.take(expectedSideEffectCount).collect {
-                sideEffect = it.sideEffect
+                transition = it
             }
         }
 
-        assertThat(sideEffect).isEqualTo(SideEffect.NoOp)
+        assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
         stateMachine.start(orderId)
 
-        assertThat(sideEffect).isEqualTo(SideEffect.LoadData(orderId))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(orderId))
 
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
+        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
 
-        assertThat(sideEffect).isEqualTo(SideEffect.UpdateViewState(data))
+        assertThat(transition?.state).isEqualTo(State.WaitingForInput(data))
     }
 
     @Test
     fun `Test successful address verification`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val expectedSideEffectCount = 5 // necessary to terminate the flow
-        var sideEffect: SideEffect? = null
+        var transition: Transition? = null
         launch {
             stateMachine.transitions.take(expectedSideEffectCount).collect {
-                sideEffect = it.sideEffect
+                transition = it
             }
         }
 
         stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
+        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
-        assertThat(sideEffect).isEqualTo(SideEffect.ValidateAddress(data.originAddress, ORIGIN))
+        assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
 
         val newData = data.copy(
             originAddress = data.originAddress,
@@ -81,7 +82,7 @@ class ShippingLabelsStateMachineTest {
         )
         stateMachine.handleEvent(Event.AddressValidated(data.originAddress))
 
-        assertThat(sideEffect).isEqualTo(SideEffect.UpdateViewState(newData))
+        assertThat(transition?.state).isEqualTo(State.WaitingForInput(newData))
     }
 
     @Test
@@ -101,7 +102,7 @@ class ShippingLabelsStateMachineTest {
         )
 
         stateMachine.start(orderId)
-        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress))
+        stateMachine.handleEvent(Event.DataLoaded(originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))
@@ -113,6 +114,6 @@ class ShippingLabelsStateMachineTest {
             flowSteps = data.flowSteps + FlowStep.CUSTOMS
         )
 
-        assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.UpdateViewState(newData))
+        assertThat(stateMachine.transitions.value.state).isEqualTo(State.WaitingForInput(newData))
     }
 }

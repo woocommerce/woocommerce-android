@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.widget.CompoundButton
 import androidx.lifecycle.Observer
@@ -32,7 +29,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
 
         _binding = FragmentProductSettingsBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers()
 
         binding.productStatus.setOnClickListener {
@@ -143,30 +139,9 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_done)?.isVisible = viewModel.hasSettingsChanges()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.PRODUCT_SETTINGS_DONE_BUTTON_TAPPED)
-                viewModel.onDoneButtonClicked(ExitSettings(shouldShowDiscardDialog = false))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitSettings())
+        viewModel.onBackButtonClicked(ExitSettings())
+        return false
     }
 
     override fun getFragmentTitle() = getString(R.string.product_settings)

@@ -1,19 +1,14 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDownloadsSettingsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
 
 class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_product_downloads_settings) {
@@ -25,7 +20,6 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
 
         _binding = FragmentProductDownloadsSettingsBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
     }
 
@@ -39,27 +33,10 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
         AnalyticsTracker.trackViewShown(this)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                viewModel.onDoneButtonClicked(ExitProductDownloads(shouldShowDiscardDialog = false))
-                AnalyticsTracker.track(Stat.PRODUCT_DOWNLOADABLE_FILES_SETTINGS_CHANGED)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             when (event) {
-                is ExitProductDownloads -> findNavController().navigateUp()
+                is ExitProductDownloadsSettings -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         })
@@ -79,20 +56,15 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
         binding.productDownloadExpiry.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toInt()
             viewModel.onDownloadExpiryChanged(value)
-            changesMade()
         }
         binding.productDownloadLimit.setOnTextChangedListener {
             val value = if (it.isNullOrEmpty()) -1 else it.toString().toLong()
             viewModel.onDownloadLimitChanged(value)
-            changesMade()
         }
     }
 
-    override fun hasChanges(): Boolean {
-        return viewModel.hasDownloadsSettingsChanges()
-    }
-
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
+        viewModel.onBackButtonClicked(ExitProductDownloadsSettings())
+        return false
     }
 }

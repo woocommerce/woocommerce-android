@@ -63,7 +63,7 @@ class CurrencyEditText : AppCompatEditText {
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val regex = Regex("[^0-9]")
+            val regex = Regex("[^\\d]")
             var cleanValue = text.toString().replace(regex, "").toBigDecimalOrNull() ?: BigDecimal.ZERO
 
             if (decimals > 0) {

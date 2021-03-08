@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -20,7 +17,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
 import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import org.wordpress.android.util.ActivityUtils
 
 class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_products) {
     private var _binding: FragmentLinkedProductsBinding? = null
@@ -32,7 +28,6 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentLinkedProductsBinding.bind(view)
-        setHasOptionsMenu(true)
 
         setupObservers()
         updateProductView()
@@ -50,25 +45,6 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value))
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onDoneButtonClicked(ExitLinkedProducts(shouldShowDiscardDialog = false))
-                AnalyticsTracker.track(Stat.LINKED_PRODUCTS,
-                    mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.DONE.value))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -79,13 +55,11 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
         handleResult<List<Long>>(UPSELLS.resultKey) {
             viewModel.updateProductDraft(upsellProductIds = it)
-            changesMade()
             updateProductView()
         }
 
         handleResult<List<Long>>(CROSS_SELLS.resultKey) {
             viewModel.updateProductDraft(crossSellProductIds = it)
-            changesMade()
             updateProductView()
         }
     }
@@ -126,7 +100,10 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         }
     }
 
-    override fun onRequestAllowBackPress() = viewModel.onBackButtonClicked(ExitLinkedProducts())
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked(ExitLinkedProducts())
+        return false
+    }
 
     private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
         val productIds = when (groupedProductType) {
