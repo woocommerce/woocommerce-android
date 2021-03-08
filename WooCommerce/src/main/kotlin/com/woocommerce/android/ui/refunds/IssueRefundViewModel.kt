@@ -26,6 +26,7 @@ import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toItem
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -87,13 +88,16 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val _refundItems = MutableLiveData<List<RefundListItem>>()
     final val refundItems: LiveData<List<RefundListItem>> = _refundItems
 
+    private val _refundShippingLines = MutableLiveData<List<RefundListItem>>()
+    val refundShippingLines: LiveData<List<RefundListItem>> = _refundShippingLines
+
     private val areAllItemsSelected: Boolean
         get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
 
     final val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     final val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = { _, new ->
-        updateRefundTotal(new.productsRefund)
+        updateRefundTotal(new.grandTotalRefund)
     })
     final val refundByAmountStateLiveData = LiveDataDelegate(
         savedState,
@@ -112,6 +116,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     private val order: Order
     private val refunds: List<Refund>
+    private val selectedShippingLineIds: List<Long>
 
     private val maxRefund: BigDecimal
     private val maxQuantities: Map<Long, Int>
@@ -132,6 +137,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     init {
         order = loadOrder(arguments.orderId)
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
+        selectedShippingLineIds = order.shippingLines.map { it.itemId }
 
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
@@ -179,12 +185,14 @@ class IssueRefundViewModel @AssistedInject constructor(
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
                     shippingSubtotal = formatCurrency(order.shippingTotal),
+                    shippingTaxes = formatCurrency(order.getTotalShippingTaxes()),
                     feesTotal = formatCurrency(order.feesTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
-                    isShippingRefundVisible = order.shippingTotal > BigDecimal.ZERO,
+                    isShippingRefundAvailable = order.shippingTotal > BigDecimal.ZERO,
                     isFeesVisible = order.feesTotal > BigDecimal.ZERO,
-                    isShippingNoticeVisible = true,
-                    isNextButtonEnabled = false
+                    isNextButtonEnabled = false,
+                    selectedShippingLines = selectedShippingLineIds,
+                    formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO)
             )
         }
 
@@ -194,6 +202,11 @@ class IssueRefundViewModel @AssistedInject constructor(
             RefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
+
+        val shippingLines = order.shippingLines.map {
+            RefundListItem(it.toItem(), 1, 1)
+        }
+        updateRefundShippingLines(shippingLines)
 
         if (productsRefundLiveData.hasInitialValue) {
             val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
@@ -267,14 +280,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
     }
 
-//    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
-//        refundByItemsState = if (isChecked) {
-//            refundByItemsState.copy(isShippingRefundVisible = true)
-//        } else {
-//            refundByItemsState.copy(isShippingRefundVisible = false)
-//        }
-//    }
-
     fun onOpenStoreAdminLinkClicked() {
         triggerEvent(OpenUrl(selectedSite.get().adminUrl))
     }
@@ -325,6 +330,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                     val resultCall = async(dispatchers.io) {
                         return@async when (commonState.refundType) {
                             ITEMS -> {
+                                // TODO: Include selected shipping lines in `items`
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
@@ -437,10 +443,12 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
+        val shippingRefund = refundByItemsState.shippingRefund
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = newAmount,
                 formattedProductsRefund = formatCurrency(newAmount),
-                isNextButtonEnabled = newAmount > BigDecimal.ZERO
+                isNextButtonEnabled = newAmount > BigDecimal.ZERO,
+                grandTotalRefund = newAmount + shippingRefund
         )
     }
 
@@ -458,13 +466,19 @@ class IssueRefundViewModel @AssistedInject constructor(
             else
                 resourceProvider.getString(R.string.order_refunds_items_select_all)
 
+        var grandTotal = productsRefund
+        if (refundByItemsState.isShippingMainSwitchChecked == true) {
+            grandTotal = grandTotal.add(refundByItemsState.shippingRefund)
+        }
+
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,
                 formattedProductsRefund = formatCurrency(productsRefund),
                 taxes = formatCurrency(taxes),
                 subtotal = formatCurrency(subtotal),
                 isNextButtonEnabled = _refundItems.value?.any { it.quantity > 0 } ?: false,
-                selectButtonTitle = selectButtonTitle
+                selectButtonTitle = selectButtonTitle,
+                grandTotalRefund = grandTotal
         )
     }
 
@@ -533,6 +547,10 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
+    private fun updateRefundShippingLines(items: List<RefundListItem>) {
+        _refundShippingLines.value = items.filter { it.maxQuantity > 0 }
+    }
+
     private fun validateInput(): InputValidationState {
         return when {
             refundByAmountState.enteredAmount > maxRefund -> return TOO_HIGH
@@ -559,6 +577,72 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun isInputValid() = validateInput() == VALID
+
+    fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
+        val productsRefund = refundByItemsState.productsRefund
+
+        if (isChecked) {
+            val shippingRefund = calculatePartialShippingTotal(refundByItemsState.selectedShippingLines!!)
+
+            refundByItemsState = refundByItemsState.copy(
+                shippingRefund = shippingRefund,
+                formattedShippingRefundTotal = formatCurrency(shippingRefund),
+                grandTotalRefund = productsRefund.add(shippingRefund),
+                isShippingMainSwitchChecked = true
+            )
+        } else {
+            refundByItemsState = refundByItemsState.copy(
+                shippingRefund = 0.toBigDecimal(),
+                formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
+                grandTotalRefund = productsRefund,
+                isShippingMainSwitchChecked = false
+            )
+        }
+    }
+
+    fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
+        val list = refundByItemsState.selectedShippingLines?.toMutableList()
+        if (list != null) {
+            if (isChecked) list += itemId else list -= itemId
+
+            val newShippingRefundTotal = calculatePartialShippingTotal(list)
+            val productsRefund = refundByItemsState.productsRefund
+
+            refundByItemsState = refundByItemsState.copy(
+                selectedShippingLines = list,
+                shippingSubtotal = formatCurrency(calculatePartialShippingSubtotal(list)),
+                shippingTaxes = formatCurrency(calculatePartialShippingTaxes(list)),
+                shippingRefund = newShippingRefundTotal,
+                formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal),
+                grandTotalRefund = productsRefund.add(newShippingRefundTotal)
+            )
+        }
+    }
+
+    private fun calculatePartialShippingSubtotal(selectedShippingLinesId: List<Long>): BigDecimal {
+        if (selectedShippingLinesId.isEmpty())
+            return 0.toBigDecimal()
+        else
+            return order.shippingLines
+                .filter { selectedShippingLinesId.contains(it.itemId) }
+                .map { it.total }
+                .reduce { acc, subtotal -> return acc + subtotal }
+    }
+
+    private fun calculatePartialShippingTaxes(selectedShippingLinesId: List<Long>): BigDecimal {
+        if (selectedShippingLinesId.isEmpty())
+            return 0.toBigDecimal()
+        else
+            return order.shippingLines
+                .filter { selectedShippingLinesId.contains(it.itemId) }
+                .map { it.totalTax }
+                .reduce { acc, subtotal -> return acc + subtotal }
+    }
+
+    private fun calculatePartialShippingTotal(selectedShippingLinesId: List<Long>): BigDecimal {
+        return calculatePartialShippingSubtotal(selectedShippingLinesId)
+            .add(calculatePartialShippingTaxes(selectedShippingLinesId))
+    }
 
     private enum class InputValidationState {
         TOO_HIGH,
@@ -594,16 +678,18 @@ class IssueRefundViewModel @AssistedInject constructor(
         val formattedProductsRefund: String? = null,
         val subtotal: String? = null,
         val taxes: String? = null,
-        val shippingRefund: BigDecimal = BigDecimal.ZERO,
-        val formattedShippingRefund: String? = null,
-        val shippingSubtotal: String? = null,
         val feesTotal: String? = null,
+        val shippingSubtotal: String? = null,
         val shippingTaxes: String? = null,
-        val isShippingRefundVisible: Boolean? = null,
+        val shippingRefund: BigDecimal = BigDecimal.ZERO,
+        val formattedShippingRefundTotal: String? = null,
+        val isShippingRefundAvailable: Boolean? = null,
+        val isShippingMainSwitchChecked: Boolean? = null,
+        val selectedShippingLines: List<Long>? = null,
         val isFeesVisible: Boolean? = null,
-        val isShippingNoticeVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
-        val selectButtonTitle: String? = null
+        val selectButtonTitle: String? = null,
+        val grandTotalRefund: BigDecimal = BigDecimal.ZERO /* for now it's productsRefund + shippingRefund */
     ) : Parcelable {
         val totalRefund: BigDecimal
             get() = max(productsRefund + shippingRefund, BigDecimal.ZERO)
