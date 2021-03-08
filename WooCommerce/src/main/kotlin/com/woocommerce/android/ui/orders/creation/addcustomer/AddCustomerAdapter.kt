@@ -2,61 +2,89 @@ package com.woocommerce.android.ui.orders.creation.addcustomer
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.databinding.CustomerListItemBinding
-import com.woocommerce.android.databinding.CustomerListLoadingItemBinding
+import com.woocommerce.android.databinding.SkeletonCustomerListItemBinding
+import com.woocommerce.android.ui.orders.creation.addcustomer.CustomerListItemType.CustomerItem
+import com.woocommerce.android.ui.orders.creation.addcustomer.CustomerListItemType.LoadingItem
 import javax.inject.Inject
 
-const val ITEM_TYPE = 0
-const val LOADING_TYPE = 1
+private const val ITEM_TYPE = 0
+private const val LOADING_TYPE = 1
 
 class AddCustomerAdapter @Inject constructor(
-    private val viewModel: AddCustomerViewModel,
     private val layoutInflater: LayoutInflater
-) : RecyclerView.Adapter<ViewHolder>() {
+) : PagedListAdapter<CustomerListItemType, ViewHolder>(customerListDiffItemCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
             ITEM_TYPE -> CustomerViewHolder(
                 CustomerListItemBinding.inflate(layoutInflater, parent, false)
             )
             LOADING_TYPE -> LoadingViewHolder(
-                CustomerListLoadingItemBinding.inflate(layoutInflater, parent, false)
+                SkeletonCustomerListItemBinding.inflate(layoutInflater, parent, false)
             )
             else -> throw IllegalStateException("$viewType is not supported by the adapter")
         }
     }
 
-    override fun getItemViewType(position: Int): Int = viewModel.getItemViewType(position)
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (holder is CustomerItemView) viewModel.bindView(holder as CustomerItemView)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is CustomerItem -> ITEM_TYPE
+            is LoadingItem -> LOADING_TYPE
+            else -> throw IllegalStateException("item at position $position is not supported")
+        }
     }
 
-    override fun getItemCount(): Int = viewModel.getItemCount()
-}
-
-interface CustomerItemView {
-    fun setName(name: String?)
-    fun setEmail(email: String?)
-    fun setOnClickListener(onClick: () -> Unit)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        if (holder is CustomerViewHolder) holder.onBind(item as CustomerItem)
+    }
 }
 
 class CustomerViewHolder(
     private val binding: CustomerListItemBinding
-) : RecyclerView.ViewHolder(binding.root), CustomerItemView {
-    override fun setName(name: String?) {
-        binding.tvCustomerName.text = name
-    }
-
-    override fun setEmail(email: String?) {
-        binding.tvCustomerEmail.text = email
-    }
-
-    override fun setOnClickListener(onClick: () -> Unit) {
-        binding.root.setOnClickListener { onClick() }
+) : RecyclerView.ViewHolder(binding.root) {
+    fun onBind(item: CustomerItem) {
+        with(item) {
+            binding.tvCustomerName.text = name
+            binding.tvCustomerEmail.text = email
+        }
     }
 }
 
-class LoadingViewHolder(binding: CustomerListLoadingItemBinding) : RecyclerView.ViewHolder(binding.root)
+class LoadingViewHolder(binding: SkeletonCustomerListItemBinding) : RecyclerView.ViewHolder(binding.root)
+
+private val customerListDiffItemCallback = object : DiffUtil.ItemCallback<CustomerListItemType>() {
+    override fun areItemsTheSame(oldItem: CustomerListItemType, newItem: CustomerListItemType): Boolean {
+        if (oldItem is LoadingItem && newItem is LoadingItem) {
+            return oldItem.remoteCustomerId == newItem.remoteCustomerId
+        }
+        return if (oldItem is CustomerItem && newItem is CustomerItem) {
+            oldItem.remoteCustomerId == newItem.remoteCustomerId
+        } else {
+            false
+        }
+    }
+
+    override fun areContentsTheSame(oldItem: CustomerListItemType, newItem: CustomerListItemType): Boolean {
+        if (oldItem is LoadingItem && newItem is LoadingItem) return true
+        return if (oldItem is CustomerItem && newItem is CustomerItem) {
+            oldItem.name == newItem.name && oldItem.email == newItem.email
+        } else {
+            false
+        }
+    }
+}
+
+sealed class CustomerListItemType {
+    data class LoadingItem(val remoteCustomerId: Long) : CustomerListItemType()
+    data class CustomerItem(
+        val remoteCustomerId: Long,
+        val name: String?,
+        val email: String
+    ) : CustomerListItemType()
+}
 

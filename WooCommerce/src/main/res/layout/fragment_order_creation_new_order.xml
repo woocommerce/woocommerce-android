@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/addNewCustomerButton"
+        android:id="@+id/btnAddNewCustomer"
         style="@style/Woo.Button.Outlined"
         android:layout_width="0dp"
         android:layout_margin="@dimen/margin_extra_large"
@@ -24,6 +24,6 @@
         android:layout_marginTop="@dimen/margin_extra_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addNewCustomerButton" />
+        app:layout_constraintTop_toBottomOf="@id/btnAddNewCustomer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

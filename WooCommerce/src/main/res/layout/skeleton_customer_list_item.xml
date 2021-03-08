@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/orderListLoading"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_clip_to_children="true"
+    app:shimmer_duration="2000"
+    app:shimmer_repeat_delay="400">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/margin_extra_large"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_large">
+
+        <View
+            android:id="@+id/vCustomerNameSkeleton"
+            android:layout_width="120dp"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:background="@drawable/skeleton_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCustomerEmail"
+            android:layout_width="160dp"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:background="@drawable/skeleton_background"
+            app:layout_constraintStart_toStartOf="@id/vCustomerNameSkeleton"
+            app:layout_constraintTop_toBottomOf="@id/vCustomerNameSkeleton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>
