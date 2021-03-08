@@ -877,7 +877,7 @@
     <string name="get_the_word_out">Let\'s get the word out</string>
     <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
     <string name="empty_order_list_title">Waiting for your first order</string>
-    <string name="empty_order_list_message">We\’ll notify you when you receive a new order. In the meantime, explore how you can increase your store sales.</string>
+    <string name="empty_order_list_message">Explore how you can increase your store sales.</string>
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
