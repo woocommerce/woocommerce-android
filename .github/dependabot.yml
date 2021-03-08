@@ -9,4 +9,6 @@ updates:
       - "woocommerce/android-developers"
       - "woocommerce/platform-9"
     ignore:
+      # The Android Gradle Plugin is a dependency we'd like to have in sync with other
+      # in-house libraries due to compatibility with composite build.
       - dependency-name: "com.android.tools.build:gradle"
