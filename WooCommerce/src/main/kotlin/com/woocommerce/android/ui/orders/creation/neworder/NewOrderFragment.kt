@@ -28,7 +28,7 @@ class NewOrderFragment : BaseOrderCreationFragment(R.layout.fragment_order_creat
         _binding = FragmentOrderCreationNewOrderBinding.bind(view)
 
         // The button is used for development purposes
-        binding.addNewCustomerButton.setOnClickListener {
+        binding.btnAddNewCustomer.setOnClickListener {
             viewModel.onAddNewCustomerButtonClicked()
         }
 

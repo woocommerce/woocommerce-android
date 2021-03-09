@@ -24,7 +24,7 @@ constructor(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun getItemsAndFetchIfNecessary(
-        listDescriptor: WCCustomerListDescriptor,
+        listDescriptor: AddCustomerListDescriptor,
         itemIdentifiers: List<Long>
     ): List<CustomerListItemType> {
         val storedCustomers = store.getCustomerByRemoteIds(listDescriptor.site, itemIdentifiers)
@@ -48,6 +48,8 @@ constructor(
             } else {
                 CustomerListItemType.CustomerItem(
                     remoteCustomerId = customer.remoteCustomerId,
+                    firstName = customer.firstName,
+                    lastName = customer.lastName,
                     email = customer.email
                 )
             }
@@ -55,7 +57,7 @@ constructor(
     }
 
     override fun getItemIdentifiers(
-        listDescriptor: WCCustomerListDescriptor,
+        listDescriptor: AddCustomerListDescriptor,
         remoteItemIds: List<RemoteId>,
         isListFullyFetched: Boolean
     ): List<Long> = remoteItemIds.map { it.value }
@@ -63,6 +65,7 @@ constructor(
     override fun fetchList(listDescriptor: AddCustomerListDescriptor, offset: Long) {
         coroutineScope.launch {
             val payload = store.fetchCustomers(
+                site = listDescriptor.site,
                 offset = offset,
                 pageSize = PAGE_SIZE
             )

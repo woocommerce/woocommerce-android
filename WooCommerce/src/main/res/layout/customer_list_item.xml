@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_primary_selector"
     android:paddingHorizontal="@dimen/margin_extra_large"
     android:paddingTop="@dimen/margin_medium"
-    android:paddingBottom="@dimen/margin_large"
-    android:layout_height="wrap_content"
-    android:background="@drawable/list_primary_selector">
+    android:paddingBottom="@dimen/margin_large">
 
     <TextView
         android:id="@+id/tvCustomerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="middle"
+        android:textColor="@color/color_on_surface_high"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="middle"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:textColor="@color/color_on_surface_medium"
         app:layout_constraintStart_toStartOf="@id/tvCustomerName"
         app:layout_constraintTop_toBottomOf="@id/tvCustomerName"
         tools:text="omar.press@gmail.com" />

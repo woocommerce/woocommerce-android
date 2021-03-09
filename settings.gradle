@@ -1,7 +1,7 @@
 include ':WooCommerce'
 include ':libs:login:WordPressLoginFlow'
 
-gradle.ext.fluxCBinaryPath = "com.github.wordpress-mobile.WordPress-FluxC-Android"
+gradle.ext.fluxCBinaryPath = "com.github.kidinov.WordPress-FluxC-Android"
 
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {

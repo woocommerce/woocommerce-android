@@ -15,6 +15,7 @@ import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.CUSTOMER_LIST
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.CUSTOMER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
@@ -47,7 +48,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         NETWORK_OFFLINE,
         PRODUCT_CATEGORY_LIST,
         PRODUCT_TAG_LIST,
-        CUSTOMER_LIST
+        CUSTOMER_LIST,
+        CUSTOMER_LIST_LOADING
     }
 
     init {
@@ -188,8 +190,15 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = true
                 title = context.getString(R.string.order_creation_add_customer_empty_list_title)
                 message = null
-                buttonText = context.getString(R.string.retry)
+                buttonText = null
                 drawableId = R.drawable.img_empty_orders_no_orders
+            }
+            CUSTOMER_LIST_LOADING -> {
+                isTitleBold = true
+                title = context.getString(R.string.orderlist_loading)
+                message = null
+                buttonText = null
+                drawableId = R.drawable.img_empty_orders_loading
             }
         }
 

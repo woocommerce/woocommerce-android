@@ -5,11 +5,14 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
@@ -73,11 +76,12 @@ class AddCustomerViewModel @AssistedInject constructor(
             }
             pagedListWrapper.listError.observe(this@AddCustomerViewModel, Observer {
                 it?.let {
-                    triggerEvent(ShowErrorSnack(string.order_creation_add_customer_error_fetching_generic))
+                    triggerEvent(ShowErrorSnack(R.string.order_creation_add_customer_error_fetching_generic))
                 }
             })
 
             _emptyViewType.addSource(isEmpty) { createAndPostEmptyViewType(this) }
+            _emptyViewType.addSource(isFetchingFirstPage) { createAndPostEmptyViewType(this) }
             _emptyViewType.addSource(listError) { createAndPostEmptyViewType(this) }
         }
     }
@@ -89,10 +93,12 @@ class AddCustomerViewModel @AssistedInject constructor(
     private fun createAndPostEmptyViewType(wrapper: PagedListWrapper<CustomerListItemType>) {
         val isListEmpty = wrapper.isEmpty.value ?: true
         val isError = wrapper.listError.value != null
+        val isLoadingData = wrapper.isFetchingFirstPage.value ?: false || wrapper.data.value == null
 
         val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
             when {
                 isError -> EmptyViewType.NETWORK_ERROR
+                isLoadingData -> EmptyViewType.CUSTOMER_LIST_LOADING
                 else -> EmptyViewType.CUSTOMER_LIST
             }
         } else {

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.addcustomer
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -15,6 +16,9 @@ interface AddCustomerModule {
     companion object {
         @Provides
         fun provideDefaultArgs(fragment: AddCustomerFragment): Bundle? = fragment.arguments
+
+        @Provides
+        fun provideLayoutInflater(fragment: AddCustomerFragment): LayoutInflater = fragment.layoutInflater
     }
 
     @Binds

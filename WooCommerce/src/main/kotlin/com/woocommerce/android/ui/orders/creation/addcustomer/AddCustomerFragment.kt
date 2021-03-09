@@ -54,8 +54,8 @@ class AddCustomerFragment : BaseOrderCreationFragment(layout.fragment_order_crea
     }
 
     private fun initObservers() {
-        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
-            binding.srlCustomers.isRefreshing = it == true
+        viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer { fetching ->
+            if (!fetching) binding.srlCustomers.isRefreshing = false
         })
 
         viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
@@ -70,7 +70,7 @@ class AddCustomerFragment : BaseOrderCreationFragment(layout.fragment_order_crea
 
         viewModel.emptyViewType.observe(viewLifecycleOwner, Observer { type ->
             when (type) {
-                EmptyViewType.CUSTOMER_LIST -> binding.evCustomers.show(type)
+                EmptyViewType.CUSTOMER_LIST, EmptyViewType.CUSTOMER_LIST_LOADING -> binding.evCustomers.show(type)
                 EmptyViewType.NETWORK_ERROR -> binding.evCustomers.show(type) { viewModel.onRefresh() }
                 else -> binding.evCustomers.hide()
             }

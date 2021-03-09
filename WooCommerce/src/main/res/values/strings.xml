@@ -843,8 +843,7 @@
     <string name="order_creation_add_customer_error_fetching_generic">Error fetching customers</string>
 
     <string name="order_creation_add_customer_empty_list_title">You don\'t have any customers</string>
-    <string name="order_creation_add_customer_empty_list_message">You don\'t have any customers</string>
-
+    <string name="order_creation_add_customer_loading">Loading your customers…</string>
 
     <!--
         Empty list messages

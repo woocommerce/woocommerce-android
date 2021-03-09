@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.addcustomer
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -47,9 +48,10 @@ class AddCustomerAdapter @Inject constructor(
 class CustomerViewHolder(
     private val binding: CustomerListItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
+    @SuppressLint("SetTextI18n")
     fun onBind(item: CustomerItem) {
         with(item) {
-            binding.tvCustomerName.text = name
+            binding.tvCustomerName.text = "$firstName $lastName"
             binding.tvCustomerEmail.text = email
         }
     }
@@ -72,7 +74,9 @@ private val customerListDiffItemCallback = object : DiffUtil.ItemCallback<Custom
     override fun areContentsTheSame(oldItem: CustomerListItemType, newItem: CustomerListItemType): Boolean {
         if (oldItem is LoadingItem && newItem is LoadingItem) return true
         return if (oldItem is CustomerItem && newItem is CustomerItem) {
-            oldItem.name == newItem.name && oldItem.email == newItem.email
+            oldItem.firstName == newItem.firstName &&
+                oldItem.lastName == newItem.lastName &&
+                oldItem.email == newItem.email
         } else {
             false
         }
@@ -83,8 +87,8 @@ sealed class CustomerListItemType {
     data class LoadingItem(val remoteCustomerId: Long) : CustomerListItemType()
     data class CustomerItem(
         val remoteCustomerId: Long,
-        val name: String?,
+        val firstName: String?,
+        val lastName: String?,
         val email: String
     ) : CustomerListItemType()
 }
-

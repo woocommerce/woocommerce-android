@@ -9,10 +9,12 @@
         android:id="@+id/newOrderFragment"
         android:name="com.woocommerce.android.ui.orders.creation.neworder.NewOrderFragment"
         android:label="NewOrderFragment"
-        tools:layout="@layout/fragment_order_creation_new_order" >
+        tools:layout="@layout/fragment_order_creation_new_order">
         <action
             android:id="@+id/action_newOrderFragment_to_addCustomerFragment"
-            app:destination="@id/addCustomerFragment" />
+            app:destination="@id/addCustomerFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
 
     <fragment
