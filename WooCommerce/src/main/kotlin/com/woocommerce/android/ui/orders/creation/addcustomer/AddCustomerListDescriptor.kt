@@ -6,7 +6,11 @@ import org.wordpress.android.fluxc.model.list.ListConfig
 import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 
 const val PAGE_SIZE = 20
-private const val PREFETCH_DISTANCE = 5
+
+private const val DB_PAGE_SIZE = PAGE_SIZE
+private const val INITIAL_LOAD_SIZE = PAGE_SIZE
+private const val NETWORK_PAGE_SIZE = PAGE_SIZE
+private const val PRE_FETCH_DISTANCE = 10
 
 class AddCustomerListDescriptor(
     customerSite: SiteModel,
@@ -16,18 +20,18 @@ class AddCustomerListDescriptor(
     customerRemoteCustomerIds: List<Long>? = null,
     customerExcludedCustomerIds: List<Long>? = null
 ) : WCCustomerListDescriptor(
-        customerSite,
-        customerSearchQuery,
-        customerEmail,
-        customerRole,
-        customerRemoteCustomerIds,
-        customerExcludedCustomerIds
+    customerSite,
+    customerSearchQuery,
+    customerEmail,
+    customerRole,
+    customerRemoteCustomerIds,
+    customerExcludedCustomerIds
 ) {
     override val config = ListConfig(
-            networkPageSize = PAGE_SIZE,
-            initialLoadSize = PAGE_SIZE,
-            dbPageSize = PAGE_SIZE * 3,
-            prefetchDistance = PREFETCH_DISTANCE
+        networkPageSize = NETWORK_PAGE_SIZE,
+        initialLoadSize = INITIAL_LOAD_SIZE,
+        dbPageSize = DB_PAGE_SIZE,
+        prefetchDistance = PRE_FETCH_DISTANCE
     )
 
     companion object {
