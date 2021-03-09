@@ -18,6 +18,7 @@ import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import org.wordpress.android.fluxc.model.customer.WCCustomerListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 
@@ -55,7 +56,7 @@ class AddCustomerViewModel @AssistedInject constructor(
 
     private val pagedListWrapper by lazy {
         listStore.getList(
-            listDescriptor = AddCustomerListDescriptor(customerSite = selectedSite.get()),
+            listDescriptor = WCCustomerListDescriptor(site = selectedSite.get()),
             dataSource = listItemDataSource,
             lifecycle = lifecycle
         ).apply { fetchFirstPage() }

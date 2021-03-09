@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.customer.WCCustomerListDescriptor
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInterface
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -20,11 +21,11 @@ class AddCustomerListItemDataSource
 constructor(
     private val store: WCCustomerStore,
     private val dispatcher: Dispatcher
-) : ListItemDataSourceInterface<AddCustomerListDescriptor, Long, CustomerListItemType> {
+) : ListItemDataSourceInterface<WCCustomerListDescriptor, Long, CustomerListItemType> {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun getItemsAndFetchIfNecessary(
-        listDescriptor: AddCustomerListDescriptor,
+        listDescriptor: WCCustomerListDescriptor,
         itemIdentifiers: List<Long>
     ): List<CustomerListItemType> {
         val storedCustomers = store.getCustomerByRemoteIds(listDescriptor.site, itemIdentifiers)
@@ -33,11 +34,11 @@ constructor(
             if (remoteIdToFetch.isEmpty()) return@launch
             val payload = store.fetchCustomersByIdsAndCache(
                 site = listDescriptor.site,
-                pageSize = PAGE_SIZE,
+                pageSize = listDescriptor.config.networkPageSize,
                 remoteCustomerIds = remoteIdToFetch
             )
             if (payload.error == null) {
-                val listTypeIdentifier = AddCustomerListDescriptor.calculateTypeIdentifier(listDescriptor.site.id)
+                val listTypeIdentifier = WCCustomerListDescriptor.calculateTypeIdentifier(listDescriptor.site.id)
                 dispatcher.dispatch(ListActionBuilder.newListDataInvalidatedAction(listTypeIdentifier))
             }
         }
@@ -57,17 +58,17 @@ constructor(
     }
 
     override fun getItemIdentifiers(
-        listDescriptor: AddCustomerListDescriptor,
+        listDescriptor: WCCustomerListDescriptor,
         remoteItemIds: List<RemoteId>,
         isListFullyFetched: Boolean
     ): List<Long> = remoteItemIds.map { it.value }
 
-    override fun fetchList(listDescriptor: AddCustomerListDescriptor, offset: Long) {
+    override fun fetchList(listDescriptor: WCCustomerListDescriptor, offset: Long) {
         coroutineScope.launch {
             val payload = store.fetchCustomers(
                 site = listDescriptor.site,
                 offset = offset,
-                pageSize = PAGE_SIZE
+                pageSize = listDescriptor.config.networkPageSize
             )
 
             dispatchEventWhenFetched(listDescriptor, payload, offset)
@@ -75,7 +76,7 @@ constructor(
     }
 
     private fun dispatchEventWhenFetched(
-        listDescriptor: AddCustomerListDescriptor,
+        listDescriptor: WCCustomerListDescriptor,
         payload: WooResult<List<WCCustomerModel>>,
         offset: Long
     ) {
@@ -83,7 +84,7 @@ constructor(
             listDescriptor = listDescriptor,
             remoteItemIds = payload.model?.map { it.remoteCustomerId } ?: emptyList(),
             loadedMore = offset > 0,
-            canLoadMore = payload.model?.size == PAGE_SIZE,
+            canLoadMore = payload.model?.size == listDescriptor.config.networkPageSize,
             error = payload.error?.let { fetchError ->
                 ListError(type = GENERIC_ERROR, message = fetchError.message)
             }

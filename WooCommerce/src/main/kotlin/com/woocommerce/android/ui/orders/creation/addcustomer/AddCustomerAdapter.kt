@@ -34,8 +34,7 @@ class AddCustomerAdapter @Inject constructor(
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is CustomerItem -> ITEM_TYPE
-            is LoadingItem -> LOADING_TYPE
-            else -> throw IllegalStateException("item at position $position is not supported")
+            else -> LOADING_TYPE
         }
     }
 
