@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingAccountSettings
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -82,14 +83,14 @@ class ShippingLabelRepository @Inject constructor(
     }
 
     suspend fun getShippingRates(
-        orderId: Long,
+        order: Order,
         origin: Address,
         destination: Address,
         packages: List<ShippingLabelPackage>
     ): WooResult<List<WCShippingRatesResult.ShippingPackage>> {
         val carrierRates = shippingLabelStore.getShippingRates(
             selectedSite.get(),
-            orderId,
+            order.remoteId,
             origin.toShippingLabelModel(),
             destination.toShippingLabelModel(),
             packages.mapIndexed { i, box ->

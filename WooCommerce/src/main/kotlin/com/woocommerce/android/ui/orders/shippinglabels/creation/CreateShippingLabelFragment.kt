@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -221,7 +222,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             event.originAddress,
                             event.destinationAddress,
                             event.shippingLabelPackages.toTypedArray(),
-                            event.orderId
+                            event.order,
+                            event.selectedRates.toTypedArray()
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -313,16 +315,16 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             return
         }
         root.isVisible = true
-        subtotalPrice.text = currencyFormatter.formatCurrency(state.price, "USD")
+        subtotalPrice.text = PriceUtils.formatCurrency(state.price + state.discount, state.currency, currencyFormatter)
 
         if (state.discount.isNotEqualTo(BigDecimal.ZERO)) {
             discountGroup.isVisible = true
-            discountPrice.text = currencyFormatter.formatCurrency(state.discount, "USD")
+            discountPrice.text = PriceUtils.formatCurrency(state.discount, state.currency, currencyFormatter)
         } else {
             discountGroup.isVisible = false
         }
 
-        val totalPriceValue = state.price - state.discount
-        totalPrice.text = currencyFormatter.formatCurrency(totalPriceValue, "USD")
+        val totalPriceValue = state.price
+        totalPrice.text = PriceUtils.formatCurrency(totalPriceValue, state.currency, currencyFormatter)
     }
 }

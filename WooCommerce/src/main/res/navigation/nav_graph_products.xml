@@ -137,15 +137,7 @@
     <fragment
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
-        android:label="addAttributeFragment">
-        <action
-            android:id="@+id/action_addAttributeFragment_to_addAttributeTermsFragment"
-            app:destination="@id/addAttributeTermsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
+        android:label="addAttributeFragment" />
     <fragment
         android:id="@+id/addAttributeTermsFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragment"
@@ -531,6 +523,13 @@
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
         app:destination="@id/productDownloadDetailsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_global_addVariationAttributeTermsFragment"
+        app:destination="@id/addAttributeTermsFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"
