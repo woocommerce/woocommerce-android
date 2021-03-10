@@ -18,6 +18,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.customer.WCCustomerListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.ListStore.ListError
@@ -51,7 +52,7 @@ class AddCustomerViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.isLoadingMore).thenReturn(mock())
         whenever(pagedListWrapper.data).thenReturn(mock())
         whenever(
-            listStore.getList<AddCustomerListDescriptor, AddCustomerListItemDataSource, CustomerListItemType>(
+            listStore.getList<WCCustomerListDescriptor, AddCustomerListItemDataSource, CustomerListItemType>(
                 listDescriptor = any(),
                 dataSource = any(),
                 lifecycle = any()
