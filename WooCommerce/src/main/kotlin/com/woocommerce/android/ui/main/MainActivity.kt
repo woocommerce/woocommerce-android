@@ -42,7 +42,6 @@ import com.woocommerce.android.push.NotificationHandler.NotificationChannelType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.FabManager
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
