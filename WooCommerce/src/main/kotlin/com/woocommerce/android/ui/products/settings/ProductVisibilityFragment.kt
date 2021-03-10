@@ -56,7 +56,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         }
 
         binding.editPassword.setOnTextChangedListener {
-            changesMade()
             if (it.toString().isNotBlank()) {
                 binding.editPassword.clearError()
             }
@@ -81,8 +80,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
             selectedVisibility = getVisibilityForButtonId(it.id)
             showPassword(it == binding.btnPasswordProtected)
-
-            changesMade()
         }
     }
 

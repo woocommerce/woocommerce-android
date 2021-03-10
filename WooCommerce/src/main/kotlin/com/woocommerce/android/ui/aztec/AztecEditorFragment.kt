@@ -1,15 +1,10 @@
 package com.woocommerce.android.ui.aztec
 
-import android.content.DialogInterface
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.AZTEC_EDITOR_DONE_BUTTON_TAPPED
 import com.woocommerce.android.databinding.FragmentAztecEditorBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
@@ -35,7 +30,6 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
 
-        private const val FIELD_IS_CONFIRMING_DISCARD = "is_confirming_discard"
         private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }
 
@@ -43,8 +37,6 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
 
     private val navArgs: AztecEditorFragmentArgs by navArgs()
 
-    private var isConfirmingDiscard = false
-    private var shouldShowDiscardDialog = true
     private var isHtmlEditorEnabled: Boolean = false
 
     override fun getFragmentTitle() = navArgs.aztecTitle
@@ -52,7 +44,6 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setHasOptionsMenu(true)
         (activity as? MainActivity)?.hideBottomNav()
 
         val binding = FragmentAztecEditorBinding.bind(view)
@@ -75,9 +66,6 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
 
         savedInstanceState?.let { state ->
             isHtmlEditorEnabled = state.getBoolean(FIELD_IS_HTML_EDITOR_ENABLED)
-            if (state.getBoolean(FIELD_IS_CONFIRMING_DISCARD)) {
-                confirmDiscard()
-            }
         }
 
         aztec.visualEditor.post {
@@ -86,30 +74,7 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.menu_done)?.isVisible = editorHasChanges()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                AnalyticsTracker.track(AZTEC_EDITOR_DONE_BUTTON_TAPPED)
-                shouldShowDiscardDialog = false
-                navigateBackWithResult(editorHasChanges())
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(FIELD_IS_CONFIRMING_DISCARD, isConfirmingDiscard)
         outState.putBoolean(FIELD_IS_HTML_EDITOR_ENABLED, isHtmlEditorEnabled)
         super.onSaveInstanceState(outState)
     }
@@ -127,32 +92,9 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
         }
     }
 
-    /**
-     * Prevent back press in the main activity if the user made changes so we can confirm the discard
-     */
     override fun onRequestAllowBackPress(): Boolean {
-        return if (editorHasChanges() && shouldShowDiscardDialog) {
-            confirmDiscard()
-            false
-        } else {
-            true
-        }
-    }
-
-    private fun confirmDiscard() {
-        isConfirmingDiscard = true
-        WooDialog.showDialog(
-                requireActivity(),
-                messageId = R.string.discard_message,
-                positiveButtonId = R.string.discard,
-                posBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                    navigateBackWithResult(false)
-                },
-                negativeButtonId = R.string.keep_editing,
-                negBtnAction = DialogInterface.OnClickListener { _, _ ->
-                    isConfirmingDiscard = false
-                })
+        navigateBackWithResult(editorHasChanges())
+        return false
     }
 
     override fun onToolbarCollapseButtonClicked() {
@@ -206,18 +148,18 @@ class AztecEditorFragment : BaseFragment(R.layout.fragment_aztec_editor),
     }
 
     override fun onRedo() {
-        requireActivity().invalidateOptionsMenu()
+        // no-op
     }
 
     override fun onRedoEnabled() {
-        requireActivity().invalidateOptionsMenu()
+        // no-op
     }
 
     override fun onUndo() {
-        requireActivity().invalidateOptionsMenu()
+        // no-op
     }
 
     override fun onUndoEnabled() {
-        requireActivity().invalidateOptionsMenu()
+        // no-op
     }
 }

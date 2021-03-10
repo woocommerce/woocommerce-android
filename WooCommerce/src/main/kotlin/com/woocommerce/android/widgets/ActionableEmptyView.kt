@@ -11,6 +11,7 @@ import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActionableEmptyViewBinding
+import com.woocommerce.android.util.WooAnimUtils
 import org.wordpress.android.util.DisplayUtils
 
 class ActionableEmptyView : LinearLayout {
@@ -68,8 +69,21 @@ class ActionableEmptyView : LinearLayout {
         checkOrientation()
     }
 
+    fun updateVisibility(shouldBeVisible: Boolean, showButton: Boolean) {
+        if (shouldBeVisible && isVisible.not()) {
+            WooAnimUtils.fadeIn(this)
+            showButton(showButton)
+        } else if (shouldBeVisible.not() && isVisible) {
+            WooAnimUtils.fadeOut(this)
+        }
+    }
+
     fun showButton(show: Boolean) {
         binding.emptyViewButton.isVisible = show
+    }
+
+    fun setOnClickListener(action: (View) -> Unit) {
+        binding.emptyViewButton.setOnClickListener(action)
     }
 
     /**

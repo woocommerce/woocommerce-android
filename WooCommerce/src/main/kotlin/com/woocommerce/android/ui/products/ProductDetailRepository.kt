@@ -7,7 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingClass
@@ -24,7 +24,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
@@ -244,18 +243,33 @@ class ProductDetailRepository @Inject constructor(
     }
 
     /**
-     * Returns the list of attributes assigned to a product
-     */
-    fun getProductAttributes(remoteProductId: Long): List<ProductAttribute> {
-        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
-        return product?.getAttributeList()?.map { it.toAppModel() } ?: emptyList()
-    }
-
-    /**
      * Fetches the list of store-wide attributes
      */
     suspend fun fetchGlobalAttributes(): List<ProductGlobalAttribute> {
         val wooResult = globalAttributeStore.fetchStoreAttributes(selectedSite.get())
+        return wooResult.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
+    /**
+     * Fetches the list of terms for an attribute
+     */
+    suspend fun fetchGlobalAttributeTerms(remoteAttributeId: Long): List<ProductAttributeTerm> {
+        val wooResult = globalAttributeStore.fetchAttributeTerms(
+            selectedSite.get(),
+            remoteAttributeId
+        )
+        return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
+    }
+
+    suspend fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
+        globalAttributeStore.createOptionValueForAttribute(selectedSite.get(), attributeId, termName)
+    }
+
+    /**
+     * Returns a list of global attributes from the local db
+     */
+    fun getGlobalAttributes(): List<ProductGlobalAttribute> {
+        val wooResult = globalAttributeStore.loadCachedStoreAttributes(selectedSite.get())
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 
@@ -368,7 +382,7 @@ class ProductDetailRepository @Inject constructor(
      */
 
     @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     fun onProductCreated(event: OnProductCreated) {
         if (event.causeOfChange == ADDED_PRODUCT) {
             if (event.isError) {

@@ -126,10 +126,6 @@
         android:id="@+id/attributeListFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"
         android:label="attributeListFragment">
-        <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
         <action
             android:id="@+id/action_attributeListFragment_to_addAttributeFragment"
             app:destination="@id/addAttributeFragment"
@@ -142,6 +138,19 @@
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
         android:label="addAttributeFragment" />
+    <fragment
+        android:id="@+id/addAttributeTermsFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragment"
+        android:label="addAttributeTermsFragment">
+        <argument
+            android:name="attributeId"
+            app:argType="long"
+            app:nullable="false" />
+        <argument
+            android:name="attributeName"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
         android:name="com.woocommerce.android.ui.aztec.AztecEditorFragment"
@@ -507,6 +516,13 @@
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
         app:destination="@id/productDownloadDetailsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_global_addVariationAttributeTermsFragment"
+        app:destination="@id/addAttributeTermsFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"

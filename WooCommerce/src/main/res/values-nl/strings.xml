@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-19 17:25:01+0000
+Translation-Revision-Date: 2021-03-04 15:54:53+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Fout bij het opslaan van je instellingen</string>
+    <string name="shipping_label_payments_saving_dialog_message">Een moment geduld…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Instellingen worden opgeslagen</string>
+    <string name="shipping_label_payments_expiration_date">Verloopt %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">E-mail de labelaanschafkwitanties naar %1$s (%2$s) via %3$s</string>
+    <string name="shipping_label_payments_account_info">Creditcards worden opgehaald uit het volgende WordPress.com-account: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Een andere creditcard toevoegen</string>
+    <string name="shipping_label_payments_selected_payment_method">Betaalmethode geselecteerd</string>
+    <string name="shipping_label_loading_data_progress_message">Een moment geduld…</string>
+    <string name="shipping_label_loading_data_progress_title">Je instellingen aan het ophalen</string>
+    <string name="shipping_label_selected_payment_description">Creditcard eindigt op %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Ontdek</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Of tik om een bestaande eigenschap te selecteren</string>
+    <string name="product_new_attribute_name">Nieuwe naam van eigenschap</string>
+    <string name="product_add_attribute">Eigenschap toevoegen</string>
+    <string name="product_variation_attributes">Eigenschappen</string>
+    <string name="product_variations_edit_attr">Wijzig eigenschappen</string>
     <string name="shipping_label_multi_packages_total_weight">Totaal pakketgewicht: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d artikelen in %2$d pakketten</string>
     <string name="shipping_label_single_package_total_weight">Totaal pakketgewicht: %1$s %2$s</string>

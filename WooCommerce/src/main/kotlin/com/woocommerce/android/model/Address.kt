@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.android.parcel.Parcelize
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
 import java.util.Locale
 
 @Parcelize
@@ -78,6 +79,17 @@ data class Address(
             address1.isNotEmpty() || country.isNotEmpty() ||
             phone.isNotEmpty() || email.isNotEmpty() ||
             state.isNotEmpty() || city.isNotEmpty()
+    }
+
+    fun toShippingLabelModel(): ShippingLabelAddress {
+        return ShippingLabelAddress(
+            address = address1,
+            address2 = address2,
+            city = city,
+            postcode = postcode,
+            state = state,
+            country = country
+        )
     }
 
     override fun toString(): String {

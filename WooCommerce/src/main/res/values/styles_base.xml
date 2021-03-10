@@ -523,6 +523,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
+    <style name="Woo.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="paddingStart">@dimen/major_75</item>
+        <item name="android:paddingLeft">@dimen/major_75</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+    </style>
+
     <!--
         Divider Style
     -->
@@ -538,7 +545,11 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Divider.Warning">
-        <item name="android:background">@color/warning_foreground_color</item>
+        <item name="android:background">@color/warning_banner_foreground_color</item>
+    </style>
+
+    <style name="Woo.Divider.Info">
+        <item name="android:background">@color/info_banner_foreground_color</item>
     </style>
 
     <!--

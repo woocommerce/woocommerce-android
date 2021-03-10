@@ -1,0 +1,2 @@
+6.1:
+Die neuesten Updates für die WooCommerce Android-App sind da. Wenn du ein Produkt bearbeitest, werden nun alle Änderungen automatisch lokal gespeichert – und wenn du auf „Aktualisieren“ klickst, werden die Änderungen an deinen Server gesendet. Darüber hinaus haben wir Fehler rund um Anzeige und Produkteinstellungen, die Bearbeitung der Sprache der Produktpreise und Push-Benachrichtigungen zu Supportanfragen behoben.

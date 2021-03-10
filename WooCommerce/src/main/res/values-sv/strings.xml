@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-16 11:54:04+0000
+Translation-Revision-Date: 2021-03-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">Ett fel uppstod när dina inställningar skulle sparas</string>
+    <string name="shipping_label_payments_saving_dialog_message">Vänta …</string>
+    <string name="shipping_label_payments_saving_dialog_title">Sparar dina inställningar</string>
+    <string name="shipping_label_payments_expiration_date">Löper ut %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">E-posta inköpskvitton till %1$s (%2$s) på %3$s</string>
+    <string name="shipping_label_payments_account_info">Kreditkort hämtas från följande WordPress.com-konto: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Lägg till ett annat kreditkort</string>
+    <string name="shipping_label_payments_selected_payment_method">Betalningsmetod vald</string>
+    <string name="shipping_label_loading_data_progress_message">Vänta …</string>
+    <string name="shipping_label_loading_data_progress_title">Hämtar dina inställningar</string>
+    <string name="shipping_label_selected_payment_description">Kreditkort slutar på %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Eller tryck för att välja ett befintligt attribut</string>
+    <string name="product_new_attribute_name">Nytt attributnamn</string>
+    <string name="product_add_attribute">Lägg till attribut</string>
+    <string name="product_variation_attributes">Attribut</string>
+    <string name="product_variations_edit_attr">Redigera attribut</string>
     <string name="shipping_label_multi_packages_total_weight">Total förpackningsvikt: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d varor i %2$d förpackningar</string>
     <string name="shipping_label_single_package_total_weight">Total förpackningsvikt: %1$s %2$s</string>

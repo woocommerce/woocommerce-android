@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-05 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_label_payments_saving_error">No se ha podido guardar la configuración</string>
+    <string name="shipping_label_payments_saving_dialog_message">Por favor, espera…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Guardando la configuración</string>
+    <string name="shipping_label_payments_expiration_date">Expira el %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Envía los recibos de compra de la etiqueta a %1$s (%2$s) en %3$s</string>
+    <string name="shipping_label_payments_account_info">Las tarjetas de crédito se han recuperado de esta cuenta de WordPress.com: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Añadir otra tarjeta de crédito</string>
+    <string name="shipping_label_payments_selected_payment_method">Método de pago seleccionado</string>
+    <string name="shipping_label_loading_data_progress_message">Por favor, espera…</string>
+    <string name="shipping_label_loading_data_progress_title">Recuperando la configuración</string>
+    <string name="shipping_label_selected_payment_description">Tarjeta de crédito acabada en %1$s</string>
+    <string name="payment_method_paypal">PayPal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Descubrir</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">O toca un atributo que ya tengas</string>
+    <string name="product_new_attribute_name">Nombre del nuevo atributo</string>
+    <string name="product_add_attribute">Añadir atributo</string>
+    <string name="product_variation_attributes">Atributos</string>
+    <string name="product_variations_edit_attr">Editar atributos</string>
     <string name="shipping_label_multi_packages_total_weight">Peso total del paquete: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d artículos en %2$d paquetes</string>
     <string name="shipping_label_single_package_total_weight">Peso total del paquete: %1$s %2$s</string>

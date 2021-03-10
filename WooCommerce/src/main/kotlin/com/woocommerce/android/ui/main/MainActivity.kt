@@ -115,7 +115,6 @@ class MainActivity : AppUpgradeActivity(),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
-    @Inject lateinit var fabManager: FabManager
 
     private var isBottomNavShowing = true
     private var previousDestinationId: Int? = null
@@ -418,17 +417,11 @@ class MainActivity : AppUpgradeActivity(),
             binding.appBarLayout.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
             showCrossIcon = when (destination.id) {
                 R.id.productFilterListFragment,
-                R.id.productShippingClassFragment,
                 R.id.issueRefundFragment,
                 R.id.addOrderShipmentTrackingFragment,
                 R.id.addOrderNoteFragment,
-                R.id.productSettingsFragment,
-                R.id.addProductCategoryFragment,
-                R.id.parentCategoryListFragment,
-                R.id.productSelectionListFragment,
                 R.id.printShippingLabelInfoFragment,
                 R.id.shippingLabelFormatOptionsFragment,
-                R.id.productDownloadsSettingsFragment,
                 R.id.newOrderFragment,
                 R.id.addCustomerFragment -> {
                     true

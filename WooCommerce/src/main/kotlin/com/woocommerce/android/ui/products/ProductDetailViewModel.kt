@@ -38,6 +38,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
+import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
@@ -164,6 +166,12 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+
+    private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
+    val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
+
+    final val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
+    private var globalAttributesViewState by globalAttributeViewStateData
 
     private val _globalAttributeList = MutableLiveData<List<ProductGlobalAttribute>>()
     val globalAttributeList: LiveData<List<ProductGlobalAttribute>> = _globalAttributeList
@@ -696,7 +704,8 @@ class ProductDetailViewModel @AssistedInject constructor(
         downloads: List<ProductFile>? = null,
         downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
-        isDownloadable: Boolean? = null
+        isDownloadable: Boolean? = null,
+        attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
             val currentProduct = product.copy()
@@ -749,7 +758,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     downloads = downloads ?: product.downloads,
                     downloadLimit = downloadLimit ?: product.downloadLimit,
                     downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable
+                    isDownloadable = isDownloadable ?: product.isDownloadable,
+                    attributes = attributes ?: product.attributes
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
@@ -948,15 +958,80 @@ class ProductDetailViewModel @AssistedInject constructor(
         _attributeList.value = getProductDraftAttributes()
     }
 
+    /**
+     * Returns the list of attributes assigned to the product
+     */
     fun getProductDraftAttributes(): List<ProductAttribute> {
         return viewState.productDraft?.attributes ?: emptyList()
     }
 
     /**
-     * User clicked an attribute in the attribute list
+     * Returns the list of term names for a specific attribute assigned to the product
      */
-    fun onAttributeListItemClick(attribute: ProductAttribute) {
-        // TODO
+    fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
+        val attributes = getProductDraftAttributes()
+        attributes.forEach { attribute ->
+            if (attribute.name == attributeName) {
+                return attribute.terms
+            }
+        }
+        return emptyList()
+    }
+
+    /**
+     * Set the list of terms for a single attribute in the product draft
+     */
+    fun setProductDraftAttributeTerms(attributeId: Long, attributeName: String, termNames: ArrayList<String>) {
+        val updatedAttributes = ArrayList<ProductAttribute>()
+
+        getProductDraftAttributes().forEach { draftAttribute ->
+            if (draftAttribute.name == attributeName) {
+                updatedAttributes.add(
+                    ProductAttribute(
+                        id = attributeId,
+                        name = attributeName,
+                        terms = termNames,
+                        isVisible = draftAttribute.isVisible
+                    )
+                )
+            } else {
+                updatedAttributes.add(draftAttribute)
+            }
+        }
+
+        updateProductDraft(attributes = updatedAttributes)
+    }
+
+    /**
+     * Fetches terms for a global product attribute
+     */
+    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
+        launch {
+            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+        }
+    }
+
+    /**
+     * Adds a new term to a global attribute
+     */
+    fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
+        launch {
+            productRepository.addGlobalAttributeTerm(attributeId, termName)
+        }
+    }
+
+    /**
+     * Clears the global attribute terms
+     */
+    fun resetGlobalAttributeTerms() {
+        _attributeTermsList.value = emptyList()
+    }
+
+    /**
+     * User clicked an attribute in the attribute list fragment or the add attribute fragment
+     */
+    fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
     }
 
     /**
@@ -966,22 +1041,70 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductAttribute)
     }
 
-    /**
-     * User clicked an attribute in the add attribute fragment
-     */
-    fun onAddAttributeListItemClick(id: Long, isGlobalAttribute: Boolean) {
-        // TODO
-    }
-
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
-     * Fetches the list of global attributes, ie: the attributes available store-wide
+     * Used by the add attribute screen to fetch the list of store-wide product attributes
      */
     fun fetchGlobalAttributes() {
         launch {
+            // load cached global attributes before fetching them, and only show skeleton if the
+            // list is still empty
+            _globalAttributeList.value = loadGlobalAttributes()
+            if (_globalAttributeList.value?.isEmpty() == true) {
+                globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = true)
+            }
+
+            // now fetch from the backend
             _globalAttributeList.value = productRepository.fetchGlobalAttributes()
+            globalAttributesViewState = globalAttributesViewState.copy(isSkeletonShown = false)
         }
+    }
+
+    fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
+        productRepository.getGlobalAttributes()
+
+    /**
+     * Returns true if an attribute with this name is assigned to the product draft
+     */
+    private fun containsAttributeName(attributeName: String): Boolean {
+        viewState.productDraft?.attributes?.forEach {
+            if (it.name.equals(attributeName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Called from the attribute list when the user enters a new attribute
+     */
+    fun addLocalAttribute(attributeName: String) {
+        if (containsAttributeName(attributeName)) {
+            triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+            return
+        }
+
+        // get the list of current attributes
+        val attributes = ArrayList<ProductAttribute>()
+        viewState.productDraft?.attributes?.let {
+            attributes.addAll(it)
+        }
+
+        // add the new one to the list
+        attributes.add(
+            ProductAttribute(
+                id = 0L,
+                name = attributeName,
+                terms = emptyList(),
+                isVisible = true)
+        )
+
+        // update the draft with the new list
+        updateProductDraft(attributes = attributes)
+
+        // take the user to the add attribute terms screen
+        triggerEvent(AddProductAttributeTerms(0L, attributeName))
     }
 
     /**
@@ -1540,6 +1663,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+        class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
     }
 
     object RefreshMenu : Event()
@@ -1611,6 +1737,11 @@ class ProductDetailViewModel @AssistedInject constructor(
     @Parcelize
     data class ProductDownloadsViewState(
         val isUploadingDownloadableFile: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class GlobalAttributesViewState(
+        val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
     @AssistedInject.Factory

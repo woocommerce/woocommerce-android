@@ -29,6 +29,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
@@ -49,7 +50,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         PRODUCT_CATEGORY_LIST,
         PRODUCT_TAG_LIST,
         CUSTOMER_LIST,
-        CUSTOMER_LIST_LOADING
+        CUSTOMER_LIST_LOADING,
+        SHIPPING_LABEL_CARRIER_RATES
     }
 
     init {
@@ -201,6 +203,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 buttonText = null
                 // TO-DO check if the image fits our needs
                 drawableId = R.drawable.img_empty_orders_loading
+            }
+            SHIPPING_LABEL_CARRIER_RATES -> {
+                isTitleBold = false
+                title = context.getString(R.string.shipping_label_shipping_carrier_rates_unavailable)
+                message = null
+                buttonText = null
+                drawableId = R.drawable.img_empty_orders_all_fulfilled
             }
         }
 
