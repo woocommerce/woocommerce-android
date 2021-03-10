@@ -6,6 +6,7 @@
 
 6.2
 -----
+- [*] Fixed a possible crash during the login
 
 
 6.1
