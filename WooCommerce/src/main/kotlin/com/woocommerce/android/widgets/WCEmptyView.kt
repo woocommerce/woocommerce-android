@@ -191,6 +191,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.order_creation_add_customer_empty_list_title)
                 message = null
                 buttonText = null
+                // TO-DO check if the image fits our needs
                 drawableId = R.drawable.img_empty_orders_no_orders
             }
             CUSTOMER_LIST_LOADING -> {
@@ -198,6 +199,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.order_creation_add_customer_empty_list_loading_title)
                 message = null
                 buttonText = null
+                // TO-DO check if the image fits our needs
                 drawableId = R.drawable.img_empty_orders_loading
             }
         }

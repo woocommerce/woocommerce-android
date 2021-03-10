@@ -17,8 +17,8 @@
         android:paddingTop="@dimen/margin_medium"
         android:paddingBottom="@dimen/margin_large">
 
-        <View
-            android:id="@+id/vCustomerNameSkeleton"
+        <TextView
+            android:id="@+id/tvCustomerName"
             android:layout_width="120dp"
             android:layout_height="@dimen/skeleton_text_height_100"
             android:background="@drawable/skeleton_background"
@@ -30,8 +30,8 @@
             android:layout_width="160dp"
             android:layout_height="@dimen/skeleton_text_height_100"
             android:background="@drawable/skeleton_background"
-            app:layout_constraintStart_toStartOf="@id/vCustomerNameSkeleton"
-            app:layout_constraintTop_toBottomOf="@id/vCustomerNameSkeleton" />
+            app:layout_constraintStart_toStartOf="@id/tvCustomerName"
+            app:layout_constraintTop_toBottomOf="@id/tvCustomerName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
