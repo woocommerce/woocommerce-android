@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -17,12 +16,14 @@ import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsL
  */
 class AttributeTermsListAdapter(
     private val showIcons: Boolean,
-    private val dragHelper: ItemTouchHelper? = null,
-    private val onTermClick: OnTermClickListener? = null
+    private val dragHelper: ItemTouchHelper? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
-    interface OnTermClickListener {
+    interface OnTermListener {
         fun onTermClick(termName: String)
+        fun onTermDelete(termName: String)
     }
+
+    private lateinit var onTermListener: OnTermListener
 
     var termNames: ArrayList<String> = ArrayList()
         set(value) {
@@ -50,13 +51,10 @@ class AttributeTermsListAdapter(
 
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
         holder.bind(termNames[position])
+    }
 
-        onTermClick?.let { listener ->
-            holder.itemView.setOnClickListener {
-                val item = termNames[position]
-                listener.onTermClick(item)
-            }
-        }
+    fun setOnTermListener(listener: OnTermListener) {
+        onTermListener = listener
     }
 
     fun isEmpty() = termNames.isEmpty()
@@ -68,7 +66,7 @@ class AttributeTermsListAdapter(
         }
     }
 
-    private fun containsTerm(termName: String): Boolean {
+    fun containsTerm(termName: String): Boolean {
         termNames.forEach { term ->
             if (term.equals(termName, ignoreCase = true)) {
                 return true
@@ -92,7 +90,7 @@ class AttributeTermsListAdapter(
         notifyItemChanged(to)
     }
 
-    private fun removeTerm(term: String) {
+    fun removeTerm(term: String) {
         val index = termNames.indexOf(term)
         if (index >= 0) {
             termNames.remove(term)
@@ -115,26 +113,32 @@ class AttributeTermsListAdapter(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        @SuppressLint("ClickableViewAccessibility")
-        fun bind(term: String) {
-            viewBinding.termName.text = term
-            viewBinding.termDragHandle.isVisible = showIcons
-            viewBinding.termDelete.isVisible = showIcons
+        init {
+            viewBinding.root.setOnClickListener {
+                val item = termNames[adapterPosition]
+                onTermListener.onTermClick(item)
+            }
 
             if (showIcons) {
                 viewBinding.termDelete.setOnClickListener {
-                    removeTerm(term)
+                    val item = termNames[adapterPosition]
+                    removeTerm(item)
+                    onTermListener.onTermDelete(item)
                 }
 
-                viewBinding.termDragHandle.setOnTouchListener { _, event ->
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        dragHelper?.startDrag(this)
-                    }
-                    false
+                viewBinding.termDragHandle.setOnClickListener {
+                    dragHelper?.startDrag(this)
                 }
             }
+        }
+
+        fun bind(termName: String) {
+            viewBinding.termName.text = termName
+            viewBinding.termDragHandle.isVisible = showIcons
+            viewBinding.termDelete.isVisible = showIcons
         }
     }
 }
