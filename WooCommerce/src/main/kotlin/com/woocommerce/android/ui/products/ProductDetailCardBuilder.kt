@@ -464,10 +464,9 @@ class ProductDetailCardBuilder(
                 // [ ] Product that's not downloadable. Set as virtual. Make sure it says "Virtual"
                 // [ ] Product that's not downloadable. Don't set as virtual too. Make sure it says "Physical"
 
-                if(this.isDownloadable) {
+                if (this.isDownloadable) {
                     resources.getString(R.string.product_type_downloadable_label)
-                }
-                else {
+                } else {
                     if (this.isVirtual) resources.getString(R.string.product_type_virtual)
                     else resources.getString(R.string.product_type_physical)
                 }
