@@ -98,6 +98,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -1031,11 +1032,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                 it.id != attributeId && it.name != attributeName
             }
         }.also {
-            it.add(ProductAttribute(
+            (ProductAttribute(
                 id = attributeId,
                 name = attributeName,
                 terms = updatedTerms,
-                isVisible = thisAttribute.isVisible
+                isVisible = thisAttribute.isVisible,
+                isVariation = thisAttribute.isVariation
             ))
         }
 
@@ -1071,7 +1073,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 id = attributeId,
                 name = attributeName,
                 terms = updatedTerms,
-                isVisible = thisAttribute.isVisible
+                isVisible = thisAttribute.isVisible,
+                isVariation = thisAttribute.isVariation
             ))
         }
 
@@ -1168,7 +1171,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 id = 0L,
                 name = attributeName,
                 terms = emptyList(),
-                isVisible = true)
+                isVisible = true,
+                isVariation = true // TODO
+            )
         )
 
         // update the draft with the new list

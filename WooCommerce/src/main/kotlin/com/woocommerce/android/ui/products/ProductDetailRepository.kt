@@ -265,12 +265,13 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Saves only the list of attributes for a product
      */
-    suspend fun updateProductAttributes(remoteProductId: Long, attributes: List<ProductAttribute>) {
+    suspend fun updateProductAttributes(remoteProductId: Long, attributes: List<ProductAttribute>): Boolean {
         val wooResult = productStore.submitProductAttributeChanges(
             selectedSite.get(),
             remoteProductId,
             attributes.map { it.toDataModel() }
         )
+        return !wooResult.isError
     }
 
     /**

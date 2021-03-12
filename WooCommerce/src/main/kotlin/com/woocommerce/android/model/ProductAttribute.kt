@@ -3,7 +3,6 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.attribute.WCProductAttributeModel
 
 /**
  * Represents an attribute which is assigned to a product
@@ -13,7 +12,8 @@ data class ProductAttribute(
     val id: Long,
     val name: String,
     val terms: List<String>,
-    val isVisible: Boolean
+    val isVisible: Boolean,
+    val isVariation: Boolean
 ) : Parcelable {
     /**
      * Local attributes, which are attributes available only to a specific product, have an ID of zero
@@ -25,11 +25,12 @@ data class ProductAttribute(
         get() = !isLocalAttribute
 
     fun toDataModel() =
-        WCProductAttributeModel(
-            globalAttributeId = id.toInt(),
+        WCProductModel.ProductAttribute(
+            id = id,
             name = name,
             visible = isVisible,
-            options = terms.toMutableList()
+            options = terms.toMutableList(),
+            variation = isVariation
         )
 }
 
@@ -38,6 +39,7 @@ fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
         id = this.id,
         name = this.name,
         terms = this.options,
-        isVisible = this.visible
+        isVisible = this.visible,
+        isVariation = this.variation
     )
 }
