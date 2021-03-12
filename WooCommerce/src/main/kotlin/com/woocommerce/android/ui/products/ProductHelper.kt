@@ -48,7 +48,7 @@ object ProductHelper {
             dateCreated = Date(),
             firstImageUrl = null,
             totalSales = 0,
-            reviewsAllowed = false,
+            reviewsAllowed = true,
             isVirtual = productType == VARIABLE,
             ratingCount = 0,
             averageRating = 0f,
