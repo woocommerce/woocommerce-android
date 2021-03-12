@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.attribute.WCProductAttributeModel
 
 /**
  * Represents an attribute which is assigned to a product
@@ -22,6 +23,14 @@ data class ProductAttribute(
 
     val isGlobalAttribute: Boolean
         get() = !isLocalAttribute
+
+    fun toDataModel() =
+        WCProductAttributeModel(
+            globalAttributeId = id.toInt(),
+            name = name,
+            visible = isVisible,
+            options = terms.toMutableList()
+        )
 }
 
 fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {

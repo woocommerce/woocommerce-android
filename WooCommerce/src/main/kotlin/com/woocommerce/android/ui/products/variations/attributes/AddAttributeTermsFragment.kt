@@ -71,6 +71,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     globalTermsAdapter.addTerm(termName)
                 }
 
+                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, navArgs.attributeName, termName)
+
                 checkViews()
             }
         }
@@ -79,7 +81,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val globalTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {
-                addTerm(termName, saveToBackend = false)
+                addTerm(termName)
             }
 
             override fun onTermDelete(termName: String) {}
@@ -116,12 +118,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val assignedTerms = assignedTermsAdapter.termNames
-        viewModel.setProductDraftAttributeTerms(
-            navArgs.attributeId,
-            navArgs.attributeName,
-            assignedTerms
-        )
+        viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
     }
@@ -158,7 +155,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
-                addTerm(termName, saveToBackend = isGlobalAttribute)
+                addTerm(termName)
                 binding.termEditText.text?.clear()
             }
             true
@@ -243,10 +240,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     /**
-     * User entered a new term or tapped a global term, saveToBackend will only be true
-     * if the user entered a new term and this is a global attribute
+     * User entered a new term or tapped a global term\
      */
-    private fun addTerm(termName: String, saveToBackend: Boolean) {
+    private fun addTerm(termName: String) {
         // add the term to the list of assigned terms
         assignedTermsAdapter.addTerm(termName)
 
@@ -255,11 +251,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        if (saveToBackend) {
-            // TODO batch save to backend when user leaves screen
-            viewModel.addGlobalAttributeTerm(navArgs.attributeId, termName)
-        }
-
-        checkViews()
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
     }
 }

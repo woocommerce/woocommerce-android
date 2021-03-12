@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
@@ -261,8 +262,15 @@ class ProductDetailRepository @Inject constructor(
         return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
     }
 
-    suspend fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
-        globalAttributeStore.createOptionValueForAttribute(selectedSite.get(), attributeId, termName)
+    /**
+     * Saves only the list of attributes for a product
+     */
+    suspend fun updateProductAttributes(remoteProductId: Long, attributes: List<ProductAttribute>) {
+        val wooResult = productStore.submitProductAttributeChanges(
+            selectedSite.get(),
+            remoteProductId,
+            attributes.map { it.toDataModel() }
+        )
     }
 
     /**
