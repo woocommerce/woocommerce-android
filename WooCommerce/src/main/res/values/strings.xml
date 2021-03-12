@@ -1149,6 +1149,7 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+    <string name="product_type_downloadable_label">Downloadable</string>
 
     <!-- Product Add more details Bottom sheet -->
     <string name="product_type_list_header">Select a product type</string>

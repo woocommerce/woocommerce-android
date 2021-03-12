@@ -459,8 +459,18 @@ class ProductDetailCardBuilder(
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
             SIMPLE -> {
-                if (this.isVirtual) resources.getString(R.string.product_type_virtual)
-                else resources.getString(R.string.product_type_physical)
+                // Testing:
+                // [x] Make a product that's downloadable. Make sure it says "Downloadable"
+                // [ ] Product that's not downloadable. Set as virtual. Make sure it says "Virtual"
+                // [ ] Product that's not downloadable. Don't set as virtual too. Make sure it says "Physical"
+
+                if(this.isDownloadable) {
+                    resources.getString(R.string.product_type_downloadable_label)
+                }
+                else {
+                    if (this.isVirtual) resources.getString(R.string.product_type_virtual)
+                    else resources.getString(R.string.product_type_physical)
+                }
             }
             VARIABLE -> resources.getString(R.string.product_type_variable)
             GROUPED -> resources.getString(R.string.product_type_grouped)
