@@ -1006,26 +1006,26 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Adds a new term to a the product draft attributes
      */
     fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
-        // find this attribute in the draft attributes
-        val thisAttribute = getDraftAttribute(attributeId, attributeName)
-        if (thisAttribute == null) {
-            // TODO
-            return
-        }
+        val updatedTerms = ArrayList<String>()
+        var isVisible = true
+        var isVariation = false
 
-        // make sure this term doesn't already exist in this attribute
-        thisAttribute.terms.forEach {
-            if (it.equals(termName, ignoreCase = true)) {
-                triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
-                return
+        // find this attribute in the draft attributes, and if it exists add its terms to our updated term list
+        getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
+            // make sure this term doesn't already exist in this attribute
+            thisAttribute.terms.forEach {
+                if (it.equals(termName, ignoreCase = true)) {
+                    triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
+                    return
+                }
             }
+            updatedTerms.addAll(thisAttribute.terms)
+            isVisible = thisAttribute.isVisible
+            isVariation = thisAttribute.isVariation
         }
 
-        // created an updated list of terms
-        val updatedTerms = ArrayList<String>().also {
-            it.addAll(thisAttribute.terms)
-            it.add(termName)
-        }
+        // add the passed term to our updated term list
+        updatedTerms.add(termName)
 
         // get the current draft attributes
         val draftAttributes = getProductDraftAttributes()
@@ -1041,8 +1041,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     id = attributeId,
                     name = attributeName,
                     terms = updatedTerms,
-                    isVisible = thisAttribute.isVisible,
-                    isVariation = thisAttribute.isVariation
+                    isVisible = isVisible,
+                    isVariation = isVariation
                 )
             )
         }

@@ -59,7 +59,9 @@
             android:paddingTop="@dimen/major_100"
             android:paddingEnd="@dimen/major_100"
             android:text="@string/product_select_attribute_term"
-            android:textAppearance="@style/TextAppearance.Woo.Caption" />
+            android:textAppearance="@style/TextAppearance.Woo.Caption"
+            android:visibility="invisible"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/globalTermList"

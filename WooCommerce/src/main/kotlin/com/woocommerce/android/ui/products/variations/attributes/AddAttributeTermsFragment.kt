@@ -78,7 +78,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 }
 
                 viewModel.removeAttributeTermFromDraft(navArgs.attributeId, navArgs.attributeName, termName)
-
                 checkViews()
             }
         }
