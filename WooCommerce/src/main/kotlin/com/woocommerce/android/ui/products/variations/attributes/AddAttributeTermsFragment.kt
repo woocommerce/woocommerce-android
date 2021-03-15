@@ -128,8 +128,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun onRequestAllowBackPress(): Boolean {
         /**
-         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll either
-         * move this to the add attribute fragment, or to the variation fragment before variations are generated.
+         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll do this
+         * before variations are generated (because they can't be generated until the attributes are saved)
          */
         viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
@@ -271,6 +271,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
 
         viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
+        checkViews()
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -278,6 +279,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             skeletonView.show(binding.globalTermList, R.layout.skeleton_simple_list, true)
         } else {
             skeletonView.hide()
+            checkViews()
         }
     }
 }
