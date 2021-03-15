@@ -460,7 +460,7 @@ class ProductDetailCardBuilder(
         return when (productType) {
             SIMPLE -> {
                 when {
-                    this.isDownloadable -> resources.getString(R.string.product_type_downloadable_label)
+                    this.isDownloadable -> resources.getString(R.string.product_type_downloadable)
                     this.isVirtual -> resources.getString(R.string.product_type_virtual)
                     else -> resources.getString(R.string.product_type_physical)
                 }
