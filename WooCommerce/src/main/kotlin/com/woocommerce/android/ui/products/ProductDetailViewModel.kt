@@ -1010,7 +1010,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         var isVisible = true
         var isVariation = false
 
-        // find this attribute in the draft attributes, and if it exists add its terms to our updated term list
+        // find this attribute in the draft attributes
         getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
             // make sure this term doesn't already exist in this attribute
             thisAttribute.terms.forEach {
@@ -1019,6 +1019,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                     return
                 }
             }
+
+            // add its terms to our updated term list
             updatedTerms.addAll(thisAttribute.terms)
             isVisible = thisAttribute.isVisible
             isVariation = thisAttribute.isVariation
@@ -1031,12 +1033,12 @@ class ProductDetailViewModel @AssistedInject constructor(
         val draftAttributes = getProductDraftAttributes()
 
         // create an updated list without this attribute, then add a new one with the updated terms
-        val updatedAttributes = ArrayList<ProductAttribute>().also {
-            draftAttributes.filter {
-                it.id != attributeId && it.name != attributeName
-            }
-        }.also {
-            it.add(
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updatedAttributes.add(
                 ProductAttribute(
                     id = attributeId,
                     name = attributeName,
@@ -1045,9 +1047,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                     isVariation = isVariation
                 )
             )
-        }
 
-        updateProductDraft(attributes = updatedAttributes)
+            updateProductDraft(attributes = updatedAttributes)
+        }
     }
 
     /**
