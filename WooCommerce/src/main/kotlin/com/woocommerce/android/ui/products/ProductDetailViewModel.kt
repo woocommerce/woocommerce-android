@@ -1087,7 +1087,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
-                    productRepository.updateProductAttributes(getRemoteProductId(), attributes)
+                    val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
+                    if (!result) {
+                        triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                    }
                 }
             }
         }
