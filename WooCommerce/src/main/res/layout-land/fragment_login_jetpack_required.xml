@@ -58,6 +58,7 @@
     </ScrollView>
 
     <include
+        android:id="@+id/epilogue_button_bar"
         layout="@layout/view_login_epilogue_button_bar" />
 
 </LinearLayout>
