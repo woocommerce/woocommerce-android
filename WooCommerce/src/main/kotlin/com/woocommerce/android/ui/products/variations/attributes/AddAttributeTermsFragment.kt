@@ -255,11 +255,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
-        // binding.globalTermContainer.isVisible = !globalTermsAdapter.isEmpty()
+        binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
     }
 
     /**
-     * User entered a new term or tapped a global term\
+     * User entered a new term or tapped a global term
      */
     private fun addTerm(termName: String) {
         // add the term to the list of assigned terms
@@ -276,10 +276,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            skeletonView.show(binding.globalTermList, R.layout.skeleton_simple_list, true)
+            skeletonView.show(binding.globalTermContainer, R.layout.skeleton_simple_list, true)
         } else {
             skeletonView.hide()
-            checkViews()
         }
+        checkViews()
     }
 }
