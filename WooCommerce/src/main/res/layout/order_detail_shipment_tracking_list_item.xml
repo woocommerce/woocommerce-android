@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/tracking_copyNumber"
+        android:id="@+id/tracking_infoContent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_75"
@@ -51,7 +51,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tracking_copyNumber"
+        app:layout_constraintStart_toEndOf="@+id/tracking_infoContent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 

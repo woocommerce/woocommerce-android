@@ -66,6 +66,17 @@ class OrderDetailShipmentTrackingListAdapter(
                     )
                 }
             }
+            with(viewBinding.trackingInfoContent) {
+                setOnClickListener {
+                    OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
+                        anchor = viewBinding.trackingBtnTrack,
+                        context = context,
+                        trackingLink = shipmentTracking.trackingLink,
+                        trackingNumber = shipmentTracking.trackingNumber,
+                        onDeleteTrackingClicked = onDeleteShipmentTrackingClicked
+                    )
+                }
+            }
         }
     }
 
