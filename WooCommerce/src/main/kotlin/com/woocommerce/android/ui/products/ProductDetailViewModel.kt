@@ -1036,13 +1036,15 @@ class ProductDetailViewModel @AssistedInject constructor(
                 it.id != attributeId && it.name != attributeName
             }
         }.also {
-           it.add(ProductAttribute(
-                id = attributeId,
-                name = attributeName,
-                terms = updatedTerms,
-                isVisible = thisAttribute.isVisible,
-                isVariation = thisAttribute.isVariation
-            ))
+            it.add(
+                ProductAttribute(
+                    id = attributeId,
+                    name = attributeName,
+                    terms = updatedTerms,
+                    isVisible = thisAttribute.isVisible,
+                    isVariation = thisAttribute.isVariation
+                )
+            )
         }
 
         updateProductDraft(attributes = updatedAttributes)
