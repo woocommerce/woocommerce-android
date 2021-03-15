@@ -127,6 +127,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        /**
+         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll either
+         * move this to the add attribute fragment, or to the variation fragment before variations are generated.
+         */
         viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
