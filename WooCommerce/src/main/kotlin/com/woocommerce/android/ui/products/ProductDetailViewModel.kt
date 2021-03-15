@@ -98,7 +98,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -1012,7 +1011,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         // make sure this term doesn't already exist in this attribute
         thisAttribute.terms.forEach {
             if (it.equals(termName, ignoreCase = true)) {
-                triggerEvent(ShowSnackbar(R.string.product_term_name_already_exists))
+                triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
                 return
             }
         }
@@ -1032,7 +1031,7 @@ class ProductDetailViewModel @AssistedInject constructor(
                 it.id != attributeId && it.name != attributeName
             }
         }.also {
-            (ProductAttribute(
+           it.add(ProductAttribute(
                 id = attributeId,
                 name = attributeName,
                 terms = updatedTerms,
@@ -1085,7 +1084,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * Saves any attribute changes to the backend
      */
     fun saveAttributeChanges() {
-        if (hasAttributeChanges()) {
+        if (hasAttributeChanges() && checkConnection()) {
             launch {
                 viewState.productDraft?.attributes?.let { attributes ->
                     productRepository.updateProductAttributes(getRemoteProductId(), attributes)

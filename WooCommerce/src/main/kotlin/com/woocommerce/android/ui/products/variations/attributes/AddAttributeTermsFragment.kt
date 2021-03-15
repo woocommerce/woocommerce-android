@@ -52,6 +52,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private lateinit var assignedTermsAdapter: AttributeTermsListAdapter
     private lateinit var globalTermsAdapter: AttributeTermsListAdapter
 
+    /**
+     * This is the listener attached to the list of assigned terms
+     */
     private val assignedTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {}
@@ -78,6 +81,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
     }
 
+    /**
+     * This is the listener attached to the list of global terms
+     */
     private val globalTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {
