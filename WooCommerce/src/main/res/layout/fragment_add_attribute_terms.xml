@@ -49,9 +49,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/minor_100"
         android:background="?attr/colorSurface"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"

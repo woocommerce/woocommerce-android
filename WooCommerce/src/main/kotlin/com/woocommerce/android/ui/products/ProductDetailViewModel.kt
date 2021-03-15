@@ -167,6 +167,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
+    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
+
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
@@ -983,7 +986,9 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
         launch {
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = true)
             _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = false)
         }
     }
 
@@ -1819,6 +1824,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class GlobalAttributesViewState(
+        val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class GlobalAttributesTermsViewState(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 

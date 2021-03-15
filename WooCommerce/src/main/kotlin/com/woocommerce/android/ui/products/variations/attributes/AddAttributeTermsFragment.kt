@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
+import com.woocommerce.android.widgets.SkeletonView
 
 /**
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
@@ -39,6 +41,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val binding get() = _binding!!
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
+    private val skeletonView = SkeletonView()
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -196,6 +199,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             showGlobalAttributeTerms(it)
         })
 
+        viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+                showSkeleton(it)
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ExitProductAddAttributeTerms -> findNavController().navigateUp()
@@ -242,7 +251,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
-        binding.globalTermContainer.isVisible = !globalTermsAdapter.isEmpty()
+        // binding.globalTermContainer.isVisible = !globalTermsAdapter.isEmpty()
     }
 
     /**
@@ -258,5 +267,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
 
         viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
+    }
+
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.globalTermList, R.layout.skeleton_simple_list, true)
+        } else {
+            skeletonView.hide()
+        }
     }
 }
