@@ -79,15 +79,6 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
         binding.issueRefundBtnNextFromItems.setOnClickListener {
             viewModel.onNextButtonTappedFromItems()
         }
-
-        // TODO: Temporarily disabled, this will be used in a future release - do not remove
-//        issueRefund_shippingSwitch.setOnCheckedChangeListener { _, isChecked ->
-//            viewModel.onRefundItemsShippingSwitchChanged(isChecked)
-//        }
-//
-//        issueRefund_productsTotal.setOnClickListener {
-//            viewModel.onProductRefundAmountTapped()
-//        }
     }
 
     private fun setupObservers() {

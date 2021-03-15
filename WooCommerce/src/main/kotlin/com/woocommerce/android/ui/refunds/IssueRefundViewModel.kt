@@ -502,25 +502,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    // TODO: Temporarily unused; it will be used again in a future release - do not remove
-    @Suppress("unused")
-    fun onRefundTabChanged(type: RefundType) {
-        val refundAmount = when (type) {
-            ITEMS -> refundByItemsState.totalRefund
-            AMOUNT -> refundByAmountState.enteredAmount
-        }
-        commonState = commonState.copy(refundType = type)
-        updateRefundTotal(refundAmount)
-
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_TAB_CHANGED,
-                mapOf(
-                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId,
-                        AnalyticsTracker.KEY_TYPE to type.name
-                )
-        )
-    }
-
     private fun updateRefundItems(items: List<RefundListItem>) {
         _refundItems.value = items.filter { it.maxQuantity > 0 }
 
