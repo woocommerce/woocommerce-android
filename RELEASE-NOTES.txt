@@ -3,6 +3,7 @@
 6.3
 -----
 - [*] Product Type: Updated product type detail to display "Downloadable" if a product is downloadable. [https://github.com/woocommerce/woocommerce-android/pull/3679]
+- [*] Custom order status is now correctly displayed in the order details. [https://github.com/woocommerce/woocommerce-android/pull/3693]
 
 6.2
 -----
