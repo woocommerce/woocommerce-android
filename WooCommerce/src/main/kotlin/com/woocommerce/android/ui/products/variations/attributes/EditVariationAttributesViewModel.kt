@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -17,6 +15,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.runBlocking
 
 class EditVariationAttributesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -27,21 +26,10 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
 
-    private val variationSelectableAttributesList = MutableLiveData<List<ProductAttribute>>()
+    private val _editableVariationAttributeList =
+        MutableLiveData<List<VariationAttributeSelectionGroup>>()
 
-    val editableVariationAttributeList: LiveData<List<VariationAttributeSelectionGroup>> =
-        Transformations.map(variationSelectableAttributesList) { attributes ->
-            attributes.map { attribute ->
-                val selectedOption = viewState.editableVariation?.attributes
-                    ?.find { it.name == attribute.name }
-
-                VariationAttributeSelectionGroup(
-                    attributeName = attribute.name,
-                    options = attribute.terms,
-                    selectedOptionIndex = attribute.terms.indexOf(selectedOption?.name)
-                )
-            }
-        }
+    val editableVariationAttributeList = _editableVariationAttributeList
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -51,10 +39,21 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             parentProduct = productRepository.getProduct(productId),
             editableVariation = variationRepository.getVariation(productId, variationId)
         )
-        loadVariationAttributes()
+        editableVariationAttributeList.value = loadProductAttributes(productId)
     }
 
-    private fun loadVariationAttributes() {}
+    private fun loadProductAttributes(productId: Long) = runBlocking {
+        productRepository.fetchProduct(productId)?.attributes?.map { attribute ->
+            val selectedOption = viewState.editableVariation?.attributes
+                ?.find { it.name == attribute.name }
+
+            VariationAttributeSelectionGroup(
+                attributeName = attribute.name,
+                options = attribute.terms,
+                selectedOptionIndex = attribute.terms.indexOf(selectedOption?.name)
+            )
+        }
+    }
 
     @Parcelize
     data class ViewState(
