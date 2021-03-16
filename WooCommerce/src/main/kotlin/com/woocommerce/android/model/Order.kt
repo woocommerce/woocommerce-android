@@ -122,6 +122,55 @@ data class Order(
             shippingName, shippingAddress, shippingCountry
         )
     }
+
+    sealed class Status(val value: String) : Parcelable {
+        companion object {
+            fun fromValue(value: String): Status {
+                return fromDataModel(CoreOrderStatus.fromValue(value)) ?: Custom(value)
+            }
+
+            fun fromDataModel(status: CoreOrderStatus?): Status? {
+                return when(status) {
+                    CoreOrderStatus.PENDING -> Pending
+                    CoreOrderStatus.PROCESSING -> Processing
+                    CoreOrderStatus.ON_HOLD -> OnHold
+                    CoreOrderStatus.COMPLETED -> Completed
+                    CoreOrderStatus.CANCELLED -> Cancelled
+                    CoreOrderStatus.REFUNDED -> Refunded
+                    CoreOrderStatus.FAILED -> Failed
+                    else -> null
+                }
+            }
+        }
+
+        override fun toString(): String {
+            return value
+        }
+
+        @Parcelize
+        object Pending : Status(CoreOrderStatus.PENDING.value)
+
+        @Parcelize
+        object Processing : Status(CoreOrderStatus.PROCESSING.value)
+
+        @Parcelize
+        object OnHold : Status(CoreOrderStatus.ON_HOLD.value)
+
+        @Parcelize
+        object Completed : Status(CoreOrderStatus.COMPLETED.value)
+
+        @Parcelize
+        object Cancelled : Status(CoreOrderStatus.CANCELLED.value)
+
+        @Parcelize
+        object Refunded : Status(CoreOrderStatus.REFUNDED.value)
+
+        @Parcelize
+        object Failed : Status(CoreOrderStatus.FAILED.value)
+
+        @Parcelize
+        data class Custom(private val customValue: String) : Status(customValue)
+    }
 }
 
 fun WCOrderModel.toAppModel(): Order {
