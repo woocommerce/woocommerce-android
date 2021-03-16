@@ -992,12 +992,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Returns the draft attribute matching the passed id and name
+     */
     private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
-        // get the current draft attributes
-        val draftAttributes = viewState.productDraft?.attributes ?: emptyList()
-
-        // find this attribute in the draft attributes
-        return draftAttributes.firstOrNull {
+        return getProductDraftAttributes().firstOrNull {
             it.id == attributeId && it.name == attributeName
         }
     }
