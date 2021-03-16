@@ -21,7 +21,8 @@ class CombinedAttributeListAdapter(
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int) = attributeList[position].id
+    // note that we can't rely on the attribute id for uniqueness since all local attributes have id = 0
+    override fun getItemId(position: Int) = attributeList[position].name.hashCode().toLong()
 
     override fun getItemCount() = attributeList.size
 
