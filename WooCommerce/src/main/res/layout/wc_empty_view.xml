@@ -50,7 +50,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/empty_view_button"
             style="@style/Woo.Button.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/alert_dialog_max_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="@dimen/major_200"
