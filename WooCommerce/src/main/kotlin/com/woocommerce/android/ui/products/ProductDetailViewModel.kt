@@ -1006,8 +1006,8 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
         val updatedTerms = ArrayList<String>()
-        var isVisible = true
-        var isVariation = false
+        var isVisible = ProductAttribute.DEFAULT_VISIBLE
+        var isVariation = ProductAttribute.DEFAULT_IS_VARIATION
 
         // find this attribute in the draft attributes
         getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
@@ -1181,8 +1181,8 @@ class ProductDetailViewModel @AssistedInject constructor(
                 id = 0L,
                 name = attributeName,
                 terms = emptyList(),
-                isVisible = true,
-                isVariation = true // TODO
+                isVisible = ProductAttribute.DEFAULT_VISIBLE,
+                isVariation = ProductAttribute.DEFAULT_IS_VARIATION
             )
         )
 

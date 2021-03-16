@@ -12,9 +12,14 @@ data class ProductAttribute(
     val id: Long,
     val name: String,
     val terms: List<String>,
-    val isVisible: Boolean,
-    val isVariation: Boolean
+    val isVisible: Boolean = DEFAULT_VISIBLE,
+    val isVariation: Boolean = DEFAULT_IS_VARIATION
 ) : Parcelable {
+    companion object {
+        val DEFAULT_VISIBLE = true
+        val DEFAULT_IS_VARIATION = false
+    }
+
     /**
      * Local attributes, which are attributes available only to a specific product, have an ID of zero
      */
