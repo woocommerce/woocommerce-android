@@ -7,6 +7,9 @@ import com.woocommerce.android.extensions.roundError
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingMethod
+import com.woocommerce.android.model.Order.Status
+import com.woocommerce.android.model.Order.Status.OnHold
+import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import com.woocommerce.android.util.StringUtils
@@ -31,7 +34,7 @@ data class Order(
     val dateCreated: Date,
     val dateModified: Date,
     val datePaid: Date?,
-    val status: CoreOrderStatus,
+    val status: Status,
     val total: BigDecimal,
     val productsTotal: BigDecimal,
     val totalTax: BigDecimal,
@@ -56,8 +59,7 @@ data class Order(
     val isOrderPaid = paymentMethodTitle.isEmpty() && datePaid == null
 
     @IgnoredOnParcel
-    val isAwaitingPayment = status == CoreOrderStatus.PENDING ||
-        status == CoreOrderStatus.ON_HOLD || datePaid == null
+    val isAwaitingPayment = status == Pending || status == OnHold || datePaid == null
 
     @IgnoredOnParcel
     val isRefundAvailable = refundTotal < total
@@ -182,7 +184,7 @@ fun WCOrderModel.toAppModel(): Order {
             dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
             dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
             datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-            status = CoreOrderStatus.fromValue(this.status) ?: CoreOrderStatus.PENDING,
+            status = Status.fromValue(status),
             total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
             productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
             totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
