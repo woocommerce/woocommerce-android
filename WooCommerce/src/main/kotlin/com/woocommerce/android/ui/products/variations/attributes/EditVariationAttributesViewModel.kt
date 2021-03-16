@@ -68,5 +68,11 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val attributeName: String,
         val options: List<String>,
         private var selectedOptionIndex: Int
-    )
+    ) {
+        fun toVariantOption() = VariantOption(
+            id = null,
+            name = attributeName,
+            option = options[selectedOptionIndex]
+        )
+    }
 }
