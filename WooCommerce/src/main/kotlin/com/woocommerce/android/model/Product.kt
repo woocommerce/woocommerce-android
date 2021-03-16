@@ -21,7 +21,6 @@ import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.attribute.WCProductAttributeModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -367,10 +366,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
     fun attributesToJson(): String {
         val jsonArray = JsonArray()
         attributes.map {
-            WCProductAttributeModel(
-                globalAttributeId = it.id.toInt(),
+            WCProductModel.ProductAttribute(
+                id = it.id,
                 name = it.name,
-                options = it.terms.toMutableList()
+                options = it.terms.toMutableList(),
+                variation = productType == ProductType.VARIABLE,
+                visible = it.isVisible
             )
         }.forEach {
             if (it.options.isNotEmpty()) {
@@ -555,11 +556,10 @@ fun WCProductModel.toProductReviewProductModel() =
 /**
  * TODO: move to FluxC model
  */
-fun WCProductAttributeModel.toJson(): JsonObject {
+fun WCProductModel.ProductAttribute.toJson(): JsonObject {
     return JsonObject().also { json ->
-        json.addProperty("id", globalAttributeId)
+        json.addProperty("id", id)
         json.addProperty("name", name)
-        json.addProperty("position", position)
         json.addProperty("visible", visible)
         json.addProperty("variation", variation)
         json.addProperty("options", options.joinToString())
