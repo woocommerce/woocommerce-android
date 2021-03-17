@@ -425,12 +425,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private enum class InputValidationState {
-        TOO_HIGH,
-        TOO_LOW,
-        VALID
-    }
-
     enum class RefundType {
         ITEMS
     }
@@ -483,7 +477,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {
-        data class ShowValidationError(val message: String) : IssueRefundEvent()
         data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
         data class ShowRefundConfirmation(
             val title: String,
@@ -492,7 +485,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         ) : IssueRefundEvent()
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
         data class OpenUrl(val url: String) : IssueRefundEvent()
-        object HideValidationError : IssueRefundEvent()
     }
 
     @AssistedInject.Factory
