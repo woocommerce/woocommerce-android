@@ -49,26 +49,6 @@
             app:argType="integer" />
     </dialog>
     <dialog
-        android:id="@+id/refundAmountDialog"
-        android:name="com.woocommerce.android.ui.refunds.RefundAmountDialog"
-        tools:layout="@layout/currency_amount_dialog"
-        android:label="RefundAmountDialog" >
-        <argument
-            android:name="title"
-            app:argType="string" />
-        <argument
-            android:name="maxValue"
-            app:argType="java.math.BigDecimal" />
-        <argument android:name="currentValue"
-            app:argType="java.math.BigDecimal" />
-        <argument
-            android:name="minValue"
-            app:argType="java.math.BigDecimal" />
-        <argument
-            android:name="message"
-            app:argType="string" />
-    </dialog>
-    <dialog
         android:id="@+id/refundConfirmationDialog"
         android:name="com.woocommerce.android.ui.refunds.RefundConfirmationDialog"
         android:label="RefundConfirmationDialog" >
