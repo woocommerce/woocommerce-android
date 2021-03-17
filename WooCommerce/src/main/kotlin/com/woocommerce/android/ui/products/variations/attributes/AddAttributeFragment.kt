@@ -122,10 +122,29 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
+        val draftAttributes = viewModel.getProductDraftAttributes()
+        val draftLocalAttributes = draftAttributes.filter { it.isLocalAttribute }
+        val draftGlobalAttributes = draftAttributes.filter { it.isGlobalAttribute }
+
+        fun getGlobalTerms(attributeId: Long): List<String> {
+            return draftGlobalAttributes.filter {
+                it.id == attributeId
+            }.firstOrNull()?.terms ?: emptyList()
+        }
+
+        // if any of the passed global attributes are assigned to the product draft, we need to copoy their
+        // draft terms to our global attribute list
+        val globalAttributesForDisplay = ArrayList<ProductAttribute>().also {
+            it.addAll(globalAttributes.map { it.toProductAttributeForDisplay() })
+            it.forEach { attribute ->
+                attribute.terms = getGlobalTerms(attribute.id)
+            }
+        }
+
         adapter.setAttributeList(
             ArrayList<ProductAttribute>().also { allAttributes ->
-                allAttributes.addAll( globalAttributes.map { it.toProductAttributeForDisplay() })
-                allAttributes.addAll(viewModel.getProductDraftAttributes().filter { it.isLocalAttribute })
+                allAttributes.addAll(globalAttributesForDisplay)
+                allAttributes.addAll(draftLocalAttributes)
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
