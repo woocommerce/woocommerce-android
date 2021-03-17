@@ -132,7 +132,7 @@ data class Order(
             }
 
             fun fromDataModel(status: CoreOrderStatus?): Status? {
-                return when(status) {
+                return when (status) {
                     CoreOrderStatus.PENDING -> Pending
                     CoreOrderStatus.PROCESSING -> Processing
                     CoreOrderStatus.ON_HOLD -> OnHold
