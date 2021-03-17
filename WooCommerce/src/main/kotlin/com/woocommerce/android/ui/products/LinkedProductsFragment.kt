@@ -115,7 +115,11 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         // products screen
         val action = if (productIds.isNullOrEmpty()) {
             ProductDetailFragmentDirections
-                .actionGlobalProductSelectionListFragment(viewModel.getRemoteProductId(), groupedProductType, longArrayOf())
+                .actionGlobalProductSelectionListFragment(
+                    remoteProductId = viewModel.getRemoteProductId(),
+                    groupedProductListType = groupedProductType,
+                    excludedProductIds = longArrayOf()
+                )
         } else {
             GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
                 viewModel.getRemoteProductId(),
