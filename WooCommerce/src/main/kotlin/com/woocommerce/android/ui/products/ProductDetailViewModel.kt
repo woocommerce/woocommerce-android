@@ -167,6 +167,9 @@ class ProductDetailViewModel @AssistedInject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
+    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
+
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
@@ -979,44 +982,125 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * Set the list of terms for a single attribute in the product draft
+     * Fetches terms for a global product attribute
      */
-    fun setProductDraftAttributeTerms(attributeId: Long, attributeName: String, termNames: ArrayList<String>) {
-        val updatedAttributes = ArrayList<ProductAttribute>()
+    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
+        launch {
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = true)
+            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = false)
+        }
+    }
 
-        getProductDraftAttributes().forEach { draftAttribute ->
-            if (draftAttribute.name == attributeName) {
-                updatedAttributes.add(
-                    ProductAttribute(
-                        id = attributeId,
-                        name = attributeName,
-                        terms = termNames,
-                        isVisible = draftAttribute.isVisible
-                    )
-                )
-            } else {
-                updatedAttributes.add(draftAttribute)
+    /**
+     * Returns the draft attribute matching the passed id and name
+     */
+    private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
+        return getProductDraftAttributes().firstOrNull {
+            it.id == attributeId && it.name == attributeName
+        }
+    }
+
+    /**
+     * Adds a new term to a the product draft attributes
+     */
+    fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
+        val updatedTerms = ArrayList<String>()
+        var isVisible = ProductAttribute.DEFAULT_VISIBLE
+        var isVariation = ProductAttribute.DEFAULT_IS_VARIATION
+
+        // find this attribute in the draft attributes
+        getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
+            // make sure this term doesn't already exist in this attribute
+            thisAttribute.terms.forEach {
+                if (it.equals(termName, ignoreCase = true)) {
+                    triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
+                    return
+                }
             }
+
+            // add its terms to our updated term list
+            updatedTerms.addAll(thisAttribute.terms)
+            isVisible = thisAttribute.isVisible
+            isVariation = thisAttribute.isVariation
+        }
+
+        // add the passed term to our updated term list
+        updatedTerms.add(termName)
+
+        // get the current draft attributes
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute, then add a new one with the updated terms
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updatedAttributes.add(
+                ProductAttribute(
+                    id = attributeId,
+                    name = attributeName,
+                    terms = updatedTerms,
+                    isVisible = isVisible,
+                    isVariation = isVariation
+                )
+            )
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    /**
+     * Removes a term from the product draft attributes
+     */
+    fun removeAttributeTermFromDraft(attributeId: Long, attributeName: String, termName: String) {
+        // find this attribute in the draft attributes
+        val thisAttribute = getDraftAttribute(attributeId, attributeName)
+        if (thisAttribute == null) {
+            // TODO
+            return
+        }
+
+        // created an updated list of terms without the passed one
+        val updatedTerms = ArrayList<String>().also { terms ->
+            terms.addAll(thisAttribute.terms.filterNot { it.equals(termName, ignoreCase = true) })
+        }
+
+        // get the current draft attributes
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute, then add a new one with the updated terms
+        val updatedAttributes = ArrayList<ProductAttribute>().also {
+            draftAttributes.filter {
+                it.id != attributeId && it.name != attributeName
+            }
+        }.also {
+            it.add(ProductAttribute(
+                id = attributeId,
+                name = attributeName,
+                terms = updatedTerms,
+                isVisible = thisAttribute.isVisible,
+                isVariation = thisAttribute.isVariation
+            ))
         }
 
         updateProductDraft(attributes = updatedAttributes)
     }
 
     /**
-     * Fetches terms for a global product attribute
+     * Saves any attribute changes to the backend
      */
-    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
-        launch {
-            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
-        }
-    }
-
-    /**
-     * Adds a new term to a global attribute
-     */
-    fun addGlobalAttributeTerm(attributeId: Long, termName: String) {
-        launch {
-            productRepository.addGlobalAttributeTerm(attributeId, termName)
+    fun saveAttributeChanges() {
+        if (hasAttributeChanges() && checkConnection()) {
+            launch {
+                viewState.productDraft?.attributes?.let { attributes ->
+                    val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
+                    if (!result) {
+                        triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                    }
+                }
+            }
         }
     }
 
@@ -1097,7 +1181,9 @@ class ProductDetailViewModel @AssistedInject constructor(
                 id = 0L,
                 name = attributeName,
                 terms = emptyList(),
-                isVisible = true)
+                isVisible = ProductAttribute.DEFAULT_VISIBLE,
+                isVariation = ProductAttribute.DEFAULT_IS_VARIATION
+            )
         )
 
         // update the draft with the new list
@@ -1741,6 +1827,11 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     @Parcelize
     data class GlobalAttributesViewState(
+        val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class GlobalAttributesTermsViewState(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
