@@ -14,10 +14,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
+import java.util.Locale
 
 class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
@@ -89,8 +91,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private fun setupObservers() {
-        viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer { globalAttributes ->
-            showAttributes(globalAttributes.map { it.toProductAttributeForDisplay() })
+        viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
+            showAttributes( it )
         })
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -107,7 +109,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
-    private fun showAttributes(attributes: List<ProductAttribute>) {
+    /**
+     * Called after fetching global attributes, sets the adapter to show a combined list of the
+     * passed global attributes and the existing draft local attributes
+     */
+    private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
             adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
@@ -116,7 +122,13 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
-        adapter.setAttributeList(attributes)
+        adapter.setAttributeList(
+            ArrayList<ProductAttribute>().also { allAttributes ->
+                allAttributes.addAll( globalAttributes.map { it.toProductAttributeForDisplay() })
+                allAttributes.addAll(viewModel.getProductDraftAttributes().filter { it.isLocalAttribute })
+                allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
+            }
+        )
     }
 
     private fun showSkeleton(show: Boolean) {
