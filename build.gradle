@@ -82,7 +82,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '5a15dcdb1227ad103016a4082918efc7bdc6c870'
+    fluxCVersion = 'b368eb6403ead20833150170c2221d960dd8c788'
     daggerVersion = '2.29.1'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
@@ -98,7 +98,7 @@ ext {
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.52.0'
+    flipperVersion = '0.80.0'
     stateMachineVersion = '0.2.0'
 }
 

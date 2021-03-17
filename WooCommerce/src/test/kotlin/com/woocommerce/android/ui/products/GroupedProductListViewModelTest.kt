@@ -24,7 +24,7 @@ import org.junit.Test
 class GroupedProductListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
-        private const val GROUPED_PRODUCT_IDS = "2,3,4,5"
+        private val GROUPED_PRODUCT_IDS = longArrayOf(2, 3, 4, 5)
     }
 
     private val networkStatus: NetworkStatus = mock()
@@ -44,7 +44,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     private val coroutineDispatchers = CoroutineDispatchers(
         Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined)
     private val productList = ProductTestUtils.generateProductList()
-    private val groupedProductIds = GROUPED_PRODUCT_IDS.split(",").map { it.toLong() }
+    private val groupedProductIds = GROUPED_PRODUCT_IDS.toList()
 
     private lateinit var viewModel: GroupedProductListViewModel
 
