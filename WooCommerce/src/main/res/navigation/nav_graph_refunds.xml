@@ -30,9 +30,6 @@
         <action
             android:id="@+id/action_issueRefundFragment_to_refundItemsPickerDialog"
             app:destination="@id/refundItemsPickerDialog" />
-        <action
-            android:id="@+id/action_issueRefundFragment_to_refundAmountDialog"
-            app:destination="@id/refundAmountDialog" />
     </fragment>
     <dialog
         android:id="@+id/refundItemsPickerDialog"

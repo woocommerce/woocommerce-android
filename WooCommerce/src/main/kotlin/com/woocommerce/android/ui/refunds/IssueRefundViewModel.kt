@@ -9,10 +9,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_TAB_CHANGED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.REFUND_CREATE_SUCCESS
@@ -35,7 +33,6 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationSt
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
@@ -422,20 +419,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
     }
 
-    // will be used in the future
-    fun onProductRefundAmountTapped() {
-        triggerEvent(ShowRefundAmountDialog(
-                refundByItemsState.productsRefund,
-                maxRefund,
-                resourceProvider.getString(R.string.order_refunds_available_for_refund, formatCurrency(maxRefund))
-        ))
-
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
-                mapOf(AnalyticsTracker.KEY_ORDER_ID to order.remoteId)
-        )
-    }
-
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = newAmount,
@@ -617,11 +600,6 @@ class IssueRefundViewModel @AssistedInject constructor(
             val confirmButtonTitle: String
         ) : IssueRefundEvent()
         data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
-        data class ShowRefundAmountDialog(
-            val refundAmount: BigDecimal,
-            val maxRefund: BigDecimal,
-            val message: String
-        ) : IssueRefundEvent()
         data class OpenUrl(val url: String) : IssueRefundEvent()
         object HideValidationError : IssueRefundEvent()
     }

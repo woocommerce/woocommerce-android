@@ -22,13 +22,11 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.Lazy
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
@@ -161,16 +159,6 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
                             event.refundItem.orderItem.uniqueId,
                             event.refundItem.maxQuantity,
                             event.refundItem.quantity
-                    )
-                    findNavController().navigateSafely(action)
-                }
-                is ShowRefundAmountDialog -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
-                            getString(R.string.order_refunds_products_refund),
-                            event.maxRefund,
-                            event.refundAmount,
-                            BigDecimal.ZERO,
-                            event.message
                     )
                     findNavController().navigateSafely(action)
                 }
