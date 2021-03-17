@@ -92,7 +92,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private fun setupObservers() {
         viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
-            showAttributes( it )
+            showAttributes(it)
         })
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -122,28 +122,30 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             adapter = binding.attributeList.adapter as AttributeListAdapter
         }
 
-        val draftAttributes = viewModel.getProductDraftAttributes()
-        val draftLocalAttributes = draftAttributes.filter { it.isLocalAttribute }
-        val draftGlobalAttributes = draftAttributes.filter { it.isGlobalAttribute }
+        val allDraftAttributes = viewModel.getProductDraftAttributes()
+        val localDraftAttributes = allDraftAttributes.filter { it.isLocalAttribute }
+        val globalDraftAttributes = allDraftAttributes.filter { it.isGlobalAttribute }
 
         // returns the list of draft terms for the passed global attribute
         fun getGlobalDraftTerms(attributeId: Long): List<String> {
-            return draftGlobalAttributes.filter {
+            return globalDraftAttributes.firstOrNull {
                 it.id == attributeId
-            }.firstOrNull()?.terms ?: emptyList()
-        }
-
-        // if any of the passed global attributes are assigned to the product draft, we need to assign their draft terms
-        val globalAttributesForDisplay = ArrayList<ProductAttribute>().also {
-            it.addAll(globalAttributes.map {
-                it.toProductAttributeForDisplay(getGlobalDraftTerms(it.remoteId))
-            })
+            }?.terms ?: emptyList()
         }
 
         adapter.setAttributeList(
             ArrayList<ProductAttribute>().also { allAttributes ->
-                allAttributes.addAll(globalAttributesForDisplay)
-                allAttributes.addAll(draftLocalAttributes)
+                // add the list of global attributes along with any terms each global attribute has in the product draft
+                allAttributes.addAll(
+                    ArrayList<ProductAttribute>().also {
+                        it.addAll(globalAttributes.map { attribute ->
+                            attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
+                        })
+                    }
+                )
+
+                // add local draft attributes then sort the combined list by name
+                allAttributes.addAll(localDraftAttributes)
                 allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
             }
         )
