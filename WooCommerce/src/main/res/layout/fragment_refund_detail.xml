@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context="com.woocommerce.android.ui.refunds.RefundByAmountFragment">
+        tools:context="com.woocommerce.android.ui.refunds.RefundByItemsFragment">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/refundDetail_refundItems"

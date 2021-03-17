@@ -14,10 +14,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.Lazy
-import kotlinx.android.synthetic.main.fragment_refund_by_amount.*
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -54,12 +52,7 @@ class IssueRefundFragment : BaseFragment() {
         viewModel.commonStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
 
-            if (new.refundType == AMOUNT) {
-                issueRefund_refundAmount.requestFocus()
-                ActivityUtils.showKeyboard(issueRefund_refundAmount)
-            } else {
-                ActivityUtils.hideKeyboard(requireActivity())
-            }
+            ActivityUtils.hideKeyboard(requireActivity())
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->

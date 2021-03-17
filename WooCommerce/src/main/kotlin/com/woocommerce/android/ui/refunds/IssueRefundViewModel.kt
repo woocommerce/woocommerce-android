@@ -27,16 +27,10 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.InputValidationState.VALID
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
-import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -92,17 +86,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = { _, new ->
         updateRefundTotal(new.productsRefund)
     })
-    final val refundByAmountStateLiveData = LiveDataDelegate(
-        savedState,
-        RefundByAmountViewState(),
-        onChange = { _, new ->
-            updateRefundTotal(new.enteredAmount)
-        }
-    )
     final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData
-    private var refundByAmountState by refundByAmountStateLiveData
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
     private var productsRefundState by productsRefundLiveData
@@ -135,7 +121,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
         gateway = loadPaymentGateway()
 
-        initRefundByAmountState()
         initRefundByItemsState()
         initRefundSummaryState()
     }
@@ -150,23 +135,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                         R.string.order_refunds_title_with_amount, formatCurrency(amount)
                 )
         )
-    }
-
-    private fun initRefundByAmountState() {
-        if (refundByAmountStateLiveData.hasInitialValue) {
-            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                    ?: DEFAULT_DECIMAL_PRECISION
-
-            refundByAmountState = refundByAmountState.copy(
-                    currency = order.currency,
-                    decimals = decimals,
-                    availableForRefund = resourceProvider.getString(
-                            R.string.order_refunds_available_for_refund,
-                            formatCurrency(maxRefund)
-                    ),
-                    isNextButtonEnabled = false
-            )
-        }
     }
 
     private fun initRefundByItemsState() {
@@ -248,22 +216,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         showRefundSummary()
     }
 
-    fun onNextButtonTappedFromAmounts() {
-        AnalyticsTracker.track(
-                CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-                mapOf(
-                        AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
-                        AnalyticsTracker.KEY_ORDER_ID to order.remoteId
-                )
-        )
-
-        if (isInputValid()) {
-            showRefundSummary()
-        } else {
-            showValidationState()
-        }
-    }
-
 //    fun onRefundItemsShippingSwitchChanged(isChecked: Boolean) {
 //        refundByItemsState = if (isChecked) {
 //            refundByItemsState.copy(isShippingRefundVisible = true)
@@ -284,13 +236,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
 
         triggerEvent(ShowRefundSummary(commonState.refundType))
-    }
-
-    fun onManualRefundAmountChanged(amount: BigDecimal) {
-        if (refundByAmountState.enteredAmount != amount) {
-            refundByAmountState = refundByAmountState.copy(enteredAmount = amount)
-            showValidationState()
-        }
     }
 
     fun onRefundConfirmed(wasConfirmed: Boolean) {
@@ -330,15 +275,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                                         gateway.supportsRefunds,
                                         refundItems.value?.map { it.toDataModel() }
                                                 ?: emptyList()
-                                )
-                            }
-                            AMOUNT -> {
-                                refundStore.createAmountRefund(
-                                        selectedSite.get(),
-                                        order.remoteId,
-                                        commonState.refundTotal,
-                                        refundSummaryState.refundReason ?: "",
-                                        gateway.supportsRefunds
                                 )
                             }
                         }
@@ -419,14 +355,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         refundSummaryState = refundSummaryState.copy(isSubmitButtonEnabled = currLength <= maxLength)
     }
 
-    fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
-        refundByItemsState = refundByItemsState.copy(
-                productsRefund = newAmount,
-                formattedProductsRefund = formatCurrency(newAmount),
-                isNextButtonEnabled = newAmount > BigDecimal.ZERO
-        )
-    }
-
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
@@ -497,33 +425,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun validateInput(): InputValidationState {
-        return when {
-            refundByAmountState.enteredAmount > maxRefund -> return TOO_HIGH
-            refundByAmountState.enteredAmount isEqualTo BigDecimal.ZERO -> TOO_LOW
-            else -> VALID
-        }
-    }
-
-    private fun showValidationState() {
-        refundByAmountState = when (validateInput()) {
-            TOO_HIGH -> {
-                triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_high_error)))
-                refundByAmountState.copy(isNextButtonEnabled = false)
-            }
-            TOO_LOW -> {
-                triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_zero_error)))
-                refundByAmountState.copy(isNextButtonEnabled = false)
-            }
-            VALID -> {
-                triggerEvent(HideValidationError)
-                refundByAmountState.copy(isNextButtonEnabled = true)
-            }
-        }
-    }
-
-    private fun isInputValid() = validateInput() == VALID
-
     private enum class InputValidationState {
         TOO_HIGH,
         TOO_LOW,
@@ -531,18 +432,8 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     enum class RefundType {
-        ITEMS,
-        AMOUNT
+        ITEMS
     }
-
-    @Parcelize
-    data class RefundByAmountViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val availableForRefund: String? = null,
-        val isNextButtonEnabled: Boolean? = null,
-        val enteredAmount: BigDecimal = BigDecimal.ZERO
-    ) : Parcelable
 
     @Parcelize
     data class ProductsRefundViewState(
