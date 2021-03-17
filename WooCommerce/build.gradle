@@ -116,7 +116,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
-        warning "NullSafeMutableLiveData"
+        disable "NullSafeMutableLiveData"
     }
 
     testOptions {
