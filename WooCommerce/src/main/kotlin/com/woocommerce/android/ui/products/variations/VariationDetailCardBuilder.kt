@@ -198,8 +198,8 @@ class VariationDetailCardBuilder(
                     onClick = {
                         viewModel.onEditVariationCardClicked(
                             ViewAttributes(
-                                this.attributes.toList(),
-                                parentProduct?.attributes ?: emptyList()
+                                remoteProductId,
+                                remoteVariationId
                             )
                         )
                     }

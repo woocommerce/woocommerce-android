@@ -66,8 +66,11 @@ class VariationNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewAttributes -> {
-                VariationDetailFragmentDirections.actionVariationDetailFragmentToEditVariationAttributesFragment()
-                    .let { fragment.findNavController().navigateSafely(it) }
+                VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToEditVariationAttributesFragment(
+                        target.remoteProductId,
+                        target.remoteVariationId
+                    ).let { fragment.findNavController().navigateSafely(it) }
             }
         }
     }

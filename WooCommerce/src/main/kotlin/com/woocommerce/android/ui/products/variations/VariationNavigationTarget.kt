@@ -22,8 +22,8 @@ sealed class VariationNavigationTarget : Event() {
     data class ViewMenuOrder(val menuOrder: Int) : VariationNavigationTarget()
     data class ViewBottomSheet(val remoteId: Long) : VariationNavigationTarget()
     data class ViewAttributes(
-        val selectedVariants: List<VariantOption>,
-        val availableVariants: List<ProductAttribute>
+        val remoteProductId: Long,
+        val remoteVariationId: Long
         ) : VariationNavigationTarget()
     data class ViewImageGallery(
         val remoteId: Long,
