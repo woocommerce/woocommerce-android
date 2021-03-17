@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <!-- WARNING -->
+    <issue id="NullSafeMutableLiveData" severity="warning" />
 
     <!-- ERROR -->
     <issue id="InconsistentArrays" severity="error" />
