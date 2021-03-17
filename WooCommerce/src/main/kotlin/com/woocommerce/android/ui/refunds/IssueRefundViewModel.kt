@@ -86,12 +86,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     final val refundByItemsStateLiveData = LiveDataDelegate(savedState, RefundByItemsViewState(), onChange = { _, new ->
         updateRefundTotal(new.productsRefund)
     })
-    final val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
-
     private var commonState by commonStateLiveData
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
-    private var productsRefundState by productsRefundLiveData
 
     private val order: Order
     private val refunds: List<Refund>
@@ -159,16 +156,6 @@ class IssueRefundViewModel @AssistedInject constructor(
             RefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
-
-        if (productsRefundLiveData.hasInitialValue) {
-            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                    ?: DEFAULT_DECIMAL_PRECISION
-
-            productsRefundState = productsRefundState.copy(
-                    currency = order.currency,
-                    decimals = decimals
-            )
-        }
     }
 
     private fun initRefundSummaryState() {
@@ -428,12 +415,6 @@ class IssueRefundViewModel @AssistedInject constructor(
     enum class RefundType {
         ITEMS
     }
-
-    @Parcelize
-    data class ProductsRefundViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION
-    ) : Parcelable
 
     @Parcelize
     data class RefundByItemsViewState(
