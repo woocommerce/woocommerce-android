@@ -90,7 +90,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private fun setupObservers() {
         viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer { globalAttributes ->
-            showAttributes(globalAttributes.map { it.toProductAttributeForDisplay()} )
+            showAttributes(globalAttributes.map { it.toProductAttributeForDisplay() })
         })
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
