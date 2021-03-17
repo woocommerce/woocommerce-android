@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.reviews
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -173,6 +174,7 @@ class ReviewListViewModel @AssistedInject constructor(
         }
     }
 
+    @SuppressLint("NullSafeMutableLiveData")
     private fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
         _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
 
