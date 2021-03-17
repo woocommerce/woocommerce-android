@@ -98,7 +98,7 @@ ext {
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.52.0'
+    flipperVersion = '0.80.0'
     stateMachineVersion = '0.2.0'
 }
 
