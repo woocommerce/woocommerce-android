@@ -34,15 +34,14 @@ data class ProductGlobalAttribute(
     }
 
     /**
-     * Converts this global attribute to a "normal" product attribute model for display purposes only (since the
-     * list of terms will always be empty and isVisible may not be correct), useful when listing global and local
-     * attributes together
+     * Converts this global attribute to a "normal" product attribute model for display purposes only, useful when
+     * listing global and local attributes together
      */
-    fun toProductAttributeForDisplay(): ProductAttribute {
+    fun toProductAttributeForDisplay(terms: List<String>): ProductAttribute {
         return ProductAttribute(
             id = this.remoteId,
             name = this.name,
-            terms = emptyList(),
+            terms = terms,
             isVisible = true
         )
     }
