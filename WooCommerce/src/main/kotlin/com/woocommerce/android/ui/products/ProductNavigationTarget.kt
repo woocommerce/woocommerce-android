@@ -59,7 +59,7 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductTypes(val isAddProduct: Boolean) : ProductNavigationTarget()
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
     object ViewProductAdd : ProductNavigationTarget()
-    data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: String) : ProductNavigationTarget()
+    data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: List<Long>) : ProductNavigationTarget()
     data class ViewLinkedProducts(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSelectionList(
         val remoteId: Long,
