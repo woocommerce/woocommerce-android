@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -21,6 +22,14 @@ class EditVariationAttributesFragment :
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel: EditVariationAttributesViewModel by viewModels { viewModelFactory }
+
+    private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+        viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
+    }
 
     private fun setupObservers() = viewModel.apply {
         viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
