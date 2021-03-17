@@ -116,6 +116,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        // see https://github.com/woocommerce/woocommerce-android/pull/3699
         disable "NullSafeMutableLiveData"
     }
 
