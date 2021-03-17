@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        google()
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
@@ -132,8 +133,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
-    implementation 'com.google.firebase:firebase-messaging:17.0.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // Support library
     implementation "androidx.legacy:legacy-support-v4:1.0.0"

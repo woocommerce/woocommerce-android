@@ -23,12 +23,12 @@ class FCMMessageService : FirebaseMessagingService() {
         super.onCreate()
     }
 
-    override fun onMessageReceived(message: RemoteMessage?) {
+    override fun onMessageReceived(message: RemoteMessage) {
         WooLog.v(T.NOTIFS, "Received message from Firebase")
 
         if (!accountStore.hasAccessToken()) return
 
-        message?.data?.let {
+        message.data.let {
             if (PUSH_TYPE_ZENDESK == it["type"]) {
                 val zendeskRequestId = it[PUSH_ARG_ZENDESK_REQUEST_ID]
 
