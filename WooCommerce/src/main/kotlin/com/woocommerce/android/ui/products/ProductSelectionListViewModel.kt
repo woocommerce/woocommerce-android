@@ -61,12 +61,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
-    private val excludedProductIds =
-        navArgs.excludedProductIds
-            .takeIf { it.isNotEmpty() }
-            ?.split(",")
-            ?.mapNotNull { it.toLongOrNull() }
-            .orEmpty()
+    private val excludedProductIds = navArgs.excludedProductIds.toList()
 
     init {
         if (_productList.value == null) {

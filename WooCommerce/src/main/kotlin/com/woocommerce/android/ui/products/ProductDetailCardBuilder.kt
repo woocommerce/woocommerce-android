@@ -528,7 +528,7 @@ class ProductDetailCardBuilder(
             showTitle = showTitle
         ) {
             viewModel.onEditProductCardClicked(
-                ViewGroupedProducts(this.remoteId, this.groupedProductIds.joinToString(",")),
+                ViewGroupedProducts(this.remoteId, this.groupedProductIds),
                 Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
             )
         }

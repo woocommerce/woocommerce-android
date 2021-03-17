@@ -229,7 +229,7 @@ class ProductNavigator @Inject constructor() {
 
             is ViewGroupedProducts -> {
                 val action = ProductDetailFragmentDirections
-                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds, GROUPED)
+                    .actionGlobalGroupedProductListFragment(target.remoteId, target.groupedProductIds.toLongArray(), GROUPED)
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -244,7 +244,8 @@ class ProductNavigator @Inject constructor() {
                     .actionGlobalProductSelectionListFragment(
                         target.remoteId,
                         target.groupedProductType,
-                        target.excludedProductIds.joinToString(","))
+                        target.excludedProductIds.toLongArray()
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
