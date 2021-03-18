@@ -11,3 +11,6 @@ fun <T> List<T>.areSameAs(otherList: List<T>, isSameAs: T.(T) -> Boolean): Boole
 fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) { id == it.id }
 
 fun List<Product>.areSameProductsAs(products: List<Product>) = this.areSameAs(products) { isSameProduct(it) }
+
+inline fun <T, R, V> List<Pair<R, V>>.pairMap(transform: (R, V) -> T): List<T> =
+    map { transform(it.first, it.second) }

@@ -1,10 +1,11 @@
-package com.woocommerce.android.ui.products.variations.attributes
+package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
@@ -41,16 +42,17 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     }
 
     private fun loadProductAttributes(productId: Long) = launch {
-        productRepository.fetchProduct(productId)?.attributes?.map { attribute ->
-            val selectedOption = viewState.editableVariation?.attributes
+        productRepository.fetchProduct(productId)?.attributes?.mapNotNull { attribute ->
+            viewState.editableVariation?.attributes
                 ?.find { it.name == attribute.name }
-
+                ?.let { Pair(attribute, it) }
+        }?.pairMap { productAttribute, selectedOption ->
             VariationAttributeSelectionGroup(
-                attributeName = attribute.name,
-                options = attribute.terms,
-                selectedOptionIndex = attribute.terms.indexOf(selectedOption?.option)
+                attributeName = productAttribute.name,
+                options = productAttribute.terms,
+                selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
             )
-        }.let {
+        }?.let {
             withContext(dispatchers.main) {
                 editableVariationAttributeList.value = it
             }
