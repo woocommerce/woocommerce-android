@@ -2,7 +2,7 @@
 
 6.2
 -----
-* Updated illustrations on various places. See if you can find them all! [https://github.com/woocommerce/woocommerce-android/pull/3678]
+* Updated empty state illustrations. [https://github.com/woocommerce/woocommerce-android/pull/3678]
 
 6.1
 -----
