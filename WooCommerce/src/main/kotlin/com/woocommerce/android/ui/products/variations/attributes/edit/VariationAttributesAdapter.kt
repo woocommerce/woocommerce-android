@@ -26,10 +26,16 @@ class VariationAttributesAdapter(
             ?.let { holder.bind(it) }
     }
 
+    fun refreshSourceData(sourceData: List<VariationAttributeSelectionGroup>) {
+        this.sourceData = sourceData
+        notifyDataSetChanged()
+    }
+
     inner class VariationAttributeSelectionViewHolder(
         val viewBinding: AttributeTermSelectionListItemBinding
     ): RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(item: VariationAttributeSelectionGroup) {
+            viewBinding.productCategoryParent.hint = item.attributeName
         }
     }
 }
