@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlinVersion = '1.3.72'
-    ext.navigationVersion = '2.3.0'
+    ext.navigationVersion = '2.3.4'
 
     repositories {
         google()
@@ -82,8 +82,8 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '773c3a292dfcc841d1c73aed92798f3c188e2637'
-    daggerVersion = '2.29.1'
+    fluxCVersion = 'b368eb6403ead20833150170c2221d960dd8c788'
+    daggerVersion = '2.33'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.0.1'
@@ -98,7 +98,7 @@ ext {
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.52.0'
+    flipperVersion = '0.80.0'
     stateMachineVersion = '0.2.0'
 }
 
