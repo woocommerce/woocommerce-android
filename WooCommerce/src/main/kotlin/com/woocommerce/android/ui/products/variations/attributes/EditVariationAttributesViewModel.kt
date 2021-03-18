@@ -15,7 +15,8 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EditVariationAttributesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -23,9 +24,6 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private val productRepository: ProductDetailRepository,
     private val variationRepository: VariationDetailRepository
 ): ScopedViewModel(savedState, dispatchers) {
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
-
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
 
@@ -39,10 +37,10 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             parentProduct = productRepository.getProduct(productId),
             editableVariation = variationRepository.getVariation(productId, variationId)
         )
-        editableVariationAttributeList.value = loadProductAttributes(productId)
+        loadProductAttributes(productId)
     }
 
-    private fun loadProductAttributes(productId: Long) = runBlocking {
+    private fun loadProductAttributes(productId: Long) = launch {
         productRepository.fetchProduct(productId)?.attributes?.map { attribute ->
             val selectedOption = viewState.editableVariation?.attributes
                 ?.find { it.name == attribute.name }
@@ -52,6 +50,10 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 options = attribute.terms,
                 selectedOptionIndex = attribute.terms.indexOf(selectedOption?.name)
             )
+        }.let {
+            withContext(dispatchers.main) {
+                editableVariationAttributeList.value = it
+            }
         }
     }
 
@@ -75,4 +77,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             option = options[selectedOptionIndex]
         )
     }
+
+    @AssistedInject.Factory
+    interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
 }
