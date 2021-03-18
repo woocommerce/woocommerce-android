@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.products.ProductsModule.AddAttributeTermsFragm
 import com.woocommerce.android.ui.products.ProductsModule.AddProductCategoryFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AddProductDownloadFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.AttributeListFragmentModule
+import com.woocommerce.android.ui.products.ProductsModule.EditVariationAttributesFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.GroupedProductListFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.LinkedProductsFragmentModule
 import com.woocommerce.android.ui.products.ProductsModule.ParentCategoryListFragmentModule
@@ -94,6 +95,7 @@ import dagger.android.ContributesAndroidInjector
     ProductFilterOptionListFragmentModule::class,
     VariationListFragmentModule::class,
     AttributeListFragmentModule::class,
+    EditVariationAttributesFragmentModule::class,
     AddAttributeFragmentModule::class,
     AddAttributeTermsFragmentModule::class,
     ProductImagesFragmentModule::class,
