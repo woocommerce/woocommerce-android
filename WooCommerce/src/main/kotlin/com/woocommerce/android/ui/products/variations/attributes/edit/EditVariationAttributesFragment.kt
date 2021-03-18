@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.variations.attributes
+package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Bundle
 import android.view.View
@@ -8,8 +8,9 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesViewModel.VariationAttributeSelectionGroup
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesFragmentArgs
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.VariationAttributeSelectionGroup
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
 

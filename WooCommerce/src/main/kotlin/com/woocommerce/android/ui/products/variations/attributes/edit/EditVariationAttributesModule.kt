@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.variations.attributes
+package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
@@ -6,7 +6,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesViewModel.Factory
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.Factory
 import com.woocommerce.android.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module

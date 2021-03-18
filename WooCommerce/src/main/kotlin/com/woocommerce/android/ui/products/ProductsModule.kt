@@ -80,8 +80,8 @@ import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTer
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsModule
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListModule
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesFragment
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesModule
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesModule
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerModule
 import dagger.Module

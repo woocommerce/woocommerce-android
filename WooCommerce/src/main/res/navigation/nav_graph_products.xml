@@ -193,7 +193,7 @@
     </fragment>
     <fragment
         android:id="@+id/editVariationAttributesFragment"
-        android:name="com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment"
         tools:layout="@layout/fragment_edit_variation_attributes">
         <argument
             android:name="remoteProductId"
