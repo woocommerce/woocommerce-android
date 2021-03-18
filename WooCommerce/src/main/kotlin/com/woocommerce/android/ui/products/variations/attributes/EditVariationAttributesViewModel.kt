@@ -48,7 +48,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             VariationAttributeSelectionGroup(
                 attributeName = attribute.name,
                 options = attribute.terms,
-                selectedOptionIndex = attribute.terms.indexOf(selectedOption?.name)
+                selectedOptionIndex = attribute.terms.indexOf(selectedOption?.option)
             )
         }.let {
             withContext(dispatchers.main) {
