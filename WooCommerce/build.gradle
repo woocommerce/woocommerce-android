@@ -258,7 +258,7 @@ dependencies {
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
-    androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
+    androidTestImplementation "com.google.code.findbugs:jsr305:3.0.2"
 
     implementation "com.zendesk:support:5.0.2"
 
