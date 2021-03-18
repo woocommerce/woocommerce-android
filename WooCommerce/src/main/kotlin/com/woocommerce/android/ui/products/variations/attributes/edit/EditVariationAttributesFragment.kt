@@ -6,9 +6,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.variations.attributes.EditVariationAttributesFragmentArgs
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.VariationAttributeSelectionGroup
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.ViewModelFactory
@@ -26,8 +26,11 @@ class EditVariationAttributesFragment :
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 
+    private lateinit var binding: FragmentEditVariationAttributesBinding
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = FragmentEditVariationAttributesBinding.bind(view)
         setupObservers()
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
     }
@@ -56,5 +59,14 @@ class EditVariationAttributesFragment :
         requireActivity().invalidateOptionsMenu()
     }
 
-    private fun showAttributeSelectableOptions(selectableOptions: List<VariationAttributeSelectionGroup>) {}
+    private fun showAttributeSelectableOptions(
+        selectableOptions: List<VariationAttributeSelectionGroup>
+    ) = binding.apply {
+        variationList
+            .run { adapter as? VariationAttributesAdapter }
+            ?.refreshSourceData(selectableOptions)
+            ?: variationList.apply {
+                adapter = VariationAttributesAdapter(selectableOptions)
+            }
+    }
 }
