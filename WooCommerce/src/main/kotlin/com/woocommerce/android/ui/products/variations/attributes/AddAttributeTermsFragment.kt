@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
+import com.woocommerce.android.widgets.SkeletonView
 
 /**
  * This fragment contains two lists of product attribute terms. Thee\ first is a list of terms from
@@ -39,6 +41,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val binding get() = _binding!!
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
+    private val skeletonView = SkeletonView()
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -52,6 +55,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private lateinit var assignedTermsAdapter: AttributeTermsListAdapter
     private lateinit var globalTermsAdapter: AttributeTermsListAdapter
 
+    /**
+     * This is the listener attached to the list of assigned terms
+     */
     private val assignedTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {}
@@ -71,15 +77,19 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     globalTermsAdapter.addTerm(termName)
                 }
 
+                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, navArgs.attributeName, termName)
                 checkViews()
             }
         }
     }
 
+    /**
+     * This is the listener attached to the list of global terms
+     */
     private val globalTermListener by lazy {
         object : OnTermListener {
             override fun onTermClick(termName: String) {
-                addTerm(termName, saveToBackend = false)
+                addTerm(termName)
             }
 
             override fun onTermDelete(termName: String) {}
@@ -116,12 +126,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val assignedTerms = assignedTermsAdapter.termNames
-        viewModel.setProductDraftAttributeTerms(
-            navArgs.attributeId,
-            navArgs.attributeName,
-            assignedTerms
-        )
+        /**
+         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll do this
+         * before variations are generated (because they can't be generated until the attributes are saved)
+         */
+        viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
         return false
     }
@@ -158,7 +167,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         binding.termEditText.setOnEditorActionListener { _, actionId, event ->
             val termName = binding.termEditText.text?.toString() ?: ""
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
-                addTerm(termName, saveToBackend = isGlobalAttribute)
+                addTerm(termName)
                 binding.termEditText.text?.clear()
             }
             true
@@ -192,6 +201,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         viewModel.attributeTermsList.observe(viewLifecycleOwner, Observer {
             showGlobalAttributeTerms(it)
         })
+
+        viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
+                showSkeleton(it)
+            }
+        }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -239,14 +254,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private fun checkViews() {
         binding.assignedTermList.isVisible = !assignedTermsAdapter.isEmpty()
-        binding.globalTermContainer.isVisible = !globalTermsAdapter.isEmpty()
+        binding.textExistingOption.isVisible = !globalTermsAdapter.isEmpty()
     }
 
     /**
-     * User entered a new term or tapped a global term, saveToBackend will only be true
-     * if the user entered a new term and this is a global attribute
+     * User entered a new term or tapped a global term
      */
-    private fun addTerm(termName: String, saveToBackend: Boolean) {
+    private fun addTerm(termName: String) {
         // add the term to the list of assigned terms
         assignedTermsAdapter.addTerm(termName)
 
@@ -255,11 +269,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        if (saveToBackend) {
-            // TODO batch save to backend when user leaves screen
-            viewModel.addGlobalAttributeTerm(navArgs.attributeId, termName)
-        }
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
+        checkViews()
+    }
 
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.globalTermContainer, R.layout.skeleton_simple_list, true)
+        } else {
+            skeletonView.hide()
+        }
         checkViews()
     }
 }

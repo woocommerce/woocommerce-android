@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlinVersion = '1.3.72'
-    ext.navigationVersion = '2.3.0'
+    ext.navigationVersion = '2.3.4'
 
     repositories {
         google()
@@ -82,9 +82,9 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '5a15dcdb1227ad103016a4082918efc7bdc6c870'
-    daggerVersion = '2.29.1'
-    glideVersion = '4.10.0'
+    fluxCVersion = 'b368eb6403ead20833150170c2221d960dd8c788'
+    daggerVersion = '2.33'
+    glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.0.1'
     mockitoKotlinVersion = '2.1.0'
@@ -92,13 +92,13 @@ ext {
     constraintLayoutVersion = '1.2.0'
     multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
-    eventBusVersion = '3.1.1'
+    eventBusVersion = '3.2.0'
     googlePlayCoreVersion = '1.8.0'
     coroutinesVersion = '1.3.6'
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.52.0'
+    flipperVersion = '0.80.0'
     stateMachineVersion = '0.2.0'
 }
 
