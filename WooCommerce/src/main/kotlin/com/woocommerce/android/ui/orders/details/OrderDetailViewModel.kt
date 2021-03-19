@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -347,7 +348,7 @@ class OrderDetailViewModel @AssistedInject constructor(
         if (networkStatus.isConnected()) {
             launch {
                 if (orderDetailRepository.updateOrderStatus(orderIdSet.id, orderIdSet.remoteOrderId, newStatus)) {
-                    order = order.copy(status = CoreOrderStatus.fromValue(newStatus) ?: order.status)
+                    order = order.copy(status = Status.fromValue(newStatus))
                 } else {
                     onOrderStatusChangeReverted()
                     triggerEvent(ShowSnackbar(string.order_error_update_general))
