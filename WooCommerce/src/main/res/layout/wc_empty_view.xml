@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/empty_state_bg_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +38,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/empty_view_message"
-            style="@style/TextAppearance.Woo.Subtitle2"
+            style="@style/TextAppearance.Woo.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_150"

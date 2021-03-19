@@ -104,4 +104,9 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+
+    <!--
+    Empty state view
+    -->
+    <color name="empty_state_bg_color">@color/woo_black_90</color>
 </resources>

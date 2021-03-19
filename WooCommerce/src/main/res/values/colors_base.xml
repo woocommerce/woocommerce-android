@@ -156,4 +156,10 @@
     -->
     <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
     <color name="skeleton_color_inverse">@color/color_surface</color>
+
+    <!--
+        Empty state view
+    -->
+    <color name="empty_state_bg_color">@color/woo_gray_0</color>
+
 </resources>
