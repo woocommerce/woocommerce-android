@@ -99,16 +99,16 @@
             <ImageView
                 android:id="@+id/stats_availability_image"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/image_major_120"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_250"
-                android:src="@drawable/img_error_unmapped"
+                android:src="@drawable/img_empty_search"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/my_store_stats_availability_title" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/my_store_stats_availability_message"
-                style="@style/Woo.TextView.Body2"
+                style="@style/Woo.TextView.Body1"
                 android:layout_width="@dimen/minor_00"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_150"
