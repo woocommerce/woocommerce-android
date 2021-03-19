@@ -23,7 +23,7 @@ Language: zh_TW
     <string name="shipping_label_shipping_method_local_pickup">自行取貨</string>
     <string name="shipping_label_shipping_method_flat_rate">單一費率</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客戶支付 %1$s (%2$s) 運費</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">「向 WooCommerce 購買運送標籤時，費率比郵局低 5% 至 40%。」</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">向 WooCommerce 購買運送標籤時，費率比郵局低 5% 至 40%。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">什麼是 WooCommerce Services 折扣？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">載入運送選項時發生錯誤</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">沒有適合所選地址和包裹的運送選項</string>

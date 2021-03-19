@@ -23,7 +23,7 @@ Language: tr
     <string name="shipping_label_shipping_method_local_pickup">Mağazadan teslim</string>
     <string name="shipping_label_shipping_method_flat_rate">Sabit fiyat</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Müşteri nakliye için %1$s (%2$s) ödedi</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"WooCommerce ile gönderdim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.\" </string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce ile gönderdim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  Hizmetleri indirimi nedir?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Gönderim seçenekleri yüklenirken hata oluştu</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Seçilen adres ve paketler için gönderim seçeneği yok</string>

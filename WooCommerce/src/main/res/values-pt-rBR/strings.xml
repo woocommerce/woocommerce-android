@@ -23,7 +23,7 @@ Language: pt_BR
     <string name="shipping_label_shipping_method_local_pickup">Retirar no local</string>
     <string name="shipping_label_shipping_method_flat_rate">Taxa fixa</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">O cliente pagou %1$s (%2$s) de frete</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"Ao comprar etiquetas de envio com o WooCommerce, você recebe de 5% a 40% de desconto se comparado às tarifas do correio.\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ao comprar etiquetas de envio com o WooCommerce, você recebe de 5% a 40% de desconto se comparado às tarifas do correio.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">O que é o desconto do  WooCommerce Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Ocorreu um erro ao carregar as opções de envio</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Não há opções de envio para os pacotes e endereço selecionados</string>

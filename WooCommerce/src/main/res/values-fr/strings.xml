@@ -23,7 +23,7 @@ Language: fr
     <string name="shipping_label_shipping_method_local_pickup">Point de vente</string>
     <string name="shipping_label_shipping_method_flat_rate">Forfait</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Le client a payé %1$s (%2$s) pour la livraison</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">« Lors de l’achat d’étiquettes d’expédition avec WooCommerce, vous bénéficiez de 5 à 40 % de réduction par rapport aux tarifs de la Poste. »\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Lors de l’achat d’étiquettes d’expédition avec WooCommerce, vous bénéficiez de 5 à 40 % de réduction par rapport aux tarifs de la Poste.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Qu’est-ce que la remise WooCommerce  Services ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Une erreur est survenue lors du chargement des options de livraison</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Il n’y a pas d’options de livraison pour l’adresse et les colis sélectionnés</string>

@@ -23,7 +23,7 @@ Language: id
     <string name="shipping_label_shipping_method_local_pickup">Pengambilan lokal</string>
     <string name="shipping_label_shipping_method_flat_rate">Tarif tetap</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Pelanggan membayar %1$s (%2$s) untuk pengiriman</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"Ketika membeli label pengiriman dengan WooCommerce, Anda mendapatkan diskon 5% hingga 40% dibandingkan dengan tarif kantor pos.\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ketika membeli label pengiriman dengan WooCommerce, Anda mendapatkan diskon 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Apa itu diskon WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Terjadi error saat memuat pilihan pengiriman</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Tidak ada pilihan pengiriman untuk alamat dan paket yang dipilih</string>

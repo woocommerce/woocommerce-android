@@ -23,7 +23,7 @@ Language: ko_KR
     <string name="shipping_label_shipping_method_local_pickup">방문 수령</string>
     <string name="shipping_label_shipping_method_flat_rate">고정 요금</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">배송에 대해 고객이 결제한 %1$s(%2$s)</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"WooCommerce를 통해 배송 레이블을 구매하면 우체국 요금보다 5~40% 할인됩니다.\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce를 통해 배송 레이블을 구매하면 우체국 요금보다 5~40% 할인됩니다.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  서비스 할인이란?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">배송 옵션을 로드하는 중 오류가 발생했습니다.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">선택한 주소와 패키지에 대한 배송 옵션이 없습니다.</string>

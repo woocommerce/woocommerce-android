@@ -23,7 +23,7 @@ Language: ru
     <string name="shipping_label_shipping_method_local_pickup">Самовывоз</string>
     <string name="shipping_label_shipping_method_flat_rate">Единая ставка</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s (%2$s) за доставку.</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">«При покупке транспортных этикеток через WooCommerce вы выиграете от 5 до 40 % по сравнению с тарифами почты».</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы выиграете от 5 до 40 % по сравнению с тарифами почты.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Для выбранного адреса и грузов варианты доставки отсутствуют.</string>

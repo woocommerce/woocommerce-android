@@ -23,7 +23,7 @@ Language: ar
     <string name="shipping_label_shipping_method_local_pickup">إستلام محلي من المتجر</string>
     <string name="shipping_label_shipping_method_flat_rate">سعر ثابت</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">دفع العميل مبلغًا قدره ⁦%1$s⁩ (⁦%2$s⁩) مقابل الشحن</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد. \"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">ما المقصود بخصم خدمات  WooCommerce؟</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">حدث خطأ ما في أثناء تحميل خيارات الشحن</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">لا يوجد أي خيارات شحن للعنوان والحزم المحدَّدة</string>

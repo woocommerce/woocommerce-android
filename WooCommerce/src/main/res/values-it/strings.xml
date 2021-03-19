@@ -23,7 +23,7 @@ Language: it
     <string name="shipping_label_shipping_method_local_pickup">Ritiro in sede</string>
     <string name="shipping_label_shipping_method_flat_rate">Tariffa unica</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Il cliente ha pagato %1$s (%2$s) per la spedizione</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5% al 40% di sconto rispetto alle tariffe degli uffici postali.\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Quando acquisti le etichette di spedizione tramite WooCommerce, ottieni dal 5% al 40% di sconto rispetto alle tariffe degli uffici postali.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Cos\'è lo sconto di WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Si è verificato un errore durante il caricamento delle opzioni di spedizione</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Non sono presenti opzioni di spedizione per l\'indirizzo e i pacchetti selezionati</string>

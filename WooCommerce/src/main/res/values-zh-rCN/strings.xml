@@ -23,7 +23,7 @@ Language: zh_CN
     <string name="shipping_label_shipping_method_local_pickup">本地自提</string>
     <string name="shipping_label_shipping_method_flat_rate">统一费率</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客户支付了 %1$s (%2$s) 用于配送</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">“相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。”</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  服务折扣是什么？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">加载配送选项时出现错误</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">所选地址和包裹没有配送选项。</string>

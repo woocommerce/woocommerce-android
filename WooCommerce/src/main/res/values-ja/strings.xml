@@ -23,7 +23,7 @@ Language: ja_JP
     <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
     <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">「WooCommerce で配送ラベルを購入すると、郵便局の価格と比べ 5%～40% お得です」</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べ 5%～40% お得です</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>

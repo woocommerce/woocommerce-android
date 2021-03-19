@@ -23,7 +23,7 @@ Language: de
     <string name="shipping_label_shipping_method_local_pickup">Abholung vor Ort</string>
     <string name="shipping_label_shipping_method_flat_rate">Versandkostenpauschale</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Der Kunde hat Versandkosten in Höhe von %1$s (%2$s) bezahlt</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">„Beim Kauf von Versandetiketten mit WooCommerce erhältst du 5 % bis 40 % Rabatt im Vergleich zu den Preisen bei der Post.“</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Beim Kauf von Versandetiketten mit WooCommerce erhältst du 5 % bis 40 % Rabatt im Vergleich zu den Preisen bei der Post.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Was ist der  WooCommerce-Dienstleistungsrabatt?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Beim Laden der Versandoptionen ist ein Fehler aufgetreten.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Für die ausgewählte Adresse und diese Pakete gibt es keine Versandoptionen.</string>
