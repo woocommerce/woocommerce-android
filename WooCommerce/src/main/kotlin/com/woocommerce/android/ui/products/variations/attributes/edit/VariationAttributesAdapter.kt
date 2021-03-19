@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.products.variations.attributes.edit.VariationA
 
 class VariationAttributesAdapter(
     private var sourceData: List<VariationAttributeSelectionGroup>
-): RecyclerView.Adapter<VariationAttributeSelectionViewHolder>() {
+) : RecyclerView.Adapter<VariationAttributeSelectionViewHolder>() {
     override fun getItemCount() = sourceData.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -33,7 +33,7 @@ class VariationAttributesAdapter(
 
     inner class VariationAttributeSelectionViewHolder(
         val viewBinding: AttributeTermSelectionListItemBinding
-    ): RecyclerView.ViewHolder(viewBinding.root) {
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(item: VariationAttributeSelectionGroup) = viewBinding.apply {
             productCategoryParent.hint = item.attributeName
             productCategoryParent.setText(item.selectedOption)

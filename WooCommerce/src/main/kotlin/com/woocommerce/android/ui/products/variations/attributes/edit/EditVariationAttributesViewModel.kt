@@ -24,7 +24,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductDetailRepository,
     private val variationRepository: VariationDetailRepository
-): ScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState, dispatchers) {
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
 

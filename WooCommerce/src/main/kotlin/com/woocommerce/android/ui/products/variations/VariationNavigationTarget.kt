@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
@@ -24,7 +22,7 @@ sealed class VariationNavigationTarget : Event() {
     data class ViewAttributes(
         val remoteProductId: Long,
         val remoteVariationId: Long
-        ) : VariationNavigationTarget()
+    ) : VariationNavigationTarget()
     data class ViewImageGallery(
         val remoteId: Long,
         val images: List<Image>,
