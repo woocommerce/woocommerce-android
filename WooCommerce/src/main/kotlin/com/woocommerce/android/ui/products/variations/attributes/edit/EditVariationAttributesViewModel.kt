@@ -73,6 +73,9 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val options: List<String>,
         private var selectedOptionIndex: Int
     ) {
+        val selectedOption
+            get() = options.getOrNull(selectedOptionIndex) ?: ""
+
         fun toVariantOption() = VariantOption(
             id = null,
             name = attributeName,
