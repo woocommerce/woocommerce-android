@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-05 11:29:12+0000
+Translation-Revision-Date: 2021-03-18 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">配送ラベルのお支払い方法を管理できるのは、サイトの所有者のみです。 お支払い方法を管理するには、ストアの所有者 %1$s (%2$s) にお問い合わせください。</string>
+    <string name="product_detail_add_variations">バリエーションを追加</string>
+    <string name="product_variant_list_empty_action">バリエーションを追加</string>
+    <string name="product_variant_list_add_first_variation">最初のバリエーションを追加</string>
+    <string name="shipping_label_selected_rates_total_description">%s 合計</string>
+    <string name="shipping_label_selected_rates_description">%s件の評価が選択済み</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">無料の署名要件を利用可能</string>
+    <string name="shipping_label_rate_included_options_free_pickup">無料の受け取りを利用可能</string>
+    <string name="shipping_label_rate_included_options_insurance">保険 (最大%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s追跡</string>
+    <string name="shipping_label_rate_included_options">含む %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">送料無料</string>
+    <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
+    <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">「WooCommerce で配送ラベルを購入すると、郵便局の価格と比べ 5%～40% お得です」</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>
+    <string name="shipping_label_shipping_carriers_title">配送業者と金額</string>
+    <string name="shipping_label_create_purchase">配送ラベルを購入</string>
+    <string name="shipping_label_create_mark_order_complete">この注文に完了のマークを付けてお客様に通知</string>
+    <string name="shipping_label_create_price_total">注文合計</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">WooCommerce サービスの割引について詳細をご確認ください</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce サービスの割引</string>
+    <string name="shipping_label_create_price_subtotal">小計</string>
+    <string name="shipping_label_create_order_summary">配送ラベル注文の概要</string>
+    <string name="free">無料</string>
+    <string name="other">その他</string>
+    <string name="product_term_name_already_exists">この名前のオプションはすでに存在しています</string>
+    <string name="product_attribute_name_already_exists">この名前の属性はすでに存在します</string>
+    <string name="product_enter_attribute_term">各オプションの名前を追加して Enter を押します</string>
+    <string name="product_select_attribute_term">またはタップして既存の属性を選択します</string>
+    <string name="product_new_attribute_term_name">オプション名</string>
     <string name="shipping_label_payments_saving_error">設定の保存中にエラーが発生しました</string>
     <string name="shipping_label_payments_saving_dialog_message">しばらくお待ちください…</string>
     <string name="shipping_label_payments_saving_dialog_title">設定を保存しています</string>
@@ -39,7 +75,6 @@ Language: ja_JP
     <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
     <string name="shipping_label_packages_loading_title">荷物を積み込んでいます。</string>
     <string name="shipping_label_package_details_title_template">荷物 %1$d</string>
-    <string name="shipping_label_package_details_items_count">「%1$d個のアイテム」</string>
     <string name="shipping_label_packages_loading_error">荷物の定義を読み込めません</string>
     <string name="shipping_label_package_details_weight_info">荷物の重量を含む</string>
     <string name="shipping_label_package_details_weight_hint">荷物の総重量 (%1$s)</string>

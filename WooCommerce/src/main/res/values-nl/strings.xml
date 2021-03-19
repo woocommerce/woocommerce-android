@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 15:54:53+0000
+Translation-Revision-Date: 2021-03-16 18:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Alleen de site-eigenaar kan de betalingsmethoden voor verzendlabels beheren. Neem contact op met winkeleigenaar %1$s (%2$s) om betalingsmethoden te beheren.</string>
+    <string name="product_detail_add_variations">Variaties toevoegen</string>
+    <string name="product_variant_list_empty_action">Variatie toevoegen</string>
+    <string name="product_variant_list_add_first_variation">Voeg je eerste variatie toe</string>
+    <string name="shipping_label_selected_rates_total_description">%s totaal</string>
+    <string name="shipping_label_selected_rates_description">%s tarieven geselecteerd</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Geschikt voor gratis handtekeningvereiste</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Geschikt voor gratis afhalen</string>
+    <string name="shipping_label_rate_included_options_insurance">Verzekering (tot %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s volgen</string>
+    <string name="shipping_label_rate_included_options">Inclusief %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Handtekening volwassene vereist (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Handtekening vereist (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Gratis verzending</string>
+    <string name="shipping_label_shipping_method_local_pickup">Lokaal afhalen</string>
+    <string name="shipping_label_shipping_method_flat_rate">Vast tarief</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Klant heeft %1$s (%2$s) betaald aan verzendkosten</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\'’Wanneer je verzendlabels koopt met WooCommerce krijg je 5 tot 40% korting ten opzichte van de tarieven van postkantoren. \"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">Wat houdt korting op WooCommerce  Services in?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Er is een fout opgetreden bij het laden van de verzendopties</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Er zijn geen verzendopties voor het geselecteerde adres en pakketjes</string>
+    <string name="shipping_label_shipping_carriers_title">Koeriersdiensten en tarieven</string>
+    <string name="shipping_label_create_purchase">Verzendlabel kopen</string>
+    <string name="shipping_label_create_mark_order_complete">Markeer deze bestelling als voltooid en informeer de klant</string>
+    <string name="shipping_label_create_price_total">Totaalaantal bestellingen</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Meer informatie over korting op WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Korting op WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Subtotaal</string>
+    <string name="shipping_label_create_order_summary">Besteloverzicht van verzendlabels</string>
+    <string name="free">gratis</string>
+    <string name="other">Andere</string>
+    <string name="product_term_name_already_exists">Er bestaat al een optie met deze naam</string>
+    <string name="product_attribute_name_already_exists">Er bestaat al een eigenschap met deze naam</string>
+    <string name="product_enter_attribute_term">Voeg de naam van elke optie toe en druk op enter</string>
+    <string name="product_select_attribute_term">Of tik om een bestaande optie te selecteren</string>
+    <string name="product_new_attribute_term_name">Naam van optie</string>
     <string name="shipping_label_payments_saving_error">Fout bij het opslaan van je instellingen</string>
     <string name="shipping_label_payments_saving_dialog_message">Een moment geduld…</string>
     <string name="shipping_label_payments_saving_dialog_title">Instellingen worden opgeslagen</string>
@@ -39,7 +75,6 @@ Language: nl
     <string name="shipping_label_packages_loading_message">Een moment geduld…</string>
     <string name="shipping_label_packages_loading_title">Pakketten worden geladen!</string>
     <string name="shipping_label_package_details_title_template">Pakket %1$d</string>
-    <string name="shipping_label_package_details_items_count">\'%1$d artikelen\'</string>
     <string name="shipping_label_packages_loading_error">Kan pakket-afmetingen niet laden</string>
     <string name="shipping_label_package_details_weight_info">Pakketgewicht inbegrepen</string>
     <string name="shipping_label_package_details_weight_hint">Totaal pakketgewicht (%1$s)</string>

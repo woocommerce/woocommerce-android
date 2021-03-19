@@ -1,11 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-17 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Apenas o proprietário do site pode gerenciar as formas de pagamento de etiquetas de envio. Fale com o proprietário da loja %1$s (%2$s) para gerenciá-las.</string>
+    <string name="product_detail_add_variations">Adicionar variações</string>
+    <string name="product_variant_list_empty_action">Adicionar variação</string>
+    <string name="product_variant_list_add_first_variation">Adicione sua primeira variação</string>
+    <string name="shipping_label_selected_rates_total_description">%s no total</string>
+    <string name="shipping_label_selected_rates_description">%s taxas selecionadas</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Elegível para solicitação de assinatura gratuita</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Elegível para retirada gratuita</string>
+    <string name="shipping_label_rate_included_options_insurance">Seguro (até %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">Rastreamento de %s</string>
+    <string name="shipping_label_rate_included_options">Inclui %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Exigida a assinatura de um adulto (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Assinatura obrigatória (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Frete grátis</string>
+    <string name="shipping_label_shipping_method_local_pickup">Retirar no local</string>
+    <string name="shipping_label_shipping_method_flat_rate">Taxa fixa</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">O cliente pagou %1$s (%2$s) de frete</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"Ao comprar etiquetas de envio com o WooCommerce, você recebe de 5% a 40% de desconto se comparado às tarifas do correio.\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">O que é o desconto do  WooCommerce Services?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Ocorreu um erro ao carregar as opções de envio</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Não há opções de envio para os pacotes e endereço selecionados</string>
+    <string name="shipping_label_shipping_carriers_title">Transportadoras e tarifas</string>
+    <string name="shipping_label_create_purchase">Comprar etiqueta de envio</string>
+    <string name="shipping_label_create_mark_order_complete">Marcar este pedido como concluído e notificar o cliente</string>
+    <string name="shipping_label_create_price_total">Total de pedidos</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Saiba mais sobre o desconto do WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Desconto do WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Subtotal</string>
+    <string name="shipping_label_create_order_summary">Resumo do pedido de etiqueta de envio</string>
+    <string name="free">grátis</string>
+    <string name="other">Outro</string>
+    <string name="product_term_name_already_exists">Já existe uma opção com este nome</string>
+    <string name="product_attribute_name_already_exists">Já existe um atributo com este nome</string>
+    <string name="product_enter_attribute_term">Adicione o nome de cada opção e pressione Enter</string>
+    <string name="product_select_attribute_term">Ou toque para selecionar uma opção existente</string>
+    <string name="product_new_attribute_term_name">Nome da opção</string>
+    <string name="shipping_label_payments_saving_error">Ocorreu um erro ao salvar suas configurações</string>
+    <string name="shipping_label_payments_saving_dialog_message">Aguarde…</string>
+    <string name="shipping_label_payments_saving_dialog_title">Salvando suas configurações</string>
+    <string name="shipping_label_payments_expiration_date">Expira em %1$s</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">Enviar os recibos de compra da etiqueta por e-mail para %1$s (%2$s) em %3$s</string>
+    <string name="shipping_label_payments_account_info">Os cartões de crédito foram recuperados da seguinte conta do WordPress.com: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">Adicionar outro cartão de crédito</string>
+    <string name="shipping_label_payments_selected_payment_method">Método de pagamento selecionado</string>
+    <string name="shipping_label_loading_data_progress_message">Aguarde…</string>
+    <string name="shipping_label_loading_data_progress_title">Buscando suas configurações</string>
+    <string name="shipping_label_selected_payment_description">Cartão de crédito com final %1$s</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">Mastercard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">Ou toque para selecionar um atributo existente</string>
+    <string name="product_new_attribute_name">Nome do novo atributo</string>
+    <string name="product_add_attribute">Adicionar atributo</string>
+    <string name="product_variation_attributes">Atributos</string>
+    <string name="product_variations_edit_attr">Editar atributos</string>
     <string name="shipping_label_multi_packages_total_weight">Peso total do pacote: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%1$d itens em %2$d pacotes</string>
     <string name="shipping_label_single_package_total_weight">Peso total do pacote: %1$s %2$s</string>
@@ -17,7 +75,6 @@ Language: pt_BR
     <string name="shipping_label_packages_loading_message">Aguarde…</string>
     <string name="shipping_label_packages_loading_title">Carregando pacotes!</string>
     <string name="shipping_label_package_details_title_template">Pacote %1$d</string>
-    <string name="shipping_label_package_details_items_count">\"%1$d itens\"</string>
     <string name="shipping_label_packages_loading_error">Não foi possível carregar as definições do pacote</string>
     <string name="shipping_label_package_details_weight_info">Inclui o peso do pacote</string>
     <string name="shipping_label_package_details_weight_hint">Peso total do pacote (%1$s)</string>

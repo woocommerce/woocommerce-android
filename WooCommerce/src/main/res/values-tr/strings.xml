@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 09:54:04+0000
+Translation-Revision-Date: 2021-03-17 11:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Gönderim etiketi ödeme yöntemlerini yalnızca site sahibi yönetebilir. Ödeme yöntemlerini yönetmek için lütfen Mağaza Sahibi %1$s (%2$s) ile iletişime geçin</string>
+    <string name="product_detail_add_variations">Varyasyon ekle</string>
+    <string name="product_variant_list_empty_action">Varyasyon Ekle</string>
+    <string name="product_variant_list_add_first_variation">İlk varyasyonunuzu ekleyin</string>
+    <string name="shipping_label_selected_rates_total_description">toplam %s</string>
+    <string name="shipping_label_selected_rates_description">%s ücret seçildi</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Ücretsiz imza şartına uygun</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Ücretsiz teslim almaya uygun</string>
+    <string name="shipping_label_rate_included_options_insurance">Sigorta (en fazla %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s izleniyor</string>
+    <string name="shipping_label_rate_included_options">Dahiller %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Yetişkin imzası gerekli (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">İmza gerekli (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Ücretsiz gönderim</string>
+    <string name="shipping_label_shipping_method_local_pickup">Mağazadan teslim</string>
+    <string name="shipping_label_shipping_method_flat_rate">Sabit fiyat</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Müşteri nakliye için %1$s (%2$s) ödedi</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">\"WooCommerce ile gönderdim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.\" </string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  Hizmetleri indirimi nedir?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Gönderim seçenekleri yüklenirken hata oluştu</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Seçilen adres ve paketler için gönderim seçeneği yok</string>
+    <string name="shipping_label_shipping_carriers_title">Taşıyıcılar ve ücretler</string>
+    <string name="shipping_label_create_purchase">Gönderim etiketi satın al</string>
+    <string name="shipping_label_create_mark_order_complete">Bu siparişi tamamlandı olarak işaretleyin ve müşteriyi bilgilendirin</string>
+    <string name="shipping_label_create_price_total">Sipariş toplamı</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">WooCommerce Hizmetleri indirimi hakkında daha fazla bilgi edinin</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce Hizmetleri indirimi</string>
+    <string name="shipping_label_create_price_subtotal">Ara Toplam</string>
+    <string name="shipping_label_create_order_summary">Gönderim etiketi sipariş özeti</string>
+    <string name="free">ücretsiz</string>
+    <string name="other">Diğer</string>
+    <string name="product_term_name_already_exists">Bu adda bir seçenek zaten var</string>
+    <string name="product_attribute_name_already_exists">Bu adda bir nitelik zaten var</string>
+    <string name="product_enter_attribute_term">Her seçenek adını ekleyin ve enter tuşuna basın</string>
+    <string name="product_select_attribute_term">Veya mevcut bir seçeneği seçmek için dokunun</string>
+    <string name="product_new_attribute_term_name">Seçenek adı</string>
     <string name="shipping_label_payments_saving_error">Ayarlarınız kaydedilirken hata oluştu</string>
     <string name="shipping_label_payments_saving_dialog_message">Lütfen bekleyin…</string>
     <string name="shipping_label_payments_saving_dialog_title">Ayarlarınız kaydediliyor </string>
@@ -39,7 +75,6 @@ Language: tr
     <string name="shipping_label_packages_loading_message">Lütfen bekleyin…</string>
     <string name="shipping_label_packages_loading_title">Paketler Yükleniyor.</string>
     <string name="shipping_label_package_details_title_template">Paket %1$d</string>
-    <string name="shipping_label_package_details_items_count">\"%1$d öğe\"</string>
     <string name="shipping_label_packages_loading_error">Paket tanımları yüklenemiyor</string>
     <string name="shipping_label_package_details_weight_info">Paket ağırlığı dahildir</string>
     <string name="shipping_label_package_details_weight_hint">Toplam paket ağırlığı (%1$s)</string>

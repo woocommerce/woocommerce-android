@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 15:54:53+0000
+Translation-Revision-Date: 2021-03-17 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Seul le propriétaire du site peut gérer les moyens de paiement des étiquettes d’expédition. Veuillez contacter le propriétaire de la boutique %1$s (%2$s) pour gérer les moyens de paiement.</string>
+    <string name="product_detail_add_variations">Ajouter des variantes</string>
+    <string name="product_variant_list_empty_action">Ajouter une variante</string>
+    <string name="product_variant_list_add_first_variation">Ajouter votre première variante</string>
+    <string name="shipping_label_selected_rates_total_description">%s au total</string>
+    <string name="shipping_label_selected_rates_description">%s tarifs sélectionnés</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Éligible au prérequis de signature gratuite</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Éligible au point de vente</string>
+    <string name="shipping_label_rate_included_options_insurance">Assurance (jusqu’à %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">Suivi de %s</string>
+    <string name="shipping_label_rate_included_options">Inclut %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Signature d’un adulte obligatoire (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Signature obligatoire (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Livraison gratuite</string>
+    <string name="shipping_label_shipping_method_local_pickup">Point de vente</string>
+    <string name="shipping_label_shipping_method_flat_rate">Forfait</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Le client a payé %1$s (%2$s) pour la livraison</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">« Lors de l’achat d’étiquettes d’expédition avec WooCommerce, vous bénéficiez de 5 à 40 % de réduction par rapport aux tarifs de la Poste. »\"</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">Qu’est-ce que la remise WooCommerce  Services ?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Une erreur est survenue lors du chargement des options de livraison</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Il n’y a pas d’options de livraison pour l’adresse et les colis sélectionnés</string>
+    <string name="shipping_label_shipping_carriers_title">Transporteurs et frais de port</string>
+    <string name="shipping_label_create_purchase">Acheter une étiquette d’expédition</string>
+    <string name="shipping_label_create_mark_order_complete">Marquer cette commande comme terminée et informer le client</string>
+    <string name="shipping_label_create_price_total">Total de la commande</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">En savoir plus sur la remise WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Remise WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Sous-total</string>
+    <string name="shipping_label_create_order_summary">Récapitulatif de la commande d’étiquettes d’expédition</string>
+    <string name="free">gratuit</string>
+    <string name="other">Autre</string>
+    <string name="product_term_name_already_exists">Une option avec ce nom existe déjà</string>
+    <string name="product_attribute_name_already_exists">Un attribut avec ce nom existe déjà</string>
+    <string name="product_enter_attribute_term">Ajouter chaque nom d’option et appuyer sur Entrée</string>
+    <string name="product_select_attribute_term">Ou appuyer pour sélectionner une option existante</string>
+    <string name="product_new_attribute_term_name">Nom de l’option</string>
     <string name="shipping_label_payments_saving_error">Une erreur s’est produite lors de l’enregistrement des paramètres</string>
     <string name="shipping_label_payments_saving_dialog_message">Veuillez patienter…</string>
     <string name="shipping_label_payments_saving_dialog_title">Enregistrement des paramètres</string>
@@ -39,7 +75,6 @@ Language: fr
     <string name="shipping_label_packages_loading_message">Veuillez patienter…</string>
     <string name="shipping_label_packages_loading_title">Colis en cours de chargement !</string>
     <string name="shipping_label_package_details_title_template">Colis %1$d</string>
-    <string name="shipping_label_package_details_items_count">« %1$d articles »</string>
     <string name="shipping_label_packages_loading_error">Impossible de charger les définitions des colis</string>
     <string name="shipping_label_package_details_weight_info">Comprend le poids du colis</string>
     <string name="shipping_label_package_details_weight_hint">Poids total du colis (%1$s)</string>
