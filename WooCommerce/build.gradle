@@ -274,6 +274,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
+    // Use caution when updating these, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-lang3:3.9"
     implementation "org.apache.commons:commons-text:1.8"
 
