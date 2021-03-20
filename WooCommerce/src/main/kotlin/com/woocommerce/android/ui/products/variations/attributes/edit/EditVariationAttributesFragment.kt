@@ -40,6 +40,8 @@ class EditVariationAttributesFragment :
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
     }
 
+    override fun getFragmentTitle() = getString(R.string.product_attributes)
+
     private fun setupObservers() = viewModel.apply {
         viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
         editableVariationAttributeList.observe(viewLifecycleOwner, Observer(::handleVariationAttributeListChanges))
