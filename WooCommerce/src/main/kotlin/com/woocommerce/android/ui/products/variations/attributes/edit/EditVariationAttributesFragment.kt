@@ -49,11 +49,6 @@ class EditVariationAttributesFragment :
         variationList.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             itemAnimator = null
-            addItemDecoration(
-                AlignedDividerDecoration(
-                    requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
-                )
-            )
         }
     }
 
