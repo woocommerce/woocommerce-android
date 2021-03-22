@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
@@ -179,18 +178,18 @@ class IssueRefundViewModel @AssistedInject constructor(
         fun getRefundNotice(): String? {
             val refundOptions = mutableListOf<String>()
             if (order.feesTotal > BigDecimal.ZERO) {
-                val fees = resourceProvider.getString(string.orderdetail_payment_fees).toLowerCase(Locale.ROOT)
+                val fees = resourceProvider.getString(R.string.orderdetail_payment_fees).toLowerCase(Locale.ROOT)
                 refundOptions.add(fees)
             }
             if (order.shippingTotal > BigDecimal.ZERO) {
-                val shipping = resourceProvider.getString(string.shipping).toLowerCase(Locale.ROOT)
+                val shipping = resourceProvider.getString(R.string.shipping).toLowerCase(Locale.ROOT)
                 refundOptions.add(shipping)
             }
             if (order.totalTax > BigDecimal.ZERO) {
-                val taxes = resourceProvider.getString(string.taxes).toLowerCase(Locale.ROOT)
+                val taxes = resourceProvider.getString(R.string.taxes).toLowerCase(Locale.ROOT)
                 refundOptions.add(taxes)
             }
-            val and = resourceProvider.getString(string.and).toLowerCase(Locale.ROOT)
+            val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.ROOT)
             return if (refundOptions.isNotEmpty()) {
                 val options = refundOptions.joinToString(lastSeparator = " $and ")
                 return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
