@@ -189,8 +189,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                 val taxes = resourceProvider.getString(R.string.taxes).toLowerCase(Locale.ROOT)
                 refundOptions.add(taxes)
             }
-            val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.ROOT)
             return if (refundOptions.isNotEmpty()) {
+                val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.ROOT)
                 val options = refundOptions.joinToString(lastSeparator = " $and ")
                 return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
             } else {
