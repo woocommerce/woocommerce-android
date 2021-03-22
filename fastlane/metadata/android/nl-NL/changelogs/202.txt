@@ -1,2 +1,0 @@
-6.1:
-Hier zijn de meest recente updates voor de WooCommerce-app voor Android. Tijdens het bewerken van een product zullen alle wijzigingen lokaal worden opgeslagen. Door op 'bijwerken’ te klikken, worden de wijzigingen naar je server verzonden. Ook hebben we bugs verholpen die invloed hadden op de weergave van productinstellingen, op het bewerken van de taal van productprijzen en op pushmeldingen over ondersteuningsverzoeken.

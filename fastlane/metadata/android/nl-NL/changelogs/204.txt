@@ -1,0 +1,2 @@
+6.2:
+Deze release is toegespitst op het verhelpen van bugs en prestatieverbeteringen.

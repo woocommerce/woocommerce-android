@@ -1,2 +1,0 @@
-6.1:
-Veja as atualizações mais recentes no aplicativo Android do WooCommerce. Quando você editar um produto, todas as alterações serão salvas automaticamente. Ao clicar em "Atualizar", elas serão enviadas para seu servidor. Também corrigimos bugs que afetam a exibição das configurações do produto, a edição do idioma dos preços dos produtos e as notificações push sobre pedidos de suporte.
