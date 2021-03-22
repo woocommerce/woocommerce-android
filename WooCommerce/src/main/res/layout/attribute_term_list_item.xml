@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/major_100"
+    android:paddingTop="@dimen/major_75"
+    android:paddingEnd="@dimen/major_100"
+    android:paddingBottom="@dimen/major_75">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/termDragHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_gridicons_align_justify"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/termName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/termName"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/termDelete"
+        app:layout_constraintStart_toEndOf="@+id/termDragHandle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Blue" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/termDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_150"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_gridicons_cross_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/termName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

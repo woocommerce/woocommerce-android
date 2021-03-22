@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 09:54:04+0000
+Translation-Revision-Date: 2021-03-16 11:54:38+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Hanya pemilik situs yang dapat mengelola metode pembayaran label pengiriman. Silakan hubungi Pemilik Toko %1$s (%2$s) untuk mengelola metode pembayaran.</string>
+    <string name="product_detail_add_variations">Tambah variasi</string>
+    <string name="product_variant_list_empty_action">Tambahkan Variasi</string>
+    <string name="product_variant_list_add_first_variation">Tambahkan variasi pertama Anda</string>
+    <string name="shipping_label_selected_rates_total_description">Total %s</string>
+    <string name="shipping_label_selected_rates_description">%s tarif dipilih</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Memenuhi syarat untuk diproses tanpa tanda tangan</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Memenuhi syarat untuk penjemputan gratis</string>
+    <string name="shipping_label_rate_included_options_insurance">Asuransi (hingga %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s pelacakan</string>
+    <string name="shipping_label_rate_included_options">Sertakan %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Tanda tangan orang dewasa wajib diisi (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Tanda tangan wajib diisi (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Pengiriman gratis</string>
+    <string name="shipping_label_shipping_method_local_pickup">Pengambilan lokal</string>
+    <string name="shipping_label_shipping_method_flat_rate">Tarif tetap</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Pelanggan membayar %1$s (%2$s) untuk pengiriman</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ketika membeli label pengiriman dengan WooCommerce, Anda mendapatkan diskon 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">Apa itu diskon WooCommerce  Services?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">Terjadi error saat memuat pilihan pengiriman</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Tidak ada pilihan pengiriman untuk alamat dan paket yang dipilih</string>
+    <string name="shipping_label_shipping_carriers_title">Operator dan tarif</string>
+    <string name="shipping_label_create_purchase">Beli label pengiriman</string>
+    <string name="shipping_label_create_mark_order_complete">Tandai pesanan ini selesai dan kirim pemberitahuan ke pelanggan</string>
+    <string name="shipping_label_create_price_total">Total pesanan</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Pelajari selengkapnya tentang diskon WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Diskon WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Subtotal</string>
+    <string name="shipping_label_create_order_summary">Ringkasan pesanan label pengiriman</string>
+    <string name="free">gratis</string>
+    <string name="other">Lainnya</string>
+    <string name="product_term_name_already_exists">Opsi dengan nama ini sudah ada.</string>
+    <string name="product_attribute_name_already_exists">Atribut dengan nama ini sudah ada.</string>
+    <string name="product_enter_attribute_term">Tambahkan tiap nama opsi lalu tekan enter</string>
+    <string name="product_select_attribute_term">Atau ketuk untuk memilih opsi yang sudah ada</string>
+    <string name="product_new_attribute_term_name">Nama pilihan</string>
     <string name="shipping_label_payments_saving_error">Terjadi error saat menyimpan pengaturan Anda</string>
     <string name="shipping_label_payments_saving_dialog_message">Harap tunggu…</string>
     <string name="shipping_label_payments_saving_dialog_title">Menyimpan pengaturan Anda</string>
@@ -39,7 +75,6 @@ Language: id
     <string name="shipping_label_packages_loading_message">Harap tunggu…</string>
     <string name="shipping_label_packages_loading_title">Memuat Paket!</string>
     <string name="shipping_label_package_details_title_template">Paket %1$d</string>
-    <string name="shipping_label_package_details_items_count">\"%1$d item\"</string>
     <string name="shipping_label_packages_loading_error">Tidak dapat memuat definisi paket</string>
     <string name="shipping_label_package_details_weight_info">Mencakup berat paket</string>
     <string name="shipping_label_package_details_weight_hint">Total berat paket (%1$s)</string>

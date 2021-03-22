@@ -1,2 +1,0 @@
-6.1:
-De senaste uppdateringarna av Android-appen WooCommerce är här. När du redigerar en produkt sparas alla ändringar automatiskt lokalt. Genom att klicka på "Uppdatera" skickas ändringarna till din server. Vi korrigerade också fel som påverkar visning av produktinställningar, redigering av språk för produktpriser och push-meddelanden om supportförfrågningar.

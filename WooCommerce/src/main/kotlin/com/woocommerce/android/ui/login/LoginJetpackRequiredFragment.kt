@@ -49,7 +49,7 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentLoginJetpackRequiredBinding.bind(view)
-        val btnBinding = binding.epilogueButtonBar!!
+        val btnBinding = binding.epilogueButtonBar
 
         setHasOptionsMenu(true)
 

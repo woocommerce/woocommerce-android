@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 09:54:04+0000
+Translation-Revision-Date: 2021-03-16 18:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">只有站点所有者可以管理配送标签付款方式。 请联系商店所有者 %1$s (%2$s) 以管理付款方式。</string>
+    <string name="product_detail_add_variations">添加变体</string>
+    <string name="product_variant_list_empty_action">添加变体</string>
+    <string name="product_variant_list_add_first_variation">添加您的第一个变体</string>
+    <string name="shipping_label_selected_rates_total_description">总计 %s</string>
+    <string name="shipping_label_selected_rates_description">已选择 %s 收费标准</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">适用于免费签收要求</string>
+    <string name="shipping_label_rate_included_options_free_pickup">适用于免费自提</string>
+    <string name="shipping_label_rate_included_options_insurance">保险（最多 %s）</string>
+    <string name="shipping_label_rate_included_options_tracking">%s 追踪</string>
+    <string name="shipping_label_rate_included_options">包含 %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">必需由成年人签收 (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">必需签收 (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">免费配送</string>
+    <string name="shipping_label_shipping_method_local_pickup">本地自提</string>
+    <string name="shipping_label_shipping_method_flat_rate">统一费率</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客户支付了 %1$s (%2$s) 用于配送</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  服务折扣是什么？</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">加载配送选项时出现错误</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">所选地址和包裹没有配送选项。</string>
+    <string name="shipping_label_shipping_carriers_title">承运商和收费标准</string>
+    <string name="shipping_label_create_purchase">购买配送标签</string>
+    <string name="shipping_label_create_mark_order_complete">将订单标注为已完成并通知客户</string>
+    <string name="shipping_label_create_price_total">订单总计</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">详细了解 WooCommerce 服务折扣</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce 服务折扣</string>
+    <string name="shipping_label_create_price_subtotal">小计</string>
+    <string name="shipping_label_create_order_summary">配送标签订单摘要</string>
+    <string name="free">免费</string>
+    <string name="other">其他</string>
+    <string name="product_term_name_already_exists">已存在具有此名称的选项</string>
+    <string name="product_attribute_name_already_exists">已存在具有此名称的属性</string>
+    <string name="product_enter_attribute_term">添加每个选项的名称并按 Enter 键</string>
+    <string name="product_select_attribute_term">或轻按以选择现有选项</string>
+    <string name="product_new_attribute_term_name">选项名称</string>
     <string name="shipping_label_payments_saving_error">保存您的设置时出错</string>
     <string name="shipping_label_payments_saving_dialog_message">请稍候…</string>
     <string name="shipping_label_payments_saving_dialog_title">正在保存您的设置</string>
@@ -39,7 +75,6 @@ Language: zh_CN
     <string name="shipping_label_packages_loading_message">请稍候…</string>
     <string name="shipping_label_packages_loading_title">加载包裹！</string>
     <string name="shipping_label_package_details_title_template">包裹 %1$d</string>
-    <string name="shipping_label_package_details_items_count">“%1$d 件商品”</string>
     <string name="shipping_label_packages_loading_error">无法加载包裹定义</string>
     <string name="shipping_label_package_details_weight_info">包含包裹重量</string>
     <string name="shipping_label_package_details_weight_hint">包裹总重 (%1$s)</string>

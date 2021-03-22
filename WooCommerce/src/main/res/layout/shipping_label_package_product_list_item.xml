@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:text="@string/shipping_label_package_details_move_item"
         android:textAllCaps="false"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

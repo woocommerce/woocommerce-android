@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import com.woocommerce.android.widgets.SkeletonView
 
 class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
@@ -24,6 +26,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private var layoutManager: LayoutManager? = null
+    private val skeletonView = SkeletonView()
 
     private var _binding: FragmentAddAttributeBinding? = null
     private val binding get() = _binding!!
@@ -73,6 +76,15 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
+        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+            val attributeName = binding.attributeEditText.text?.toString() ?: ""
+            if (attributeName.isNotBlank()) {
+                binding.attributeEditText.text?.clear()
+                viewModel.addLocalAttribute(attributeName)
+            }
+            true
+        }
+
         viewModel.fetchGlobalAttributes()
     }
 
@@ -80,6 +92,10 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         viewModel.globalAttributeList.observe(viewLifecycleOwner, Observer {
             showAttributes(it)
         })
+
+        viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+        }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
@@ -94,7 +110,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
         val adapter: CombinedAttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
+            adapter = CombinedAttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
             adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
@@ -104,5 +120,13 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute },
             globalAttributes = globalAttributes
         )
+    }
+
+    private fun showSkeleton(show: Boolean) {
+        if (show) {
+            skeletonView.show(binding.attributeList, R.layout.skeleton_simple_list, delayed = true)
+        } else {
+            skeletonView.hide()
+        }
     }
 }

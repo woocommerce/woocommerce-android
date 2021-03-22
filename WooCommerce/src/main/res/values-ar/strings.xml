@@ -1,33 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-02 21:30:37+0000
+Translation-Revision-Date: 2021-03-16 14:54:14+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="shipping_label_payments_saving_error">Error while saving your settings</string>
+    <string name="shipping_label_payments_cant_edit_warning">يمكن لمالك الموقع فقط إدارة طرق دفع ملصقات الشحن. يرجى الاتصال بمالك المخزن ⁦%1$s⁩ (⁦%2$s⁩) لإدارة طرق الدفع.</string>
+    <string name="product_detail_add_variations">إضافة أنواع</string>
+    <string name="product_variant_list_empty_action">إضافة نوع</string>
+    <string name="product_variant_list_add_first_variation">إضافة نوعك الأول</string>
+    <string name="shipping_label_selected_rates_total_description">إجمالي %s</string>
+    <string name="shipping_label_selected_rates_description">تم تحديد %s من الأسعار </string>
+    <string name="shipping_label_rate_included_options_signature_required_free">مؤهل لمتطلبات التوقيع المجاني</string>
+    <string name="shipping_label_rate_included_options_free_pickup">مؤهل للاقتناء المجاني</string>
+    <string name="shipping_label_rate_included_options_insurance">التأمين (يصل إلى %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">تعقُّب %s</string>
+    <string name="shipping_label_rate_included_options">يتضمن %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">يلزم توقيع شخص بالغ (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">يلزم التوقيع (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">شحن مجاني</string>
+    <string name="shipping_label_shipping_method_local_pickup">إستلام محلي من المتجر</string>
+    <string name="shipping_label_shipping_method_flat_rate">سعر ثابت</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">دفع العميل مبلغًا قدره ⁦%1$s⁩ (⁦%2$s⁩) مقابل الشحن</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">ما المقصود بخصم خدمات  WooCommerce؟</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">حدث خطأ ما في أثناء تحميل خيارات الشحن</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">لا يوجد أي خيارات شحن للعنوان والحزم المحدَّدة</string>
+    <string name="shipping_label_shipping_carriers_title">شركات النقل وأسعارها</string>
+    <string name="shipping_label_create_purchase">شراء ملصق الشحن</string>
+    <string name="shipping_label_create_mark_order_complete">وضع علامة على هذا الطلب على أنه مكتمل وإخطار العميل</string>
+    <string name="shipping_label_create_price_total">إجمالي الطلبات</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">معرفة المزيد حول خصم خدمات WooCommerce</string>
+    <string name="shipping_label_create_price_woo_discount">خصم خدمات WooCommerce</string>
+    <string name="shipping_label_create_price_subtotal">المجموع</string>
+    <string name="shipping_label_create_order_summary">ملخص طلبات ملصق الشحن</string>
+    <string name="free">مجاناً</string>
+    <string name="other">أخرى</string>
+    <string name="product_term_name_already_exists">يوجد خيار يحمل هذا الاسم بالفعل</string>
+    <string name="product_attribute_name_already_exists">توجد سمة تحمل هذا الاسم بالفعل</string>
+    <string name="product_enter_attribute_term">إضافة كل أسماء الخيارات والضغط على مفتاح enter</string>
+    <string name="product_select_attribute_term">أو الضغط لتحديد خيار موجود</string>
+    <string name="product_new_attribute_term_name">اسم الخيار</string>
+    <string name="shipping_label_payments_saving_error">حدث خطأ في أثناء حفظ الإعدادات التي قمت بإجرائها</string>
     <string name="shipping_label_payments_saving_dialog_message">يُرجى الانتظار…</string>
-    <string name="shipping_label_payments_saving_dialog_title">Saving your settings</string>
-    <string name="shipping_label_payments_expiration_date">Expire %1$s</string>
-    <string name="shipping_label_payments_email_receipts_checkbox">Email the label purchase receipts to %1$s (%2$s) at %3$s</string>
-    <string name="shipping_label_payments_account_info">Credit cards are retrieved from the following WordPress.com account: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_saving_dialog_title">حفظ الإعدادات التي قمت بإجرائها</string>
+    <string name="shipping_label_payments_expiration_date">تنتهي الصلاحية ⁦%1$s⁩</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">إرسال إيصالات شراء الملصق عبر البريد الإلكتروني إلى ⁦%1$s⁩ (⁦%2$s⁩) على ⁦%3$s⁩</string>
+    <string name="shipping_label_payments_account_info">يتم استرداد بطاقات الائتمان من حساب ووردبريس التالي: ⁦%1$s⁩ &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">أضف بطاقة ائتمان أخرى</string>
-    <string name="shipping_label_payments_selected_payment_method">Payment method selected</string>
+    <string name="shipping_label_payments_selected_payment_method">تم تحديد طريقة الدفع</string>
     <string name="shipping_label_loading_data_progress_message">يُرجى الانتظار…</string>
-    <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
-    <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
+    <string name="shipping_label_loading_data_progress_title">إحضار إعداداتك</string>
+    <string name="shipping_label_selected_payment_description">تنتهي صلاحية بطاقة الائتمان في ⁦%1$s⁩</string>
     <string name="payment_method_paypal">Paypal</string>
     <string name="payment_method_visa">فيزا</string>
     <string name="payment_method_mastercard">ماستركارد</string>
     <string name="payment_method_discover">اكتشاف</string>
     <string name="payment_method_american_express">أمريكان اكسبريس</string>
-    <string name="product_select_attribute">Or tap to select an existing attribute</string>
-    <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_select_attribute">أو الضغط لتحديد السمة الموجودة</string>
+    <string name="product_new_attribute_name">اسم السمة الجديدة</string>
     <string name="product_add_attribute">إضافة سمة</string>
     <string name="product_variation_attributes">السمات</string>
-    <string name="product_variations_edit_attr">Edit attributes</string>
+    <string name="product_variations_edit_attr">تحرير السمات</string>
     <string name="shipping_label_multi_packages_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ من العناصر موجودة في ⁦%2$d⁩ من الحزم</string>
     <string name="shipping_label_single_package_total_weight">إجمالي وزن الحزمة: ⁦%1$s⁩ %2$s</string>
@@ -39,7 +75,6 @@ Language: ar
     <string name="shipping_label_packages_loading_message">يُرجى الانتظار…</string>
     <string name="shipping_label_packages_loading_title">تحميل الحزم!</string>
     <string name="shipping_label_package_details_title_template">الحزمة ⁦%1$d⁩</string>
-    <string name="shipping_label_package_details_items_count">\"⁦%1$d⁩ من العناصر\"</string>
     <string name="shipping_label_packages_loading_error">يتعذر تحميل تعريفات الحزمة</string>
     <string name="shipping_label_package_details_weight_info">يتضمن وزن الحزمة</string>
     <string name="shipping_label_package_details_weight_hint">إجمالي وزن الحزمة (⁦%1$s⁩)</string>

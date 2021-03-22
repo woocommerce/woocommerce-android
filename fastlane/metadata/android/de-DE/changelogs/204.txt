@@ -1,0 +1,2 @@
+6.2:
+In dieser Release haben wir uns auf Fehlerbehebungen und die Verbesserung der Performance konzentriert.

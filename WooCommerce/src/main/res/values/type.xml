@@ -52,7 +52,7 @@
     <style name="TextAppearance.Woo.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
-        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:textColor">@color/color_on_surface_high_selector</item>
         <item name="android:textStyle">normal</item>
         <item name="lineHeight">@dimen/line_height_minor_100</item>
     </style>
