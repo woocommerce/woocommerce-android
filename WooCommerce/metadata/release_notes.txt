@@ -1,1 +1,3 @@
-For this release, we focused on bug fixes and performance improvements.
+- [*] Product Type: Updated product type detail to display "Downloadable" if a product is downloadable. [https://github.com/woocommerce/woocommerce-android/pull/3679]
+- [*] Custom order status is now correctly displayed in the order details. [https://github.com/woocommerce/woocommerce-android/pull/3693]
+
