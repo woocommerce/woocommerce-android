@@ -71,6 +71,7 @@
     <string name="product_enter_attribute_term">Add each option name and press enter</string>
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
+    <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -456,7 +457,7 @@
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
     <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
     <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
@@ -645,7 +646,6 @@
     <string name="product_stock_status">Stock status</string>
     <string name="product_type">Product type</string>
     <string name="product_type_description">%s product</string>
-    <string name="product_type_downloadable">downloadable</string>
     <string name="product_filter_default">Any</string>
     <string name="product_manage_stock">Manage stock</string>
     <string name="product_sold_individually">Limit one per order</string>
@@ -1149,6 +1149,7 @@
     <string name="product_type_variable">Variable</string>
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
+    <string name="product_type_downloadable">Downloadable</string>
 
     <!-- Product Add more details Bottom sheet -->
     <string name="product_type_list_header">Select a product type</string>
@@ -1162,22 +1163,22 @@
     <string name="product_type_confirm_button">Yes, change</string>
 
     <!-- New Product bottom sheet -->
-    <string name="product_add_type_list_header">@string/product_type_list_header</string>
+    <string name="product_add_type_list_header" translatable="false">@string/product_type_list_header</string>
     <string name="product_add_type_simple">Simple product</string>
     <string name="product_add_type_variable">Variable product</string>
     <string name="product_add_type_grouped">Grouped product</string>
     <string name="product_add_type_external">External product</string>
     <string name="product_add_type_simple_desc">A unique item to sell</string>
     <string name="product_add_type_variable_desc">A product with variations like color or size</string>
-    <string name="product_add_type_grouped_desc">@string/product_type_grouped_desc</string>
-    <string name="product_add_type_external_desc">@string/product_type_external_desc</string>
+    <string name="product_add_type_grouped_desc" translatable="false">@string/product_type_grouped_desc</string>
+    <string name="product_add_type_external_desc" translatable="false">@string/product_type_external_desc</string>
 
     <!-- New Product screen -->
     <string name="product_add_tool_bar_title">New Product</string>
     <string name="product_add_tool_bar_menu_button_done">PUBLISH</string>
     <string name="product_publish_dialog_title">Publishing product</string>
     <string name="product_publish_draft_dialog_title">Saving draft</string>
-    <string name="product_publish_dialog_message">@string/product_update_dialog_message</string>
+    <string name="product_publish_dialog_message" translatable="false">@string/product_update_dialog_message</string>
     <string name="product_detail_publish_product_error">Error publishing product</string>
     <string name="product_detail_publish_product_success">Product published</string>
     <string name="product_detail_publish_product_draft_error">Error saving product draft</string>
