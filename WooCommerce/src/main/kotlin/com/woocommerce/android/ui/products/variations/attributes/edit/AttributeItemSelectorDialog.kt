@@ -13,6 +13,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  */
 class AttributeOptionSelectorDialog : DialogFragment() {
     companion object {
+        const val TAG: String = "AttributeOptionSelectorDialog"
+
         fun newInstance(
             attributeGroup: VariationAttributeSelectionGroup,
             onAttributeOptionSelected: (VariationAttributeSelectionGroup) -> Unit
