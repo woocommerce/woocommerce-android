@@ -1070,12 +1070,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         // get the current draft attributes
         val draftAttributes = getProductDraftAttributes()
 
-        // create an updated list without this attribute, then add a new one with the updated terms unless there are none
+        // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
             it.addAll(draftAttributes.filter { attribute ->
                 attribute.id != attributeId && attribute.name != attributeName
             })
         }.also {
+            // ...then add this attribute back with the updated list of terms unless there are none
             if (updatedTerms.isNotEmpty()) {
                 it.add(
                     ProductAttribute(
