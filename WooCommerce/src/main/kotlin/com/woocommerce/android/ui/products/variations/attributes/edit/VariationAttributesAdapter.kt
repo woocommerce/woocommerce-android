@@ -34,7 +34,7 @@ class VariationAttributesAdapter(
         val viewBinding: AttributeTermSelectionListItemBinding
     ) : RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(item: VariationAttributeSelectionGroup) =
-            viewBinding.productCategoryParent.apply {
+            viewBinding.attributeOptionsSpinner.apply {
                 hint = item.attributeName
                 setText(item.selectedOption)
                 setOnClickListener { displaySelectionDialog(item) }
