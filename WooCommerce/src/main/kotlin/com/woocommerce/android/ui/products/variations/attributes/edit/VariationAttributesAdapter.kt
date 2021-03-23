@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeTermSelectionListItemBinding
-import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.VariationAttributeSelectionGroup
 import com.woocommerce.android.ui.products.variations.attributes.edit.VariationAttributesAdapter.VariationAttributeSelectionViewHolder
 
 class VariationAttributesAdapter(
-    private var sourceData: List<VariationAttributeSelectionGroup>
+    private var sourceData: MutableList<VariationAttributeSelectionGroup>
 ) : RecyclerView.Adapter<VariationAttributeSelectionViewHolder>() {
     override fun getItemCount() = sourceData.size
 
@@ -26,7 +25,7 @@ class VariationAttributesAdapter(
             ?.let { holder.bind(it) }
     }
 
-    fun refreshSourceData(sourceData: List<VariationAttributeSelectionGroup>) {
+    fun refreshSourceData(sourceData: MutableList<VariationAttributeSelectionGroup>) {
         this.sourceData = sourceData
         notifyDataSetChanged()
     }
@@ -34,9 +33,21 @@ class VariationAttributesAdapter(
     inner class VariationAttributeSelectionViewHolder(
         val viewBinding: AttributeTermSelectionListItemBinding
     ) : RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(item: VariationAttributeSelectionGroup) = viewBinding.apply {
-            productCategoryParent.hint = item.attributeName
-            productCategoryParent.setText(item.selectedOption)
+        fun bind(item: VariationAttributeSelectionGroup) =
+            viewBinding.productCategoryParent.apply {
+                hint = item.attributeName
+                setText(item.selectedOption)
+                setOnClickListener { displaySelectionDialog(item) }
+            }
+
+        private fun displaySelectionDialog(item: VariationAttributeSelectionGroup) {
+            AttributeOptionSelectorDialog.newInstance(
+                attributeGroup = item,
+                onAttributeOptionSelected = { modifiedGroup ->
+                    sourceData.indexOf(item).let { sourceData[it] = modifiedGroup }
+                    notifyDataSetChanged()
+                }
+            )
         }
     }
 }
