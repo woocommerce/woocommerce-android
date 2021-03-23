@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +23,7 @@ class EditVariationAttributesFragment :
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: EditVariationAttributesViewModel by viewModels { viewModelFactory }
+    private val viewModel: EditVariationAttributesViewModel by activityViewModels { viewModelFactory }
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 
