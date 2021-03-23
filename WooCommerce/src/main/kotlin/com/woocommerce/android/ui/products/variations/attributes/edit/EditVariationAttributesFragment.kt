@@ -11,7 +11,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.VariationAttributeSelectionGroup
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import javax.inject.Inject
@@ -67,12 +66,12 @@ class EditVariationAttributesFragment :
     }
 
     private fun handleVariationAttributeListChanges(selectableOptions: List<VariationAttributeSelectionGroup>) {
-        showAttributeSelectableOptions(selectableOptions)
+        showAttributeSelectableOptions(selectableOptions.toMutableList())
         requireActivity().invalidateOptionsMenu()
     }
 
     private fun showAttributeSelectableOptions(
-        selectableOptions: List<VariationAttributeSelectionGroup>
+        selectableOptions: MutableList<VariationAttributeSelectionGroup>
     ) = binding.apply {
         variationList
             .run { adapter as? VariationAttributesAdapter }
