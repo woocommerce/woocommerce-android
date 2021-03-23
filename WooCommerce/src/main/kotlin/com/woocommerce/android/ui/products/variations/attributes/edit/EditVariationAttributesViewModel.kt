@@ -8,7 +8,6 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -67,21 +66,6 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val parentProduct: Product? = null,
         val editableVariation: ProductVariation? = null
     ) : Parcelable
-
-    data class VariationAttributeSelectionGroup(
-        val attributeName: String,
-        val options: List<String>,
-        private var selectedOptionIndex: Int
-    ) {
-        val selectedOption
-            get() = options.getOrNull(selectedOptionIndex) ?: ""
-
-        fun toVariantOption() = VariantOption(
-            id = null,
-            name = attributeName,
-            option = options[selectedOptionIndex]
-        )
-    }
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
