@@ -29,6 +29,9 @@ class EditVariationAttributesFragment :
 
     private lateinit var binding: FragmentEditVariationAttributesBinding
 
+    private val adapter
+        get() = binding.variationList.adapter as? VariationAttributesAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentEditVariationAttributesBinding.bind(view)
@@ -72,12 +75,23 @@ class EditVariationAttributesFragment :
 
     private fun showAttributeSelectableOptions(
         selectableOptions: MutableList<VariationAttributeSelectionGroup>
-    ) = binding.apply {
-        variationList
-            .run { adapter as? VariationAttributesAdapter }
+    ) {
+        adapter
             ?.refreshSourceData(selectableOptions)
-            ?: variationList.apply {
-                adapter = VariationAttributesAdapter(selectableOptions)
+            ?: binding.variationList.apply {
+                adapter = VariationAttributesAdapter(
+                    selectableOptions,
+                    ::displaySelectionDialog
+                )
             }
+    }
+
+    private fun displaySelectionDialog(item: VariationAttributeSelectionGroup) {
+        AttributeOptionSelectorDialog.newInstance(
+            attributeGroup = item,
+            onAttributeOptionSelected = { modifiedGroup ->
+                adapter?.refreshSingleAttributeSelectionGroup(modifiedGroup)
+            }
+        ).also { it.show(parentFragmentManager, AttributeOptionSelectorDialog.TAG) }
     }
 }
