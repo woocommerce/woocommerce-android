@@ -57,7 +57,11 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     }
 
     fun exit() {
-        if (hasChanges) triggerEvent(ExitWithResult(viewState.updatedAttributeSelection))
+        if (hasChanges) triggerEvent(ExitWithResult(
+            viewState.updatedAttributeSelection
+                .mapNotNull { it.toVariantOption() }
+                .toTypedArray()
+        ))
         else triggerEvent(Exit)
     }
 
@@ -81,14 +85,23 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             selectedVariation?.attributes
                 ?.find { it.name == attribute.name }
                 ?.let { Pair(attribute, it) }
+        }.toMutableList().also { currentSelectionGroup ->
+            currentSelectionGroup.map { it.first }.let { knownAttributes ->
+                parentProduct?.attributes
+                    ?.filter { knownAttributes.contains(it).not() }
+                    ?.map { Pair(it, VariantOption.empty) }
+                    ?.let { currentSelectionGroup.apply { addAll(it) } }
+            }
         }
 
     private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList() =
         pairMap { productAttribute, selectedOption ->
             VariationAttributeSelectionGroup(
+                id = productAttribute.id,
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
-                selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
+                selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
+                anySelectionEnabled = selectedOption.option.isNullOrEmpty()
             )
         }
 
