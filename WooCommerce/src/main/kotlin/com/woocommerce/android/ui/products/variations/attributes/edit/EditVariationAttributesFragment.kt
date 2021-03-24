@@ -35,7 +35,7 @@ class EditVariationAttributesFragment :
     private var skeletonVisibility: Boolean = false
         set(show) {
             field = show
-            if(show) skeletonView.show(
+            if (show) skeletonView.show(
                 binding.attributeSelectionGroupList,
                 R.layout.skeleton_variation_attributes_list,
                 delayed = true
