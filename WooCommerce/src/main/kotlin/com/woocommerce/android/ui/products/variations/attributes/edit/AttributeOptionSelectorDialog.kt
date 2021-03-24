@@ -32,7 +32,7 @@ class AttributeOptionSelectorDialog : DialogFragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(attributeGroup?.attributeName)
             .setSingleChoiceItems(
-                attributeGroup?.options?.toTypedArray(),
+                attributeGroup?.attributeOptions?.toTypedArray(),
                 attributeGroup?.selectedOptionIndex ?: 0,
                 ::onOptionSelected
             ).create()
