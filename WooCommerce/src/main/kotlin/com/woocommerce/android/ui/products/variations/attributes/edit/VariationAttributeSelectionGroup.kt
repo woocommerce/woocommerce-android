@@ -9,7 +9,7 @@ data class VariationAttributeSelectionGroup(
     val attributeName: String,
     val options: List<String>,
     var selectedOptionIndex: Int
-): Parcelable {
+) : Parcelable {
     val selectedOption
         get() = options.getOrNull(selectedOptionIndex) ?: ""
 

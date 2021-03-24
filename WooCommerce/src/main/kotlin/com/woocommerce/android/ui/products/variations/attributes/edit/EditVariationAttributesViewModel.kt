@@ -48,8 +48,6 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             ?.contentDeepEquals(viewState.updatedAttributeSelection.toTypedArray())
             ?: false
 
-
-
     fun start(productId: Long, variationId: Long) {
         viewState = viewState.copy(
             parentProductID = productId,
