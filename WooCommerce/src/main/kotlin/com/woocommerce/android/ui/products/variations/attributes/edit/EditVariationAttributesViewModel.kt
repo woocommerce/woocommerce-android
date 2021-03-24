@@ -40,23 +40,30 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         loadProductAttributes(productId)
     }
 
-    private fun loadProductAttributes(productId: Long) = launch {
-        productRepository.fetchProduct(productId)?.attributes?.mapNotNull { attribute ->
-            viewState.editableVariation?.attributes
-                ?.find { it.name == attribute.name }
-                ?.let { Pair(attribute, it) }
-        }?.pairMap { productAttribute, selectedOption ->
-            VariationAttributeSelectionGroup(
-                attributeName = productAttribute.name,
-                options = productAttribute.terms,
-                selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
-            )
-        }?.let {
-            withContext(dispatchers.main) {
-                editableVariationAttributeList.value = it
+    private fun loadProductAttributes(productId: Long) =
+        viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
+            launch(context = dispatchers.computation) {
+                productRepository.fetchProduct(productId)?.attributes?.mapNotNull { attribute ->
+                    viewState.editableVariation?.attributes
+                        ?.find { it.name == attribute.name }
+                        ?.let { Pair(attribute, it) }
+                }?.pairMap { productAttribute, selectedOption ->
+                    VariationAttributeSelectionGroup(
+                        attributeName = productAttribute.name,
+                        options = productAttribute.terms,
+                        selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
+                    )
+                }?.let {
+                    withContext(dispatchers.main) {
+                        editableVariationAttributeList.value = it
+                        skeletonViewShouldBeVisible(false)
+                    }
+                } ?: skeletonViewShouldBeVisible(false)
             }
         }
-    }
+
+    private suspend fun skeletonViewShouldBeVisible(visibility: Boolean) =
+        withContext(dispatchers.main) { viewState = viewState.copy(isSkeletonShown = visibility) }
 
     @Parcelize
     data class ViewState(
