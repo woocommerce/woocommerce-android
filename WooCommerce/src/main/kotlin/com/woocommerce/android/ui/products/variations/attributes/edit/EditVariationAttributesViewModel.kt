@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -41,12 +43,28 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private val parentProduct
         get() = productRepository.getProduct(viewState.parentProductID)
 
+    private val hasChanges
+        get() = editableVariationAttributeList.value?.toTypedArray()
+            ?.contentDeepEquals(viewState.updatedAttributeSelection.toTypedArray())
+            ?: false
+
+
+
     fun start(productId: Long, variationId: Long) {
         viewState = viewState.copy(
             parentProductID = productId,
             editableVariationID = variationId
         )
         loadProductAttributes()
+    }
+
+    fun exit() {
+        if (hasChanges) triggerEvent(ExitWithResult(viewState.updatedAttributeSelection))
+        else triggerEvent(Exit)
+    }
+
+    fun updateData(attributeSelection: List<VariationAttributeSelectionGroup>) {
+        viewState = viewState.copy(updatedAttributeSelection = attributeSelection)
     }
 
     private fun loadProductAttributes() =
@@ -91,7 +109,8 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
         val parentProductID: Long = 0L,
-        val editableVariationID: Long = 0L
+        val editableVariationID: Long = 0L,
+        val updatedAttributeSelection: List<VariationAttributeSelectionGroup> = emptyList()
     ) : Parcelable
 
     @AssistedInject.Factory
