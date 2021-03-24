@@ -88,7 +88,7 @@ ext {
     testRunnerVersion = '1.0.1'
     espressoVersion = '3.0.1'
     mockitoKotlinVersion = '2.2.0'
-    mockitoVersion = '2.28.2'
+    mockitoVersion = '3.8.0'
     constraintLayoutVersion = '1.2.0'
     multidexVersion = '1.0.3'
     libaddressinputVersion = '0.0.2'
@@ -98,7 +98,7 @@ ext {
     archComponentsVersion = '2.2.0'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.80.0'
+    flipperVersion = '0.81.0'
     stateMachineVersion = '0.2.0'
 }
 
