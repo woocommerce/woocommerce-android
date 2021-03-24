@@ -127,6 +127,10 @@ object StringUtils {
             else -> number.toString()
         }
     }
+    
+    fun formatCountDecimal(number: Double): String {
+        return number.toString()
+    }
 
     /**
      * Returns the name of the country associated with the current store.
