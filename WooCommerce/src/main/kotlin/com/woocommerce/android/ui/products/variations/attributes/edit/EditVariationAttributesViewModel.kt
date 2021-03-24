@@ -6,9 +6,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.pairMap
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -34,10 +32,19 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
+    private val selectedVariation
+        get() = variationRepository.getVariation(
+            viewState.parentProductID,
+            viewState.editableVariationID
+        )
+
+    private val parentProduct
+        get() = productRepository.getProduct(viewState.parentProductID)
+
     fun start(productId: Long, variationId: Long) {
         viewState = viewState.copy(
-            parentProduct = productRepository.getProduct(productId),
-            editableVariation = variationRepository.getVariation(productId, variationId)
+            parentProductID = productId,
+            editableVariationID = variationId
         )
         loadProductAttributes(productId)
     }
@@ -45,17 +52,17 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private fun loadProductAttributes(productId: Long) =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                productRepository.fetchProduct(productId)?.attributes
+                parentProduct?.attributes
                     ?.pairWithSelectedOption()
                     ?.mapToAttributeSelectionGroupList()
                     ?.dispatchListResult()
-                    ?: skeletonViewShouldBeVisible(false)
+                    ?: updateSkeletonVisibility(visible = false)
             }
         }
 
     private fun List<ProductAttribute>.pairWithSelectedOption() =
         mapNotNull { attribute ->
-            viewState.editableVariation?.attributes
+            selectedVariation?.attributes
                 ?.find { it.name == attribute.name }
                 ?.let { Pair(attribute, it) }
         }
@@ -72,12 +79,12 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private suspend fun List<VariationAttributeSelectionGroup>.dispatchListResult() =
         withContext(dispatchers.main) {
             editableVariationAttributeList.value = this@dispatchListResult
-            skeletonViewShouldBeVisible(false)
+            updateSkeletonVisibility(visible = false)
         }
 
-    private suspend fun skeletonViewShouldBeVisible(visibility: Boolean) =
+    private suspend fun updateSkeletonVisibility(visible: Boolean) =
         withContext(dispatchers.main) {
-            viewState = viewState.copy(isSkeletonShown = visibility)
+            viewState = viewState.copy(isSkeletonShown = visible)
         }
 
     @Parcelize
@@ -85,8 +92,8 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
-        val parentProduct: Product? = null,
-        val editableVariation: ProductVariation? = null
+        val parentProductID: Long = 0L,
+        val editableVariationID: Long = 0L
     ) : Parcelable
 
     @AssistedInject.Factory
