@@ -32,6 +32,8 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
+import com.woocommerce.android.ui.products.variations.attributes.edit.VariationAttributeSelectionGroup
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -174,6 +176,13 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
                 viewModel.onVariationChanged(
                     description = result.getString(AztecEditorFragment.ARG_AZTEC_EDITOR_TEXT)
+                )
+            }
+        }
+        handleResult<List<VariationAttributeSelectionGroup>>(KEY_VARIATION_ATTRIBUTES_RESULT) { result ->
+            result.map { it.toVariantOption() }.let {
+                viewModel.onVariationChanged(
+                    options = it
                 )
             }
         }
