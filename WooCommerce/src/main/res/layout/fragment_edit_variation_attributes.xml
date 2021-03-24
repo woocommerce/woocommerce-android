@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/variationList"
+        android:id="@+id/attribute_selection_group_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"

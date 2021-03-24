@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.ViewModelFactory
+import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class EditVariationAttributesFragment :
@@ -29,8 +30,21 @@ class EditVariationAttributesFragment :
 
     private lateinit var binding: FragmentEditVariationAttributesBinding
 
+    private val skeletonView = SkeletonView()
+
+    private var skeletonVisibility: Boolean = false
+        set(show) {
+            field = show
+            if(show) skeletonView.show(
+                binding.attributeSelectionGroupList,
+                R.layout.skeleton_variation_attributes_list,
+                delayed = true
+            )
+            else skeletonView.hide()
+        }
+
     private val adapter
-        get() = binding.variationList.adapter as? VariationAttributesAdapter
+        get() = binding.attributeSelectionGroupList.adapter as? VariationAttributesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,6 +52,11 @@ class EditVariationAttributesFragment :
         setupObservers()
         setupViews()
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
+    }
+
+    override fun onDestroyView() {
+        skeletonView.hide()
+        super.onDestroyView()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_attributes)
@@ -48,16 +67,14 @@ class EditVariationAttributesFragment :
     }
 
     private fun setupViews() = binding.apply {
-        variationList.apply {
+        attributeSelectionGroupList.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             itemAnimator = null
         }
     }
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
-        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
-            // change skeleton visibility
-        }
+        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonVisibility = it }
 
         new?.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
             // update refresh layout
@@ -78,7 +95,7 @@ class EditVariationAttributesFragment :
     ) {
         adapter
             ?.refreshSourceData(selectableOptions)
-            ?: binding.variationList.apply {
+            ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
                     ::displaySelectionDialog
