@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes.edit
 
-import com.woocommerce.android.model.VariantOption
+import com.woocommerce.android.model.ProductVariation.Option
 
 data class VariationAttributeSelectionGroup(
     val attributeName: String,
@@ -10,9 +10,8 @@ data class VariationAttributeSelectionGroup(
     val selectedOption
         get() = options.getOrNull(selectedOptionIndex) ?: ""
 
-    fun toVariantOption() = VariantOption(
-        id = null,
-        name = attributeName,
-        option = options[selectedOptionIndex]
+    fun toVariantOption() = Option(
+        attributeName = attributeName,
+        optionChoice = selectedOption
     )
 }
