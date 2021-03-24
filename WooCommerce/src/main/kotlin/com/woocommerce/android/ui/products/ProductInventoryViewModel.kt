@@ -95,7 +95,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         backorderStatus: ProductBackorderStatus? = inventoryData.backorderStatus,
         isSoldIndividually: Boolean? = inventoryData.isSoldIndividually,
         isStockManaged: Boolean? = inventoryData.isStockManaged,
-        stockQuantity: Int? = inventoryData.stockQuantity,
+        stockQuantity: Double? = inventoryData.stockQuantity,
         stockStatus: ProductStockStatus? = inventoryData.stockStatus
     ) {
         viewState = viewState.copy(
@@ -148,7 +148,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isStockManaged: Boolean? = null,
         val isSoldIndividually: Boolean? = null,
         val stockStatus: ProductStockStatus? = null,
-        val stockQuantity: Int? = null,
+        val stockQuantity: Double? = null,
         val backorderStatus: ProductBackorderStatus? = null
     ) : Parcelable
 

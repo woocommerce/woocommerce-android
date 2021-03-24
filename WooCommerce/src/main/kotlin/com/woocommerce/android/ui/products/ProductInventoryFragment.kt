@@ -152,7 +152,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
 
         with(binding.productStockQuantity) {
             setOnTextChangedListener {
-                it.toString().toIntOrNull()?.let { quantity ->
+                it.toString().toDoubleOrNull()?.let { quantity ->
                     viewModel.onDataChanged(stockQuantity = quantity)
                 }
             }
