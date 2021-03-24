@@ -7,7 +7,7 @@ import com.woocommerce.android.databinding.AttributeTermSelectionListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.edit.VariationAttributesAdapter.VariationAttributeSelectionViewHolder
 
 class VariationAttributesAdapter(
-    private var sourceData: MutableList<VariationAttributeSelectionGroup>,
+    var sourceData: MutableList<VariationAttributeSelectionGroup>,
     private val onGroupClickListener: (VariationAttributeSelectionGroup) -> Unit
 ) : RecyclerView.Adapter<VariationAttributeSelectionViewHolder>() {
     override fun getItemCount() = sourceData.size
