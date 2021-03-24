@@ -241,7 +241,7 @@ dependencies {
     androidTestImplementation "androidx.test:rules:1.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:3.3.0"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
