@@ -81,56 +81,64 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test order with no extra shipping options`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        whenever(orderStore.getOrderByIdentifier(any())).thenReturn(OrderTestUtils.generateOrder())
+    fun `when order has zero taxes and no shipping and fees, then refund notice is not visible`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(OrderTestUtils.generateOrder())
 
-        initViewModel()
+            initViewModel()
 
-        var viewState: RefundByItemsViewState? = null
-        viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-        assertFalse(viewState!!.isRefundNoticeVisible)
+            assertFalse(viewState!!.isRefundNoticeVisible)
+        }
     }
 
     @Test
-    fun `test order tax refund option`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val orderWithTax = OrderTestUtils.generateOrder().apply { totalTax = "4.00" }
-        whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithTax)
+    fun `when order has taxes and no shipping and fees, only the taxes are mentioned in the notice`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val orderWithTax = OrderTestUtils.generateOrder().apply { totalTax = "4.00" }
+            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithTax)
 
-        initViewModel()
+            initViewModel()
 
-        var viewState: RefundByItemsViewState? = null
-        viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-        assertTrue(viewState!!.isRefundNoticeVisible)
-        assertEquals("You can refund taxes", viewState!!.refundNotice)
+            assertTrue(viewState!!.isRefundNoticeVisible)
+            assertEquals("You can refund taxes", viewState!!.refundNotice)
+        }
     }
 
     @Test
-    fun `test order shipping and fees refund option`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee()
-        whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
+    fun `when order has no shipping and fees, the taxes are not mentioned in the notice`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee()
+            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
 
-        initViewModel()
+            initViewModel()
 
-        var viewState: RefundByItemsViewState? = null
-        viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-        assertTrue(viewState!!.isRefundNoticeVisible)
-        assertEquals("You can refund fees and shipping", viewState!!.refundNotice)
+            assertTrue(viewState!!.isRefundNoticeVisible)
+            assertEquals("You can refund fees and shipping", viewState!!.refundNotice)
+        }
     }
 
     @Test
-    fun `test order shipping, fees and taxes refund option`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().apply { totalTax = "4.00" }
-        whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
+    fun `when order has shipping, fees and taxes, all refund options are mentioned in the notice`() {
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val orderWithFeesAndShipping = OrderTestUtils.generateOrderWithFee().apply { totalTax = "4.00" }
+            whenever(orderStore.getOrderByIdentifier(any())).thenReturn(orderWithFeesAndShipping)
 
-        initViewModel()
+            initViewModel()
 
-        var viewState: RefundByItemsViewState? = null
-        viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
 
-        assertTrue(viewState!!.isRefundNoticeVisible)
-        assertEquals("You can refund fees, shipping and taxes", viewState!!.refundNotice)
+            assertTrue(viewState!!.isRefundNoticeVisible)
+            assertEquals("You can refund fees, shipping and taxes", viewState!!.refundNotice)
+        }
     }
 }
