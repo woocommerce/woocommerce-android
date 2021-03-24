@@ -249,7 +249,7 @@ class ProductDetailCardBuilder(
                 ),
                 Pair(
                     resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCount(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
@@ -321,7 +321,7 @@ class ProductDetailCardBuilder(
         if (productType == SIMPLE || productType == VARIABLE) {
             if (this.isStockManaged) {
                 inventory[resources.getString(R.string.product_stock_quantity)] =
-                    FormatUtils.formatInt(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 inventory[resources.getString(R.string.product_backorders)] =
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
             } else if (productType == SIMPLE) {

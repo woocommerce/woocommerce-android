@@ -672,7 +672,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
