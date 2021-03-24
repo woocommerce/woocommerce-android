@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 11:54:04+0000
+Translation-Revision-Date: 2021-03-16 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">Только владелец сайта может управлять способами оплаты транспортных этикеток. Чтобы управлять способами оплаты, свяжитесь с владельцем магазина %1$s (%2$s).</string>
+    <string name="product_detail_add_variations">Добавить варианты</string>
+    <string name="product_variant_list_empty_action">Добавить вариант</string>
+    <string name="product_variant_list_add_first_variation">Добавьте первый вариант</string>
+    <string name="shipping_label_selected_rates_total_description">Итого %s</string>
+    <string name="shipping_label_selected_rates_description">Выбрано %s ставок</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">Подходит для бесплатной подписи</string>
+    <string name="shipping_label_rate_included_options_free_pickup">Подходит для бесплатного самовывоза</string>
+    <string name="shipping_label_rate_included_options_insurance">Страхование (до %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">Отслеживание %s</string>
+    <string name="shipping_label_rate_included_options">Включает %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">Требуется подпись совершеннолетнего лица (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">Требуется подпись (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">Бесплатная доставка</string>
+    <string name="shipping_label_shipping_method_local_pickup">Самовывоз</string>
+    <string name="shipping_label_shipping_method_flat_rate">Единая ставка</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s (%2$s) за доставку.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы выиграете от 5 до 40 % по сравнению с тарифами почты.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">Для выбранного адреса и грузов варианты доставки отсутствуют.</string>
+    <string name="shipping_label_shipping_carriers_title">Перевозчики и тарифы</string>
+    <string name="shipping_label_create_purchase">Приобрести транспортную этикетку</string>
+    <string name="shipping_label_create_mark_order_complete">Отметить заказ как выполненный и уведомить заказчика</string>
+    <string name="shipping_label_create_price_total">Общая сумма заказа</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">Подробно о скидках WooCommerce Services</string>
+    <string name="shipping_label_create_price_woo_discount">Скидка WooCommerce Services</string>
+    <string name="shipping_label_create_price_subtotal">Подытог</string>
+    <string name="shipping_label_create_order_summary">Сводка по заказу на транспортные этикетки</string>
+    <string name="free">бесплатно</string>
+    <string name="other">Прочее</string>
+    <string name="product_term_name_already_exists">Опция с таким именем уже существует.</string>
+    <string name="product_attribute_name_already_exists">Атрибут с таким именем уже существует.</string>
+    <string name="product_enter_attribute_term">Укажите имя каждой опции и нажмите клавишу Enter</string>
+    <string name="product_select_attribute_term">или коснитесь существующей опции.</string>
+    <string name="product_new_attribute_term_name">Название опции</string>
     <string name="shipping_label_payments_saving_error">Ошибка при сохранении настроек</string>
     <string name="shipping_label_payments_saving_dialog_message">Пожалуйста, подождите…</string>
     <string name="shipping_label_payments_saving_dialog_title">Сохранение настроек</string>
@@ -39,7 +75,6 @@ Language: ru
     <string name="shipping_label_packages_loading_message">Пожалуйста, подождите…</string>
     <string name="shipping_label_packages_loading_title">Загрузка посылок!</string>
     <string name="shipping_label_package_details_title_template">Посылка %1$d</string>
-    <string name="shipping_label_package_details_items_count">\"Товаров: %1$d\"</string>
     <string name="shipping_label_packages_loading_error">Не удаётся загрузить определения посылок</string>
     <string name="shipping_label_package_details_weight_info">Включает вес посылок</string>
     <string name="shipping_label_package_details_weight_hint">Общий вес посылок (%1$s)</string>
@@ -418,7 +453,7 @@ Language: ru
     <string name="settings_app_theme_title">Внешний вид</string>
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
-    <string name="my_store_stats_reverted_message">Мы подготовили обновление для нашей системы аналитики. Для просмотра статистики с 1 сентября 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
+    <string name="my_store_stats_reverted_message">Мы подготовили обновление для нашей системы аналитики. Для просмотра статистики с 1 сентября 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
     <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>

@@ -1,2 +1,0 @@
-6.1:
-Pembaruan terbaru untuk aplikasi Android WooCommerce sudah tersedia. Jika Anda menyunting produk, semua perubahan kini akan secara otomatis disimpan secara lokal—dengan mengeklik “Perbarui”, perubahan akan dikirimkan ke server Anda. Kami juga telah memperbaiki bug yang memengaruhi tampilan pengaturan produk, penyuntingan bahasa pada harga produk, dan pemberitahuan push mengenai permintaan dukungan.

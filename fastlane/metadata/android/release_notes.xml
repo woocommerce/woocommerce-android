@@ -1,68 +1,68 @@
 <ar>
-6.1:
-تتوفر آخر التحديثات لتطبيق WooCommerce لنظام تشغيل Android هنا. عند تحرير أحد المنتجات، سيتم حفظ جميع التغييرات الآن تلقائيًا، سيؤدي النقر على "تحديث" إلى إرسال التغييرات إلى خادمك. أصلحنا كذلك أخطاء كانت تؤثر في عرض إعدادات المنتج، وتعديل لغة أسعار المنتج، والتنبيهات المنبثقة بشأن طلبات الدعم.
+6.2:
+بالنسبة إلى هذا الإصدار، ركزنا على إصلاحات الأخطاء وتحسينات الأداء.
 </ar>
 <de-DE>
-6.1:
-Die neuesten Updates für die WooCommerce Android-App sind da. Wenn du ein Produkt bearbeitest, werden nun alle Änderungen automatisch lokal gespeichert – und wenn du auf „Aktualisieren“ klickst, werden die Änderungen an deinen Server gesendet. Darüber hinaus haben wir Fehler rund um Anzeige und Produkteinstellungen, die Bearbeitung der Sprache der Produktpreise und Push-Benachrichtigungen zu Supportanfragen behoben.
+6.2:
+In dieser Release haben wir uns auf Fehlerbehebungen und die Verbesserung der Performance konzentriert.
 </de-DE>
 <es-ES>
-6.1:
-Ya están aquí las últimas novedades de la aplicación de WooCommerce para Android. Ahora, cuando edites un producto, los cambios se guardarán localmente de manera automática. Al hacer clic en "Actualizar", los cambios se enviarán al servidor. Hemos corregido errores que afectaban a cómo se mostraban los ajustes de los productos, la edición del idioma en los precios del producto y las notificaciones push sobre solicitudes de soporte.
+6.2:
+En esta versión, nos hemos centrado en corregir errores y hacer mejoras de rendimiento.
 </es-ES>
 <fr-FR>
-6.1 :
-Les dernières mises à jour de l’application WooCommerce pour Android sont disponibles. Lorsque vous modifiez un produit, toutes les modifications sont désormais enregistrées localement. Appuyez sur « Mettre à jour » pour envoyer les modifications à votre serveur. Nous avons également corrigé des bugs au niveau de l’affichage des paramètres des produits, de la modification de la langue pour le prix des produits et des notifications push relatives aux demandes d’assistance.
+6.2 :
+Pour cette version, nous nous sommes concentrés sur les résolutions de bogues et l’amélioration des performances.
 </fr-FR>
 <iw-IL>
-6.1:
-העדכונים האחרונים לאפליקציה של WooCommerce ב-Android כבר כאן. כאשר עורכים מוצר, כל השינויים נשמרים כעת במכשיר המקומי באופן אוטומטי – לאחר הלחיצה על 'עדכון', העדכונים יעברו לשרת. בנוסף, תיקנו באגים שהשפיעו על התצוגה בהגדרות המוצר, העריכה של השפות במחירי המוצרים והודעות הדחיפה לגבי בקשות לתמיכה.
+6.2:
+בגרסה הזאת התמקדנו בתיקון באגים ובשיפורים בביצועים.
 </iw-IL>
 <id>
-6.1:
-Pembaruan terbaru untuk aplikasi Android WooCommerce sudah tersedia. Jika Anda menyunting produk, semua perubahan kini akan secara otomatis disimpan secara lokal—dengan mengeklik “Perbarui”, perubahan akan dikirimkan ke server Anda. Kami juga telah memperbaiki bug yang memengaruhi tampilan pengaturan produk, penyuntingan bahasa pada harga produk, dan pemberitahuan push mengenai permintaan dukungan.
+6.2:
+Untuk rilis ini, kami berfokus pada perbaikan bug dan peningkatan performa.
 </id>
 <it-IT>
-6.1:
-Ecco gli ultimi aggiornamenti all'app per Android di WooCommerce. Quando viene modificato un prodotto, tutte le modifiche verranno automaticamente salvate in locale. Facendo clic su "Aggiorna" le modifiche verranno inviate al server. Abbiamo inoltre corretto bug che interessavano la visualizzazione delle impostazioni del prodotto, la modifica della lingua del prezzo del prodotto e le notifiche push relative alle richieste del supporto.
+6.2:
+Per questo rilascio, ci siamo concentrati sulle correzioni dei bug e sui miglioramenti delle prestazioni.
 </it-IT>
 <ja-JP>
-6.1:
-WooCommerce Android アプリの最新の更新プログラムはこちらです。商品の編集時にすべての変更が自動的にローカルで保存されるようになりました。「更新」をクリックすると変更がサーバーに送信されます。商品設定の表示、商品価格の言語の編集、サポートリクエストのプッシュ通知に影響するバグも修正しました。
+6.2:
+このリリースでは、バグ修正とパフォーマンス向上に注力しました。
 </ja-JP>
 <ko-KR>
-6.1:
-최근에 WooCommerce Android 앱을 업데이트했습니다. 제품을 편집할 때 이제는 모든 변경사항이 로컬로 자동으로 저장됩니다. "업데이트"를 클릭하면 변경사항이 서버로 전송됩니다. 제품 설정의 표시, 제품 가격 언어의 편집 및 지원 요청에 대한 푸시 알림에 영향을 주는 버그도 수정했습니다.
+6.2:
+이 릴리스의 경우 버그 수정 및 성능 향상에 집중했습니다.
 </ko-KR>
 <nl-NL>
-6.1:
-Hier zijn de meest recente updates voor de WooCommerce-app voor Android. Tijdens het bewerken van een product zullen alle wijzigingen lokaal worden opgeslagen. Door op 'bijwerken’ te klikken, worden de wijzigingen naar je server verzonden. Ook hebben we bugs verholpen die invloed hadden op de weergave van productinstellingen, op het bewerken van de taal van productprijzen en op pushmeldingen over ondersteuningsverzoeken.
+6.2:
+Deze release is toegespitst op het verhelpen van bugs en prestatieverbeteringen.
 </nl-NL>
 <pt-BR>
-6.1:
-Veja as atualizações mais recentes no aplicativo Android do WooCommerce. Quando você editar um produto, todas as alterações serão salvas automaticamente. Ao clicar em "Atualizar", elas serão enviadas para seu servidor. Também corrigimos bugs que afetam a exibição das configurações do produto, a edição do idioma dos preços dos produtos e as notificações push sobre pedidos de suporte.
+6.2:
+Para esta versão, focamos em corrigir bugs e melhorar o desempenho.
 </pt-BR>
 <ru-RU>
-6.1:
-А вот и последнее обновление приложения WooCommerce для Android. Теперь при редактировании товара все изменения автоматически сохраняются на локальном устройстве и отправляются на сервер при нажатии кнопки "Обновить". Мы также исправили ошибки, влияющие на отображение параметров товаров, редактирование языка обозначения цены на товар и всплывающие уведомления об обращениях в службу поддержки.
+6.2:
+В этом выпуске мы сосредоточились на исправлении ошибок и повышении производительности.
 </ru-RU>
 <sv-SE>
-6.1:
-De senaste uppdateringarna av Android-appen WooCommerce är här. När du redigerar en produkt sparas alla ändringar automatiskt lokalt. Genom att klicka på "Uppdatera" skickas ändringarna till din server. Vi korrigerade också fel som påverkar visning av produktinställningar, redigering av språk för produktpriser och push-meddelanden om supportförfrågningar.
+6.2:
+I den här versionen har vi fokuserat på buggkorrigeringar och prestandaförbättringar.
 </sv-SE>
 <tr-TR>
-6.1:
-WooCommerce Android uygulamasıyla ilgili en son güncellemeler burada. Bir ürünü düzenlerken, tüm değişiklikler artık otomatik şekilde yerel olarak kaydedilecek. "Güncelle"ye tıkladığınızda değişiklikler sunucunuza gönderilir. Ayrıca ürün ayarlarının görüntülenmesini, ürün fiyatlarının dilinin düzenlenmesini ve destek talepleriyle ilgili anlık bildirimleri etkileyen hatalar da düzeltildi.
+6.2:
+Bu sürümde, hata düzeltmeye ve performans iyileştirmelerine odaklandık.
 </tr-TR>
 <zh-CN>
-6.1：
-这是 WooCommerce Android 应用程序的最新更新。 现在，编辑产品后，系统会将所有更改自动保存在本地 - 点击“更新”会将更改发送到您的服务器。 我们还修复了影响产品设置显示、产品价格语言编辑和支持请求推送通知的错误。
+6.2：
+在此版本中，我们重点关注错误修复和性能提升。
 </zh-CN>
 <zh-TW>
-6.1：
-以下是 WooCommerce Android 應用程式的最新更新。 編輯產品時，所有變更現在會自動儲存在本機；按一下「更新」會將變更傳送到你的伺服器。 我們也修正了幾個影響到產品設定顯示、產品價格語言編輯，以及支援要求相關推送通知的錯誤。
+6.2：
+此版本著重於修正錯誤和提升效能。
 </zh-TW>
 <en-US>
-6.1:
-The latest updates to the WooCommerce Android app are here. When editing a product, all changes will now automatically save locally—clicking “Update” will send the changes to your server. We also fixed bugs affecting the display of product settings, the editing of the language of product prices, and push notifications about support requests. 
+6.2:
+For this release, we focused on bug fixes and performance improvements.
 </en-US>

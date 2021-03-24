@@ -1,0 +1,2 @@
+6.2:
+Untuk rilis ini, kami berfokus pada perbaikan bug dan peningkatan performa.

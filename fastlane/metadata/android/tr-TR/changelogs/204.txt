@@ -1,0 +1,2 @@
+6.2:
+Bu sürümde, hata düzeltmeye ve performans iyileştirmelerine odaklandık.

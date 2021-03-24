@@ -48,9 +48,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "6.2-rc-1"
+            versionName "6.3-rc-1"
         }
-        versionCode 203
+        versionCode 205
 
         minSdkVersion 21
         targetSdkVersion 30
@@ -141,7 +141,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation "androidx.recyclerview:recyclerview-selection:1.0.0"
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.multidex:multidex:2.0.1"
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "com.google.android.material:material:1.2.1"
@@ -192,7 +192,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
@@ -239,9 +239,9 @@ dependencies {
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:1.1.1"
     androidTestImplementation "androidx.test:rules:1.2.0"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$daggerVersion"
     kaptAndroidTest("com.squareup.inject:assisted-inject-processor-dagger2:0.6.0")
     androidTestCompileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.6.0")
@@ -258,7 +258,6 @@ dependencies {
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.1.0"
-    androidTestImplementation "com.google.code.findbugs:jsr305:2.0.1"
 
     implementation "com.zendesk:support:5.0.2"
 
@@ -274,8 +273,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
+    // Use caution when updating these, as commons-text 1.9 caused the reviews tab to crash on API 21
     implementation "org.apache.commons:commons-lang3:3.9"
-    implementation "org.apache.commons:commons-text:1.9"
+    implementation "org.apache.commons:commons-text:1.8"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 }

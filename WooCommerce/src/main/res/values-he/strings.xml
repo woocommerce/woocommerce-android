@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-04 15:54:53+0000
+Translation-Revision-Date: 2021-03-17 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_label_payments_cant_edit_warning">רק בעלי האתר יכולים לנהל את אמצעי התשלום של תוויות המשלוח. יש ליצור קשר עם הבעלים של החנות ⁦%1$s⁩ (⁦%2$s⁩) כדי לנהל את אמצעי התשלום.</string>
+    <string name="product_detail_add_variations">להוסיף סוגים</string>
+    <string name="product_variant_list_empty_action">להוסיף סוג</string>
+    <string name="product_variant_list_add_first_variation">להוסיף את הסוג הראשון שלך</string>
+    <string name="shipping_label_selected_rates_total_description">סך הכול %s</string>
+    <string name="shipping_label_selected_rates_description">נבחרו %s תעריפים</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>
+    <string name="shipping_label_rate_included_options_free_pickup">זכאי לאיסוף בחינם</string>
+    <string name="shipping_label_rate_included_options_insurance">ביטוח (עד %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">מבצע מעקב של %s</string>
+    <string name="shipping_label_rate_included_options">כולל %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">נדרשת חתימה (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">משלוח חינם</string>
+    <string name="shipping_label_shipping_method_local_pickup">איסוף מקומי</string>
+    <string name="shipping_label_shipping_method_flat_rate">תעריף קבוע</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">הלקוח שילם ⁦%1$s⁩ (⁦%2$s⁩) על משלוח</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">כאשר רוכשים תוויות משלוח עם WooCommerce, אפשר לחסוך בין 5% ל-40% לעומת תעריפי המשלוח דרך הדואר.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">מהי  הנחת השירותים של WooCommerce?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">אירעה שגיאה בטעינת אפשרויות המשלוח</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">אין אפשרויות משלוח לכתובת ולחבילות שבחרת</string>
+    <string name="shipping_label_shipping_carriers_title">ספקים ותעריפים</string>
+    <string name="shipping_label_create_purchase">לרכוש תווית משלוח</string>
+    <string name="shipping_label_create_mark_order_complete">לסמן את ההזמנה כ\'הושלמה\' ולהודיע ללקוח</string>
+    <string name="shipping_label_create_price_total">סך כל ההזמנה</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">למידע נוסף על הנחת השירותים של WooCommerce</string>
+    <string name="shipping_label_create_price_woo_discount">הנחת השירותים של WooCommerce</string>
+    <string name="shipping_label_create_price_subtotal">סכום ביניים</string>
+    <string name="shipping_label_create_order_summary">סיכום ההזמנה לתווית המשלוח</string>
+    <string name="free">בחינם</string>
+    <string name="other">אחר</string>
+    <string name="product_term_name_already_exists">כבר קיימת אפשרות עם השם הזה</string>
+    <string name="product_attribute_name_already_exists">כבר קיים מאפיין עם השם הזה</string>
+    <string name="product_enter_attribute_term">יש להוסיף כל שם של אפשרות וללחוץ על Enter</string>
+    <string name="product_select_attribute_term">לחלופין, ניתן להקיש כדי לבחור אפשרות קיימת</string>
+    <string name="product_new_attribute_term_name">שם האפשרות</string>
     <string name="shipping_label_payments_saving_error">אירעה שגיאה במהלך שמירת ההגדרות שלך</string>
     <string name="shipping_label_payments_saving_dialog_message">רק רגע…</string>
     <string name="shipping_label_payments_saving_dialog_title">שומר את ההגדרות שלך</string>
@@ -39,7 +75,6 @@ Language: he_IL
     <string name="shipping_label_packages_loading_message">רק רגע…</string>
     <string name="shipping_label_packages_loading_title">טוען את החבילות!</string>
     <string name="shipping_label_package_details_title_template">חבילה ⁦%1$d⁩</string>
-    <string name="shipping_label_package_details_items_count">\"⁦%1$d⁩ פירטים\"</string>
     <string name="shipping_label_packages_loading_error">אין אפשרות לטעון את הגדרות החבילה</string>
     <string name="shipping_label_package_details_weight_info">כולל המשקל של החבילה</string>
     <string name="shipping_label_package_details_weight_hint">משקל החבילה הכולל (⁦%1$s⁩)</string>
