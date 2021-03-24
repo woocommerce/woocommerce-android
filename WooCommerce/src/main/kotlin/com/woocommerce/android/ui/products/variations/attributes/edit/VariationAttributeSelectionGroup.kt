@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Parcelable
-import com.woocommerce.android.model.ProductVariation.Option
 import com.woocommerce.android.model.VariantOption
 import kotlinx.android.parcel.Parcelize
 
