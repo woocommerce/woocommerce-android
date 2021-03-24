@@ -127,7 +127,7 @@ object StringUtils {
             else -> number.toString()
         }
     }
-    
+
     fun formatCountDecimal(number: Double): String {
         return number.toString()
     }

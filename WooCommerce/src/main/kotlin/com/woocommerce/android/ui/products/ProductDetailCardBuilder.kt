@@ -48,7 +48,6 @@ import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.util.FormatUtils
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
