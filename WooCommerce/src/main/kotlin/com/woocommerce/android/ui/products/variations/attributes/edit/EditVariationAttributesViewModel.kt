@@ -7,7 +7,9 @@ import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -43,27 +45,40 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     private fun loadProductAttributes(productId: Long) =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                productRepository.fetchProduct(productId)?.attributes?.mapNotNull { attribute ->
-                    viewState.editableVariation?.attributes
-                        ?.find { it.name == attribute.name }
-                        ?.let { Pair(attribute, it) }
-                }?.pairMap { productAttribute, selectedOption ->
-                    VariationAttributeSelectionGroup(
-                        attributeName = productAttribute.name,
-                        options = productAttribute.terms,
-                        selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
-                    )
-                }?.let {
-                    withContext(dispatchers.main) {
-                        editableVariationAttributeList.value = it
-                        skeletonViewShouldBeVisible(false)
-                    }
-                } ?: skeletonViewShouldBeVisible(false)
+                productRepository.fetchProduct(productId)?.attributes
+                    ?.pairWithSelectedOption()
+                    ?.mapToAttributeSelectionGroupList()
+                    ?.dispatchListResult()
+                    ?: skeletonViewShouldBeVisible(false)
             }
         }
 
+    private fun List<ProductAttribute>.pairWithSelectedOption() =
+        mapNotNull { attribute ->
+            viewState.editableVariation?.attributes
+                ?.find { it.name == attribute.name }
+                ?.let { Pair(attribute, it) }
+        }
+
+    private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList() =
+        pairMap { productAttribute, selectedOption ->
+            VariationAttributeSelectionGroup(
+                attributeName = productAttribute.name,
+                options = productAttribute.terms,
+                selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option)
+            )
+        }
+
+    private suspend fun List<VariationAttributeSelectionGroup>.dispatchListResult() =
+        withContext(dispatchers.main) {
+            editableVariationAttributeList.value = this@dispatchListResult
+            skeletonViewShouldBeVisible(false)
+        }
+
     private suspend fun skeletonViewShouldBeVisible(visibility: Boolean) =
-        withContext(dispatchers.main) { viewState = viewState.copy(isSkeletonShown = visibility) }
+        withContext(dispatchers.main) {
+            viewState = viewState.copy(isSkeletonShown = visibility)
+        }
 
     @Parcelize
     data class ViewState(
