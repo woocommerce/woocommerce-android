@@ -36,8 +36,8 @@ class EditVariationAttributesFragment :
         set(show) {
             field = show
             if (show) skeletonView.show(
-                binding.attributeSelectionGroupList,
-                R.layout.skeleton_variation_attributes_list,
+                viewActual = binding.attributeSelectionGroupList,
+                layoutId = R.layout.skeleton_variation_attributes_list,
                 delayed = true
             )
             else skeletonView.hide()
