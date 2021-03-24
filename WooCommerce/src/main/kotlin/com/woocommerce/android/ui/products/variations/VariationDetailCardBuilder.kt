@@ -193,11 +193,12 @@ class VariationDetailCardBuilder(
                                 .filter { it.name != null && it.option != null }
                                 .map { Pair(it.name!!, it.option!!) }
                                 .let { map.apply { putAll(it) } }
-                        }.takeIf { it.isEmpty() }?.let { map ->
-                            parentProduct?.attributes?.map {
-                                Pair(it.name, "Any")
-                            }?.let { map.apply { putAll(it) } }
-                        } ?: emptyMap(),
+                        }.also { map ->
+                            parentProduct?.attributes
+                                ?.filter { map.containsKey(it.name).not() }
+                                ?.map { Pair(it.name, "Any") }
+                                ?.let { map.apply { putAll(it) } }
+                        },
                     icon = drawable.ic_gridicons_customize,
                     onClick = {
                         viewModel.onEditVariationCardClicked(
@@ -280,7 +281,8 @@ class VariationDetailCardBuilder(
             R.string.product_inventory,
             inventoryGroup,
             R.drawable.ic_gridicons_list_checkmark,
-            true) {
+            true
+        ) {
             viewModel.onEditVariationCardClicked(
                 ViewInventory(
                     InventoryData(
