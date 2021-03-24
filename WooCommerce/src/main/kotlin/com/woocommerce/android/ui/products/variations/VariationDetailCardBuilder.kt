@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.FormatUtils
 
@@ -229,7 +230,8 @@ class VariationDetailCardBuilder(
                 ),
                 Pair(
                     resources.getString(R.string.product_stock_quantity),
-                    FormatUtils.formatInt(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
+
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
