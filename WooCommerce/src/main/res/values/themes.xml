@@ -35,6 +35,7 @@
         <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="scrimBackground">@color/color_scrim_background</item>
         <item name="android:navigationBarColor">@color/nav_bar</item>
+        <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
         <item name="android:textColorLink">@color/color_secondary</item>
