@@ -11,3 +11,11 @@ fun <T> List<T>.areSameAs(otherList: List<T>, isSameAs: T.(T) -> Boolean): Boole
 fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) { id == it.id }
 
 fun List<Product>.areSameProductsAs(products: List<Product>) = this.areSameAs(products) { isSameProduct(it) }
+
+fun List<String>.joinToString(separator: String = ", ", lastSeparator: String): String {
+    return if (this.size < 3) {
+        joinToString(lastSeparator)
+    } else {
+        (listOf(take(size - 1).joinToString(separator)) + last()).joinToString(lastSeparator)
+    }
+}
