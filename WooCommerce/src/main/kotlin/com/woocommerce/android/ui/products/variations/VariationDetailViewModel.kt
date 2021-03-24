@@ -32,8 +32,6 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
-import com.woocommerce.android.util.OptionalViewState
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -163,8 +161,8 @@ class VariationDetailViewModel @AssistedInject constructor(
         image: Image? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
-        saleEndDate: Optional<Date>? = null,
-        saleStartDate: Optional<Date>? = null,
+        saleEndDate: Date? = null,
+        saleStartDate: Date? = null,
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
@@ -190,8 +188,8 @@ class VariationDetailViewModel @AssistedInject constructor(
             image = image ?: viewState.variation.image,
             regularPrice = regularPrice ?: viewState.variation.regularPrice,
             salePrice = salePrice ?: viewState.variation.salePrice,
-            saleEndDateGmt = if (saleEndDate != null) saleEndDate.value else viewState.variation.saleEndDateGmt,
-            saleStartDateGmt = if (saleStartDate != null) saleStartDate.value else viewState.variation.saleStartDateGmt,
+            saleEndDateGmt = saleEndDate ?: viewState.variation.saleEndDateGmt,
+            saleStartDateGmt = saleStartDate ?: viewState.variation.saleStartDateGmt,
             isSaleScheduled = isSaleScheduled ?: viewState.variation.isSaleScheduled,
             stockStatus = stockStatus ?: viewState.variation.stockStatus,
             backorderStatus = backorderStatus ?: viewState.variation.backorderStatus,
@@ -312,12 +310,12 @@ class VariationDetailViewModel @AssistedInject constructor(
         viewState = if (ProductImagesService.isUploadingForProduct(remoteProductId)) {
             val uri = ProductImagesService.getUploadingImageUris(remoteProductId)?.firstOrNull()
             viewState.copy(
-                uploadingImageUri = OptionalViewState(uri),
+                uploadingImageUri = uri,
                 isDoneButtonEnabled = false
             )
         } else {
             viewState.copy(
-                uploadingImageUri = OptionalViewState(),
+                uploadingImageUri = null,
                 isDoneButtonEnabled = true
             )
         }
@@ -379,7 +377,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         val gmtOffset: Float = 0f,
         val shippingClass: String? = null,
         val parentProduct: Product? = null,
-        val uploadingImageUri: OptionalViewState<Uri>? = null
+        val uploadingImageUri: Uri? = null
     ) : Parcelable
 
     @AssistedInject.Factory
