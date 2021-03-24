@@ -172,6 +172,10 @@ data class VariantOption(
         option = sourceModel.option
     )
 
+    companion object {
+        val empty by lazy { VariantOption(null, null, null) }
+    }
+
     fun asSourceModel() = ProductVariantOption(id, name, option)
 }
 
