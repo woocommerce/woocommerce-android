@@ -46,10 +46,10 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
             parentProductID = productId,
             editableVariationID = variationId
         )
-        loadProductAttributes(productId)
+        loadProductAttributes()
     }
 
-    private fun loadProductAttributes(productId: Long) =
+    private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
                 parentProduct?.attributes
