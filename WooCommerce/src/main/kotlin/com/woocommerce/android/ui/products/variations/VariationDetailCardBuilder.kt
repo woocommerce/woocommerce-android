@@ -193,7 +193,11 @@ class VariationDetailCardBuilder(
                                 .filter { it.name != null && it.option != null }
                                 .map { Pair(it.name!!, it.option!!) }
                                 .let { map.apply { putAll(it) } }
-                        },
+                        }.takeIf { it.isEmpty() }?.let { map ->
+                            parentProduct?.attributes?.map {
+                                Pair(it.name, "Any")
+                            }?.let { map.apply { putAll(it) } }
+                        } ?: emptyMap(),
                     icon = drawable.ic_gridicons_customize,
                     onClick = {
                         viewModel.onEditVariationCardClicked(
