@@ -192,6 +192,8 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation project(":libs:cardreader")
+
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
