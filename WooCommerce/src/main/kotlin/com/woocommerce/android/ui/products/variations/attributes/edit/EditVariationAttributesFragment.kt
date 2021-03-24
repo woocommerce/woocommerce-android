@@ -75,14 +75,6 @@ class EditVariationAttributesFragment :
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonVisibility = it }
-
-        new?.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-            // update refresh layout
-        }
-
-        new?.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) {
-            // update empty view visibility
-        }
     }
 
     private fun handleVariationAttributeListChanges(selectableOptions: List<VariationAttributeSelectionGroup>) {

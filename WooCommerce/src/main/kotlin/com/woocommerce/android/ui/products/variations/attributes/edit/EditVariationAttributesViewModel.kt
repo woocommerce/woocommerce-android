@@ -90,8 +90,6 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
-        val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null,
         val parentProductID: Long = 0L,
         val editableVariationID: Long = 0L
     ) : Parcelable
