@@ -73,25 +73,27 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
                 parentProduct?.attributes
-                    ?.pairWithSelectedOption()
+                    ?.pairWithSelectedAttributeOption()
+                    ?.pairWithUnselectedAttributeOption()
                     ?.mapToAttributeSelectionGroupList()
                     ?.dispatchListResult()
                     ?: updateSkeletonVisibility(visible = false)
             }
         }
 
-    private fun List<ProductAttribute>.pairWithSelectedOption() =
+    private fun List<ProductAttribute>.pairWithSelectedAttributeOption() =
         mapNotNull { attribute ->
             selectedVariation?.attributes
                 ?.find { it.name == attribute.name }
                 ?.let { Pair(attribute, it) }
-        }.toMutableList().also { currentSelectionGroup ->
-            currentSelectionGroup.map { it.first }.let { knownAttributes ->
-                parentProduct?.attributes
-                    ?.filter { knownAttributes.contains(it).not() }
-                    ?.map { Pair(it, VariantOption.empty) }
-                    ?.let { currentSelectionGroup.apply { addAll(it) } }
-            }
+        }
+
+    private fun List<Pair<ProductAttribute, VariantOption>>.pairWithUnselectedAttributeOption() =
+        map { it.first }.let { selectedAttributes ->
+            parentProduct?.attributes
+                ?.filter { selectedAttributes.contains(it).not() }
+                ?.map { Pair(it, VariantOption.empty) }
+                ?.let { toMutableList().apply { addAll(it) } }
         }
 
     private fun List<Pair<ProductAttribute, VariantOption>>.mapToAttributeSelectionGroupList() =
