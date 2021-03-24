@@ -4,22 +4,29 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditVariationAttributesBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import javax.inject.Inject
 
 class EditVariationAttributesFragment :
-    BaseFragment(R.layout.fragment_edit_variation_attributes) {
+    BaseFragment(R.layout.fragment_edit_variation_attributes), BackPressListener {
     companion object {
         const val TAG: String = "EditVariationAttributesFragment"
+        const val KEY_VARIATION_ATTRIBUTES_RESULT = "key_variation_attributes_result"
     }
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
@@ -59,11 +66,17 @@ class EditVariationAttributesFragment :
         super.onDestroyView()
     }
 
+    override fun onRequestAllowBackPress(): Boolean {
+        return (viewModel.event.value == Exit)
+            .also { viewModel.exit() }
+    }
+
     override fun getFragmentTitle() = getString(R.string.product_attributes)
 
     private fun setupObservers() = viewModel.apply {
         viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
         editableVariationAttributeList.observe(viewLifecycleOwner, Observer(::handleVariationAttributeListChanges))
+        event.observe(viewLifecycleOwner, Observer(::handleViewModelEvents))
     }
 
     private fun setupViews() = binding.apply {
@@ -82,11 +95,18 @@ class EditVariationAttributesFragment :
         requireActivity().invalidateOptionsMenu()
     }
 
+    private fun handleViewModelEvents(event: MultiLiveEvent.Event) {
+        when (event) {
+            is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_ATTRIBUTES_RESULT, event.data)
+            is Exit -> findNavController().navigateUp()
+            else -> event.isHandled = false
+        }
+    }
+
     private fun showAttributeSelectableOptions(
         selectableOptions: MutableList<VariationAttributeSelectionGroup>
     ) {
-        adapter
-            ?.refreshSourceData(selectableOptions)
+        adapter?.refreshSourceData(selectableOptions)
             ?: binding.attributeSelectionGroupList.apply {
                 adapter = VariationAttributesAdapter(
                     selectableOptions,
@@ -99,7 +119,10 @@ class EditVariationAttributesFragment :
         AttributeOptionSelectorDialog.newInstance(
             attributeGroup = item,
             onAttributeOptionSelected = { modifiedGroup ->
-                adapter?.refreshSingleAttributeSelectionGroup(modifiedGroup)
+                adapter?.apply {
+                    refreshSingleAttributeSelectionGroup(modifiedGroup)
+                    viewModel.updateData(sourceData)
+                }
             }
         ).also { it.show(parentFragmentManager, AttributeOptionSelectorDialog.TAG) }
     }
