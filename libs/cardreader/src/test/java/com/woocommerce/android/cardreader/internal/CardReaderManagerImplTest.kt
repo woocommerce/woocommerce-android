@@ -21,13 +21,13 @@ import org.mockito.junit.MockitoJUnitRunner
 class CardReaderManagerImplTest {
     private lateinit var cardReaderManager: CardReaderManagerImpl
     private val terminalWrapper: TerminalWrapper = mock()
+    private val tokenProvider: TokenProvider = mock()
     private val lifecycleObserver: TerminalLifecycleObserver = mock()
     private val application: Application = mock()
 
     @Before
     fun setUp() {
-        cardReaderManager = CardReaderManagerImpl(terminalWrapper)
-            .also { it.initialize(application) }
+        cardReaderManager = CardReaderManagerImpl(terminalWrapper, tokenProvider)
         whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
     }
 
@@ -42,6 +42,8 @@ class CardReaderManagerImplTest {
 
     @Test
     fun `when terminal is initialized, then memory gets trimmed`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+        cardReaderManager.initialize(application)
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
         cardReaderManager.onTrimMemory(0)
