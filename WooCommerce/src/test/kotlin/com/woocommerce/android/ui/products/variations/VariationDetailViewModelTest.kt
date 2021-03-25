@@ -23,7 +23,6 @@ import java.time.ZoneOffset
 import java.util.Date
 
 class VariationDetailViewModelTest : BaseUnitTest() {
-
     companion object {
         private val SALE_START_DATE = Date.from(
             LocalDateTime.of(2020, 3, 1, 8, 0).toInstant(ZoneOffset.UTC)
