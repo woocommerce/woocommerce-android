@@ -9,11 +9,4 @@
         <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
-
-    <style name="Theme.Woo.Splash" parent="Theme.Woo">
-        <item name="android:navigationBarColor">@color/splash_background</item>
-        <item name="android:statusBarColor">@color/splash_background</item>
-        <item name="android:windowBackground">@drawable/bg_splash</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
 </resources>
