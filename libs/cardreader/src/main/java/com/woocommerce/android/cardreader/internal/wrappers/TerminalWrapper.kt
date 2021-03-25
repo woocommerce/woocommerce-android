@@ -7,6 +7,9 @@ import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.internal.TokenProvider
 
+/**
+ * Injectable wrapper for Stripe's Terminal object.
+ */
 internal class TerminalWrapper {
     fun isInitialized() = Terminal.isInitialized()
     fun getLifecycleObserver() = TerminalLifecycleObserver.getInstance()

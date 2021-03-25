@@ -11,6 +11,9 @@ import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
+/**
+ * Implementation of CardReaderManager using StripeTerminalSDK.
+ */
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider
