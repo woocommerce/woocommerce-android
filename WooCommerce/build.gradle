@@ -264,7 +264,7 @@ dependencies {
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$archComponentsVersion"
     // TODO Try to re-enable NullSafeMutableLiveData lint check when we move to fragment-ktx v1.4.0+
-    implementation "androidx.fragment:fragment-ktx:1.3.1"
+    implementation "androidx.fragment:fragment-ktx:1.3.2"
     implementation "androidx.activity:activity-ktx:1.2.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0"
 
