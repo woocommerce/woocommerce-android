@@ -9,8 +9,7 @@ enum class FeatureFlag {
     SHIPPING_LABELS_M2,
     ADD_EDIT_VARIATIONS,
     DB_DOWNGRADE,
-    ORDER_CREATION,
-    CARD_READER;
+    ORDER_CREATION;
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             SHIPPING_LABELS_M2 -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
@@ -19,7 +18,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
             ORDER_CREATION -> PackageUtils.isDebugBuild() || PackageUtils.isTesting()
-            CARD_READER -> PackageUtils.isDebugBuild()
         }
     }
 }
