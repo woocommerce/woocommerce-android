@@ -7,10 +7,10 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class VariationAttributeSelectionGroup(
     private val id: Long,
-    val attributeName: String,
     private var options: List<String>,
-    var selectedOptionIndex: Int,
-    private var anySelectionEnabled: Boolean = false
+    private var noOptionSelected: Boolean = false,
+    val attributeName: String,
+    var selectedOptionIndex: Int
 ) : Parcelable {
     val selectedOption
         get() = options.getOrNull(selectedOptionIndex) ?: ""
@@ -24,11 +24,10 @@ data class VariationAttributeSelectionGroup(
         get() = options.getOrNull(selectedOptionIndex) == anySelectionOption
 
     init {
-        if (anySelectionEnabled) options.toMutableList()
-            .apply {
-                add(anySelectionOption)
-                selectedOptionIndex = indexOf(anySelectionOption)
-            }.also { options = it }
+        options.toMutableList().apply { add(anySelectionOption) }
+            .let { options = it }
+            .takeIf { noOptionSelected }
+            ?.let { selectedOptionIndex = options.indexOf(anySelectionOption) }
     }
 
     fun toVariantOption() =
