@@ -196,7 +196,7 @@ class VariationDetailCardBuilder(
                         }.also { map ->
                             parentProduct?.attributes
                                 ?.filter { map.containsKey(it.name).not() }
-                                ?.map { Pair(it.name, "Any") }
+                                ?.map { Pair(it.name, resources.getString(string.product_any_attribute_hint)) }
                                 ?.let { map.apply { putAll(it) } }
                         },
                     icon = drawable.ic_gridicons_customize,
