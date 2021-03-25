@@ -37,4 +37,7 @@ dependencies {
     testImplementation "junit:junit:$jUnitVersion"
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+
+    implementation "com.stripe:stripeterminal:1.0.17"
+
 }
