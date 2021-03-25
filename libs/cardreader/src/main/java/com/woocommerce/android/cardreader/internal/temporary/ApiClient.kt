@@ -22,7 +22,7 @@
 */
 package com.woocommerce.android.cardreader.internal.temporary
 
-import com.woocommerce.android.cardreader.WCPayStoreWrapper
+import com.woocommerce.android.cardreader.CardReaderStore
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -33,7 +33,7 @@ import java.io.IOException
  * Note:  This code has been copied (https://github.com/stripe/stripe-terminal-android) and modified.
  * It will be removed as soon as we implement the endpoints in FluxC.
  */
-internal class WCPayStoreImpl : WCPayStoreWrapper {
+internal class CardReaderStoreImpl : CardReaderStore {
     private val backendUrl = "http://0.0.0.0:4567"
 
     private val client = OkHttpClient.Builder()
