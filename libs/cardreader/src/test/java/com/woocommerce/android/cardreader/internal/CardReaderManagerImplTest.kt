@@ -71,4 +71,22 @@ class CardReaderManagerImplTest {
 
         assertThat(cardReaderManager.isInitialized()).isFalse()
     }
+
+    @Test
+    fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+        cardReaderManager.initialize(application)
+
+        verify(terminalWrapper).initTerminal(any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(true)
+
+        cardReaderManager.initialize(application)
+
+        verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
+    }
 }
