@@ -39,7 +39,7 @@ class EditVariationAttributesFragment :
 
     private val skeletonView = SkeletonView()
 
-    private var skeletonVisibility: Boolean = false
+    private var isLoadingSkeletonVisible: Boolean = false
         set(show) {
             field = show
             if (show) skeletonView.show(
@@ -87,7 +87,7 @@ class EditVariationAttributesFragment :
     }
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
-        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonVisibility = it }
+        new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
     }
 
     private fun handleVariationAttributeListChanges(selectableOptions: List<VariationAttributeSelectionGroup>) {
