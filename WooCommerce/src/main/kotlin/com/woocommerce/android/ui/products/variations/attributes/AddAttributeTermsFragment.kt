@@ -157,13 +157,13 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        /**
-         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll do this
-         * before variations are generated (because they can't be generated until the attributes are saved)
-         */
+        saveChangesAndReturn()
+        return false
+    }
+
+    private fun saveChangesAndReturn() {
         viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
-        return false
     }
 
     override fun onResume() {
@@ -333,8 +333,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
     }
 
+    /**
+     * Removes this attribute from the product draft and returns to the attributes screen
+     */
     private fun removeAttribute() {
         viewModel.removeAttributeFromDraft(navArgs.attributeId, navArgs.attributeName)
-        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
+        saveChangesAndReturn()
     }
 }
