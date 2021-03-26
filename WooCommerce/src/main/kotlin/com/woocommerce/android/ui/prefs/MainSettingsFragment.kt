@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerActivity
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.widgets.WCPromoTooltip
 import com.woocommerce.android.widgets.WCPromoTooltip.Feature
@@ -115,6 +116,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     mapOf(AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(isChecked))
             )
             AppPrefs.setImageOptimizationEnabled(isChecked)
+        }
+
+        binding.storeSettingsContainer.visibility = if(FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.optionCardReader.setOnClickListener {
+            // TODO cardreader Add tracking
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderSettingsFragment)
         }
 
         binding.optionHelpAndSupport.setOnClickListener {
