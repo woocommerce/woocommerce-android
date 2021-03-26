@@ -129,7 +129,12 @@ object StringUtils {
     }
 
     fun formatCountDecimal(number: Double): String {
-        return number.toString()
+        if (number.rem(1).equals(0.0)) {
+            return formatCount(number.toInt())
+        }
+        else {
+            return number.toString()
+        }
     }
 
     /**
