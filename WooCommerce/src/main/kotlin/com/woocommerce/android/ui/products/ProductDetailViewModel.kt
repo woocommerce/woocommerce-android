@@ -1006,6 +1006,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute and save it to the draft
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
     /**
      * Adds a new term to a the product draft attributes
      */
