@@ -14,6 +14,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
@@ -24,7 +25,8 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
     private val productRepository: ProductDetailRepository,
-    private val variationRepository: VariationDetailRepository
+    private val variationRepository: VariationDetailRepository,
+    private val resources: ResourceProvider
 ) : ScopedViewModel(savedState, dispatchers) {
     private val _editableVariationAttributeList =
         MutableLiveData<List<VariationAttributeSelectionGroup>>()
@@ -103,7 +105,8 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
                 attributeName = productAttribute.name,
                 options = productAttribute.terms,
                 selectedOptionIndex = productAttribute.terms.indexOf(selectedOption.option),
-                noOptionSelected = selectedOption.option.isNullOrEmpty()
+                noOptionSelected = selectedOption.option.isNullOrEmpty(),
+                resourceCreator = { resources.getString(it) }
             )
         }
 
