@@ -137,9 +137,9 @@ data class ProductVariation(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
+            it.attributes = JsonArray().toString()
             attributes.takeIf { list -> list.isNotEmpty() }
                 ?.forEach { variant -> it.addVariant(variant.asSourceModel()) }
-                ?: it.apply { attributes = JsonArray().toString() }
             it.length = if (length == 0f) "" else length.formatToString()
             it.width = if (width == 0f) "" else width.formatToString()
             it.weight = if (weight == 0f) "" else weight.formatToString()
