@@ -80,7 +80,6 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -680,7 +679,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
-        saleEndDate: Optional<Date>? = null,
+        saleEndDate: Date? = viewState.productDraft?.saleEndDateGmt,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -711,7 +710,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
-            val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
                     shortDescription = shortDescription ?: product.shortDescription,
@@ -750,12 +748,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
                     upsellProductIds = upsellProductIds ?: product.upsellProductIds,
                     crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
-                    saleEndDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                    } else viewState.storedProduct?.saleEndDateGmt,
-                    saleStartDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                        saleEndDate
+                    } else {
+                        viewState.storedProduct?.saleEndDateGmt
+                    },
+                    saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                         saleStartDate ?: product.saleStartDateGmt
                     } else viewState.storedProduct?.saleStartDateGmt,
                     downloads = downloads ?: product.downloads,
@@ -768,6 +766,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
             updateProductEditAction()
         }
+    }
+
+    private fun productHasSale(
+        isSaleScheduled: Boolean?,
+        product: Product
+    ): Boolean {
+        return isSaleScheduled == true || (isSaleScheduled == null && product.isSaleScheduled)
     }
 
     override fun onCleared() {

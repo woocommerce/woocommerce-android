@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -141,8 +140,8 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,
                 isSaleScheduled = it.isSaleScheduled,
-                saleStartDate = Optional(it.saleStartDate),
-                saleEndDate = Optional(it.saleEndDate)
+                saleStartDate = it.saleStartDate,
+                saleEndDate = it.saleEndDate
             )
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
@@ -192,10 +191,10 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
             new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
                 variationName = new.variation.getName(product)
             }
-            new.uploadingImageUri?.takeIfNotEqualTo(old?.uploadingImageUri) {
-                if (it.value != null) {
+            new.uploadingImageUri.takeIfNotEqualTo(old?.uploadingImageUri) {
+                if (it != null) {
                     binding.imageGallery.clearImages()
-                    binding.imageGallery.setPlaceholderImageUris(listOf(it.value))
+                    binding.imageGallery.setPlaceholderImageUris(listOf(it))
                 } else {
                     binding.imageGallery.clearPlaceholders()
                 }
