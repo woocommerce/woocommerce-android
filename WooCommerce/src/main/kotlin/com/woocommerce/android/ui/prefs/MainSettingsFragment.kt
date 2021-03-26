@@ -118,7 +118,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             AppPrefs.setImageOptimizationEnabled(isChecked)
         }
 
-        binding.storeSettingsContainer.visibility = if(FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
+        binding.storeSettingsContainer.visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
         binding.optionCardReader.setOnClickListener {
             // TODO cardreader Add tracking
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_cardReaderSettingsFragment)
