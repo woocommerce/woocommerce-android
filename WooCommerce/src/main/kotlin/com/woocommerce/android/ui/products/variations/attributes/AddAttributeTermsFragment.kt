@@ -146,6 +146,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         inflater.inflate(R.menu.menu_attribute_terms, menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        // we don't want to show the Remove menu item if this is new attribute
+        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_remove -> {
@@ -162,6 +168,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun saveChangesAndReturn() {
+        // TODO We probably want to push changes in the main attribute list screen rather than here
         viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
     }

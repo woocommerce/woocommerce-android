@@ -1138,7 +1138,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
     /**
@@ -1213,7 +1213,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
     }
 
     /**
