@@ -37,7 +37,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         isStockManaged = false,
         isSoldIndividually = false,
         stockStatus = InStock,
-        stockQuantity = 10,
+        stockQuantity = 10.0,
         backorderStatus = No
     )
 
@@ -46,7 +46,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         isStockManaged = true,
         isSoldIndividually = true,
         stockStatus = OutOfStock,
-        stockQuantity = 0,
+        stockQuantity = 0.0,
         backorderStatus = Yes
     )
 
