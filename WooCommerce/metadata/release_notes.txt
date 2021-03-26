@@ -1,3 +1,5 @@
-- [*] Product Type: Updated product type detail to display "Downloadable" if a product is downloadable. [https://github.com/woocommerce/woocommerce-android/pull/3679]
-- [*] Custom order status is now correctly displayed in the order details. [https://github.com/woocommerce/woocommerce-android/pull/3693]
+WooCommerce Android 6.3 offers users two important updates: 
 
+ - If applicable, you can now include “downloadable” in the type details of a product.
+ - We fixed a bug so that a custom order’s status now displays correctly in order details.
+ 

@@ -12,5 +12,13 @@ fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) { 
 
 fun List<Product>.areSameProductsAs(products: List<Product>) = this.areSameAs(products) { isSameProduct(it) }
 
+fun List<String>.joinToString(separator: String = ", ", lastSeparator: String): String {
+    return if (this.size < 3) {
+        joinToString(lastSeparator)
+    } else {
+        (listOf(take(size - 1).joinToString(separator)) + last()).joinToString(lastSeparator)
+    }
+}
+
 inline fun <T, R, V> List<Pair<R, V>>.pairMap(transform: (R, V) -> T): List<T> =
     map { transform(it.first, it.second) }

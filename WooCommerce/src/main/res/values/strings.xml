@@ -103,6 +103,7 @@
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
     <string name="free">free</string>
+    <string name="and">and</string>
     <!--
         Date/Time Labels
     -->
@@ -513,8 +514,7 @@
         <item quantity="other">%d items</item>
     </plurals>
     <string name="order_refunds_refund_info_title">Refunded products</string>
-    <string name="order_refunds_shipping_refund_notice">You can refund shipping and tax amounts %s</string>
-    <string name="order_refunds_shipping_refund_notice_fees">You can refund fees, shipping and tax amounts %s</string>
+    <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
         Add Order Note
