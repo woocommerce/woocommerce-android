@@ -79,12 +79,11 @@ class EditVariationAttributesFragment :
         event.observe(viewLifecycleOwner, Observer(::handleViewModelEvents))
     }
 
-    private fun setupViews() = binding.apply {
-        attributeSelectionGroupList.apply {
+    private fun setupViews() =
+        binding.attributeSelectionGroupList.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             itemAnimator = null
         }
-    }
 
     private fun handleViewStateChanges(old: ViewState?, new: ViewState?) {
         new?.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isLoadingSkeletonVisible = it }
