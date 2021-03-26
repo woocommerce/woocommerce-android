@@ -24,6 +24,17 @@
         tools:optionTitle="testwooshop.mystagingwebsite.com"
         tools:optionValue="Woo Tester" />
 
+    <View style="@style/Woo.Divider" />
+    <!--
+        Help & support
+    -->
+    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+        android:id="@+id/option_help_and_support"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:optionTitle="@string/support_help" />
+
+
 
     <LinearLayout
         android:id="@+id/store_settings_container"
@@ -50,16 +61,6 @@
             app:optionTitle="@string/settings_card_reader" />
 
     </LinearLayout>
-
-    <View style="@style/Woo.Divider" />
-    <!--
-        Help & support
-    -->
-    <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-        android:id="@+id/option_help_and_support"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:optionTitle="@string/support_help" />
 
     <View style="@style/Woo.Divider" />
 
