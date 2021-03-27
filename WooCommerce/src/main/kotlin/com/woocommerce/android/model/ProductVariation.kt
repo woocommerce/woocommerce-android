@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -167,7 +166,7 @@ data class VariantOption(
     val name: String?,
     val option: String?
 ) : Parcelable {
-    constructor(sourceModel: ProductVariantOption) : this(
+    constructor(sourceModel: WCProductVariationModel.ProductVariantOption) : this(
         id = sourceModel.id,
         name = sourceModel.name,
         option = sourceModel.option
@@ -177,7 +176,7 @@ data class VariantOption(
         val empty by lazy { VariantOption(null, null, null) }
     }
 
-    fun asSourceModel() = ProductVariantOption(id, name, option)
+    fun asSourceModel() = WCProductVariationModel.ProductVariantOption(id, name, option)
 }
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
