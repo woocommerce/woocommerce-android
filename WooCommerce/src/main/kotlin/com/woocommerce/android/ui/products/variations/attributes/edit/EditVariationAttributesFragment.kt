@@ -65,6 +65,7 @@ class EditVariationAttributesFragment :
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onRequestAllowBackPress(): Boolean {
