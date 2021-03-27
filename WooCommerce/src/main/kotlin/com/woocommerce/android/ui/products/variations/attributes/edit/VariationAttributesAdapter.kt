@@ -22,8 +22,7 @@ class VariationAttributesAdapter(
         )
 
     override fun onBindViewHolder(holder: VariationAttributeSelectionViewHolder, position: Int) {
-        sourceData.getOrNull(position)
-            ?.let { holder.bind(it) }
+        sourceData[position].let { holder.bind(it) }
     }
 
     fun refreshSourceData(sourceData: MutableList<VariationAttributeSelectionGroup>) {
