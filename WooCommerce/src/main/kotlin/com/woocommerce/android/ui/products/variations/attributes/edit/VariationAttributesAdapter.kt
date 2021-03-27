@@ -32,10 +32,11 @@ class VariationAttributesAdapter(
 
     fun refreshSingleAttributeSelectionGroup(modifiedGroup: VariationAttributeSelectionGroup) {
         sourceData.apply {
-            indexOf(find { it.attributeName == modifiedGroup.attributeName })
-                .let { sourceData[it] = modifiedGroup }
+            indexOf(find { it.attributeName == modifiedGroup.attributeName }).let {
+                sourceData[it] = modifiedGroup
+                notifyItemChanged(it)
+            }
         }
-        notifyDataSetChanged()
     }
 
     inner class VariationAttributeSelectionViewHolder(
