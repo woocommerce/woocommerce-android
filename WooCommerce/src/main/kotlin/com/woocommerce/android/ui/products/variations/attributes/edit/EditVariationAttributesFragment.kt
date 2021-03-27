@@ -35,7 +35,8 @@ class EditVariationAttributesFragment :
 
     private val navArgs: EditVariationAttributesFragmentArgs by navArgs()
 
-    private lateinit var binding: FragmentEditVariationAttributesBinding
+    private var _binding: FragmentEditVariationAttributesBinding? = null
+    private val binding get() = _binding!!
 
     private val skeletonView = SkeletonView()
 
@@ -55,7 +56,7 @@ class EditVariationAttributesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentEditVariationAttributesBinding.bind(view)
+        _binding = FragmentEditVariationAttributesBinding.bind(view)
         setupObservers()
         setupViews()
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
