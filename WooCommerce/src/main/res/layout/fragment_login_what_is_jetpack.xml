@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY"
+            android:scaleType="fitStart"
             app:srcCompat="@drawable/img_what_is_jetpack"/>
     </FrameLayout>
 
