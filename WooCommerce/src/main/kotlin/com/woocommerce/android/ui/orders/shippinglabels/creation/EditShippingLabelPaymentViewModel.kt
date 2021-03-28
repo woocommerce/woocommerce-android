@@ -4,6 +4,8 @@ import android.os.Parcelable
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingAccountSettings
@@ -69,7 +71,9 @@ class EditShippingLabelPaymentViewModel @AssistedInject constructor(
         viewState = viewState.copy(paymentMethods = paymentMethodsModels)
     }
 
-    fun saveSettings() {
+    fun onDoneButtonClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_METHOD_DONE_BUTTON_TAPPED)
+
         launch {
             viewState = viewState.copy(showSavingProgressDialog = true)
             val selectedPaymentMethod = viewState.paymentMethods.find { it.isSelected }!!.paymentMethod
