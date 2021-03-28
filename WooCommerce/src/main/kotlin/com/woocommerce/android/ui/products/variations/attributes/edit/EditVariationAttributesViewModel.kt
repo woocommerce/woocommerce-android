@@ -94,7 +94,7 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         map { it.first }.let { selectedAttributes ->
             parentProduct?.attributes
                 ?.filter { selectedAttributes.contains(it).not() }
-                ?.map { Pair(it, VariantOption.empty) }
+                ?.map { it to VariantOption.empty }
                 ?.let { toMutableList().apply { addAll(it) } }
         }
 
