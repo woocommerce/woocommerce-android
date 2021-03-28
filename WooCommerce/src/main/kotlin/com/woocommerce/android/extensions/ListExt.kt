@@ -27,8 +27,8 @@ fun List<String>.joinToString(separator: String = ", ", lastSeparator: String): 
  * This method extend a map operation to be able to take a List of Pairs and map both values declared
  * in a explicit parameter form. The objective of this is to improve the readability when composing
  * complex data through the usage of [Pair]. So instead of access the Pair using [Pair.first] and [Pair.second]
- * this method allow us to define better naming for the map operation inside the [transform] HOF declaration
- * of the caller
+ * this method allow us to define better naming for the map operation by wrapping the object in two parameters
+ * inside the [transform] HOF declaration of the caller
  */
 inline fun <T, R, V> List<Pair<R, V>>.pairMap(transform: (R, V) -> T): List<T> =
     map { transform(it.first, it.second) }
