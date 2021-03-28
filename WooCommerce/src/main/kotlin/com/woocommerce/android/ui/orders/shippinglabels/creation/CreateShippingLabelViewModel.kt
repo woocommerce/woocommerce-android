@@ -457,6 +457,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(ShowWooDiscountBottomSheet)
     }
 
+    fun onPurchaseShippingLabelClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_BUTTON_TAPPED)
+        // TODO: AnalyticsTracker.track(Stat.CREATE_SHIPPING_LABEL_FLOW, mapOf("state" to "purchase_initiated"))
+    }
+
     fun onEditButtonTapped(step: FlowStep) {
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested

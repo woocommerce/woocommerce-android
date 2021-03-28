@@ -326,5 +326,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
         val totalPriceValue = state.price
         totalPrice.text = PriceUtils.formatCurrency(totalPriceValue, state.currency, currencyFormatter)
+
+        purchaseLabelButton.setOnClickListener {
+            viewModel.onPurchaseShippingLabelClicked()
+        }
     }
 }
