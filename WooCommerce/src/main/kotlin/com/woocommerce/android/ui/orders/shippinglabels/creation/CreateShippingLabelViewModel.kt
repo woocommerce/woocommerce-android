@@ -6,6 +6,8 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Address
@@ -179,10 +181,31 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
+                        is SideEffect.TrackFlowStart -> trackFlowStart()
+                        is SideEffect.TrackCompletedStep -> trackCompletedStep(sideEffect.step)
                     }
                 }
             }
         }
+    }
+
+    private fun trackFlowStart() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to "started"))
+    }
+
+    private fun trackCompletedStep(step: Step<*>) {
+        val action = when (step) {
+            is OriginAddressStep -> "origin_address_complete"
+            is ShippingAddressStep -> "destination_address_complete"
+            is PackagingStep -> "packages_selected"
+            is CarrierStep -> "carrier_rates_selected"
+            is CustomsStep -> "customs_complete"
+            is PaymentsStep -> "payment_method_selected"
+        }
+        AnalyticsTracker.track(
+            Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+            mapOf("state" to action)
+        )
     }
 
     private suspend fun handleResult(
@@ -256,6 +279,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 (!customsStep.isVisible || customsStep.status == DONE) &&
                 carrierStep.status == DONE
             if (!isVisible) return OrderSummaryState()
+
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to "purchase_ready"))
 
             with(stateMachineData.stepsState.carrierStep.data) {
                 val price = sumByBigDecimal { it.price }
@@ -410,50 +435,62 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
 
     fun onAddressEditConfirmed(address: Address) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CONFIRMED)
         stateMachine.handleEvent(AddressValidated(address))
     }
 
     fun onAddressEditCanceled() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_EDIT_CANCELED)
         stateMachine.handleEvent(AddressEditCanceled)
     }
 
     fun onSuggestedAddressDiscarded() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_DISCARDED)
         stateMachine.handleEvent(SuggestedAddressDiscarded)
     }
 
     fun onSuggestedAddressAccepted(address: Address) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_ACCEPTED)
         stateMachine.handleEvent(SuggestedAddressAccepted(address))
     }
 
     fun onSuggestedAddressEditRequested(address: Address) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SUGGESTED_ADDRESS_EDIT_REQUESTED)
         stateMachine.handleEvent(EditAddressRequested(address))
     }
 
     fun onPackagesUpdated(packages: List<ShippingLabelPackage>) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_UPDATED)
         stateMachine.handleEvent(PackagesSelected(packages))
     }
 
     fun onPackagesEditCanceled() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PACKAGE_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPackagingCanceled)
     }
 
     fun onPaymentsUpdated(paymentMethod: PaymentMethod) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_UPDATED)
         stateMachine.handleEvent(PaymentSelected(paymentMethod))
     }
 
     fun onPaymentsEditCanceled() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PAYMENT_SELECTION_CANCELED)
         stateMachine.handleEvent(EditPaymentCanceled)
     }
 
     fun onShippingCarriersSelected(rates: List<ShippingRate>) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_UPDATED)
         stateMachine.handleEvent(ShippingCarrierSelected(rates))
     }
 
     fun onShippingCarrierSelectionCanceled() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_SHIPPING_CARRIER_SELECTION_CANCELED)
         stateMachine.handleEvent(ShippingCarrierSelectionCanceled)
     }
 
     fun onWooDiscountInfoClicked() {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_DISCOUNT_INFO_BUTTON_TAPPED)
         triggerEvent(ShowWooDiscountBottomSheet)
     }
 
@@ -463,6 +500,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     fun onEditButtonTapped(step: FlowStep) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_BUTTON_TAPPED, mapOf("step" to step.name))
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.EditOriginAddressRequested
             FlowStep.SHIPPING_ADDRESS -> Event.EditShippingAddressRequested
@@ -478,6 +516,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     fun onContinueButtonTapped(step: FlowStep) {
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_CONTINUE_BUTTON_TAPPED, mapOf("step" to step.name))
         when (step) {
             FlowStep.ORIGIN_ADDRESS -> Event.OriginAddressValidationStarted
             FlowStep.SHIPPING_ADDRESS -> Event.ShippingAddressValidationStarted
