@@ -207,7 +207,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingLines = order.shippingLines.map {
             RefundListItem(it.toItem(), 1, 1)
         }
-        updateRefundShippingLines(shippingLines)
+        _refundShippingLines.value = shippingLines
 
         if (productsRefundLiveData.hasInitialValue) {
             val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
@@ -538,10 +538,6 @@ class IssueRefundViewModel @AssistedInject constructor(
                     selectedItems
                 )
         )
-    }
-
-    private fun updateRefundShippingLines(items: List<RefundListItem>) {
-        _refundShippingLines.value = items.filter { it.maxQuantity > 0 }
     }
 
     private fun validateInput(): InputValidationState {
