@@ -5,6 +5,7 @@ import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -201,6 +203,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditPaymentRequested> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
+            on<Event.PurchaseStarted> {
+                transitionTo(State.PurchaseLabels(data))
+            }
         }
 
         state<State.OriginAddressValidation> {
@@ -371,6 +376,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
             on<Event.EditPaymentCanceled> {
                 transitionTo(State.WaitingForInput(data))
+            }
+        }
+
+        state<PurchaseLabels> {
+            on<Event.PurchaseFailed> {
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PurchaseError))
+            }
+
+            on<Event.PurchaseSuccess> {
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(it.labels))
             }
         }
 
@@ -560,6 +575,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingError : Error()
         object AddressValidationError : Error()
         object PackagesLoadingError : Error()
+        object PurchaseError : Error()
     }
 
     sealed class State : Parcelable {
@@ -610,6 +626,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class PaymentSelection(val data: StateMachineData) : State()
+
+        @Parcelize
+        data class PurchaseLabels(val data: StateMachineData) : State()
     }
 
     sealed class Event {
@@ -658,6 +677,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object EditPaymentRequested : UserInput()
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
+
+        object PurchaseStarted : UserInput()
+        data class PurchaseSuccess(val labels: List<ShippingLabel>) : Event()
+        object PurchaseFailed : Event()
     }
 
     sealed class SideEffect {
@@ -682,7 +705,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object ShowCustomsForm : SideEffect()
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
+
         object ShowPaymentOptions : SideEffect()
+
+        data class ShowLabelsPrint(val labels: List<ShippingLabel>) : ShippingLabelsStateMachine.SideEffect()
     }
 
     class InvalidStateException(message: String) : Exception(message)

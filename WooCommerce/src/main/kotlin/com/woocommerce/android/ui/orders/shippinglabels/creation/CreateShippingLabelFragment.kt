@@ -298,6 +298,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         binding.orderSummaryLayout.discountInfo.setOnClickListener {
             viewModel.onWooDiscountInfoClicked()
         }
+        binding.orderSummaryLayout.purchaseLabelButton.setOnClickListener {
+            viewModel.onPurchaseButtonClicked()
+        }
     }
 
     private fun ShippingLabelCreationStepView.update(data: StepUiState) {

@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PurchaseError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressChangeSuggested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditCanceled
@@ -44,6 +46,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseStarted
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelectionCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
@@ -154,6 +159,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
                         }
                     }
+                    is State.PurchaseLabels -> {
+                        handleResult(
+                            progressDialogTitle = string.shipping_label_create_purchase_progress_title,
+                            progressDialogMessage = string.shipping_label_create_purchase_progress_message
+                        ) {
+                            purchaseLabels(transition.state.data)
+                        }
+                    }
                     else -> {
                     }
                 }
@@ -180,6 +193,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
+                        is SideEffect.ShowLabelsPrint -> openPringLabelsScreen(sideEffect.labels)
                     }
                 }
             }
@@ -228,6 +242,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     private fun openPaymentDetails() {
         triggerEvent(ShowPaymentDetails)
+    }
+
+    private fun openPringLabelsScreen(labels: List<ShippingLabel>) {
+        println("yay")
     }
 
     private fun updateViewState(stateMachineData: StateMachineData) {
@@ -288,6 +306,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             DataLoadingError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             AddressValidationError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             PackagesLoadingError -> triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
+            PurchaseError -> triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_error))
         }
     }
 
@@ -331,6 +350,17 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             is ValidationResult.NameMissing -> AddressInvalid(address, result)
             is ValidationResult.Error -> AddressValidationFailed
         }
+    }
+
+    private suspend fun purchaseLabels(data: StateMachineData): Event {
+        val result = shippingLabelRepository.purchaseLabels(
+            orderId = data.order.remoteId,
+            origin = data.stepsState.originAddressStep.data,
+            destination = data.stepsState.shippingAddressStep.data,
+            packages = data.stepsState.packagingStep.data,
+            rates = data.stepsState.carrierStep.data
+        )
+        return if (result.isError) PurchaseFailed else PurchaseSuccess(result.model!!)
     }
 
     private val PackagingStep.stepDescription: String
@@ -456,6 +486,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onWooDiscountInfoClicked() {
         triggerEvent(ShowWooDiscountBottomSheet)
+    }
+
+    fun onPurchaseButtonClicked() {
+        stateMachine.handleEvent(PurchaseStarted)
     }
 
     fun onEditButtonTapped(step: FlowStep) {
