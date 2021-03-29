@@ -1,6 +1,8 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
 import android.util.Log
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
@@ -31,17 +33,21 @@ internal class CardReaderManagerImpl(
             // Register the observer for all lifecycle hooks
             app.registerActivityLifecycleCallbacks(terminal.getLifecycleObserver())
 
+            app.registerComponentCallbacks(object : ComponentCallbacks2 {
+                override fun onConfigurationChanged(newConfig: Configuration) {}
+
+                override fun onLowMemory() {}
+
+                override fun onTrimMemory(level: Int) {
+                    terminal.getLifecycleObserver().onTrimMemory(level, application)
+                }
+            })
+
             // TODO cardreader: Set LogLevel depending on build flavor.
             // Choose the level of messages that should be logged to your console
             val logLevel = LogLevel.VERBOSE
 
             initStripeTerminal(logLevel)
-        }
-    }
-
-    override fun onTrimMemory(level: Int) {
-        if (terminal.isInitialized()) {
-            terminal.getLifecycleObserver().onTrimMemory(level, application)
         }
     }
 
