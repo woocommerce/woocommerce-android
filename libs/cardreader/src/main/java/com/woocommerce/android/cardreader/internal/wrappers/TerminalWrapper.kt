@@ -6,9 +6,11 @@ import com.stripe.stripeterminal.TerminalLifecycleObserver
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.Cancelable
 import com.stripe.stripeterminal.callable.DiscoveryListener
+import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
+import com.stripe.stripeterminal.model.external.Reader
 import com.woocommerce.android.cardreader.internal.TokenProvider
 
 /**
@@ -29,4 +31,7 @@ internal class TerminalWrapper {
         discoveryListener: DiscoveryListener,
         callback: Callback
     ): Cancelable = Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
+
+    fun connectToReader(reader: Reader, callback: ReaderCallback) =
+        Terminal.getInstance().connectReader(reader, callback)
 }

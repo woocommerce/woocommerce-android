@@ -18,6 +18,7 @@ interface CardReaderManager {
     fun isInitialized(): Boolean
     fun initialize(app: Application)
     fun startDiscovery(isSimulated: Boolean)
+    fun connectToReader(readerId: String)
     fun onTrimMemory(level: Int)
 
     companion object {

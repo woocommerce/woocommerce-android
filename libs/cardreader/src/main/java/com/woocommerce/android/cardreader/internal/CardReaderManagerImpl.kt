@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.DiscoveryListener
+import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.stripe.stripeterminal.model.external.ConnectionStatus
@@ -31,6 +32,7 @@ internal class CardReaderManagerImpl(
     override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = MutableStateFlow(
         CardReaderDiscoveryEvents.NotStarted
     )
+    private val foundReaders = mutableSetOf<Reader>()
 
     override fun isInitialized(): Boolean {
         return terminal.isInitialized()
@@ -57,6 +59,7 @@ internal class CardReaderManagerImpl(
         discoveryEvents.value = CardReaderDiscoveryEvents.Started
         terminal.discoverReaders(config, object : DiscoveryListener {
             override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
+                foundReaders.addAll(readers)
                 discoveryEvents.value = CardReaderDiscoveryEvents.ReadersFound(readers.mapNotNull { it.serialNumber })
             }
         }, object : Callback {
@@ -66,6 +69,21 @@ internal class CardReaderManagerImpl(
 
             override fun onSuccess() {}
         })
+    }
+
+    override fun connectToReader(readerId: String) {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        foundReaders.find { it.serialNumber == readerId }?.let {
+          terminal.connectToReader(it, object : ReaderCallback {
+              override fun onFailure(e: TerminalException) {
+                  Log.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
+              }
+
+              override fun onSuccess(reader: Reader) {
+                  Log.d("CardReader", "connecting to reader succeeded")
+              }
+          })
+        }
     }
 
     override fun onTrimMemory(level: Int) {
