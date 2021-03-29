@@ -25,9 +25,10 @@ internal class CardReaderManagerImpl(
     }
     private lateinit var application: Application
 
-    override fun isInitialized(): Boolean {
-        return terminal.isInitialized()
-    }
+    override val isInitialized: Boolean
+        get() {
+            return terminal.isInitialized()
+        }
 
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
