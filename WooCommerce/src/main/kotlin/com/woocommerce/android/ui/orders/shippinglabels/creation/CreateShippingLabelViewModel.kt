@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.sumByBigDecimal
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -355,7 +356,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 val weightFormatted = with(DecimalFormat()) {
                     maximumFractionDigits = 4
                     minimumFractionDigits = 0
-                    format(data.sumByDouble { it.weight })
+                    format(data.sumByFloat { it.weight })
                 }
 
                 val secondLine = resourceProvider.getString(

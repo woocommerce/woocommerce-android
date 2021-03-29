@@ -98,10 +98,10 @@ class ShippingLabelRepository @Inject constructor(
                 WCShippingLabelModel.ShippingLabelPackage(
                     id = "package$i",
                     boxId = pack.id,
-                    height = pack.dimensions.height.toFloat(),
-                    width = pack.dimensions.width.toFloat(),
-                    length = pack.dimensions.length.toFloat(),
-                    weight = box.weight.toFloat(),
+                    height = pack.dimensions.height,
+                    width = pack.dimensions.width,
+                    length = pack.dimensions.length,
+                    weight = box.weight,
                     isLetter = pack.isLetter
                 )
             }
