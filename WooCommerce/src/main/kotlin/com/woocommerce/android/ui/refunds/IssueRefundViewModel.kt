@@ -467,10 +467,7 @@ class IssueRefundViewModel @AssistedInject constructor(
             else
                 resourceProvider.getString(R.string.order_refunds_items_select_all)
 
-        var grandTotal = productsRefund
-        if (refundByItemsState.isShippingMainSwitchChecked == true) {
-            grandTotal = grandTotal.add(refundByItemsState.shippingRefund)
-        }
+        val grandTotal = productsRefund + refundByItemsState.shippingRefund
 
         refundByItemsState = refundByItemsState.copy(
                 productsRefund = productsRefund,
@@ -588,15 +585,13 @@ class IssueRefundViewModel @AssistedInject constructor(
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
-                grandTotalRefund = productsRefund.add(shippingRefund),
-                isShippingMainSwitchChecked = true
+                grandTotalRefund = productsRefund.add(shippingRefund)
             )
         } else {
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
-                grandTotalRefund = productsRefund,
-                isShippingMainSwitchChecked = false
+                grandTotalRefund = productsRefund
             )
         }
     }
@@ -678,7 +673,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         val shippingRefund: BigDecimal = BigDecimal.ZERO,
         val formattedShippingRefundTotal: String? = null,
         val isShippingRefundAvailable: Boolean? = null,
-        val isShippingMainSwitchChecked: Boolean? = null,
+        val isShippingMainSwitchChecked: Boolean = shippingRefund > BigDecimal.ZERO,
         val selectedShippingLines: List<Long>? = null,
         val isFeesVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
