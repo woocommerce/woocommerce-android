@@ -8,6 +8,9 @@ import com.stripe.stripeterminal.callable.ReaderCallback
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.stripe.stripeterminal.model.external.ConnectionStatus
+import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
+import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
+import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
 import com.stripe.stripeterminal.model.external.DeviceType
 import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
 import com.stripe.stripeterminal.model.external.PaymentStatus
@@ -32,6 +35,8 @@ internal class CardReaderManagerImpl(
     override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = MutableStateFlow(
         CardReaderDiscoveryEvents.NotStarted
     )
+
+    override val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
     private val foundReaders = mutableSetOf<Reader>()
 
     override fun isInitialized(): Boolean {
@@ -95,13 +100,18 @@ internal class CardReaderManagerImpl(
     private fun initStripeTerminal(logLevel: LogLevel) {
         val listener = object : TerminalListener {
             override fun onUnexpectedReaderDisconnect(reader: Reader) {
-                // TODO cardreader: Not Implemented
+                readerStatus.value = CardReaderStatus.NOT_CONNECTED
                 Log.d("CardReader", "onUnexpectedReaderDisconnect")
+
             }
 
             override fun onConnectionStatusChange(status: ConnectionStatus) {
                 super.onConnectionStatusChange(status)
-                // TODO cardreader: Not Implemented
+                readerStatus.value = when (status) {
+                    NOT_CONNECTED -> CardReaderStatus.NOT_CONNECTED
+                    CONNECTING -> CardReaderStatus.CONNECTING
+                    CONNECTED -> CardReaderStatus.CONNECTED
+                }
                 Log.d("CardReader", "onConnectionStatusChange: ${status.name}")
             }
 
