@@ -125,10 +125,7 @@ data class Order(
     }
 
     fun getTotalShippingTaxes(): BigDecimal {
-        if (shippingLines.isEmpty())
-            return 0.toBigDecimal()
-        else
-            return shippingLines.map { it.totalTax }.reduce { acc, tax -> return acc.add(tax) }
+        return shippingLines.sumByBigDecimal { it.totalTax }
     }
 }
 
