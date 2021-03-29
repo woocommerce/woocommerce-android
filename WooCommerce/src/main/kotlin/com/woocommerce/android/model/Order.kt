@@ -123,10 +123,6 @@ data class Order(
             shippingName, shippingAddress, shippingCountry
         )
     }
-
-    fun getTotalShippingTaxes(): BigDecimal {
-        return shippingLines.sumByBigDecimal { it.totalTax }
-    }
 }
 
 // Conversion is needed for refunding shipping line items.

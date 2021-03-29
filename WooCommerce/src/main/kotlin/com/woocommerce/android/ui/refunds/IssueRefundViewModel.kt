@@ -63,6 +63,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import java.math.BigDecimal
 import kotlin.math.min
 
@@ -185,7 +186,7 @@ class IssueRefundViewModel @AssistedInject constructor(
                     subtotal = formatCurrency(BigDecimal.ZERO),
                     taxes = formatCurrency(BigDecimal.ZERO),
                     shippingSubtotal = formatCurrency(order.shippingTotal),
-                    shippingTaxes = formatCurrency(order.getTotalShippingTaxes()),
+                    shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
                     feesTotal = formatCurrency(order.feesTotal),
                     formattedProductsRefund = formatCurrency(BigDecimal.ZERO),
                     isShippingRefundAvailable = order.shippingTotal > BigDecimal.ZERO,
