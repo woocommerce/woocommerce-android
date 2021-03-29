@@ -11,6 +11,7 @@ import com.stripe.stripeterminal.model.external.PaymentStatus
 import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 
 /**
@@ -18,7 +19,8 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
  */
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider,
+    private val logWrapper: LogWrapper
 ) : CardReaderManager {
     companion object {
         private const val TAG = "CardReaderManager"
@@ -53,7 +55,7 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
         } else {
-            Log.w(TAG, "CardReaderManager is already initialized")
+            logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
