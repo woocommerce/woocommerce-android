@@ -100,11 +100,11 @@ internal class CardReaderManagerImpl(
         foundReaders.find { it.serialNumber == readerId }?.let {
             terminal.connectToReader(it, object : ReaderCallback {
                 override fun onFailure(e: TerminalException) {
-                    Log.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
+                    logWrapper.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
                 }
 
                 override fun onSuccess(reader: Reader) {
-                    Log.d("CardReader", "connecting to reader succeeded")
+                    logWrapper.d("CardReader", "connecting to reader succeeded")
                 }
             })
         }
@@ -114,7 +114,7 @@ internal class CardReaderManagerImpl(
         val listener = object : TerminalListener {
             override fun onUnexpectedReaderDisconnect(reader: Reader) {
                 readerStatus.value = CardReaderStatus.NOT_CONNECTED
-                Log.d("CardReader", "onUnexpectedReaderDisconnect")
+                logWrapper.d("CardReader", "onUnexpectedReaderDisconnect")
             }
 
             override fun onConnectionStatusChange(status: ConnectionStatus) {
@@ -124,25 +124,25 @@ internal class CardReaderManagerImpl(
                     CONNECTING -> CardReaderStatus.CONNECTING
                     CONNECTED -> CardReaderStatus.CONNECTED
                 }
-                Log.d("CardReader", "onConnectionStatusChange: ${status.name}")
+                logWrapper.d("CardReader", "onConnectionStatusChange: ${status.name}")
             }
 
             override fun onPaymentStatusChange(status: PaymentStatus) {
                 super.onPaymentStatusChange(status)
                 // TODO cardreader: Not Implemented
-                Log.d("CardReader", "onPaymentStatusChange: ${status.name}")
+                logWrapper.d("CardReader", "onPaymentStatusChange: ${status.name}")
             }
 
             override fun onReportLowBatteryWarning() {
                 super.onReportLowBatteryWarning()
                 // TODO cardreader: Not Implemented
-                Log.d("CardReader", "onReportLowBatteryWarning")
+                logWrapper.d("CardReader", "onReportLowBatteryWarning")
             }
 
             override fun onReportReaderEvent(event: ReaderEvent) {
                 super.onReportReaderEvent(event)
                 // TODO cardreader: Not Implemented
-                Log.d("CardReader", "onReportReaderEvent: $event.name")
+                logWrapper.d("CardReader", "onReportReaderEvent: $event.name")
             }
         }
         terminal.initTerminal(application, logLevel, tokenProvider, listener)
