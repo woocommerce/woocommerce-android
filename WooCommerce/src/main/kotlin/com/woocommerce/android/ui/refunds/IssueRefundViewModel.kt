@@ -621,23 +621,16 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun calculatePartialShippingSubtotal(selectedShippingLinesId: List<Long>): BigDecimal {
-        if (selectedShippingLinesId.isEmpty())
-            return 0.toBigDecimal()
-        else
-            return order.shippingLines
-                .filter { selectedShippingLinesId.contains(it.itemId) }
-                .map { it.total }
-                .reduce { acc, subtotal -> return acc + subtotal }
+        return order.shippingLines
+            .filter { it.itemId in selectedShippingLinesId }
+            .sumByBigDecimal { it.total }
     }
 
+
     private fun calculatePartialShippingTaxes(selectedShippingLinesId: List<Long>): BigDecimal {
-        if (selectedShippingLinesId.isEmpty())
-            return 0.toBigDecimal()
-        else
-            return order.shippingLines
-                .filter { selectedShippingLinesId.contains(it.itemId) }
-                .map { it.totalTax }
-                .reduce { acc, subtotal -> return acc + subtotal }
+        return order.shippingLines
+            .filter { it.itemId in selectedShippingLinesId }
+            .sumByBigDecimal { it.totalTax }
     }
 
     private fun calculatePartialShippingTotal(selectedShippingLinesId: List<Long>): BigDecimal {
