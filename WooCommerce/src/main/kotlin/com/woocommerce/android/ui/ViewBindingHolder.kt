@@ -20,14 +20,20 @@ interface ViewBindingHolder<B : ViewBinding> {
             lambda(it)
         }}
 
+    fun onBeforeDestroyViewBinding() {
+        // noop - fragments can override this to do any cleanup needed prior releasing the binding
+    }
+
     /**
-     * Make sure to use this with Fragment.viewLifecycleOwner
+     * Make sure to use this with Fragment.viewLifecycleOwner. Note that onDestroy() is called before
+     * the fragment's onDestroyView(), so don't use requireBinding() from that event.
      */
     fun registerBinding(binding: B, lifecycleOwner: LifecycleOwner) {
         this.binding = binding
         lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
                 owner.lifecycle.removeObserver(this)
+                onBeforeDestroyViewBinding()
                 this@ViewBindingHolder.binding = null
             }
         })
