@@ -116,6 +116,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val currentShippingPackages = arrayOf(
             ShippingLabelPackage(
+                "package1",
                 availablePackages.first(),
                 10.0f,
                 listOf(Item(0L, "product", "", "10 kg"))

@@ -86,6 +86,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(showSkeletonView = false)
         return listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = lastUsedPackage,
                 weight = Float.NaN,
                 items = order.getShippableItems().map { it.toShippingItem() }

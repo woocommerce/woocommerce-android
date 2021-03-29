@@ -142,6 +142,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                 val options = mapOf(
                     DEFAULT to ShippingRate(
                         pkg.boxId,
+                        default.shipmentId,
                         default.rateId,
                         default.serviceId,
                         default.carrierId,
@@ -155,6 +156,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     SIGNATURE to signature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
+                            option.shipmentId,
                             option.rateId,
                             option.serviceId,
                             option.carrierId,
@@ -169,6 +171,7 @@ class ShippingCarrierRatesViewModel @AssistedInject constructor(
                     ADULT_SIGNATURE to adultSignature?.let { option ->
                         ShippingRate(
                             pkg.boxId,
+                            option.shipmentId,
                             option.rateId,
                             option.serviceId,
                             option.carrierId,
