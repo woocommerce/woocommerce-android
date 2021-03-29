@@ -20,6 +20,9 @@ internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider
 ) : CardReaderManager {
+    companion object {
+        private const val TAG = "CardReaderManager"
+    }
     private lateinit var application: Application
 
     override fun isInitialized(): Boolean {
@@ -48,6 +51,8 @@ internal class CardReaderManagerImpl(
             val logLevel = LogLevel.VERBOSE
 
             initStripeTerminal(logLevel)
+        } else {
+            Log.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
