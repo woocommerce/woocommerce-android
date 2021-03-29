@@ -5,13 +5,19 @@ import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Interface for consumers who want to start accepting POC card payments.
  */
+@ExperimentalCoroutinesApi
 interface CardReaderManager {
+    // TODO cardreader Replace String with a sealed class representing the state
+    val discoveryEvents: MutableStateFlow<String>
     fun isInitialized(): Boolean
     fun initialize(app: Application)
+    fun startDiscovery(isSimulated: Boolean)
     fun onTrimMemory(level: Int)
 
     companion object {

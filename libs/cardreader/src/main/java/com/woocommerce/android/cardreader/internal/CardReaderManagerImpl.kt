@@ -2,14 +2,20 @@ package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
 import android.util.Log
+import com.stripe.stripeterminal.callable.Callback
+import com.stripe.stripeterminal.callable.DiscoveryListener
 import com.stripe.stripeterminal.callable.TerminalListener
 import com.stripe.stripeterminal.log.LogLevel
 import com.stripe.stripeterminal.model.external.ConnectionStatus
+import com.stripe.stripeterminal.model.external.DeviceType
+import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
 import com.stripe.stripeterminal.model.external.PaymentStatus
 import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.ReaderEvent
+import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -19,6 +25,8 @@ internal class CardReaderManagerImpl(
     private val tokenProvider: TokenProvider
 ) : CardReaderManager {
     private lateinit var application: Application
+
+    override val discoveryEvents: MutableStateFlow<String> = MutableStateFlow("Not Started")
 
     override fun isInitialized(): Boolean {
         return terminal.isInitialized()
@@ -37,6 +45,25 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
         }
+    }
+
+    override fun startDiscovery(isSimulated: Boolean) {
+        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        val config = DiscoveryConfiguration(0, DeviceType.CHIPPER_2X, isSimulated)
+        discoveryEvents.value = "Discover started"
+        terminal.discoverReaders(config, object : DiscoveryListener {
+            override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
+                discoveryEvents.value = "Readers found ${readers.map { it.serialNumber }}"
+            }
+        }, object : Callback {
+            override fun onFailure(e: TerminalException) {
+                discoveryEvents.value = "Reader discovery failed."
+            }
+
+            override fun onSuccess() {
+                discoveryEvents.value = "Reader discovery succeeded."
+            }
+        })
     }
 
     override fun onTrimMemory(level: Int) {
