@@ -17,6 +17,7 @@ import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.PrintShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
@@ -193,7 +194,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
-                        is SideEffect.ShowLabelsPrint -> openPringLabelsScreen(sideEffect.labels)
+                        is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                     }
                 }
             }
@@ -244,8 +245,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(ShowPaymentDetails)
     }
 
-    private fun openPringLabelsScreen(labels: List<ShippingLabel>) {
-        println("yay")
+    private fun openPrintLabelsScreen(orderId: Long, labels: List<ShippingLabel>) {
+        triggerEvent(PrintShippingLabel(orderId, labels))
     }
 
     private fun updateViewState(stateMachineData: StateMachineData) {

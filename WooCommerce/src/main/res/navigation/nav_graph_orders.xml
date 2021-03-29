@@ -267,6 +267,13 @@
             app:destination="@id/shippingCarrierRatesFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_createShippingLabelFragment_to_printShippingLabelFragment"
+            app:destination="@id/printShippingLabelFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/shippingLabelAddressSuggestionFragment"
