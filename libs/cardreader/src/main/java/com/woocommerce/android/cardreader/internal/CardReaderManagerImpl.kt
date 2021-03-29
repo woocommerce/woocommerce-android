@@ -1,6 +1,8 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
 import android.util.Log
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.DiscoveryListener
@@ -18,6 +20,7 @@ import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,9 +30,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider,
+    private val logWrapper: LogWrapper
 ) : CardReaderManager {
+    companion object {
+        private const val TAG = "CardReaderManager"
+    }
     private lateinit var application: Application
+
+    override val isInitialized: Boolean
+        get() { return terminal.isInitialized() }
 
     @ExperimentalCoroutinesApi
     override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = MutableStateFlow(
@@ -39,10 +49,6 @@ internal class CardReaderManagerImpl(
     override val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
     private val foundReaders = mutableSetOf<Reader>()
 
-    override fun isInitialized(): Boolean {
-        return terminal.isInitialized()
-    }
-
     override fun initialize(app: Application) {
         if (!terminal.isInitialized()) {
             application = app
@@ -50,11 +56,23 @@ internal class CardReaderManagerImpl(
             // Register the observer for all lifecycle hooks
             app.registerActivityLifecycleCallbacks(terminal.getLifecycleObserver())
 
+            app.registerComponentCallbacks(object : ComponentCallbacks2 {
+                override fun onConfigurationChanged(newConfig: Configuration) {}
+
+                override fun onLowMemory() {}
+
+                override fun onTrimMemory(level: Int) {
+                    terminal.getLifecycleObserver().onTrimMemory(level, application)
+                }
+            })
+
             // TODO cardreader: Set LogLevel depending on build flavor.
             // Choose the level of messages that should be logged to your console
             val logLevel = LogLevel.VERBOSE
 
             initStripeTerminal(logLevel)
+        } else {
+            logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
@@ -88,12 +106,6 @@ internal class CardReaderManagerImpl(
                     Log.d("CardReader", "connecting to reader succeeded")
                 }
             })
-        }
-    }
-
-    override fun onTrimMemory(level: Int) {
-        if (terminal.isInitialized()) {
-            terminal.getLifecycleObserver().onTrimMemory(level, application)
         }
     }
 

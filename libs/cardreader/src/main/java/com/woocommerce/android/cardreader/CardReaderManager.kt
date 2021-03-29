@@ -15,13 +15,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 @ExperimentalCoroutinesApi
 interface CardReaderManager {
+    val isInitialized: Boolean
     val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents>
     val readerStatus: MutableStateFlow<CardReaderStatus>
-    fun isInitialized(): Boolean
     fun initialize(app: Application)
     fun startDiscovery(isSimulated: Boolean)
     fun connectToReader(readerId: String)
-    fun onTrimMemory(level: Int)
 
     companion object {
         /*
