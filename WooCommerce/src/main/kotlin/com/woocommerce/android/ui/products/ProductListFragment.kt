@@ -120,14 +120,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
         super.onAttach(context)
     }
 
-    override fun onBeforeDestroyViewBinding() {
-        disableSearchListeners()
-        super.onBeforeDestroyViewBinding()
-    }
-
     override fun onDestroyView() {
         skeletonView.hide()
 
+        disableSearchListeners()
         searchView = null
         showAddProductButton(false)
         super.onDestroyView()
@@ -259,7 +255,9 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                                 searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
-                        new.filterCount?.compareTo(0) == 1 -> requireBinding().emptyView.show(EmptyViewType.FILTER_RESULTS)
+                        new.filterCount?.compareTo(0) == 1 -> {
+                            requireBinding().emptyView.show(EmptyViewType.FILTER_RESULTS)
+                        }
                         else -> requireBinding().emptyView.show(EmptyViewType.PRODUCT_LIST)
                     }
                 } else {

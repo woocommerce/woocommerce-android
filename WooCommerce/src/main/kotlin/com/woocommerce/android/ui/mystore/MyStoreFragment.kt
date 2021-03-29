@@ -189,16 +189,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onStop()
     }
 
-    override fun onBeforeDestroyViewBinding() {
+    override fun onDestroyView() {
         requireBinding().myStoreStats.removeListener()
         requireBinding().myStoreTopPerformers.removeListener()
-        super.onBeforeDestroyViewBinding()
-    }
 
-    override fun onDestroyView() {
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
+
         presenter.dropView()
         super.onDestroyView()
     }

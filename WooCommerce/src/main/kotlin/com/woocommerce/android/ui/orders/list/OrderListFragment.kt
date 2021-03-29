@@ -244,14 +244,10 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         super.onSaveInstanceState(outState)
     }
 
-    override fun onBeforeDestroyViewBinding() {
+    override fun onDestroyView() {
         disableSearchListeners()
         removeTabLayoutFromAppBar()
 
-        super.onBeforeDestroyViewBinding()
-    }
-
-    override fun onDestroyView() {
         _tabLayout = null
         searchView = null
         orderListMenu = null

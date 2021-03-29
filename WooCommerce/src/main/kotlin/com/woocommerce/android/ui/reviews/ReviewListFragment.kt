@@ -180,7 +180,9 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 requireBinding().notifsRefreshLayout.isRefreshing = it
             }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { requireBinding().notifsLoadMoreProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) {
+                requireBinding().notifsLoadMoreProgress.isVisible = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
