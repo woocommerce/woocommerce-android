@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
  */
+@ExperimentalCoroutinesApi
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
