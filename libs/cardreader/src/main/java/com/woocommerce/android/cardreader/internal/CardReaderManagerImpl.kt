@@ -79,15 +79,15 @@ internal class CardReaderManagerImpl(
     override fun connectToReader(readerId: String) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         foundReaders.find { it.serialNumber == readerId }?.let {
-          terminal.connectToReader(it, object : ReaderCallback {
-              override fun onFailure(e: TerminalException) {
-                  Log.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
-              }
+            terminal.connectToReader(it, object : ReaderCallback {
+                override fun onFailure(e: TerminalException) {
+                    Log.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
+                }
 
-              override fun onSuccess(reader: Reader) {
-                  Log.d("CardReader", "connecting to reader succeeded")
-              }
-          })
+                override fun onSuccess(reader: Reader) {
+                    Log.d("CardReader", "connecting to reader succeeded")
+                }
+            })
         }
     }
 
@@ -102,7 +102,6 @@ internal class CardReaderManagerImpl(
             override fun onUnexpectedReaderDisconnect(reader: Reader) {
                 readerStatus.value = CardReaderStatus.NOT_CONNECTED
                 Log.d("CardReader", "onUnexpectedReaderDisconnect")
-
             }
 
             override fun onConnectionStatusChange(status: ConnectionStatus) {
