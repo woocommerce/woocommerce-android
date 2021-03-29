@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
 
 /**
@@ -18,15 +18,16 @@ interface ViewBindingHolder<B : ViewBinding> {
     fun requireBinding(lambda: (B) -> Unit) {
         binding?.let {
             lambda(it)
-        }}
-
-    fun onBeforeDestroyViewBinding() {
-        // noop - fragments can override this to do any cleanup needed prior releasing the binding
+        }
     }
 
+    // fragments can override this to do any cleanup needed prior to releasing the binding
+    fun onBeforeDestroyViewBinding() {}
+
     /**
-     * Make sure to use this with Fragment.viewLifecycleOwner. Note that onDestroy() is called before
-     * the fragment's onDestroyView(), so don't use requireBinding() from that event.
+     * Make sure to use this with Fragment.viewLifecycleOwner. Note that onDestroy() is called before the
+     * fragment's onDestroyView() so don't access requireBinding() from that event, instead override
+     * onBeforeDestroyViewBinding() above
      */
     fun registerBinding(binding: B, lifecycleOwner: LifecycleOwner) {
         this.binding = binding
