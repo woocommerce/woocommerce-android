@@ -15,6 +15,7 @@ import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -26,7 +27,10 @@ internal class CardReaderManagerImpl(
 ) : CardReaderManager {
     private lateinit var application: Application
 
-    override val discoveryEvents: MutableStateFlow<String> = MutableStateFlow("Not Started")
+    @ExperimentalCoroutinesApi
+    override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = MutableStateFlow(
+        CardReaderDiscoveryEvents.NotStarted
+    )
 
     override fun isInitialized(): Boolean {
         return terminal.isInitialized()
@@ -50,19 +54,17 @@ internal class CardReaderManagerImpl(
     override fun startDiscovery(isSimulated: Boolean) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         val config = DiscoveryConfiguration(0, DeviceType.CHIPPER_2X, isSimulated)
-        discoveryEvents.value = "Discover started"
+        discoveryEvents.value = CardReaderDiscoveryEvents.Started
         terminal.discoverReaders(config, object : DiscoveryListener {
             override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
-                discoveryEvents.value = "Readers found ${readers.map { it.serialNumber }}"
+                discoveryEvents.value = CardReaderDiscoveryEvents.ReadersFound(readers.mapNotNull { it.serialNumber })
             }
         }, object : Callback {
             override fun onFailure(e: TerminalException) {
-                discoveryEvents.value = "Reader discovery failed."
+                discoveryEvents.value = CardReaderDiscoveryEvents.Failed(e.toString())
             }
 
-            override fun onSuccess() {
-                discoveryEvents.value = "Reader discovery succeeded."
-            }
+            override fun onSuccess() {}
         })
     }
 

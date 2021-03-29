@@ -13,8 +13,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerceDebug
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.NotStarted
+import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Started
+import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Failed
+import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
 import kotlinx.coroutines.flow.collect
+import org.wordpress.android.util.AppLog
 
 class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
     companion object {
@@ -61,8 +66,15 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
                 application.cardReaderManager.discoveryEvents.collect { event ->
-                    view?.let { view ->
-                        Snackbar.make(view, event, BaseTransientBottomBar.LENGTH_SHORT).show()
+                    AppLog.d(AppLog.T.MAIN, event.toString())
+                    when (event) {
+                        NotStarted, Started, is Failed -> Snackbar.make(
+                            requireView(),
+                            event.toString(),
+                            BaseTransientBottomBar.LENGTH_SHORT
+                        ).show()
+                        is ReadersFound -> {
+                        }
                     }
                 }
             }

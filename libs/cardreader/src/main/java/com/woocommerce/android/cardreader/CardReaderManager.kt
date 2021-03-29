@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader
 
 import android.app.Application
+import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
@@ -13,8 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 @ExperimentalCoroutinesApi
 interface CardReaderManager {
-    // TODO cardreader Replace String with a sealed class representing the state
-    val discoveryEvents: MutableStateFlow<String>
+    val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents>
     fun isInitialized(): Boolean
     fun initialize(app: Application)
     fun startDiscovery(isSimulated: Boolean)
