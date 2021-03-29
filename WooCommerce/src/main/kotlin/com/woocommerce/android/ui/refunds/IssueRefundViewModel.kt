@@ -621,7 +621,6 @@ class IssueRefundViewModel @AssistedInject constructor(
             .sumByBigDecimal { it.total }
     }
 
-
     private fun calculatePartialShippingTaxes(selectedShippingLinesId: List<Long>): BigDecimal {
         return order.shippingLines
             .filter { it.itemId in selectedShippingLinesId }
