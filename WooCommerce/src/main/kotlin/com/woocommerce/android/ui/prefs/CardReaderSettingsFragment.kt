@@ -58,28 +58,35 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             } else {
                 requestPermissionLauncher.launch(permissionType)
             }
-            startObserving()
+            startObserving(binding)
         }
     }
 
-    private fun startObserving() {
+    private fun startObserving(binding: FragmentSettingsCardReaderBinding) {
         (requireActivity().application as? WooCommerceDebug)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
                 application.cardReaderManager.discoveryEvents.collect { event ->
                     AppLog.d(AppLog.T.MAIN, event.toString())
                     when (event) {
-                        NotStarted, Started, is Failed -> Snackbar.make(
-                            requireView(),
-                            event.toString(),
-                            BaseTransientBottomBar.LENGTH_SHORT
-                        ).show()
+                        NotStarted, Started, is Failed -> {
+                            Snackbar.make(
+                                requireView(),
+                                event.javaClass.simpleName,
+                                BaseTransientBottomBar.LENGTH_SHORT
+                            ).show()
+                        }
                         is ReadersFound -> {
                             if (event.list.isNotEmpty()) {
                                 getCardReaderManager()?.connectToReader(event.list[0])
                             }
                         }
                     }
+                }
+            }
+            lifecycleScope.launchWhenResumed {
+                application.cardReaderManager.readerStatus.collect { status ->
+                    binding.connectionStatus.text = status.name
                 }
             }
         }
