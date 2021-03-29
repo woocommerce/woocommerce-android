@@ -22,6 +22,7 @@ import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.push.NotificationHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.ViewBindingHolder
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -43,7 +44,8 @@ import javax.inject.Inject
 
 class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ViewBindingHolder<FragmentReviewsListBinding> {
     companion object {
         const val TAG = "ReviewListFragment"
         const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
@@ -67,8 +69,7 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     private var pendingModerationNewStatus: String? = null
     private var changeReviewStatusSnackbar: Snackbar? = null
 
-    private var _binding: FragmentReviewsListBinding? = null
-    private val binding get() = _binding!!
+    override var binding: FragmentReviewsListBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,13 +81,14 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
 
         setHasOptionsMenu(true)
 
-        _binding = FragmentReviewsListBinding.bind(view)
+        binding = FragmentReviewsListBinding.bind(view)
+        registerBinding(requireBinding(), this.viewLifecycleOwner)
 
         val activity = requireActivity()
 
         reviewsAdapter = ReviewListAdapter(activity, this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
-        binding.reviewsList.apply {
+        requireBinding().reviewsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
             setHasFixedSize(false)
@@ -115,9 +117,9 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             isMotionEventSplittingEnabled = false
         }
 
-        binding.notifsRefreshLayout.apply {
+        requireBinding().notifsRefreshLayout.apply {
             // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = binding.reviewsList
+            scrollUpChild = requireBinding().reviewsList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
@@ -169,7 +171,6 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     override fun onDestroyView() {
         skeletonView.hide()
         super.onDestroyView()
-        _binding = null
     }
 
     private fun setupObservers() {
@@ -177,9 +178,9 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.hasUnreadReviews?.takeIfNotEqualTo(old?.hasUnreadReviews) { showMarkAllReadMenuItem(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.notifsRefreshLayout.isRefreshing = it
+                requireBinding().notifsRefreshLayout.isRefreshing = it
             }
-            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
+            new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { requireBinding().notifsLoadMoreProgress.isVisible = it }
         }
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
@@ -232,7 +233,7 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> {
-                skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
+                skeletonView.show(requireBinding().notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
             false -> skeletonView.hide()
@@ -241,11 +242,11 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+            requireBinding().emptyView.show(EmptyViewType.REVIEW_LIST) {
                 ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
             }
         } else {
-            binding.emptyView.hide()
+            requireBinding().emptyView.hide()
         }
     }
 
@@ -341,7 +342,7 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
             if (status == SPAM || status == TRASH) {
                 val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
                 if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
-                    binding.reviewsList.smoothScrollToPosition(itemPos)
+                    requireBinding().reviewsList.smoothScrollToPosition(itemPos)
                 }
             }
         }
@@ -352,7 +353,7 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
     override fun getFragmentTitle() = getString(R.string.review_notifications)
 
     override fun scrollToTop() {
-        binding.reviewsList.smoothScrollToPosition(0)
+        requireBinding().reviewsList.smoothScrollToPosition(0)
     }
 
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
@@ -361,5 +362,5 @@ class ReviewListFragment : TopLevelFragment(R.layout.fragment_reviews_list),
         openReviewDetail(review)
     }
 
-    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
+    override fun shouldExpandToolbar() = requireBinding().reviewsList.computeVerticalScrollOffset() == 0
 }
