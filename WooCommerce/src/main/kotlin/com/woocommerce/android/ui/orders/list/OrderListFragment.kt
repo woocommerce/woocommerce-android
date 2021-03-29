@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.ViewBindingHolder
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity
@@ -46,7 +47,10 @@ import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
-    OrderStatusListView.OrderStatusListListener, OnQueryTextListener, OnActionExpandListener, OrderListListener {
+    OrderStatusListView.OrderStatusListListener,
+    OnQueryTextListener, OnActionExpandListener,
+    OrderListListener,
+    ViewBindingHolder<FragmentOrderListBinding> {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_ACTIVE_FILTER = "active-order-status-filter"
@@ -63,6 +67,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
     @Inject internal lateinit var selectedSite: SelectedSite
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+
+    override var binding: FragmentOrderListBinding? = null
 
     private val viewModel: OrderListViewModel by viewModels { viewModelFactory }
 
@@ -87,9 +93,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     private var searchView: SearchView? = null
     private val searchHandler = Handler()
 
-    private var _binding: FragmentOrderListBinding? = null
-    private val binding get() = _binding!!
-
     // Alias for interacting with [viewModel.searchQuery] so the value is always identical
     // to the real value on the UI side.
     private var searchQuery: String
@@ -109,7 +112,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         get() = _tabLayout!!
 
     private val emptyView
-        get() = binding.orderListView.emptyView
+        get() = requireBinding().orderListView.emptyView
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -151,12 +154,14 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         _tabLayout = TabLayout(requireContext(), null, R.attr.tabStyle)
         addTabLayoutToAppBar()
 
-        _binding = FragmentOrderListBinding.bind(view)
-        binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        binding.orderStatusListView.init(listener = this)
-        binding.orderRefreshLayout.apply {
+        binding = FragmentOrderListBinding.bind(view)
+        registerBinding(requireBinding(), this.viewLifecycleOwner)
+
+        requireBinding().orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        requireBinding().orderStatusListView.init(listener = this)
+        requireBinding().orderRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
-            scrollUpChild = binding.orderListView.ordersList
+            scrollUpChild = requireBinding().orderListView.ordersList
             setOnRefreshListener {
                 AnalyticsTracker.track(Stat.ORDERS_LIST_PULLED_TO_REFRESH)
                 refreshOrders()
@@ -212,7 +217,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
                     // store the selected tab in SharedPrefs and clear the adapter data,
                     // then load orders with the calculated filter.
                     AppPrefs.setSelectedOrderListTab(tab.position)
-                    binding.orderListView.clearAdapterData()
+                    requireBinding().orderListView.clearAdapterData()
                     loadListForActiveTab()
                 }
             }
@@ -220,7 +225,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             override fun onTabUnselected(tab: TabLayout.Tab) {}
 
             override fun onTabReselected(tab: TabLayout.Tab) {
-                binding.orderListView.scrollToTop()
+                requireBinding().orderListView.scrollToTop()
             }
         })
     }
@@ -239,15 +244,19 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         super.onSaveInstanceState(outState)
     }
 
-    override fun onDestroyView() {
+    override fun onBeforeDestroyViewBinding() {
         disableSearchListeners()
         removeTabLayoutFromAppBar()
+
+        super.onBeforeDestroyViewBinding()
+    }
+
+    override fun onDestroyView() {
         _tabLayout = null
         searchView = null
         orderListMenu = null
         searchMenuItem = null
         super.onDestroyView()
-        _binding = null
     }
 
     /**
@@ -297,7 +306,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     override fun getFragmentTitle() = if (isFilterEnabled || isSearching) "" else getString(R.string.orders)
 
     override fun scrollToTop() {
-        binding.orderListView.scrollToTop()
+        requireBinding().orderListView.scrollToTop()
     }
 
     private fun initializeViewModel() {
@@ -306,26 +315,26 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
         // populate views with any existing viewModel data
         viewModel.orderStatusOptions.value?.let { options ->
             // So the order status can be matched to the appropriate label
-            binding.orderListView.setOrderStatusOptions(options)
+            requireBinding().orderListView.setOrderStatusOptions(options)
 
             updateOrderStatusList(options)
         }
 
         // setup observers
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner, Observer {
-            binding.orderRefreshLayout.isRefreshing = it == true
+            requireBinding().orderRefreshLayout.isRefreshing = it == true
         })
 
         viewModel.isLoadingMore.observe(viewLifecycleOwner, Observer {
             it?.let { isLoadingMore ->
-                binding.orderListView.setLoadingMoreIndicator(active = isLoadingMore)
+                requireBinding().orderListView.setLoadingMoreIndicator(active = isLoadingMore)
             }
         })
 
         viewModel.orderStatusOptions.observe(viewLifecycleOwner, Observer {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
-                binding.orderListView.setOrderStatusOptions(options)
+                requireBinding().orderListView.setOrderStatusOptions(options)
 
                 updateOrderStatusList(options)
             }
@@ -339,7 +348,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             when (event) {
                 is ShowErrorSnack -> {
                     uiMessageResolver.showSnack(event.messageRes)
-                    binding.orderRefreshLayout.isRefreshing = false
+                    requireBinding().orderRefreshLayout.isRefreshing = false
                 }
                 else -> event.isHandled = false
             }
@@ -349,7 +358,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             it?.let { emptyViewType ->
                 when (emptyViewType) {
                     EmptyViewType.SEARCH_RESULTS -> {
-                        binding.orderStatusListView
+                        requireBinding().orderStatusListView
                         emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
                     EmptyViewType.ORDER_LIST -> {
@@ -378,7 +387,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
-        binding.orderListView.submitPagedList(pagedListData)
+        requireBinding().orderListView.submitPagedList(pagedListData)
 
         if (pagedListData?.size != 0 && isSearching) {
             WPActivityUtils.hideKeyboard(activity)
@@ -420,8 +429,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     private fun updateOrderStatusList(orderStatusList: Map<String, WCOrderStatusModel>) {
-        binding.orderListViewRoot.visibility = View.VISIBLE
-        binding.orderStatusListView.updateOrderStatusListView(orderStatusList.values.toList())
+        requireBinding().orderListViewRoot.visibility = View.VISIBLE
+        requireBinding().orderStatusListView.updateOrderStatusListView(orderStatusList.values.toList())
     }
 
     override fun onOrderStatusSelected(orderStatus: String?) {
@@ -436,7 +445,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
             displayFilteredList()
 
             // Load the filtered list
-            binding.orderListView.clearAdapterData()
+            requireBinding().orderListView.clearAdapterData()
             viewModel.submitSearchOrFilter(statusFilter = orderStatus)
 
             updateActivityTitle()
@@ -614,7 +623,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
 
     private fun disableSearchListeners() {
         orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
-        binding.orderListViewRoot.visibility = View.VISIBLE
+        requireBinding().orderListViewRoot.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
         hideOrderStatusListView()
@@ -687,15 +696,15 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     private fun displayOrderStatusListView() {
-        binding.orderStatusListView.visibility = View.VISIBLE
-        binding.orderListView.visibility = View.GONE
-        binding.orderRefreshLayout.isEnabled = false
+        requireBinding().orderStatusListView.visibility = View.VISIBLE
+        requireBinding().orderListView.visibility = View.GONE
+        requireBinding().orderRefreshLayout.isEnabled = false
     }
 
     private fun hideOrderStatusListView() {
-        binding.orderStatusListView.visibility = View.GONE
-        binding.orderListView.visibility = View.VISIBLE
-        binding.orderRefreshLayout.isEnabled = true
+        requireBinding().orderStatusListView.visibility = View.GONE
+        requireBinding().orderListView.visibility = View.VISIBLE
+        requireBinding().orderRefreshLayout.isEnabled = true
     }
 
     private fun checkOrientation() {
@@ -711,7 +720,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
      */
     private fun clearOrderListData() {
         if (!isFilterEnabled) {
-            binding.orderListView.clearAdapterData()
+            requireBinding().orderListView.clearAdapterData()
         }
     }
     // endregion
@@ -737,6 +746,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list),
     }
 
     override fun shouldExpandToolbar(): Boolean {
-        return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
+        return requireBinding().orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
     }
 }

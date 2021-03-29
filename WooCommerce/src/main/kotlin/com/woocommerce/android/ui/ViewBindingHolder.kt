@@ -25,8 +25,8 @@ interface ViewBindingHolder<B : ViewBinding> {
     fun onBeforeDestroyViewBinding() {}
 
     /**
-     * Make sure to use this with Fragment.viewLifecycleOwner. Note that onDestroy() is called before the
-     * fragment's onDestroyView() so don't access requireBinding() from that event, instead override
+     * Make sure to use this with Fragment.viewLifecycleOwner. Note that onDestroy() here is called before
+     * the fragment's onDestroyView() so don't access requireBinding() from that event, instead override
      * onBeforeDestroyViewBinding() above
      */
     fun registerBinding(binding: B, lifecycleOwner: LifecycleOwner) {
