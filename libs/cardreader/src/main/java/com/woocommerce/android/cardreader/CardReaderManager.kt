@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
+import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,6 @@ interface CardReaderManager {
           Consider refactoring this in the future.
          */
         fun createInstance(): CardReaderManager =
-            CardReaderManagerImpl(TerminalWrapper(), TokenProvider(CardReaderStoreImpl()))
+            CardReaderManagerImpl(TerminalWrapper(), TokenProvider(CardReaderStoreImpl()), LogWrapper())
     }
 }
