@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerceDebug
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.NotStarted
 import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Failed
@@ -74,6 +75,9 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                             BaseTransientBottomBar.LENGTH_SHORT
                         ).show()
                         is ReadersFound -> {
+                            if (event.list.isNotEmpty()) {
+                                getCardReaderManager()?.connectToReader(event.list[0])
+                            }
                         }
                     }
                 }
@@ -91,14 +95,17 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     // TODO cardreader move this into a VM
     private fun connectToReader() {
         // TODO cardreader Replace WooCommerceDebug with WooCommerce to support production builds
-        (requireActivity().application as? WooCommerceDebug)?.let {
-            if (!it.cardReaderManager.isInitialized()) {
-                it.cardReaderManager.initialize(it)
+        getCardReaderManager()?.let { cardReaderManager ->
+            if (!cardReaderManager.isInitialized()) {
+                cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {
                 // TODO cardreader make sure to cancel the discovery when the user leaves the activity/app
-                it.cardReaderManager.startDiscovery(true)
+                cardReaderManager.startDiscovery(true)
             }
         }
     }
+
+    private fun getCardReaderManager(): CardReaderManager? =
+        (requireActivity().application as? WooCommerceDebug)?.cardReaderManager
 }
