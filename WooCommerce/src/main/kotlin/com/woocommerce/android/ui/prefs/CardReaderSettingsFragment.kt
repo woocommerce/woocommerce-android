@@ -7,12 +7,14 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerceDebug
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
+import kotlinx.coroutines.flow.collect
 
 class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_reader) {
     companion object {
@@ -50,6 +52,20 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             } else {
                 requestPermissionLauncher.launch(permissionType)
             }
+            startObserving()
+        }
+    }
+
+    private fun startObserving() {
+        (requireActivity().application as? WooCommerceDebug)?.let { application ->
+            // TODO cardreader Move this into a VM
+            lifecycleScope.launchWhenResumed {
+                application.cardReaderManager.discoveryEvents.collect { event ->
+                    view?.let { view ->
+                        Snackbar.make(view, event, BaseTransientBottomBar.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
@@ -60,12 +76,16 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         activity?.setTitle(R.string.settings_card_reader)
     }
 
+    // TODO cardreader move this into a VM
     private fun connectToReader() {
-        // TODO cardreader move this into a VM
         // TODO cardreader Replace WooCommerceDebug with WooCommerce to support production builds
         (requireActivity().application as? WooCommerceDebug)?.let {
             if (!it.cardReaderManager.isInitialized()) {
                 it.cardReaderManager.initialize(it)
+            }
+            lifecycleScope.launchWhenResumed {
+                // TODO cardreader make sure to cancel the discovery when the user leaves the activity/app
+                it.cardReaderManager.startDiscovery(true)
             }
         }
     }
