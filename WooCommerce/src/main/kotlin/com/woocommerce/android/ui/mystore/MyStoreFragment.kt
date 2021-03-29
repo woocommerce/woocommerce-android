@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.ViewBindingHolder
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -43,14 +44,13 @@ import javax.inject.Inject
 
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     MyStoreContract.View,
-    MyStoreStatsListener {
+    MyStoreStatsListener,
+    ViewBindingHolder<FragmentMyStoreBinding> {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
         private const val STATE_KEY_TAB_POSITION = "tab-stats-position"
         private const val STATE_KEY_REFRESH_PENDING = "is-refresh-pending"
         private const val STATE_KEY_IS_EMPTY_VIEW_SHOWING = "is-empty-view-showing"
-
-        fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
@@ -59,9 +59,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-
-    private var _binding: FragmentMyStoreBinding? = null
-    private val binding get() = _binding!!
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
@@ -85,7 +82,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         get() = activity as? MainNavigationRouter
 
     private val myStoreDateBar
-        get() = binding.myStoreStats.myStoreDateBar
+        get() = requireBinding().myStoreStats.myStoreDateBar
 
     private var isEmptyViewVisible: Boolean = false
 
@@ -93,8 +90,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         override fun onTabSelected(tab: TabLayout.Tab) {
             tabStatsPosition = tab.position
             myStoreDateBar.clearDateRangeValues()
-            binding.myStoreStats.loadDashboardStats(activeGranularity)
-            binding.myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
+            requireBinding().myStoreStats.loadDashboardStats(activeGranularity)
+            requireBinding().myStoreTopPerformers.loadTopPerformerStats(activeGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -111,17 +108,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
+        binding = FragmentMyStoreBinding.bind(view)
+        registerBinding(requireBinding(), this.viewLifecycleOwner)
+
         _tabLayout = TabLayout(requireContext(), null, R.attr.scrollableTabStyle)
         addTabLayoutToAppBar()
 
-        _binding = FragmentMyStoreBinding.bind(view)
-
-        binding.myStoreRefreshLayout.setOnRefreshListener {
+        requireBinding().myStoreRefreshLayout.setOnRefreshListener {
             // Track the user gesture
             AnalyticsTracker.track(Stat.DASHBOARD_PULLED_TO_REFRESH)
 
             MyStorePresenter.resetForceRefresh()
-            binding.myStoreRefreshLayout.isRefreshing = false
+            requireBinding().myStoreRefreshLayout.isRefreshing = false
             refreshMyStoreStats(forced = true)
         }
 
@@ -138,7 +136,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         // Create tabs and add to appbar
         StatsGranularity.values().forEach { granularity ->
             val tab = tabLayout.newTab().apply {
-                setText(binding.myStoreStats.getStringForGranularity(granularity))
+                setText(requireBinding().myStoreStats.getStringForGranularity(granularity))
                 tag = granularity
             }
             tabLayout.addTab(tab)
@@ -151,14 +149,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
 
         myStoreDateBar.initView()
 
-        binding.myStoreStats.initView(
+        requireBinding().myStoreStats.initView(
             activeGranularity,
             listener = this,
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         )
 
-        binding.myStoreTopPerformers.initView(
+        requireBinding().myStoreTopPerformers.initView(
             listener = this,
             selectedSite = selectedSite,
             formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded,
@@ -170,7 +168,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
             .configureStringClick(
                 clickableContent = contactUsText,
                 clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) },
-                textField = binding.myStoreStatsAvailabilityMessage
+                textField = requireBinding().myStoreStatsAvailabilityMessage
             )
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
@@ -190,14 +188,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun onDestroyView() {
-        binding.myStoreStats.removeListener()
-        binding.myStoreTopPerformers.removeListener()
+        requireBinding().myStoreStats.removeListener()
+        requireBinding().myStoreTopPerformers.removeListener()
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null
         presenter.dropView()
         super.onDestroyView()
-        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -229,8 +226,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         addTabLayoutToAppBar()
         // Only update the order stats view if the new stats match the currently selected timeframe
         if (activeGranularity == granularity) {
-            binding.myStoreStats.showErrorView(false)
-            binding.myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
+            requireBinding().myStoreStats.showErrorView(false)
+            requireBinding().myStoreStats.updateView(revenueStatsModel, presenter.getStatsCurrency())
             myStoreDateBar.updateDateRangeView(revenueStatsModel, granularity)
         }
     }
@@ -238,44 +235,44 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     override fun showStatsError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
             showStats(null, granularity)
-            binding.myStoreStats.showErrorView(true)
+            requireBinding().myStoreStats.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun updateStatsAvailabilityError() {
-        binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.statsErrorScrollView)
+        requireBinding().myStoreRefreshLayout.visibility = View.GONE
+        WooAnimUtils.fadeIn(requireBinding().statsErrorScrollView)
         removeTabLayoutFromAppBar()
     }
 
     override fun showTopPerformers(topPerformers: List<WCTopPerformerProductModel>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.showErrorView(false)
-            binding.myStoreTopPerformers.updateView(topPerformers)
+            requireBinding().myStoreTopPerformers.showErrorView(false)
+            requireBinding().myStoreTopPerformers.updateView(topPerformers)
         }
     }
 
     override fun showTopPerformersError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            binding.myStoreTopPerformers.updateView(emptyList())
-            binding.myStoreTopPerformers.showErrorView(true)
+            requireBinding().myStoreTopPerformers.updateView(emptyList())
+            requireBinding().myStoreTopPerformers.showErrorView(true)
             showErrorSnack()
         }
     }
 
     override fun showVisitorStats(visitorStats: Map<String, Int>, granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStats(visitorStats)
+            requireBinding().myStoreStats.showVisitorStats(visitorStats)
             if (granularity == StatsGranularity.DAYS) {
-                binding.emptyStatsView.updateVisitorCount(visitorStats.values.sum())
+                requireBinding().emptyStatsView.updateVisitorCount(visitorStats.values.sum())
             }
         }
     }
 
     override fun showVisitorStatsError(granularity: StatsGranularity) {
         if (activeGranularity == granularity) {
-            binding.myStoreStats.showVisitorStatsError()
+            requireBinding().myStoreStats.showVisitorStatsError()
         }
     }
 
@@ -298,15 +295,15 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun scrollToTop() {
-        binding.statsScrollView.smoothScrollTo(0, 0)
+        requireBinding().statsScrollView.smoothScrollTo(0, 0)
     }
 
     override fun refreshMyStoreStats(forced: Boolean) {
         // If this fragment is currently active, force a refresh of data. If not, set
         // a flag to force a refresh when it becomes active
         if (forced) {
-            binding.myStoreStats.clearLabelValues()
-            binding.myStoreStats.clearChartData()
+            requireBinding().myStoreStats.clearLabelValues()
+            requireBinding().myStoreStats.clearChartData()
             myStoreDateBar.clearDateRangeValues()
         }
         presenter.run {
@@ -317,20 +314,20 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun showChartSkeleton(show: Boolean) {
-        binding.myStoreStats.showSkeleton(show)
+        requireBinding().myStoreStats.showSkeleton(show)
     }
 
     override fun showTopPerformersSkeleton(show: Boolean) {
-        binding.myStoreTopPerformers.showSkeleton(show)
+        requireBinding().myStoreTopPerformers.showSkeleton(show)
     }
 
     override fun onRequestLoadStats(period: StatsGranularity) {
-        binding.myStoreStats.showErrorView(false)
+        requireBinding().myStoreStats.showErrorView(false)
         presenter.loadStats(period)
     }
 
     override fun onRequestLoadTopPerformersStats(period: StatsGranularity) {
-        binding.myStoreTopPerformers.showErrorView(false)
+        requireBinding().myStoreTopPerformers.showErrorView(false)
         presenter.coroutineScope.launch {
             presenter.loadTopPerformersStats(period)
         }
@@ -355,7 +352,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
      * If should not and it's visible, the card visibility is changed to gone
      * If should be and it's already visible, nothing happens
      */
-    private fun handleFeedbackRequestCardState() = with(binding.storeFeedbackRequestCard) {
+    private fun handleFeedbackRequestCardState() = with(requireBinding().storeFeedbackRequestCard) {
         if (userFeedbackIsDue && visibility == View.GONE) {
             setupFeedbackRequestCard()
         } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
@@ -364,19 +361,19 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     private fun setupFeedbackRequestCard() {
-        binding.storeFeedbackRequestCard.visibility = View.VISIBLE
+        requireBinding().storeFeedbackRequestCard.visibility = View.VISIBLE
         val negativeCallback = {
             mainNavigationRouter?.showFeedbackSurvey()
-            binding.storeFeedbackRequestCard.visibility = View.GONE
+            requireBinding().storeFeedbackRequestCard.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
         }
-        binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
+        requireBinding().storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
         context?.let {
             // Hide the card and set last feedback date to now
-            binding.storeFeedbackRequestCard.visibility = View.GONE
+            requireBinding().storeFeedbackRequestCard.visibility = View.GONE
             FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
 
             // Request a ReviewInfo object from the Google Reviews API. If this fails
@@ -410,21 +407,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         val dashboardVisibility: Int
         if (show) {
             dashboardVisibility = View.GONE
-            binding.emptyView.show(EmptyViewType.DASHBOARD) {
+            requireBinding().emptyView.show(EmptyViewType.DASHBOARD) {
                 AnalyticsTracker.track(Stat.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
                 ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
-            binding.emptyStatsView.visibility = View.VISIBLE
+            requireBinding().emptyStatsView.visibility = View.VISIBLE
         } else {
-            binding.emptyView.hide()
+            requireBinding().emptyView.hide()
             dashboardVisibility = View.VISIBLE
-            binding.emptyStatsView.visibility = View.GONE
+            requireBinding().emptyStatsView.visibility = View.GONE
         }
 
         tabLayout.visibility = dashboardVisibility
         myStoreDateBar.visibility = dashboardVisibility
-        binding.myStoreStats.visibility = dashboardVisibility
-        binding.myStoreTopPerformers.visibility = dashboardVisibility
+        requireBinding().myStoreStats.visibility = dashboardVisibility
+        requireBinding().myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
     }
 
@@ -449,5 +446,5 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
         }
     }
 
-    override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
+    override fun shouldExpandToolbar() = requireBinding().statsScrollView.scrollY == 0
 }

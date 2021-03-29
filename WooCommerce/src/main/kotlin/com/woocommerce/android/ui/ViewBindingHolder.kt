@@ -8,9 +8,8 @@ import androidx.viewbinding.ViewBinding
  * Enables implementing ViewBinding without having to release the binding in each
  * fragment's onDestroy
  * Adapted from https://dropbox.tech/mobile/detecting-memory-leaks-in-android-applications
- *
  */
-interface FragmentViewBindingHolder<B : ViewBinding> {
+interface ViewBindingHolder<B : ViewBinding> {
     var binding: B?
 
     // Only valid between onCreateView and onDestroyView.
@@ -29,7 +28,7 @@ interface FragmentViewBindingHolder<B : ViewBinding> {
         lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
                 owner.lifecycle.removeObserver(this)
-                this@FragmentViewBindingHolder.binding = null
+                this@ViewBindingHolder.binding = null
             }
         })
     }
