@@ -227,6 +227,7 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
+        variationName = variation.getName()
         if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
             binding.imageGallery.hide()
             binding.addImageContainer.show()
