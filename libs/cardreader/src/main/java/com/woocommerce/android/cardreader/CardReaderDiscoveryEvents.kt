@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader.internal
+package com.woocommerce.android.cardreader
 
 sealed class CardReaderDiscoveryEvents {
     object NotStarted : CardReaderDiscoveryEvents()

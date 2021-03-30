@@ -1,9 +1,7 @@
 package com.woocommerce.android.cardreader
 
 import android.app.Application
-import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
-import com.woocommerce.android.cardreader.internal.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper

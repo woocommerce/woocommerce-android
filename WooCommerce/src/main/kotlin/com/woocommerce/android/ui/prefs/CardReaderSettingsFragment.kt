@@ -14,10 +14,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerceDebug
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.NotStarted
-import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Started
-import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.Failed
-import com.woocommerce.android.cardreader.internal.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
 import kotlinx.coroutines.flow.collect
 import org.wordpress.android.util.AppLog

@@ -15,6 +15,8 @@ import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
 import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
 import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
 import com.stripe.stripeterminal.model.external.Reader
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
