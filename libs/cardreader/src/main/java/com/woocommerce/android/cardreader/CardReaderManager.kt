@@ -20,13 +20,4 @@ interface CardReaderManager {
     fun initialize(app: Application)
     fun startDiscovery(isSimulated: Boolean)
     fun connectToReader(readerId: String)
-
-    companion object {
-        /*
-         TODO cardreader This method is not using dagger since it's not initialized within this module.
-          Consider refactoring this in the future.
-         */
-        fun createInstance(): CardReaderManager =
-            CardReaderManagerImpl(TerminalWrapper(), TokenProvider(CardReaderStoreImpl()), LogWrapper())
-    }
 }

@@ -8,12 +8,12 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
 
 class WooCommerceDebug : WooCommerce() {
-    val cardReaderManager = CardReaderManager.createInstance()
+    val cardReaderManager = CardReaderManagerFactory.createCardReaderManager()
 
     override val component: AppComponent by lazy {
         DaggerAppComponentDebug.builder()
