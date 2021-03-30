@@ -107,7 +107,7 @@ internal class CardReaderManagerImpl(
                     logWrapper.d("CardReader", "connecting to reader succeeded")
                 }
             })
-        }
+        } ?: logWrapper.e("CardReader", "Connecting to reader failed: reader not found")
     }
 
     private fun initStripeTerminal(logLevel: LogLevel) {
