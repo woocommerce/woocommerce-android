@@ -13,7 +13,7 @@ import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
 
 class WooCommerceDebug : WooCommerce() {
-    val cardReaderManager = CardReaderManagerFactory.createCardReaderManager()
+    override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager()
 
     override val component: AppComponent by lazy {
         DaggerAppComponentDebug.builder()

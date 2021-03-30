@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
-import com.woocommerce.android.WooCommerceDebug
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
@@ -63,10 +63,10 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     }
 
     private fun startObserving(binding: FragmentSettingsCardReaderBinding) {
-        (requireActivity().application as? WooCommerceDebug)?.let { application ->
+        (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
-                application.cardReaderManager.discoveryEvents.collect { event ->
+                application.cardReaderManager?.discoveryEvents?.collect { event ->
                     AppLog.d(AppLog.T.MAIN, event.toString())
                     when (event) {
                         NotStarted, Started, is Failed -> {
@@ -85,7 +85,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 }
             }
             lifecycleScope.launchWhenResumed {
-                application.cardReaderManager.readerStatus.collect { status ->
+                application.cardReaderManager?.readerStatus?.collect { status ->
                     binding.connectionStatus.text = status.name
                 }
             }
@@ -101,7 +101,6 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
 
     // TODO cardreader move this into a VM
     private fun connectToReader() {
-        // TODO cardreader Replace WooCommerceDebug with WooCommerce to support production builds
         getCardReaderManager()?.let { cardReaderManager ->
             if (!cardReaderManager.isInitialized) {
                 cardReaderManager.initialize(requireActivity().application)
@@ -114,5 +113,5 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     }
 
     private fun getCardReaderManager(): CardReaderManager? =
-        (requireActivity().application as? WooCommerceDebug)?.cardReaderManager
+        (requireActivity().application as? WooCommerce)?.cardReaderManager
 }
