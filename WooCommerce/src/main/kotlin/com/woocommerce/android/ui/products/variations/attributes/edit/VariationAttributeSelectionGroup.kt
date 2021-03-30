@@ -23,8 +23,8 @@ data class VariationAttributeSelectionGroup(
     val attributeOptions
         get() = options
 
-    private val anySelectionOption =
-        "${resourceCreator(string.product_any_attribute_hint)} $attributeName"
+    private val anySelectionOption
+        get() = "${resourceCreator(string.product_any_attribute_hint)} $attributeName"
 
     private val isAnyOptionSelected
         get() = options.getOrNull(selectedOptionIndex) == anySelectionOption
