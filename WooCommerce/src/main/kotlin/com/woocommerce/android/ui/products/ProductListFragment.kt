@@ -33,7 +33,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMI
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.ViewBindingHolder
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.ui.viewBinding
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
@@ -56,8 +56,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener,
-    ViewBindingHolder<FragmentProductListBinding> {
+    OnActionExpandListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -78,7 +77,10 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     private var trashProductUndoSnack: Snackbar? = null
     private var pendingTrashProductId: Long? = null
 
-    override var binding: FragmentProductListBinding? = null
+    private val binding by viewBinding(FragmentProductListBinding::bind, onDestroyCallback = {
+        disableSearchListeners()
+        searchView = null
+    })
 
     private val feedbackState
         get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
@@ -88,23 +90,20 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
         setHasOptionsMenu(true)
 
-        binding = FragmentProductListBinding.bind(view)
-        registerBinding(requireBinding(), this.viewLifecycleOwner)
-
         setupObservers(viewModel)
         setupResultHandlers()
 
         productAdapter = ProductListAdapter(this, this)
-        requireBinding().productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
-        requireBinding().productsRecycler.adapter = productAdapter
+        binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        binding.productsRecycler.adapter = productAdapter
 
         // Setting this field to false ensures that the RecyclerView children do NOT receive the multiple clicks,
         // and only processes the first click event. More details on this issue can be found here:
         // https://github.com/woocommerce/woocommerce-android/issues/2074
-        requireBinding().productsRecycler.isMotionEventSplittingEnabled = false
+        binding.productsRecycler.isMotionEventSplittingEnabled = false
 
-        requireBinding().productsRefreshLayout.apply {
-            scrollUpChild = requireBinding().productsRecycler
+        binding.productsRefreshLayout.apply {
+            scrollUpChild = binding.productsRecycler
             setOnRefreshListener {
                 viewModel.onRefreshRequested()
             }
@@ -122,9 +121,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
 
     override fun onDestroyView() {
         skeletonView.hide()
-
-        disableSearchListeners()
-        searchView = null
         showAddProductButton(false)
         super.onDestroyView()
     }
@@ -236,7 +232,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     private fun setIsRefreshing(isRefreshing: Boolean) {
-        requireBinding().productsRefreshLayout.isRefreshing = isRefreshing
+        binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
     private fun setupObservers(viewModel: ProductListViewModel) {
@@ -250,18 +246,18 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
                 if (isEmptyViewVisible) {
                     when {
                         new.isSearchActive == true -> {
-                            requireBinding().emptyView.show(
+                            binding.emptyView.show(
                                 EmptyViewType.SEARCH_RESULTS,
                                 searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
                         new.filterCount?.compareTo(0) == 1 -> {
-                            requireBinding().emptyView.show(EmptyViewType.FILTER_RESULTS)
+                            binding.emptyView.show(EmptyViewType.FILTER_RESULTS)
                         }
-                        else -> requireBinding().emptyView.show(EmptyViewType.PRODUCT_LIST)
+                        else -> binding.emptyView.show(EmptyViewType.PRODUCT_LIST)
                     }
                 } else {
-                    requireBinding().emptyView.hide()
+                    binding.emptyView.hide()
                 }
             }
             new.displaySortAndFilterCard?.takeIfNotEqualTo(old?.displaySortAndFilterCard) {
@@ -270,7 +266,7 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             new.filterCount?.takeIfNotEqualTo(old?.filterCount) { updateFilterSelection(it) }
 
             new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
-                requireBinding().productsSortFilterCard.setSortingTitle(getString(it))
+                binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
@@ -351,20 +347,20 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     override fun getFragmentTitle() = getString(R.string.products)
 
     override fun scrollToTop() {
-        requireBinding().productsRecycler.smoothScrollToPosition(0)
+        binding.productsRecycler.smoothScrollToPosition(0)
     }
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
             showProductWIPNoticeCard(false)
-            skeletonView.show(requireBinding().productsRecycler, R.layout.skeleton_product_list, delayed = true)
+            skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
         }
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        requireBinding().loadMoreProgress.isVisible = show
+        binding.loadMoreProgress.isVisible = show
     }
 
     private fun showProductList(products: List<Product>) {
@@ -378,29 +374,29 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
             val wipCardTitleId = R.string.product_wip_title_m5
             val wipCardMessageId = R.string.product_wip_message_m5
 
-            requireBinding().productsWipCard.visibility = View.VISIBLE
-            requireBinding().productsWipCard.initView(
+            binding.productsWipCard.visibility = View.VISIBLE
+            binding.productsWipCard.initView(
                 title = getString(wipCardTitleId),
                 message = getString(wipCardMessageId),
                 onGiveFeedbackClick = ::onGiveFeedbackClicked,
                 onDismissClick = ::onDismissProductWIPNoticeCardClicked
             )
         } else {
-            requireBinding().productsWipCard.visibility = View.GONE
+            binding.productsWipCard.visibility = View.GONE
         }
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
         if (show) {
-            requireBinding().productsSortFilterCard.visibility = View.VISIBLE
-            requireBinding().productsSortFilterCard.initView(this)
+            binding.productsSortFilterCard.visibility = View.VISIBLE
+            binding.productsSortFilterCard.initView(this)
         } else {
-            requireBinding().productsSortFilterCard.visibility = View.GONE
+            binding.productsSortFilterCard.visibility = View.GONE
         }
     }
 
     private fun updateFilterSelection(filterCount: Int) {
-        requireBinding().productsSortFilterCard.updateFilterSelection(filterCount)
+        binding.productsSortFilterCard.updateFilterSelection(filterCount)
     }
 
     private fun showAddProductButton(show: Boolean) {
@@ -492,6 +488,6 @@ class ProductListFragment : TopLevelFragment(R.layout.fragment_product_list),
     }
 
     override fun shouldExpandToolbar(): Boolean {
-        return requireBinding().productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
+        return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
     }
 }
