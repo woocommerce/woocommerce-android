@@ -17,10 +17,10 @@ import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.PrintShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
@@ -246,7 +246,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     }
 
     private fun openPrintLabelsScreen(orderId: Long, labels: List<ShippingLabel>) {
-        triggerEvent(PrintShippingLabel(orderId, labels))
+        triggerEvent(ShowPrintShippingLabels(orderId, labels))
     }
 
     private fun updateViewState(stateMachineData: StateMachineData) {

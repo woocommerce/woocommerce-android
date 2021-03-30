@@ -61,7 +61,7 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
 
     object ShowPaymentDetails : CreateShippingLabelEvent()
 
-    data class PrintShippingLabel(val orderId: Long, val labels: List<ShippingLabel>) : CreateShippingLabelEvent()
+    data class ShowPrintShippingLabels(val orderId: Long, val labels: List<ShippingLabel>) : CreateShippingLabelEvent()
 
     object ShowWooDiscountBottomSheet : CreateShippingLabelEvent()
 }

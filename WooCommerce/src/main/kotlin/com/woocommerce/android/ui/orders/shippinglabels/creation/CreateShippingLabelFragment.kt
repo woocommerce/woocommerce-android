@@ -22,10 +22,10 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.PrintShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
@@ -234,12 +234,13 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         show()
                     }
                 }
-                is PrintShippingLabel -> {
+                is ShowPrintShippingLabels -> {
                     // TODO update the argument to accept multiple labels in M4
                     val action = CreateShippingLabelFragmentDirections
                         .actionCreateShippingLabelFragmentToPrintShippingLabelFragment(
-                            event.orderId,
-                            event.labels.first().id
+                            orderId = event.orderId,
+                            shippingLabelId = event.labels.first().id,
+                            isReprint = false
                         )
                     findNavController().navigateSafely(action)
                 }

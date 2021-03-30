@@ -6,8 +6,10 @@ import android.os.Environment
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
@@ -28,7 +30,8 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: PrintShippingLabelViewModel by viewModels { viewModelFactory }
+    private val viewModel: PrintShippingLabelViewModel by viewModels { viewModelFactory }
+    private val navArgs: PrintShippingLabelFragmentArgs by navArgs()
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -41,6 +44,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentPrintShippingLabelBinding.bind(view)
+
+        binding.reprintGroup.isVisible = navArgs.isReprint
+        binding.purchaseGroup.isVisible = !navArgs.isReprint
 
         setupObservers(viewModel)
         setupResultHandlers(viewModel)

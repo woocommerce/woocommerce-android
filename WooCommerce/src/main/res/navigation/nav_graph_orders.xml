@@ -40,6 +40,10 @@
             android:name="shippingLabelId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isReprint"
+            android:defaultValue="true"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_printShippingLabelFragment_to_shippingLabelPaperSizeSelectorDialog"
             app:destination="@id/shippingLabelPaperSizeSelectorDialog"
