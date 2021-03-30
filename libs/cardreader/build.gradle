@@ -29,9 +29,9 @@ android {
 }
 
 dependencies {
-    debugImplementation "androidx.core:core-ktx:$coreKtxVersion"
-    debugImplementation "androidx.appcompat:appcompat:$appCompatVersion"
-    debugImplementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "com.google.android.material:material:$materialVersion"
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
@@ -43,8 +43,8 @@ dependencies {
     debugImplementation "com.stripe:stripeterminal:1.0.17"
 
     // Coroutines
-    debugImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    debugImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     // Temporary dependencies - used just for the first few iterations
