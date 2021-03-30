@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -204,7 +203,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
             on<Event.PurchaseStarted> {
-                transitionTo(State.PurchaseLabels(data))
+                transitionTo(State.PurchaseLabels(data, it.fulfillOrder))
             }
         }
 
@@ -379,7 +378,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
         }
 
-        state<PurchaseLabels> {
+        state<State.PurchaseLabels> {
             on<Event.PurchaseFailed> {
                 transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PurchaseError))
             }
@@ -628,7 +627,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class PaymentSelection(val data: StateMachineData) : State()
 
         @Parcelize
-        data class PurchaseLabels(val data: StateMachineData) : State()
+        data class PurchaseLabels(val data: StateMachineData, val fulfillOrder: Boolean) : State()
     }
 
     sealed class Event {
@@ -678,7 +677,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
 
-        object PurchaseStarted : UserInput()
+        data class PurchaseStarted(val fulfillOrder: Boolean) : UserInput()
         data class PurchaseSuccess(val labels: List<ShippingLabel>) : Event()
         object PurchaseFailed : Event()
     }

@@ -310,7 +310,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             viewModel.onWooDiscountInfoClicked()
         }
         binding.orderSummaryLayout.purchaseLabelButton.setOnClickListener {
-            viewModel.onPurchaseButtonClicked()
+            viewModel.onPurchaseButtonClicked(binding.orderSummaryLayout.markOrderCompleteCheckbox.isChecked)
         }
     }
 

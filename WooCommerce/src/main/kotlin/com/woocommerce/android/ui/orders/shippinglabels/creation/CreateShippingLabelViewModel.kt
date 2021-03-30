@@ -81,6 +81,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -165,7 +167,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             progressDialogTitle = string.shipping_label_create_purchase_progress_title,
                             progressDialogMessage = string.shipping_label_create_purchase_progress_message
                         ) {
-                            purchaseLabels(transition.state.data)
+                            purchaseLabels(transition.state.data, transition.state.fulfillOrder)
                         }
                     }
                     else -> {
@@ -353,7 +355,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun purchaseLabels(data: StateMachineData): Event {
+    private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
         val result = shippingLabelRepository.purchaseLabels(
             orderId = data.order.remoteId,
             origin = data.stepsState.originAddressStep.data,
@@ -361,7 +363,22 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             packages = data.stepsState.packagingStep.data,
             rates = data.stepsState.carrierStep.data
         )
-        return if (result.isError) PurchaseFailed else PurchaseSuccess(result.model!!)
+        return if (result.isError) {
+            PurchaseFailed
+        } else {
+            if (fulfillOrder) {
+                val orderIdSet = data.order.identifier.toIdSet()
+                val fulfillResult = orderDetailRepository.updateOrderStatus(
+                    localOrderId = orderIdSet.id,
+                    remoteOrderId = orderIdSet.remoteOrderId,
+                    newStatus = CoreOrderStatus.COMPLETED.value
+                )
+                if (!fulfillResult) {
+                    triggerEvent(ShowSnackbar(R.string.orderstatus_failed))
+                }
+            }
+            PurchaseSuccess(result.model!!)
+        }
     }
 
     private val PackagingStep.stepDescription: String
@@ -489,8 +506,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(ShowWooDiscountBottomSheet)
     }
 
-    fun onPurchaseButtonClicked() {
-        stateMachine.handleEvent(PurchaseStarted)
+    fun onPurchaseButtonClicked(fulfillOrder: Boolean) {
+        stateMachine.handleEvent(PurchaseStarted(fulfillOrder))
     }
 
     fun onEditButtonTapped(step: FlowStep) {

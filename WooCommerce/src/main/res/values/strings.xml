@@ -395,6 +395,7 @@
     <string name="shipping_label_create_purchase_progress_title">Purchasing label</string>
     <string name="shipping_label_create_purchase_progress_message">Please wait…</string>
     <string name="shipping_label_create_purchase_error">Error purchasing the labels</string>
+    <string name="shipping_label_create_purchase_fulfill_error">Couldn\'t mark the order as complete</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>

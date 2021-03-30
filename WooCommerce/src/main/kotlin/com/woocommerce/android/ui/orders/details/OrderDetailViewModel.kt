@@ -251,8 +251,12 @@ class OrderDetailViewModel @AssistedInject constructor(
     }
 
     fun onShippingLabelsPurchased() {
-        // Refresh UI from the database, as new labels are cached by FluxC after the purchase
-        displayOrderDetails()
+        // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
+        // if for any reason, the order wasn't found, refetch it
+        orderDetailRepository.getOrder(navArgs.orderId)?.let {
+            order = it
+            displayOrderDetails()
+        } ?: launch { fetchOrder(true) }
     }
 
     fun onOrderItemRefunded() {
