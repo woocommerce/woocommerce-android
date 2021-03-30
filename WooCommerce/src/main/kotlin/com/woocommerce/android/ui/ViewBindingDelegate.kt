@@ -19,9 +19,9 @@ class ViewBindingDelegate<T : ViewBinding> private constructor(
     private var binding: T? = fragment.view?.let { bind(it) }
 
     init {
-        fragment.viewLifecycleOwnerLiveData.observe(fragment, Observer<LifecycleOwner> { owner ->
+        fragment.viewLifecycleOwnerLiveData.observeForever { owner ->
             binding = owner?.let { bind(fragment.requireView()) }
-        })
+        }
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T = binding
