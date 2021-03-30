@@ -159,7 +159,7 @@ class ShippingLabelRepository @Inject constructor(
         destination: Address,
         packages: List<ShippingLabelPackage>,
         rates: List<ShippingRate>
-    ) : WooResult<List<ShippingLabel>> {
+    ): WooResult<List<ShippingLabel>> {
         val packagesData = packages.mapIndexed { i, labelPackage ->
             val rate = rates.first { it.packageId == labelPackage.packageId }
             WCShippingLabelPackageData(
