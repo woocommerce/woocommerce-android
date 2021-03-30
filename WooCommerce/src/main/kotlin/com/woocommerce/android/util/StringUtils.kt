@@ -131,8 +131,7 @@ object StringUtils {
     fun formatCountDecimal(number: Double): String {
         if (number.rem(1).equals(0.0)) {
             return formatCount(number.toInt())
-        }
-        else {
+        } else {
             return number.toString()
         }
     }
