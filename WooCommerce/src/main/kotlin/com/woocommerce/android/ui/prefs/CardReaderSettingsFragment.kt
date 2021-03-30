@@ -103,7 +103,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     private fun connectToReader() {
         // TODO cardreader Replace WooCommerceDebug with WooCommerce to support production builds
         getCardReaderManager()?.let { cardReaderManager ->
-            if (!cardReaderManager.isInitialized()) {
+            if (!cardReaderManager.isInitialized) {
                 cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {

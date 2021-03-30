@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import android.util.Log
 import com.stripe.stripeterminal.callable.Callback
 import com.stripe.stripeterminal.callable.DiscoveryListener
 import com.stripe.stripeterminal.callable.ReaderCallback
