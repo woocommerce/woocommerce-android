@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -105,7 +106,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
-                val quantity = it.toString()
+                val quantity = StringUtils.formatCountDecimal(it)
                 if (binding.productStockQuantity.getText() != quantity) {
                     binding.productStockQuantity.setText(quantity)
                 }
