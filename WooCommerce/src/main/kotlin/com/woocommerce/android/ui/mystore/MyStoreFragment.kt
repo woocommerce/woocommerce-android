@@ -23,10 +23,10 @@ import com.woocommerce.android.extensions.configureStringClick
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.ViewBindingDelegate.Factory.viewBinding
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.viewBinding
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooAnimUtils
@@ -59,7 +59,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val binding by viewBinding(FragmentMyStoreBinding::bind)
+    private val binding by viewBinding(FragmentMyStoreBinding::bind, onDestroyCallback = {
+        it.myStoreStats.removeListener()
+        it.myStoreTopPerformers.removeListener()
+    })
 
     override var isRefreshPending: Boolean = false // If true, the fragment will refresh its data when it's visible
     private var errorSnackbar: Snackbar? = null
@@ -186,9 +189,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store),
     }
 
     override fun onDestroyView() {
-        binding.myStoreStats.removeListener()
-        binding.myStoreTopPerformers.removeListener()
-
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         _tabLayout = null

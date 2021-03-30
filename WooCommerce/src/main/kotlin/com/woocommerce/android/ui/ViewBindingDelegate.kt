@@ -2,28 +2,59 @@ package com.woocommerce.android.ui
 
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.viewbinding.ViewBinding
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-class ViewBindingDelegate<T : ViewBinding> private constructor(
-    private val fragment: Fragment,
-    private val bind: (View) -> T
-) {
-    companion object Factory {
-        fun <T : ViewBinding> Fragment.viewBinding(bind: (View) -> T): ViewBindingDelegate<T> =
-            ViewBindingDelegate(this, bind)
-    }
-
-    private var binding: T? = fragment.view?.let { bind(it) }
+class FragmentViewBindingDelegate<T : ViewBinding>(
+    val fragment: Fragment,
+    val viewBindingFactory: (View) -> T,
+    val onDestroyCallback: (T) -> Unit
+) : ReadOnlyProperty<Fragment, T> {
+    private var binding: T? = null
 
     init {
-        fragment.viewLifecycleOwnerLiveData.observe(fragment, Observer<LifecycleOwner> { owner ->
-            binding = owner?.let { bind(fragment.requireView()) }
+        fragment.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            val viewLifecycleOwnerLiveDataObserver =
+                Observer<LifecycleOwner?> { owner ->
+                    val viewLifecycleOwner = owner ?: return@Observer
+
+                    viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                        override fun onDestroy(owner: LifecycleOwner) {
+                            binding?.let { onDestroyCallback(it) }
+                            binding = null
+                        }
+                    })
+                }
+
+            override fun onCreate(owner: LifecycleOwner) {
+                fragment.viewLifecycleOwnerLiveData.observeForever(viewLifecycleOwnerLiveDataObserver)
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                fragment.viewLifecycleOwnerLiveData.removeObserver(viewLifecycleOwnerLiveDataObserver)
+            }
         })
     }
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = binding
-        ?: error("Cannot access view binding before onCreateView() or after onDestroyView()")
+    override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
+        val binding = binding
+        if (binding != null) {
+            return binding
+        }
+
+        val lifecycle = fragment.viewLifecycleOwner.lifecycle
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
+            throw IllegalStateException("Should not attempt to get bindings when Fragment views are destroyed.")
+        }
+
+        return viewBindingFactory(thisRef.requireView()).also { this.binding = it }
+    }
 }
+
+fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T, onDestroyCallback: (T) -> Unit = {}) =
+    FragmentViewBindingDelegate(this, viewBindingFactory, onDestroyCallback)
