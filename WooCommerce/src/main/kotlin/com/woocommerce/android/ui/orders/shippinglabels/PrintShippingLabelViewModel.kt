@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,6 +50,10 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
 
     fun onPaperSizeSelected(paperSize: ShippingLabelPaperSize) {
         viewState = viewState.copy(paperSize = paperSize)
+    }
+
+    fun onSaveForLaterClicked() {
+        triggerEvent(ExitWithResult(Unit))
     }
 
     fun onPrintShippingLabelClicked() {
