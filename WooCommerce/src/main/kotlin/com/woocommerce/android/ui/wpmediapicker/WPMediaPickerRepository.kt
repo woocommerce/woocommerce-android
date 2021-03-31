@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.wpmediapicker
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +24,7 @@ class WPMediaPickerRepository @Inject constructor(
         private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
     }
 
-    private val loadContinuation = ContinuationWrapper<Boolean>(AppConstants.REQUEST_TIMEOUT)
+    private val loadContinuation = ContinuationWrapper<Boolean>()
 
     var canLoadMoreMedia = true
         private set
@@ -42,7 +41,7 @@ class WPMediaPickerRepository @Inject constructor(
      * Submits a fetch request to get a list of media for the current site
      */
     suspend fun fetchSiteMediaList(loadMore: Boolean = false): List<Image> {
-        val result = loadContinuation.callAndWait {
+        val result = loadContinuation.callAndWaitUntilTimeout {
             val payload = MediaStore.FetchMediaListPayload(
                 selectedSite.get(),
                 MEDIA_PAGE_SIZE,
