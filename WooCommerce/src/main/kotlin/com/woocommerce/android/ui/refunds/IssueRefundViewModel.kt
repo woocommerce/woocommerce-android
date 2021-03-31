@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.refunds
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
@@ -673,6 +674,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         object HideValidationError : IssueRefundEvent()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
 }
