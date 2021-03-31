@@ -137,7 +137,8 @@
     <fragment
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
-        android:label="addAttributeFragment" />
+        android:label="addAttributeFragment">
+    </fragment>
     <fragment
         android:id="@+id/addAttributeTermsFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragment"
@@ -150,6 +151,9 @@
             android:name="attributeName"
             app:argType="string"
             app:nullable="false" />
+        <argument
+            android:name="isNewAttribute"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
