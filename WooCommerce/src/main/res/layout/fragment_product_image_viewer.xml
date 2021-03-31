@@ -28,7 +28,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            app:srcCompat="@drawable/ic_arrow_left_white_24dp" />
+            app:srcCompat="@drawable/ic_back_24dp" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/iconTrash"

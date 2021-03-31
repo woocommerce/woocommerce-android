@@ -26,7 +26,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/minor_100"
-            app:srcCompat="@drawable/ic_arrow_left_white_24dp" />
+            app:srcCompat="@drawable/ic_back_24dp" />
 
     </FrameLayout>
 

@@ -170,7 +170,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
             stars?.getDrawable(2)?.setColorFilter(
-                    ContextCompat.getColor(requireContext(), R.color.alert_yellow),
+                    ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
                     PorterDuff.Mode.SRC_ATOP
             )
         }
