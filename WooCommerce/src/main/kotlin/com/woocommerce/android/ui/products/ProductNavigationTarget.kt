@@ -77,6 +77,7 @@ sealed class ProductNavigationTarget : Event() {
     object AddProductAttribute : ProductNavigationTarget()
     data class AddProductAttributeTerms(
         val attributeId: Long,
-        val attributeName: String
+        val attributeName: String,
+        val isNewAttribute: Boolean
     ) : ProductNavigationTarget()
 }
