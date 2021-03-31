@@ -14,7 +14,7 @@ import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponentDebug
 
 class WooCommerceDebug : WooCommerce() {
-    override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object: CardReaderStore {
+    override val cardReaderManager = CardReaderManagerFactory.createCardReaderManager(object : CardReaderStore {
         override suspend fun getConnectionToken(): String {
             val result = payStore.fetchConnectionToken(selectedSite.get())
             return result.model?.token.orEmpty()
@@ -27,8 +27,8 @@ class WooCommerceDebug : WooCommerce() {
 
     override val component: AppComponent by lazy {
         DaggerAppComponentDebug.builder()
-                .application(this)
-                .build()
+            .application(this)
+            .build()
     }
 
     override fun onCreate() {
