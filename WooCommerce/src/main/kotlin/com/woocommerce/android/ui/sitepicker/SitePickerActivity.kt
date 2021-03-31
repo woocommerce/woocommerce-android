@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
@@ -84,8 +83,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
-
-    @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
     private lateinit var siteAdapter: SitePickerAdapter
 
@@ -424,9 +421,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // Preemptively also update the site settings so we have them available sooner
         presenter.updateWooSiteSettings(site)
-
-        // also check if the site supports the new v4 revenue stats api changes
-        revenueStatsAvailabilityFetcher.fetchRevenueStatsAvailability(site)
     }
 
     /**
