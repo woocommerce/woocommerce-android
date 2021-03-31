@@ -4,7 +4,6 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,7 +23,7 @@ class WPMediaPickerRepository @Inject constructor(
         private const val MEDIA_PAGE_SIZE = WPMediaGalleryView.NUM_COLUMNS * 10
     }
 
-    private val loadContinuation = ContinuationWrapper<Boolean>()
+    private val loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
 
     var canLoadMoreMedia = true
         private set
@@ -41,7 +40,7 @@ class WPMediaPickerRepository @Inject constructor(
      * Submits a fetch request to get a list of media for the current site
      */
     suspend fun fetchSiteMediaList(loadMore: Boolean = false): List<Image> {
-        val result = loadContinuation.callAndWaitUntilTimeout {
+        loadContinuation.callAndWaitUntilTimeout {
             val payload = MediaStore.FetchMediaListPayload(
                 selectedSite.get(),
                 MEDIA_PAGE_SIZE,
@@ -51,9 +50,6 @@ class WPMediaPickerRepository @Inject constructor(
             dispatcher.dispatch(MediaActionBuilder.newFetchMediaListAction(payload))
         }
 
-        if (result is Cancellation) {
-            WooLog.e(WooLog.T.PRODUCTS, "CancellationException while fetching site media", result.exception)
-        }
         return getSiteMediaList()
     }
 

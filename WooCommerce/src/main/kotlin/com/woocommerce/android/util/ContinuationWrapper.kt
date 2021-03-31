@@ -19,8 +19,10 @@ import kotlin.coroutines.resume
  * 2. After a continuation is successfully resumed it's nulled.
  * 3. The whole async call is wrapped in a try-catch block which handles the [CancellationException].
  *
+ * There is a required tag parameter because we want to make sure all [CancellationException] are logged.
+ *
  */
-class ContinuationWrapper<T> {
+class ContinuationWrapper<T>(private val tag: WooLog.T) {
     private var timeout: Long = 0
     private var continuation: CancellableContinuation<T>? = null
     private val mutex = Mutex()
@@ -51,6 +53,7 @@ class ContinuationWrapper<T> {
                 }
                 Success(continuationResult)
             } catch (e: CancellationException) {
+                WooLog.e(tag, e)
                 Cancellation<T>(e)
             }
 
