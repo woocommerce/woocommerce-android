@@ -52,6 +52,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import javax.inject.Inject
@@ -74,6 +75,8 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
+
+    @Inject lateinit var payStore: WCPayStore
 
     // TODO cardreader init this field
     open val cardReaderManager: CardReaderManager? = null
