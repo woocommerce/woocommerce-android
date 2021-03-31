@@ -31,7 +31,9 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
         timeout: Long = AppConstants.REQUEST_TIMEOUT,
         asyncAction: () -> Unit
     ): ContinuationResult<T> {
-        this.timeout = timeout
+        mutex.withLock {
+            this.timeout = timeout
+        }
         return callAndWait(asyncAction)
     }
 
