@@ -196,6 +196,19 @@
             android:defaultValue="SIMPLE" />
     </fragment>
     <fragment
+        android:id="@+id/editVariationAttributesFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment"
+        tools:layout="@layout/fragment_edit_variation_attributes">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="remoteVariationId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
+    <fragment
         android:id="@+id/productShippingFragment"
         android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
@@ -463,6 +476,9 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_editVariationAttributesFragment"
+            app:destination="@id/editVariationAttributesFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
