@@ -47,7 +47,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         binding.connectReaderButton.setOnClickListener {
             // TODO cardreader move this into a vm
             // TODO card reader implement connect reader button
-            val permissionType = Manifest.permission.ACCESS_COARSE_LOCATION
+            val permissionType = Manifest.permission.ACCESS_FINE_LOCATION
             val locationPermissionResult = ContextCompat.checkSelfPermission(
                 requireContext(),
                 permissionType
