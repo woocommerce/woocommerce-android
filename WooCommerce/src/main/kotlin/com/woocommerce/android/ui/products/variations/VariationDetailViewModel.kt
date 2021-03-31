@@ -21,6 +21,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.ProductVariation.Option
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -176,6 +177,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         isStockManaged: Boolean? = null,
         shippingClass: String? = null,
         shippingClassId: Long? = null,
+        attributes: Array<VariantOption>? = null,
         length: Float? = null,
         width: Float? = null,
         height: Float? = null,
@@ -203,6 +205,7 @@ class VariationDetailViewModel @AssistedInject constructor(
             isStockManaged = isStockManaged ?: viewState.variation.isStockManaged,
             shippingClass = shippingClass ?: viewState.variation.shippingClass,
             shippingClassId = shippingClassId ?: viewState.variation.shippingClassId,
+            attributes = attributes ?: viewState.variation.attributes,
             length = length ?: viewState.variation.length,
             width = width ?: viewState.variation.width,
             height = height ?: viewState.variation.height,
