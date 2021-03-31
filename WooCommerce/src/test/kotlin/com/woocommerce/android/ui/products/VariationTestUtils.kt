@@ -30,6 +30,7 @@ fun generateVariation(): ProductVariation {
         sku = "sku",
         stockQuantity = 1,
         stockStatus = InStock,
+        attributes = emptyArray(),
         weight = 0f,
         width = 0f
     )

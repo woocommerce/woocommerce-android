@@ -70,8 +70,10 @@
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
     <string name="product_enter_attribute_term">Add each option name and press enter</string>
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
+    <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
+    <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -629,6 +631,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -920,6 +923,9 @@
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
+    <string name="settings_store">Store settings</string>
+    <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>

@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -16,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
@@ -32,6 +37,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
+        private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
 
     private var layoutManagerAssigned: LinearLayoutManager? = null
@@ -42,6 +48,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private val navArgs: AddAttributeTermsFragmentArgs by navArgs()
     private val skeletonView = SkeletonView()
+
+    private var isConfirmRemoveDialogShowing = false
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -107,6 +115,14 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         initializeViews(savedInstanceState)
         setupObservers()
         getAttributeTerms()
+
+        setHasOptionsMenu(true)
+
+        savedInstanceState?.let { bundle ->
+            if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
+                confirmRemoveAttribute()
+            }
+        }
     }
 
     private fun getAttributeTerms() {
@@ -125,14 +141,36 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         _binding = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_attribute_terms, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        // we don't want to show the Remove menu item if this is new attribute
+        menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_remove -> {
+                confirmRemoveAttribute()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onRequestAllowBackPress(): Boolean {
-        /**
-         * TODO: we save attribute changes to the backend here only for testing purposes. Down the road we'll do this
-         * before variations are generated (because they can't be generated until the attributes are saved)
-         */
+        saveChangesAndReturn()
+        return false
+    }
+
+    private fun saveChangesAndReturn() {
+        // TODO We probably want to push changes in the main attribute list screen rather than here
         viewModel.saveAttributeChanges()
         viewModel.onBackButtonClicked(ExitProductAddAttributeTerms())
-        return false
     }
 
     override fun onResume() {
@@ -141,6 +179,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        if (isConfirmRemoveDialogShowing) {
+            outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
+        }
         layoutManagerAssigned?.let {
             outState.putParcelable(LIST_STATE_KEY_ASSIGNED, it.onSaveInstanceState())
         }
@@ -280,5 +321,30 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             skeletonView.hide()
         }
         checkViews()
+    }
+
+    private fun confirmRemoveAttribute() {
+        isConfirmRemoveDialogShowing = true
+        WooDialog.showDialog(
+            requireActivity(),
+            messageId = R.string.product_attribute_remove,
+            positiveButtonId = R.string.remove,
+            posBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmRemoveDialogShowing = false
+                removeAttribute()
+            },
+            negativeButtonId = R.string.cancel,
+            negBtnAction = DialogInterface.OnClickListener { _, _ ->
+                isConfirmRemoveDialogShowing = false
+            }
+        )
+    }
+
+    /**
+     * Removes this attribute from the product draft and returns to the attributes screen
+     */
+    private fun removeAttribute() {
+        viewModel.removeAttributeFromDraft(navArgs.attributeId, navArgs.attributeName)
+        saveChangesAndReturn()
     }
 }
