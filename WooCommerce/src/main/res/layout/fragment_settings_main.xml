@@ -25,7 +25,6 @@
         tools:optionValue="Woo Tester" />
 
     <View style="@style/Woo.Divider" />
-
     <!--
         Help & support
     -->
@@ -34,6 +33,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:optionTitle="@string/support_help" />
+
+
+
+    <LinearLayout
+        android:id="@+id/store_settings_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <View style="@style/Woo.Divider" />
+        <!--
+                Store Settings
+            -->
+        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_store" />
+        <!--
+            Card Reader
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_card_reader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_card_reader" />
+
+    </LinearLayout>
 
     <View style="@style/Woo.Divider" />
 
