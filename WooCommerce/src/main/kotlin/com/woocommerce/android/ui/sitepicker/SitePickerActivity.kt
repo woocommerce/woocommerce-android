@@ -327,7 +327,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.GONE
             }
 
-            loginSiteUrl?.let { processLoginSite(it) }
+            loginSiteUrl?.let {
+                // hide the site list and validate the url if we already know the connected store, which will happen
+                // if the user logged in by entering their store address
+                binding.siteListContainer.visibility = View.GONE
+                processLoginSite(it)
+            }
             return
         }
 
