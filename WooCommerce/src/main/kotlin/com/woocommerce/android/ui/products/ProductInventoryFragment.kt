@@ -106,7 +106,8 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
-                val quantity = StringUtils.formatCountDecimal(it)
+                val quantity = StringUtils.formatCountDecimal(it, forInput = true)
+
                 if (binding.productStockQuantity.getText() != quantity) {
                     binding.productStockQuantity.setText(quantity)
                 }

@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.util.FormatUtils
 import java.io.IOException
 import java.util.Locale
 import kotlin.math.abs
@@ -128,13 +129,28 @@ object StringUtils {
         }
     }
 
-    fun formatCountDecimal(number: Double): String {
-        if (number.rem(1).equals(0.0)) {
-            return formatCount(number.toInt())
+    /**
+     * If a number's fractional part is zero, remove it and return as string. Otherwise return as string while
+     * including the fractional part.
+     * If the number is to be displayed as regular text, `formatInt` is used to display commas/dot for thousands
+     * separator (depending on locale).
+     * If the number is to be displayed in an editable text input, number.toInt() is used so that the input behavior
+     * does not show the thousands separator.
+     *
+     *  @param [number] The number to be formatted
+     *  @param [forInput] Whether the formatting is used in a text input or not.
+     */
+    fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
+        return if (number.rem(1).equals(0.0)) {
+            if(forInput)
+                number.toInt().toString()
+            else
+                FormatUtils.formatInt(number.toInt())
         } else {
-            return number.toString()
+            number.toString()
         }
     }
+
 
     /**
      * Returns the name of the country associated with the current store.
