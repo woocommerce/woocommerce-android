@@ -6,8 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -542,6 +543,6 @@ class OrderDetailViewModel @AssistedInject constructor(
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<OrderDetailViewModel>
 }
