@@ -17,6 +17,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CollectPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -126,16 +127,27 @@ internal class CollectPaymentActionTest {
     @Test
     fun `given last event is terminal, when multiple events emitted, then flow terminates`() = test {
         whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock())
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock())
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock())
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock())
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock())
+            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
+            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock()) // non-terminal
+            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
+            (it.arguments[1] as ReaderDisplayListener).onRequestReaderDisplayMessage(mock()) // non-terminal
+            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
             mock<Cancelable>()
         }
 
         val result = action.collectPayment(mock()).toList()
 
         assertThat(result.size).isEqualTo(5)
+    }
+
+    @Test(expected = ClosedSendChannelException::class)
+    fun `given more events emitted, when terminal event already processed, then exception is thrown`() = test {
+        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
+            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
+            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
+            mock<Cancelable>()
+        }
+
+        action.collectPayment(mock()).toList()
     }
 }
