@@ -19,6 +19,7 @@ object CardReaderManagerFactory {
             TokenProvider(cardReaderStore),
             logWrapper,
             PaymentManager(
+                cardReaderStore,
                 CreatePaymentAction(PaymentIntentParametersFactory(), terminal, logWrapper),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper)

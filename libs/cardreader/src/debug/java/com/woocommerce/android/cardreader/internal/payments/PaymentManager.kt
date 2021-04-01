@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
+import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
@@ -22,7 +23,6 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
-import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
@@ -31,7 +31,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 @ExperimentalCoroutinesApi
-internal class PaymentManager constructor(
+internal class PaymentManager(
+    private val cardReaderStore: CardReaderStore,
     private val createPaymentAction: CreatePaymentAction,
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction
@@ -52,7 +53,7 @@ internal class PaymentManager constructor(
             return@flow
         }
 
-        capturePayment(paymentIntent)
+        capturePayment(cardReaderStore, paymentIntent)
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(
@@ -101,10 +102,11 @@ internal class PaymentManager constructor(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+        cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
         val success = withContext(Dispatchers.IO) {
-            CardReaderStoreImpl().capturePaymentIntent(paymentIntent.id)
+            cardReaderStore.capturePaymentIntent(paymentIntent.id)
         }
         if (success) {
             emit(PaymentCompleted)
