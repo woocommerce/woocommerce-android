@@ -139,9 +139,11 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
-        val isStockManagementVisible: Boolean? = null
+        val isStockManagementVisible: Boolean? = null,
+        // If the quantity is not whole decimal, make stock quantity field be read-only
+        // because the API doesn't support updating decimal amount yet.
+        val isStockQuantityEditable: Boolean = inventoryData.stockQuantity?.rem(1)?.equals(0.0) == true
     ) : Parcelable
-
     @Parcelize
     data class InventoryData(
         val sku: String? = null,

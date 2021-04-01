@@ -108,15 +108,12 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
                 val quantity = StringUtils.formatCountDecimal(it, forInput = true)
 
-                // If the quantity is not whole decimal, make this field read-only, because the API doesn't support
-                // updating decimal amount yet.
-                if (! it.rem(1).equals(0.0)) {
-                    binding.productStockQuantity.isEnabled = false
-                }
-
                 if (binding.productStockQuantity.getText() != quantity) {
                     binding.productStockQuantity.setText(quantity)
                 }
+            }
+            new.isStockQuantityEditable.takeIfNotEqualTo(old?.isStockQuantityEditable) {
+                binding.productStockQuantity.isEnabled = it
             }
             new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
                 binding.soldIndividuallySwitch.isChecked = it
