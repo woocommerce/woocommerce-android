@@ -62,7 +62,7 @@ class VariationListAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            onItemClick(variationList[position])
+            onItemClick(variation)
         }
     }
 
