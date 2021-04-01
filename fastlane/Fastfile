@@ -13,6 +13,7 @@ ENV[GHHELPER_REPO="woocommerce/woocommerce-android"]
 ENV["PROJECT_NAME"]="WooCommerce"
 ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="lintVanillaRelease"
+REPOSITORY_NAME="woocommerce-android"
 
 SUPPORTED_LOCALES = [
   { glotpress: "ar", google_play: "ar",  promo_config: {}},
@@ -86,7 +87,8 @@ platform :android do
   desc "Creates a new release branch from the current develop"
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
-    android_tag_build()
+    new_version = android_get_app_version()
+    trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
   #####################################################################################
@@ -146,7 +148,8 @@ platform :android do
   lane :new_beta_release do | options |
     android_betabuild_prechecks(options)
     android_bump_version_beta()
-    android_tag_build()
+    new_version = android_get_app_version()
+    trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
   #####################################################################################
@@ -165,7 +168,8 @@ platform :android do
   lane :new_hotfix_release do | options |
     prev_ver = android_hotfix_prechecks(version_name: options[:version_name], skip_confirm: options[:skip_confirm])
     android_bump_version_hotfix(previous_version_name: prev_ver, version_name: options[:version_name], version_code: options[:version_code])
-    android_tag_build(tag_alpha: false)
+    new_version = android_get_app_version()
+    trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
   #####################################################################################
@@ -187,15 +191,16 @@ platform :android do
     hotfix = android_current_branch_is_hotfix
     android_update_metadata(options) unless hotfix
     android_bump_version_final_release() unless hotfix
-    version = android_get_release_version() unless hotfix
+    version = android_get_release_version()
     download_metadata_strings(version: version["name"], build_number: version["code"]) unless hotfix
-    android_tag_build(tag_alpha: false)
 
     # Wrap up
     removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
     setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
     create_new_milestone(repository:GHHELPER_REPO)
     close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
+
+    trigger_release_build(branch_to_build: "release/#{version["name"]}")
   end
 
   #####################################################################################
@@ -284,6 +289,25 @@ platform :android do
     )
 
     create_gh_release(version: version, prerelease: true) if options[:create_release]
+  end
+
+  #####################################################################################
+   # trigger_release_build
+   # -----------------------------------------------------------------------------------
+   # This lane triggers a stable release build on CI
+   # -----------------------------------------------------------------------------------
+   # Usage:
+   # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
+   #
+   #####################################################################################
+   lane :trigger_release_build do | options |
+    circleci_trigger_job(
+      circle_ci_token: ENV["CIRCLE_CI_AUTH_TOKEN"],
+      repository: REPOSITORY_NAME,
+      organization: "woocommerce",
+      branch: options[:branch_to_build],
+      job_params: {"release_build" => true}
+    )
   end
 
   #####################################################################################
