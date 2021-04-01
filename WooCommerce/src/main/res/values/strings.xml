@@ -103,6 +103,7 @@
     <string name="other">Other</string>
     <string name="free">free</string>
     <string name="and">and</string>
+    <string name="generic_string" translatable="false">%s</string>
     <!--
         Date/Time Labels
     -->
@@ -290,6 +291,7 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_collect_payment_button">Collect Payment</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>

@@ -176,7 +176,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
+                    }
+                }
                 is ShowUndoSnackbar -> {
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
