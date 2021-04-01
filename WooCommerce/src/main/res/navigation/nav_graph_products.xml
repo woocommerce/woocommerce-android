@@ -120,7 +120,12 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="isVariationCreation"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/attributeListFragment"
@@ -132,7 +137,12 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="isVariationCreation"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/addAttributeFragment"
