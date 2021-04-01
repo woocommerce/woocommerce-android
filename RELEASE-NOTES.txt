@@ -2,7 +2,7 @@
 
 6.4
 -----
-
+- [*] Fixed a ui bug in the shipping label formats description screen. [https://github.com/woocommerce/woocommerce-android/pull/3791]
 
 6.3
 -----
