@@ -76,7 +76,7 @@ class VariationListViewModel @AssistedInject constructor(
 
     fun onAddEditAttributesClick() {
         // TODO: tracks event
-        triggerEvent(ShowAttributeList)
+        triggerEvent(ShowAttributeList())
     }
 
     private fun loadVariations(remoteProductId: Long, loadMore: Boolean = false) {
@@ -159,7 +159,7 @@ class VariationListViewModel @AssistedInject constructor(
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
-    object ShowAttributeList : Event()
+    data class ShowAttributeList(val isVariationCreation: Boolean = false) : Event()
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<VariationListViewModel>
