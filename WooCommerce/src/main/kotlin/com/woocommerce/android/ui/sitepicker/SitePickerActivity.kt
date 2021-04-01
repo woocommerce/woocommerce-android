@@ -363,10 +363,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
-        binding.noStoresView.noStoresViewText.visibility = View.GONE
-        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
+        binding.noStoresView.noStoresView.visibility = View.GONE
         binding.siteListContainer.visibility = View.VISIBLE
-        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
         binding.siteListLabel.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
