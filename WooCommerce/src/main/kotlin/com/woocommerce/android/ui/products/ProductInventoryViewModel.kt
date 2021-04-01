@@ -37,7 +37,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
             inventoryData = navArgs.inventoryData,
             isIndividualSaleSwitchVisible = isProduct,
             isStockManagementVisible = !isProduct || navArgs.productType != EXTERNAL && navArgs.productType != GROUPED,
-            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE
+            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE,
+
+            // Stock quantity field is only editable if the value is whole decimal (e.g: 10.0).
+            // Otherwise it is set to read-only, because the API doesn't support updating amount with non-zero
+            // fractional yet.
+            isStockQuantityEditable = navArgs.inventoryData.stockQuantity?.rem(1)?.equals(0.0)
         )
     )
     private var viewState by viewStateData
@@ -140,9 +145,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
         val isStockManagementVisible: Boolean? = null,
-        // If the quantity is not whole decimal, make stock quantity field be read-only
-        // because the API doesn't support updating decimal amount yet.
-        val isStockQuantityEditable: Boolean = inventoryData.stockQuantity?.rem(1)?.equals(0.0) == true
+        val isStockQuantityEditable: Boolean? = null
     ) : Parcelable
     @Parcelize
     data class InventoryData(
