@@ -204,7 +204,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that stock quantity field is not ditable if stock quantity is non-whole decimal`() = test {
+    fun `Test that stock quantity field is not editable if stock quantity is non-whole decimal`() = test {
         viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
 
         var viewState: ViewState? = null
