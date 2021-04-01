@@ -142,7 +142,7 @@ object StringUtils {
      */
     fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
         return if (number.rem(1).equals(0.0)) {
-            if(forInput)
+            if (forInput)
                 number.toInt().toString()
             else
                 FormatUtils.formatInt(number.toInt())
@@ -150,7 +150,6 @@ object StringUtils {
             number.toString()
         }
     }
-
 
     /**
      * Returns the name of the country associated with the current store.
