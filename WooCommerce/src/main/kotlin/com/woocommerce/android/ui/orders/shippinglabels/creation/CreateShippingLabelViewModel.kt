@@ -374,7 +374,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     newStatus = CoreOrderStatus.COMPLETED.value
                 )
                 if (!fulfillResult) {
-                    triggerEvent(ShowSnackbar(R.string.orderstatus_failed))
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
                 }
             }
             PurchaseSuccess(result.model!!)
