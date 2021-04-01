@@ -10,6 +10,11 @@ orbs:
   bundle-install: toshimaru/bundle-install@0.3.1
   slack: circleci/slack@3.4.2
 
+parameters:
+  release_build:
+     type: boolean
+     default: false
+
 version: 2.1
 jobs:
   Lint:
@@ -158,16 +163,13 @@ jobs:
 
 workflows:
   "WooCommerce Android":
+    unless: << pipeline.parameters.release_build >>
     jobs:
       - Lint
       - Test
       - Installable Build
       - Ensure Screenshots Tests Build
   Release Build:
+    when: << pipeline.parameters.release_build >>
     jobs:
-      - Release Build:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^\d+(\.\d+)*(-rc-\d)?$/
+      - Release Build
