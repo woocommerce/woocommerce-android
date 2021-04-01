@@ -41,6 +41,15 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         backorderStatus = No
     )
 
+    private val initialDataWithNonWholeDecimalQuantity = InventoryData(
+        "SKU123",
+        isStockManaged = true,
+        isSoldIndividually = false,
+        stockStatus = InStock,
+        stockQuantity = 10.42,
+        backorderStatus = No
+    )
+
     private val expectedData = InventoryData(
         "SKU321",
         isStockManaged = true,
@@ -63,11 +72,11 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY)
     }
 
-    private fun createViewModel(requestCode: Int): ProductInventoryViewModel {
+    private fun createViewModel(requestCode: Int, initData: InventoryData = initialData): ProductInventoryViewModel {
         val savedState = SavedStateWithArgs(
             SavedStateHandle(),
             null,
-            ProductInventoryFragmentArgs(requestCode, initialData, initialData.sku!!)
+            ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!)
         )
         return spy(
             ProductInventoryViewModel(
@@ -192,5 +201,16 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewState?.isIndividualSaleSwitchVisible).isFalse()
+    }
+
+    @Test
+    fun `Test that stock quantity field is not ditable if stock quantity is non-whole decimal`() = test {
+        viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
+
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            viewState = new
+        }
+        assertThat(viewState?.isStockQuantityEditable).isFalse()
     }
 }
