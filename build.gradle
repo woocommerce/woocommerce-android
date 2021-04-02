@@ -94,7 +94,7 @@ ext {
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.2.0'
     googlePlayCoreVersion = '1.10.0'
-    coroutinesVersion = '1.4.3-native-mt'
+    coroutinesVersion = '1.4.3'
     lifecycleVersion = '2.3.1'
     assertjVersion = '3.11.1'
     aztecVersion = 'v1.3.45'
