@@ -6,9 +6,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -39,7 +36,6 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductAttribute.Companion
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
@@ -94,6 +90,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
