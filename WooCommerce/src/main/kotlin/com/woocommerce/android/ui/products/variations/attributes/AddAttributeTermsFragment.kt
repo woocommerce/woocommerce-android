@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -37,6 +38,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
         private const val LIST_STATE_KEY_GLOBAL = "list_state_global"
+        private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
 
@@ -50,6 +52,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private val skeletonView = SkeletonView()
 
     private var isConfirmRemoveDialogShowing = false
+    private var renamedAttributeName: String? = null
 
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
@@ -108,7 +111,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         get() = navArgs.attributeId != 0L
 
     private val attributeName
-        get() = navArgs.attributeName // TODO handle rename
+        get() = renamedAttributeName ?: navArgs.attributeName
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -117,6 +120,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         initializeViews(savedInstanceState)
         setupObservers()
+        setupResultHandlers()
         getAttributeTerms()
 
         setHasOptionsMenu(true)
@@ -124,6 +128,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
                 confirmRemoveAttribute()
+            }
+            if (bundle.containsKey(KEY_RENAMED_ATTRIBUTE_NAME)) {
+                renamedAttributeName = bundle.getString(KEY_RENAMED_ATTRIBUTE_NAME)
             }
         }
     }
@@ -192,6 +199,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     override fun onSaveInstanceState(outState: Bundle) {
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
+        }
+        renamedAttributeName?.let {
+            outState.putString(KEY_RENAMED_ATTRIBUTE_NAME, it)
         }
         layoutManagerAssigned?.let {
             outState.putParcelable(LIST_STATE_KEY_ASSIGNED, it.onSaveInstanceState())
@@ -266,6 +276,17 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 else -> event.isHandled = false
             }
         })
+    }
+
+    private fun setupResultHandlers() {
+        handleResult<String>(RenameAttributeFragment.KEY_RENAME_ATTRIBUTE_RESULT) {
+            // note we always pass 0L as the attributeId since renaming is only supported for local attributes
+            viewModel.renameAttributeInDraft(
+                0L,
+                oldAttributeName = attributeName,
+                newAttributeName = it)
+            renamedAttributeName = it
+        }
     }
 
     override fun getFragmentTitle() = attributeName

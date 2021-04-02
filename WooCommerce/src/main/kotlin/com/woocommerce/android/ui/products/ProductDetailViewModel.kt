@@ -39,6 +39,7 @@ import com.woocommerce.android.media.ProductImagesService.Companion.OnProductIma
 import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateStartedEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductAttribute.Companion
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
@@ -1018,6 +1019,33 @@ class ProductDetailViewModel @AssistedInject constructor(
             })
 
             updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    /**
+     * Renames a single attribute in the product draft
+     */
+    fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String) {
+        getDraftAttribute(attributeId, oldAttributeName)?.let { oldAttribute ->
+            // create a new attribute with the same properties as the old one except for the name
+            val newAttribute = ProductAttribute(
+                id = attributeId,
+                name = newAttributeName,
+                terms = oldAttribute.terms,
+                isVisible = oldAttribute.isVisible,
+                isVariation = oldAttribute.isVariation
+            )
+
+            ArrayList<ProductAttribute>().also { updatedAttributes ->
+                // create a list of draft attributes without the old one
+                updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == oldAttributeName
+                })
+
+                // add the renamed attribute to the list and update the draft attributes
+                updatedAttributes.add(newAttribute)
+                updateProductDraft(attributes = updatedAttributes)
+            }
         }
     }
 
