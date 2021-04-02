@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
@@ -71,6 +72,9 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
+
+    // TODO cardreader init this field
+    open val cardReaderManager: CardReaderManager? = null
 
     private var connectionReceiverRegistered = false
 
