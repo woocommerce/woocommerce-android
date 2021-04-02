@@ -25,6 +25,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPayme
 import com.woocommerce.android.cardreader.internal.temporary.CardReaderStoreImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -36,7 +37,7 @@ internal class PaymentManager constructor(
     private val collectPaymentAction: CollectPaymentAction,
     private val processPaymentAction: ProcessPaymentAction
 ) {
-    suspend fun acceptPayment(amount: Int, currency: String) = flow {
+    suspend fun acceptPayment(amount: Int, currency: String): Flow<CardPaymentStatus> = flow {
         var paymentIntent = createPaymentIntent(amount, currency)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
