@@ -1024,36 +1024,42 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Renames a single attribute in the product draft
      */
-    fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String) {
+    fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
         // first make sure an attribute with the new name doesn't already exist in the draft
         getProductDraftAttributes().forEach {
             if (it.name.equals(newAttributeName, ignoreCase = true)) {
                 triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
-                return
+                return false
             }
         }
 
-        getDraftAttribute(attributeId, oldAttributeName)?.let { oldAttribute ->
-            // create a new attribute with the same properties as the old one except for the name
-            val newAttribute = ProductAttribute(
-                id = attributeId,
-                name = newAttributeName,
-                terms = oldAttribute.terms,
-                isVisible = oldAttribute.isVisible,
-                isVariation = oldAttribute.isVariation
-            )
-
-            ArrayList<ProductAttribute>().also { updatedAttributes ->
-                // create a list of draft attributes without the old one
-                updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
-                    attribute.id == attributeId && attribute.name == oldAttributeName
-                })
-
-                // add the renamed attribute to the list and update the draft attributes
-                updatedAttributes.add(newAttribute)
-                updateProductDraft(attributes = updatedAttributes)
-            }
+        val oldAttribute = getDraftAttribute(attributeId, oldAttributeName)
+        if (oldAttribute == null) {
+            triggerEvent(ShowSnackbar(string.product_attribute_error_renaming))
+            return false
         }
+
+        // create a new attribute with the same properties as the old one except for the name
+        val newAttribute = ProductAttribute(
+            id = attributeId,
+            name = newAttributeName,
+            terms = oldAttribute.terms,
+            isVisible = oldAttribute.isVisible,
+            isVariation = oldAttribute.isVariation
+        )
+
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            // create a list of draft attributes without the old one
+            updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == oldAttributeName
+            })
+
+            // add the renamed attribute to the list and update the draft attributes
+            updatedAttributes.add(newAttribute)
+            updateProductDraft(attributes = updatedAttributes)
+        }
+
+        return true
     }
 
     /**

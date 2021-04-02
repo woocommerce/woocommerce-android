@@ -281,11 +281,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun setupResultHandlers() {
         handleResult<String>(RenameAttributeFragment.KEY_RENAME_ATTRIBUTE_RESULT) {
             // note we always pass 0L as the attributeId since renaming is only supported for local attributes
-            viewModel.renameAttributeInDraft(
-                0L,
-                oldAttributeName = attributeName,
-                newAttributeName = it)
-            renamedAttributeName = it
+            if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
+                renamedAttributeName = it
+            }
         }
     }
 

@@ -74,6 +74,7 @@
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
     <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
+    <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
