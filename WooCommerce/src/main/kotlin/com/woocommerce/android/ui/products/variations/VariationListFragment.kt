@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -29,6 +28,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAttributeList
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.util.FeatureFlag
@@ -60,8 +60,6 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
-    private var isVariationCreation = false
-
     // this is an included layout
     private var _warningBinding: ProductPropertyWarningLayoutBinding? = null
     private val warningBinding get() = _warningBinding!!
@@ -75,7 +73,6 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         initializeViewModel()
-        isVariationCreation = navArgs.isVariationCreation
     }
 
     override fun onDestroyView() {
@@ -88,10 +85,6 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        if(isVariationCreation) {
-            viewModel.onAddEditAttributesClick(isVariationCreation = true)
-            isVariationCreation = false
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -155,7 +148,7 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         setupObservers(viewModel)
         viewModel.start(navArgs.remoteProductId)
         binding.firstVariationView.setOnClickListener {
-            viewModel.onAddEditAttributesClick(isVariationCreation = true)
+            viewModel.onCreateVariationRequested()
         }
     }
 
@@ -193,7 +186,8 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {
                 is ShowVariationDetail -> openVariationDetail(event.variation)
-                is ShowAttributeList -> openAttributeList(event.isVariationCreation)
+                is ShowAttributeList -> openAttributeList()
+                is ShowAddAttributeView -> openAddAttributeView()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> activity?.onBackPressed()
             }
@@ -211,12 +205,16 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
         findNavController().navigateSafely(action)
     }
 
-    private fun openAttributeList(isVariationCreation: Boolean) {
+    private fun openAttributeList() {
         val action = VariationListFragmentDirections
-            .actionVariationListFragmentToAttributeListFragment(isVariationCreation)
+            .actionVariationListFragmentToAttributeListFragment()
         findNavController().navigateSafely(action)
-        Log.d("Testing", "navigation to attribute list called")
     }
+
+    private fun openAddAttributeView() =
+        VariationListFragmentDirections
+            .actionVariationListFragmentToAddAttributeFragment(true)
+            .run { findNavController().navigateSafely(this) }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
 
