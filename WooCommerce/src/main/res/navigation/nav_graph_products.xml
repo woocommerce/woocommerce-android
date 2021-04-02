@@ -26,7 +26,12 @@
             app:enterAnim="@anim/activity_slide_in_from_right"
             app:exitAnim="@anim/activity_slide_out_to_left"
             app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:popExitAnim="@anim/activity_slide_out_to_right">
+            <argument
+                android:name="isVariationCreation"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment"
@@ -107,6 +112,10 @@
             android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="isVariationCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_variationListFragment_to_variationDetailFragment"
             app:destination="@id/variationDetailFragment"
@@ -131,6 +140,10 @@
         android:id="@+id/attributeListFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AttributeListFragment"
         android:label="attributeListFragment">
+        <argument
+            android:name="isVariationCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_attributeListFragment_to_addAttributeFragment"
             app:destination="@id/addAttributeFragment"
@@ -148,6 +161,10 @@
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
         android:label="addAttributeFragment">
+        <argument
+            android:name="isVariationCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/addAttributeTermsFragment"
