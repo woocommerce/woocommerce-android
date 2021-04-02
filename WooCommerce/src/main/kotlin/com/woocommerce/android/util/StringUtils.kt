@@ -10,6 +10,7 @@ import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
@@ -139,9 +140,14 @@ object StringUtils {
      *
      *  @param [number] The number to be formatted
      *  @param [forInput] Whether the formatting is used in a text input or not.
+     *
+     *  For eg: for a number = 234560 and forInput = false, returns 234560
+     * for a number = 234560 forInput = true, returns 2,34,560
+     * for a number = 2.3456 return 2.3456
+     *
      */
     fun formatCountDecimal(number: Double, forInput: Boolean = false): String {
-        return if (number.rem(1).equals(0.0)) {
+        return if (number.isInteger()) {
             if (forInput)
                 number.toInt().toString()
             else
