@@ -148,8 +148,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
+
         // we don't want to show the Remove menu item if this is new attribute
         menu.findItem(R.id.menu_remove)?.isVisible = !navArgs.isNewAttribute
+
+        // we don't want to show the Rename menu item if this is new attribute or a global attribute
+        menu.findItem(R.id.menu_rename)?.isVisible = !navArgs.isNewAttribute && !isGlobalAttribute
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
