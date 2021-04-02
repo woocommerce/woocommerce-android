@@ -75,7 +75,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        if(navArgs.isVariationCreation) {
+        if (navArgs.isVariationCreation) {
             menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.done).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 isVisible = true
