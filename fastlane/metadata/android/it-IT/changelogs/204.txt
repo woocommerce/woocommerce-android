@@ -1,0 +1,2 @@
+6.2:
+Per questo rilascio, ci siamo concentrati sulle correzioni dei bug e sui miglioramenti delle prestazioni.

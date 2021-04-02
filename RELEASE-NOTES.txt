@@ -4,6 +4,7 @@
 -----
 * [*] Fixed bug where the app couldn't load products if there's decimal stock quantity. [https://github.com/woocommerce/woocommerce-android/pull/3782]
 
+
 6.3
 -----
 - [*] Product Type: Updated product type detail to display "Downloadable" if a product is downloadable. [https://github.com/woocommerce/woocommerce-android/pull/3679]

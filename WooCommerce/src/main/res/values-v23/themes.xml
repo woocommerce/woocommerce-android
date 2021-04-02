@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.Woo.Splash" parent="Theme.Woo">
-        <item name="android:navigationBarColor">@color/splash_background</item>
-        <item name="android:statusBarColor">@color/splash_background</item>
-        <item name="android:windowBackground">@drawable/bg_splash</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
+    <!--
+        We can set statusBarColor in API 21, but windowLightStatusBar isn't supported until API 23,
+        so if we change the status bar color in the main themes.xml the status bar text won't be
+        readable in API 21
+    -->
     <style name="Theme.Woo" parent="Theme.WooBase">
         <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>

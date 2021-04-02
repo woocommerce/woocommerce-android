@@ -70,8 +70,10 @@
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
     <string name="product_enter_attribute_term">Add each option name and press enter</string>
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
+    <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
+    <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -102,6 +104,7 @@
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
     <string name="free">free</string>
+    <string name="and">and</string>
     <!--
         Date/Time Labels
     -->
@@ -457,7 +460,7 @@
     </plurals>
     <string name="shipping_label_shipping_carrier_rates_generic_error">There was an error loading shipping options</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">What is WooCommerce  Services discount?</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message">"When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates. "</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">When purchasing shipping labels with WooCommerce, you get 5% to 40% off compared to post office rates.</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Customer paid %1$s (%2$s) for shipping</string>
     <string name="shipping_label_shipping_method_flat_rate">Flat rate</string>
     <string name="shipping_label_shipping_method_local_pickup">Local pickup</string>
@@ -512,8 +515,7 @@
         <item quantity="other">%d items</item>
     </plurals>
     <string name="order_refunds_refund_info_title">Refunded products</string>
-    <string name="order_refunds_shipping_refund_notice">You can refund shipping and tax amounts %s</string>
-    <string name="order_refunds_shipping_refund_notice_fees">You can refund fees, shipping and tax amounts %s</string>
+    <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
         Add Order Note
@@ -622,6 +624,7 @@
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
     <string name="product_price_empty">Add price</string>
+    <string name="product_attributes">Attributes</string>
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
@@ -913,6 +916,9 @@
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
+    <string name="settings_store">Store settings</string>
+    <string name="settings_card_reader">Manage card reader</string>
+    <string name="settings_card_reader_connect">Connect card reader</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>

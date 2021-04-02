@@ -6,8 +6,9 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -80,7 +81,6 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -680,7 +680,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
-        saleEndDate: Optional<Date>? = null,
+        saleEndDate: Date? = viewState.productDraft?.saleEndDateGmt,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -711,7 +711,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
-            val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
                     shortDescription = shortDescription ?: product.shortDescription,
@@ -750,12 +749,12 @@ class ProductDetailViewModel @AssistedInject constructor(
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
                     upsellProductIds = upsellProductIds ?: product.upsellProductIds,
                     crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
-                    saleEndDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                    } else viewState.storedProduct?.saleEndDateGmt,
-                    saleStartDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                        saleEndDate
+                    } else {
+                        viewState.storedProduct?.saleEndDateGmt
+                    },
+                    saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                         saleStartDate ?: product.saleStartDateGmt
                     } else viewState.storedProduct?.saleStartDateGmt,
                     downloads = downloads ?: product.downloads,
@@ -768,6 +767,13 @@ class ProductDetailViewModel @AssistedInject constructor(
 
             updateProductEditAction()
         }
+    }
+
+    private fun productHasSale(
+        isSaleScheduled: Boolean?,
+        product: Product
+    ): Boolean {
+        return isSaleScheduled == true || (isSaleScheduled == null && product.isSaleScheduled)
     }
 
     override fun onCleared() {
@@ -1001,6 +1007,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute and save it to the draft
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
     /**
      * Adds a new term to a the product draft attributes
      */
@@ -1070,19 +1089,24 @@ class ProductDetailViewModel @AssistedInject constructor(
         // get the current draft attributes
         val draftAttributes = getProductDraftAttributes()
 
-        // create an updated list without this attribute, then add a new one with the updated terms
+        // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
-            draftAttributes.filter {
-                it.id != attributeId && it.name != attributeName
-            }
+            it.addAll(draftAttributes.filter { attribute ->
+                attribute.id != attributeId && attribute.name != attributeName
+            })
         }.also {
-            it.add(ProductAttribute(
-                id = attributeId,
-                name = attributeName,
-                terms = updatedTerms,
-                isVisible = thisAttribute.isVisible,
-                isVariation = thisAttribute.isVariation
-            ))
+            // ...then add this attribute back with the updated list of terms unless there are none
+            if (updatedTerms.isNotEmpty()) {
+                it.add(
+                    ProductAttribute(
+                        id = attributeId,
+                        name = attributeName,
+                        terms = updatedTerms,
+                        isVisible = thisAttribute.isVisible,
+                        isVariation = thisAttribute.isVariation
+                    )
+                )
+            }
         }
 
         updateProductDraft(attributes = updatedAttributes)
@@ -1115,7 +1139,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
     /**
@@ -1190,7 +1214,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
     }
 
     /**
@@ -1835,6 +1859,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }

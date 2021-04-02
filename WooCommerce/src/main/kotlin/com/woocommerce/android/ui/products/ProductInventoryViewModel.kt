@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -157,6 +158,6 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val backorderStatus: ProductBackorderStatus? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductInventoryViewModel>
 }

@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -141,7 +140,7 @@ class ProductDetailFragment : BaseProductFragment(R.layout.fragment_product_deta
                 regularPrice = it.regularPrice,
                 salePrice = it.salePrice,
                 saleStartDate = it.saleStartDate,
-                saleEndDate = Optional(it.saleEndDate),
+                saleEndDate = it.saleEndDate,
                 isSaleScheduled = it.isSaleScheduled,
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus

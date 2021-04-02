@@ -1,2 +1,0 @@
-6.1 :
-Les dernières mises à jour de l’application WooCommerce pour Android sont disponibles. Lorsque vous modifiez un produit, toutes les modifications sont désormais enregistrées localement. Appuyez sur « Mettre à jour » pour envoyer les modifications à votre serveur. Nous avons également corrigé des bugs au niveau de l’affichage des paramètres des produits, de la modification de la langue pour le prix des produits et des notifications push relatives aux demandes d’assistance.
