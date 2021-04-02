@@ -9,7 +9,7 @@
     tools:context="com.woocommerce.android.ui.products.variations.attributes.RenameAttributeFragment">
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/attributeNameText"
+        android:id="@+id/attributeName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/major_100"
