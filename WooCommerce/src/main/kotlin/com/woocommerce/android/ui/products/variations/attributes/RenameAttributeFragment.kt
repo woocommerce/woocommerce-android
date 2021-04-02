@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentRenameAttributeBinding
-import com.woocommerce.android.ui.base.BaseFragment
 
-class RenameAttributeFragment : BaseFragment(R.layout.fragment_rename_attribute) {
+class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute) {
     companion object {
         const val TAG: String = "RenameAttributeFragment"
     }
@@ -22,6 +22,7 @@ class RenameAttributeFragment : BaseFragment(R.layout.fragment_rename_attribute)
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentRenameAttributeBinding.bind(view)
+        requireActivity().title = requireActivity().getString(R.string.product_rename_attribute)
 
         if (savedInstanceState == null) {
             binding.attributeEditText.setText(navArgs.attributeName)
@@ -37,6 +38,4 @@ class RenameAttributeFragment : BaseFragment(R.layout.fragment_rename_attribute)
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = requireActivity().getString(R.string.product_rename_attribute)
 }
