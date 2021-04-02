@@ -624,7 +624,13 @@ class ProductDetailCardBuilder(
                 icon = drawable.ic_gridicons_types,
                 showTitle = false,
                 onClick = {
-                    // TODO call variation creation view sequence
+                    viewModel.onEditProductCardClicked(
+                        ViewProductVariations(
+                            remoteId = this.remoteId,
+                            isVariationCreation = true
+                        ),
+                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                    )
                 }
             )
         } else {
