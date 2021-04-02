@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -33,7 +34,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         ) { isGranted: Boolean ->
             if (isGranted) {
                 // TODO cardreader move this into a VM
-                connectToReader()
+                connectToReader(view?.findViewById<CheckBox>(R.id.simulated_checkbox)?.isChecked == true)
             } else {
                 // TODO cardreader Move this into a VM and use string resource
                 Snackbar.make(requireView(), "Missing required permissions", BaseTransientBottomBar.LENGTH_SHORT)
@@ -47,7 +48,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         binding.connectReaderButton.setOnClickListener {
             // TODO cardreader move this into a vm
             // TODO cardreader implement connect reader button
-            val permissionType = Manifest.permission.ACCESS_COARSE_LOCATION
+            val permissionType = Manifest.permission.ACCESS_FINE_LOCATION
             // TODO cardreader Replace with WooPermissionsUtils
             val locationPermissionResult = ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -55,7 +56,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
             )
 
             if (locationPermissionResult == PackageManager.PERMISSION_GRANTED) {
-                connectToReader()
+                connectToReader(binding.simulatedCheckbox.isChecked)
             } else {
                 requestPermissionLauncher.launch(permissionType)
             }
@@ -101,14 +102,14 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
     }
 
     // TODO cardreader move this into a VM
-    private fun connectToReader() {
+    private fun connectToReader(simulated: Boolean) {
         getCardReaderManager()?.let { cardReaderManager ->
             if (!cardReaderManager.isInitialized) {
                 cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {
                 // TODO cardreader make sure to cancel the discovery when the user leaves the activity/app
-                cardReaderManager.startDiscovery(true)
+                cardReaderManager.startDiscovery(isSimulated = simulated)
             }
         }
     }

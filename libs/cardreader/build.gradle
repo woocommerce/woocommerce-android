@@ -29,6 +29,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.lifecycle:lifecycle-process:2.3.1'
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
@@ -40,7 +41,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
-    debugImplementation "com.stripe:stripeterminal:1.0.17"
+    debugImplementation "com.stripe:stripeterminal:1.0.18"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
