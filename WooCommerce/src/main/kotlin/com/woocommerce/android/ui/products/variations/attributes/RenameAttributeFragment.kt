@@ -32,6 +32,13 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute), Ba
         if (savedInstanceState == null) {
             binding.attributeName.setText(navArgs.attributeName)
         }
+
+        binding.attributeName.setOnEditorActionListener { termName: String ->
+            if (termName.isNotBlank()) {
+                navigateBack()
+            }
+            true
+        }
     }
 
     override fun onDestroyView() {
