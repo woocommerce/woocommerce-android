@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -1149,6 +1150,13 @@ class ProductDetailViewModel @AssistedInject constructor(
         triggerEvent(AddProductAttribute)
     }
 
+    /**
+     * User tapped "Rename" on the attribute terms fragment
+     */
+    fun onRenameAttributeButtonClick(attributeName: String) {
+        triggerEvent(RenameProductAttribute(attributeName))
+    }
+
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
@@ -1774,6 +1782,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_window_background"
+    android:orientation="vertical"
+    tools:context="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameLayout"
+            style="@style/Woo.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:hint="@string/type">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/attributeEditText"
+                style="@style/Woo.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

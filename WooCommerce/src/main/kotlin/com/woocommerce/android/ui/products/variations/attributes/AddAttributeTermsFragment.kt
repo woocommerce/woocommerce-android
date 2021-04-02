@@ -85,7 +85,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     globalTermsAdapter.addTerm(termName)
                 }
 
-                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, navArgs.attributeName, termName)
+                viewModel.removeAttributeTermFromDraft(navArgs.attributeId, attributeName, termName)
                 checkViews()
             }
         }
@@ -106,6 +106,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     private val isGlobalAttribute
         get() = navArgs.attributeId != 0L
+
+    private val attributeName
+        get() = navArgs.attributeName // TODO handle rename
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -132,7 +135,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         }
 
         // get the attribute terms for attributes already assigned to this product
-        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, navArgs.attributeName))
+        showAssignedTerms(viewModel.getProductDraftAttributeTerms(navArgs.attributeId, attributeName))
     }
 
     override fun onDestroyView() {
@@ -160,6 +163,10 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         return when (item.itemId) {
             R.id.menu_remove -> {
                 confirmRemoveAttribute()
+                true
+            }
+            R.id.menu_rename -> {
+                viewModel.onRenameAttributeButtonClick(attributeName)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -261,7 +268,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         })
     }
 
-    override fun getFragmentTitle() = navArgs.attributeName
+    override fun getFragmentTitle() = attributeName
 
     /**
      * Show the list of terms already assigned to the product attribute
@@ -314,7 +321,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             globalTermsAdapter.removeTerm(termName)
         }
 
-        viewModel.addAttributeTermToDraft(navArgs.attributeId, navArgs.attributeName, termName)
+        viewModel.addAttributeTermToDraft(navArgs.attributeId, attributeName, termName)
         checkViews()
     }
 
@@ -348,7 +355,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
      * Removes this attribute from the product draft and returns to the attributes screen
      */
     private fun removeAttribute() {
-        viewModel.removeAttributeFromDraft(navArgs.attributeId, navArgs.attributeName)
+        viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
         saveChangesAndReturn()
     }
 }

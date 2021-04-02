@@ -65,6 +65,7 @@
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_rename_attribute">Rename attribute</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
@@ -95,6 +96,7 @@
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
     <string name="rename">Rename</string>
+    <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>

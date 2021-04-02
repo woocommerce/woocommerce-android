@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -283,6 +284,11 @@ class ProductNavigator @Inject constructor() {
             }
 
             is AddProductAttribute -> {
+                val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment()
+                fragment.findNavController().navigate(action)
+            }
+
+            is RenameProductAttribute -> {
                 val action = AttributeListFragmentDirections.actionAttributeListFragmentToAddAttributeFragment()
                 fragment.findNavController().navigate(action)
             }
