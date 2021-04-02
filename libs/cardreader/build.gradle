@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
-    implementation "com.stripe:stripeterminal:1.0.17"
+    debugImplementation "com.stripe:stripeterminal:1.0.17"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -48,7 +48,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     // Temporary dependencies - used just for the first few iterations
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    implementation "com.squareup.retrofit2:retrofit:2.3.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    debugImplementation "com.squareup.okhttp3:okhttp:4.9.0"
+    debugImplementation "com.squareup.retrofit2:retrofit:2.3.0"
+    debugImplementation "com.squareup.retrofit2:converter-gson:2.3.0"
 }
