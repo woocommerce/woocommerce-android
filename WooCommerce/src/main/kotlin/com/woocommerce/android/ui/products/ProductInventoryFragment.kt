@@ -112,10 +112,8 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                     binding.productStockQuantity.setText(quantity)
                 }
             }
-            new.isStockQuantityEditable.takeIfNotEqualTo(old?.isStockQuantityEditable) {
-                if (it != null) {
-                    binding.productStockQuantity.isEnabled = it
-                }
+            new.isStockQuantityEditable?.takeIfNotEqualTo(old?.isStockQuantityEditable) {
+                binding.productStockQuantity.isEnabled = it
             }
             new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
                 binding.soldIndividuallySwitch.isChecked = it
