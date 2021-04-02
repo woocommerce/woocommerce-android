@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +26,12 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
     private var layoutManager: LayoutManager? = null
 
+    private val navArgs: AttributeListFragmentArgs by navArgs()
+
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
+
+    private var isVariationCreation = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +40,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         initializeViews(savedInstanceState)
         setupObservers()
+        isVariationCreation = navArgs.isVariationCreation
     }
 
     override fun onDestroyView() {
@@ -50,6 +56,10 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        if(isVariationCreation) {
+            viewModel.onAddAttributeButtonClick()
+            isVariationCreation = false
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
