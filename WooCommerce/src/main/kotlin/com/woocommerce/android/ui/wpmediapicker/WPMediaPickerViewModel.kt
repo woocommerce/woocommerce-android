@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.wpmediapicker
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.Product
@@ -103,6 +104,6 @@ class WPMediaPickerViewModel @AssistedInject constructor(
         val isMultiSelectionAllowed: Boolean? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<WPMediaPickerViewModel>
 }

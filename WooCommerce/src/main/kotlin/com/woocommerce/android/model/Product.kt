@@ -52,7 +52,7 @@ data class Product(
     val regularPrice: BigDecimal?,
     val taxClass: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Int,
+    val stockQuantity: Double,
     val sku: String,
     val shippingClass: String,
     val shippingClassId: Long,

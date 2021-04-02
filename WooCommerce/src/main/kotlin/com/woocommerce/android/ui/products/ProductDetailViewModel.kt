@@ -6,8 +6,9 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -671,7 +672,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
@@ -1006,6 +1007,19 @@ class ProductDetailViewModel @AssistedInject constructor(
         }
     }
 
+    fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute and save it to the draft
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
     /**
      * Adds a new term to a the product draft attributes
      */
@@ -1125,7 +1139,7 @@ class ProductDetailViewModel @AssistedInject constructor(
      * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
     /**
@@ -1200,7 +1214,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         updateProductDraft(attributes = attributes)
 
         // take the user to the add attribute terms screen
-        triggerEvent(AddProductAttributeTerms(0L, attributeName))
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
     }
 
     /**
@@ -1845,6 +1859,6 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }
