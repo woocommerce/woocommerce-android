@@ -82,7 +82,7 @@ task installGitHooks(type: Copy) {
 }
 
 ext {
-    fluxCVersion = '56e6fbce58e4f0024aa44cbb6e532b7a9de25753'
+    fluxCVersion = '07d58c173950028b50ffbb92eb54ac0cfbdc94bf'
     daggerVersion = '2.33'
     glideVersion = '4.12.0'
     testRunnerVersion = '1.0.1'
@@ -104,7 +104,7 @@ ext {
     appCompatVersion = '1.2.0'
     materialVersion = '1.3.0'
     jUnitVersion = '4.12'
-    jUnitExtVersion = '1.1.1'
+    jUnitExtVersion = '1.1.2'
 }
 
 tasks.getByPath('WooCommerce:preBuild').dependsOn installGitHooks

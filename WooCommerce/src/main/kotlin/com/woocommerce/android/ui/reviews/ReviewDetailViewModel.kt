@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.reviews
 
 import android.os.Parcelable
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -146,6 +147,6 @@ class ReviewDetailViewModel @AssistedInject constructor(
         data class MarkNotificationAsRead(val remoteNoteId: Long) : ReviewDetailEvent()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ReviewDetailViewModel>
 }
