@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
@@ -22,6 +26,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
+        private const val ID_ATTRIBUTE_LIST = 1
     }
 
     private var layoutManager: LayoutManager? = null
@@ -31,16 +36,14 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     private var _binding: FragmentAttributeListBinding? = null
     private val binding get() = _binding!!
 
-    private var isVariationCreation = false
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentAttributeListBinding.bind(view)
 
+        setHasOptionsMenu(true)
         initializeViews(savedInstanceState)
         setupObservers()
-        isVariationCreation = navArgs.isVariationCreation
     }
 
     override fun onDestroyView() {
@@ -56,15 +59,34 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        if(isVariationCreation) {
-            viewModel.onAddAttributeButtonClick()
-            isVariationCreation = false
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        if(navArgs.isVariationCreation) {
+            menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.done).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                isVisible = true
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            ID_ATTRIBUTE_LIST -> {
+                AttributeListFragmentDirections
+                    .actionAttributeListFragmentToVariationListFragment()
+                    .run { findNavController().navigateSafely(this) }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
