@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -66,6 +67,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
 
@@ -93,6 +95,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             productDetailRepository = productDetailRepository,
             orderDetailRepository = orderDetailRepository,
+            variationDetailRepository = variationDetailRepository,
             shippingLabelRepository = shippingLabelRepository,
             parameterRepository = parameterRepository
         )
