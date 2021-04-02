@@ -22,10 +22,10 @@ class RenameAttributeFragment : Fragment(R.layout.fragment_rename_attribute) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentRenameAttributeBinding.bind(view)
-        requireActivity().title = requireActivity().getString(R.string.product_rename_attribute)
+        requireActivity().title = getString(R.string.product_rename_attribute)
 
         if (savedInstanceState == null) {
-            binding.attributeEditText.setText(navArgs.attributeName)
+            binding.attributeNameText.setText(navArgs.attributeName)
         }
     }
 

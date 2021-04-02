@@ -66,6 +66,7 @@
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
     <string name="product_rename_attribute">Rename attribute</string>
+    <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
