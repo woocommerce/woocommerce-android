@@ -15,22 +15,22 @@ ENV["PROJECT_ROOT_FOLDER"]="./"
 ENV["validate_translations"]="lintVanillaRelease"
 
 SUPPORTED_LOCALES = [
-  { glotpress: "ar", google_play: "ar",  promo_config: {}},
-  { glotpress: "de", google_play: "de-DE",  promo_config: {} },
-  { glotpress: "es", google_play: "es-ES",  promo_config: {} },
-  { glotpress: "fr", google_play: "fr-FR",  promo_config: {} },
-  { glotpress: "he", google_play: "iw-IL",  promo_config: {} },
-  { glotpress: "id", google_play: "id",  promo_config: {} },
-  { glotpress: "it", google_play: "it-IT",  promo_config: {} },
-  { glotpress: "ja", google_play: "ja-JP",  promo_config: {} },
-  { glotpress: "ko", google_play: "ko-KR",  promo_config: {} },
-  { glotpress: "nl", google_play: "nl-NL",  promo_config: {} },
-  { glotpress: "pt-br", google_play: "pt-BR",  promo_config: {} },
-  { glotpress: "ru", google_play: "ru-RU",  promo_config: {} },
-  { glotpress: "sv", google_play: "sv-SE",  promo_config: {} },
-  { glotpress: "tr", google_play: "tr-TR",  promo_config: {} },
-  { glotpress: "zh-cn", google_play: "zh-CN",  promo_config: {} },
-  { glotpress: "zh-tw", google_play: "zh-TW",  promo_config: {} },
+  { glotpress: "ar", android: "ar", google_play: "ar",  promo_config: {}},
+  { glotpress: "de", android: "de", google_play: "de-DE",  promo_config: {} },
+  { glotpress: "es", android: "es", google_play: "es-ES",  promo_config: {} },
+  { glotpress: "fr", android: "fr", google_play: "fr-FR",  promo_config: {} },
+  { glotpress: "he", android: "he", google_play: "iw-IL",  promo_config: {} },
+  { glotpress: "id", android: "id", google_play: "id",  promo_config: {} },
+  { glotpress: "it", android: "it", google_play: "it-IT",  promo_config: {} },
+  { glotpress: "ja", android: "ja", google_play: "ja-JP",  promo_config: {} },
+  { glotpress: "ko", android: "ko", google_play: "ko-KR",  promo_config: {} },
+  { glotpress: "nl", android: "nl", google_play: "nl-NL",  promo_config: {} },
+  { glotpress: "pt-br", android: "pt-rBR", google_play: "pt-BR",  promo_config: {} },
+  { glotpress: "ru", android: "ru", google_play: "ru-RU",  promo_config: {} },   
+  { glotpress: "sv", android: "sv", google_play: "sv-SE",  promo_config: {} },
+  { glotpress: "tr", android: "tr", google_play: "tr-TR",  promo_config: {} },
+  { glotpress: "zh-cn", android: "zh-rCN", google_play: "zh-CN",  promo_config: {} },
+  { glotpress: "zh-tw", android: "zh-rTW", google_play: "zh-TW",  promo_config: {} },
 ].freeze
 
 main_strings_path = "./WooCommerce/src/main/res/values/strings.xml"
@@ -185,7 +185,7 @@ platform :android do
     android_finalize_prechecks(options)
     configure_apply(force: is_ci)
     hotfix = android_current_branch_is_hotfix
-    android_update_metadata(options) unless hotfix
+    download_translations(options) unless hotfix
     android_bump_version_final_release() unless hotfix
     version = android_get_release_version() unless hotfix
     download_metadata_strings(version: version["name"], build_number: version["code"]) unless hotfix
@@ -196,6 +196,15 @@ platform :android do
     setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
     create_new_milestone(repository:GHHELPER_REPO)
     close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
+  end
+
+  desc "Downloads the translations from GlotPress and update the strings.xml files accordingly"
+  lane :download_translations do | options |
+    android_download_translations(
+      project_name: ENV['PROJECT_NAME'],
+      project_url: 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android',
+      locales: SUPPORTED_LOCALES
+    )
   end
 
   #####################################################################################
