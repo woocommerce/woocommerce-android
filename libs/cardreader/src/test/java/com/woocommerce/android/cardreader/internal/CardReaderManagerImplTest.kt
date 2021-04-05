@@ -38,7 +38,7 @@ class CardReaderManagerImplTest {
 
     @Before
     fun setUp() {
-        cardReaderManager = CardReaderManagerImpl(terminalWrapper, tokenProvider, logWrapper)
+        cardReaderManager = CardReaderManagerImpl(terminalWrapper, tokenProvider, logWrapper, mock())
         whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
     }
 
