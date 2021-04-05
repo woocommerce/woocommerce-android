@@ -168,7 +168,7 @@ class VariationDetailViewModel @AssistedInject constructor(
         isSaleScheduled: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         backorderStatus: ProductBackorderStatus? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         options: List<Option>? = null,
         isPurchasable: Boolean? = null,
         isVirtual: Boolean? = null,

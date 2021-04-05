@@ -36,7 +36,7 @@ data class ProductVariation(
     val isSaleScheduled: Boolean,
     val stockStatus: ProductStockStatus,
     val backorderStatus: ProductBackorderStatus,
-    val stockQuantity: Int,
+    val stockQuantity: Double,
     val options: List<Option>,
     var priceWithCurrency: String? = null,
     val isPurchasable: Boolean,

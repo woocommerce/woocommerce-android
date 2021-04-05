@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -105,10 +106,14 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
-                val quantity = it.toString()
+                val quantity = StringUtils.formatCountDecimal(it, forInput = true)
+
                 if (binding.productStockQuantity.getText() != quantity) {
                     binding.productStockQuantity.setText(quantity)
                 }
+            }
+            new.isStockQuantityEditable?.takeIfNotEqualTo(old?.isStockQuantityEditable) {
+                binding.productStockQuantity.isEnabled = it
             }
             new.inventoryData.isSoldIndividually?.takeIfNotEqualTo(old?.inventoryData?.isSoldIndividually) {
                 binding.soldIndividuallySwitch.isChecked = it
@@ -152,7 +157,7 @@ class ProductInventoryFragment : BaseProductEditorFragment(R.layout.fragment_pro
 
         with(binding.productStockQuantity) {
             setOnTextChangedListener {
-                it.toString().toIntOrNull()?.let { quantity ->
+                it.toString().toDoubleOrNull()?.let { quantity ->
                     viewModel.onDataChanged(stockQuantity = quantity)
                 }
             }
