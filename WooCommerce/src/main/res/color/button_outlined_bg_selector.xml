@@ -5,5 +5,5 @@
         android:color="@color/product_filer_bg_selected"/>
     <item
         android:state_selected="false"
-        android:color="@color/transparent"/>
+        android:color="@android:color/transparent"/>
 </selector>

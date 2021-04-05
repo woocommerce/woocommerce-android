@@ -28,7 +28,7 @@ fun generateVariation(): ProductVariation {
         shippingClass = "",
         shippingClassId = 0,
         sku = "sku",
-        stockQuantity = 1,
+        stockQuantity = 1.0,
         stockStatus = InStock,
         attributes = emptyArray(),
         weight = 0f,
