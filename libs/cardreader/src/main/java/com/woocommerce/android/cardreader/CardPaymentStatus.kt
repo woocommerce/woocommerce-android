@@ -4,7 +4,7 @@ sealed class CardPaymentStatus {
     object InitializingPayment : CardPaymentStatus()
     object InitializingPaymentFailed : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
-    object CollectingPaymentFailed : CardPaymentStatus()
+    data class CollectingPaymentFailed(val error: CollectingPaymentError) : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
     object ShowAdditionalInfo : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
@@ -12,4 +12,8 @@ sealed class CardPaymentStatus {
     object CapturingPayment : CardPaymentStatus()
     object CapturingPaymentFailed : CardPaymentStatus()
     object PaymentCompleted : CardPaymentStatus()
+}
+
+enum class CollectingPaymentError {
+    CARD_READER_ERROR, TIMED_OUT
 }

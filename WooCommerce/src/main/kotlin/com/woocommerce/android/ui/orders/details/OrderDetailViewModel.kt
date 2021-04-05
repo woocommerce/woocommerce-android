@@ -229,10 +229,12 @@ class OrderDetailViewModel @AssistedInject constructor(
             cardReaderManager?.collectPayment(999, "usd")?.collect {
                 when (it) {
                     CapturingPaymentFailed,
-                    CollectingPaymentFailed,
                     InitializingPaymentFailed,
                     ProcessingPaymentFailed -> triggerEvent(
                         ShowSnackbar(string.generic_string, arrayOf("Payment failed :("))
+                    )
+                    is CollectingPaymentFailed -> triggerEvent(
+                        ShowSnackbar(string.generic_string, arrayOf("Collecting payment failed:  ${it.error}"))
                     )
                     PaymentCompleted -> triggerEvent(
                         ShowSnackbar(string.generic_string, arrayOf("Payment completed successfully :))"))

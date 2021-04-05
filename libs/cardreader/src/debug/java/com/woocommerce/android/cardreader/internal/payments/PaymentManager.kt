@@ -14,10 +14,12 @@ import com.woocommerce.android.cardreader.CardPaymentStatus.ProcessingPaymentFai
 import com.woocommerce.android.cardreader.CardPaymentStatus.ShowAdditionalInfo
 import com.woocommerce.android.cardreader.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.CardReaderStore
+import com.woocommerce.android.cardreader.CollectingPaymentError
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.DisplayMessageRequested
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.ReaderInputRequested
+import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.TimedOut
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
@@ -81,7 +83,8 @@ internal class PaymentManager(
             when (it) {
                 is DisplayMessageRequested -> emit(ShowAdditionalInfo)
                 is ReaderInputRequested -> emit(WaitingForInput)
-                is CollectPaymentStatus.Failure -> emit(CollectingPaymentFailed)
+                is CollectPaymentStatus.TerminalFailure -> emit(CollectingPaymentFailed(CollectingPaymentError.CARD_READER_ERROR))
+                TimedOut -> emit(CollectingPaymentFailed(CollectingPaymentError.TIMED_OUT))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
