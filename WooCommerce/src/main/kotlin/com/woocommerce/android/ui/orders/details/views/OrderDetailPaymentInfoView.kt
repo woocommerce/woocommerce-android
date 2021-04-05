@@ -7,7 +7,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailPaymentInfoBinding
 import com.woocommerce.android.extensions.getMediumDate
