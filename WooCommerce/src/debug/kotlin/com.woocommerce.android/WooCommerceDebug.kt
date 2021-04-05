@@ -21,7 +21,7 @@ class WooCommerceDebug : WooCommerce() {
         }
 
         override suspend fun capturePaymentIntent(id: String): Boolean {
-            TODO("Not yet implemented")
+            return false
         }
     })
 

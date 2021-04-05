@@ -137,7 +137,8 @@
     <fragment
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
-        android:label="addAttributeFragment" />
+        android:label="addAttributeFragment">
+    </fragment>
     <fragment
         android:id="@+id/addAttributeTermsFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragment"
@@ -150,6 +151,9 @@
             android:name="attributeName"
             app:argType="string"
             app:nullable="false" />
+        <argument
+            android:name="isNewAttribute"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -190,6 +194,19 @@
             android:name="productType"
             app:argType="com.woocommerce.android.ui.products.ProductType"
             android:defaultValue="SIMPLE" />
+    </fragment>
+    <fragment
+        android:id="@+id/editVariationAttributesFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment"
+        tools:layout="@layout/fragment_edit_variation_attributes">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="remoteVariationId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -459,6 +476,9 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_editVariationAttributesFragment"
+            app:destination="@id/editVariationAttributesFragment" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />

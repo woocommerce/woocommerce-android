@@ -47,8 +47,9 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         val binding = FragmentSettingsCardReaderBinding.bind(view)
         binding.connectReaderButton.setOnClickListener {
             // TODO cardreader move this into a vm
-            // TODO card reader implement connect reader button
+            // TODO cardreader implement connect reader button
             val permissionType = Manifest.permission.ACCESS_FINE_LOCATION
+            // TODO cardreader Replace with WooPermissionsUtils
             val locationPermissionResult = ContextCompat.checkSelfPermission(
                 requireContext(),
                 permissionType

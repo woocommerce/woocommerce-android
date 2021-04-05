@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -176,11 +178,19 @@ class VariationDetailFragment : BaseFragment(R.layout.fragment_variation_detail)
                 )
             }
         }
+        handleResult<Array<VariantOption>>(KEY_VARIATION_ATTRIBUTES_RESULT) {
+            viewModel.onVariationChanged(
+                attributes = it
+            )
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.variation.takeIfNotEqualTo(old?.variation) { showVariationDetails(it) }
+            new.variation.takeIfNotEqualTo(old?.variation) {
+                variationName = new.variation.getName(new.parentProduct)
+                showVariationDetails(it)
+            }
             new.parentProduct.takeIfNotEqualTo(old?.parentProduct) { product ->
                 variationName = new.variation.getName(product)
             }

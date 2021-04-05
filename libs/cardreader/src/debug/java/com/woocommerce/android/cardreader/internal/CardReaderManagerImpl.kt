@@ -18,12 +18,15 @@ import com.stripe.stripeterminal.model.external.PaymentStatus
 import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.stripe.stripeterminal.model.external.TerminalException
+import com.woocommerce.android.cardreader.CardPaymentStatus
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -33,7 +36,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
-    private val logWrapper: LogWrapper
+    private val logWrapper: LogWrapper,
+    private val paymentManager: PaymentManager
 ) : CardReaderManager {
     companion object {
         private const val TAG = "CardReaderManager"
@@ -110,6 +114,9 @@ internal class CardReaderManagerImpl(
             })
         } ?: logWrapper.e("CardReader", "Connecting to reader failed: reader not found")
     }
+
+    override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =
+        paymentManager.acceptPayment(amount, currency)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
         val listener = object : TerminalListener {

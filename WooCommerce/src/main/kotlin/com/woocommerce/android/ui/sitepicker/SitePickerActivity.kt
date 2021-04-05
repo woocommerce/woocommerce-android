@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.mystore.RevenueStatsAvailabilityFetcher
 import com.woocommerce.android.ui.sitepicker.SitePickerAdapter.OnSiteClickListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CrashUtils
@@ -84,8 +83,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
     @Inject lateinit var presenter: SitePickerContract.Presenter
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
-
-    @Inject lateinit var revenueStatsAvailabilityFetcher: RevenueStatsAvailabilityFetcher
 
     private lateinit var siteAdapter: SitePickerAdapter
 
@@ -327,7 +324,12 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
                 binding.loginEpilogueButtonBar.buttonSecondary.visibility = View.GONE
             }
 
-            loginSiteUrl?.let { processLoginSite(it) }
+            loginSiteUrl?.let {
+                // hide the site list and validate the url if we already know the connected store, which will happen
+                // if the user logged in by entering their store address
+                binding.siteListContainer.visibility = View.GONE
+                processLoginSite(it)
+            }
             return
         }
 
@@ -363,10 +365,8 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
             return
         }
 
-        binding.noStoresView.noStoresViewText.visibility = View.GONE
-        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
+        binding.noStoresView.noStoresView.visibility = View.GONE
         binding.siteListContainer.visibility = View.VISIBLE
-        binding.noStoresView.btnSecondaryAction.visibility = View.GONE
 
         binding.siteListLabel.text = when {
             wcSites.size == 1 -> getString(R.string.login_connected_store)
@@ -424,9 +424,6 @@ class SitePickerActivity : AppCompatActivity(), SitePickerContract.View, OnSiteC
 
         // Preemptively also update the site settings so we have them available sooner
         presenter.updateWooSiteSettings(site)
-
-        // also check if the site supports the new v4 revenue stats api changes
-        revenueStatsAvailabilityFetcher.fetchRevenueStatsAvailability(site)
     }
 
     /**
