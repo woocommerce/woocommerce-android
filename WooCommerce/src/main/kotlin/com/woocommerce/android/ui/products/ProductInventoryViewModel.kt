@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -37,7 +39,12 @@ class ProductInventoryViewModel @AssistedInject constructor(
             inventoryData = navArgs.inventoryData,
             isIndividualSaleSwitchVisible = isProduct,
             isStockManagementVisible = !isProduct || navArgs.productType != EXTERNAL && navArgs.productType != GROUPED,
-            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE
+            isStockStatusVisible = !isProduct || navArgs.productType != VARIABLE,
+
+            // Stock quantity field is only editable if the value is whole decimal (e.g: 10.0).
+            // Otherwise it is set to read-only, because the API doesn't support updating amount with non-zero
+            // fractional yet
+            isStockQuantityEditable = navArgs.inventoryData.stockQuantity?.isInteger()
         )
     )
     private var viewState by viewStateData
@@ -95,7 +102,7 @@ class ProductInventoryViewModel @AssistedInject constructor(
         backorderStatus: ProductBackorderStatus? = inventoryData.backorderStatus,
         isSoldIndividually: Boolean? = inventoryData.isSoldIndividually,
         isStockManaged: Boolean? = inventoryData.isStockManaged,
-        stockQuantity: Int? = inventoryData.stockQuantity,
+        stockQuantity: Double? = inventoryData.stockQuantity,
         stockStatus: ProductStockStatus? = inventoryData.stockStatus
     ) {
         viewState = viewState.copy(
@@ -139,19 +146,19 @@ class ProductInventoryViewModel @AssistedInject constructor(
         val skuErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
-        val isStockManagementVisible: Boolean? = null
+        val isStockManagementVisible: Boolean? = null,
+        val isStockQuantityEditable: Boolean? = null
     ) : Parcelable
-
     @Parcelize
     data class InventoryData(
         val sku: String? = null,
         val isStockManaged: Boolean? = null,
         val isSoldIndividually: Boolean? = null,
         val stockStatus: ProductStockStatus? = null,
-        val stockQuantity: Int? = null,
+        val stockQuantity: Double? = null,
         val backorderStatus: ProductBackorderStatus? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductInventoryViewModel>
 }
