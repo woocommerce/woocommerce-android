@@ -105,6 +105,7 @@ internal class PaymentManager(
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
+        emit(CapturingPayment)
         val success = cardReaderStore.capturePaymentIntent(paymentIntent.id)
         if (success) {
             emit(PaymentCompleted)
