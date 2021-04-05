@@ -102,7 +102,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         }
 
         binding.paymentInfoIssueRefundButton.setOnClickListener(onIssueRefundClickListener)
-        if (BuildConfig.DEBUG && FeatureFlag.CARD_READER.isEnabled()) {
+        if (FeatureFlag.CARD_READER.isEnabled()) {
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
                 onCollectCardPresentPaymentClickListener
             )

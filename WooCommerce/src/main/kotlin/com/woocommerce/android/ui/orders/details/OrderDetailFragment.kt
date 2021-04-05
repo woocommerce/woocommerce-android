@@ -222,7 +222,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onCollectCardPresentPaymentClickListener = {
-                if (BuildConfig.DEBUG && FeatureFlag.CARD_READER.isEnabled()) {
+                if (FeatureFlag.CARD_READER.isEnabled()) {
                     val manager = (requireActivity().application as? WooCommerce)?.cardReaderManager
                     viewModel.onAcceptCardPresentPaymentClicked(cardReaderManager = manager)
                 }
