@@ -38,7 +38,7 @@ class ProductImagesNotificationHandler(
                 context,
                 CHANNEL_ID
         ).also {
-            it.color = ContextCompat.getColor(context, R.color.grey_50)
+            it.color = ContextCompat.getColor(context, R.color.woo_gray_40)
             it.setSmallIcon(android.R.drawable.stat_sys_upload)
             it.setOnlyAlertOnce(true)
             it.setOngoing(true)

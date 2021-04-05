@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.products.variations.attributes.edit
 
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.ProductAttribute
@@ -129,6 +130,6 @@ class EditVariationAttributesViewModel @AssistedInject constructor(
         val updatedAttributeSelection: List<VariationAttributeSelectionGroup> = emptyList()
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<EditVariationAttributesViewModel>
 }

@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.AppComponent
 import com.woocommerce.android.di.DaggerAppComponent
 import com.woocommerce.android.di.WooCommerceGlideModule
@@ -45,12 +46,11 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WCPayStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import javax.inject.Inject
@@ -73,6 +73,11 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
+
+    @Inject lateinit var payStore: WCPayStore
+
+    // TODO cardreader init this field
+    open val cardReaderManager: CardReaderManager? = null
 
     private var connectionReceiverRegistered = false
 
@@ -210,11 +215,6 @@ open class WooCommerce : MultiDexApplication(), HasAndroidInjector, ApplicationL
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
             dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
-
-            selectedSite.getIfExists()?.let {
-                val payload = FetchOrderStatusOptionsPayload(it)
-                dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderStatusOptionsAction(payload))
-            }
         }
     }
 
