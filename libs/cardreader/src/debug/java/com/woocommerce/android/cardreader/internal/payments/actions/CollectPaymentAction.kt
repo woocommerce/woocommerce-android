@@ -51,6 +51,7 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                         this@callbackFlow.close()
                     }
                 })
+            // TODO cardreader implement timeout
             awaitClose()
         }
     }
