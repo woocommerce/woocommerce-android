@@ -51,8 +51,11 @@ jobs:
           cache-prefix: tests-cache-v1
       - <<: *copy_gradle_properties
       - run:
-          name: Unit tests
+          name: Unit tests WooCommerce
           command: ./gradlew --stacktrace testVanillaRelease
+      - run:
+          name: Unit tests CardReaderModule
+          command: ./gradlew --stacktrace lib:cardreader:testDebug
       - android/save-gradle-cache:
           cache-prefix: tests-cache-v1
       - android/save-test-results
