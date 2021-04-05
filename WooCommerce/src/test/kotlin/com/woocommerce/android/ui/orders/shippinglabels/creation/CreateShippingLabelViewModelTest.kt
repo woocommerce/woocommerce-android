@@ -326,7 +326,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `fulfill order after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val purchasedLabels = listOf(
             OrderTestUtils.generateShippingLabel(
                 remoteOrderId = order.remoteOrderId, shippingLabelId = 1
@@ -346,25 +346,26 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `fulfill failed after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+    fun `notify user if fulfilment fail after successful purchase`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            val purchasedLabels = listOf(
+                OrderTestUtils.generateShippingLabel(
+                    remoteOrderId = order.remoteOrderId, shippingLabelId = 1
+                )
             )
-        )
-        whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
-            .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
-            .thenReturn(false)
+            whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any()))
+                .thenReturn(WooResult(purchasedLabels))
+            whenever(orderDetailRepository.updateOrderStatus(any(), any(), any()))
+                .thenReturn(false)
 
-        var event: MultiLiveEvent.Event? = null
-        viewModel.event.observeForever {
-            event = it
+            var event: MultiLiveEvent.Event? = null
+            viewModel.event.observeForever {
+                event = it
+            }
+
+            viewModel.onPurchaseButtonClicked(fulfillOrder = true)
+            stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
+
+            assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
         }
-
-        viewModel.onPurchaseButtonClicked(fulfillOrder = true)
-        stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
-
-        assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
-    }
 }
