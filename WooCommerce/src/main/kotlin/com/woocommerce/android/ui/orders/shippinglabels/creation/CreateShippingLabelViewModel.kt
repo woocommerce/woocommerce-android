@@ -236,7 +236,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to action))
     }
 
-
     private suspend fun handleResult(
         @StringRes progressDialogTitle: Int = 0,
         @StringRes progressDialogMessage: Int = 0,

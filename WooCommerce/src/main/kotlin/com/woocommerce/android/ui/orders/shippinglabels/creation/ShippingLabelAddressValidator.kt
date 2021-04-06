@@ -69,7 +69,6 @@ class ShippingLabelAddressValidator @Inject constructor(
                 }
                 is WCAddressVerificationResult.Valid -> {
                     AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
-                    
                     val suggestion = (result.model as WCAddressVerificationResult.Valid).suggestedAddress.toAppModel()
                     if (suggestion.toString() != address.toString()) {
                         ValidationResult.SuggestedChanges(suggestion)

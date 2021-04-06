@@ -206,7 +206,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
             on<Event.PurchaseStarted> {
-                transitionTo(State.PurchaseLabels(data, it.fulfillOrder), SideEffect.TrackPurchaseInitiated(data.stepsState.carrierStep.data))
+                transitionTo(
+                    State.PurchaseLabels(data, it.fulfillOrder),
+                    SideEffect.TrackPurchaseInitiated(data.stepsState.carrierStep.data)
+                )
             }
         }
 
