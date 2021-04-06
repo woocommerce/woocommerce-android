@@ -109,9 +109,9 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
             R.id.btnPublished -> PUBLISH.toString()
             R.id.btnDraft -> DRAFT.toString()
             R.id.btnPending -> PENDING.toString()
-            R.id.btnPrivate -> PRIVATE.toString()
+            R.id.btnPublishedPrivately -> PRIVATE.toString()
             R.id.btnTrashed -> TRASH.toString()
-            else -> selectedStatus
+            else -> throw IllegalArgumentException()
         }
     }
 }
