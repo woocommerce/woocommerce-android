@@ -35,9 +35,6 @@ internal class CardReaderManagerImpl(
     override val isInitialized: Boolean
         get() { return terminal.isInitialized() }
 
-    @ExperimentalCoroutinesApi
-    override val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents> = connectionManager.discoveryEvents
-
     override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
 
     override fun initialize(app: Application) {
@@ -67,9 +64,9 @@ internal class CardReaderManagerImpl(
         }
     }
 
-    override fun startDiscovery(isSimulated: Boolean) {
+    override fun startDiscovery(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.startDiscovery(isSimulated)
+        return connectionManager.startDiscovery(isSimulated)
     }
 
     override fun connectToReader(readerId: String) {

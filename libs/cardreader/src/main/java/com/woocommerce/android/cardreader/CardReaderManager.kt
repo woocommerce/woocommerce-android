@@ -11,10 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @ExperimentalCoroutinesApi
 interface CardReaderManager {
     val isInitialized: Boolean
-    val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents>
     val readerStatus: MutableStateFlow<CardReaderStatus>
     fun initialize(app: Application)
-    fun startDiscovery(isSimulated: Boolean)
+    fun startDiscovery(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
     fun connectToReader(readerId: String)
 
     // TODO cardreader Stripe accepts only Int, is that ok?
