@@ -113,7 +113,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         }
 
         order.items.forEach {
-            val result = if (it.variationId != 0L) {
+            val result = if (it.isVariation) {
                 fetchVariationIfNeeded(it.productId, it.variationId)
             } else {
                 fetchProductIfNeeded(it.productId)
@@ -162,7 +162,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
-        val weight = if (variationId != 0L) {
+        val weight = if (isVariation) {
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {
             productDetailRepository.getProduct(productId)!!.weight
