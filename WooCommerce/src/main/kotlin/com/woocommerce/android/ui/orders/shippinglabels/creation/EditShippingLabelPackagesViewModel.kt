@@ -87,8 +87,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(showSkeletonView = false)
         return listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = lastUsedPackage,
-                weight = Double.NaN,
+                weight = Float.NaN,
                 items = order.getShippableItems().map { it.toShippingItem() }
             )
         )
@@ -109,7 +110,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         }
     }
 
-    fun onWeightEdited(position: Int, weight: Double) {
+    fun onWeightEdited(position: Int, weight: Float) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
         viewState = viewState.copy(shippingLabelPackages = packages)

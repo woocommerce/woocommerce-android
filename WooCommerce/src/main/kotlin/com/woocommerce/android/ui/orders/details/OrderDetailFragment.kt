@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
+import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.refunds.RefundSummaryFragment
@@ -206,6 +207,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
+        }
+        handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
+            viewModel.onShippingLabelsPurchased()
         }
     }
 
