@@ -26,7 +26,6 @@ import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toItem
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -42,7 +41,8 @@ import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.refunds.IssueRefundViewModel.RefundType.ITEMS
-import com.woocommerce.android.ui.refunds.RefundProductListAdapter.RefundListItem
+import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
+import com.woocommerce.android.ui.refunds.RefundShippingListAdapter.ShippingRefundListItem
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
@@ -86,11 +86,11 @@ class IssueRefundViewModel @AssistedInject constructor(
         private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
     }
 
-    private val _refundItems = MutableLiveData<List<RefundListItem>>()
-    final val refundItems: LiveData<List<RefundListItem>> = _refundItems
+    private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
+    final val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems
 
-    private val _refundShippingLines = MutableLiveData<List<RefundListItem>>()
-    val refundShippingLines: LiveData<List<RefundListItem>> = _refundShippingLines
+    private val _refundShippingLines = MutableLiveData<List<ShippingRefundListItem>>()
+    val refundShippingLines: LiveData<List<ShippingRefundListItem>> = _refundShippingLines
 
     private val areAllItemsSelected: Boolean
         get() = refundItems.value?.all { it.quantity == it.maxQuantity } ?: false
@@ -200,12 +200,12 @@ class IssueRefundViewModel @AssistedInject constructor(
         val items = order.items.map {
             val maxQuantity = maxQuantities[it.uniqueId] ?: 0
             val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: 0, maxQuantity)
-            RefundListItem(it, maxQuantity, selectedQuantity)
+            ProductRefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
 
         val shippingLines = order.shippingLines.map {
-            RefundListItem(it.toItem(), 1, 1)
+            ShippingRefundListItem(it)
         }
         _refundShippingLines.value = shippingLines
 
@@ -475,8 +475,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<RefundListItem> {
-        val newItems = mutableListOf<RefundListItem>()
+    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<ProductRefundListItem> {
+        val newItems = mutableListOf<ProductRefundListItem>()
         _refundItems.value?.forEach {
             if (it.orderItem.uniqueId == uniqueId) {
                 newItems.add(
@@ -528,7 +528,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun updateRefundItems(items: List<RefundListItem>) {
+    private fun updateRefundItems(items: List<ProductRefundListItem>) {
         _refundItems.value = items.filter { it.maxQuantity > 0 }
 
         val selectedItems = items.sumBy { it.quantity }
@@ -687,7 +687,7 @@ class IssueRefundViewModel @AssistedInject constructor(
 
     sealed class IssueRefundEvent : Event() {
         data class ShowValidationError(val message: String) : IssueRefundEvent()
-        data class ShowNumberPicker(val refundItem: RefundListItem) : IssueRefundEvent()
+        data class ShowNumberPicker(val refundItem: ProductRefundListItem) : IssueRefundEvent()
         data class ShowRefundConfirmation(
             val title: String,
             val message: String,
