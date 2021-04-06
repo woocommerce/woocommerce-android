@@ -8,15 +8,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.stripe.stripeterminal.TerminalLifecycleObserver
-import com.stripe.stripeterminal.callable.Cancelable
-import com.stripe.stripeterminal.callable.DiscoveryListener
-import com.stripe.stripeterminal.callable.TerminalListener
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTED
-import com.stripe.stripeterminal.model.external.ConnectionStatus.CONNECTING
-import com.stripe.stripeterminal.model.external.ConnectionStatus.NOT_CONNECTED
-import com.stripe.stripeterminal.model.external.Reader
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.CardReaderStatus
+import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,10 +27,11 @@ class CardReaderManagerImplTest {
     private val lifecycleObserver: TerminalLifecycleObserver = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
+    private val connectionManager: ConnectionManager = mock()
 
     @Before
     fun setUp() {
-        cardReaderManager = CardReaderManagerImpl(terminalWrapper, tokenProvider, logWrapper, mock())
+        cardReaderManager = CardReaderManagerImpl(terminalWrapper, tokenProvider, logWrapper, mock(), connectionManager)
         whenever(terminalWrapper.getLifecycleObserver()).thenReturn(lifecycleObserver)
     }
 
@@ -100,89 +93,5 @@ class CardReaderManagerImplTest {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
         cardReaderManager.connectToReader("")
-    }
-
-    @Test
-    fun `when reader discovery started, then observers get notified`() {
-        whenever(terminalWrapper.isInitialized()).thenReturn(true)
-
-        cardReaderManager.startDiscovery(true)
-
-        assertThat(cardReaderManager.discoveryEvents.value).isEqualTo(CardReaderDiscoveryEvents.Started)
-    }
-
-    @Test
-    fun `when readers discovered, then observers get notified`() {
-        whenever(terminalWrapper.isInitialized()).thenReturn(true)
-        val dummyReaderId = "12345"
-        val discoveredReaders = listOf(mock<Reader>()
-            .apply { whenever(serialNumber).thenReturn(dummyReaderId) })
-        whenever(terminalWrapper.discoverReaders(any(), any(), any()))
-            .thenAnswer {
-                it.getArgument<DiscoveryListener>(1).onUpdateDiscoveredReaders(discoveredReaders)
-                mock<Cancelable>()
-            }
-
-        cardReaderManager.startDiscovery(true)
-
-        assertThat(cardReaderManager.discoveryEvents.value).isEqualTo(
-            CardReaderDiscoveryEvents.ReadersFound(listOf(dummyReaderId))
-        )
-    }
-
-    @Test
-    fun `when reader unexpectedly disconnected, then observers get notified`() {
-        whenever(terminalWrapper.initTerminal(any(), any(), any(), any()))
-            .thenAnswer {
-                it.getArgument<TerminalListener>(3).onUnexpectedReaderDisconnect(mock())
-            }
-
-        cardReaderManager.initialize(application)
-
-        assertThat(cardReaderManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NOT_CONNECTED
-        )
-    }
-
-    @Test
-    fun `when reader disconnected, then observers get notified`() {
-        whenever(terminalWrapper.initTerminal(any(), any(), any(), any()))
-            .thenAnswer {
-                it.getArgument<TerminalListener>(3).onConnectionStatusChange(NOT_CONNECTED)
-            }
-
-        cardReaderManager.initialize(application)
-
-        assertThat(cardReaderManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.NOT_CONNECTED
-        )
-    }
-
-    @Test
-    fun `when connecting to reader, then observers get notified`() {
-        whenever(terminalWrapper.initTerminal(any(), any(), any(), any()))
-            .thenAnswer {
-                it.getArgument<TerminalListener>(3).onConnectionStatusChange(CONNECTING)
-            }
-
-        cardReaderManager.initialize(application)
-
-        assertThat(cardReaderManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.CONNECTING
-        )
-    }
-
-    @Test
-    fun `when reader connection established, then observers get notified`() {
-        whenever(terminalWrapper.initTerminal(any(), any(), any(), any()))
-            .thenAnswer {
-                it.getArgument<TerminalListener>(3).onConnectionStatusChange(CONNECTED)
-            }
-
-        cardReaderManager.initialize(application)
-
-        assertThat(cardReaderManager.readerStatus.value).isEqualTo(
-            CardReaderStatus.CONNECTED
-        )
     }
 }
