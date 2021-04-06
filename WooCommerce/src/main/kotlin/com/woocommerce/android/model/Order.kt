@@ -125,24 +125,6 @@ data class Order(
     }
 }
 
-// Conversion is needed for refunding shipping line items.
-// Properties that are irrelevant for the refund process are set as either (-1), or empty string.
-fun ShippingLine.toItem(): Item {
-    return Item(
-        itemId = itemId,
-        productId = -1, /* irrelevant */
-        name = methodTitle,
-        price = (-1).toBigDecimal(), /* irrelevant */
-        sku = "", /* irrelevant */
-        quantity = 1,
-        subtotal = (-1).toBigDecimal(), /* irrelevant */
-        totalTax = totalTax,
-        total = total,
-        variationId = -1, /* irrelevant */
-        attributesList = "" /* irrelevant */
-    )
-}
-
 fun WCOrderModel.toAppModel(): Order {
     return Order(
         identifier = OrderIdentifier(this),
