@@ -44,13 +44,18 @@ class VariationListAdapter(
     override fun getItemCount() = variationList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VariationViewHolder {
-        return VariationViewHolder(
+        val holder = VariationViewHolder(
             VariationListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         )
+
+        holder.itemView.setOnClickListener {
+            onItemClick(variationList[holder.adapterPosition])
+        }
+        return holder
     }
 
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
@@ -59,10 +64,6 @@ class VariationListAdapter(
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
-        }
-
-        holder.itemView.setOnClickListener {
-            onItemClick(variation)
         }
     }
 
