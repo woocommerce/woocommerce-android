@@ -19,6 +19,7 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
 import kotlinx.coroutines.flow.collect
 import org.wordpress.android.util.AppLog
@@ -68,25 +69,6 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
         (requireActivity().application as? WooCommerce)?.let { application ->
             // TODO cardreader Move this into a VM
             lifecycleScope.launchWhenResumed {
-                application.cardReaderManager?.discoveryEvents?.collect { event ->
-                    AppLog.d(AppLog.T.MAIN, event.toString())
-                    when (event) {
-                        NotStarted, Started, is Failed -> {
-                            Snackbar.make(
-                                requireView(),
-                                event.javaClass.simpleName,
-                                BaseTransientBottomBar.LENGTH_SHORT
-                            ).show()
-                        }
-                        is ReadersFound -> {
-                            if (event.list.isNotEmpty()) {
-                                getCardReaderManager()?.connectToReader(event.list[0])
-                            }
-                        }
-                    }
-                }
-            }
-            lifecycleScope.launchWhenResumed {
                 application.cardReaderManager?.readerStatus?.collect { status ->
                     binding.connectionStatus.text = status.name
                 }
@@ -108,8 +90,23 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {
-                // TODO cardreader make sure to cancel the discovery when the user leaves the activity/app
-                cardReaderManager.startDiscovery(isSimulated = simulated)
+                cardReaderManager.startDiscovery(isSimulated = simulated).collect { event ->
+                    AppLog.d(AppLog.T.MAIN, event.toString())
+                    when (event) {
+                        NotStarted, Started, Succeeded, is Failed -> {
+                            Snackbar.make(
+                                requireView(),
+                                event.javaClass.simpleName,
+                                BaseTransientBottomBar.LENGTH_SHORT
+                            ).show()
+                        }
+                        is ReadersFound -> {
+                            if (event.list.isNotEmpty()) {
+                                getCardReaderManager()?.connectToReader(event.list[0])
+                            }
+                        }
+                    }
+                }
             }
         }
     }
