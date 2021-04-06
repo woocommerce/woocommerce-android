@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -114,6 +115,12 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     defaultPricingGroup,
                     R.drawable.ic_gridicons_money,
                     showTitle = false
+                ),
+                RatingBar(
+                    string.product_reviews,
+                    resources.getString(string.product_ratings_count_zero),
+                    0F,
+                    drawable.ic_reviews
                 ),
                 PropertyGroup(
                     string.product_inventory,

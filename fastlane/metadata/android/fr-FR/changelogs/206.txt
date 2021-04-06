@@ -1,0 +1,6 @@
+6.3 :
+WooCommerce Android 6.3 propose aux utilisateurs deux mises à jour importantes :
+
+- Le cas échéant, vous pouvez désormais inclure « téléchargeable » dans les détails de type d’un produit.
+- Nous avons résolu un bug afin que l’état d’une commande personnalisée s’affiche désormais correctement dans les détails de la commande.
+

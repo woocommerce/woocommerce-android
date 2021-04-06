@@ -1,8 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-6.3
+6.4
 -----
 
+
+6.3
+-----
+- [*] Product Type: Updated product type detail to display "Downloadable" if a product is downloadable. [https://github.com/woocommerce/woocommerce-android/pull/3679]
+- [*] Custom order status is now correctly displayed in the order details. [https://github.com/woocommerce/woocommerce-android/pull/3693]
 
 6.2
 -----
@@ -43,7 +48,7 @@
 * [*] Fixed a minor UI layout issue review detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3461]
 * [*] Possibly fixed a crash in product detail screen. [https://github.com/woocommerce/woocommerce-android/pull/3463]
 * [*] Fixed a rare crash caused by invalid server API response. [https://github.com/woocommerce/woocommerce-android/pull/3464]
- 
+
 5.8
 -----
 * [**] Products: Now you can add/edit downloadable files, manage linked products and delete products. [https://github.com/woocommerce/woocommerce-android/pull/3056]
@@ -72,7 +77,7 @@
 5.4.1
 -----
 ** Fixed issue in order product variations where an empty variation key would cause a crash [https://github.com/woocommerce/woocommerce-android/pull/3188]
- 
+
 5.4
 -----
 * Selected product variation information now fully displayed in order details
@@ -86,11 +91,11 @@
 * Product detail screen now includes the number of ratings for that product
 * Fixed slowness in order screens
 * Order detail screen now includes option to print and refund shipping labels if you have the WooCommerce Shipping & Tax extension
- 
+
 5.2
 -----
 * Product editing is now out of beta and is available for all users
- 
+
 5.1
 -----
 * Implemented new login flow complete with new screen designs! #2851
@@ -101,37 +106,37 @@
 * Fixed an issue where switching between light and dark themes on older Android versions made the app unresponsive.
 * Fixed a common crash when choosing a product image
 * You can now give your opinion for the Product sections with the new Give Feedback Banner
- 
+
 4.9
 -----
 * Creates CrowdSignal integration for app Feedback survey
 * You can now edit variations (price, description, inventory, visibility and shipping)
 * Products: now you can edit grouped, external and variable products, including updating product type, categories and tags.
- 
+
 4.8
 -----
 * Added a fix to display the Add shipment tracking section only if the Shipment Tracking plugin is available
 * Fixed a rare crash caused by attempting to hide a non-active view
- 
+
 4.7
 -----
 * Disabled beta options and removed Improved Stats as selectable option from it
 * Set Stats V4 as the default choice
 * Update Stats V3 due date warning message to September 1, 2020
 * Fixed cursor window size-related crashes for device running Android P and above
- 
+
 4.6
 -----
 * Added a fix to support multiple new order notifications for a store.
 * Updated the background color of the login views.
 * Moved privacy notice for CA users to the About App screen.
 * Added a placeholder for orders without a customer name.
- 
+
 4.5
 -----
 * Added a link to the new privacy notice for california users
 * Products: now you can update product images, product settings, viewing and sharing a product
- 
+
 4.4
 -----
 * Minor style tweaks to login screens
@@ -156,47 +161,47 @@
 4.2.1
 -----
 * Fixed crash happening on Android 5.1 while applying dynamic themes
- 
+
 4.2
 -----
 * Bugfix: Removed detached and non-functioning text counter in the support email dialog
 * Fixed issue where dark theme version of placeholder images were not themed properly
 * Minor styling tweaks to various login screens
 * Changed notification icon to match the app icon
- 
+
 4.1
 -----
 * App colors have been updated for a fresh new look
 * Dark mode is now available!
 * Misc bug fixes
- 
+
 4.0
 -----
 * Products is now available with limited editing for simple products!
 * Fixed a date conversion bug in orders that was causing some orders to be hidden or grouped incorrectly.
- 
+
 3.9
 -----
 * Fixed a crash when clicking on 2 products at the same time from the Products list section.
- 
+
 3.8
 -----
 * Limited editing is now available for simple products (requires enabling Settings > Beta features > Products)
- 
+
 3.7
 -----
 * Added support to display negative revenue in our new stats screen!
- 
+
 3.6
 -----
 * Fixed a few problems with the new "empty states," such as being cut off on smaller screens in landscape
 * Fixed a bug that could cause the reviews list to be empty when returning to it after rotating the device
- 
+
 3.5
 -----
 * Refunds are back! Select individual order items and the refund amount will be automatically calculated for you
 * Fixed a crash when opening the app from a new order notification
- 
+
 3.4
 -----
 * Fixed a problem when the order list did not sync with the server
@@ -209,7 +214,7 @@
 * Fixed bug that caused reviews to show an incorrect timestamp
 * Fixed rare crash when backing out of an order immediately after changing order status
 * Fixed the sorting in product variations to match the sorting displayed on the web.
- 
+
 3.2
 -----
 * Added a new option in the Settings page for users to opt in or out of our new Products tab.
@@ -218,11 +223,11 @@
 * Fixed a rare crash in refunds when custom order numbers are used
 * Fixed a rare crash when updating a product variant in wp-admin and refreshing the same in the app.
 * Temporarily disabled the refunds feature due to a reporting inconsistency issue
- 
+
 3.1
 -----
 * The new beta stats UI now requires WooCommerce Admin plugin version 0.22+
- 
+
 3.0
 -----
 * The logic that loads and updates the orders list view with orders has been completely revamped and optimized. Orders now load faster!
@@ -232,14 +237,14 @@
 * Products with multiple images now show all images in a gallery.
 * Bugfix: Fixed a rare crash that would happen in the "Add Order Note" view while saving state when the app is pushed to the background.
 * The order detail view now includes the shipping method of the order.
- 
+
 2.9
 -----
-* The orders tab has received a major design overhaul! Search and filtering have been consolidated into a single view that includes a total count of orders by order status. The orders list is now broken up int two tabs: Processing & All. The Processing tab shows all orders waiting to be processed. 
-* The order detail view has also received some touchups. 
+* The orders tab has received a major design overhaul! Search and filtering have been consolidated into a single view that includes a total count of orders by order status. The orders list is now broken up int two tabs: Processing & All. The Processing tab shows all orders waiting to be processed.
+* The order detail view has also received some touchups.
 * We now officially support Android 10!
 * Several minor bug fixes are also included in this release.
- 
+
 2.8
 -----
 * Revamped the order list page by providing a new tab for unfulfilled orders
@@ -247,7 +252,7 @@
 * Fixed missing cursor in order list search
 * See a list of issued refunds inside the order detail screen
 * Fixed rare crash on opening stats page with WooCommerce Admin plugin enabled
- 
+
 2.7
 -----
 * Added brand new stats page for user with the WooCommerce Admin plugin and provided an option for users to opt in or out directly from the Settings page.
@@ -272,10 +277,10 @@
 
 2.4
 -----
-* The Notifications tab has been replaced by Reviews 
+* The Notifications tab has been replaced by Reviews
 * The unfulfilled order count has been removed from the dashboard and is now shown as a badge on the order list
 * Added support to update the app without even going to the play store.
- 
+
 2.3
 -----
 * Fixed a bug where the shipping/billing details for a virtual order was being displayed.
@@ -309,7 +314,7 @@
 
 Improvements
 * Dates have been added to the order list
- 
+
 1.8
 -----
 
@@ -321,7 +326,7 @@ Improvements
 * Hide the external link button on shipment tracking views if no external link available
 * Redirect to username/password login when WordPress.com reports email login not allowed
 * Shipment Tracking date formatting is now localized
- 
+
 New Features
 * You can now tap a product to view a read-only detail view
 

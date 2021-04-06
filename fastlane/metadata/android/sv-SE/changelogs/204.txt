@@ -1,2 +1,0 @@
-6.2:
-I den här versionen har vi fokuserat på buggkorrigeringar och prestandaförbättringar.

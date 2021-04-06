@@ -1,2 +1,0 @@
-6.2:
-Para esta versão, focamos em corrigir bugs e melhorar o desempenho.

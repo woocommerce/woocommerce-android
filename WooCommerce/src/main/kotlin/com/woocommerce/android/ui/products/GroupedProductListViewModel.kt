@@ -34,12 +34,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
-    private val originalProductIds =
-        navArgs.productIds
-            .takeIf { it.isNotEmpty() }
-            ?.split(",")
-            ?.mapNotNull { it.toLongOrNull() }
-            .orEmpty()
+    private val originalProductIds = navArgs.productIds.toList()
 
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
