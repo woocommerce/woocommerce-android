@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+6.5
+-----
+
+
 6.4
 -----
 * [*] Fixed bug where the app couldn't load products if there's decimal stock quantity. [https://github.com/woocommerce/woocommerce-android/pull/3782]
