@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-03-17 11:54:04+0000
+Translation-Revision-Date: 2021-03-30 11:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_attributes_error_saving">Özellikleriniz kaydedilirken hata oluştu</string>
     <string name="shipping_label_payments_cant_edit_warning">Gönderim etiketi ödeme yöntemlerini yalnızca site sahibi yönetebilir. Ödeme yöntemlerini yönetmek için lütfen Mağaza Sahibi %1$s (%2$s) ile iletişime geçin</string>
     <string name="product_detail_add_variations">Varyasyon ekle</string>
     <string name="product_variant_list_empty_action">Varyasyon Ekle</string>
@@ -23,7 +24,7 @@ Language: tr
     <string name="shipping_label_shipping_method_local_pickup">Mağazadan teslim</string>
     <string name="shipping_label_shipping_method_flat_rate">Sabit fiyat</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Müşteri nakliye için %1$s (%2$s) ödedi</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce ile gönderdim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce\'ten gönderim etiketi satın alırken, postane fiyatlarına kıyasla %5 ila %40 indirimden yararlanırsınız.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  Hizmetleri indirimi nedir?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Gönderim seçenekleri yüklenirken hata oluştu</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Seçilen adres ve paketler için gönderim seçeneği yok</string>
@@ -47,7 +48,7 @@ Language: tr
     <string name="shipping_label_payments_saving_dialog_title">Ayarlarınız kaydediliyor </string>
     <string name="shipping_label_payments_expiration_date">Son kullanma tarihi: %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">Etiket satın alma makbuzlarını e-posta ile şuraya gönderin: %1$s (%2$s), %3$s</string>
-    <string name="shipping_label_payments_account_info">Kredi kartları aşağıdaki WordPress.com hesabından alınır: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_account_info">Kredi kartları aşağıdaki WordPress.com hesabından alınır: %1$s &lt;%2$s&gt;</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Başka kredi kartı ekle</string>
     <string name="shipping_label_payments_selected_payment_method">Ödeme yöntemi seçildi</string>
@@ -176,8 +177,8 @@ Language: tr
     <string name="product_downloadable_files_value_single">1 dosya</string>
     <string name="product_downloadable_files_value_multiple">%1$d dosya</string>
     <string name="product_wip_message_m4">Artık hareket halindeyken Woo uygulamasından basit, bağlantılı ve gruplandırılmış ürünler oluşturmak mümkün. Henüz hazır değil misiniz? O halde taslak olarak kaydedin!</string>
-    <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b>doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b> Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
-    <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b>aynı WiFi ağlarına&lt;/b> bağlı olduğundan emin olun</string>
+    <string name="print_shipping_label_info_step_4">WiFi yazdırmayı &lt;b&gt;doğrudan yazıcıdan yapılandırmanız gerekebilir.&lt;/b&gt; Yazıcı ürün yazılımının güncellendiğinden emin olun ve talimatlar için yazıcınızın belgelerine bakın.</string>
+    <string name="print_shipping_label_info_step_1">Yazıcınızın ve cihazınızın &lt;b&gt;aynı WiFi ağlarına&lt;/b&gt; bağlı olduğundan emin olun</string>
     <string name="settings_enable_product_adding_teaser_message">Yayına hazırlanırken yeni, basit, bağlantılı ve gruplandırılmış ürün oluşturma özelliğini deneyin</string>
     <string name="bottom_sheet_linked_products_desc">Yukarı satış ve çapraz satış ile satışları artırın</string>
     <string name="edit_products_button">Ürünleri düzenle</string>
@@ -207,8 +208,8 @@ Language: tr
     <string name="product_ratings_count_one">\u2022 bir kez değerlendirildi</string>
     <string name="product_ratings_count">\u2022 %d kez değerlendirildi</string>
     <string name="product_detail_fetch_product_invalid_id_error">Ürün bulunamadı</string>
-    <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, &lt;b>etiketinizi PDF olarak kaydedebilir&lt;/b> ve başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
-    <string name="print_shipping_label_info_step_2"> &lt;b>\"Gönderim etiketi yazdır\"&lt;/b> öğesini seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
+    <string name="print_shipping_label_info_step_5">Hâlâ cihazınızdan yazdırırken sorun yaşıyorsanız, &lt;b&gt;etiketinizi PDF olarak kaydedebilir&lt;/b&gt; ve başka bir cihazdan yazdırmak için e-posta ile gönderebilirsiniz.</string>
+    <string name="print_shipping_label_info_step_2"> &lt;b&gt;\"Gönderim etiketi yazdır\"&lt;/b&gt; öğesini seçtikten sonra, daha önce bu cihazdan yazdırmadıysanız bir yazıcı seçmeniz ve eklemeniz gerekebilir.</string>
     <string name="print_shipping_label_format_options_title">Etiket biçimi seçenekleri</string>
     <string name="print_shipping_label_info_title">Cihazınızla yazdırın</string>
     <string name="shipping_label_paper_size_label">Etiket (4 x 6 inç)</string>
@@ -261,19 +262,15 @@ Language: tr
     <string name="feedback_product_give_feedback_button_text">Geri Bildirim Ver</string>
     <string name="product_detail_publish_product_success">Ürün yayınlandı</string>
     <string name="product_detail_publish_product_error">Ürün yayınlanırken hata oluştu</string>
-    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
     <string name="product_publish_dialog_title">Ürün yayınlanıyor</string>
     <string name="product_add_tool_bar_menu_button_done">YAYINLA</string>
     <string name="product_add_tool_bar_title">Yeni Ürün</string>
-    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
-    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
     <string name="product_add_type_variable_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
     <string name="product_add_type_simple_desc">Satılacak benzersiz bir ürün</string>
     <string name="product_add_type_external">Harici ürün</string>
     <string name="product_add_type_grouped">Gruplandırılmış ürün</string>
     <string name="product_add_type_variable">Varyasyonlu ürün</string>
     <string name="product_add_type_simple">Basit ürün</string>
-    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
     <string name="product_images_image_limit_warning">Her ürün çeşidi için yalnızca bir fotoğraf görüntülenebilir</string>
     <string name="product_replace_photo">Fotoğrafı değiştir</string>
     <string name="product_add_photo">Fotoğraf ekle</string>
@@ -553,10 +550,10 @@ Language: tr
     <string name="date_timeframe_future">Yakında</string>
     <string name="remove">Kaldır</string>
     <string name="login_discovery_error_generic">Sitenize erişimi başaramadık. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
-    <string name="login_discovery_error_ssl">&lt;b>SSL Sertifikası&lt;/b> ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
-    <string name="login_discovery_error_http_auth">&lt;b>HTTP Kimlik Doğrulaması&lt;/b> gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
-    <string name="login_discovery_error_xmlrpc">Sitenizdeki &lt;b>XMLRPC dosyasına&lt;/b> erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
-    <string name="login_site_credentials_magic_link_label">Çok az kaldı! Sadece Jetpack bağlantılı e-posta adresinizi doğrulamamız gerekiyor &lt;b>%1$s&lt;/b></string>
+    <string name="login_discovery_error_ssl">&lt;b&gt;SSL Sertifikası&lt;/b&gt; ile ilgili bir sorun nedeniyle sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP Kimlik Doğrulaması&lt;/b&gt; gerektiğinden sitenize erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_discovery_error_xmlrpc">Sitenizdeki &lt;b&gt;XMLRPC dosyasına&lt;/b&gt; erişemedik. Bu sorunu çözmek için sunucunuza ulaşmanız gerekecektir.</string>
+    <string name="login_site_credentials_magic_link_label">Çok az kaldı! Sadece Jetpack bağlantılı e-posta adresinizi doğrulamamız gerekiyor &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_site_credentials_instead">Site kimlik bilgileriyle giriş yapın.</string>
     <string name="enter_credentials_for_site">%1$s site kimlik bilginizle giriş yapın</string>
     <string name="send_verification_email">Doğrulama e-postası gönder</string>
@@ -584,7 +581,7 @@ Language: tr
     <string name="orderdetail_shipping_method">Sevkiyat yöntemi</string>
     <string name="button_edit_permissions">İzinleri düzenle</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permissions_denied_message">Görünen o ki bu özellik için gerekli izinleri kapatmışsınız.&lt;br/>&lt;br/>Bunu değiştirmek için izinlerinizi düzenleyin ve &lt;strong>%s&lt;/strong> izninin etkin olduğundan emin olun.</string>
+    <string name="permissions_denied_message">Görünen o ki bu özellik için gerekli izinleri kapatmışsınız.&lt;br/&gt;&lt;br/&gt;Bunu değiştirmek için izinlerinizi düzenleyin ve &lt;strong&gt;%s&lt;/strong&gt; izninin etkin olduğundan emin olun.</string>
     <string name="permissions_denied_title">İzinler</string>
     <string name="orders_processed_empty_message">Tüm siparişler işlendi</string>
     <string name="orders_empty_message_with_processing">Henüz işlenecek sipariş yok</string>
@@ -657,7 +654,7 @@ Language: tr
     <string name="orderdetail_empty_shipping_address">Adres belirtilmedi.</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
-    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
+    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
     <string name="country_mapping_ZW">Zimbabve</string>
     <string name="country_mapping_ZM">Zambiya</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -928,7 +925,7 @@ Language: tr
     <string name="order_detail_shipment_tracking_button_contentdesc">Gönderim takibini takip et veya sil</string>
     <string name="orderdetail_delete_tracking">Takibi sil</string>
     <string name="orderdetail_track_shipment">Gönderimi takip et</string>
-    <string name="login_email_help_desc">Site yöneticinizde, %3$sBağlantılar > Hesap bağlantısı %4$s bölümünde yer alan %1$sJetpack Panosu\'ndan%2$s WordPress.com\'a bağlanmak için kullandığınız e-postayı bulabilirsiniz.</string>
+    <string name="login_email_help_desc">Site yöneticinizde, %3$sBağlantılar &gt; Hesap bağlantısı %4$s bölümünde yer alan %1$sJetpack Panosu\'ndan%2$s WordPress.com\'a bağlanmak için kullandığınız e-postayı bulabilirsiniz.</string>
     <string name="login_email_help_title">Giriş yapmak için hangi e-postayı kullanmam gerek?</string>
     <string name="login_need_help_finding_email">Bağlandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
