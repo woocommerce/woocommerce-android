@@ -59,7 +59,7 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 
                     override fun onFailure(e: TerminalException) {
                         logWrapper.d("CardReader", "Payment collection failed")
-                        this@callbackFlow.sendBlocking(TerminalFailure(exception))
+                        this@callbackFlow.sendBlocking(TerminalFailure(e))
                         this@callbackFlow.close()
                     }
                 })
