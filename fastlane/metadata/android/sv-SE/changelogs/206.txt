@@ -1,0 +1,6 @@
+6.3:
+Med WooCommerce Android 6.3 får användare två viktiga uppdateringar:
+
+– Vid behov kan du nu inkludera "nedladdningsbar" i typinformationen för en produkt.
+– Vi åtgärdade en bugg så att en status för en anpassad order nu visas korrekt i orderinformationen.
+

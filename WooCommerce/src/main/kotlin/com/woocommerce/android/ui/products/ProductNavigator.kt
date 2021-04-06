@@ -290,7 +290,8 @@ class ProductNavigator @Inject constructor() {
             is AddProductAttributeTerms -> {
                 val action = NavGraphProductsDirections.actionGlobalAddVariationAttributeTermsFragment(
                     target.attributeId,
-                    target.attributeName
+                    target.attributeName,
+                    target.isNewAttribute
                 )
                 fragment.findNavController().navigate(action)
             }

@@ -1,0 +1,6 @@
+6.3:
+O WooCommerce para Android 6.3 conta com duas atualizações importantes:
+
+- Se aplicável, agora é possível incluir "pode ser baixado" nos detalhes de tipo de um produto.
+- Corrigimos um bug e agora o status de pedidos personalizados é exibido corretamente nos detalhes do pedido.
+

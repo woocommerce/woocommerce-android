@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -88,8 +89,9 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         viewState = viewState.copy(showSkeletonView = false)
         return listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = lastUsedPackage,
-                weight = Double.NaN,
+                weight = Float.NaN,
                 items = order.getShippableItems().map { it.toShippingItem() }
             )
         )
@@ -110,7 +112,7 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
         }
     }
 
-    fun onWeightEdited(position: Int, weight: Double) {
+    fun onWeightEdited(position: Int, weight: Float) {
         val packages = viewState.shippingLabelPackages.toMutableList()
         packages[position] = packages[position].copy(weight = weight)
         viewState = viewState.copy(shippingLabelPackages = packages)
@@ -174,6 +176,6 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<EditShippingLabelPackagesViewModel>
 }

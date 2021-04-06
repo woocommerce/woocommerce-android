@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.OnApiVersionFetched
@@ -66,7 +67,7 @@ class SitePickerPresenter @Inject constructor(
     }
 
     override fun fetchSitesFromAPI() {
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction())
+        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
     }
 
     override fun fetchUpdatedSiteFromAPI(site: SiteModel) {

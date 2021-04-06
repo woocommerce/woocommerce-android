@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
@@ -233,6 +234,16 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         show()
                     }
                 }
+                is ShowPrintShippingLabels -> {
+                    // TODO update the argument to accept multiple labels in M4
+                    val action = CreateShippingLabelFragmentDirections
+                        .actionCreateShippingLabelFragmentToPrintShippingLabelFragment(
+                            orderId = event.orderId,
+                            shippingLabelId = event.labels.first().id,
+                            isReprint = false
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 else -> event.isHandled = false
             }
         })
@@ -298,6 +309,9 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         binding.orderSummaryLayout.discountInfo.setOnClickListener {
             viewModel.onWooDiscountInfoClicked()
         }
+        binding.orderSummaryLayout.purchaseLabelButton.setOnClickListener {
+            viewModel.onPurchaseButtonClicked(binding.orderSummaryLayout.markOrderCompleteCheckbox.isChecked)
+        }
     }
 
     private fun ShippingLabelCreationStepView.update(data: StepUiState) {
@@ -326,9 +340,5 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
         val totalPriceValue = state.price
         totalPrice.text = PriceUtils.formatCurrency(totalPriceValue, state.currency, currencyFormatter)
-
-        purchaseLabelButton.setOnClickListener {
-            viewModel.onPurchaseShippingLabelClicked()
-        }
     }
 }

@@ -5,6 +5,7 @@ import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
@@ -203,6 +204,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             on<Event.EditPaymentRequested> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
+            on<Event.PurchaseStarted> {
+                transitionTo(State.PurchaseLabels(data, it.fulfillOrder))
+            }
         }
 
         state<State.OriginAddressValidation> {
@@ -373,6 +377,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
             on<Event.EditPaymentCanceled> {
                 transitionTo(State.WaitingForInput(data))
+            }
+        }
+
+        state<State.PurchaseLabels> {
+            on<Event.PurchaseFailed> {
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PurchaseError))
+            }
+
+            on<Event.PurchaseSuccess> {
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId, it.labels))
             }
         }
 
@@ -570,6 +584,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingError : Error()
         object AddressValidationError : Error()
         object PackagesLoadingError : Error()
+        object PurchaseError : Error()
     }
 
     sealed class State : Parcelable {
@@ -620,6 +635,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class PaymentSelection(val data: StateMachineData) : State()
+
+        @Parcelize
+        data class PurchaseLabels(val data: StateMachineData, val fulfillOrder: Boolean) : State()
     }
 
     sealed class Event {
@@ -668,6 +686,10 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object EditPaymentRequested : UserInput()
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
+
+        data class PurchaseStarted(val fulfillOrder: Boolean) : UserInput()
+        data class PurchaseSuccess(val labels: List<ShippingLabel>) : Event()
+        object PurchaseFailed : Event()
     }
 
     sealed class SideEffect {
@@ -692,7 +714,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object ShowCustomsForm : SideEffect()
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
+
         object ShowPaymentOptions : SideEffect()
+
+        data class ShowLabelsPrint(
+            val orderId: Long,
+            val labels: List<ShippingLabel>
+        ) : ShippingLabelsStateMachine.SideEffect()
 
         object TrackFlowStart : SideEffect()
         data class TrackCompletedStep(val step: Step<*>) : SideEffect()
