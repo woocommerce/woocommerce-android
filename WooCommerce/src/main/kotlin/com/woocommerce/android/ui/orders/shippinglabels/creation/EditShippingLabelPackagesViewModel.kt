@@ -97,17 +97,18 @@ class EditShippingLabelPackagesViewModel @AssistedInject constructor(
     }
 
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
-        suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
-            if (variationDetailRepository.getVariation(productId, variationId) == null) {
-                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
-                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
-            }
-            return true
-        }
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
             if (productDetailRepository.getProduct(productId) == null) {
                 return productDetailRepository.fetchProduct(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
+            }
+            return true
+        }
+        suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
+            if (!fetchProductIfNeeded(productId)) return false
+            if (variationDetailRepository.getVariation(productId, variationId) == null) {
+                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
+                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
         }
