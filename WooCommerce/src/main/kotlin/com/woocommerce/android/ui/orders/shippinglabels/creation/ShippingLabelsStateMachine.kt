@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import com.tinder.StateMachine
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
@@ -205,7 +206,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
             }
             on<Event.PurchaseStarted> {
-                transitionTo(State.PurchaseLabels(data, it.fulfillOrder))
+                transitionTo(State.PurchaseLabels(data, it.fulfillOrder), SideEffect.TrackPurchaseInitiated(data.stepsState.carrierStep.data))
             }
         }
 
@@ -720,11 +721,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
         data class ShowLabelsPrint(
             val orderId: Long,
             val labels: List<ShippingLabel>
-        ) : ShippingLabelsStateMachine.SideEffect()
+        ) : SideEffect()
 
         object TrackFlowStart : SideEffect()
         data class TrackCompletedStep(val step: Step<*>) : SideEffect()
-        object TrackPurchaseInitiated : SideEffect()
+        data class TrackPurchaseInitiated(private val data: List<ShippingRate>) : SideEffect() {
+            val amount = data.sumByBigDecimal { it.price }
+        }
     }
 
     class InvalidStateException(message: String) : Exception(message)

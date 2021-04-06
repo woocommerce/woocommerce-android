@@ -201,7 +201,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
                         is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                         is SideEffect.TrackFlowStart -> trackFlowStart()
-                        is SideEffect.TrackPurchaseInitiated -> trackPurchaseInitiated()
+                        is SideEffect.TrackPurchaseInitiated -> trackPurchaseInitiated(sideEffect.amount)
                         is SideEffect.TrackCompletedStep -> trackCompletedStep(sideEffect.step)
                     }
                 }
@@ -209,12 +209,19 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private fun trackFlowStart() {
-        trackFlowEvent("started")
-    }
+    private fun trackFlowStart() = AnalyticsTracker.track(
+        Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+        mapOf("state" to "started")
+    )
 
-    private fun trackPurchaseInitiated() {
-        trackFlowEvent("purchase_initiated")
+    private fun trackPurchaseInitiated(amount: BigDecimal) {
+        AnalyticsTracker.track(
+            Stat.SHIPPING_LABEL_PURCHASE_FLOW,
+            mapOf(
+                "state" to "purchase_initiated",
+                "amount" to amount.toPlainString()
+            )
+        )
     }
 
     private fun trackCompletedStep(step: Step<*>) {
@@ -226,13 +233,9 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             is CustomsStep -> "customs_complete"
             is PaymentsStep -> "payment_method_selected"
         }
-        trackFlowEvent(action)
+        AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to action))
     }
 
-    private fun trackFlowEvent(action: String) = AnalyticsTracker.track(
-        Stat.SHIPPING_LABEL_PURCHASE_FLOW,
-        mapOf("state" to action)
-    )
 
     private suspend fun handleResult(
         @StringRes progressDialogTitle: Int = 0,
@@ -397,6 +400,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             rates = data.stepsState.carrierStep.data
         )
         return if (result.isError) {
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to "purchase_failed"))
             PurchaseFailed
         } else {
             if (fulfillOrder) {
@@ -410,6 +414,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                     triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
                 }
             }
+            AnalyticsTracker.track(Stat.SHIPPING_LABEL_PURCHASE_FLOW, mapOf("state" to "purchase_succeeded"))
             PurchaseSuccess(result.model!!)
         }
     }
