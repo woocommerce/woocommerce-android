@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.UserInput
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.TrackFlowStart
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.TrackCompletedStep
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.TrackFlowStart
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -214,7 +214,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.originAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.originAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.originAddressStep))
             }
             on<Event.AddressChangeSuggested> { event ->
                 transitionTo(
@@ -246,7 +246,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.originAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.originAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.originAddressStep))
             }
             on<Event.EditAddressRequested> { event ->
                 transitionTo(State.OriginAddressEditing(data), SideEffect.OpenAddressEditor(event.address, ORIGIN))
@@ -261,7 +261,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.originAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.originAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.originAddressStep))
             }
             on<Event.AddressEditCanceled> {
                 transitionTo(State.WaitingForInput(data))
@@ -273,7 +273,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.shippingAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.shippingAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.shippingAddressStep))
             }
             on<Event.AddressChangeSuggested> { event ->
                 transitionTo(
@@ -305,7 +305,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.shippingAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.shippingAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.shippingAddressStep))
             }
             on<Event.EditAddressRequested> { event ->
                 transitionTo(
@@ -323,7 +323,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.shippingAddressStep, event.address)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.shippingAddressStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.shippingAddressStep))
             }
             on<Event.AddressEditCanceled> {
                 transitionTo(State.WaitingForInput(data))
@@ -335,7 +335,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.packagingStep, event.shippingPackages)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.packagingStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.packagingStep))
             }
 
             on<Event.EditPackagingCanceled> {
@@ -348,7 +348,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.customsStep, Unit)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.customsStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.customsStep))
             }
         }
 
@@ -360,7 +360,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                         it.rates
                     )
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.carrierStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.carrierStep))
             }
             on<Event.ShippingCarrierSelectionCanceled> {
                 transitionTo(State.WaitingForInput(data))
@@ -372,7 +372,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(data.stepsState.paymentsStep, it.paymentMethod)
                 )
-                transitionTo(State.WaitingForInput(newData), getLogSideEffect(data.stepsState.paymentsStep))
+                transitionTo(State.WaitingForInput(newData), getTracksSideEffect(data.stepsState.paymentsStep))
             }
 
             on<Event.EditPaymentCanceled> {
@@ -425,7 +425,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         }
     }
 
-    private fun getLogSideEffect(step: Step<*>): SideEffect? {
+    private fun getTracksSideEffect(step: Step<*>): SideEffect? {
         return if (step.status == DONE) {
             null
         } else {
@@ -724,6 +724,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object TrackFlowStart : SideEffect()
         data class TrackCompletedStep(val step: Step<*>) : SideEffect()
+        object TrackPurchaseInitiated : SideEffect()
     }
 
     class InvalidStateException(message: String) : Exception(message)
