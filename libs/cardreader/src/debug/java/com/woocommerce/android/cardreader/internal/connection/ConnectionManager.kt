@@ -19,10 +19,8 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 
-@ExperimentalCoroutinesApi
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val logWrapper: LogWrapper
