@@ -14,58 +14,23 @@
 
         <View
             style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"/>
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/minor_00"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/issueRefund_shippingLines"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:itemCount="2"
+            tools:listitem="@layout/refund_shipping_list_item"
+            tools:targetApi="lollipop" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <FrameLayout
-                android:id="@+id/issueRefund_shippingIconFrame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_75"
-                android:background="@drawable/picture_frame"
-                android:padding="1dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/issueRefund_shippingIcon"
-                    android:layout_width="@dimen/image_minor_100"
-                    android:layout_height="@dimen/image_minor_100"
-                    android:contentDescription="@string/orderdetail_product_image_contentdesc"
-                    android:padding="@dimen/minor_100"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_gridicons_shipping"
-                    tools:visibility="visible" />
-
-            </FrameLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/issueRefund_shippingName"
-                style="@style/Woo.Card.Title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/issueRefund_shippingIconFrame"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="USPS Flatrate shipping" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/issueRefund_shippingDescription"
-                style="@style/Woo.Card.Body"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/issueRefund_shippingIconFrame"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingName"
-                tools:text="$10.00" />
 
             <View
                 android:id="@+id/issueRefund_dividerBelowShipping"
@@ -74,7 +39,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/minor_00"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/issueRefund_shippingIconFrame" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/issueRefund_shippingSubtotalSection"
@@ -160,9 +125,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginBottom="@dimen/major_75"
             android:text="@string/order_refunds_shipping_refund" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/issueRefund_shippingTotal"
+            style="@style/Woo.Card.Body.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_75"
+            android:layout_marginBottom="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
+            tools:text="$1.00" />
+
+            <!-- This button is needed for a future purpose. Commented out for now. -->
+            <!--
+            <com.google.android.material.button.MaterialButton
             android:id="@+id/issueRefund_shippingRefundTotalButton"
             style="@style/Woo.Button.TextButton"
             android:layout_width="wrap_content"
@@ -172,6 +153,7 @@
             android:includeFontPadding="false"
             android:textAllCaps="false"
             tools:text="$49.00" />
+            -->
 
     </LinearLayout>
 
