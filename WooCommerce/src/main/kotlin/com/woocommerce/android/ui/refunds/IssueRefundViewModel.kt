@@ -573,12 +573,14 @@ class IssueRefundViewModel @AssistedInject constructor(
 
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = shippingRefund,
-                formattedShippingRefundTotal = formatCurrency(shippingRefund)
+                formattedShippingRefundTotal = formatCurrency(shippingRefund),
+                isShippingMainSwitchChecked = true
             )
         } else {
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = 0.toBigDecimal(),
-                formattedShippingRefundTotal = formatCurrency(0.toBigDecimal())
+                formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
+                isShippingMainSwitchChecked = false
             )
         }
     }
