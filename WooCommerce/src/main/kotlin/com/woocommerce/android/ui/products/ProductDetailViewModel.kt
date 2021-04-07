@@ -6,9 +6,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.assisted.AssistedFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -61,6 +58,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -92,6 +90,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -1021,6 +1022,47 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
+     * Renames a single attribute in the product draft
+     */
+    fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
+        // first make sure an attribute with the new name doesn't already exist in the draft
+        getProductDraftAttributes().forEach {
+            if (it.name.equals(newAttributeName, ignoreCase = true)) {
+                triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+                return false
+            }
+        }
+
+        val oldAttribute = getDraftAttribute(attributeId, oldAttributeName)
+        if (oldAttribute == null) {
+            triggerEvent(ShowSnackbar(string.product_attribute_error_renaming))
+            return false
+        }
+
+        // create a new attribute with the same properties as the old one except for the name
+        val newAttribute = ProductAttribute(
+            id = attributeId,
+            name = newAttributeName,
+            terms = oldAttribute.terms,
+            isVisible = oldAttribute.isVisible,
+            isVariation = oldAttribute.isVariation
+        )
+
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            // create a list of draft attributes without the old one
+            updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == oldAttributeName
+            })
+
+            // add the renamed attribute to the list and update the draft attributes
+            updatedAttributes.add(newAttribute)
+            updateProductDraft(attributes = updatedAttributes)
+        }
+
+        return true
+    }
+
+    /**
      * Adds a new term to a the product draft attributes
      */
     fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
@@ -1147,6 +1189,13 @@ class ProductDetailViewModel @AssistedInject constructor(
      */
     fun onAddAttributeButtonClick() {
         triggerEvent(AddProductAttribute)
+    }
+
+    /**
+     * User tapped "Rename" on the attribute terms fragment
+     */
+    fun onRenameAttributeButtonClick(attributeName: String) {
+        triggerEvent(RenameProductAttribute(attributeName))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1774,6 +1823,9 @@ class ProductDetailViewModel @AssistedInject constructor(
             shouldShowDiscardDialog
         )
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
+        class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
     }
