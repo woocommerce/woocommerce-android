@@ -12,14 +12,12 @@ import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
  */
-@ExperimentalCoroutinesApi
 internal class CardReaderManagerImpl(
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
