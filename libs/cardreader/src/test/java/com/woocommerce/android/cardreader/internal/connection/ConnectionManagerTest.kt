@@ -52,7 +52,7 @@ class ConnectionManagerTest {
 
         val result = connectionManager.discoverReaders(true).toList()
 
-       assertThat((result.first() as ReadersFound).list.first().getId())
+        assertThat((result.first() as ReadersFound).list.first().getId())
             .isEqualTo(dummyReaderId)
     }
 
@@ -63,7 +63,7 @@ class ConnectionManagerTest {
 
         val result = connectionManager.discoverReaders(true).single()
 
-       assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Failed::class.java)
+        assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Failed::class.java)
     }
 
     @Test
@@ -73,14 +73,14 @@ class ConnectionManagerTest {
 
         val result = connectionManager.discoverReaders(true).single()
 
-       assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Succeeded::class.java)
+        assertThat(result).isInstanceOf(CardReaderDiscoveryEvents.Succeeded::class.java)
     }
 
     @Test
     fun `when reader unexpectedly disconnected, then observers get notified`() {
         connectionManager.onUnexpectedReaderDisconnect(mock())
 
-       assertThat(connectionManager.readerStatus.value).isEqualTo(
+        assertThat(connectionManager.readerStatus.value).isEqualTo(
             CardReaderStatus.NOT_CONNECTED
         )
     }
@@ -89,7 +89,7 @@ class ConnectionManagerTest {
     fun `when reader disconnected, then observers get notified`() {
         connectionManager.onConnectionStatusChange(NOT_CONNECTED)
 
-       assertThat(connectionManager.readerStatus.value).isEqualTo(
+        assertThat(connectionManager.readerStatus.value).isEqualTo(
             CardReaderStatus.NOT_CONNECTED
         )
     }
@@ -98,7 +98,7 @@ class ConnectionManagerTest {
     fun `when connecting to reader, then observers get notified`() {
         connectionManager.onConnectionStatusChange(CONNECTING)
 
-       assertThat(connectionManager.readerStatus.value).isEqualTo(
+        assertThat(connectionManager.readerStatus.value).isEqualTo(
             CardReaderStatus.CONNECTING
         )
     }
@@ -107,7 +107,7 @@ class ConnectionManagerTest {
     fun `when reader connection established, then observers get notified`() {
         connectionManager.onConnectionStatusChange(CONNECTED)
 
-       assertThat(connectionManager.readerStatus.value).isEqualTo(
+        assertThat(connectionManager.readerStatus.value).isEqualTo(
             CardReaderStatus.CONNECTED
         )
     }
