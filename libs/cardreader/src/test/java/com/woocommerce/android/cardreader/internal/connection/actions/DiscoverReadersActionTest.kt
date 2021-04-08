@@ -15,7 +15,9 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.ClosedSendChannelException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.joinAll
@@ -55,7 +57,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false).first()
+        val event = action.discoverReaders(false)
+            .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(FoundReaders::class.java)
     }
@@ -67,7 +70,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false).first()
+        val event = action.discoverReaders(false)
+            .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Success::class.java)
     }
@@ -79,7 +83,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false).first()
+        val event = action.discoverReaders(false)
+            .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Failure::class.java)
     }
@@ -91,7 +96,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false).toList()
+        val event = action.discoverReaders(false)
+            .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
     }
@@ -103,7 +109,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false).toList()
+        val event = action.discoverReaders(false)
+            .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
     }
@@ -177,7 +184,8 @@ class DiscoverReadersActionTest {
             mock<Cancelable>()
         }
 
-        val result = action.discoverReaders(false).toList()
+        val result = action.discoverReaders(false)
+            .ignoreStartedEvent().toList()
 
         assertThat(result.size).isEqualTo(3)
     }
@@ -205,4 +213,6 @@ class DiscoverReadersActionTest {
     private fun onFailure(args: Array<Any>) {
         args.filterIsInstance<Callback>().first().onFailure(mock())
     }
+
+    private fun <T> Flow<T>.ignoreStartedEvent(): Flow<T> = filterNot { it is Started }
 }
