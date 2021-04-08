@@ -21,7 +21,6 @@ import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
