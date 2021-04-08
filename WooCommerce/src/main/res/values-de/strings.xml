@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Translation-Revision-Date: 2021-04-01 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
@@ -24,7 +24,7 @@ Language: de
     <string name="shipping_label_shipping_method_local_pickup">Abholung vor Ort</string>
     <string name="shipping_label_shipping_method_flat_rate">Versandkostenpauschale</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Der Kunde hat Versandkosten in Höhe von %1$s (%2$s) bezahlt</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message">Beim Kauf von Versandetiketten bei WooCommerce erhältst du 5 % bis 40 % Rabatt im Vergleich zu den Preisen bei der Post.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Beim Kauf von Versandetiketten bei WooCommerce erhältst du 5 % bis 40 % Rabatt im Vergleich zu den Preisen bei der Post.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Was ist der  WooCommerce-Dienstleistungsrabatt?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Beim Laden der Versandoptionen ist ein Fehler aufgetreten.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Für die ausgewählte Adresse und diese Pakete gibt es keine Versandoptionen.</string>
@@ -48,7 +48,7 @@ Language: de
     <string name="shipping_label_payments_saving_dialog_title">Deine Einstellungen werden gespeichert</string>
     <string name="shipping_label_payments_expiration_date">Läuft ab %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">Die Kaufbelege für die Etiketten per E-Mail an %1$s (%2$s) unter %3$s senden</string>
-    <string name="shipping_label_payments_account_info">Kreditkartendaten werden vom folgenden WordPress.com-Konto abgerufen: %1$s &lt;%2$s></string>
+    <string name="shipping_label_payments_account_info">Kreditkartendaten werden vom folgenden WordPress.com-Konto abgerufen: %1$s &lt;%2$s&gt;</string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Eine weitere Kreditkarte hinzufügen</string>
     <string name="shipping_label_payments_selected_payment_method">Zahlungsmethode ausgewählt</string>
@@ -176,9 +176,9 @@ Language: de
     <string name="product_downloadable_files_value_single">1 Datei</string>
     <string name="product_downloadable_files_value_multiple">%1$d Dateien</string>
     <string name="product_wip_message_m4">Du hast jetzt die Möglichkeit, neue, einfache und gruppierte Produkte von unterwegs aus in der Woo-App zu erstellen. Noch nicht bereit? Speichere sie als Entwurf!</string>
-    <string name="print_shipping_label_info_step_4">Du musst möglicherweise &lt;b>die Funktion zum WLAN-Drucken direkt am Drucker konfigurieren.&lt;/b> Stelle sicher, dass die Firmware des Druckers aktualisiert ist. In der Dokumentation zum Drucker findest du eine Anleitung.</string>
-    <string name="print_shipping_label_info_step_3">Du kannst den &lt;b>standardmäßigen Druckdienst&lt;/b> deines Gerätes auswählen oder eine &lt;b>App der Druckermarke&lt;/b> installieren (dies sollte als empfohlene Option angezeigt werden)</string>
-    <string name="print_shipping_label_info_step_1">Stelle sicher, dass dein Drucker und dein Gerät mit &lt;b>demselben WLAN-Netzwerk&lt;/b> verbunden sind.</string>
+    <string name="print_shipping_label_info_step_4">Du musst möglicherweise &lt;b&gt;die Funktion zum WLAN-Drucken direkt am Drucker konfigurieren.&lt;/b&gt; Stelle sicher, dass die Firmware des Druckers aktualisiert ist. In der Dokumentation zum Drucker findest du eine Anleitung.</string>
+    <string name="print_shipping_label_info_step_3">Du kannst den &lt;b&gt;standardmäßigen Druckdienst&lt;/b&gt; deines Gerätes auswählen oder eine &lt;b&gt;App der Druckermarke&lt;/b&gt; installieren (dies sollte als empfohlene Option angezeigt werden)</string>
+    <string name="print_shipping_label_info_step_1">Stelle sicher, dass dein Drucker und dein Gerät mit &lt;b&gt;demselben WLAN-Netzwerk&lt;/b&gt; verbunden sind.</string>
     <string name="settings_enable_product_adding_teaser_message">Teste die neue vereinfachte, verknüpfte und gruppierte Produkterstellung, an der wir gerade arbeiten</string>
     <string name="bottom_sheet_linked_products_desc">Erhöhe deine Einnahmen mit Upsell- und Cross-Sell-Möglichkeiten</string>
     <string name="edit_products_button">Produkte bearbeiten</string>
@@ -208,8 +208,8 @@ Language: de
     <string name="product_ratings_count_one">\u2022 einmal bewertet</string>
     <string name="product_ratings_count">\u2022 %d Mal bewertet</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt nicht gefunden</string>
-    <string name="print_shipping_label_info_step_5">Wenn beim Drucken von diesem Gerät weiterhin Probleme auftreten, kannst du &lt;b>dein Etikett als PDF speichern&lt;/b> und es per E-Mail versenden, um es von einem anderen Gerät zu drucken.</string>
-    <string name="print_shipping_label_info_step_2">Nach der Auswahl &lt;b>„Versandetikett drucken“&lt;/b> musst du möglicherweise einen Drucker auswählen und hinzufügen, wenn du noch nie von diesem Gerät gedruckt hast.</string>
+    <string name="print_shipping_label_info_step_5">Wenn beim Drucken von diesem Gerät weiterhin Probleme auftreten, kannst du &lt;b&gt;dein Etikett als PDF speichern&lt;/b&gt; und es per E-Mail versenden, um es von einem anderen Gerät zu drucken.</string>
+    <string name="print_shipping_label_info_step_2">Nach der Auswahl &lt;b&gt;„Versandetikett drucken“&lt;/b&gt; musst du möglicherweise einen Drucker auswählen und hinzufügen, wenn du noch nie von diesem Gerät gedruckt hast.</string>
     <string name="print_shipping_label_format_options_title">Optionen für Etikettenformat</string>
     <string name="print_shipping_label_info_title">Mit deinem Gerät drucken</string>
     <string name="shipping_label_paper_size_label">Etikett (4 x 6 in)</string>
@@ -549,10 +549,10 @@ Language: de
     <string name="date_timeframe_future">Bevorstehend</string>
     <string name="remove">Entfernen</string>
     <string name="login_discovery_error_generic">Leider konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
-    <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b>SSL-Zertifikat&lt;/b> konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
-    <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b>HTTP-Authentifizierung&lt;/b> erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
-    <string name="login_discovery_error_xmlrpc">Leider konnten wir nicht auf die &lt;b>XMLRPC-Datei&lt;/b> auf deiner Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
-    <string name="login_site_credentials_magic_link_label">Fast geschafft! Wir müssen nur noch deine mit Jetpack verbundene E-Mail-Adresse &lt;b>%1$s&lt;/b> überprüfen.</string>
+    <string name="login_discovery_error_ssl">Aufgrund eines Problems mit dem &lt;b&gt;SSL-Zertifikat&lt;/b&gt; konnten wir nicht auf deine Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_discovery_error_http_auth">Leider konnten wir nicht auf deine Website zugreifen, weil eine &lt;b&gt;HTTP-Authentifizierung&lt;/b&gt; erforderlich ist. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_discovery_error_xmlrpc">Leider konnten wir nicht auf die &lt;b&gt;XMLRPC-Datei&lt;/b&gt; auf deiner Website zugreifen. Zum Lösen dieses Problems musst du dich an deinen Host wenden.</string>
+    <string name="login_site_credentials_magic_link_label">Fast geschafft! Wir müssen nur noch deine mit Jetpack verbundene E-Mail-Adresse &lt;b&gt;%1$s&lt;/b&gt; überprüfen.</string>
     <string name="enter_site_credentials_instead">Melde dich mit deinen Website-Anmeldedaten an.</string>
     <string name="enter_credentials_for_site">Melde dich mit deinen Website-Anmeldedaten für %1$s an.</string>
     <string name="send_verification_email">Verifizierungs-E-Mail senden</string>
@@ -580,7 +580,7 @@ Language: de
     <string name="orderdetail_shipping_method">Versandmethode</string>
     <string name="button_edit_permissions">Rechte bearbeiten</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permissions_denied_message">Scheinbar hast du die Rechte, die für diese Funktion erforderlich sind, deaktiviert.&lt;br/>&lt;br/>Bearbeite deine Rechte, um dies zu ändern, und stelle sicher, dass &lt;strong>%s&lt;/strong> aktiviert ist.</string>
+    <string name="permissions_denied_message">Scheinbar hast du die Rechte, die für diese Funktion erforderlich sind, deaktiviert.&lt;br/&gt;&lt;br/&gt;Bearbeite deine Rechte, um dies zu ändern, und stelle sicher, dass &lt;strong&gt;%s&lt;/strong&gt; aktiviert ist.</string>
     <string name="permissions_denied_title">Berechtigungen</string>
     <string name="orders_processed_empty_message">Alle Bestellungen wurden verarbeitet</string>
     <string name="orders_empty_message_with_processing">Noch keine Bestellungen zu verarbeiten</string>
@@ -653,7 +653,7 @@ Language: de
     <string name="orderdetail_empty_shipping_address">Keine Adresse angegeben.</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
-    <string name="enter_email_for_site">Melde dich mit WordPress.com an, um dich mit &lt;b>%1$s&lt;/b> zu verbinden</string>
+    <string name="enter_email_for_site">Melde dich mit WordPress.com an, um dich mit &lt;b&gt;%1$s&lt;/b&gt; zu verbinden</string>
     <string name="country_mapping_ZW">Simbabwe</string>
     <string name="country_mapping_ZM">Sambia</string>
     <string name="country_mapping_YE">Jemen</string>
@@ -924,7 +924,7 @@ Language: de
     <string name="order_detail_shipment_tracking_button_contentdesc">Sendung verfolgen oder Sendungsverfolgung löschen</string>
     <string name="orderdetail_delete_tracking">Verfolgung löschen</string>
     <string name="orderdetail_track_shipment">Sendung verfolgen</string>
-    <string name="login_email_help_desc">In deiner Website-Administration kannst du über das %1$sJetpack-Dashboard%2$s unter %3$sVerbindungen > Kontoverbindung%4$s die E-Mail-Adresse finden, mit der du dich mit WordPress.com verbunden hast.</string>
+    <string name="login_email_help_desc">In deiner Website-Administration kannst du über das %1$sJetpack-Dashboard%2$s unter %3$sVerbindungen &gt; Kontoverbindung%4$s die E-Mail-Adresse finden, mit der du dich mit WordPress.com verbunden hast.</string>
     <string name="login_email_help_title">Mit welcher E-Mail-Adresse melde ich mich an?</string>
     <string name="login_need_help_finding_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
