@@ -12,7 +12,7 @@ interface CardReaderManager {
     val readerStatus: MutableStateFlow<CardReaderStatus>
     fun initialize(app: Application)
     fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents>
-    fun connectToReader(readerId: String)
+    fun connectToReader(cardReader: CardReader)
 
     // TODO cardreader Stripe accepts only Int, is that ok?
     suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus>

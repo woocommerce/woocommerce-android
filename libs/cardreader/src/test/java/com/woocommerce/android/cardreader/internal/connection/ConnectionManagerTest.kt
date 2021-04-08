@@ -49,7 +49,8 @@ class ConnectionManagerTest {
 
         val result = connectionManager.discoverReaders(true).toList()
 
-        Assertions.assertThat(result.first()).isEqualTo(ReadersFound(listOf(dummyReaderId)))
+        Assertions.assertThat((result.first() as ReadersFound).list.first().getId())
+            .isEqualTo(dummyReaderId)
     }
 
     @Test

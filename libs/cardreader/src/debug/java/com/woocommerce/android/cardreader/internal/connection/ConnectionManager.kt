@@ -10,7 +10,9 @@ import com.stripe.stripeterminal.model.external.PaymentStatus
 import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.ReaderEvent
 import com.stripe.stripeterminal.model.external.TerminalException
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.CardReaderImpl
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
@@ -36,7 +38,7 @@ internal class ConnectionManager(
                     CardReaderDiscoveryEvents.Failed(state.exception.toString())
                 }
                 is DiscoverReadersStatus.FoundReaders -> {
-                    CardReaderDiscoveryEvents.ReadersFound(state.readers.mapNotNull { it.serialNumber })
+                    CardReaderDiscoveryEvents.ReadersFound(state.readers.map { CardReaderImpl(it) })
                 }
                 DiscoverReadersStatus.Success -> {
                     CardReaderDiscoveryEvents.Succeeded
@@ -44,9 +46,9 @@ internal class ConnectionManager(
             }
         }
 
-    fun connectToReader(readerId: String) {
-        discoverReadersAction.foundReaders.find { it.serialNumber == readerId }?.let {
-            terminal.connectToReader(it, object : ReaderCallback {
+    fun connectToReader(cardReader: CardReader) {
+        (cardReader as? CardReaderImpl)?.let {
+            terminal.connectToReader(it.cardReader, object : ReaderCallback {
                 override fun onFailure(e: TerminalException) {
                     logWrapper.d("CardReader", "connecting to reader failed: ${e.errorMessage}")
                 }
@@ -55,7 +57,7 @@ internal class ConnectionManager(
                     logWrapper.d("CardReader", "connecting to reader succeeded")
                 }
             })
-        } ?: logWrapper.e("CardReader", "Connecting to reader failed: reader not found")
+        } ?: logWrapper.e("CardReader", "Expected CardReaderImpl but ${cardReader.javaClass} found.")
     }
 
     override fun onUnexpectedReaderDisconnect(reader: Reader) {

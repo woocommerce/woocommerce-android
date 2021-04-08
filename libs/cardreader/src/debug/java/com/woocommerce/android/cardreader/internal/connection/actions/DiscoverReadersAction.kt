@@ -28,9 +28,6 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
         data class FoundReaders(val readers: List<Reader>) : DiscoverReadersStatus()
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
-
-    val foundReaders = mutableSetOf<Reader>()
-
     fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
         return callbackFlow {
             this.sendBlocking(Started)
@@ -39,7 +36,6 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
             try {
                 cancelable = terminal.discoverReaders(config, object : DiscoveryListener {
                     override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
-                        foundReaders.addAll(readers)
                         this@callbackFlow.sendBlocking(FoundReaders(readers))
                     }
                 }, object : Callback {
@@ -55,7 +51,6 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
                 })
                 awaitClose()
             } finally {
-                foundReaders.clear()
                 cancelable?.takeIf { !it.isCompleted }?.cancel(noopCallback)
             }
         }

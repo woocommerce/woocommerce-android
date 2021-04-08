@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardReader
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderStatus
@@ -67,9 +68,9 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated)
     }
 
-    override fun connectToReader(readerId: String) {
+    override fun connectToReader(cardReader: CardReader) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        connectionManager.connectToReader(readerId)
+        connectionManager.connectToReader(cardReader)
     }
 
     override suspend fun collectPayment(amount: Int, currency: String): Flow<CardPaymentStatus> =

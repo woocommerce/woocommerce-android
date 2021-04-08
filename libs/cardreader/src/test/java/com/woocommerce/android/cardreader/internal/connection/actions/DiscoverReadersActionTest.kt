@@ -116,33 +116,6 @@ class DiscoverReadersActionTest {
     }
 
     @Test
-    fun `when readers discovered, then foundReaders is updated`() = runBlockingTest {
-        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
-            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
-            mock<Cancelable>()
-        }
-
-        val job = launch {
-            action.discoverReaders(false).collect { }
-        }
-
-        assertThat(action.foundReaders.size).isNotEqualTo(0)
-        job.cancel()
-    }
-
-    @Test
-    fun `when flow terminates, then foundReaders collection is cleared`() = runBlockingTest {
-        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
-            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
-            onSuccess(args = it.arguments)
-            mock<Cancelable>()
-        }
-        action.discoverReaders(false).toList()
-
-        assertThat(action.foundReaders.size).isEqualTo(0)
-    }
-
-    @Test
     fun `given flow not terminated, when job canceled, then reader discovery gets canceled`() = runBlockingTest {
         val cancelable = mock<Cancelable>()
         whenever(cancelable.isCompleted).thenReturn(false)
