@@ -14,12 +14,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.NotStarted
-import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
+import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.Succeeded
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentSettingsCardReaderBinding
 import kotlinx.coroutines.flow.collect
 import org.wordpress.android.util.AppLog
@@ -93,7 +92,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 cardReaderManager.startDiscovery(isSimulated = simulated).collect { event ->
                     AppLog.d(AppLog.T.MAIN, event.toString())
                     when (event) {
-                        NotStarted, Started, Succeeded, is Failed -> {
+                        Started, Succeeded, is Failed -> {
                             Snackbar.make(
                                 requireView(),
                                 event.javaClass.simpleName,
