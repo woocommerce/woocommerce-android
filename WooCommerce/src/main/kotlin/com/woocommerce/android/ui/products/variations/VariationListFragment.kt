@@ -198,7 +198,8 @@ class VariationListFragment : BaseFragment(R.layout.fragment_variation_list),
 
     private fun openVariationDetail(variation: ProductVariation) {
         val action = VariationListFragmentDirections.actionVariationListFragmentToVariationDetailFragment(
-            variation
+            variation.remoteProductId,
+            variation.remoteVariationId
         )
         findNavController().navigateSafely(action)
     }

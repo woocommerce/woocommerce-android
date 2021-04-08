@@ -108,7 +108,6 @@
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
 
-    <!-- TODO ? -->
     <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products"
@@ -126,6 +125,19 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+    </action>
+    <action
+        android:id="@+id/action_global_productVariationDetailFragment"
+        app:destination="@id/nav_graph_products"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:popExitAnim="@anim/activity_slide_out_to_right">
+        <argument
+            android:name="remoteProductId"
+            app:argType="long" />
+        <argument
+            android:name="remoteVariationId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </action>
     <fragment
         android:id="@+id/reviewDetailFragment"

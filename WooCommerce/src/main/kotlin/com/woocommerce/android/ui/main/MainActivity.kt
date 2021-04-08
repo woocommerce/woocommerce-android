@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.navigation
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -760,13 +761,26 @@ class MainActivity : AppUpgradeActivity(),
         }
     }
 
-    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId,
-            isTrashEnabled = enableTrash
-        )
-        navController.navigateSafely(action)
+    override fun showProductDetail(remoteProductId: Long, remoteVariationId: Long, enableTrash: Boolean) {
+        if (remoteVariationId == 0L) {
+            val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+                remoteProductId,
+                isTrashEnabled = enableTrash
+            )
+            navController.navigateSafely(action)
+        } else {
+            // the product nav graph has product detail as the start destination, so we have to change it to
+            // the variation detail
+            val navGraph = navController.navInflater.inflate(navigation.nav_graph_products)
+            navGraph.startDestination = R.id.variationDetailFragment
+            navController.setGraph(navGraph)
+
+            val action = NavGraphMainDirections.actionGlobalProductVariationDetailFragment(
+                remoteProductId = remoteProductId,
+                remoteVariationId = remoteVariationId
+            )
+            navController.navigateSafely(action)
+        }
     }
 
     override fun showAddProduct() {

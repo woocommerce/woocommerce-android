@@ -123,9 +123,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         _binding = null
     }
 
-    override fun openOrderProductDetail(remoteProductId: Long) {
+    override fun openOrderProductDetail(remoteProductId: Long, remoteVariationId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId)
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, remoteVariationId)
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {

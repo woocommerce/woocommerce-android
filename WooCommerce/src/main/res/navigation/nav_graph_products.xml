@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_products"
-    app:startDestination="@id/productDetailFragment">
+    app:startDestination="@+id/productDetailFragment">
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
@@ -471,8 +471,12 @@
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
         android:label="variationDetailFragment">
         <argument
-            android:name="variation"
-            app:argType="com.woocommerce.android.model.ProductVariation" />
+            android:name="remoteProductId"
+            app:argType="long" />
+        <argument
+            android:name="remoteVariationId"
+            android:defaultValue="0L"
+            app:argType="long" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment" />
