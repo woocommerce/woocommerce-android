@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -25,7 +26,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.navigation
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -769,17 +769,10 @@ class MainActivity : AppUpgradeActivity(),
             )
             navController.navigateSafely(action)
         } else {
-            // the product nav graph has product detail as the start destination, so we have to change it to
-            // the variation detail
-            val navGraph = navController.navInflater.inflate(navigation.nav_graph_products)
-            navGraph.startDestination = R.id.variationDetailFragment
-            navController.setGraph(navGraph)
-
-            val action = NavGraphMainDirections.actionGlobalProductVariationDetailFragment(
-                remoteProductId = remoteProductId,
-                remoteVariationId = remoteVariationId
-            )
-            navController.navigateSafely(action)
+            val deeplink = "${getString(R.string.deeplink_variation_detail)}" +
+                "?remoteProductId=$remoteProductId" +
+                "&remoteVariationId=$remoteVariationId"
+            navController.navigate(Uri.parse(deeplink))
         }
     }
 
