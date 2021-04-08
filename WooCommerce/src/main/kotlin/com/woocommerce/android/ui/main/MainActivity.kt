@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -768,10 +769,8 @@ class MainActivity : AppUpgradeActivity(),
                 isTrashEnabled = enableTrash
             )
             navController.navigateSafely(action)
-        } else {
-            val deeplink = "${getString(R.string.deeplink_variation_detail)}" +
-                "?remoteProductId=$remoteProductId" +
-                "&remoteVariationId=$remoteVariationId"
+        } else {val deeplink = "android-app://com.woocommerce.android/variationDetail" +
+                "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
             navController.navigate(Uri.parse(deeplink))
         }
     }

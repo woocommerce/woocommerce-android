@@ -65,7 +65,6 @@ class VariationDetailViewModel @AssistedInject constructor(
     }
 
     private val navArgs: VariationDetailFragmentArgs by savedState.navArgs()
-
     private var originalVariation: ProductVariation = variationRepository.getVariation(
         navArgs.remoteProductId,
         navArgs.remoteVariationId

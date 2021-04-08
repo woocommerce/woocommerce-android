@@ -470,13 +470,11 @@
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"
         android:label="variationDetailFragment">
-        <deepLink app:uri="@string/deeplink_variation_detail" />
         <argument
             android:name="remoteProductId"
             app:argType="long" />
         <argument
             android:name="remoteVariationId"
-            android:defaultValue="0L"
             app:argType="long" />
         <action
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
@@ -515,6 +513,7 @@
                 android:name="requestCode"
                 app:argType="integer" />
         </action>
+        <deepLink app:uri="android-app://com.woocommerce.android/variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
     </fragment>
     <fragment
         android:id="@+id/productDownloadDetailsFragment"
