@@ -769,7 +769,10 @@ class MainActivity : AppUpgradeActivity(),
                 isTrashEnabled = enableTrash
             )
             navController.navigateSafely(action)
-        } else {val deeplink = "android-app://com.woocommerce.android/variationDetail" +
+        } else {
+            // variation details are part of the product navgraph, and product detail is the starting destination for
+            // that graph, so we have to use a deep link to navigate to it
+            val deeplink = "android-app://com.woocommerce.android/variationDetail" +
                 "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
             navController.navigate(Uri.parse(deeplink))
         }
