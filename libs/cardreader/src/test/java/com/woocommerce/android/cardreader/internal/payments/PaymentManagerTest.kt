@@ -104,17 +104,18 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `given status not REQUIRES_PAYMENT_METHOD, when creating payment finishes, then flow terminates`() = runBlockingTest {
-        whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
-            .thenReturn(flow { emit(CreatePaymentStatus.Success(createPaymentIntent(CANCELED))) })
+    fun `given status not REQUIRES_PAYMENT_METHOD, when creating payment finishes, then flow terminates`() =
+        runBlockingTest {
+            whenever(createPaymentAction.createPaymentIntent(anyInt(), anyString()))
+                .thenReturn(flow { emit(CreatePaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
-        val result = withTimeoutOrNull(TIMEOUT) {
-            manager.acceptPayment(0, "").toList()
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager.acceptPayment(0, "").toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            verify(collectPaymentAction, never()).collectPayment(anyOrNull())
         }
-
-        assertThat(result).isNotNull // verify the flow did not timeout
-        verify(collectPaymentAction, never()).collectPayment(anyOrNull())
-    }
 
     // END - Creating Payment intent
     // BEGIN - Collecting Payment
@@ -157,17 +158,18 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `given status not REQUIRES_CONFIRMATION, when collecting payment finishes, then flow terminates`() = runBlockingTest {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(CANCELED))) })
+    fun `given status not REQUIRES_CONFIRMATION, when collecting payment finishes, then flow terminates`() =
+        runBlockingTest {
+            whenever(collectPaymentAction.collectPayment(anyOrNull()))
+                .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
-        val result = withTimeoutOrNull(TIMEOUT) {
-            manager.acceptPayment(0, "").toList()
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager.acceptPayment(0, "").toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            verify(processPaymentAction, never()).processPayment(anyOrNull())
         }
-
-        assertThat(result).isNotNull // verify the flow did not timeout
-        verify(processPaymentAction, never()).processPayment(anyOrNull())
-    }
 
     // END - Collecting Payment
     // BEGIN - Processing Payment
@@ -190,17 +192,18 @@ class PaymentManagerTest {
     }
 
     @Test
-    fun `given status not REQUIRES_CAPTURE, when processing payment finishes, then flow terminates`() = runBlockingTest {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
+    fun `given status not REQUIRES_CAPTURE, when processing payment finishes, then flow terminates`() =
+        runBlockingTest {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
 
-        val result = withTimeoutOrNull(TIMEOUT) {
-            manager.acceptPayment(0, "").toList()
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager.acceptPayment(0, "").toList()
+            }
+
+            assertThat(result).isNotNull // verify the flow did not timeout
+            verify(cardReaderStore, never()).capturePaymentIntent(anyString())
         }
-
-        assertThat(result).isNotNull // verify the flow did not timeout
-        verify(cardReaderStore, never()).capturePaymentIntent(anyString())
-    }
 
     // END - Processing Payment
     // BEGIN - Capturing Payment
@@ -242,8 +245,10 @@ class PaymentManagerTest {
             .withIndex()
             .onEach {
                 if (expectedSequence[it.index] != it.value) {
-                    throw IllegalStateException("`PaymentManagerTest.expectedSequence` does not match received " +
-                        "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly.")
+                    throw IllegalStateException(
+                        "`PaymentManagerTest.expectedSequence` does not match received " +
+                            "events. Please verify that `PaymentManagerTest.expectedSequence` is defined correctly."
+                    )
                 }
             }
             .map { it.value }

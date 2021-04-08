@@ -136,13 +136,14 @@ internal class CollectPaymentActionTest {
     }
 
     @Test(expected = ClosedSendChannelException::class)
-    fun `given more events emitted, when terminal event already processed, then exception is thrown`() = runBlockingTest {
-        whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
-            (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
-            (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
-            mock<Cancelable>()
-        }
+    fun `given more events emitted, when terminal event already processed, then exception is thrown`() =
+        runBlockingTest {
+            whenever(terminal.collectPaymentMethod(any(), any(), any())).thenAnswer {
+                (it.arguments[2] as PaymentIntentCallback).onSuccess(mock()) // terminal
+                (it.arguments[1] as ReaderDisplayListener).onRequestReaderInput(mock()) // non-terminal
+                mock<Cancelable>()
+            }
 
-        action.collectPayment(mock()).toList()
-    }
+            action.collectPayment(mock()).toList()
+        }
 }
