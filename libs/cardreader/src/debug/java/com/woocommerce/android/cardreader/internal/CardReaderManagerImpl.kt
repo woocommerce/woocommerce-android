@@ -62,9 +62,9 @@ internal class CardReaderManagerImpl(
         }
     }
 
-    override fun startDiscovery(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
+    override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.startDiscovery(isSimulated)
+        return connectionManager.discoverReaders(isSimulated)
     }
 
     override fun connectToReader(readerId: String) {

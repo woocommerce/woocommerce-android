@@ -26,7 +26,7 @@ internal class ConnectionManager(
 ) : TerminalListener {
     val readerStatus: MutableStateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NOT_CONNECTED)
 
-    fun startDiscovery(isSimulated: Boolean) =
+    fun discoverReaders(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
             when (state) {
                 is DiscoverReadersStatus.Started -> {

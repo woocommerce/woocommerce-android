@@ -89,7 +89,7 @@ class CardReaderSettingsFragment : Fragment(R.layout.fragment_settings_card_read
                 cardReaderManager.initialize(requireActivity().application)
             }
             lifecycleScope.launchWhenResumed {
-                cardReaderManager.startDiscovery(isSimulated = simulated).collect { event ->
+                cardReaderManager.discoverReaders(isSimulated = simulated).collect { event ->
                     AppLog.d(AppLog.T.MAIN, event.toString())
                     when (event) {
                         Started, Succeeded, is Failed -> {
