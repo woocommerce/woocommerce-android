@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
-import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success

@@ -23,7 +23,7 @@ private const val DISCOVERY_TIMEOUT_IN_SECONDS = 60
 @ExperimentalCoroutinesApi
 internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
     sealed class DiscoverReadersStatus {
-        object Started: DiscoverReadersStatus()
+        object Started : DiscoverReadersStatus()
         object Success : DiscoverReadersStatus()
         data class FoundReaders(val readers: List<Reader>) : DiscoverReadersStatus()
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
@@ -63,11 +63,7 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
 }
 
 private val noopCallback = object : Callback {
-    override fun onFailure(e: TerminalException) {
-        println("Discovery cancellation failed")
-    }
+    override fun onFailure(e: TerminalException) {}
 
-    override fun onSuccess() {
-        println("Discovery cancellation finished")
-    }
+    override fun onSuccess() {}
 }
