@@ -169,8 +169,9 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items) {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundItemsPickerDialog(
                             getString(R.string.order_refunds_select_quantity),
                             event.refundItem.orderItem.uniqueId,
-                            event.refundItem.maxQuantity,
-                            event.refundItem.quantity
+                        // TODO Remove conversion to Int
+                            event.refundItem.maxQuantity.toInt(),
+                            event.refundItem.quantity.toInt()
                     )
                     findNavController().navigateSafely(action)
                 }

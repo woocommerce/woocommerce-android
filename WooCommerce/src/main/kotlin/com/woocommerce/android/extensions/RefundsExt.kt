@@ -8,11 +8,11 @@ fun List<RefundListItem>.calculateTotals(): Pair<BigDecimal, BigDecimal> {
     var taxes = BigDecimal.ZERO
     var subtotal = BigDecimal.ZERO
     this.forEach { item ->
-        val quantity = item.quantity.toBigDecimal()
+        val quantity = item.quantity
         subtotal += quantity.times(item.orderItem.price)
 
         val singleItemTax = item.orderItem.totalTax.divide(
-                item.orderItem.quantity.toBigDecimal(),
+                item.orderItem.quantity,
                 2,
                 HALF_UP
         )

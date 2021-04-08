@@ -79,8 +79,8 @@ class RefundProductListAdapter(
                 skuTextView.show()
             }
 
-            val totalRefund = formatCurrency(item.orderItem.price.times(item.quantity.toBigDecimal()))
-            if (item.quantity > 1) {
+            val totalRefund = formatCurrency(item.orderItem.price.times(item.quantity))
+            if (item.quantity > BigDecimal.ONE) {
                 descriptionTextView.text = itemView.context.getString(
                         R.string.order_refunds_detail_item_description,
                         totalRefund,
@@ -144,16 +144,17 @@ class RefundProductListAdapter(
     @Parcelize
     data class RefundListItem(
         val orderItem: Order.Item,
-        val maxQuantity: Int = 0,
-        val quantity: Int = 0
+        val maxQuantity: BigDecimal = BigDecimal.ZERO,
+        val quantity: BigDecimal = BigDecimal.ZERO
     ) : Parcelable {
         fun toDataModel(): WCRefundItem {
+            // TODO Change WCRefundItem in WordPress-FluxC-Android
             return WCRefundItem(
                     orderItem.itemId,
-                    quantity,
-                    quantity.toBigDecimal().times(orderItem.price),
-                    orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
-                            .times(quantity.toBigDecimal())
+                    quantity.toInt(),
+                    quantity.times(orderItem.price),
+                    orderItem.totalTax.divide(orderItem.quantity, 2, HALF_UP)
+                            .times(quantity)
             )
         }
     }

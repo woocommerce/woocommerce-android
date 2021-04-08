@@ -2,6 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.roundError
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
@@ -23,7 +24,7 @@ data class Refund(
     @Parcelize
     data class Item(
         val productId: Long,
-        val quantity: Int,
+        val quantity: BigDecimal,
         val id: Long = 0,
         val name: String = "",
         val variationId: Long = 0,
@@ -61,10 +62,11 @@ fun WCRefundModel.toAppModel(): Refund {
     )
 }
 
+// TODO change WCRefundItem quantity Int to BigDecimal
 fun WCRefundItem.toAppModel(): Refund.Item {
     return Refund.Item(
             productId ?: -1,
-            -quantity, // WCRefundItem.quantity is NEGATIVE
+            -quantity.toBigDecimal(), // WCRefundItem.quantity is NEGATIVE
             itemId,
             name ?: "",
             variationId ?: -1,
@@ -77,24 +79,24 @@ fun WCRefundItem.toAppModel(): Refund.Item {
 }
 
 fun List<Refund>.hasNonRefundedProducts(products: List<Order.Item>) =
-    getMaxRefundQuantities(products).values.any { it > 0 }
+    getMaxRefundQuantities(products).values.any { it > BigDecimal.ZERO }
 
 fun List<Refund>.getNonRefundedProducts(
     products: List<Order.Item>
 ): List<Order.Item> {
-    val leftoverProducts = getMaxRefundQuantities(products).filter { it.value > 0 }
+    val leftoverProducts = getMaxRefundQuantities(products).filter { it.value > BigDecimal.ZERO }
     return products
         .filter { leftoverProducts.contains(it.uniqueId) }
         .map {
             val newQuantity = leftoverProducts[it.uniqueId]
-            val quantity = it.quantity.toBigDecimal()
+            val quantity = it.quantity
             val totalTax = if (quantity > BigDecimal.ZERO) {
                 it.totalTax.divide(quantity, 2, HALF_UP)
             } else BigDecimal.ZERO
 
             it.copy(
                 quantity = newQuantity ?: error("Missing product"),
-                total = it.price.times(newQuantity.toBigDecimal()),
+                total = it.price.times(newQuantity),
                 totalTax = totalTax
             )
         }
@@ -105,11 +107,12 @@ fun List<Refund>.getNonRefundedProducts(
  */
 fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
-): Map<Long, Int> {
-    val map = mutableMapOf<Long, Int>()
+): Map<Long, BigDecimal> {
+    val map = mutableMapOf<Long, BigDecimal>()
     val groupedRefunds = this.flatMap { it.items }.groupBy { it.uniqueId }
     products.map { item ->
-        map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumBy { it.quantity } ?: 0)
+        map[item.uniqueId] = item.quantity - (groupedRefunds[item.uniqueId]?.sumByBigDecimal { it.quantity }
+            ?: BigDecimal.ZERO)
     }
     return map
 }

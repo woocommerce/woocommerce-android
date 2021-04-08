@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
+import com.woocommerce.android.extensions.sumByBigDecimal
 
 class RefundDetailViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -66,7 +67,7 @@ class RefundDetailViewModel @AssistedInject constructor(
         val groupedRefunds = refunds.flatMap { it.items }.groupBy { it.uniqueId }
         val refundedProducts = groupedRefunds.keys.mapNotNull { id ->
             order.items.firstOrNull { it.uniqueId == id }?.let { item ->
-                groupedRefunds[id]?.sumBy { it.quantity }?.let { quantity ->
+                groupedRefunds[id]?.sumByBigDecimal { it.quantity }?.let { quantity ->
                     RefundListItem(item, quantity = quantity)
                 }
             }

@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -57,6 +58,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.android.support.AndroidSupportInjection
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
@@ -273,8 +275,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
-        if (refundsCount > 0) {
+        val refundsCount = refunds.sumByBigDecimal { refund -> refund.items.sumByBigDecimal { it.quantity } }
+        if (refundsCount > BigDecimal.ZERO) {
             binding.orderDetailRefundsInfo.show()
             binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
                 viewModel.onViewRefundedProductsClicked()

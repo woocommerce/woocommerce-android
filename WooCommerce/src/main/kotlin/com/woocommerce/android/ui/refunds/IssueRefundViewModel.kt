@@ -22,6 +22,7 @@ import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
@@ -66,7 +67,6 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Locale
-import kotlin.math.min
 
 class IssueRefundViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
@@ -117,13 +117,13 @@ class IssueRefundViewModel @AssistedInject constructor(
     private val refunds: List<Refund>
 
     private val maxRefund: BigDecimal
-    private val maxQuantities: Map<Long, Int>
+    private val maxQuantities: Map<Long, BigDecimal>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
     private val arguments: RefundsArgs by savedState.navArgs()
 
-    private val selectedQuantities: MutableMap<Long, Int> by lazy {
-        val quantities = savedState.get<MutableMap<Long, Int>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
+    private val selectedQuantities: MutableMap<Long, BigDecimal> by lazy {
+        val quantities = savedState.get<MutableMap<Long, BigDecimal>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
         savedState[SELECTED_QUANTITIES_KEY] = quantities
         quantities
     }
@@ -216,8 +216,8 @@ class IssueRefundViewModel @AssistedInject constructor(
         }
 
         val items = order.items.map {
-            val maxQuantity = maxQuantities[it.uniqueId] ?: 0
-            val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: 0, maxQuantity)
+            val maxQuantity = maxQuantities[it.uniqueId] ?: BigDecimal.ZERO
+            val selectedQuantity = min(selectedQuantities[it.uniqueId] ?: BigDecimal.ZERO, maxQuantity)
             RefundListItem(it, maxQuantity, selectedQuantity)
         }
         updateRefundItems(items)
@@ -471,7 +471,7 @@ class IssueRefundViewModel @AssistedInject constructor(
         )
     }
 
-    fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
+    fun onRefundQuantityChanged(uniqueId: Long, newQuantity: BigDecimal) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
 
@@ -490,19 +490,19 @@ class IssueRefundViewModel @AssistedInject constructor(
                 formattedProductsRefund = formatCurrency(productsRefund),
                 taxes = formatCurrency(taxes),
                 subtotal = formatCurrency(subtotal),
-                isNextButtonEnabled = _refundItems.value?.any { it.quantity > 0 } ?: false,
+                isNextButtonEnabled = _refundItems.value?.any { it.quantity > BigDecimal.ZERO } ?: false,
                 selectButtonTitle = selectButtonTitle
         )
     }
 
-    private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<RefundListItem> {
+    private fun getUpdatedItemList(uniqueId: Long, newQuantity: BigDecimal): MutableList<RefundListItem> {
         val newItems = mutableListOf<RefundListItem>()
         _refundItems.value?.forEach {
             if (it.orderItem.uniqueId == uniqueId) {
                 newItems.add(
                         it.copy(
                                 quantity = newQuantity,
-                                maxQuantity = maxQuantities[uniqueId] ?: 0
+                                maxQuantity = maxQuantities[uniqueId] ?: BigDecimal.ZERO
                         )
                 )
             } else {
@@ -515,7 +515,7 @@ class IssueRefundViewModel @AssistedInject constructor(
     fun onSelectButtonTapped() {
         if (areAllItemsSelected) {
             _refundItems.value?.forEach {
-                onRefundQuantityChanged(it.orderItem.uniqueId, 0)
+                onRefundQuantityChanged(it.orderItem.uniqueId, BigDecimal.ZERO)
             }
         } else {
             _refundItems.value?.forEach {
@@ -549,9 +549,9 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun updateRefundItems(items: List<RefundListItem>) {
-        _refundItems.value = items.filter { it.maxQuantity > 0 }
+        _refundItems.value = items.filter { it.maxQuantity > BigDecimal.ZERO }
 
-        val selectedItems = items.sumBy { it.quantity }
+        val selectedItems = items.sumByBigDecimal { it.quantity }
         refundByItemsState = refundByItemsState.copy(
                 selectedItemsHeader = resourceProvider.getString(
                     R.string.order_refunds_items_selected,

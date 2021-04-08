@@ -210,7 +210,7 @@ object OrderTestUtils {
                 items = listOf(
                     Refund.Item(
                         productId = 15,
-                        quantity = 1,
+                        quantity = BigDecimal.valueOf(1.0),
                         id = 1L,
                         name = "A test",
                         variationId = 0,

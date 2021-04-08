@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
@@ -125,12 +126,13 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
         var availableRefundQuantity = order.availableRefundQuantity
         refunds.flatMap { it.items }.groupBy { it.uniqueId }.forEach { productRefunds ->
-            val refundedCount = productRefunds.value.sumBy { it.quantity }
+            val refundedCount = productRefunds.value.sumByBigDecimal { it.quantity }
             availableRefundQuantity -= refundedCount
         }
 
         // TODO: Once the refund by amount is supported again, this condition will need to be updated
-        binding.paymentInfoIssueRefundButtonSection.isVisible = availableRefundQuantity > 0 && order.isRefundAvailable
+        val isVisible = availableRefundQuantity > BigDecimal.ZERO && order.isRefundAvailable
+        binding.paymentInfoIssueRefundButtonSection.isVisible = isVisible
     }
 
     fun showRefundTotal(

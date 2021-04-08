@@ -22,7 +22,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.collections.sumBy
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @Parcelize
@@ -65,7 +64,7 @@ data class Order(
     val isRefundAvailable = refundTotal < total
 
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumBy { it.quantity }
+    val availableRefundQuantity = items.sumByBigDecimal { it.quantity }
 
     @Parcelize
     data class ShippingMethod(
@@ -88,7 +87,7 @@ data class Order(
         val name: String,
         val price: BigDecimal,
         val sku: String,
-        val quantity: Int,
+        val quantity: BigDecimal,
         val subtotal: BigDecimal,
         val totalTax: BigDecimal,
         val total: BigDecimal,
@@ -248,7 +247,7 @@ fun WCOrderModel.toAppModel(): Order {
                                 it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
                                 it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.sku ?: "",
-                                it.quantity?.toInt() ?: 0,
+                                it.quantity?.toBigDecimal() ?: BigDecimal.ZERO,
                                 it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
                                 it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
