@@ -20,9 +20,9 @@ data class ShippingPackage(
 
 @Parcelize
 data class PackageDimensions(
-    val length: Double,
-    val width: Double,
-    val height: Double
+    val length: Float,
+    val width: Float,
+    val height: Float
 ) : Parcelable
 
 fun CustomPackage.toAppModel(): ShippingPackage {
@@ -32,9 +32,9 @@ fun CustomPackage.toAppModel(): ShippingPackage {
         title = title,
         isLetter = isLetter,
         dimensions = PackageDimensions(
-            length = dimensionsParts[0].trim().toDouble(),
-            width = dimensionsParts[1].trim().toDouble(),
-            height = dimensionsParts[2].trim().toDouble()
+            length = dimensionsParts[0].trim().toFloat(),
+            width = dimensionsParts[1].trim().toFloat(),
+            height = dimensionsParts[2].trim().toFloat()
         ),
         category = ShippingPackage.CUSTOM_PACKAGE_CATEGORY
     )
@@ -48,9 +48,9 @@ fun PredefinedOption.toAppModel(): List<ShippingPackage> {
             title = it.title,
             isLetter = it.isLetter,
             dimensions = PackageDimensions(
-                length = dimensionsParts[0].trim().toDouble(),
-                width = dimensionsParts[1].trim().toDouble(),
-                height = dimensionsParts[2].trim().toDouble()
+                length = dimensionsParts[0].trim().toFloat(),
+                width = dimensionsParts[1].trim().toFloat(),
+                height = dimensionsParts[2].trim().toFloat()
             ),
             category = this.title
         )
