@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-03-30 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
@@ -24,7 +24,7 @@ Language: ar
     <string name="shipping_label_shipping_method_local_pickup">إستلام محلي من المتجر</string>
     <string name="shipping_label_shipping_method_flat_rate">سعر ثابت</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">دفع العميل مبلغًا قدره ⁦%1$s⁩ (⁦%2$s⁩) مقابل الشحن</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">عند شراء ملصقات الشحن باستخدام WooCommerce، ستحصل على خصم يتراوح بين 5 % و40 % مقارنةً بأسعار مكاتب البريد.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">ما المقصود بخصم خدمات  WooCommerce؟</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">حدث خطأ ما في أثناء تحميل خيارات الشحن</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">لا يوجد أي خيارات شحن للعنوان والحزم المحدَّدة</string>
@@ -48,7 +48,7 @@ Language: ar
     <string name="shipping_label_payments_saving_dialog_title">حفظ الإعدادات التي قمت بإجرائها</string>
     <string name="shipping_label_payments_expiration_date">تنتهي الصلاحية ⁦%1$s⁩</string>
     <string name="shipping_label_payments_email_receipts_checkbox">إرسال إيصالات شراء الملصق عبر البريد الإلكتروني إلى ⁦%1$s⁩ (⁦%2$s⁩) على ⁦%3$s⁩</string>
-    <string name="shipping_label_payments_account_info">يتم استرداد بطاقات الائتمان من حساب ووردبريس التالي: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">يتم استرداد بطاقات الائتمان من حساب ووردبريس التالي: ⁦%1$s⁩ &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">أضف بطاقة ائتمان أخرى</string>
     <string name="shipping_label_payments_selected_payment_method">تم تحديد طريقة الدفع</string>
@@ -91,7 +91,6 @@ Language: ar
     <string name="shipping_label_edit_address_loading_progress_title">تحميل بيانات العنوان</string>
     <string name="product_wip_title_m5">تتوافر ميزات جديدة!</string>
     <string name="product_wip_message_m5">يمكنك الآن إضافة ملفات قابلة للتنزيل إلى المنتج والربط بين المنتجات الموصى بها والمنتجات التسويقية. ألم تعد تريد منتجًا ما؟ انقله إلى سلة المهملات!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">يمكنك استرداد المبالغ المدفوعة في الرسوم ومبالغ الشحن والضرائب %s</string>
     <string name="shipping_label_validation_view_map">فتح الخريطة</string>
     <string name="shipping_label_validation_contact_customer">الاتصال بالعميل</string>
     <string name="shipping_label_validation_error_template">فشل التحقُّق: %s</string>
@@ -177,9 +176,9 @@ Language: ar
     <string name="product_downloadable_files_value_single">1 ملف</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ ملفات</string>
     <string name="product_wip_message_m4">أصبح من الممكن الآن إنشاء منتجات جديدة بسيطة مرتبطة ومجمَّعة في أثناء التنقل من تطبيق Woo. أليست جاهزة حتى الآن؟ احفظها كمسودة!</string>
-    <string name="print_shipping_label_info_step_4">قد تضطر إلى &lt;b&gt;تكوين طباعة WiFi مباشرة على الطابعة نفسها.&lt;/b&gt; تأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
-    <string name="print_shipping_label_info_step_3">يمكنك تحديد &lt;b&gt;خدمة الطباعة الافتراضية&lt;/b&gt; الخاصة بجهازك أو تثبيت &lt;b&gt;تطبيق العلامة التجارية للطابعة&lt;/b&gt; (ينبغي أن يظهر هذا كخيار موصى به)</string>
-    <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ &lt;b&gt;شبكات WiFi نفسها&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">قد تضطر إلى &lt;b>تكوين طباعة WiFi مباشرة على الطابعة نفسها.&lt;/b> تأكُّد من تحديث البرنامج الثابت للطابعة، والاطِّلاع على وثائق الطابعة لديك للحصول على الإرشادات.</string>
+    <string name="print_shipping_label_info_step_3">يمكنك تحديد &lt;b>خدمة الطباعة الافتراضية&lt;/b> الخاصة بجهازك أو تثبيت &lt;b>تطبيق العلامة التجارية للطابعة&lt;/b> (ينبغي أن يظهر هذا كخيار موصى به)</string>
+    <string name="print_shipping_label_info_step_1">تأكَّد من اتصال طابعتك وجهازك بـ &lt;b>شبكات WiFi نفسها&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">اختبار إنشاء منتج بسيط ومرتبط ومجمَّع بينما نستعد للبدء</string>
     <string name="bottom_sheet_linked_products_desc">زيادة المبيعات من خلال عمليات البيع والبيع المتبادل</string>
     <string name="edit_products_button">تحرير المنتجات</string>
@@ -209,8 +208,8 @@ Language: ar
     <string name="product_ratings_count_one">تم التقييم مرة واحدة</string>
     <string name="product_ratings_count">تم تقييم %d من المرات</string>
     <string name="product_detail_fetch_product_invalid_id_error">لم يتم العثور على المنتج</string>
-    <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك &lt;b&gt;حفظ التسمية الخاصة بك بصيغة PDF&lt;/b&gt; وإرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
-    <string name="print_shipping_label_info_step_2">بعد تحديد &lt;b&gt;\"طباعة ملصق الشحن\"&lt;/b&gt;، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
+    <string name="print_shipping_label_info_step_5">إذا كنت لا تزال تواجه مشكلات في الطباعة من جهازك، فيمكنك &lt;b>حفظ التسمية الخاصة بك بصيغة PDF&lt;/b> وإرسالها عبر البريد الإلكتروني لطباعتها من جهاز آخر.</string>
+    <string name="print_shipping_label_info_step_2">بعد تحديد &lt;b>\"طباعة ملصق الشحن\"&lt;/b>، قد تضطر إلى تحديد طابعة وإضافتها إذا لم تقم بالطباعة من هذا الجهاز من قبل.</string>
     <string name="print_shipping_label_format_options_title">خيارات تنسيق الملصق</string>
     <string name="print_shipping_label_info_title">الطباعة باستخدام جهازك</string>
     <string name="shipping_label_paper_size_label">ملصق (4 × 6 بوصات)</string>
@@ -471,7 +470,6 @@ Language: ar
     <string name="product_schedule_sale_sublabel">بدء التخفيض وانتهاؤه تلقائيًا</string>
     <string name="product_schedule_sale_label">جدولة التخفيض</string>
     <string name="order_refunds_store_admin_link_text">في مسؤول المتجر الخاص بك</string>
-    <string name="order_refunds_shipping_refund_notice">يمكنك استرداد %s من مبالغ الشحن والضرائب</string>
     <string name="orders_empty_message_with_order_status_filter">نأسف لذلك، لم نتمكن من العثور على أي \"%s\" من الطلبات</string>
     <string name="product_inventory_update_sku_error">وحدة SKU قيد الاستخدام بالفعل بواسطة منتج آخر</string>
     <string name="product_shipping_settings">إعدادات الشحن</string>
@@ -551,10 +549,10 @@ Language: ar
     <string name="date_timeframe_future">القادم</string>
     <string name="remove">إزالة</string>
     <string name="login_discovery_error_generic">تعذر علينا الوصول إلى موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
-    <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b&gt;شهادة SSL&lt;/b&gt;. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
-    <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b&gt;مصادقة HTTP&lt;/b&gt;. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
-    <string name="login_discovery_error_xmlrpc">تعذر علينا الوصول إلى &lt;b&gt;ملف XMLRPC&lt;/b&gt; على موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
-    <string name="login_site_credentials_magic_link_label">تقريبًا هناك! يتعين علينا فقط التحقق من صحة عنوان بريدك الإلكتروني المتصل بـ Jetpack &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_ssl">تعذر علينا الوصول إلى موقعك بسبب حدوث مشكلة في &lt;b>شهادة SSL&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_discovery_error_http_auth">تعذر علينا الوصول إلى موقعك لأنه يتطلب &lt;b>مصادقة HTTP&lt;/b>. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_discovery_error_xmlrpc">تعذر علينا الوصول إلى &lt;b>ملف XMLRPC&lt;/b> على موقعك. سيتعين عليك الوصول إلى مضيفك لحل هذا الأمر.</string>
+    <string name="login_site_credentials_magic_link_label">تقريبًا هناك! يتعين علينا فقط التحقق من صحة عنوان بريدك الإلكتروني المتصل بـ Jetpack &lt;b>%1$s&lt;/b></string>
     <string name="enter_site_credentials_instead">سجِّل الدخول باستخدام بيانات اعتماد الموقع.</string>
     <string name="enter_credentials_for_site">تسجيل الدخول باستخدام بيانات اعتماد الموقع %1$s الخاصة بك</string>
     <string name="send_verification_email">إرسال رسالة تحقق عبر البريد الإلكتروني</string>
@@ -582,7 +580,7 @@ Language: ar
     <string name="orderdetail_shipping_method">طريقة الشحن</string>
     <string name="button_edit_permissions">تحرير الأذونات</string>
     <string name="permission_camera">الكاميرا</string>
-    <string name="permissions_denied_message">يبدو أنك أوقفت الأذونات المطلوبة لهذه الميزة.&lt;br/&gt;&lt;br/&gt;لتغيير هذا، قم بتحرير أذوناتك وتأكد من تمكين &lt;strong&gt;%s&lt;/strong&gt;.</string>
+    <string name="permissions_denied_message">يبدو أنك أوقفت الأذونات المطلوبة لهذه الميزة.&lt;br/>&lt;br/>لتغيير هذا، قم بتحرير أذوناتك وتأكد من تمكين &lt;strong>%s&lt;/strong>.</string>
     <string name="permissions_denied_title">أذونات</string>
     <string name="orders_processed_empty_message">تمت معالجة جميع الطلبات</string>
     <string name="orders_empty_message_with_processing">لا توجد أي طلبات مطلوب معالجتها حتى الآن</string>
@@ -655,7 +653,7 @@ Language: ar
     <string name="orderdetail_empty_shipping_address">لا يوجد عنوان محدَّد.</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
-    <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
+    <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b>⁦%1$s⁩&lt;/b></string>
     <string name="country_mapping_ZW">زيمبابوي</string>
     <string name="country_mapping_ZM">زامبيا</string>
     <string name="country_mapping_YE">اليمن</string>
@@ -926,7 +924,7 @@ Language: ar
     <string name="order_detail_shipment_tracking_button_contentdesc">التعقب أو حذف تعقب الشحنة</string>
     <string name="orderdetail_delete_tracking">حذف التعقب</string>
     <string name="orderdetail_track_shipment">تعقب الشحنة</string>
-    <string name="login_email_help_desc">في مسؤول موقعك، يمكنك العثور على البريد الإلكتروني الذي استخدمته للاتصال بوردبرس.كوم من %1$sلوحة التحكم في Jetpack %2$s أسفل %3$sالاتصالات &gt; الاتصال بالحساب%4$s</string>
+    <string name="login_email_help_desc">في مسؤول موقعك، يمكنك العثور على البريد الإلكتروني الذي استخدمته للاتصال بوردبرس.كوم من %1$sلوحة التحكم في Jetpack %2$s أسفل %3$sالاتصالات > الاتصال بالحساب%4$s</string>
     <string name="login_email_help_title">ما البريد الإلكتروني الذي أستخدمه لتسجيل الدخول؟</string>
     <string name="login_need_help_finding_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني المتصل؟</string>
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>

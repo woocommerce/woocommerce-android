@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-04-01 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
@@ -24,7 +24,7 @@ Language: ru
     <string name="shipping_label_shipping_method_local_pickup">Самовывоз</string>
     <string name="shipping_label_shipping_method_flat_rate">Единая ставка</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Клиент оплатил %1$s (%2$s) за доставку.</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">При покупке транспортных этикеток через WooCommerce вы сэкономите от 5 до 40 % по сравнению с тарифами почты.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">При покупке транспортных этикеток через WooCommerce вы сэкономите от 5 до 40 % по сравнению с тарифами почты.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Что такое скидка WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">При загрузке вариантов доставки произошла ошибка.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Для выбранного адреса и грузов варианты доставки отсутствуют.</string>
@@ -48,7 +48,7 @@ Language: ru
     <string name="shipping_label_payments_saving_dialog_title">Сохранение настроек</string>
     <string name="shipping_label_payments_expiration_date">Срок действия истекает %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">Отправлять квитанции о покупке на %1$s (%2$s) — %3$s</string>
-    <string name="shipping_label_payments_account_info">Сведения о кредитных картах получены из следующей учётной записи WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">Сведения о кредитных картах получены из следующей учётной записи WordPress.com: %1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Добавить другую кредитную карту</string>
     <string name="shipping_label_payments_selected_payment_method">Способ оплаты выбран</string>
@@ -91,7 +91,6 @@ Language: ru
     <string name="shipping_label_edit_address_loading_progress_title">Загрузка адреса</string>
     <string name="product_wip_title_m5">Доступны новые функции!</string>
     <string name="product_wip_message_m5">Теперь вы можете добавлять к товару скачиваемые файлы и давать ссылки на сопутствующие и более дорогие товары. Товар больше не нужен? Отправьте его в корзину!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Можно получить возврат оплаты товара, доставки и суммы налогов (%s)</string>
     <string name="shipping_label_validation_view_map">Открыть карту</string>
     <string name="shipping_label_validation_contact_customer">Связаться с клиентом</string>
     <string name="shipping_label_validation_error_template">Сбой проверки: %s</string>
@@ -177,9 +176,9 @@ Language: ru
     <string name="product_downloadable_files_value_single">1 файл</string>
     <string name="product_downloadable_files_value_multiple">%1$d файлы</string>
     <string name="product_wip_message_m4">Теперь можно на ходу создавать новые простые, связанные и сгруппированные товары в приложении Woo. Еще не готовы? Сохраните их как черновик.</string>
-    <string name="print_shipping_label_info_step_4">Возможно, нужно &lt;b&gt;настроить печать по Wi-Fi на самом принтере&lt;/b&gt;. Убедитесь, что микропрограммное обеспечение принтера обновлено, и ознакомьтесь с документацией принтера.</string>
-    <string name="print_shipping_label_info_step_3">Можно выбрать для принтера &lt;b&gt;службу печати по умолчанию&lt;/b&gt; или установить &lt;b&gt;приложение от производителя принтера&lt;/b&gt; (здесь должен появиться рекомендованный вариант).</string>
-    <string name="print_shipping_label_info_step_1">Убедитесь, что ваши принтер и устройство подключены к &lt;b&gt;одной сети Wi-Fi&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">Возможно, нужно &lt;b>настроить печать по Wi-Fi на самом принтере&lt;/b>. Убедитесь, что микропрограммное обеспечение принтера обновлено, и ознакомьтесь с документацией принтера.</string>
+    <string name="print_shipping_label_info_step_3">Можно выбрать для принтера &lt;b>службу печати по умолчанию&lt;/b> или установить &lt;b>приложение от производителя принтера&lt;/b> (здесь должен появиться рекомендованный вариант).</string>
+    <string name="print_shipping_label_info_step_1">Убедитесь, что ваши принтер и устройство подключены к &lt;b>одной сети Wi-Fi&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">Оцените новую простую процедуру создания связанных и сгруппированных продуктов, которая готова к запуску</string>
     <string name="bottom_sheet_linked_products_desc">Увеличивайте продажи благодаря продаже дополнительных и связанных продуктов</string>
     <string name="edit_products_button">Изменить товары</string>
@@ -209,8 +208,8 @@ Language: ru
     <string name="product_ratings_count_one">\u2022 одна оценка</string>
     <string name="product_ratings_count">\u2022 оценено %d раз</string>
     <string name="product_detail_fetch_product_invalid_id_error">Продукт не найден</string>
-    <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете &lt;b&gt;сохранить этикетку в формате PDF&lt;/b&gt; и отправить ее по эл. почте, чтобы распечатать с другого устройства.</string>
-    <string name="print_shipping_label_info_step_2">Нажав &lt;b&gt;«Напечатать транспортную этикетку»&lt;/b&gt;, можно выбрать и добавить принтер, если ранее вы не выполняли печать с этого устройства.</string>
+    <string name="print_shipping_label_info_step_5">Если вам по-прежнему не удается выполнить печать со своего устройства, вы можете &lt;b>сохранить этикетку в формате PDF&lt;/b> и отправить ее по эл. почте, чтобы распечатать с другого устройства.</string>
+    <string name="print_shipping_label_info_step_2">Нажав &lt;b>«Напечатать транспортную этикетку»&lt;/b>, можно выбрать и добавить принтер, если ранее вы не выполняли печать с этого устройства.</string>
     <string name="print_shipping_label_format_options_title">Варианты формата этикетки</string>
     <string name="print_shipping_label_info_title">Печать с устройства</string>
     <string name="shipping_label_paper_size_label">Этикетка (4 x 6 in)</string>
@@ -471,7 +470,6 @@ Language: ru
     <string name="product_schedule_sale_sublabel">Автоматически начинать и завершать распродажу</string>
     <string name="product_schedule_sale_label">Запланировать распродажу</string>
     <string name="order_refunds_store_admin_link_text">в учетной записи администратора магазина</string>
-    <string name="order_refunds_shipping_refund_notice">Можно получить возврат оплаты доставки и суммы налогов (%s)</string>
     <string name="orders_empty_message_with_order_status_filter">К сожалению, мы не смогли найти заказы \"%s\"</string>
     <string name="product_inventory_update_sku_error">Артикул уже используется для другого продукта</string>
     <string name="product_shipping_settings">Настройки доставки</string>
@@ -551,10 +549,10 @@ Language: ru
     <string name="date_timeframe_future">Ближайшие</string>
     <string name="remove">Удалить</string>
     <string name="login_discovery_error_generic">Не удалось получить доступ к вашему сайту. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
-    <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b&gt;сертификатом SSL&lt;/b&gt;. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
-    <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b&gt;проверку подлинности HTTP&lt;/b&gt;. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
-    <string name="login_discovery_error_xmlrpc">Не удалось получить доступ к &lt;b&gt;файлу XMLRPC&lt;/b&gt; на вашем сайте. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
-    <string name="login_site_credentials_magic_link_label">Почти готово! Осталось проверить адрес эл. почты, привязанный к Jetpack &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_ssl">Не удалось получить доступ к вашему сайту: возникла проблема с &lt;b>сертификатом SSL&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
+    <string name="login_discovery_error_http_auth">Не удалось получить доступ к вашему сайту: необходимо выполнить &lt;b>проверку подлинности HTTP&lt;/b>. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
+    <string name="login_discovery_error_xmlrpc">Не удалось получить доступ к &lt;b>файлу XMLRPC&lt;/b> на вашем сайте. Возможно, потребуется обратиться в техподдержку службы хостинга, чтобы решить эту проблему.</string>
+    <string name="login_site_credentials_magic_link_label">Почти готово! Осталось проверить адрес эл. почты, привязанный к Jetpack &lt;b>%1$s&lt;/b></string>
     <string name="enter_site_credentials_instead">Войдите с именем пользователя и паролем для сайта.</string>
     <string name="enter_credentials_for_site">Войдите с именем пользователя и паролем для сайта %1$s</string>
     <string name="send_verification_email">Отправить письмо с подтверждением</string>
@@ -582,7 +580,7 @@ Language: ru
     <string name="orderdetail_shipping_method">Способ доставки</string>
     <string name="button_edit_permissions">Изменить разрешения</string>
     <string name="permission_camera">Камера</string>
-    <string name="permissions_denied_message">Кажется, вы отключили разрешения, которые нужны для этой функции.&lt;br/&gt;&lt;br/&gt;Чтобы это изменить, отредактируйте разрешения и убедитесь, что параметр &lt;strong&gt;%s&lt;/strong&gt; включён.</string>
+    <string name="permissions_denied_message">Кажется, вы отключили разрешения, которые нужны для этой функции.&lt;br/>&lt;br/>Чтобы это изменить, отредактируйте разрешения и убедитесь, что параметр &lt;strong>%s&lt;/strong> включён.</string>
     <string name="permissions_denied_title">Разрешения</string>
     <string name="orders_processed_empty_message">Все заказы обработаны</string>
     <string name="orders_empty_message_with_processing">Нет заказов для обработки</string>
@@ -655,7 +653,7 @@ Language: ru
     <string name="orderdetail_empty_shipping_address">Адрес не указан.</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
-    <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Зимбабве</string>
     <string name="country_mapping_ZM">Замбия</string>
     <string name="country_mapping_YE">Йемен</string>
@@ -926,7 +924,7 @@ Language: ru
     <string name="order_detail_shipment_tracking_button_contentdesc">Отслеживать посылку или удалить отслеживание</string>
     <string name="orderdetail_delete_tracking">Удалить отслеживание</string>
     <string name="orderdetail_track_shipment">Отследить посылку</string>
-    <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения &gt; Подключение учетных записей%4$s</string>
+    <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения > Подключение учетных записей%4$s</string>
     <string name="login_email_help_title">Какой адрес эл. почты я использую для входа?</string>
     <string name="login_need_help_finding_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>

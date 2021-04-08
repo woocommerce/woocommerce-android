@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-03-31 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
@@ -24,7 +24,7 @@ Language: ja_JP
     <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
     <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>
@@ -48,7 +48,7 @@ Language: ja_JP
     <string name="shipping_label_payments_saving_dialog_title">設定を保存しています</string>
     <string name="shipping_label_payments_expiration_date">%1$s が有効期限切れ</string>
     <string name="shipping_label_payments_email_receipts_checkbox">ラベルの購入レシートを %1$s (%2$s) に %3$s でメール送信します</string>
-    <string name="shipping_label_payments_account_info">クレジットカードが次の WordPress.com アカウントから読み込まれました: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">クレジットカードが次の WordPress.com アカウントから読み込まれました: %1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">別のクレジットカードの追加</string>
     <string name="shipping_label_payments_selected_payment_method">お支払い方法が選択されました</string>
@@ -91,7 +91,6 @@ Language: ja_JP
     <string name="shipping_label_edit_address_loading_progress_title">住所データを読み込んでいます</string>
     <string name="product_wip_title_m5">新機能を利用できます。</string>
     <string name="product_wip_message_m5">商品にダウンロード可能なファイルを追加して、アップセルとクロスセルの商品をリンクできるようになりました。 商品が不要になりましたか ? ゴミ箱に移動しましょう。</string>
-    <string name="order_refunds_shipping_refund_notice_fees">料金、配送料、税額の払い戻しを受けられます%s</string>
     <string name="shipping_label_validation_view_map">マップを開く</string>
     <string name="shipping_label_validation_contact_customer">顧客に連絡</string>
     <string name="shipping_label_validation_error_template">検証に失敗しました: %s</string>
@@ -177,9 +176,9 @@ Language: ja_JP
     <string name="product_downloadable_files_value_single">1件のファイル</string>
     <string name="product_downloadable_files_value_multiple">%1$d ファイル</string>
     <string name="product_wip_message_m4">Woo アプリで、シンプルでリンクおよびグループ化された商品を外出先でも作成できるようになりました。ぜひインストールしてください。 下書きとして保存しましょう !</string>
-    <string name="print_shipping_label_info_step_4">&lt;b&gt;プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b&gt;プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
-    <string name="print_shipping_label_info_step_3">端末の&lt;b&gt;デフォルトの印刷サービス&lt;/b&gt;を選択するか、&lt;b&gt;プリンターのブランドのアプリ&lt;/b&gt;をインストールできます (これは推奨オプションとして表示)</string>
-    <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b&gt;同じ WiFi ネットワーク&lt;/b&gt;に接続されていることを確認してください</string>
+    <string name="print_shipping_label_info_step_4">&lt;b>プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b>プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
+    <string name="print_shipping_label_info_step_3">端末の&lt;b>デフォルトの印刷サービス&lt;/b>を選択するか、&lt;b>プリンターのブランドのアプリ&lt;/b>をインストールできます (これは推奨オプションとして表示)</string>
+    <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b>同じ WiFi ネットワーク&lt;/b>に接続されていることを確認してください</string>
     <string name="settings_enable_product_adding_teaser_message">リリースの準備ができ次第、新しいリンクおよびグループ化された商品の作成機能をテストしてください</string>
     <string name="bottom_sheet_linked_products_desc">アップセルとクロスセルで販売を伸ばしましょう</string>
     <string name="edit_products_button">商品を編集</string>
@@ -209,8 +208,8 @@ Language: ja_JP
     <string name="product_ratings_count_one">\u2022 1件の評価</string>
     <string name="product_ratings_count">\u2022 %d件の評価</string>
     <string name="product_detail_fetch_product_invalid_id_error">商品が見つかりません</string>
-    <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、&lt;b&gt;ラベルを PDF として保存&lt;/b&gt;し、メールで別の端末に送信して印刷できます。</string>
-    <string name="print_shipping_label_info_step_2">&lt;b&gt;「配送ラベルを印刷」&lt;/b&gt;を選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
+    <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、&lt;b>ラベルを PDF として保存&lt;/b>し、メールで別の端末に送信して印刷できます。</string>
+    <string name="print_shipping_label_info_step_2">&lt;b>「配送ラベルを印刷」&lt;/b>を選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
     <string name="print_shipping_label_format_options_title">ラベルの書式設定オプション</string>
     <string name="print_shipping_label_info_title">端末から印刷</string>
     <string name="shipping_label_paper_size_label">ラベル (4 x 6インチ)</string>
@@ -471,7 +470,6 @@ Language: ja_JP
     <string name="product_schedule_sale_sublabel">セールを自動的に開始、終了する</string>
     <string name="product_schedule_sale_label">セールの予定を設定</string>
     <string name="order_refunds_store_admin_link_text">ストア管理へ</string>
-    <string name="order_refunds_shipping_refund_notice">配送料と税額%sの返金をリクエストできます。</string>
     <string name="orders_empty_message_with_order_status_filter">「%s」の注文が見つかりませんでした。</string>
     <string name="product_inventory_update_sku_error">すでに別の製品で使用されている SKU</string>
     <string name="product_shipping_settings">配送設定</string>
@@ -551,10 +549,10 @@ Language: ja_JP
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_ssl">&lt;b&gt;SSL 証明書&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP 認証&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_xmlrpc">サイトの &lt;b&gt;XMLRPC ファイル&lt;/b&gt;にアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_site_credentials_magic_link_label">もう少しです !最後に、Jetpack に連携したメールアドレス &lt;b&gt;%1$s&lt;/b&gt; を確認します</string>
+    <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_discovery_error_xmlrpc">サイトの &lt;b>XMLRPC ファイル&lt;/b>にアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_site_credentials_magic_link_label">もう少しです !最後に、Jetpack に連携したメールアドレス &lt;b>%1$s&lt;/b> を確認します</string>
     <string name="enter_site_credentials_instead">サイトのログイン情報でログインします。</string>
     <string name="enter_credentials_for_site">%1$s サイトのログイン情報でログインします。</string>
     <string name="send_verification_email">確認メールを送信</string>
@@ -582,7 +580,7 @@ Language: ja_JP
     <string name="orderdetail_shipping_method">配送方法</string>
     <string name="button_edit_permissions">権限を編集</string>
     <string name="permission_camera">カメラ</string>
-    <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/&gt;&lt;br/&gt;これを変更するには、権限を編集して &lt;strong&gt;%s&lt;/strong&gt; が有効であることを確認してください。</string>
+    <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/>&lt;br/>これを変更するには、権限を編集して &lt;strong>%s&lt;/strong> が有効であることを確認してください。</string>
     <string name="permissions_denied_title">権限</string>
     <string name="orders_processed_empty_message">注文がすべて処理されました</string>
     <string name="orders_empty_message_with_processing">処理する注文はまだありません</string>
@@ -655,7 +653,7 @@ Language: ja_JP
     <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
+    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>

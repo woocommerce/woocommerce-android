@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-03-31 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
@@ -24,7 +24,7 @@ Language: ko_KR
     <string name="shipping_label_shipping_method_local_pickup">방문 수령</string>
     <string name="shipping_label_shipping_method_flat_rate">고정 요금</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">배송에 대해 고객이 결제한 %1$s(%2$s)</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce를 통해 배송 레이블을 구매하면 우체국 요금보다 5~40% 할인됩니다.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">WooCommerce를 통해 배송 레이블을 구매하면 우체국 요금보다 5~40% 할인됩니다.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  서비스 할인이란?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">배송 옵션을 로드하는 중 오류가 발생했습니다.</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">선택한 주소와 패키지에 대한 배송 옵션이 없습니다.</string>
@@ -48,7 +48,7 @@ Language: ko_KR
     <string name="shipping_label_payments_saving_dialog_title">설정 저장 중</string>
     <string name="shipping_label_payments_expiration_date">%1$s 만료</string>
     <string name="shipping_label_payments_email_receipts_checkbox">%3$s에 %1$s(%2$s)(으)로 레이블 구매 영수증을 이메일로 보내기</string>
-    <string name="shipping_label_payments_account_info">워드프레스닷컴 계정 %1$s&lt;%2$s&gt;에서 신용카드가 검색되었습니다.</string>
+    <string name="shipping_label_payments_account_info">워드프레스닷컴 계정 %1$s&lt;%2$s>에서 신용카드가 검색되었습니다.</string>
     <string name="shipping_label_payments_type_digits">%1$s**** %2$s</string>
     <string name="shipping_label_payments_add_credit_card">다른 신용카드 추가</string>
     <string name="shipping_label_payments_selected_payment_method">결제 수단 선택됨</string>
@@ -91,7 +91,6 @@ Language: ko_KR
     <string name="shipping_label_edit_address_loading_progress_title">주소 데이터 로드 중</string>
     <string name="product_wip_title_m5">새 기능을 사용할 수 있습니다!</string>
     <string name="product_wip_message_m5">이제 다운로드 가능한 파일을 제품에 추가하고 상향 판매 및 교차 판매 제품을 연결할 수 있습니다. 더는 제품을 원하지 않나요? 휴지통에 버리세요!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">수수료, 배송비 및 세금(%s)을 환불할 수 있음</string>
     <string name="shipping_label_validation_view_map">지도 열기</string>
     <string name="shipping_label_validation_contact_customer">고객에게 문의</string>
     <string name="shipping_label_validation_error_template">유효성 검사 실패: %s</string>
@@ -177,9 +176,9 @@ Language: ko_KR
     <string name="product_downloadable_files_value_single">1개 파일</string>
     <string name="product_downloadable_files_value_multiple">%1$d 파일</string>
     <string name="product_wip_message_m4">이제 이동 중에 Woo 앱에서 간단하고 연결되고 그룹화된 새 제품을 생성할 수 있습니다. 아직 준비되지 않으셨나요? 임시글로 저장하세요!</string>
-    <string name="print_shipping_label_info_step_4">&lt;b&gt;프린터 자체에서 직접 WiFi 인쇄를 구성&lt;/b&gt;해야 할 수도 있습니다. 프린터 펌웨어가 업데이트되어 있는지 확인하고 프린터 설명서의 지침을 참조하세요.</string>
-    <string name="print_shipping_label_info_step_3">기기의 &lt;b&gt;기본 인쇄 서비스&lt;/b&gt; 선택 또는 &lt;b&gt;프린터의 브랜드 앱&lt;/b&gt; 설치(권장 옵션으로 표시된 경우) 가능</string>
-    <string name="print_shipping_label_info_step_1">프린터와 기기가 &lt;b&gt;같은 WiFi 네트워크&lt;/b&gt;에 연결되었는지 확인</string>
+    <string name="print_shipping_label_info_step_4">&lt;b>프린터 자체에서 직접 WiFi 인쇄를 구성&lt;/b>해야 할 수도 있습니다. 프린터 펌웨어가 업데이트되어 있는지 확인하고 프린터 설명서의 지침을 참조하세요.</string>
+    <string name="print_shipping_label_info_step_3">기기의 &lt;b>기본 인쇄 서비스&lt;/b> 선택 또는 &lt;b>프린터의 브랜드 앱&lt;/b> 설치(권장 옵션으로 표시된 경우) 가능</string>
+    <string name="print_shipping_label_info_step_1">프린터와 기기가 &lt;b>같은 WiFi 네트워크&lt;/b>에 연결되었는지 확인</string>
     <string name="settings_enable_product_adding_teaser_message">출시 준비가 완료되면 간단하고 연결되어 있으며 그룹화된 새 제품 생성을 테스트하세요.</string>
     <string name="bottom_sheet_linked_products_desc">상향 판매 및 교차 판매로 판매 늘리기</string>
     <string name="edit_products_button">제품 편집</string>
@@ -209,8 +208,8 @@ Language: ko_KR
     <string name="product_ratings_count_one">\u2022 1회 평가됨</string>
     <string name="product_ratings_count">\u2022 %d회 평가됨</string>
     <string name="product_detail_fetch_product_invalid_id_error">제품을 찾을 수 없습니다.</string>
-    <string name="print_shipping_label_info_step_5">기기에서 인쇄 중 문제가 계속 발생하는 경우 &lt;b&gt;레이블을 PDF로 저장&lt;/b&gt;하고 이메일로 보내 다른 기기에서 인쇄할 수 있습니다.</string>
-    <string name="print_shipping_label_info_step_2">&lt;b&gt;\"배송 레이블 인쇄\"&lt;/b&gt;를 선택한 후, 이전에 이 기기에서 인쇄한 적이 없는 경우 프린터를 선택하고 추가해야 할 수도 있습니다.</string>
+    <string name="print_shipping_label_info_step_5">기기에서 인쇄 중 문제가 계속 발생하는 경우 &lt;b>레이블을 PDF로 저장&lt;/b>하고 이메일로 보내 다른 기기에서 인쇄할 수 있습니다.</string>
+    <string name="print_shipping_label_info_step_2">&lt;b>\"배송 레이블 인쇄\"&lt;/b>를 선택한 후, 이전에 이 기기에서 인쇄한 적이 없는 경우 프린터를 선택하고 추가해야 할 수도 있습니다.</string>
     <string name="print_shipping_label_format_options_title">레이블 형식 옵션</string>
     <string name="print_shipping_label_info_title">기기로 인쇄</string>
     <string name="shipping_label_paper_size_label">레이블(4 x 6in)</string>
@@ -471,7 +470,6 @@ Language: ko_KR
     <string name="product_schedule_sale_sublabel">자동 판매 시작 및 종료</string>
     <string name="product_schedule_sale_label">판매 일정</string>
     <string name="order_refunds_store_admin_link_text">스토어 관리자에서</string>
-    <string name="order_refunds_shipping_refund_notice">배송비 및 세금(%s)을 환불할 수 있습니다.</string>
     <string name="orders_empty_message_with_order_status_filter">죄송합니다. \"%s\" 주문을 찾을 수 없습니다.</string>
     <string name="product_inventory_update_sku_error">SKU가 다른 제품에서 이미 사용 중</string>
     <string name="product_shipping_settings">배송 설정</string>
@@ -551,10 +549,10 @@ Language: ko_KR
     <string name="date_timeframe_future">다음</string>
     <string name="remove">제거</string>
     <string name="login_discovery_error_generic">사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
-    <string name="login_discovery_error_ssl">&lt;b&gt;SSL 인증서&lt;/b&gt; 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
-    <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP 인증&lt;/b&gt;이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
-    <string name="login_discovery_error_xmlrpc">사이트에서 &lt;b&gt;XMLRPC 파일&lt;/b&gt;에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
-    <string name="login_site_credentials_magic_link_label">마지막 부분입니다! 젯팩에 연결된 이메일 주소 &lt;b&gt;%1$s&lt;/b&gt;만 확인하면 됩니다.</string>
+    <string name="login_discovery_error_ssl">&lt;b>SSL 인증서&lt;/b> 문제로 인해 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_discovery_error_http_auth">&lt;b>HTTP 인증&lt;/b>이 필요하므로 사이트에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_discovery_error_xmlrpc">사이트에서 &lt;b>XMLRPC 파일&lt;/b>에 액세스할 수 없습니다. 이 문제를 해결하려면 호스트에게 연락해야 합니다.</string>
+    <string name="login_site_credentials_magic_link_label">마지막 부분입니다! 젯팩에 연결된 이메일 주소 &lt;b>%1$s&lt;/b>만 확인하면 됩니다.</string>
     <string name="enter_site_credentials_instead">사이트 자격 증명으로 로그인하세요.</string>
     <string name="enter_credentials_for_site">%1$s 사이트 자격 증명으로 로그인</string>
     <string name="send_verification_email">인증 이메일 보내기</string>
@@ -582,7 +580,7 @@ Language: ko_KR
     <string name="orderdetail_shipping_method">배송 방법</string>
     <string name="button_edit_permissions">권한 편집</string>
     <string name="permission_camera">카메라</string>
-    <string name="permissions_denied_message">이 기능에 대한 필수 권한이 해제되어 있는 것 같습니다.&lt;br/&gt;&lt;br/&gt;변경하려면 권한을 편집하고 &lt;strong&gt;%s&lt;/strong&gt;이(가) 활성화되어 있는지 확인하세요.</string>
+    <string name="permissions_denied_message">이 기능에 대한 필수 권한이 해제되어 있는 것 같습니다.&lt;br/>&lt;br/>변경하려면 권한을 편집하고 &lt;strong>%s&lt;/strong>이(가) 활성화되어 있는지 확인하세요.</string>
     <string name="permissions_denied_title">권한</string>
     <string name="orders_processed_empty_message">모든 주문이 처리됨</string>
     <string name="orders_empty_message_with_processing">아직 처리할 주문이 없음</string>
@@ -655,7 +653,7 @@ Language: ko_KR
     <string name="orderdetail_empty_shipping_address">주소가 지정되지 않았습니다.</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
-    <string name="enter_email_for_site">워드프레스닷컴으로 로그인하여 &lt;b&gt;%1$s&lt;/b&gt;에 연결</string>
+    <string name="enter_email_for_site">워드프레스닷컴으로 로그인하여 &lt;b>%1$s&lt;/b>에 연결</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -926,7 +924,7 @@ Language: ko_KR
     <string name="order_detail_shipment_tracking_button_contentdesc">배송 추적을 추적 또는 삭제</string>
     <string name="orderdetail_delete_tracking">추적 삭제</string>
     <string name="orderdetail_track_shipment">배송 추적</string>
-    <string name="login_email_help_desc">사이트 관리에서 %1$sJetpack 대시보드%2$s(%3$s연결 &gt; 계정 연결%4$s)에서 워드프레스닷컴에 연결하는 데 사용한 이메일을 찾을 수 있습니다.</string>
+    <string name="login_email_help_desc">사이트 관리에서 %1$sJetpack 대시보드%2$s(%3$s연결 > 계정 연결%4$s)에서 워드프레스닷컴에 연결하는 데 사용한 이메일을 찾을 수 있습니다.</string>
     <string name="login_email_help_title">로그인할 때 어떤 이메일을 사용하나요?</string>
     <string name="login_need_help_finding_email">연결된 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>

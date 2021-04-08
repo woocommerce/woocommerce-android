@@ -1,11 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
-Translation-Revision-Date: 2021-03-30 11:54:04+0000
+Translation-Revision-Date: 2021-04-07 13:00:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="magic_link_not_meaning_to_create_account">Var det inte meningen att skapa ett nytt konto? Gå tillbaka och skriv din e-postadress igen.</string>
+    <string name="settings_card_reader">Hantera kortläsare</string>
+    <string name="settings_store">Butiksinställningar</string>
+    <string name="product_attributes">Attribut</string>
+    <string name="and">och</string>
+    <string name="product_attribute_remove">Ta bort detta attribut?</string>
     <string name="product_attributes_error_saving">Fel när dina attribut sparades</string>
     <string name="shipping_label_payments_cant_edit_warning">Det är bara webbplatsens ägare som kan hantera betalningsmetoderna för fraktetiketter. Kontakta butiksägaren %1$s (%2$s) för att hantera betalningsmetoder.</string>
     <string name="product_detail_add_variations">Lägg till variationer</string>
@@ -24,7 +30,7 @@ Language: sv_SE
     <string name="shipping_label_shipping_method_local_pickup">Hämta själv</string>
     <string name="shipping_label_shipping_method_flat_rate">Fast pris</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Kunden betalade %1$s (%2$s) för frakt</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">När du köper fraktetiketter med WooCommerce, får du 5 % till 40 % i rabatt jämfört med postkontoret.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">När du köper fraktetiketter med WooCommerce, får du 5 % till 40 % i rabatt jämfört med postkontoret.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Vad innebär rabatt på  WooCommerce-tjänster?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Det gick inte att hämta leveransalternativen</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Det finns inga leveransalternativ för den valda adressen och de valda paketen</string>
@@ -48,7 +54,7 @@ Language: sv_SE
     <string name="shipping_label_payments_saving_dialog_title">Sparar dina inställningar</string>
     <string name="shipping_label_payments_expiration_date">Löper ut %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">E-posta inköpskvitton till %1$s (%2$s) på %3$s</string>
-    <string name="shipping_label_payments_account_info">Kreditkort hämtas från följande WordPress.com-konto: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">Kreditkort hämtas från följande WordPress.com-konto: %1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Lägg till ett annat kreditkort</string>
     <string name="shipping_label_payments_selected_payment_method">Betalningsmetod vald</string>
@@ -91,7 +97,6 @@ Language: sv_SE
     <string name="shipping_label_edit_address_loading_progress_title">Laddar in adressdata</string>
     <string name="product_wip_title_m5">Nya funktioner tillgängliga!</string>
     <string name="product_wip_message_m5">Du kan nu lägga till nedladdningsbara filer till en produkt och länka produkter för merföräljning och korsförsäljning. Vill du inte ha en produkt längre? Släng den!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Du kan återbetala avgifter, frakt och momsbelopp %s</string>
     <string name="shipping_label_validation_view_map">Öppna karta</string>
     <string name="shipping_label_validation_contact_customer">Kontakta kunden</string>
     <string name="shipping_label_validation_error_template">Validering misslyckades: %s</string>
@@ -177,9 +182,9 @@ Language: sv_SE
     <string name="product_downloadable_files_value_single">1 fil</string>
     <string name="product_downloadable_files_value_multiple">%1$d filer</string>
     <string name="product_wip_message_m4">Det är nu möjligt att skapa nya enkla, länkade och grupperade produkter i farten med hjälp av Woo-appen. Är du inte klar än? Spara dem som utkast!</string>
-    <string name="print_shipping_label_info_step_4">Du kan behöva &lt;b&gt;konfigurera Wi-Fi-utskrift direkt på själva skrivaren.&lt;/b&gt; Kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
-    <string name="print_shipping_label_info_step_3">Du kan välja din enhets &lt;b&gt;standardutskriftstjänst&lt;/b&gt; eller installera din &lt;b&gt;skrivares varumärkesapp&lt;/b&gt; (detta bör visas som ett rekommenderat alternativ)</string>
-    <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till &lt;b&gt;samma Wi-Fi-nätverk&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">Du kan behöva &lt;b>konfigurera Wi-Fi-utskrift direkt på själva skrivaren.&lt;/b> Kontrollera att skrivarens fasta programvara är uppdaterad. Anvisningar finns i skrivarens dokumentation.</string>
+    <string name="print_shipping_label_info_step_3">Du kan välja din enhets &lt;b>standardutskriftstjänst&lt;/b> eller installera din &lt;b>skrivares varumärkesapp&lt;/b> (detta bör visas som ett rekommenderat alternativ)</string>
+    <string name="print_shipping_label_info_step_1">Se till att din skrivare och din enhet är anslutna till &lt;b>samma Wi-Fi-nätverk&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">Testa det nya enkla, länkade och grupperade produktskapandet medan vi gör oss redo för lansering</string>
     <string name="bottom_sheet_linked_products_desc">Öka försäljningen med merförsäljning och korsförsäljning</string>
     <string name="edit_products_button">Redigera produkter</string>
@@ -209,8 +214,8 @@ Language: sv_SE
     <string name="product_ratings_count_one">\u2022 betygsatt en gång</string>
     <string name="product_ratings_count">\u2022 betygsatt %d gånger</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produkt hittades inte</string>
-    <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du &lt;b&gt;spara din etikett som en PDF-fil&lt;/b&gt; och skicka den med e-post för att skriva ut den från en annan enhet.</string>
-    <string name="print_shipping_label_info_step_2">När du har valt &lt;b&gt;\"Skriv ut fraktetikett\"&lt;/b&gt; kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
+    <string name="print_shipping_label_info_step_5">Om du fortfarande har problem med att skriva ut från din enhet kan du &lt;b>spara din etikett som en PDF-fil&lt;/b> och skicka den med e-post för att skriva ut den från en annan enhet.</string>
+    <string name="print_shipping_label_info_step_2">När du har valt &lt;b>\"Skriv ut fraktetikett\"&lt;/b> kan du behöva välja och lägga till en skrivare om du inte har skrivit ut från den här enheten tidigare.</string>
     <string name="print_shipping_label_format_options_title">Alternativ för etikettformat</string>
     <string name="print_shipping_label_info_title">Skriv ut med din enhet</string>
     <string name="shipping_label_paper_size_label">Etikett (4 x 6 tum)</string>
@@ -471,7 +476,6 @@ Language: sv_SE
     <string name="product_schedule_sale_sublabel">Starta och avsluta en rea automatiskt</string>
     <string name="product_schedule_sale_label">Schemalägg rea</string>
     <string name="order_refunds_store_admin_link_text">i ditt administratörsarkiv</string>
-    <string name="order_refunds_shipping_refund_notice">Du kan återbetala frakt- och momsbelopp %s</string>
     <string name="orders_empty_message_with_order_status_filter">Vi hittade inga %s-ordrar</string>
     <string name="product_inventory_update_sku_error">SKU används redan av en annan produkt</string>
     <string name="product_shipping_settings">Fraktinställningar</string>
@@ -551,10 +555,10 @@ Language: sv_SE
     <string name="date_timeframe_future">Kommande</string>
     <string name="remove">Ta bort</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
-    <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b&gt;SSL-certifikatet&lt;/b&gt;. För att lösa detta behöver du kontakta ditt webbhotell.</string>
-    <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b&gt;HTTP-autentisering&lt;/b&gt;. För att lösa detta behöver du kontakta ditt webbhotell.</string>
-    <string name="login_discovery_error_xmlrpc">Vi kunde inte komma åt &lt;b&gt;XMLRPC-filen&lt;/b&gt; på din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
-    <string name="login_site_credentials_magic_link_label">Nästan där! Nästan klart! Vi behöver bara bekräfta den e-postadress du har registrerad hos Jetpack &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b>SSL-certifikatet&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b>HTTP-autentisering&lt;/b>. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_discovery_error_xmlrpc">Vi kunde inte komma åt &lt;b>XMLRPC-filen&lt;/b> på din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
+    <string name="login_site_credentials_magic_link_label">Nästan där! Nästan klart! Vi behöver bara bekräfta den e-postadress du har registrerad hos Jetpack &lt;b>%1$s&lt;/b></string>
     <string name="enter_site_credentials_instead">Logga in med dina inloggningsuppgifter.</string>
     <string name="enter_credentials_for_site">Logga in med dina inloggningsuppgifter för %1$s</string>
     <string name="send_verification_email">Skicka verifieringsmeddelande via e-post</string>
@@ -582,7 +586,7 @@ Language: sv_SE
     <string name="orderdetail_shipping_method">Fraktmetod</string>
     <string name="button_edit_permissions">Redigera behörigheter</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permissions_denied_message">Det verkar som om du har stängt av några behörigheter som krävs för denna funktion.&lt;br/&gt;&lt;br/&gt;För att ändra detta behöver du redigera appens behörigheter och se till att &lt;strong&gt;%s&lt;/strong&gt; är aktiverat.</string>
+    <string name="permissions_denied_message">Det verkar som om du har stängt av några behörigheter som krävs för denna funktion.&lt;br/>&lt;br/>För att ändra detta behöver du redigera appens behörigheter och se till att &lt;strong>%s&lt;/strong> är aktiverat.</string>
     <string name="permissions_denied_title">Behörigheter</string>
     <string name="orders_processed_empty_message">Alla ordrar har behandlats</string>
     <string name="orders_empty_message_with_processing">Inga ordrar att behandla ännu</string>
@@ -655,7 +659,7 @@ Language: sv_SE
     <string name="orderdetail_empty_shipping_address">Ingen adress angiven.</string>
     <string name="login_need_help_finding_connected_email">Behöver du hjälp med att hitta e-postadressen som du använde för att ansluta?</string>
     <string name="enter_wordpress_site">Webbplatsen på den här adressen är inte en WordPress-webbplats. Webbplatsen måste använda WordPress för att vi ska kunna ansluta till den.</string>
-    <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -926,7 +930,7 @@ Language: sv_SE
     <string name="order_detail_shipment_tracking_button_contentdesc">Spåra eller ta bort spårning av försändelse</string>
     <string name="orderdetail_delete_tracking">Ta bort spårning</string>
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
-    <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
+    <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar > Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
     <string name="login_need_help_finding_email">Behöver du hjälp med att hitta den anslutna e-postadressen?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>

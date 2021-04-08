@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-04-01 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
@@ -24,7 +24,7 @@ Language: zh_CN
     <string name="shipping_label_shipping_method_local_pickup">本地自提</string>
     <string name="shipping_label_shipping_method_flat_rate">统一费率</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">客户支付了 %1$s (%2$s) 用于配送</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">相比邮局的收费标准，使用 WooCommerce 购买配送标签可以获得 5% 至 40% 的优惠。</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  服务折扣是什么？</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">加载配送选项时出现错误</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">所选地址和包裹没有配送选项。</string>
@@ -48,7 +48,7 @@ Language: zh_CN
     <string name="shipping_label_payments_saving_dialog_title">正在保存您的设置</string>
     <string name="shipping_label_payments_expiration_date">%1$s 到期</string>
     <string name="shipping_label_payments_email_receipts_checkbox">将标签购买收据通过电子邮件发送到 %3$s 的 %1$s (%2$s)</string>
-    <string name="shipping_label_payments_account_info">从以下 WordPress.com 帐户检索信用卡：%1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">从以下 WordPress.com 帐户检索信用卡：%1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">添加其他信用卡</string>
     <string name="shipping_label_payments_selected_payment_method">所选付款方式</string>
@@ -91,7 +91,6 @@ Language: zh_CN
     <string name="shipping_label_edit_address_loading_progress_title">正在加载地址数据</string>
     <string name="product_wip_title_m5">已推出新功能！</string>
     <string name="product_wip_message_m5">您现在可以为产品添加可下载的文件，并链接追加销售和交叉销售产品。 不再想要某款产品了吗？ 将该产品移至回收站！</string>
-    <string name="order_refunds_shipping_refund_notice_fees">您可以退还运费和税款 %s</string>
     <string name="shipping_label_validation_view_map">打开地图</string>
     <string name="shipping_label_validation_contact_customer">联系客户</string>
     <string name="shipping_label_validation_error_template">验证失败：%s</string>
@@ -177,9 +176,9 @@ Language: zh_CN
     <string name="product_downloadable_files_value_single">1 个文件</string>
     <string name="product_downloadable_files_value_multiple">%1$d 个文件</string>
     <string name="product_wip_message_m4">现在可通过 Woo 应用程序随时随地新建简单的关联和分组产品。还没有准备好？ 将它们另存为草稿！</string>
-    <string name="print_shipping_label_info_step_4">您可能需要&lt;b&gt;直接在打印机上配置 WiFi 打印&lt;/b&gt;。确保打印机固件已更新，相关说明请参阅打印机文档。</string>
-    <string name="print_shipping_label_info_step_3">您可以选择设备的&lt;b&gt;默认打印服务&lt;/b&gt;或安装&lt;b&gt;打印机的品牌应用&lt;/b&gt;（后者应显示为推荐选项）</string>
-    <string name="print_shipping_label_info_step_1">确保您的打印机和设备连接到&lt;b&gt;相同的 WiFi 网络&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">您可能需要&lt;b>直接在打印机上配置 WiFi 打印&lt;/b>。确保打印机固件已更新，相关说明请参阅打印机文档。</string>
+    <string name="print_shipping_label_info_step_3">您可以选择设备的&lt;b>默认打印服务&lt;/b>或安装&lt;b>打印机的品牌应用&lt;/b>（后者应显示为推荐选项）</string>
+    <string name="print_shipping_label_info_step_1">确保您的打印机和设备连接到&lt;b>相同的 WiFi 网络&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">试用我们即将发布的简单、关联和分组的新产品创建功能</string>
     <string name="bottom_sheet_linked_products_desc">通过追加销售和交叉销售增加销售额</string>
     <string name="edit_products_button">编辑产品</string>
@@ -209,8 +208,8 @@ Language: zh_CN
     <string name="product_ratings_count_one">\u2022 评价 1 次</string>
     <string name="product_ratings_count">\u2022 评价 %d 次</string>
     <string name="product_detail_fetch_product_invalid_id_error">找不到产品</string>
-    <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以&lt;b&gt;将标签另存为 PDF &lt;/b&gt;，并通过电子邮件将其发送到其他设备打印。</string>
-    <string name="print_shipping_label_info_step_2">选择&lt;b&gt;“打印配送标签”&lt;/b&gt;之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
+    <string name="print_shipping_label_info_step_5">如果通过设备打印时仍然有问题，您可以&lt;b>将标签另存为 PDF &lt;/b>，并通过电子邮件将其发送到其他设备打印。</string>
+    <string name="print_shipping_label_info_step_2">选择&lt;b>“打印配送标签”&lt;/b>之后，如果以前从未通过此设备执行过打印操作，则可能需要选择并添加打印机。</string>
     <string name="print_shipping_label_format_options_title">标签格式选项</string>
     <string name="print_shipping_label_info_title">通过设备打印</string>
     <string name="shipping_label_paper_size_label">标签（4 x 6 英寸）</string>
@@ -471,7 +470,6 @@ Language: zh_CN
     <string name="product_schedule_sale_sublabel">自动开始和结束销售</string>
     <string name="product_schedule_sale_label">安排促销</string>
     <string name="order_refunds_store_admin_link_text">在您的店铺管理页面中</string>
-    <string name="order_refunds_shipping_refund_notice">您可以退还运费和税款 %s</string>
     <string name="orders_empty_message_with_order_status_filter">抱歉，找不到任何“%s”的订单</string>
     <string name="product_inventory_update_sku_error">SKU 已用于其他产品</string>
     <string name="product_shipping_settings">配送选项</string>
@@ -551,10 +549,10 @@ Language: zh_CN
     <string name="date_timeframe_future">即将到来</string>
     <string name="remove">删除</string>
     <string name="login_discovery_error_generic">我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
-    <string name="login_discovery_error_ssl">由于 &lt;b&gt;SSL 证书&lt;/b&gt;的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
-    <string name="login_discovery_error_http_auth">由于需要 &lt;b&gt;HTTP 验证&lt;/b&gt;，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
-    <string name="login_discovery_error_xmlrpc">我们无法访问您的站点上的 &lt;b&gt;XMLRPC 文件&lt;/b&gt;。您需要联系您的主机来解决这个问题。</string>
-    <string name="login_site_credentials_magic_link_label">马上就好！我们需要验证您的 Jetpack 连接的电子邮件地址 &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_ssl">由于 &lt;b>SSL 证书&lt;/b>的问题，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_discovery_error_http_auth">由于需要 &lt;b>HTTP 验证&lt;/b>，我们无法访问您的站点。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_discovery_error_xmlrpc">我们无法访问您的站点上的 &lt;b>XMLRPC 文件&lt;/b>。您需要联系您的主机来解决这个问题。</string>
+    <string name="login_site_credentials_magic_link_label">马上就好！我们需要验证您的 Jetpack 连接的电子邮件地址 &lt;b>%1$s&lt;/b></string>
     <string name="enter_site_credentials_instead">使用站点凭据登录。</string>
     <string name="enter_credentials_for_site">使用 %1$s 站点凭据登录</string>
     <string name="send_verification_email">发送验证电子邮件</string>
@@ -582,7 +580,7 @@ Language: zh_CN
     <string name="orderdetail_shipping_method">配送方式</string>
     <string name="button_edit_permissions">编辑权限</string>
     <string name="permission_camera">照相机</string>
-    <string name="permissions_denied_message">您似乎关闭了此功能所需的权限。&lt;br/&gt;&lt;br/&gt;要对此进行更改，请编辑您的权限并确保已启用&lt;strong&gt;%s&lt;/strong&gt;。</string>
+    <string name="permissions_denied_message">您似乎关闭了此功能所需的权限。&lt;br/>&lt;br/>要对此进行更改，请编辑您的权限并确保已启用&lt;strong>%s&lt;/strong>。</string>
     <string name="permissions_denied_title">权限</string>
     <string name="orders_processed_empty_message">所有订单均已处理完毕</string>
     <string name="orders_empty_message_with_processing">没有要处理的订单</string>
@@ -655,7 +653,7 @@ Language: zh_CN
     <string name="orderdetail_empty_shipping_address">未指定地址。</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
-    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">津巴布韦</string>
     <string name="country_mapping_ZM">赞比亚</string>
     <string name="country_mapping_YE">也门</string>
@@ -926,7 +924,7 @@ Language: zh_CN
     <string name="order_detail_shipment_tracking_button_contentdesc">跟踪或删除配送跟踪</string>
     <string name="orderdetail_delete_tracking">删除跟踪</string>
     <string name="orderdetail_track_shipment">跟踪配送</string>
-    <string name="login_email_help_desc">进行站点管理时，您可以从 %1$sJetpack 控制面板%2$s中找到用于连接 WordPress.com 的电子邮件，具体位于%3$s连接 &gt; 帐户连接%4$s下面</string>
+    <string name="login_email_help_desc">进行站点管理时，您可以从 %1$sJetpack 控制面板%2$s中找到用于连接 WordPress.com 的电子邮件，具体位于%3$s连接 > 帐户连接%4$s下面</string>
     <string name="login_email_help_title">我用什么电子邮件登录？</string>
     <string name="login_need_help_finding_email">需要帮助查找连接的电子邮件？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>

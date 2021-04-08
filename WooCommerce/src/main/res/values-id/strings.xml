@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Translation-Revision-Date: 2021-04-01 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
@@ -24,7 +24,7 @@ Language: id
     <string name="shipping_label_shipping_method_local_pickup">Pengambilan lokal</string>
     <string name="shipping_label_shipping_method_flat_rate">Tarif tetap</string>
     <string name="shipping_label_shipping_carrier_flat_fee_banner_message">Pelanggan membayar %1$s (%2$s) untuk pengiriman</string>
-    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">Ketika membeli label pengiriman dengan WooCommerce, Anda bisa berhemat 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message">Ketika membeli label pengiriman dengan WooCommerce, Anda bisa berhemat 5% hingga 40% dibandingkan dengan tarif kantor pos.</string>
     <string name="shipping_label_woo_discount_bottomsheet_title">Apa itu diskon WooCommerce  Services?</string>
     <string name="shipping_label_shipping_carrier_rates_generic_error">Terjadi error saat memuat pilihan pengiriman</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable">Tidak ada pilihan pengiriman untuk alamat dan paket yang dipilih</string>
@@ -48,7 +48,7 @@ Language: id
     <string name="shipping_label_payments_saving_dialog_title">Menyimpan pengaturan Anda</string>
     <string name="shipping_label_payments_expiration_date">Berakhir pada %1$s</string>
     <string name="shipping_label_payments_email_receipts_checkbox">Kirimkan email tanda terima pembelian label ke %1$s (%2$s) di %3$s</string>
-    <string name="shipping_label_payments_account_info">Kartu kredit diambil dari akun WordPress.com berikut: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_account_info">Kartu kredit diambil dari akun WordPress.com berikut: %1$s &lt;%2$s></string>
     <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
     <string name="shipping_label_payments_add_credit_card">Tambahkan kartu kredit lain</string>
     <string name="shipping_label_payments_selected_payment_method">Metode pembayaran dipilih</string>
@@ -91,7 +91,6 @@ Language: id
     <string name="shipping_label_edit_address_loading_progress_title">Memuat data alamat</string>
     <string name="product_wip_title_m5">Tersedia fitur baru!</string>
     <string name="product_wip_message_m5">Sekarang Anda dapat menambahkan file yang dapat diunduh ke produk dan menautkan produk upsell &amp; cross-sell. Tidak lagi ingin menampilkan produk? Hapus!</string>
-    <string name="order_refunds_shipping_refund_notice_fees">Anda dapat mengembalikan dana, pengiriman, dan jumlah pajak %s</string>
     <string name="shipping_label_validation_view_map">Buka Peta</string>
     <string name="shipping_label_validation_contact_customer">Hubungi Pelanggan</string>
     <string name="shipping_label_validation_error_template">Validasi gagal: %s</string>
@@ -177,9 +176,9 @@ Language: id
     <string name="product_downloadable_files_value_single">1 file</string>
     <string name="product_downloadable_files_value_multiple">%1$d file</string>
     <string name="product_wip_message_m4">Sekarang Anda dapat membuat produk baru yang sederhana, ditautkan, dan dikelompokkan langsung dari aplikasi Woo. Belum siap? Simpan sebagai draf!</string>
-    <string name="print_shipping_label_info_step_4">Anda mungkin perlu &lt;b&gt;mengonfigurasi pencetakan melalui WiFi langsung dari mesin cetak.&lt;/b&gt; Pastikan firmware mesin cetak sudah diperbarui dan lihat manual mesin cetak untuk mengetahui petunjuknya.</string>
-    <string name="print_shipping_label_info_step_3">Anda dapat memilih &lt;b&gt;layanan cetak default&lt;/b&gt; perangkat atau pasang &lt;b&gt;aplikasi khusus mesin cetak&lt;/b&gt; Anda (ini akan muncul sebagai opsi yang disarankan)</string>
-    <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke &lt;b&gt;jaringan WiFi yang sama&lt;/b&gt;</string>
+    <string name="print_shipping_label_info_step_4">Anda mungkin perlu &lt;b>mengonfigurasi pencetakan melalui WiFi langsung dari mesin cetak.&lt;/b> Pastikan firmware mesin cetak sudah diperbarui dan lihat manual mesin cetak untuk mengetahui petunjuknya.</string>
+    <string name="print_shipping_label_info_step_3">Anda dapat memilih &lt;b>layanan cetak default&lt;/b> perangkat atau pasang &lt;b>aplikasi khusus mesin cetak&lt;/b> Anda (ini akan muncul sebagai opsi yang disarankan)</string>
+    <string name="print_shipping_label_info_step_1">Pastikan mesin cetak dan perangkat Anda terhubung ke &lt;b>jaringan WiFi yang sama&lt;/b></string>
     <string name="settings_enable_product_adding_teaser_message">Gunakan pembuatan produk baru yang sederhana, ditautkan, dan dikelompokkan saat kami bersiap untuk meluncurkan</string>
     <string name="bottom_sheet_linked_products_desc">Tingkatkan penjualan dengan upsell dan cross-sell</string>
     <string name="edit_products_button">Edit produk</string>
@@ -209,8 +208,8 @@ Language: id
     <string name="product_ratings_count_one">\u2022 diberi peringkat sekali</string>
     <string name="product_ratings_count">\u2022 diberi peringkat %d kali</string>
     <string name="product_detail_fetch_product_invalid_id_error">Produk tidak ditemukan</string>
-    <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat &lt;b&gt;menyimpan label Anda dalam format PDF&lt;/b&gt; dan mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
-    <string name="print_shipping_label_info_step_2">Setelah memilih &lt;b&gt;\"Cetak label pengiriman\"&lt;/b&gt;, Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
+    <string name="print_shipping_label_info_step_5">Jika masih mengalami masalah mencetak dari perangkat, Anda dapat &lt;b>menyimpan label Anda dalam format PDF&lt;/b> dan mengirimkannya melalui email ke perangkat lain untuk dicetak.</string>
+    <string name="print_shipping_label_info_step_2">Setelah memilih &lt;b>\"Cetak label pengiriman\"&lt;/b>, Anda harus memilih dan menambahkan mesin cetak jika belum pernah mencetak dari perangkat ini sebelumnya.</string>
     <string name="print_shipping_label_format_options_title">Opsi format Label</string>
     <string name="print_shipping_label_info_title">Cetak dari perangkat Anda</string>
     <string name="shipping_label_paper_size_label">Label (4 x 6 inci)</string>
@@ -471,7 +470,6 @@ Language: id
     <string name="product_schedule_sale_sublabel">Otomatis mulai dan akhiri penjualan</string>
     <string name="product_schedule_sale_label">Jadwalkan obral</string>
     <string name="order_refunds_store_admin_link_text">di admin toko Anda</string>
-    <string name="order_refunds_shipping_refund_notice">Anda dapat mengembalikan dana pengiriman dan jumlah pajak %s</string>
     <string name="orders_empty_message_with_order_status_filter">Maaf, kami tidak dapat menemukan pesanan \"%s\"</string>
     <string name="product_inventory_update_sku_error">SKU telah digunakan oleh produk lain</string>
     <string name="product_shipping_settings">Pengaturan pengiriman</string>
@@ -551,10 +549,10 @@ Language: id
     <string name="date_timeframe_future">Mendatang</string>
     <string name="remove">Buang</string>
     <string name="login_discovery_error_generic">Kami tidak dapat mengakses situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
-    <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b&gt;Sertifikat SSL&lt;/b&gt;. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
-    <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b&gt;Autentikasi HTTP&lt;/b&gt;. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
-    <string name="login_discovery_error_xmlrpc">Kami tidak dapat mengakses &lt;b&gt;file XMLRPC&lt;/b&gt; situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
-    <string name="login_site_credentials_magic_link_label">Hampir selesai! Kami hanya perlu memverifikasi alamat email Anda yang terhubung dengan Jetpack &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="login_discovery_error_ssl">Kami tidak dapat mengakses situs Anda karena ada masalah dengan &lt;b>Sertifikat SSL&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_discovery_error_http_auth">Kami tidak dapat mengakses situs Anda akrena hal ini membutuhkan &lt;b>Autentikasi HTTP&lt;/b>. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_discovery_error_xmlrpc">Kami tidak dapat mengakses &lt;b>file XMLRPC&lt;/b> situs Anda. Anda harus menghubungi host untuk mengatasi masalah ini.</string>
+    <string name="login_site_credentials_magic_link_label">Hampir selesai! Kami hanya perlu memverifikasi alamat email Anda yang terhubung dengan Jetpack &lt;b>%1$s&lt;/b></string>
     <string name="enter_site_credentials_instead">Login dengan kredensial situs.</string>
     <string name="enter_credentials_for_site">Login dengan kredensial situs %1$s</string>
     <string name="send_verification_email">Kirim email verifikasi</string>
@@ -582,7 +580,7 @@ Language: id
     <string name="orderdetail_shipping_method">Metode pengiriman</string>
     <string name="button_edit_permissions">Sunting izin</string>
     <string name="permission_camera">Kamera</string>
-    <string name="permissions_denied_message">Tampaknya Anda mematikan izin wajib untuk fitur ini.&lt;br/&gt;&lt;br/&gt;Untuk mengubahnya, edit izin Anda dan pastikan &lt;strong&gt;%s&lt;/strong&gt; telah aktif.</string>
+    <string name="permissions_denied_message">Tampaknya Anda mematikan izin wajib untuk fitur ini.&lt;br/>&lt;br/>Untuk mengubahnya, edit izin Anda dan pastikan &lt;strong>%s&lt;/strong> telah aktif.</string>
     <string name="permissions_denied_title">Izin</string>
     <string name="orders_processed_empty_message">Semua pesanan telah diproses</string>
     <string name="orders_empty_message_with_processing">Belum ada pesanan untuk diproses</string>
@@ -655,7 +653,7 @@ Language: id
     <string name="orderdetail_empty_shipping_address">Tidak ada alamat yang dicantumkan.</string>
     <string name="login_need_help_finding_connected_email">Perlu bantuan untuk menemukan email yang terhubung dengan Anda?</string>
     <string name="enter_wordpress_site">Situs web di alamat ini bukan situs WordPress. Agar kami dapat terhubung ke situs tersebut, situs harus menggunakan WordPress.</string>
-    <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b>%1$s&lt;/b></string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yaman</string>
@@ -926,7 +924,7 @@ Language: id
     <string name="order_detail_shipment_tracking_button_contentdesc">Lacak atau hapus pelacakan pengiriman</string>
     <string name="orderdetail_delete_tracking">Hapus pelacakan</string>
     <string name="orderdetail_track_shipment">Lacak pengiriman</string>
-    <string name="login_email_help_desc">Di admin situs, Anda bisa menemukan email yang Anda gunakan untuk terhubung ke WordPress.com dari %1$sDasbor Jetpack%2$s di bagian %3$sKoneksi &gt; Koneksi akun%4$s</string>
+    <string name="login_email_help_desc">Di admin situs, Anda bisa menemukan email yang Anda gunakan untuk terhubung ke WordPress.com dari %1$sDasbor Jetpack%2$s di bagian %3$sKoneksi > Koneksi akun%4$s</string>
     <string name="login_email_help_title">Email apa yang saya gunakan untuk masuk?</string>
     <string name="login_need_help_finding_email">Perlu bantuan untuk menemukan email yang terhubung?</string>
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
