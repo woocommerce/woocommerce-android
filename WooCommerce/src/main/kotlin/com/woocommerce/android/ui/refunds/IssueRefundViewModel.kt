@@ -596,25 +596,30 @@ class IssueRefundViewModel @AssistedInject constructor(
     private fun isInputValid() = validateInput() == VALID
 
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
+        val productsRefund = refundByItemsState.productsRefund
+
         if (isChecked) {
             val shippingRefund = calculatePartialShippingTotal(refundByItemsState.selectedShippingLines!!)
 
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = shippingRefund,
                 formattedShippingRefundTotal = formatCurrency(shippingRefund),
-                isShippingMainSwitchChecked = true
+                isShippingMainSwitchChecked = true,
+                isNextButtonEnabled = productsRefund.add(shippingRefund) > BigDecimal.ZERO
             )
         } else {
             refundByItemsState = refundByItemsState.copy(
                 shippingRefund = 0.toBigDecimal(),
                 formattedShippingRefundTotal = formatCurrency(0.toBigDecimal()),
-                isShippingMainSwitchChecked = false
+                isShippingMainSwitchChecked = false,
+                isNextButtonEnabled = productsRefund > BigDecimal.ZERO
             )
         }
     }
 
     fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         val list = refundByItemsState.selectedShippingLines?.toMutableList()
+        val productsRefund = refundByItemsState.productsRefund
         if (list != null) {
             if (isChecked) list += itemId else list -= itemId
 
@@ -625,7 +630,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                 shippingSubtotal = formatCurrency(calculatePartialShippingSubtotal(list)),
                 shippingTaxes = formatCurrency(calculatePartialShippingTaxes(list)),
                 shippingRefund = newShippingRefundTotal,
-                formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal)
+                formattedShippingRefundTotal = formatCurrency(newShippingRefundTotal),
+                isNextButtonEnabled = productsRefund.add(newShippingRefundTotal) > BigDecimal.ZERO
             )
         }
     }
