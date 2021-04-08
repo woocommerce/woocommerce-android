@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.stripe.stripeterminal.model.external.PaymentIntent
 import com.stripe.stripeterminal.model.external.PaymentIntentStatus
 import com.woocommerce.android.cardreader.CardPaymentStatus
+import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CapturingPaymentFailed
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.CardPaymentStatus.CollectingPaymentFailed
@@ -23,12 +24,10 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
 internal class PaymentManager(
     private val cardReaderStore: CardReaderStore,
@@ -104,9 +103,8 @@ internal class PaymentManager(
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
-        val success = withContext(Dispatchers.IO) {
-            cardReaderStore.capturePaymentIntent(paymentIntent.id)
-        }
+        emit(CapturingPayment)
+        val success = cardReaderStore.capturePaymentIntent(paymentIntent.id)
         if (success) {
             emit(PaymentCompleted)
         } else {
