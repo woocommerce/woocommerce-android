@@ -2,7 +2,7 @@
 
 6.5
 -----
-
+* [*] Fixed bug where opening a product variation from order detail would treat it like a "regular" product rather than a variation
 
 6.4
 -----
