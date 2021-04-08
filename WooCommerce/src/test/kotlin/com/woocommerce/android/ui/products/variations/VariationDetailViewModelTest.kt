@@ -53,7 +53,10 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateWithArgs(
         savedState = SavedStateHandle(),
         arguments = null,
-        defaultArgs = VariationDetailFragmentArgs(TEST_VARIATION)
+        defaultArgs = VariationDetailFragmentArgs(
+            TEST_VARIATION.remoteProductId,
+            TEST_VARIATION.remoteVariationId
+        )
     )
 
     @Before
