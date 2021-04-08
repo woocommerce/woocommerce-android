@@ -1,14 +1,12 @@
 package com.woocommerce.android.cardreader
 
 import android.app.Application
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Interface for consumers who want to start accepting POC card payments.
  */
-@ExperimentalCoroutinesApi
 interface CardReaderManager {
     val isInitialized: Boolean
     val discoveryEvents: MutableStateFlow<CardReaderDiscoveryEvents>

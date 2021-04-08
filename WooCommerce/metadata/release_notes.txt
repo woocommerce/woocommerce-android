@@ -1,4 +1,3 @@
-* [*] Fixed bug where the app couldn't load products if there's decimal stock quantity. [https://github.com/woocommerce/woocommerce-android/pull/3782]
-
-- [*] Fixed a ui bug in the shipping label formats description screen. [https://github.com/woocommerce/woocommerce-android/pull/3791]
-
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.
