@@ -9,6 +9,7 @@ import com.stripe.stripeterminal.model.external.Reader
 import com.stripe.stripeterminal.model.external.TerminalException
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +23,7 @@ private const val DISCOVERY_TIMEOUT_IN_SECONDS = 60
 @ExperimentalCoroutinesApi
 internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
     sealed class DiscoverReadersStatus {
+        object Started: DiscoverReadersStatus()
         object Success : DiscoverReadersStatus()
         data class FoundReaders(val readers: List<Reader>) : DiscoverReadersStatus()
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
@@ -31,6 +33,7 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
 
     fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
         return callbackFlow {
+            this.sendBlocking(Started)
             val config = DiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, CHIPPER_2X, isSimulated)
             var cancelable: Cancelable? = null
             try {

@@ -11,6 +11,7 @@ import com.stripe.stripeterminal.callable.DiscoveryListener
 import com.stripe.stripeterminal.model.external.Reader
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.ClosedSendChannelException
@@ -34,6 +35,17 @@ class DiscoverReadersActionTest {
     @Before
     fun setUp() {
         action = DiscoverReadersAction(terminal)
+    }
+
+    @Test
+    fun `when discovery started, then Started is emitted`() = runBlockingTest {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            mock<Cancelable>()
+        }
+
+        val result = action.discoverReaders(false).first()
+
+        assertThat(result).isInstanceOf(Started::class.java)
     }
 
     @Test

@@ -29,6 +29,9 @@ internal class ConnectionManager(
     fun startDiscovery(isSimulated: Boolean) =
         discoverReadersAction.discoverReaders(isSimulated).map { state ->
             when (state) {
+                is DiscoverReadersStatus.Started -> {
+                    CardReaderDiscoveryEvents.Started
+                }
                 is DiscoverReadersStatus.Failure -> {
                     CardReaderDiscoveryEvents.Failed(state.exception.toString())
                 }
