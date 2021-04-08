@@ -10,12 +10,12 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import test
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -29,7 +29,7 @@ internal class ProcessPaymentActionTest {
     }
 
     @Test
-    fun `when processing payment succeeds, then Success is emitted`() = test {
+    fun `when processing payment succeeds, then Success is emitted`() = runBlockingTest {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
@@ -40,7 +40,7 @@ internal class ProcessPaymentActionTest {
     }
 
     @Test
-    fun `when processing payment fails, then Failure is emitted`() = test {
+    fun `when processing payment fails, then Failure is emitted`() = runBlockingTest {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
@@ -51,7 +51,7 @@ internal class ProcessPaymentActionTest {
     }
 
     @Test
-    fun `when processing payment succeeds, then updated paymentIntent is returned`() = test {
+    fun `when processing payment succeeds, then updated paymentIntent is returned`() = runBlockingTest {
         val updatedPaymentIntent = mock<PaymentIntent>()
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
@@ -63,7 +63,7 @@ internal class ProcessPaymentActionTest {
     }
 
     @Test
-    fun `when processing payment succeeds, then flow is terminated`() = test {
+    fun `when processing payment succeeds, then flow is terminated`() = runBlockingTest {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
@@ -74,7 +74,7 @@ internal class ProcessPaymentActionTest {
     }
 
     @Test
-    fun `when processing payment fails, then flow is terminated`() = test {
+    fun `when processing payment fails, then flow is terminated`() = runBlockingTest {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
         }
