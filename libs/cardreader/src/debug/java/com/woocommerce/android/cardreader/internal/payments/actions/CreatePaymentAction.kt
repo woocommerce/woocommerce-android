@@ -9,13 +9,11 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-@ExperimentalCoroutinesApi
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
@@ -35,9 +33,9 @@ internal class CreatePaymentAction(
                     this@callbackFlow.close()
                 }
 
-                override fun onFailure(exception: TerminalException) {
+                override fun onFailure(e: TerminalException) {
                     logWrapper.d("CardReader", "Creating payment intent failed")
-                    this@callbackFlow.sendBlocking(Failure(exception))
+                    this@callbackFlow.sendBlocking(Failure(e))
                     this@callbackFlow.close()
                 }
             })
