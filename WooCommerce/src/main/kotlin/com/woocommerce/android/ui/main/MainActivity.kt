@@ -771,8 +771,8 @@ class MainActivity : AppUpgradeActivity(),
         } else {
             // variation detail is part of the products navigation graph, and product detail is the starting destination
             // for that graph, so we have to use a deep link to navigate to variation detail
-            val deeplink = "android-app://com.woocommerce.android/variationDetail" +
-                "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+            val query = "?remoteProductId=$remoteProductId&remoteVariationId=$remoteVariationId"
+            val deeplink = "wcandroid://variationDetail$query"
             navController.navigate(Uri.parse(deeplink))
         }
     }

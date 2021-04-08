@@ -529,7 +529,7 @@
                 android:name="requestCode"
                 app:argType="integer" />
         </action>
-        <deepLink app:uri="android-app://com.woocommerce.android/variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
+        <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
     </fragment>
     <fragment
         android:id="@+id/productDownloadDetailsFragment"
