@@ -9,7 +9,9 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.Companion.TEST_VARIATION
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -45,6 +47,9 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock {
         on { getParameters(any(), any()) } doReturn (siteParams)
     }
+    private val variationRepository: VariationDetailRepository = mock {
+        on { getVariation(any(), any()) } doReturn (TEST_VARIATION)
+    }
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { answer -> answer.arguments[0].toString() }
@@ -64,7 +69,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         sut = VariationDetailViewModel(
             savedState = savedState,
             dispatchers = coroutinesTestRule.testDispatchers,
-            variationRepository = mock(),
+            variationRepository = variationRepository,
             productRepository = mock(),
             networkStatus = mock(),
             currencyFormatter = mock(),
