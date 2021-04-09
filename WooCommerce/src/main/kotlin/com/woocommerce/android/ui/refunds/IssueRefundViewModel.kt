@@ -61,6 +61,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.order.OrderIdentifier
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -359,15 +360,21 @@ class IssueRefundViewModel @AssistedInject constructor(
                     val resultCall = async(dispatchers.io) {
                         return@async when (commonState.refundType) {
                             ITEMS -> {
-                                // TODO: Include selected shipping lines in `items`
+                                val allItems = mutableListOf<WCRefundItem>()
+                                if (! refundItems.value.isNullOrEmpty()) {
+                                    refundItems.value!!.forEach { allItems.add(it.toDataModel()) }
+                                }
+                                if (! refundShippingLines.value.isNullOrEmpty()) {
+                                    refundShippingLines.value!!.forEach { allItems.add(it.toDataModel()) }
+                                }
+
                                 refundStore.createItemsRefund(
                                         selectedSite.get(),
                                         order.remoteId,
                                         refundSummaryState.refundReason ?: "",
                                         true,
                                         gateway.supportsRefunds,
-                                        refundItems.value?.map { it.toDataModel() }
-                                                ?: emptyList()
+                                        items = allItems
                                 )
                             }
                             AMOUNT -> {
