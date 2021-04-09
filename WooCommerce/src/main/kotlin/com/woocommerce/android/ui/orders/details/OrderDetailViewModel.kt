@@ -81,10 +81,6 @@ class OrderDetailViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedState, dispatchers) {
-    companion object {
-        private const val US_COUNTRY_CODE = "US"
-    }
-
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     private val orderIdSet: OrderIdSet
