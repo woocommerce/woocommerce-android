@@ -85,13 +85,13 @@ class CardReaderManagerImplTest {
     fun `given terminal not initialized, when reader discovery started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.startDiscovery(true)
+        cardReaderManager.discoverReaders(true)
     }
 
     @Test(expected = IllegalStateException::class)
     fun `given terminal not initialized, when connecting to reader started, then exception is thrown`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.connectToReader("")
+        cardReaderManager.connectToReader(mock())
     }
 }

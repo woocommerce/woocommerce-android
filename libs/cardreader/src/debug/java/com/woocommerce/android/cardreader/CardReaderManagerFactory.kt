@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
@@ -25,7 +26,7 @@ object CardReaderManagerFactory {
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper)
             ),
-            ConnectionManager(terminal, logWrapper)
+            ConnectionManager(terminal, logWrapper, DiscoverReadersAction(terminal))
         )
     }
 }
