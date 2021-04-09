@@ -167,13 +167,21 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
             new.formattedShippingRefundTotal?.takeIfNotEqualTo(old?.formattedShippingRefundTotal) {
                 shippingLinesBinding.issueRefundShippingTotal.text = it
             }
+            new.isRefundNoticeVisible.takeIfNotEqualTo(old?.isRefundNoticeVisible) { isVisible ->
+                if (isVisible) {
+                    productsBinding.issueRefundRefundNotice.show()
+                } else {
+                    productsBinding.issueRefundRefundNotice.hide()
+                }
+            }
+            new.refundNotice.takeIfNotEqualTo(old?.refundNotice) { notice ->
+                notice?.let { updateRefundNoticeView(it) }
+            }
             new.isFeesVisible?.takeIfNotEqualTo(old?.isFeesVisible) { isVisible ->
                 if (isVisible) {
                     productsBinding.issueRefundFeesGroup.show()
-                    updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice_fees))
                 } else {
                     productsBinding.issueRefundFeesGroup.hide()
-                    updateRefundNoticeView(getString(R.string.order_refunds_shipping_refund_notice))
                 }
             }
         }
@@ -219,7 +227,7 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
 
     private fun updateRefundNoticeView(refundNoticeText: String) {
         val linkText = getString(R.string.order_refunds_store_admin_link_text)
-        val noticeText = String.format(refundNoticeText, linkText)
+        val noticeText = "$refundNoticeText $linkText"
         val spannable = SpannableString(noticeText)
         val span = WooClickableSpan { viewModel.onOpenStoreAdminLinkClicked() }
         span.useCustomStyle = false
@@ -229,8 +237,8 @@ class RefundByItemsFragment : BaseFragment(R.layout.fragment_refund_by_items),
             noticeText.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        productsBinding.issueRefundShippingRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
-        productsBinding.issueRefundShippingRefundNotice.movementMethod = LinkMovementMethod.getInstance()
+        productsBinding.issueRefundRefundNotice.setText(spannable, TextView.BufferType.SPANNABLE)
+        productsBinding.issueRefundRefundNotice.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {

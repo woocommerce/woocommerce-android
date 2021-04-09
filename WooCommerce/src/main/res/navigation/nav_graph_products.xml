@@ -138,13 +138,15 @@
         android:id="@+id/addAttributeFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeFragment"
         android:label="addAttributeFragment">
-        <action
-            android:id="@+id/action_addAttributeFragment_to_addAttributeTermsFragment"
-            app:destination="@id/addAttributeTermsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/renameAttributeFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.RenameAttributeFragment"
+        android:label="renameAttributeFragment">
+        <argument
+            android:name="attributeName"
+            app:argType="string"
+            app:nullable="false" />
     </fragment>
     <fragment
         android:id="@+id/addAttributeTermsFragment"
@@ -158,6 +160,16 @@
             android:name="attributeName"
             app:argType="string"
             app:nullable="false" />
+        <argument
+            android:name="isNewAttribute"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_attributeTermsFragment_to_renameAttributeFragment"
+            app:destination="@id/renameAttributeFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -198,6 +210,19 @@
             android:name="productType"
             app:argType="com.woocommerce.android.ui.products.ProductType"
             android:defaultValue="SIMPLE" />
+    </fragment>
+    <fragment
+        android:id="@+id/editVariationAttributesFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment"
+        tools:layout="@layout/fragment_edit_variation_attributes">
+        <argument
+            android:name="remoteProductId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="remoteVariationId"
+            android:defaultValue="0L"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
@@ -333,8 +358,7 @@
             app:argType="long" />
         <argument
             android:name="productIds"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long[]" />
         <argument
             android:name="groupedProductListType"
             app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
@@ -352,8 +376,7 @@
             app:argType="com.woocommerce.android.ui.products.GroupedProductListType"/>
         <argument
             android:name="excludedProductIds"
-            android:defaultValue='""'
-            app:argType="string" />
+            app:argType="long[]" />
     </fragment>
     <fragment
         android:id="@+id/linkedProductsFragment"
@@ -470,6 +493,9 @@
             android:id="@+id/action_variationDetailFragment_to_productPricingFragment"
             app:destination="@id/productPricingFragment" />
         <action
+            android:id="@+id/action_variationDetailFragment_to_editVariationAttributesFragment"
+            app:destination="@id/editVariationAttributesFragment" />
+        <action
             android:id="@+id/action_variationDetailFragment_to_productInventoryFragment"
             app:destination="@id/productInventoryFragment" />
         <action
@@ -524,6 +550,13 @@
     <action
         android:id="@+id/action_global_productDownloadDetailsFragment"
         app:destination="@id/productDownloadDetailsFragment"
+        app:enterAnim="@anim/activity_slide_in_from_right"
+        app:exitAnim="@anim/activity_slide_out_to_left"
+        app:popEnterAnim="@anim/activity_slide_in_from_left"
+        app:popExitAnim="@anim/activity_slide_out_to_right" />
+    <action
+        android:id="@+id/action_global_addVariationAttributeTermsFragment"
+        app:destination="@id/addAttributeTermsFragment"
         app:enterAnim="@anim/activity_slide_in_from_right"
         app:exitAnim="@anim/activity_slide_out_to_left"
         app:popEnterAnim="@anim/activity_slide_in_from_left"

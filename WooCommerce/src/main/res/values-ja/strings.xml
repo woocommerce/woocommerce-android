@@ -1,11 +1,70 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-03-31 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_attributes_error_saving">属性の保存中にエラーが発生しました</string>
+    <string name="shipping_label_payments_cant_edit_warning">配送ラベルのお支払い方法を管理できるのは、サイトの所有者のみです。 お支払い方法を管理するには、ストアの所有者 %1$s (%2$s) にお問い合わせください。</string>
+    <string name="product_detail_add_variations">バリエーションを追加</string>
+    <string name="product_variant_list_empty_action">バリエーションを追加</string>
+    <string name="product_variant_list_add_first_variation">最初のバリエーションを追加</string>
+    <string name="shipping_label_selected_rates_total_description">%s 合計</string>
+    <string name="shipping_label_selected_rates_description">%s件の評価が選択済み</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">無料の署名要件を利用可能</string>
+    <string name="shipping_label_rate_included_options_free_pickup">無料の受け取りを利用可能</string>
+    <string name="shipping_label_rate_included_options_insurance">保険 (最大%s)</string>
+    <string name="shipping_label_rate_included_options_tracking">%s追跡</string>
+    <string name="shipping_label_rate_included_options">含む %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">成年の署名が必要 (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">署名が必要 (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">送料無料</string>
+    <string name="shipping_label_shipping_method_local_pickup">店頭渡し</string>
+    <string name="shipping_label_shipping_method_flat_rate">定額送料</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">配送料としてお客様から %1$s (%2$s) の支払いがありました</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">WooCommerce で配送ラベルを購入すると、郵便局の価格と比べて5%～40% お得です。</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">WooCommerce  サービスの割引はどのくらいですか ?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">配送オプションの読み込みでエラーが発生しました</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">選択したアドレスと荷物に対応した配送オプションがありません</string>
+    <string name="shipping_label_shipping_carriers_title">配送業者と金額</string>
+    <string name="shipping_label_create_purchase">配送ラベルを購入</string>
+    <string name="shipping_label_create_mark_order_complete">この注文に完了のマークを付けてお客様に通知</string>
+    <string name="shipping_label_create_price_total">注文合計</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">WooCommerce サービスの割引について詳細をご確認ください</string>
+    <string name="shipping_label_create_price_woo_discount">WooCommerce サービスの割引</string>
+    <string name="shipping_label_create_price_subtotal">小計</string>
+    <string name="shipping_label_create_order_summary">配送ラベル注文の概要</string>
+    <string name="free">無料</string>
+    <string name="other">その他</string>
+    <string name="product_term_name_already_exists">この名前のオプションはすでに存在しています</string>
+    <string name="product_attribute_name_already_exists">この名前の属性はすでに存在します</string>
+    <string name="product_enter_attribute_term">各オプションの名前を追加して Enter を押します</string>
+    <string name="product_select_attribute_term">またはタップして既存の属性を選択します</string>
+    <string name="product_new_attribute_term_name">オプション名</string>
+    <string name="shipping_label_payments_saving_error">設定の保存中にエラーが発生しました</string>
+    <string name="shipping_label_payments_saving_dialog_message">しばらくお待ちください…</string>
+    <string name="shipping_label_payments_saving_dialog_title">設定を保存しています</string>
+    <string name="shipping_label_payments_expiration_date">%1$s が有効期限切れ</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">ラベルの購入レシートを %1$s (%2$s) に %3$s でメール送信します</string>
+    <string name="shipping_label_payments_account_info">クレジットカードが次の WordPress.com アカウントから読み込まれました: %1$s &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">別のクレジットカードの追加</string>
+    <string name="shipping_label_payments_selected_payment_method">お支払い方法が選択されました</string>
+    <string name="shipping_label_loading_data_progress_message">しばらくお待ちください…</string>
+    <string name="shipping_label_loading_data_progress_title">設定を取得しています</string>
+    <string name="shipping_label_selected_payment_description">クレジットカードの有効期限は %1$s です</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">ディスカバー</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">またはタップして既存の属性を選択</string>
+    <string name="product_new_attribute_name">新規属性名</string>
+    <string name="product_add_attribute">属性を追加</string>
+    <string name="product_variation_attributes">属性</string>
+    <string name="product_variations_edit_attr">属性を編集</string>
     <string name="shipping_label_multi_packages_total_weight">荷物の総重量: %1$s %2$s</string>
     <string name="shipping_label_multi_packages_items_count">%2$d個の荷物内に%1$d個のアイテム</string>
     <string name="shipping_label_single_package_total_weight">荷物の総重量: %1$s %2$s</string>
@@ -17,7 +76,6 @@ Language: ja_JP
     <string name="shipping_label_packages_loading_message">しばらくお待ちください…</string>
     <string name="shipping_label_packages_loading_title">荷物を積み込んでいます。</string>
     <string name="shipping_label_package_details_title_template">荷物 %1$d</string>
-    <string name="shipping_label_package_details_items_count">「%1$d個のアイテム」</string>
     <string name="shipping_label_packages_loading_error">荷物の定義を読み込めません</string>
     <string name="shipping_label_package_details_weight_info">荷物の重量を含む</string>
     <string name="shipping_label_package_details_weight_hint">荷物の総重量 (%1$s)</string>
@@ -119,9 +177,10 @@ Language: ja_JP
     <string name="product_downloadable_files_value_single">1件のファイル</string>
     <string name="product_downloadable_files_value_multiple">%1$d ファイル</string>
     <string name="product_wip_message_m4">Woo アプリで、シンプルでリンクおよびグループ化された商品を外出先でも作成できるようになりました。ぜひインストールしてください。 下書きとして保存しましょう !</string>
-    <string name="print_shipping_label_info_step_4">&lt;b>プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b>プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
-    <string name="print_shipping_label_info_step_3">端末の&lt;b>デフォルトの印刷サービス&lt;/b>を選択するか、&lt;b>プリンターのブランドのアプリ&lt;/b>をインストールできます (これは推奨オプションとして表示)</string>
-    <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b>同じ WiFi ネットワーク&lt;/b>に接続されていることを確認してください</string>
+    <string name="print_shipping_label_info_step_4">&lt;b&gt;プリンター自体で WiFi 印刷を直接設定する必要があるようです。&lt;/b&gt;プリンターのファームウェアが最新であることを確認し、プリンターの説明書をお読みになることをおすすめします。</string>
+    <string name="print_shipping_label_info_step_3">端末の&lt;b&gt;デフォルトの印刷サービス&lt;/b&gt;を選択するか、&lt;b&gt;プリンターのブランドのアプリ&lt;/b&gt;をインストールできます (これは推奨オプションとして表示)</string>
+    <string name="print_shipping_label_info_step_1">お使いのプリンターと端末が&lt;b&gt;同じ WiFi ネットワーク&lt;/b&gt;に接続されていることを確認してください</string>
+    <string name="settings_enable_product_adding_teaser_message">リリースの準備ができ次第、新しいリンクおよびグループ化された商品の作成機能をテストしてください</string>
     <string name="bottom_sheet_linked_products_desc">アップセルとクロスセルで販売を伸ばしましょう</string>
     <string name="edit_products_button">商品を編集</string>
     <string name="add_products_button">商品追加</string>
@@ -150,8 +209,8 @@ Language: ja_JP
     <string name="product_ratings_count_one">\u2022 1件の評価</string>
     <string name="product_ratings_count">\u2022 %d件の評価</string>
     <string name="product_detail_fetch_product_invalid_id_error">商品が見つかりません</string>
-    <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、&lt;b>ラベルを PDF として保存&lt;/b>し、メールで別の端末に送信して印刷できます。</string>
-    <string name="print_shipping_label_info_step_2">&lt;b>「配送ラベルを印刷」&lt;/b>を選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
+    <string name="print_shipping_label_info_step_5">端末からの印刷で引き続き問題が発生している場合は、&lt;b&gt;ラベルを PDF として保存&lt;/b&gt;し、メールで別の端末に送信して印刷できます。</string>
+    <string name="print_shipping_label_info_step_2">&lt;b&gt;「配送ラベルを印刷」&lt;/b&gt;を選択後、この端末からの印刷が初めての場合は、プリンターを選択して追加する必要がある可能性があります。</string>
     <string name="print_shipping_label_format_options_title">ラベルの書式設定オプション</string>
     <string name="print_shipping_label_info_title">端末から印刷</string>
     <string name="shipping_label_paper_size_label">ラベル (4 x 6インチ)</string>
@@ -204,23 +263,21 @@ Language: ja_JP
     <string name="feedback_product_give_feedback_button_text">フィードバックを残す</string>
     <string name="product_detail_publish_product_success">公開済みの商品</string>
     <string name="product_detail_publish_product_error">商品の公開中にエラーが発生しました</string>
-    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
     <string name="product_publish_dialog_title">商品を公開しています</string>
     <string name="product_add_tool_bar_menu_button_done">公開</string>
     <string name="product_add_tool_bar_title">新商品</string>
-    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
-    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
     <string name="product_add_type_variable_desc">色やサイズのバリエーションがある商品</string>
     <string name="product_add_type_simple_desc">ユニークな商品の販売</string>
     <string name="product_add_type_external">外部商品</string>
     <string name="product_add_type_grouped">グループ化された商品</string>
     <string name="product_add_type_variable">バリエーションのある商品</string>
     <string name="product_add_type_simple">基本的な商品</string>
-    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
     <string name="product_images_image_limit_warning">商品1種類につき、表示できる写真は1点のみです</string>
     <string name="product_replace_photo">写真を置換</string>
     <string name="product_add_photo">写真を追加</string>
     <string name="variation_detail_image_add">バリエーション画像を追加</string>
+    <string name="login_jetpack_view_instructions">Jetpack のインストールと連携の方法を調べる</string>
+    <string name="login_jetpack_required_text">%1$sにこのアプリを使用するには、Jetpack プラグインをストアと連携する必要があります。</string>
     <string name="login_try_another_account">別のアカウントでログイン</string>
     <string name="login_pick_store">連携するストアを選択</string>
     <string name="login_store_address">ストアの住所を入力</string>
@@ -494,10 +551,10 @@ Language: ja_JP
     <string name="date_timeframe_future">次回</string>
     <string name="remove">削除</string>
     <string name="login_discovery_error_generic">サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_ssl">&lt;b>SSL 証明書&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_http_auth">&lt;b>HTTP 認証&lt;/b>の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_discovery_error_xmlrpc">サイトの &lt;b>XMLRPC ファイル&lt;/b>にアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
-    <string name="login_site_credentials_magic_link_label">もう少しです !最後に、Jetpack に連携したメールアドレス &lt;b>%1$s&lt;/b> を確認します</string>
+    <string name="login_discovery_error_ssl">&lt;b&gt;SSL 証明書&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_discovery_error_http_auth">&lt;b&gt;HTTP 認証&lt;/b&gt;の問題により、サイトにアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_discovery_error_xmlrpc">サイトの &lt;b&gt;XMLRPC ファイル&lt;/b&gt;にアクセスできませんでした。ホストに問い合わせてこの問題を解決してください。</string>
+    <string name="login_site_credentials_magic_link_label">もう少しです !最後に、Jetpack に連携したメールアドレス &lt;b&gt;%1$s&lt;/b&gt; を確認します</string>
     <string name="enter_site_credentials_instead">サイトのログイン情報でログインします。</string>
     <string name="enter_credentials_for_site">%1$s サイトのログイン情報でログインします。</string>
     <string name="send_verification_email">確認メールを送信</string>
@@ -525,7 +582,7 @@ Language: ja_JP
     <string name="orderdetail_shipping_method">配送方法</string>
     <string name="button_edit_permissions">権限を編集</string>
     <string name="permission_camera">カメラ</string>
-    <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/>&lt;br/>これを変更するには、権限を編集して &lt;strong>%s&lt;/strong> が有効であることを確認してください。</string>
+    <string name="permissions_denied_message">この機能に必要な権限を無効にしているようです。&lt;br/&gt;&lt;br/&gt;これを変更するには、権限を編集して &lt;strong&gt;%s&lt;/strong&gt; が有効であることを確認してください。</string>
     <string name="permissions_denied_title">権限</string>
     <string name="orders_processed_empty_message">注文がすべて処理されました</string>
     <string name="orders_empty_message_with_processing">処理する注文はまだありません</string>
@@ -598,7 +655,7 @@ Language: ja_JP
     <string name="orderdetail_empty_shipping_address">アドレスが指定されていません。</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">&lt;b>%1$s&lt;/b> に接続するには WordPress.com にログインします</string>
+    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>

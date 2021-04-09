@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
@@ -34,12 +35,7 @@ class GroupedProductListViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState, dispatchers) {
     private val navArgs: GroupedProductListFragmentArgs by savedState.navArgs()
 
-    private val originalProductIds =
-        navArgs.productIds
-            .takeIf { it.isNotEmpty() }
-            ?.split(",")
-            ?.mapNotNull { it.toLongOrNull() }
-            .orEmpty()
+    private val originalProductIds = navArgs.productIds.toList()
 
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
@@ -171,6 +167,6 @@ class GroupedProductListViewModel @AssistedInject constructor(
         val isAddProductButtonVisible: Boolean
             get() = isSkeletonShown == false
     }
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<GroupedProductListViewModel>
 }

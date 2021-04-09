@@ -44,7 +44,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
             ProductSelectionListFragmentArgs(
                 remoteProductId = PRODUCT_REMOTE_ID,
                 groupedProductListType = GroupedProductListType.GROUPED,
-                excludedProductIds = excludedProductIds.joinToString(",")
+                excludedProductIds = excludedProductIds.toLongArray()
             )
         )
     )

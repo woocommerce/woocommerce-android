@@ -13,11 +13,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
+import java.util.Locale
 
 class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
@@ -76,6 +78,15 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
         ))
 
+        binding.attributeEditText.setOnEditorActionListener { _, actionId, event ->
+            val attributeName = binding.attributeEditText.text?.toString() ?: ""
+            if (attributeName.isNotBlank()) {
+                binding.attributeEditText.text?.clear()
+                viewModel.addLocalAttribute(attributeName)
+            }
+            true
+        }
+
         viewModel.fetchGlobalAttributes()
     }
 
@@ -98,18 +109,45 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
+    /**
+     * Called after fetching global attributes, sets the adapter to show a combined list of the
+     * passed global attributes and the existing draft local attributes
+     */
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
-        val adapter: CombinedAttributeListAdapter
+        val adapter: AttributeListAdapter
         if (binding.attributeList.adapter == null) {
-            adapter = CombinedAttributeListAdapter(viewModel::onAddAttributeListItemClick)
+            adapter = AttributeListAdapter(viewModel::onAttributeListItemClick)
             binding.attributeList.adapter = adapter
         } else {
-            adapter = binding.attributeList.adapter as CombinedAttributeListAdapter
+            adapter = binding.attributeList.adapter as AttributeListAdapter
+        }
+
+        val allDraftAttributes = viewModel.getProductDraftAttributes()
+        val localDraftAttributes = allDraftAttributes.filter { it.isLocalAttribute }
+        val globalDraftAttributes = allDraftAttributes.filter { it.isGlobalAttribute }
+
+        // returns the list of draft terms for the passed global attribute
+        fun getGlobalDraftTerms(attributeId: Long): List<String> {
+            return globalDraftAttributes.firstOrNull {
+                it.id == attributeId
+            }?.terms ?: emptyList()
         }
 
         adapter.setAttributeList(
-            localAttributes = viewModel.getProductDraftAttributes().filter { it.isLocalAttribute },
-            globalAttributes = globalAttributes
+            ArrayList<ProductAttribute>().also { allAttributes ->
+                // add the list of global attributes along with any terms each global attribute has in the product draft
+                allAttributes.addAll(
+                    ArrayList<ProductAttribute>().also {
+                        it.addAll(globalAttributes.map { attribute ->
+                            attribute.toProductAttributeForDisplay(getGlobalDraftTerms(attribute.remoteId))
+                        })
+                    }
+                )
+
+                // add local draft attributes then sort the combined list by name
+                allAttributes.addAll(localDraftAttributes)
+                allAttributes.sortBy { it.name.toLowerCase(Locale.getDefault()) }
+            }
         )
     }
 

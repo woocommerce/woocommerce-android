@@ -1,1 +1,3 @@
-The latest updates to the WooCommerce Android app are here. When editing a product, all changes will now automatically save locally—clicking “Update” will send the changes to your server. We also fixed bugs affecting the display of product settings, the editing of the language of product prices, and push notifications about support requests. 
+We made a few improvements in this release.
+We fixed a bug that prevented the app from loading products when there was a decimal value in the stock quantity.
+We also fixed a layout issue that occurred on the shipping label formats option screen.

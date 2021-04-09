@@ -18,13 +18,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-                android:id="@+id/optionEditText"
-                style="@style/Woo.Button.Outlined"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/termEditText"
+                style="@style/Woo.TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
-                android:hint="@string/product_new_attribute_term_name" />
+                android:hint="@string/product_new_attribute_term_name"
+                android:inputType="text" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
@@ -43,6 +44,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
+        android:id="@+id/globalTermContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/minor_100"
@@ -50,13 +52,16 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textExistingOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/major_100"
             android:paddingTop="@dimen/major_100"
             android:paddingEnd="@dimen/major_100"
             android:text="@string/product_select_attribute_term"
-            android:textAppearance="@style/TextAppearance.Woo.Caption" />
+            android:textAppearance="@style/TextAppearance.Woo.Caption"
+            android:visibility="invisible"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/globalTermList"

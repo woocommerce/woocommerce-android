@@ -6,14 +6,21 @@ import java.math.BigDecimal
 
 @Parcelize
 data class ShippingRate(
-    val title: String,
-    val deliveryEstimate: Int,
+    val packageId: String,
+    val shipmentId: String,
+    val rateId: String,
+    val serviceId: String,
+    val carrierId: String,
+    val serviceName: String,
+    val deliveryDays: Int,
     val price: BigDecimal,
-    val carrier: ShippingCarrier
+    val discount: BigDecimal,
+    val formattedFee: String,
+    val option: Option
 ) : Parcelable {
-    enum class ShippingCarrier {
-        FEDEX,
-        USPS,
-        UPS
+    enum class Option {
+        DEFAULT,
+        SIGNATURE,
+        ADULT_SIGNATURE
     }
 }

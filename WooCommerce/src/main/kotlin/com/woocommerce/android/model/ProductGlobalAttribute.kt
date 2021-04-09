@@ -32,6 +32,19 @@ data class ProductGlobalAttribute(
             it.remoteId = remoteId.toInt()
         }
     }
+
+    /**
+     * Converts this global attribute to a "normal" product attribute model for display purposes only, useful when
+     * listing global and local attributes together
+     */
+    fun toProductAttributeForDisplay(terms: List<String>): ProductAttribute {
+        return ProductAttribute(
+            id = this.remoteId,
+            name = this.name,
+            terms = terms,
+            isVisible = true
+        )
+    }
 }
 
 fun WCGlobalAttributeModel.toAppModel(): ProductGlobalAttribute {

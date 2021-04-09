@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.refunds
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
@@ -20,6 +21,7 @@ import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.joinToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
@@ -65,6 +67,7 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 import java.math.BigDecimal
+import java.util.Locale
 import kotlin.math.min
 
 class IssueRefundViewModel @AssistedInject constructor(
@@ -180,6 +183,30 @@ class IssueRefundViewModel @AssistedInject constructor(
     }
 
     private fun initRefundByItemsState() {
+        fun getRefundNotice(): String? {
+            val refundOptions = mutableListOf<String>()
+            if (order.feesTotal > BigDecimal.ZERO) {
+                val fees = resourceProvider.getString(R.string.orderdetail_payment_fees)
+                    .toLowerCase(Locale.getDefault())
+                refundOptions.add(fees)
+            }
+            if (order.shippingTotal > BigDecimal.ZERO) {
+                val shipping = resourceProvider.getString(R.string.shipping).toLowerCase(Locale.getDefault())
+                refundOptions.add(shipping)
+            }
+            if (order.totalTax > BigDecimal.ZERO) {
+                val taxes = resourceProvider.getString(R.string.taxes).toLowerCase(Locale.getDefault())
+                refundOptions.add(taxes)
+            }
+            return if (refundOptions.isNotEmpty()) {
+                val and = resourceProvider.getString(R.string.and).toLowerCase(Locale.getDefault())
+                val options = refundOptions.joinToString(lastSeparator = " $and ")
+                return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
+            } else {
+                null
+            }
+        }
+
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
                     currency = order.currency,
@@ -194,6 +221,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     isNextButtonEnabled = false,
                     selectedShippingLines = selectedShippingLineIds,
                     formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO)
+                    refundNotice = getRefundNotice(),
+                    isNextButtonEnabled = false
             )
         }
 
@@ -663,10 +692,13 @@ class IssueRefundViewModel @AssistedInject constructor(
         val selectedShippingLines: List<Long>? = null,
         val isFeesVisible: Boolean? = null,
         val selectedItemsHeader: String? = null,
-        val selectButtonTitle: String? = null
+        val selectButtonTitle: String? = null,
+        val refundNotice: String? = null
     ) : Parcelable {
         val grandTotalRefund: BigDecimal
             get() = max(productsRefund + shippingRefund, BigDecimal.ZERO)
+
+        val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }
 
     @Parcelize
@@ -705,6 +737,6 @@ class IssueRefundViewModel @AssistedInject constructor(
         object HideValidationError : IssueRefundEvent()
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<IssueRefundViewModel>
 }

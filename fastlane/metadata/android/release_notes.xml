@@ -1,102 +1,136 @@
 <ar>
-6.0:
-ما الجديد في الإصدار 6.0 الخاص بنا؟
+6.3:
+يوفِّر تطبيق WooCommerce المتوافق مع نظام تشغيل Android 6.3 تحديثين مهمين للمستخدمين:
 
-لقد سألت واستمعنا! بسبب طلب الجماهير، يتم عرض وحدة SKU الخاصة بالمنتج مرة أخرى في شاشة تفاصيل الطلب. أصلحنا كذلك مشكلة كان يتم فيها عرض أهم العملاء في مخزنك مرتين على نحو غير صحيح.
+- يمكنك الآن تضمين عبارة "قابل للتنزيل" في تفاصيل نوع المنتج إن أمكن.
+- أصلحنا خطأ بحيث تظهر حالة طلب العميل بشكل صحيح الآن في تفاصيل الطلب.
+
 </ar>
 <de-DE>
-6.0:
-Neuerungen in unserer Version 6.0
+6.3:
+WooCommerce Android 6.3 hält zwei wichtige Updates bereit:
 
-Euer Wunsch ist uns Befehl! Aufgrund der großen Nachfrage wird die Produkt-SKU wieder auf dem Bildschirm mit den Bestelldetails angezeigt. Wir haben auch ein Problem behoben, bei dem Topseller in deinem Store fälschlicherweise zweimal angezeigt wurden.
+- Falls zutreffend kannst du jetzt in den Produktdetails „Zum Herunterladen“ angeben.
+- Wir haben einen Fehler behoben, sodass der Status einzelner Bestellungen jetzt korrekt unter den Bestelldetails angezeigt wird.
+
 </de-DE>
 <es-ES>
-6.0:
-Novedades de la versión 6.0
+6.3:
+WooCommerce para Android 6.3 ofrece a los usuarios dos mejoras importantes:
 
-Hemos respondido a tus peticiones. Por demanda popular, ahora la SKU de los productos vuelve a mostrarse en la pantalla Detalles del pedido. También hemos corregido un problema por el que los productos con mejor rendimiento se mostraban dos veces por error.
+- Cuando proceda, ya puedes incluir "descargable" en los detalles del tipo de producto.
+- Hemos solucionado un error para que el estado de los pedidos personalizados aparezca correctamente en los detalles del pedido.
+
 </es-ES>
 <fr-FR>
-6.0 :
-Nouveauté de la version 6.0
+6.3 :
+WooCommerce Android 6.3 propose aux utilisateurs deux mises à jour importantes :
 
-Vous l’avez demandé, nous vous avons écouté ! Suite à une demande récurrente, l’UGS du produit apparaît également dans l’écran Détails de la commande. Nous avons également résolu un problème se traduisant par un double affichage erroné des produits les plus performants de votre boutique.
+- Le cas échéant, vous pouvez désormais inclure « téléchargeable » dans les détails de type d’un produit.
+- Nous avons résolu un bug afin que l’état d’une commande personnalisée s’affiche désormais correctement dans les détails de la commande.
+
 </fr-FR>
 <iw-IL>
-6.0:
-מה חדש בגרסת 6.0?
+6.3:
+גרסת 6.3 של WooCommerce ל-Android כוללת שני עדכונים חשובים למשתמשים:
 
-הקשבנו לבקשות מהמשתמשים! עקב הביקוש הרב, ה-SKU של המוצר מוצג שוב במסך 'פרטי הזמנה'. תיקנו גם בעיה שגרמה לביצועים המובילים בחנות להופיע פעמיים בצורה לא תקינה.
+- אם רלוונטי, אפשר להוסיף אפשרות 'להורדה' בפרטי הסוג של המוצר.
+- תיקנו באג כדי לוודא שסטטוס ההזמנה המותאם מופיע כעת בצורה תקינה בפרטי ההזמנה.
+
 </iw-IL>
 <id>
-6.0:
-Apa yang baru di rilis 6.0 kami?
+6.3:
+WooCommerce Android 6.3 memberikan dua pembaruan penting untuk pengguna:
 
-Anda meminta, kami menyediakannya! Karena banyaknya permintaan, SKU produk akan ditampilkan sekali lagi pada layar Detail Pesanan. Kami juga memperbaiki masalah saat produk dengan performa tertinggi di toko Anda salah ditampilkan dua kali.
+- Jika dibutuhkan, sekarang Anda dapat menyertakan “bahan unduhan” pada detail tipe produk.
+- Kami telah memperbaiki bug sehingga status pesanan khusus ditampilkan dengan benar pada detail pesanan.
+
 </id>
 <it-IT>
-6.0:
-Novità del rilascio 6.0
+6.3:
+WooCommerce per Android 6.3 offre agli utenti due importanti aggiornamenti:
 
-Tu hai chiesto, noi abbiamo ascoltato. A grande richiesta, lo SKU del prodotto viene visualizzato nuovamente nella schermata Dettagli dell'ordine. Abbiamo anche risolto un problema per il quale i risultati migliori nel negozio venivano visualizzati in modo errato due volte.
+- Se applicabile, puoi ora includere "scaricabile" nei dettagli del tipo di prodotto.
+- Abbiamo risolto un bug in modo che lo stato di un ordine personalizzato ora venga visualizzato correttamente nei dettagli dell'ordine.
+
 </it-IT>
 <ja-JP>
-6.0:
-6.0リリースの新機能
+6.3:
+WooCommerce Android 6.3に2つの重要なアップデートがあります : 
 
-ご不明な点があればお知らせください。 多くのご要望をいただきましたが、製品の SKU が「注文詳細」画面で再度表示されるようになりました。 また、ストアのトップパフォーマーが誤って2回表示されていた問題も修正しました。
+- 該当する場合は、商品のタイプの詳細に「ダウンロード可能」を含めることが可能になりました。
+- カスタム注文のステータスが注文の詳細に正確に表示されるようバグを修正しました。
+
 </ja-JP>
 <ko-KR>
-6.0:
-6.0 릴리스의 새로운 기능
+6.3:
+WooCommerce Android 6.3에서 다음 두 가지 중요한 업데이트를 사용자에게 제공합니다.
 
-여러 회원의 질문을 경청했습니다! 많이 사용하는 제품 SKU가 주문 상세 정보 화면에 한 번 더 표시됩니다. 스토어의 최고 인기 상품이 올바르지 않게 두 번 표시되는 문제도 해결했습니다.
+- 업데이트를 적용하면 상품 유형 상세 정보에 "다운로드 가능"이라는 표시를 포함할 수 있습니다.
+- 이제 주문 상세 정보에 사용자 정의 주문의 상태가 올바르게 표시되도록 버그를 수정했습니다.
+
 </ko-KR>
 <nl-NL>
-6.0:
-Wat is er nieuw in onze 6.0-uitgave?
+6.3:
+WooCommerce Android 6.3 bevat twee belangrijke updates:
 
-Jij vraagt, wij draaien! Op veler verzoek wordt de product-SKU weer weergegeven in het scherm Bestelgegevens. We hebben ook een probleem opgelost waarbij toppresteerders in je winkel per ongeluk twee keer werden weergegeven.
+- Indien van toepassing, kan je nu 'downloadbaar’ toevoegen aan de informatie van het producttype.
+- We hebben een bug verholpen zodat de status van een aangepaste bestelling nu correct wordt weergegeven in de bestellingsgegevens.
+
 </nl-NL>
 <pt-BR>
-6.0:
-Novidades da versão 6.0.
+6.3:
+O WooCommerce para Android 6.3 conta com duas atualizações importantes:
 
-Você pediu, nós atendemos! Devido a inúmeros pedidos, o SKU do produto é exibido mais uma vez na tela de Detalhes do pedido. Também corrigimos um problema em que os melhores desempenhos em sua loja eram exibidos duas vezes incorretamente.
+- Se aplicável, agora é possível incluir "pode ser baixado" nos detalhes de tipo de um produto.
+- Corrigimos um bug e agora o status de pedidos personalizados é exibido corretamente nos detalhes do pedido.
+
 </pt-BR>
 <ru-RU>
-6.0: 
-Что нового в выпуске 6.0?
+6.3:
+Доступно два важных обновления WooCommerce 6.3 для Android:
 
-Вы просили — мы сделали! По многочисленным просьбам мы вернули отображение артикула товара на странице сведений о заказе. Мы также исправили ошибку, которая заключалась в том, что самые продаваемые товары вашего магазина отображались дважды.
+— Теперь в сведениях о типе можно указать, что товар является загружаемым (если применимо).
+— Исправлена ошибка, благодаря чему статус заказа клиента отображается корректно в сведениях о заказе.
+
 </ru-RU>
 <sv-SE>
-6.0:
-Vad är nytt i vår 6.0-utgåva?
+6.3:
+Med WooCommerce Android 6.3 får användare två viktiga uppdateringar:
 
-Du frågade, vi lyssnade! På grund av allmän begäran visas produkt-SKU en gång till på skärmen för beställningsinformation. Vi korrigerade också ett problem där toppresultat i din butik visades felaktigt två gånger.
+– Vid behov kan du nu inkludera "nedladdningsbar" i typinformationen för en produkt.
+– Vi åtgärdade en bugg så att en status för en anpassad order nu visas korrekt i orderinformationen.
+
 </sv-SE>
 <tr-TR>
-6.0:
-6.0 sürümümüzdeki yenilikler nelerdir?
+6.3:
+WooCommerce Android 6.3 kullanıcılara iki önemli güncelleme sunuyor:
 
-Siz istediniz, biz yaptık! Yoğun talepten dolayı ürün SKU'su Sipariş Ayrıntıları ekranında yeniden görüntüleniyor. Ayrıca mağazanızda en iyi performans gösteren ürünlerin hatalı bir şekilde iki kez görüntülenmesine neden olan bir sorunu da çözdük.
+- Mümkünse, artık bir ürünün tür ayrıntılarına "indirilebilir" ifadesini ekleyebilirsiniz.
+- Özel bir siparişin durumunun sipariş ayrıntılarında doğru şekilde görüntülenmesini önleyen bir hatayı düzelttik.
+
 </tr-TR>
 <zh-CN>
-6.0：
-6.0 版本有哪些新功能？
+6.3：
+WooCommerce Android 6.3 为用户提供了两个重要更新：
 
-您提问，我们倾听！ 为迎合大众需求，产品 SKU 再次在“订单详细信息”屏幕中显示。 我们还修复了您商店中的热销产品错误地显示两次的问题。
+- 如果适用，您现在可以在产品的类型详情中包括“可下载”。
+- 我们修复了一个错误，以便现在可以在订单详情中正确显示自定义订单的状态。
+
 </zh-CN>
 <zh-TW>
-6.0：
-6.0 版有哪些更新？
+6.3：
+WooCommerce Android 6.3 版為使用者提供兩項重要更新：
 
-你的要求我們聽見了！ 在許多使用者的要求下，我們再次把產品 SKU 放到「訂單詳細資訊」畫面上了。 我們也修正了商店中成效最佳項目不正確地重複顯示的問題。
+- 在適用情況下，你現在可以在產品類型詳細資料中提供「可下載」內容。
+- 修正錯誤，現在自訂訂單詳細資料中會正確顯示訂單狀態。
+
 </zh-TW>
 <en-US>
-6.0:
-What’s new in our 6.0 release?
+6.3:
+WooCommerce Android 6.3 offers users two important updates: 
 
-You asked, we listened! Due to popular demand, the product SKU is displayed once again in the Order Details screen. We also fixed an issue where top performers in your store were incorrectly displaying twice.
+ - If applicable, you can now include “downloadable” in the type details of a product.
+ - We fixed a bug so that a custom order’s status now displays correctly in order details.
+ 
 </en-US>

@@ -52,7 +52,7 @@ data class Product(
     val regularPrice: BigDecimal?,
     val taxClass: String,
     val isStockManaged: Boolean,
-    val stockQuantity: Int,
+    val stockQuantity: Double,
     val sku: String,
     val shippingClass: String,
     val shippingClassId: Long,
@@ -137,7 +137,8 @@ data class Product(
             downloads == product.downloads &&
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
-            isDownloadable == product.isDownloadable
+            isDownloadable == product.isDownloadable &&
+            attributes == product.attributes
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -362,6 +363,24 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         return jsonArray.toString()
     }
 
+    fun attributesToJson(): String {
+        val jsonArray = JsonArray()
+        attributes.map {
+            WCProductModel.ProductAttribute(
+                id = it.id,
+                name = it.name,
+                visible = it.isVisible,
+                options = it.terms.toMutableList(),
+                variation = it.isVariation
+            )
+        }.forEach {
+            if (it.options.isNotEmpty()) {
+                jsonArray.add(it.toJson())
+            }
+        }
+        return jsonArray.toString()
+    }
+
     return (storedProductModel ?: WCProductModel()).also {
         it.remoteProductId = remoteId
         it.description = description
@@ -424,6 +443,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel?): WCProductModel {
         it.downloadLimit = downloadLimit
         it.downloadExpiry = downloadExpiry
         it.downloadable = isDownloadable
+        it.attributes = attributesToJson()
     }
 }
 
@@ -485,12 +505,7 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map {
-            ProductAttribute(
-                it.id,
-                it.name,
-                it.options,
-                it.visible
-            )
+            it.toAppModel()
         },
         saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
         saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
@@ -532,3 +547,15 @@ fun MediaModel.toAppModel(): Product.Image {
  */
 fun WCProductModel.toProductReviewProductModel() =
     ProductReviewProduct(this.remoteProductId, this.name, this.permalink)
+
+/**
+ * TODO: move to FluxC model
+ */
+fun WCProductModel.ProductAttribute.toJson(): JsonObject {
+    return JsonObject().also { json ->
+        json.addProperty("id", id)
+        json.addProperty("name", name)
+        json.addProperty("visible", visible)
+        json.addProperty("options", options.joinToString())
+    }
+}

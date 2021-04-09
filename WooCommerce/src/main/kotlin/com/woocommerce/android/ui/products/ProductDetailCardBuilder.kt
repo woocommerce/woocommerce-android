@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
@@ -41,10 +44,10 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.util.FormatUtils
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
@@ -245,7 +248,7 @@ class ProductDetailCardBuilder(
                 ),
                 Pair(
                     resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCount(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
@@ -317,7 +320,7 @@ class ProductDetailCardBuilder(
         if (productType == SIMPLE || productType == VARIABLE) {
             if (this.isStockManaged) {
                 inventory[resources.getString(R.string.product_stock_quantity)] =
-                    FormatUtils.formatInt(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 inventory[resources.getString(R.string.product_backorders)] =
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
             } else if (productType == SIMPLE) {
@@ -455,8 +458,11 @@ class ProductDetailCardBuilder(
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
             SIMPLE -> {
-                if (this.isVirtual) resources.getString(R.string.product_type_virtual)
-                else resources.getString(R.string.product_type_physical)
+                when {
+                    this.isDownloadable -> resources.getString(R.string.product_type_downloadable)
+                    this.isVirtual -> resources.getString(R.string.product_type_virtual)
+                    else -> resources.getString(R.string.product_type_physical)
+                }
             }
             VARIABLE -> resources.getString(R.string.product_type_variable)
             GROUPED -> resources.getString(R.string.product_type_grouped)
@@ -521,7 +527,7 @@ class ProductDetailCardBuilder(
             showTitle = showTitle
         ) {
             viewModel.onEditProductCardClicked(
-                ViewGroupedProducts(this.remoteId, this.groupedProductIds.joinToString(",")),
+                ViewGroupedProducts(this.remoteId, this.groupedProductIds),
                 Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
             )
         }
@@ -606,16 +612,32 @@ class ProductDetailCardBuilder(
                 )
             }
         } else {
+            emptyVariations()
+        }
+    }
+
+    private fun Product.emptyVariations(): ComplexProperty {
+        return if (ADD_EDIT_VARIATIONS.isEnabled()) {
             ComplexProperty(
-                R.string.product_variations,
-                resources.getString(R.string.product_detail_no_variations),
-                R.drawable.ic_gridicons_types
-            ) {
-                viewModel.onEditProductCardClicked(
-                    ViewProductVariations(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
-                )
-            }
+                value = resources.getString(string.product_detail_add_variations),
+                icon = drawable.ic_gridicons_types,
+                showTitle = false,
+                onClick = {
+                    // TODO call variation creation view sequence
+                }
+            )
+        } else {
+            ComplexProperty(
+                title = string.product_variations,
+                value = resources.getString(string.product_detail_no_variations),
+                icon = drawable.ic_gridicons_types,
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductVariations(this.remoteId),
+                        PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+                    )
+                }
+            )
         }
     }
 

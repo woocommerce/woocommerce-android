@@ -6,8 +6,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -60,6 +58,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -80,7 +79,6 @@ import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.Optional
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -92,6 +90,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -166,6 +167,9 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
+
+    final val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
+    private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
 
     private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
     val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
@@ -669,7 +673,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         manageStock: Boolean? = null,
         stockStatus: ProductStockStatus? = null,
         soldIndividually: Boolean? = null,
-        stockQuantity: Int? = null,
+        stockQuantity: Double? = null,
         backorderStatus: ProductBackorderStatus? = null,
         regularPrice: BigDecimal? = null,
         salePrice: BigDecimal? = null,
@@ -677,7 +681,7 @@ class ProductDetailViewModel @AssistedInject constructor(
         isVirtual: Boolean? = null,
         isSaleScheduled: Boolean? = null,
         saleStartDate: Date? = null,
-        saleEndDate: Optional<Date>? = null,
+        saleEndDate: Date? = viewState.productDraft?.saleEndDateGmt,
         taxStatus: ProductTaxStatus? = null,
         taxClass: String? = null,
         length: Float? = null,
@@ -704,10 +708,10 @@ class ProductDetailViewModel @AssistedInject constructor(
         downloads: List<ProductFile>? = null,
         downloadLimit: Long? = null,
         downloadExpiry: Int? = null,
-        isDownloadable: Boolean? = null
+        isDownloadable: Boolean? = null,
+        attributes: List<ProductAttribute>? = null
     ) {
         viewState.productDraft?.let { product ->
-            val currentProduct = product.copy()
             val updatedProduct = product.copy(
                     description = description ?: product.description,
                     shortDescription = shortDescription ?: product.shortDescription,
@@ -746,23 +750,31 @@ class ProductDetailViewModel @AssistedInject constructor(
                     groupedProductIds = groupedProductIds ?: product.groupedProductIds,
                     upsellProductIds = upsellProductIds ?: product.upsellProductIds,
                     crossSellProductIds = crossSellProductIds ?: product.crossSellProductIds,
-                    saleEndDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
-                        if (saleEndDate != null) saleEndDate.value else product.saleEndDateGmt
-                    } else viewState.storedProduct?.saleEndDateGmt,
-                    saleStartDateGmt = if (isSaleScheduled == true ||
-                            (isSaleScheduled == null && currentProduct.isSaleScheduled)) {
+                    saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
+                        saleEndDate
+                    } else {
+                        viewState.storedProduct?.saleEndDateGmt
+                    },
+                    saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                         saleStartDate ?: product.saleStartDateGmt
                     } else viewState.storedProduct?.saleStartDateGmt,
                     downloads = downloads ?: product.downloads,
                     downloadLimit = downloadLimit ?: product.downloadLimit,
                     downloadExpiry = downloadExpiry ?: product.downloadExpiry,
-                    isDownloadable = isDownloadable ?: product.isDownloadable
+                    isDownloadable = isDownloadable ?: product.isDownloadable,
+                    attributes = attributes ?: product.attributes
             )
             viewState = viewState.copy(productDraft = updatedProduct)
 
             updateProductEditAction()
         }
+    }
+
+    private fun productHasSale(
+        isSaleScheduled: Boolean?,
+        product: Product
+    ): Boolean {
+        return isSaleScheduled == true || (isSaleScheduled == null && product.isSaleScheduled)
     }
 
     override fun onCleared() {
@@ -969,9 +981,7 @@ class ProductDetailViewModel @AssistedInject constructor(
     fun getProductDraftAttributeTerms(attributeId: Long, attributeName: String): List<String> {
         val attributes = getProductDraftAttributes()
         attributes.forEach { attribute ->
-            if (attribute.isLocalAttribute && attribute.name == attributeName) {
-                return attribute.terms
-            } else if (attribute.isGlobalAttribute && attribute.id == attributeId) {
+            if (attribute.name == attributeName) {
                 return attribute.terms
             }
         }
@@ -981,16 +991,181 @@ class ProductDetailViewModel @AssistedInject constructor(
     /**
      * Fetches terms for a global product attribute
      */
-    fun fetchGlobalAttributeTerms(remoteAttributeId: Long, excludeAssignedTerms: Boolean = false) {
+    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
         launch {
-            val terms = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
-            if (excludeAssignedTerms) {
-                val assignedTerms = getProductDraftAttributeTerms(remoteAttributeId, "")
-                _attributeTermsList.value = terms.filterNot {
-                    assignedTerms.contains(it.name)
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = true)
+            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
+            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = false)
+        }
+    }
+
+    /**
+     * Returns the draft attribute matching the passed id and name
+     */
+    private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
+        return getProductDraftAttributes().firstOrNull {
+            it.id == attributeId && it.name == attributeName
+        }
+    }
+
+    fun removeAttributeFromDraft(attributeId: Long, attributeName: String) {
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute and save it to the draft
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    /**
+     * Renames a single attribute in the product draft
+     */
+    fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
+        // first make sure an attribute with the new name doesn't already exist in the draft
+        getProductDraftAttributes().forEach {
+            if (it.name.equals(newAttributeName, ignoreCase = true)) {
+                triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+                return false
+            }
+        }
+
+        val oldAttribute = getDraftAttribute(attributeId, oldAttributeName)
+        if (oldAttribute == null) {
+            triggerEvent(ShowSnackbar(string.product_attribute_error_renaming))
+            return false
+        }
+
+        // create a new attribute with the same properties as the old one except for the name
+        val newAttribute = ProductAttribute(
+            id = attributeId,
+            name = newAttributeName,
+            terms = oldAttribute.terms,
+            isVisible = oldAttribute.isVisible,
+            isVariation = oldAttribute.isVariation
+        )
+
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            // create a list of draft attributes without the old one
+            updatedAttributes.addAll(getProductDraftAttributes().filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == oldAttributeName
+            })
+
+            // add the renamed attribute to the list and update the draft attributes
+            updatedAttributes.add(newAttribute)
+            updateProductDraft(attributes = updatedAttributes)
+        }
+
+        return true
+    }
+
+    /**
+     * Adds a new term to a the product draft attributes
+     */
+    fun addAttributeTermToDraft(attributeId: Long, attributeName: String, termName: String) {
+        val updatedTerms = ArrayList<String>()
+        var isVisible = ProductAttribute.DEFAULT_VISIBLE
+        var isVariation = ProductAttribute.DEFAULT_IS_VARIATION
+
+        // find this attribute in the draft attributes
+        getDraftAttribute(attributeId, attributeName)?.let { thisAttribute ->
+            // make sure this term doesn't already exist in this attribute
+            thisAttribute.terms.forEach {
+                if (it.equals(termName, ignoreCase = true)) {
+                    triggerEvent(ShowSnackbar(string.product_term_name_already_exists))
+                    return
                 }
-            } else {
-                _attributeTermsList.value = terms
+            }
+
+            // add its terms to our updated term list
+            updatedTerms.addAll(thisAttribute.terms)
+            isVisible = thisAttribute.isVisible
+            isVariation = thisAttribute.isVariation
+        }
+
+        // add the passed term to our updated term list
+        updatedTerms.add(termName)
+
+        // get the current draft attributes
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute, then add a new one with the updated terms
+        ArrayList<ProductAttribute>().also { updatedAttributes ->
+            updatedAttributes.addAll(draftAttributes.filterNot { attribute ->
+                attribute.id == attributeId && attribute.name == attributeName
+            })
+
+            updatedAttributes.add(
+                ProductAttribute(
+                    id = attributeId,
+                    name = attributeName,
+                    terms = updatedTerms,
+                    isVisible = isVisible,
+                    isVariation = isVariation
+                )
+            )
+
+            updateProductDraft(attributes = updatedAttributes)
+        }
+    }
+
+    /**
+     * Removes a term from the product draft attributes
+     */
+    fun removeAttributeTermFromDraft(attributeId: Long, attributeName: String, termName: String) {
+        // find this attribute in the draft attributes
+        val thisAttribute = getDraftAttribute(attributeId, attributeName)
+        if (thisAttribute == null) {
+            // TODO
+            return
+        }
+
+        // created an updated list of terms without the passed one
+        val updatedTerms = ArrayList<String>().also { terms ->
+            terms.addAll(thisAttribute.terms.filterNot { it.equals(termName, ignoreCase = true) })
+        }
+
+        // get the current draft attributes
+        val draftAttributes = getProductDraftAttributes()
+
+        // create an updated list without this attribute...
+        val updatedAttributes = ArrayList<ProductAttribute>().also {
+            it.addAll(draftAttributes.filter { attribute ->
+                attribute.id != attributeId && attribute.name != attributeName
+            })
+        }.also {
+            // ...then add this attribute back with the updated list of terms unless there are none
+            if (updatedTerms.isNotEmpty()) {
+                it.add(
+                    ProductAttribute(
+                        id = attributeId,
+                        name = attributeName,
+                        terms = updatedTerms,
+                        isVisible = thisAttribute.isVisible,
+                        isVariation = thisAttribute.isVariation
+                    )
+                )
+            }
+        }
+
+        updateProductDraft(attributes = updatedAttributes)
+    }
+
+    /**
+     * Saves any attribute changes to the backend
+     */
+    fun saveAttributeChanges() {
+        if (hasAttributeChanges() && checkConnection()) {
+            launch {
+                viewState.productDraft?.attributes?.let { attributes ->
+                    val result = productRepository.updateProductAttributes(getRemoteProductId(), attributes)
+                    if (!result) {
+                        triggerEvent(ShowSnackbar(string.product_attributes_error_saving))
+                    }
+                }
             }
         }
     }
@@ -1003,10 +1178,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * User clicked an attribute in the attribute list fragment
+     * User clicked an attribute in the attribute list fragment or the add attribute fragment
      */
     fun onAttributeListItemClick(attributeId: Long, attributeName: String) {
-        // TODO
+        triggerEvent(AddProductAttributeTerms(attributeId, attributeName, isNewAttribute = false))
     }
 
     /**
@@ -1017,10 +1192,10 @@ class ProductDetailViewModel @AssistedInject constructor(
     }
 
     /**
-     * User clicked an attribute in the add attribute fragment
+     * User tapped "Rename" on the attribute terms fragment
      */
-    fun onAddAttributeListItemClick(attributeId: Long, attributeName: String) {
-        triggerEvent(AddProductAttributeTerms(attributeId, attributeName))
+    fun onRenameAttributeButtonClick(attributeName: String) {
+        triggerEvent(RenameProductAttribute(attributeName))
     }
 
     fun hasAttributeChanges() = viewState.storedProduct?.hasAttributeChanges(viewState.productDraft) ?: false
@@ -1045,6 +1220,51 @@ class ProductDetailViewModel @AssistedInject constructor(
 
     fun loadGlobalAttributes(): List<ProductGlobalAttribute> =
         productRepository.getGlobalAttributes()
+
+    /**
+     * Returns true if an attribute with this name is assigned to the product draft
+     */
+    private fun containsAttributeName(attributeName: String): Boolean {
+        viewState.productDraft?.attributes?.forEach {
+            if (it.name.equals(attributeName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Called from the attribute list when the user enters a new attribute
+     */
+    fun addLocalAttribute(attributeName: String) {
+        if (containsAttributeName(attributeName)) {
+            triggerEvent(ShowSnackbar(string.product_attribute_name_already_exists))
+            return
+        }
+
+        // get the list of current attributes
+        val attributes = ArrayList<ProductAttribute>()
+        viewState.productDraft?.attributes?.let {
+            attributes.addAll(it)
+        }
+
+        // add the new one to the list
+        attributes.add(
+            ProductAttribute(
+                id = 0L,
+                name = attributeName,
+                terms = emptyList(),
+                isVisible = ProductAttribute.DEFAULT_VISIBLE,
+                isVariation = ProductAttribute.DEFAULT_IS_VARIATION
+            )
+        )
+
+        // update the draft with the new list
+        updateProductDraft(attributes = attributes)
+
+        // take the user to the add attribute terms screen
+        triggerEvent(AddProductAttributeTerms(0L, attributeName, isNewAttribute = true))
+    }
 
     /**
      * Updates the product to the backend only if network is connected.
@@ -1605,6 +1825,9 @@ class ProductDetailViewModel @AssistedInject constructor(
         class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
             shouldShowDiscardDialog
         )
+        class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
+            shouldShowDiscardDialog
+        )
     }
 
     object RefreshMenu : Event()
@@ -1683,6 +1906,11 @@ class ProductDetailViewModel @AssistedInject constructor(
         val isSkeletonShown: Boolean? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @Parcelize
+    data class GlobalAttributesTermsViewState(
+        val isSkeletonShown: Boolean? = null
+    ) : Parcelable
+
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductDetailViewModel>
 }

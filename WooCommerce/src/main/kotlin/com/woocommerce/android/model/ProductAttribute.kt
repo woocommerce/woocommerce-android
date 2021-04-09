@@ -12,8 +12,14 @@ data class ProductAttribute(
     val id: Long,
     val name: String,
     val terms: List<String>,
-    val isVisible: Boolean
+    val isVisible: Boolean = DEFAULT_VISIBLE,
+    val isVariation: Boolean = DEFAULT_IS_VARIATION
 ) : Parcelable {
+    companion object {
+        val DEFAULT_VISIBLE = true
+        val DEFAULT_IS_VARIATION = false
+    }
+
     /**
      * Local attributes, which are attributes available only to a specific product, have an ID of zero
      */
@@ -22,6 +28,15 @@ data class ProductAttribute(
 
     val isGlobalAttribute: Boolean
         get() = !isLocalAttribute
+
+    fun toDataModel() =
+        WCProductModel.ProductAttribute(
+            id = id,
+            name = name,
+            visible = isVisible,
+            options = terms.toMutableList(),
+            variation = isVariation
+        )
 }
 
 fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
@@ -29,6 +44,7 @@ fun WCProductModel.ProductAttribute.toAppModel(): ProductAttribute {
         id = this.id,
         name = this.name,
         terms = this.options,
-        isVisible = this.visible
+        isVisible = this.visible,
+        isVariation = this.variation
     )
 }

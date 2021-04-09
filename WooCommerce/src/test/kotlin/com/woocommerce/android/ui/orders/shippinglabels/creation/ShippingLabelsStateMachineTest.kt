@@ -5,6 +5,8 @@ import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
@@ -35,17 +37,17 @@ import org.junit.Test
 class ShippingLabelsStateMachineTest {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
-    private val remoteOrderId = 123L
+    private val order = OrderTestUtils.generateOrder().toAppModel()
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val data = StateMachineData(
-        remoteOrderId,
+        order,
         StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
             packagingStep = PackagingStep(NOT_READY, emptyList()),
             customsStep = CustomsStep(NOT_READY),
-            carrierStep = CarrierStep(NOT_READY),
+            carrierStep = CarrierStep(NOT_READY, emptyList()),
             paymentsStep = PaymentsStep(NOT_READY, null)
         )
     )
@@ -70,13 +72,13 @@ class ShippingLabelsStateMachineTest {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(remoteOrderId.toString())
+        stateMachine.start(order.remoteId.toString())
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(remoteOrderId.toString()))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(order.remoteId.toString()))
 
         stateMachine.handleEvent(
             Event.DataLoaded(
-                remoteOrderId,
+                order,
                 originAddress,
                 shippingAddress,
                 null
@@ -96,8 +98,8 @@ class ShippingLabelsStateMachineTest {
             }
         }
 
-        stateMachine.start(remoteOrderId.toString())
-        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
+        stateMachine.start(order.remoteId.toString())
+        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
         assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
@@ -116,20 +118,21 @@ class ShippingLabelsStateMachineTest {
     fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val packagesList = listOf(
             ShippingLabelPackage(
+                packageId = "package1",
                 selectedPackage = ShippingPackage(
                     "id",
                     "title",
                     false,
                     "provider",
-                    PackageDimensions(10.0, 10.0, 10.0)
+                    PackageDimensions(10.0f, 10.0f, 10.0f)
                 ),
-                weight = 10.0,
+                weight = 10.0f,
                 items = listOf(Item(10L, "item", "attributes", "10kgs"))
             )
         )
 
-        stateMachine.start(remoteOrderId.toString())
-        stateMachine.handleEvent(Event.DataLoaded(remoteOrderId, originAddress, shippingAddress, null))
+        stateMachine.start(order.toString())
+        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.PackageSelectionStarted)
 
         assertThat(stateMachine.transitions.value.sideEffect).isEqualTo(SideEffect.ShowPackageOptions(emptyList()))

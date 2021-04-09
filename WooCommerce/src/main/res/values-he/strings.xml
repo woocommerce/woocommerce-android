@@ -1,11 +1,70 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-02-18 11:54:04+0000
+Translation-Revision-Date: 2021-04-01 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_attributes_error_saving">אירעה שגיאה במהלך השמירה של המאפיינים</string>
+    <string name="shipping_label_payments_cant_edit_warning">רק בעלי האתר יכולים לנהל את אמצעי התשלום של תוויות המשלוח. יש ליצור קשר עם הבעלים של החנות ⁦%1$s⁩ (⁦%2$s⁩) כדי לנהל את אמצעי התשלום.</string>
+    <string name="product_detail_add_variations">להוסיף סוגים</string>
+    <string name="product_variant_list_empty_action">להוסיף סוג</string>
+    <string name="product_variant_list_add_first_variation">להוסיף את הסוג הראשון שלך</string>
+    <string name="shipping_label_selected_rates_total_description">סך הכול %s</string>
+    <string name="shipping_label_selected_rates_description">נבחרו %s תעריפים</string>
+    <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>
+    <string name="shipping_label_rate_included_options_free_pickup">זכאי לאיסוף בחינם</string>
+    <string name="shipping_label_rate_included_options_insurance">ביטוח (עד %s)</string>
+    <string name="shipping_label_rate_included_options_tracking">מבצע מעקב של %s</string>
+    <string name="shipping_label_rate_included_options">כולל %s</string>
+    <string name="shipping_label_rate_option_adult_signature_required">נדרשת חתימה של אדם מבוגר (%s)</string>
+    <string name="shipping_label_rate_option_signature_required">נדרשת חתימה (%s)</string>
+    <string name="shipping_label_shipping_method_free_shipping">משלוח חינם</string>
+    <string name="shipping_label_shipping_method_local_pickup">איסוף מקומי</string>
+    <string name="shipping_label_shipping_method_flat_rate">תעריף קבוע</string>
+    <string name="shipping_label_shipping_carrier_flat_fee_banner_message">הלקוח שילם ⁦%1$s⁩ (⁦%2$s⁩) על משלוח</string>
+    <string name="shipping_label_woo_discount_bottomsheet_message" formatted="false">כאשר רוכשים תוויות משלוח עם WooCommerce, אפשר לחסוך בין 5% ל-40% לעומת תעריפי המשלוח דרך הדואר.</string>
+    <string name="shipping_label_woo_discount_bottomsheet_title">מהי  הנחת השירותים של WooCommerce?</string>
+    <string name="shipping_label_shipping_carrier_rates_generic_error">אירעה שגיאה בטעינת אפשרויות המשלוח</string>
+    <string name="shipping_label_shipping_carrier_rates_unavailable">אין אפשרויות משלוח לכתובת ולחבילות שבחרת</string>
+    <string name="shipping_label_shipping_carriers_title">ספקים ותעריפים</string>
+    <string name="shipping_label_create_purchase">לרכוש תווית משלוח</string>
+    <string name="shipping_label_create_mark_order_complete">לסמן את ההזמנה כ\'הושלמה\' ולהודיע ללקוח</string>
+    <string name="shipping_label_create_price_total">סך כל ההזמנה</string>
+    <string name="shipping_label_create_price_woo_discount_content_description">למידע נוסף על הנחת השירותים של WooCommerce</string>
+    <string name="shipping_label_create_price_woo_discount">הנחת השירותים של WooCommerce</string>
+    <string name="shipping_label_create_price_subtotal">סכום ביניים</string>
+    <string name="shipping_label_create_order_summary">סיכום ההזמנה לתווית המשלוח</string>
+    <string name="free">בחינם</string>
+    <string name="other">אחר</string>
+    <string name="product_term_name_already_exists">כבר קיימת אפשרות עם השם הזה</string>
+    <string name="product_attribute_name_already_exists">כבר קיים מאפיין עם השם הזה</string>
+    <string name="product_enter_attribute_term">יש להוסיף כל שם של אפשרות וללחוץ על Enter</string>
+    <string name="product_select_attribute_term">לחלופין, ניתן להקיש כדי לבחור אפשרות קיימת</string>
+    <string name="product_new_attribute_term_name">שם האפשרות</string>
+    <string name="shipping_label_payments_saving_error">אירעה שגיאה במהלך שמירת ההגדרות שלך</string>
+    <string name="shipping_label_payments_saving_dialog_message">רק רגע…</string>
+    <string name="shipping_label_payments_saving_dialog_title">שומר את ההגדרות שלך</string>
+    <string name="shipping_label_payments_expiration_date">תאריך תפוגה ⁦%1$s⁩</string>
+    <string name="shipping_label_payments_email_receipts_checkbox">לשלוח את הקבלות על רכישת התווית אל ⁦%1$s⁩ (⁦%2$s⁩) ב-⁦%3$s⁩</string>
+    <string name="shipping_label_payments_account_info">כרטיסי אשראי מתקבלים מהחשבון הבא של WordPress.com: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="shipping_label_payments_type_digits">%1$s****%2$s</string>
+    <string name="shipping_label_payments_add_credit_card">הוספה של כרטיס אשראי אחר</string>
+    <string name="shipping_label_payments_selected_payment_method">אמצעי התשלום נבחר</string>
+    <string name="shipping_label_loading_data_progress_message">רק רגע…</string>
+    <string name="shipping_label_loading_data_progress_title">מביא את ההגדרות שלך</string>
+    <string name="shipping_label_selected_payment_description">כרטיס אשראי שמסתיים בספרות ⁦%1$s⁩</string>
+    <string name="payment_method_paypal">Paypal</string>
+    <string name="payment_method_visa">VISA</string>
+    <string name="payment_method_mastercard">MasterCard</string>
+    <string name="payment_method_discover">Discover</string>
+    <string name="payment_method_american_express">American Express</string>
+    <string name="product_select_attribute">לחלופין, ניתן להקיש כדי לבחור מאפיין קיים</string>
+    <string name="product_new_attribute_name">שם המאפיין החדש</string>
+    <string name="product_add_attribute">הוספת תכונה</string>
+    <string name="product_variation_attributes">תכונות</string>
+    <string name="product_variations_edit_attr">לערוך מאפיינים</string>
     <string name="shipping_label_multi_packages_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
     <string name="shipping_label_multi_packages_items_count">⁦%1$d⁩ פריטים ב-⁦%2$d⁩ חבילות</string>
     <string name="shipping_label_single_package_total_weight">משקל החבילה הכולל: ⁦%1$s⁩ %2$s</string>
@@ -17,7 +76,6 @@ Language: he_IL
     <string name="shipping_label_packages_loading_message">רק רגע…</string>
     <string name="shipping_label_packages_loading_title">טוען את החבילות!</string>
     <string name="shipping_label_package_details_title_template">חבילה ⁦%1$d⁩</string>
-    <string name="shipping_label_package_details_items_count">\"⁦%1$d⁩ פירטים\"</string>
     <string name="shipping_label_packages_loading_error">אין אפשרות לטעון את הגדרות החבילה</string>
     <string name="shipping_label_package_details_weight_info">כולל המשקל של החבילה</string>
     <string name="shipping_label_package_details_weight_hint">משקל החבילה הכולל (⁦%1$s⁩)</string>
@@ -119,9 +177,10 @@ Language: he_IL
     <string name="product_downloadable_files_value_single">קובץ אחד</string>
     <string name="product_downloadable_files_value_multiple">⁦%1$d⁩ קבצים</string>
     <string name="product_wip_message_m4">מעכשיו אפשר ליצור מוצרים פשוטים, מקושרים ומקובצים חדשים מכל מקום, דרך האפליקציה של WooCommerce. לא מתאים לך כרגע? אפשר לשמור אותם כטיוטה!</string>
-    <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך &lt;b>להגדיר את ההדפסת מה-WiFi ישירות מהמדפסת עצמה.&lt;/b> יש לוודא שהקושחה של המדפסת מעודכנת ולבדוק את ההוראות בתיעוד של המדפסת.</string>
-    <string name="print_shipping_label_info_step_3">אפשר לבחור את &lt;b>שירות ההדפסה בברירת מחדל&lt;/b> של המכשיר או להתקין את &lt;b>אפליקציית המותג של המדפסת&lt;/b> (היא אמורה להופיע כאפשרות מומלצת)</string>
-    <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל &lt;b>אותן רשתות WiFi‏ &lt;/b></string>
+    <string name="print_shipping_label_info_step_4">ייתכן שיהיה עליך &lt;b&gt;להגדיר את ההדפסת מה-WiFi ישירות מהמדפסת עצמה.&lt;/b&gt; יש לוודא שהקושחה של המדפסת מעודכנת ולבדוק את ההוראות בתיעוד של המדפסת.</string>
+    <string name="print_shipping_label_info_step_3">אפשר לבחור את &lt;b&gt;שירות ההדפסה בברירת מחדל&lt;/b&gt; של המכשיר או להתקין את &lt;b&gt;אפליקציית המותג של המדפסת&lt;/b&gt; (היא אמורה להופיע כאפשרות מומלצת)</string>
+    <string name="print_shipping_label_info_step_1">יש לוודא שהמדפסת והמכשיר מחוברים אל &lt;b&gt;אותן רשתות WiFi‏ &lt;/b&gt;</string>
+    <string name="settings_enable_product_adding_teaser_message">כדאי לבדוק את האפשרות החדשה ליצירה של מוצרים פשוטים, מקושרים ומקובצים בזמן שאנחנו מתכוננים להשקה</string>
     <string name="bottom_sheet_linked_products_desc">להגדיל את המכירות עם שדרוגי מכירות ומכירות צולבות</string>
     <string name="edit_products_button">לערוך מוצרים</string>
     <string name="add_products_button">להוסיף מוצרים</string>
@@ -150,8 +209,8 @@ Language: he_IL
     <string name="product_ratings_count_one">\u2022 דורג פעם אחת</string>
     <string name="product_ratings_count">\u2022 דורג %d פעמים</string>
     <string name="product_detail_fetch_product_invalid_id_error">המוצר לא נמצא</string>
-    <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר &lt;b>לשמור את התווית שלך בקובץ PDF‏ &lt;/b> ולשלוח באימייל כדי להדפיס אותה ממכשיר אחר.</string>
-    <string name="print_shipping_label_info_step_2">אחרי הבחירה באפשרות &lt;b>\"הדפסת תווית משלוח\"&lt;/b> ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
+    <string name="print_shipping_label_info_step_5">אם עדיין יש בעיות בהדפסה מהמכשיר שלך, אפשר &lt;b&gt;לשמור את התווית שלך בקובץ PDF‏ &lt;/b&gt; ולשלוח באימייל כדי להדפיס אותה ממכשיר אחר.</string>
+    <string name="print_shipping_label_info_step_2">אחרי הבחירה באפשרות &lt;b&gt;\"הדפסת תווית משלוח\"&lt;/b&gt; ייתכן שיהיה עליך לבחור ולהוסיף מדפסת אם לא הדפסת דרך מכשיר זה בעבר.</string>
     <string name="print_shipping_label_format_options_title">אפשרויות לפורמט תווית</string>
     <string name="print_shipping_label_info_title">להדפיס באמצעות המכשיר שלך</string>
     <string name="shipping_label_paper_size_label">תווית (4 x‏ 6 אינץ\')</string>
@@ -204,19 +263,15 @@ Language: he_IL
     <string name="feedback_product_give_feedback_button_text">להעניק משוב</string>
     <string name="product_detail_publish_product_success">המוצר פורסם</string>
     <string name="product_detail_publish_product_error">שגיאה בפרסום המוצר</string>
-    <string name="product_publish_dialog_message">\@string/product_update_dialog_message</string>
     <string name="product_publish_dialog_title">מפרסם את המוצר שלך…</string>
     <string name="product_add_tool_bar_menu_button_done">פרסום</string>
     <string name="product_add_tool_bar_title">מוצר חדש</string>
-    <string name="product_add_type_external_desc">\@string/product_type_external_desc</string>
-    <string name="product_add_type_grouped_desc">\@string/product_type_grouped_desc</string>
     <string name="product_add_type_variable_desc">מוצר עם סוגים כגון צבע או מידה</string>
     <string name="product_add_type_simple_desc">פריט ייחודי למכירה</string>
     <string name="product_add_type_external">מוצר חיצוני</string>
     <string name="product_add_type_grouped">קבוצת מוצרים</string>
     <string name="product_add_type_variable">מוצר עם וריאציות</string>
     <string name="product_add_type_simple">מוצר רגיל</string>
-    <string name="product_add_type_list_header">\@string/product_type_list_header</string>
     <string name="product_images_image_limit_warning">ניתן להציג רק תמונה אחת לכל סוג מוצר</string>
     <string name="product_replace_photo">להחליף את התמונה</string>
     <string name="product_add_photo">להוסיף תמונה</string>
@@ -496,10 +551,10 @@ Language: he_IL
     <string name="date_timeframe_future">אירועים קרובים</string>
     <string name="remove">הסרה</string>
     <string name="login_discovery_error_generic">לא הייתה לנו אפשרות לגשת לאתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
-    <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b>בתעודת SSL&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
-    <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b>אימות HTTP&lt;/b>. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
-    <string name="login_discovery_error_xmlrpc">לא הייתה לנו אפשרות לגשת &lt;b>לקובץ XMLRPC&lt;/b> באתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
-    <string name="login_site_credentials_magic_link_label">כמעט סיימת! אנחנו רק צריכים לאמת שהשירות של Jetpack מחובר לכתובת האימייל שלך &lt;b>%1$s&lt;/b></string>
+    <string name="login_discovery_error_ssl">לא הייתה לנו אפשרות לגשת לאתר שלך עקב בעיה &lt;b&gt;בתעודת SSL&lt;/b&gt;. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_discovery_error_http_auth">לא הייתה לנו אפשרות לגשת לאתר שלך מכיוון שהוא דורש &lt;b&gt;אימות HTTP&lt;/b&gt;. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_discovery_error_xmlrpc">לא הייתה לנו אפשרות לגשת &lt;b&gt;לקובץ XMLRPC&lt;/b&gt; באתר שלך. עליך ליצור קשר עם חברת האחסון שלך כדי לפתור את הבעיה.</string>
+    <string name="login_site_credentials_magic_link_label">כמעט סיימת! אנחנו רק צריכים לאמת שהשירות של Jetpack מחובר לכתובת האימייל שלך &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="enter_site_credentials_instead">יש להתחבר עם פרטי הכניסה של האתר.</string>
     <string name="enter_credentials_for_site">יש להתחבר עם פרטי הכניסה שלך לאתר %1$s</string>
     <string name="send_verification_email">לשלוח את הודעת האימייל לאישור</string>
@@ -527,7 +582,7 @@ Language: he_IL
     <string name="orderdetail_shipping_method">שיטת משלוח</string>
     <string name="button_edit_permissions">עריכת הרשאות</string>
     <string name="permission_camera">מצלמה</string>
-    <string name="permissions_denied_message">נראה שהשבתת את פעילות ההרשאות שנדרשות לתכונה זו.&lt;br/>&lt;br/>כדי לשנות זאת, יש לערוך את ההרשאות שלך ולוודא שהפעלת את &lt;strong>%s&lt;/strong>.</string>
+    <string name="permissions_denied_message">נראה שהשבתת את פעילות ההרשאות שנדרשות לתכונה זו.&lt;br/&gt;&lt;br/&gt;כדי לשנות זאת, יש לערוך את ההרשאות שלך ולוודא שהפעלת את &lt;strong&gt;%s&lt;/strong&gt;.</string>
     <string name="permissions_denied_title">הרשאות</string>
     <string name="orders_processed_empty_message">כל ההזמנות עובדו</string>
     <string name="orders_empty_message_with_processing">טרם התקבלו הזמנות לעיבוד</string>
@@ -600,7 +655,7 @@ Language: he_IL
     <string name="orderdetail_empty_shipping_address">לא צוינה כתובת.</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
-    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b>⁦%1$s⁩&lt;/b></string>
+    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
     <string name="country_mapping_ZW">זימבבואה</string>
     <string name="country_mapping_ZM">זמביה</string>
     <string name="country_mapping_YE">תימן</string>
@@ -871,7 +926,7 @@ Language: he_IL
     <string name="order_detail_shipment_tracking_button_contentdesc">לבצע מעקב אחר המשלוח או למחוק את המעקב</string>
     <string name="orderdetail_delete_tracking">מחיקת מעקב</string>
     <string name="orderdetail_track_shipment">מעקב אחר משלוח</string>
-    <string name="login_email_help_desc">במנהל המערכת של האתר שלך אפשר למצור את כתובת האימייל שבה השתמשת כדי להתחבר אל WordPress.com %1$sמלוח הבקרה של Jetpack%2$s במקטע %3$sחיבורים > חיבור החשבון%4$s</string>
+    <string name="login_email_help_desc">במנהל המערכת של האתר שלך אפשר למצור את כתובת האימייל שבה השתמשת כדי להתחבר אל WordPress.com %1$sמלוח הבקרה של Jetpack%2$s במקטע %3$sחיבורים &gt; חיבור החשבון%4$s</string>
     <string name="login_email_help_title">באיזה אימייל השתמשי כדי להתחבר?</string>
     <string name="login_need_help_finding_email">נדרשת לך עזרה עם האימייל להתחברות?</string>
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>

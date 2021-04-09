@@ -2,12 +2,17 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.extensions.sumByBigDecimal
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.tools.SelectedSite
@@ -16,6 +21,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPackageDetails
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPaymentDetails
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowPrintShippingLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowShippingRates
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowWooDiscountBottomSheet
@@ -30,6 +36,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.AddressValidationError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.DataLoadingError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PackagesLoadingError
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Error.PurchaseError
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressChangeSuggested
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressEditCanceled
@@ -41,6 +48,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.EditPaymentCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PackagesSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PaymentSelected
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseFailed
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseStarted
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelected
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.ShippingCarrierSelectionCanceled
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.SuggestedAddressAccepted
@@ -59,7 +69,11 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -68,6 +82,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.order.toIdSet
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -76,6 +92,7 @@ import java.text.DecimalFormat
 class CreateShippingLabelViewModel @AssistedInject constructor(
     @Assisted savedState: SavedStateWithArgs,
     dispatchers: CoroutineDispatchers,
+    parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
@@ -83,10 +100,16 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private val site: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val accountStore: AccountStore,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedState, dispatchers) {
     companion object {
         private const val STATE_KEY = "state"
+        private const val KEY_SHIPPING_LABELS_PARAMETERS = "key_shipping_labels_parameters"
+    }
+
+    private val parameters: SiteParameters by lazy {
+        parameterRepository.getParameters(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
     }
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()
@@ -140,6 +163,14 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                             validateAddress(transition.state.data.stepsState.shippingAddressStep.data, DESTINATION)
                         }
                     }
+                    is State.PurchaseLabels -> {
+                        handleResult(
+                            progressDialogTitle = string.shipping_label_create_purchase_progress_title,
+                            progressDialogMessage = string.shipping_label_create_purchase_progress_message
+                        ) {
+                            purchaseLabels(transition.state.data, transition.state.fulfillOrder)
+                        }
+                    }
                     else -> {
                     }
                 }
@@ -166,6 +197,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                         is SideEffect.ShowCustomsForm -> handleResult { Event.CustomsFormFilledOut }
                         is SideEffect.ShowCarrierOptions -> openShippingCarrierRates(sideEffect.data)
                         is SideEffect.ShowPaymentOptions -> openPaymentDetails()
+                        is SideEffect.ShowLabelsPrint -> openPrintLabelsScreen(sideEffect.orderId, sideEffect.labels)
                     }
                 }
             }
@@ -194,10 +226,11 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     private fun openShippingCarrierRates(data: StateMachineData) {
         triggerEvent(
             ShowShippingRates(
-                data.remoteOrderId,
+                data.order,
                 data.stepsState.originAddressStep.data,
                 data.stepsState.shippingAddressStep.data,
-                data.stepsState.packagingStep.data
+                data.stepsState.packagingStep.data,
+                data.stepsState.carrierStep.data
             )
         )
     }
@@ -215,6 +248,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         triggerEvent(ShowPaymentDetails)
     }
 
+    private fun openPrintLabelsScreen(orderId: Long, labels: List<ShippingLabel>) {
+        triggerEvent(ShowPrintShippingLabels(orderId, labels))
+    }
+
     private fun updateViewState(stateMachineData: StateMachineData) {
         fun <T> Step<T>.mapToUiState(): StepUiState {
             if (!isVisible) return StepUiState.hide()
@@ -222,10 +259,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             val description = when (this) {
                 is OriginAddressStep -> data.toString()
                 is ShippingAddressStep -> data.toString()
-                is PackagingStep -> data.stepDescription
+                is PackagingStep -> stepDescription
                 is CustomsStep -> null
-                is CarrierStep -> null
-                is PaymentsStep -> data.stepDescription
+                is CarrierStep -> stepDescription
+                is PaymentsStep -> stepDescription
             }
 
             return when (status) {
@@ -243,9 +280,18 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
                 carrierStep.status == DONE
             if (!isVisible) return OrderSummaryState()
 
-            return OrderSummaryState(
-                isVisible = true, price = BigDecimal.TEN, discount = BigDecimal.ONE
-            )
+            with(stateMachineData.stepsState.carrierStep.data) {
+                val price = sumByBigDecimal { it.price }
+                val discount = sumByBigDecimal { it.discount }
+
+                return OrderSummaryState(
+                    isVisible = true,
+                    price = price,
+                    discount = discount,
+                    // TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use
+                    currency = parameters.currencyCode
+                )
+            }
         }
 
         viewState = viewState.copy(
@@ -264,6 +310,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             DataLoadingError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             AddressValidationError -> triggerEvent(ShowSnackbar(string.dashboard_stats_error))
             PackagesLoadingError -> triggerEvent(ShowSnackbar(string.shipping_label_packages_loading_error))
+            PurchaseError -> triggerEvent(ShowSnackbar(string.shipping_label_create_purchase_error))
         }
     }
 
@@ -274,7 +321,7 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
             it.model!!
         }
         return Event.DataLoaded(
-            remoteOrderId = order.remoteId,
+            order = order,
             originAddress = getStoreAddress(),
             shippingAddress = order.shippingAddress,
             currentPaymentMethod = accountSettings.paymentMethods.find { it.id == accountSettings.selectedPaymentId }
@@ -309,46 +356,105 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         }
     }
 
-    private val List<ShippingLabelPackage>.stepDescription: String?
-        get() {
-            if (isEmpty()) return null
-
-            val firstLine = if (size == 1) {
-                first().selectedPackage!!.title
-            } else {
-                // TODO properly test this during M3
-                resourceProvider.getString(
-                    string.shipping_label_multi_packages_items_count,
-                    sumBy { it.items.size },
-                    size
+    private suspend fun purchaseLabels(data: StateMachineData, fulfillOrder: Boolean): Event {
+        val result = shippingLabelRepository.purchaseLabels(
+            orderId = data.order.remoteId,
+            origin = data.stepsState.originAddressStep.data,
+            destination = data.stepsState.shippingAddressStep.data,
+            packages = data.stepsState.packagingStep.data,
+            rates = data.stepsState.carrierStep.data
+        )
+        return if (result.isError) {
+            PurchaseFailed
+        } else {
+            if (fulfillOrder) {
+                val orderIdSet = data.order.identifier.toIdSet()
+                val fulfillResult = orderDetailRepository.updateOrderStatus(
+                    localOrderId = orderIdSet.id,
+                    remoteOrderId = orderIdSet.remoteOrderId,
+                    newStatus = CoreOrderStatus.COMPLETED.value
                 )
+                if (!fulfillResult) {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+                }
             }
+            PurchaseSuccess(result.model!!)
+        }
+    }
 
-            val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
-            val stringResource = if (size == 1) {
-                string.shipping_label_single_package_total_weight
+    private val PackagingStep.stepDescription: String
+        get() {
+            return if (status == DONE && data.isNotEmpty()) {
+                val firstLine = if (data.size == 1) {
+                    data.first().selectedPackage!!.title
+                } else {
+                    // TODO properly test this during M3
+                    resourceProvider.getString(
+                        string.shipping_label_multi_packages_items_count,
+                        data.sumBy { it.items.size },
+                        data.size
+                    )
+                }
+
+                val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+                val stringResource = if (data.size == 1) {
+                    string.shipping_label_single_package_total_weight
+                } else {
+                    string.shipping_label_multi_packages_total_weight
+                }
+                val weightFormatted = with(DecimalFormat()) {
+                    maximumFractionDigits = 4
+                    minimumFractionDigits = 0
+                    format(data.sumByFloat { it.weight })
+                }
+
+                val secondLine = resourceProvider.getString(
+                    stringResource,
+                    weightFormatted,
+                    weightDimension
+                )
+
+                "$firstLine\n$secondLine"
             } else {
-                string.shipping_label_multi_packages_total_weight
+                resourceProvider.getString(string.shipping_label_create_packaging_details_description)
             }
-            val weightFormatted = with(DecimalFormat()) {
-                maximumFractionDigits = 4
-                minimumFractionDigits = 0
-                format(sumByDouble { it.weight })
-            }
-
-            val secondLine = resourceProvider.getString(
-                stringResource,
-                weightFormatted,
-                weightDimension
-            )
-
-            return "$firstLine\n$secondLine"
         }
 
-    private val PaymentMethod?.stepDescription: String?
+    private val PaymentsStep.stepDescription: String?
         get() {
-            if (this == null) return null
-            return resourceProvider.getString(string.shipping_label_selected_payment_description, cardDigits)
+            return if (status == DONE && data != null) {
+                resourceProvider.getString(string.shipping_label_selected_payment_description, data.cardDigits)
+            } else {
+                resourceProvider.getString(string.shipping_label_create_payment_description)
+            }
+        }
+
+    private val CarrierStep.stepDescription: String
+        get() {
+            return if (status == DONE && data.isNotEmpty()) {
+                val firstLine: String
+                val secondLine: String
+                if (data.size > 1) {
+                    firstLine = resourceProvider.getString(string.shipping_label_selected_rates_description, data.size)
+                    secondLine = resourceProvider.getString(
+                        string.shipping_label_selected_rates_total_description,
+                        data.sumByBigDecimal { it.price }.format()
+                    )
+                } else {
+                    val rate = data.first()
+                    firstLine = rate.serviceName
+
+                    val total = data.sumByBigDecimal { it.price }.format()
+                    val deliveryDays = resourceProvider.getPluralString(
+                        R.plurals.shipping_label_shipping_carrier_rates_delivery_estimate,
+                        rate.deliveryDays
+                    )
+                    secondLine = "$total - $deliveryDays"
+                }
+                return "$firstLine\n$secondLine"
+            } else {
+                resourceProvider.getString(string.shipping_label_create_carrier_description)
+            }
         }
 
     fun retry() = stateMachine.handleEvent(Event.FlowStarted(arguments.orderIdentifier))
@@ -389,8 +495,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         stateMachine.handleEvent(EditPaymentCanceled)
     }
 
-    fun onShippingCarriersSelected(carriers: List<ShippingRate>) {
-        stateMachine.handleEvent(ShippingCarrierSelected)
+    fun onShippingCarriersSelected(rates: List<ShippingRate>) {
+        stateMachine.handleEvent(ShippingCarrierSelected(rates))
     }
 
     fun onShippingCarrierSelectionCanceled() {
@@ -399,6 +505,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
 
     fun onWooDiscountInfoClicked() {
         triggerEvent(ShowWooDiscountBottomSheet)
+    }
+
+    fun onPurchaseButtonClicked(fulfillOrder: Boolean) {
+        stateMachine.handleEvent(PurchaseStarted(fulfillOrder))
     }
 
     fun onEditButtonTapped(step: FlowStep) {
@@ -434,6 +544,10 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         shippingLabelRepository.clearCache()
     }
 
+    private fun BigDecimal.format(): String {
+        return PriceUtils.formatCurrency(this, parameters.currencyCode, currencyFormatter)
+    }
+
     @Parcelize
     data class ViewState(
         val uiState: UiState = WaitingForInput,
@@ -462,7 +576,8 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
     data class OrderSummaryState(
         val isVisible: Boolean = false,
         val price: BigDecimal = BigDecimal.ZERO,
-        val discount: BigDecimal = BigDecimal.ZERO
+        val discount: BigDecimal = BigDecimal.ZERO,
+        val currency: String? = null
     ) : Parcelable
 
     @Parcelize
@@ -509,6 +624,6 @@ class CreateShippingLabelViewModel @AssistedInject constructor(
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT
     }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<CreateShippingLabelViewModel>
 }

@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.di.ViewModelAssistedFactory
@@ -61,12 +62,7 @@ class ProductSelectionListViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
-    private val excludedProductIds =
-        navArgs.excludedProductIds
-            .takeIf { it.isNotEmpty() }
-            ?.split(",")
-            ?.mapNotNull { it.toLongOrNull() }
-            .orEmpty()
+    private val excludedProductIds = navArgs.excludedProductIds.toList()
 
     init {
         if (_productList.value == null) {
@@ -255,6 +251,6 @@ class ProductSelectionListViewModel @AssistedInject constructor(
         val isSearchActive: Boolean? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductSelectionListViewModel>
 }

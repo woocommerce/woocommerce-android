@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import com.tinder.StateMachine
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelPackage
-import com.woocommerce.android.model.ShippingRate.ShippingCarrier
+import com.woocommerce.android.model.ShippingRate
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -131,11 +133,11 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     shippingAddressStep = ShippingAddressStep(NOT_READY, event.shippingAddress),
                     packagingStep = PackagingStep(NOT_READY, emptyList()),
                     customsStep = CustomsStep(NOT_READY),
-                    carrierStep = CarrierStep(NOT_READY),
+                    carrierStep = CarrierStep(NOT_READY, emptyList()),
                     paymentsStep = PaymentsStep(NOT_READY, event.currentPaymentMethod)
                 )
                 val data = StateMachineData(
-                    remoteOrderId = event.remoteOrderId,
+                    order = event.order,
                     stepsState = steps
                 )
                 transitionTo(State.WaitingForInput(data))
@@ -199,6 +201,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
             }
             on<Event.EditPaymentRequested> {
                 transitionTo(State.PaymentSelection(data), SideEffect.ShowPaymentOptions)
+            }
+            on<Event.PurchaseStarted> {
+                transitionTo(State.PurchaseLabels(data, it.fulfillOrder))
             }
         }
 
@@ -350,7 +355,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 val newData = data.copy(
                     stepsState = data.stepsState.updateStep(
                         data.stepsState.carrierStep,
-                        emptyList()
+                        it.rates
                     )
                 )
                 transitionTo(State.WaitingForInput(newData))
@@ -370,6 +375,16 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
             on<Event.EditPaymentCanceled> {
                 transitionTo(State.WaitingForInput(data))
+            }
+        }
+
+        state<State.PurchaseLabels> {
+            on<Event.PurchaseFailed> {
+                transitionTo(State.WaitingForInput(data), SideEffect.ShowError(Error.PurchaseError))
+            }
+
+            on<Event.PurchaseSuccess> {
+                transitionTo(State.Idle, SideEffect.ShowLabelsPrint(data.order.remoteId, it.labels))
             }
         }
 
@@ -413,7 +428,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
      */
     @Parcelize
     data class StateMachineData(
-        val remoteOrderId: Long,
+        val order: Order,
         val stepsState: StepsState
     ) : Parcelable
 
@@ -450,8 +465,8 @@ class ShippingLabelsStateMachine @Inject constructor() {
         @Parcelize
         data class CarrierStep(
             override val status: StepStatus,
-            override val data: List<ShippingCarrier> = emptyList()
-        ) : Step<List<ShippingCarrier>>()
+            override val data: List<ShippingRate>
+        ) : Step<List<ShippingRate>>()
 
         @Parcelize
         data class PaymentsStep(
@@ -515,7 +530,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 is CarrierStep -> {
                     val paymentStatus = if (paymentsStep.data == null) READY else DONE
                     copy(
-                        carrierStep = carrierStep.copy(status = DONE),
+                        carrierStep = carrierStep.copy(status = DONE, data = newData as List<ShippingRate>),
                         paymentsStep = paymentsStep.copy(status = paymentStatus)
                     )
                 }
@@ -541,7 +556,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
                     carrierStep = invalidateCarrierStepIfNeeded()
                 )
                 is CustomsStep -> copy(customsStep = customsStep.copy(data = newData as Unit))
-                is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingCarrier>))
+                is CarrierStep -> copy(carrierStep = carrierStep.copy(data = newData as List<ShippingRate>))
                 is PaymentsStep -> copy(paymentsStep = paymentsStep.copy(data = newData as PaymentMethod))
             }
         }
@@ -559,6 +574,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
         object DataLoadingError : Error()
         object AddressValidationError : Error()
         object PackagesLoadingError : Error()
+        object PurchaseError : Error()
     }
 
     sealed class State : Parcelable {
@@ -609,6 +625,9 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         @Parcelize
         data class PaymentSelection(val data: StateMachineData) : State()
+
+        @Parcelize
+        data class PurchaseLabels(val data: StateMachineData, val fulfillOrder: Boolean) : State()
     }
 
     sealed class Event {
@@ -616,7 +635,7 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         data class FlowStarted(val orderId: String) : Event()
         data class DataLoaded(
-            val remoteOrderId: Long,
+            val order: Order,
             val originAddress: Address,
             val shippingAddress: Address,
             val currentPaymentMethod: PaymentMethod?
@@ -650,13 +669,17 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object ShippingCarrierSelectionStarted : UserInput()
         object EditShippingCarrierRequested : UserInput()
-        object ShippingCarrierSelected : Event()
+        data class ShippingCarrierSelected(val rates: List<ShippingRate>) : Event()
         object ShippingCarrierSelectionCanceled : Event()
 
         object PaymentSelectionStarted : UserInput()
         object EditPaymentRequested : UserInput()
         object EditPaymentCanceled : Event()
         data class PaymentSelected(val paymentMethod: PaymentMethod) : Event()
+
+        data class PurchaseStarted(val fulfillOrder: Boolean) : UserInput()
+        data class PurchaseSuccess(val labels: List<ShippingLabel>) : Event()
+        object PurchaseFailed : Event()
     }
 
     sealed class SideEffect {
@@ -681,7 +704,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         object ShowCustomsForm : SideEffect()
         data class ShowCarrierOptions(val data: StateMachineData) : SideEffect()
+
         object ShowPaymentOptions : SideEffect()
+
+        data class ShowLabelsPrint(
+            val orderId: Long,
+            val labels: List<ShippingLabel>
+        ) : ShippingLabelsStateMachine.SideEffect()
     }
 
     class InvalidStateException(message: String) : Exception(message)
