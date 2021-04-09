@@ -2,13 +2,12 @@
 
 6.5
 -----
-
+- [*] Fixed bug that would cause the on-screen keyboard to disappear when searching the order list. [https://github.com/woocommerce/woocommerce-android/pull/3828]
 
 6.4
 -----
 * [*] Fixed bug where the app couldn't load products if there's decimal stock quantity. [https://github.com/woocommerce/woocommerce-android/pull/3782]
 - [*] Fixed a ui bug in the shipping label formats description screen. [https://github.com/woocommerce/woocommerce-android/pull/3791]
-- [*] Fixed bug that would cause the on-screen keyboard to disappear when searching the order list
 
 
 6.3
