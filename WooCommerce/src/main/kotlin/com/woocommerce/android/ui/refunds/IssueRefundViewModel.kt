@@ -220,9 +220,8 @@ class IssueRefundViewModel @AssistedInject constructor(
                     isFeesVisible = order.feesTotal > BigDecimal.ZERO,
                     isNextButtonEnabled = false,
                     selectedShippingLines = selectedShippingLineIds,
-                    formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO)
-                    refundNotice = getRefundNotice(),
-                    isNextButtonEnabled = false
+                    formattedShippingRefundTotal = formatCurrency(BigDecimal.ZERO),
+                    refundNotice = getRefundNotice()
             )
         }
 
