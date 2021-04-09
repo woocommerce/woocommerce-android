@@ -10,6 +10,10 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.resume
 
+@Deprecated(
+    message = "Use runBlockingTest which provides additional features such as skipping delays",
+    replaceWith = ReplaceWith("runBlockingTest", "import kotlinx.coroutines.test.runBlockingTest")
+)
 fun <T> test(context: CoroutineContext = EmptyCoroutineContext, block: suspend CoroutineScope.() -> T) {
     runBlocking(context, block)
 }
