@@ -18,6 +18,7 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreationFeatures
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import com.woocommerce.android.util.suspendCancellableCoroutineWithTimeout
@@ -63,12 +64,6 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    companion object {
-        const val CAN_CREATE_PAYMENT_METHOD = false
-        const val CAN_CREATE_PACKAGE = false
-        const val CAN_CREATE_CUSTOMS_FORM = false
-    }
-
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
@@ -313,9 +308,9 @@ class OrderDetailRepository @Inject constructor(
         val result = shippingLabelStore.fetchShippingLabelCreationEligibility(
             site = selectedSite.get(),
             orderId = orderId,
-            canCreatePackage = CAN_CREATE_PACKAGE,
-            canCreatePaymentMethod = CAN_CREATE_PAYMENT_METHOD,
-            canCreateCustomsForm = CAN_CREATE_CUSTOMS_FORM
+            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
         )
         if (result.isError) {
             WooLog.e(
@@ -334,9 +329,9 @@ class OrderDetailRepository @Inject constructor(
         return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
             site = selectedSite.get(),
             orderId = orderId,
-            canCreatePackage = CAN_CREATE_PACKAGE,
-            canCreatePaymentMethod = CAN_CREATE_PAYMENT_METHOD,
-            canCreateCustomsForm = CAN_CREATE_CUSTOMS_FORM
+            canCreatePackage = ShippingLabelCreationFeatures.CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = ShippingLabelCreationFeatures.CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = ShippingLabelCreationFeatures.CAN_CREATE_CUSTOMS_FORM
         )?.isEligible ?: false
     }
 
