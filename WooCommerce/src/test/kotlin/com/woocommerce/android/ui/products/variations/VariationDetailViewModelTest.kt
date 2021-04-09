@@ -9,9 +9,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
-import com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.Companion.TEST_VARIATION
 import com.woocommerce.android.util.CoroutineTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
