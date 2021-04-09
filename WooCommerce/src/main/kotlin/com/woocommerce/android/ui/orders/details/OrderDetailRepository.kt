@@ -63,6 +63,12 @@ class OrderDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
+    companion object {
+        const val CAN_CREATE_PAYMENT_METHOD = false
+        const val CAN_CREATE_PACKAGE = false
+        const val CAN_CREATE_CUSTOMS_FORM = false
+    }
+
     private var continuationFetchOrder: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderNotes: CancellableContinuation<Boolean>? = null
     private var continuationFetchOrderShipmentTrackingList: CancellableContinuation<RequestResult>? = null
@@ -301,6 +307,37 @@ class OrderDetailRepository @Inject constructor(
 
     fun getStoreCountryCode(): String? {
         return wooCommerceStore.getStoreCountryCode(selectedSite.get())
+    }
+
+    suspend fun fetchSLCreationEligibility(orderId: Long) {
+        val result = shippingLabelStore.fetchShippingLabelCreationEligibility(
+            site = selectedSite.get(),
+            orderId = orderId,
+            canCreatePackage = CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = CAN_CREATE_CUSTOMS_FORM
+        )
+        if (result.isError) {
+            WooLog.e(
+                tag = ORDERS,
+                message = "Fetching shipping labels creation eligibility failed for $orderId, " +
+                    "error: ${result.error.type} ${result.error.message}")
+        } else if (!result.model!!.isEligible) {
+            WooLog.d(
+                tag = ORDERS,
+                message = "Order $orderId is not eligible for shipping labels creation, " +
+                    "reason: ${result.model!!.reason}")
+        }
+    }
+
+    fun isOrderEligibleForSLCreation(orderId: Long): Boolean {
+        return shippingLabelStore.isOrderEligibleForShippingLabelCreation(
+            site = selectedSite.get(),
+            orderId = orderId,
+            canCreatePackage = CAN_CREATE_PACKAGE,
+            canCreatePaymentMethod = CAN_CREATE_PAYMENT_METHOD,
+            canCreateCustomsForm = CAN_CREATE_CUSTOMS_FORM
+        )?.isEligible ?: false
     }
 
     @Suppress("unused")
