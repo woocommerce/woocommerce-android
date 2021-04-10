@@ -49,7 +49,6 @@ import com.woocommerce.android.util.FeatureFlag.ADD_EDIT_VARIATIONS
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.util.FormatUtils
 
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
@@ -250,7 +249,7 @@ class ProductDetailCardBuilder(
                 ),
                 Pair(
                     resources.getString(R.string.product_stock_quantity),
-                    StringUtils.formatCount(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
@@ -322,7 +321,7 @@ class ProductDetailCardBuilder(
         if (productType == SIMPLE || productType == VARIABLE) {
             if (this.isStockManaged) {
                 inventory[resources.getString(R.string.product_stock_quantity)] =
-                    FormatUtils.formatInt(this.stockQuantity)
+                    StringUtils.formatCountDecimal(this.stockQuantity)
                 inventory[resources.getString(R.string.product_backorders)] =
                     ProductBackorderStatus.backordersToDisplayString(resources, this.backorderStatus)
             } else if (productType == SIMPLE) {

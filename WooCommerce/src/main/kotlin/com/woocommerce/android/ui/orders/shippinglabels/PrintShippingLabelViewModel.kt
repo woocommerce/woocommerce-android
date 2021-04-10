@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels
 
 import android.os.Parcelable
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Stat
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,6 +51,10 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
 
     fun onPaperSizeSelected(paperSize: ShippingLabelPaperSize) {
         viewState = viewState.copy(paperSize = paperSize)
+    }
+
+    fun onSaveForLaterClicked() {
+        triggerEvent(ExitWithResult(Unit))
     }
 
     fun onPrintShippingLabelClicked() {
@@ -106,6 +112,6 @@ class PrintShippingLabelViewModel @AssistedInject constructor(
         val tempFile: File? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<PrintShippingLabelViewModel>
 }

@@ -204,6 +204,15 @@
         </action>
     </fragment>
     <fragment
+        android:id="@+id/renameAttributeFragment"
+        android:name="com.woocommerce.android.ui.products.variations.attributes.RenameAttributeFragment"
+        android:label="renameAttributeFragment">
+        <argument
+            android:name="attributeName"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+    <fragment
         android:id="@+id/addAttributeTermsFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragment"
         android:label="addAttributeTermsFragment">
@@ -218,6 +227,13 @@
         <argument
             android:name="isNewAttribute"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_attributeTermsFragment_to_renameAttributeFragment"
+            app:destination="@id/renameAttributeFragment"
+            app:enterAnim="@anim/activity_slide_in_from_right"
+            app:exitAnim="@anim/activity_slide_out_to_left"
+            app:popEnterAnim="@anim/activity_slide_in_from_left"
+            app:popExitAnim="@anim/activity_slide_out_to_right" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"

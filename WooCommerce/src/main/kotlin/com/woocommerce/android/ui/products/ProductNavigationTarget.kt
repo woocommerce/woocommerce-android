@@ -84,4 +84,7 @@ sealed class ProductNavigationTarget : Event() {
         val attributeName: String,
         val isNewAttribute: Boolean
     ) : ProductNavigationTarget()
+    data class RenameProductAttribute(
+        val attributeName: String
+    ) : ProductNavigationTarget()
 }

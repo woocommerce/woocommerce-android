@@ -65,6 +65,8 @@
     <string name="product_variation_attributes">Attributes</string>
     <string name="product_add_attribute">Add attribute</string>
     <string name="product_new_attribute_name">New attribute name</string>
+    <string name="product_rename_attribute">Rename attribute</string>
+    <string name="product_rename_attribute_helper">Type of variation, eg. size or color</string>
     <string name="product_select_attribute">Or tap to select an existing attribute</string>
     <string name="product_new_attribute_term_name">Option name</string>
     <string name="product_select_attribute_term">Or tap to select an existing option</string>
@@ -72,6 +74,7 @@
     <string name="product_attribute_name_already_exists">An attribute with this name already exists</string>
     <string name="product_any_attribute_hint">Any</string>
     <string name="product_term_name_already_exists">An option with this name already exists</string>
+    <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="review_notifications">Reviews</string>
@@ -94,6 +97,8 @@
     <string name="button_not_now">Not now</string>
     <string name="unknown">Unknown</string>
     <string name="remove">Remove</string>
+    <string name="rename">Rename</string>
+    <string name="type">Type</string>
     <string name="try_again">Try again</string>
     <string name="update">Update</string>
     <string name="discard_message">Do you want to discard your changes?</string>
@@ -105,6 +110,7 @@
     <string name="other">Other</string>
     <string name="free">free</string>
     <string name="and">and</string>
+    <string name="generic_string" translatable="false">%s</string>
     <!--
         Date/Time Labels
     -->
@@ -292,6 +298,7 @@
     <string name="orderdetail_empty_shipping_address">No address specified.</string>
     <string name="orderdetail_shipping_notice">This order is using extensions to calculate shipping. The shipping methods shown might be incomplete.</string>
     <string name="orderdetail_issue_refund_button">Issue refund</string>
+    <string name="orderdetail_collect_payment_button">Collect Payment</string>
     <string name="orderdetail_shipping_label_item_header">Package %d</string>
     <string name="orderdetail_shipping_label_item_menu">Refund shipping label</string>
     <string name="orderdetail_shipping_label_item_shipfrom">Ship from</string>
@@ -353,6 +360,9 @@
     <string name="shipping_label_print_button">Print shipping label</string>
     <string name="shipping_label_paper_size_options_info">See label layout and paper size options</string>
     <string name="shipping_label_print_info">Don\'t know how to print with your phone?</string>
+    <string name="shipping_label_print_purchase_success">Shipping label purchased!</string>
+    <string name="shipping_label_print_save_for_later">Save for later</string>
+    <string name="shipping_label_print_screen_title">Print shipping label</string>
     <string name="shipping_label_preview_error">Error previewing shipping label</string>
     <string name="shipping_label_paper_size_legal">Legal (8.5 x 14 in)</string>
     <string name="shipping_label_paper_size_letter">Letter (8.5 x 11 in)</string>
@@ -391,6 +401,10 @@
     <string name="shipping_label_create_price_total">Order total</string>
     <string name="shipping_label_create_mark_order_complete">Mark this order as complete and notify the customer</string>
     <string name="shipping_label_create_purchase">Purchase shipping label</string>
+    <string name="shipping_label_create_purchase_progress_title">Purchasing label</string>
+    <string name="shipping_label_create_purchase_progress_message">Please wait…</string>
+    <string name="shipping_label_create_purchase_error">Error purchasing the labels</string>
+    <string name="shipping_label_create_purchase_fulfill_error">Couldn\'t mark the order as complete</string>
     <string name="shipping_label_selected_payment_description">Credit card ending in %1$s</string>
     <string name="shipping_label_loading_data_progress_title">Fetching your settings</string>
     <string name="shipping_label_loading_data_progress_message">Please wait…</string>
@@ -1587,4 +1601,5 @@
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
     <string name="shipping_label_payments_cant_edit_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
+    <string name="magic_link_not_meaning_to_create_account">Didn\'t mean to create a new account? Go back to re-enter your email address.</string>
 </resources>

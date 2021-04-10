@@ -1,68 +1,136 @@
 <ar>
-6.2:
-بالنسبة إلى هذا الإصدار، ركزنا على إصلاحات الأخطاء وتحسينات الأداء.
+6.3:
+يوفِّر تطبيق WooCommerce المتوافق مع نظام تشغيل Android 6.3 تحديثين مهمين للمستخدمين:
+
+- يمكنك الآن تضمين عبارة "قابل للتنزيل" في تفاصيل نوع المنتج إن أمكن.
+- أصلحنا خطأ بحيث تظهر حالة طلب العميل بشكل صحيح الآن في تفاصيل الطلب.
+
 </ar>
 <de-DE>
-6.2:
-In dieser Release haben wir uns auf Fehlerbehebungen und die Verbesserung der Performance konzentriert.
+6.3:
+WooCommerce Android 6.3 hält zwei wichtige Updates bereit:
+
+- Falls zutreffend kannst du jetzt in den Produktdetails „Zum Herunterladen“ angeben.
+- Wir haben einen Fehler behoben, sodass der Status einzelner Bestellungen jetzt korrekt unter den Bestelldetails angezeigt wird.
+
 </de-DE>
 <es-ES>
-6.2:
-En esta versión, nos hemos centrado en corregir errores y hacer mejoras de rendimiento.
+6.3:
+WooCommerce para Android 6.3 ofrece a los usuarios dos mejoras importantes:
+
+- Cuando proceda, ya puedes incluir "descargable" en los detalles del tipo de producto.
+- Hemos solucionado un error para que el estado de los pedidos personalizados aparezca correctamente en los detalles del pedido.
+
 </es-ES>
 <fr-FR>
-6.2 :
-Pour cette version, nous nous sommes concentrés sur les résolutions de bogues et l’amélioration des performances.
+6.3 :
+WooCommerce Android 6.3 propose aux utilisateurs deux mises à jour importantes :
+
+- Le cas échéant, vous pouvez désormais inclure « téléchargeable » dans les détails de type d’un produit.
+- Nous avons résolu un bug afin que l’état d’une commande personnalisée s’affiche désormais correctement dans les détails de la commande.
+
 </fr-FR>
 <iw-IL>
-6.2:
-בגרסה הזאת התמקדנו בתיקון באגים ובשיפורים בביצועים.
+6.3:
+גרסת 6.3 של WooCommerce ל-Android כוללת שני עדכונים חשובים למשתמשים:
+
+- אם רלוונטי, אפשר להוסיף אפשרות 'להורדה' בפרטי הסוג של המוצר.
+- תיקנו באג כדי לוודא שסטטוס ההזמנה המותאם מופיע כעת בצורה תקינה בפרטי ההזמנה.
+
 </iw-IL>
 <id>
-6.2:
-Untuk rilis ini, kami berfokus pada perbaikan bug dan peningkatan performa.
+6.3:
+WooCommerce Android 6.3 memberikan dua pembaruan penting untuk pengguna:
+
+- Jika dibutuhkan, sekarang Anda dapat menyertakan “bahan unduhan” pada detail tipe produk.
+- Kami telah memperbaiki bug sehingga status pesanan khusus ditampilkan dengan benar pada detail pesanan.
+
 </id>
 <it-IT>
-6.2:
-Per questo rilascio, ci siamo concentrati sulle correzioni dei bug e sui miglioramenti delle prestazioni.
+6.3:
+WooCommerce per Android 6.3 offre agli utenti due importanti aggiornamenti:
+
+- Se applicabile, puoi ora includere "scaricabile" nei dettagli del tipo di prodotto.
+- Abbiamo risolto un bug in modo che lo stato di un ordine personalizzato ora venga visualizzato correttamente nei dettagli dell'ordine.
+
 </it-IT>
 <ja-JP>
-6.2:
-このリリースでは、バグ修正とパフォーマンス向上に注力しました。
+6.3:
+WooCommerce Android 6.3に2つの重要なアップデートがあります : 
+
+- 該当する場合は、商品のタイプの詳細に「ダウンロード可能」を含めることが可能になりました。
+- カスタム注文のステータスが注文の詳細に正確に表示されるようバグを修正しました。
+
 </ja-JP>
 <ko-KR>
-6.2:
-이 릴리스의 경우 버그 수정 및 성능 향상에 집중했습니다.
+6.3:
+WooCommerce Android 6.3에서 다음 두 가지 중요한 업데이트를 사용자에게 제공합니다.
+
+- 업데이트를 적용하면 상품 유형 상세 정보에 "다운로드 가능"이라는 표시를 포함할 수 있습니다.
+- 이제 주문 상세 정보에 사용자 정의 주문의 상태가 올바르게 표시되도록 버그를 수정했습니다.
+
 </ko-KR>
 <nl-NL>
-6.2:
-Deze release is toegespitst op het verhelpen van bugs en prestatieverbeteringen.
+6.3:
+WooCommerce Android 6.3 bevat twee belangrijke updates:
+
+- Indien van toepassing, kan je nu 'downloadbaar’ toevoegen aan de informatie van het producttype.
+- We hebben een bug verholpen zodat de status van een aangepaste bestelling nu correct wordt weergegeven in de bestellingsgegevens.
+
 </nl-NL>
 <pt-BR>
-6.2:
-Para esta versão, focamos em corrigir bugs e melhorar o desempenho.
+6.3:
+O WooCommerce para Android 6.3 conta com duas atualizações importantes:
+
+- Se aplicável, agora é possível incluir "pode ser baixado" nos detalhes de tipo de um produto.
+- Corrigimos um bug e agora o status de pedidos personalizados é exibido corretamente nos detalhes do pedido.
+
 </pt-BR>
 <ru-RU>
-6.2:
-В этом выпуске мы сосредоточились на исправлении ошибок и повышении производительности.
+6.3:
+Доступно два важных обновления WooCommerce 6.3 для Android:
+
+— Теперь в сведениях о типе можно указать, что товар является загружаемым (если применимо).
+— Исправлена ошибка, благодаря чему статус заказа клиента отображается корректно в сведениях о заказе.
+
 </ru-RU>
 <sv-SE>
-6.2:
-I den här versionen har vi fokuserat på buggkorrigeringar och prestandaförbättringar.
+6.3:
+Med WooCommerce Android 6.3 får användare två viktiga uppdateringar:
+
+– Vid behov kan du nu inkludera "nedladdningsbar" i typinformationen för en produkt.
+– Vi åtgärdade en bugg så att en status för en anpassad order nu visas korrekt i orderinformationen.
+
 </sv-SE>
 <tr-TR>
-6.2:
-Bu sürümde, hata düzeltmeye ve performans iyileştirmelerine odaklandık.
+6.3:
+WooCommerce Android 6.3 kullanıcılara iki önemli güncelleme sunuyor:
+
+- Mümkünse, artık bir ürünün tür ayrıntılarına "indirilebilir" ifadesini ekleyebilirsiniz.
+- Özel bir siparişin durumunun sipariş ayrıntılarında doğru şekilde görüntülenmesini önleyen bir hatayı düzelttik.
+
 </tr-TR>
 <zh-CN>
-6.2：
-在此版本中，我们重点关注错误修复和性能提升。
+6.3：
+WooCommerce Android 6.3 为用户提供了两个重要更新：
+
+- 如果适用，您现在可以在产品的类型详情中包括“可下载”。
+- 我们修复了一个错误，以便现在可以在订单详情中正确显示自定义订单的状态。
+
 </zh-CN>
 <zh-TW>
-6.2：
-此版本著重於修正錯誤和提升效能。
+6.3：
+WooCommerce Android 6.3 版為使用者提供兩項重要更新：
+
+- 在適用情況下，你現在可以在產品類型詳細資料中提供「可下載」內容。
+- 修正錯誤，現在自訂訂單詳細資料中會正確顯示訂單狀態。
+
 </zh-TW>
 <en-US>
-6.2:
-For this release, we focused on bug fixes and performance improvements.
+6.3:
+WooCommerce Android 6.3 offers users two important updates: 
+
+ - If applicable, you can now include “downloadable” in the type details of a product.
+ - We fixed a bug so that a custom order’s status now displays correctly in order details.
+ 
 </en-US>

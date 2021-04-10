@@ -28,10 +28,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val availablePackages = listOf(
         ShippingPackage(
-            "id1", "title1", false, "provider1", PackageDimensions(1.0, 1.0, 1.0)
+            "id1", "title1", false, "provider1", PackageDimensions(1.0f, 1.0f, 1.0f)
         ),
         ShippingPackage(
-            "id2", "title2", false, "provider2", PackageDimensions(1.0, 1.0, 1.0)
+            "id2", "title2", false, "provider2", PackageDimensions(1.0f, 1.0f, 1.0f)
         )
     )
     private val parameterRepository: ParameterRepository = mock()

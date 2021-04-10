@@ -42,10 +42,10 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
     private val availablePackages = listOf(
         ShippingPackage(
-            "id1", "title1", false, "provider1", PackageDimensions(1.0, 1.0, 1.0)
+            "id1", "title1", false, "provider1", PackageDimensions(1.0f, 1.0f, 1.0f)
         ),
         ShippingPackage(
-            "id2", "title2", false, "provider2", PackageDimensions(1.0, 1.0, 1.0)
+            "id2", "title2", false, "provider2", PackageDimensions(1.0f, 1.0f, 1.0f)
         )
     )
 
@@ -116,8 +116,9 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     fun `test edit flow`() = coroutinesTestRule.testDispatcher.runBlockingTest {
         val currentShippingPackages = arrayOf(
             ShippingLabelPackage(
+                "package1",
                 availablePackages.first(),
-                10.0,
+                10.0f,
                 listOf(Item(0L, "product", "", "10 kg"))
             )
         )
@@ -162,8 +163,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
-        viewModel.onWeightEdited(0, 10.0)
-        assertThat(viewState!!.shippingLabelPackages.first().weight).isEqualTo(10.0)
+        viewModel.onWeightEdited(0, 10.0f)
+        assertThat(viewState!!.shippingLabelPackages.first().weight).isEqualTo(10.0f)
         assertThat(viewState!!.isDataValid).isTrue()
     }
 
@@ -201,12 +202,12 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         var event: MultiLiveEvent.Event? = null
         viewModel.event.observeForever { event = it }
 
-        viewModel.onWeightEdited(0, 10.0)
+        viewModel.onWeightEdited(0, 10.0f)
         viewModel.onDoneButtonClicked()
 
         assertThat(event).isInstanceOf(ExitWithResult::class.java)
         val createdShippingPackages = (event as ExitWithResult<List<ShippingLabelPackage>>).data
         assertThat(createdShippingPackages.size).isEqualTo(1)
-        assertThat(createdShippingPackages.first().weight).isEqualTo(10.0)
+        assertThat(createdShippingPackages.first().weight).isEqualTo(10.0f)
     }
 }

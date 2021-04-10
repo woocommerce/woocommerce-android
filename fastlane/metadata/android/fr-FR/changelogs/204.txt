@@ -1,2 +1,0 @@
-6.2 :
-Pour cette version, nous nous sommes concentrés sur les résolutions de bogues et l’amélioration des performances.

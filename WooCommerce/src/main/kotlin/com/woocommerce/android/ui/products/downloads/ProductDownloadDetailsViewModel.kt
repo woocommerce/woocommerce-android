@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.products.downloads
 import android.content.DialogInterface
 import android.os.Parcelable
 import androidx.core.util.PatternsCompat
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.assisted.AssistedFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.model.ProductFile
@@ -146,6 +147,6 @@ class ProductDownloadDetailsViewModel @AssistedInject constructor(
         val nameErrorMessage: Int? = null
     ) : Parcelable
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : ViewModelAssistedFactory<ProductDownloadDetailsViewModel>
 }
